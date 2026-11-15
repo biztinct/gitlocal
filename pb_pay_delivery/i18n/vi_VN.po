@@ -2149,3 +2149,341 @@ msgstr "đã trả"
 #: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
 msgid "still to pay"
 msgstr "còn phải trả"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "%(name)s has already been paid (%(date)s)."
+msgstr "%(name)s đã được trả lương (%(date)s)."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "%s is in a bank file whose money has already been released."
+msgstr "%s nằm trong một tệp ngân hàng đã được giải ngân."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "%s is in a bank file whose money has already been released. That cannot be undone here."
+msgstr "%s nằm trong một tệp ngân hàng đã được giải ngân. Không thể hoàn tác việc này ở đây."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s people were paid another way"
+msgstr "%s người đã được trả bằng cách khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "%s was paid by a released bank file. That cannot be undone here."
+msgstr "%s đã được trả qua một tệp ngân hàng đã giải ngân. Không thể hoàn tác việc này ở đây."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "%s's pay is not marked as paid another way."
+msgstr "Lương của %s chưa được đánh dấu là đã trả bằng cách khác."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "%s's pay is on hold. Release the hold first."
+msgstr "Lương của %s đang bị giữ lại. Hãy bỏ giữ lương trước."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "%s's payslip is not finished yet. Approve the pay run first."
+msgstr "Phiếu lương của %s chưa hoàn tất. Hãy duyệt kỳ lương trước."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 person was paid another way"
+msgstr "1 người đã được trả bằng cách khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "A payslip paid another way needs the day it was paid."
+msgstr "Phiếu lương trả bằng cách khác cần có ngày đã trả."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "Choose how the pay was paid: cash, cheque, another bank transfer or something else."
+msgstr "Chọn cách đã trả lương: tiền mặt, séc, chuyển khoản khác hoặc cách khác."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Mark at most %s people at once."
+msgstr "Mỗi lần chỉ đánh dấu tối đa %s người."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "Marked as not paid after all by %(who)s. Reason: %(reason)s. Their pay is still to pay."
+msgstr "%(who)s đã đánh dấu là chưa trả. Lý do: %(reason)s. Lương của người này vẫn còn phải trả."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "Marked as paid another way by %(who)s: %(how)s, on %(day)s. Note: %(note)s. This pay is not in any bank file."
+msgstr "%(who)s đã đánh dấu là trả bằng cách khác: %(how)s, ngày %(day)s. Ghi chú: %(note)s. Khoản lương này không nằm trong tệp ngân hàng nào."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "No · %s"
+msgstr "Không · %s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "Only the pay team can mark pay as paid another way. This needs the Payroll Manager or a Finance role."
+msgstr "Chỉ nhóm trả lương mới có thể đánh dấu lương là đã trả bằng cách khác. Cần vai trò Quản lý lương hoặc Tài chính."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_payslip__pb_paid_method
+msgid "Paid another way"
+msgstr "Trả bằng cách khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "Pick at least one person."
+msgstr "Hãy chọn ít nhất một người."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "The day it was paid cannot be in the future."
+msgstr "Ngày trả không thể ở tương lai."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "Write how the pay was paid (at least %s characters), for example the cheque number or who handed over the cash."
+msgstr "Ghi rõ cách đã trả lương (ít nhất %s ký tự), ví dụ số séc hoặc người đã giao tiền mặt."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "Write how the pay was paid (at least %s characters)."
+msgstr "Ghi rõ cách đã trả lương (ít nhất %s ký tự)."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "Write why this pay was not paid after all (at least %s characters)."
+msgstr "Ghi rõ vì sao khoản lương này thực ra chưa được trả (ít nhất %s ký tự)."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/paid_other.py:0
+msgid "You cannot mark your own pay as paid. Ask someone else in the pay team."
+msgstr "Bạn không thể tự đánh dấu lương của chính mình là đã trả. Hãy nhờ người khác trong nhóm trả lương."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "− %(amount)s paid another way (%(people)s)"
+msgstr "− %(amount)s trả bằng cách khác (%(people)s)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_release.py:0
+msgid "This bank file still pays someone who has been marked as paid another way since it was prepared (%s). Prepare the bank file again — it will leave them out — and have it approved before releasing the money."
+msgstr "Tệp ngân hàng này vẫn trả cho người đã được đánh dấu là trả bằng cách khác sau khi tệp được lập (%s). Hãy lập lại tệp ngân hàng — tệp mới sẽ bỏ họ ra — và cho duyệt trước khi giải ngân."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0
+msgid "Those payslips are not all in this pay run."
+msgstr "Không phải tất cả các phiếu lương đó đều thuộc kỳ lương này."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(n)s people in this file have been marked as paid another way since it was prepared (%(names)s). Prepare it again before the money is released."
+msgstr "%(n)s người trong tệp này đã được đánh dấu là trả bằng cách khác sau khi tệp được lập (%(names)s). Hãy lập lại tệp trước khi giải ngân."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s has been marked as paid another way since this file was prepared. Prepare it again before the money is released."
+msgstr "%s đã được đánh dấu là trả bằng cách khác sau khi tệp này được lập. Hãy lập lại tệp trước khi giải ngân."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s people are marked as paid. They will not be in any bank file."
+msgstr "Đã đánh dấu %s người là đã trả. Họ sẽ không nằm trong tệp ngân hàng nào."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 person is marked as paid. They will not be in any bank file."
+msgstr "Đã đánh dấu 1 người là đã trả. Người này sẽ không nằm trong tệp ngân hàng nào."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Mark %s people as paid"
+msgstr "Đánh dấu %s người là đã trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Mark 1 person as paid"
+msgstr "Đánh dấu 1 người là đã trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Marked as not paid. Their pay is still to pay."
+msgstr "Đã đánh dấu là chưa trả. Lương của người này vẫn còn phải trả."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Tick the people who were paid another way first."
+msgstr "Hãy đánh dấu chọn những người đã được trả bằng cách khác trước."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "(at least 6 characters)"
+msgstr "(ít nhất 6 ký tự)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Ctrl + Enter to confirm · Esc to cancel"
+msgstr "Ctrl + Enter để xác nhận · Esc để hủy"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "How was it paid?"
+msgstr "Đã trả bằng cách nào?"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Marked by"
+msgstr "Đánh dấu bởi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Not in any bank file · counted as paid"
+msgstr "Không nằm trong tệp ngân hàng nào · được tính là đã trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Not paid after all"
+msgstr "Thực ra chưa trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Paid on"
+msgstr "Ngày trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Paid some of them in cash, by cheque or by another transfer? Tick them and record it."
+msgstr "Đã trả cho một số người bằng tiền mặt, séc hoặc chuyển khoản khác? Hãy đánh dấu chọn họ và ghi lại."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Why was it not paid?"
+msgstr "Vì sao chưa trả?"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Why was it not paid? (at least 6 characters)"
+msgstr "Vì sao chưa trả? (ít nhất 6 ký tự)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "e.g. cheque 004512, or cash handed over by the site manager"
+msgstr "ví dụ: séc 004512, hoặc tiền mặt do quản lý công trường giao"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "paid another way"
+msgstr "trả bằng cách khác"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_payslip__pb_paid_note
+msgid "How it was paid"
+msgstr "Cách đã trả"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_payslip__pb_paid_by
+msgid "Marked as paid by"
+msgstr "Người đánh dấu đã trả"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_hr_payslip__pb_paid_method
+msgid "This person's pay was paid outside the bank file — in cash, by cheque, by a separate transfer or otherwise."
+msgstr "Lương của người này đã được trả ngoài tệp ngân hàng — bằng tiền mặt, séc, chuyển khoản riêng hoặc cách khác."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__hr_payslip__pb_paid_method__cash
+msgid "Cash"
+msgstr "Tiền mặt"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__hr_payslip__pb_paid_method__cheque
+msgid "Cheque"
+msgstr "Séc"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__hr_payslip__pb_paid_method__transfer
+msgid "Other bank transfer"
+msgstr "Chuyển khoản khác"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__hr_payslip__pb_paid_method__other
+msgid "Other"
+msgstr "Khác"

@@ -21,6 +21,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
 
 from .approval_common import PAY_GROUPS as _PAY_GROUPS
+from .paid_other import MAX_AT_ONCE
 
 
 class PbPayDelivery(models.AbstractModel):
@@ -75,9 +76,12 @@ class PbPayDelivery(models.AbstractModel):
                     'employee': slip.employee_id.name or '',
                     'employee_id': slip.employee_id.id,
                     'reasons': reasons,
+                    # WDGAP PR-E: the row's payslip, so it can be marked as
+                    # paid another way from the left-out list
+                    'slip_id': slip.id,
                 }
                 if slip.pb_pay_hold:
-                    row.update(on_hold=True, slip_id=slip.id)
+                    row.update(on_hold=True)
                 excluded.append(row)
             else:
                 eligible += 1
@@ -98,7 +102,9 @@ class PbPayDelivery(models.AbstractModel):
 
     def _money_totals(self, run):
         """Per currency — never added across currencies: what the run pays,
-        of which on hold, of which paid, of which still to pay."""
+        of which on hold, of which paid by a released bank file, of which
+        paid another way (WDGAP PR-E), of which still to pay. Per currency:
+        paid + paid another way + on hold + still to pay = total."""
         rows = {}
         for slip in self._done_slips(run):
             cur = slip._pb_slip_currency()
@@ -106,11 +112,15 @@ class PbPayDelivery(models.AbstractModel):
             row = rows.setdefault(cur.id, {
                 'currency': cur.name or '', 'symbol': cur.symbol or '',
                 'total': 0.0, 'held': 0.0, 'paid': 0.0, 'to_pay': 0.0,
+                'paid_other': 0.0,
                 'count': 0, 'held_count': 0, 'paid_count': 0,
-                'to_pay_count': 0})
+                'to_pay_count': 0, 'paid_other_count': 0})
             row['total'] += net
             row['count'] += 1
-            if slip.pb_paid_on:
+            if slip.pb_paid_method:
+                row['paid_other'] += net
+                row['paid_other_count'] += 1
+            elif slip.pb_paid_on:
                 row['paid'] += net
                 row['paid_count'] += 1
             elif slip.pb_pay_hold:
@@ -133,6 +143,25 @@ class PbPayDelivery(models.AbstractModel):
             slip = self.env['hr.payslip'].sudo().browse(person['slip_id'])
             person['can_release'] = bool(
                 may_act and slip.employee_id.user_id.id != own_uid)
+        return summary
+
+    def _paid_other_payload(self, run):
+        """WDGAP PR-E: who was paid another way, and who may undo it."""
+        summary = run.pb_paid_other_summary()
+        may_act = self.env['pb.money.approval.mixin']._pay_groups_held()
+        own_uid = self.env.uid
+        for person in summary['people']:
+            slip = self.env['hr.payslip'].sudo().browse(person['slip_id'])
+            person['can_undo'] = bool(
+                may_act and slip.employee_id.user_id.id != own_uid)
+        Slip = self.env['hr.payslip']
+        summary['methods'] = [
+            {'key': key, 'label': label} for key, label in
+            Slip._fields['pb_paid_method']._description_selection(self.env)]
+        summary['can_mark'] = bool(may_act)
+        summary['max_at_once'] = MAX_AT_ONCE
+        summary['today'] = fields.Date.to_string(
+            fields.Date.context_today(self))
         return summary
 
     def _follow_up_payload(self, run, eligible):
@@ -229,6 +258,7 @@ class PbPayDelivery(models.AbstractModel):
         latest = self._latest_file(run)
         payload = self._route_payload(latest)
         held_now = latest._pb_held_in_file() if latest else []
+        other_now = latest._pb_paid_other_in_file() if latest else []
         payload.update({
             'filename': latest.filename or '' if latest else '',
             'row_count': latest.row_count if latest else 0,
@@ -245,6 +275,8 @@ class PbPayDelivery(models.AbstractModel):
             'total_sentence': latest._pb_total_sentence() if latest else '',
             # held AFTER this file was prepared: it must be prepared again
             'held_since': [s.employee_id.name or '' for s in held_now],
+            # WDGAP PR-E: marked as paid another way after it was prepared
+            'paid_other_since': [s.employee_id.name or '' for s in other_now],
         })
         return payload
 
@@ -411,6 +443,8 @@ class PbPayDelivery(models.AbstractModel):
             'money': money,
             'holds': self._holds_payload(run),
             'follow_up': self._follow_up_payload(run, eligible),
+            # WDGAP PR-E
+            'paid_other': self._paid_other_payload(run),
         }
 
     # ------------------------------------------------------------- holds
@@ -423,6 +457,33 @@ class PbPayDelivery(models.AbstractModel):
         if not slip.exists() or slip.sudo().payslip_run_id != run:
             raise AccessError(_("That payslip is not in this pay run."))
         slip.action_pb_release_hold()
+        return self.get_delivery_data(run.id)
+
+    # ------------------------------------------------ paid another way
+    def _run_slips(self, run, slip_ids):
+        ids = [int(i) for i in (slip_ids or []) if i]
+        slips = self.env['hr.payslip'].browse(ids).exists()
+        if not slips or len(slips) != len(set(ids)) \
+                or slips.sudo().mapped('payslip_run_id') != run:
+            raise AccessError(_("Those payslips are not all in this pay run."))
+        return slips
+
+    @api.model
+    def mark_paid_other(self, run_id, slip_ids, method, note, paid_date=False):
+        """Mark people of the left-out list as paid another way (WDGAP
+        PR-E): one method and one note for all of them."""
+        self._require_access()
+        run = self._run(run_id)
+        self._run_slips(run, slip_ids).action_pb_paid_other(
+            method, note, paid_date or None)
+        return self.get_delivery_data(run.id)
+
+    @api.model
+    def undo_paid_other(self, run_id, slip_id, reason):
+        """"Not paid after all" for one person paid another way."""
+        self._require_access()
+        run = self._run(run_id)
+        self._run_slips(run, [slip_id]).action_pb_not_paid_after_all(reason)
         return self.get_delivery_data(run.id)
 
     # ------------------------------------------------------------- money out

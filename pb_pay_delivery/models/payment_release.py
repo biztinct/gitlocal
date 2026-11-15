@@ -127,6 +127,19 @@ class PbPaymentRelease(models.Model):
         """WDGAP PR-C rail R1: a file carrying a payslip that was put on hold
         after the file was prepared can never be released. Asked when the
         release is prepared AND again at the moment it is carried out."""
+        # WDGAP PR-E: the same for somebody marked as paid another way since
+        # the file was prepared — the bank must not pay them a second time.
+        other_way = bank_file._pb_paid_other_in_file()
+        if other_way:
+            names = ', '.join(other_way.mapped('employee_id.name')[:5])
+            if len(other_way) > 5:
+                names = _("%(names)s and %(more)s more", names=names,
+                          more=len(other_way) - 5)
+            raise UserError(_(
+                "This bank file still pays someone who has been marked as "
+                "paid another way since it was prepared (%s). Prepare the "
+                "bank file again — it will leave them out — and have it "
+                "approved before releasing the money.", names))
         held = bank_file._pb_held_in_file()
         if not held:
             return True

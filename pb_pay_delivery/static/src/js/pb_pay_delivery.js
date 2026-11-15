@@ -49,6 +49,11 @@ export class PbPayDelivery extends Component {
             bankReference: "",
             showExcl: false,
             netShown: 0,         // count-up display
+            // WDGAP PR-E — "Paid another way": who is ticked in the left-out
+            // list, the open form (method, note, day), and the one undo box
+            sel: {},
+            payOther: null,
+            undo: null,
         });
         onWillStart(async () => {
             if (this.state.runId) { await this.load(); }
@@ -149,7 +154,9 @@ export class PbPayDelivery extends Component {
     /** Everybody who can be paid has been: a released file, nobody ready. */
     get paidUp() {
         const v = (this.state.data && this.state.data.validation) || {};
-        return !!(this.followUp.released_files && !v.eligible);
+        // WDGAP PR-E: also a run whose people were all paid another way
+        const runPaid = !!(this.state.data && this.state.data.run.paid);
+        return !!((this.followUp.released_files || runPaid) && !v.eligible);
     }
     /** Nobody is ready because everybody left to pay is on hold. */
     get allHeld() {
@@ -159,7 +166,7 @@ export class PbPayDelivery extends Component {
     /** Of a currency's total: on hold, paid, still to pay — said only when
      *  any of it is not simply "still to pay". */
     get moneySplit() {
-        return this.moneyRows.filter((m) => m.held || m.paid);
+        return this.moneyRows.filter((m) => m.held || m.paid || m.paid_other);
     }
     get otherCurrencies() { return this.moneyRows.slice(1); }
     /** Releases already gone out for this run, other than the current one. */
@@ -193,6 +200,121 @@ export class PbPayDelivery extends Component {
             ? _t("%s has been put on hold since this file was prepared. Prepare it again before the money is released.", names[0])
             : _t("%(n)s people in this file have been put on hold since it was prepared (%(names)s). Prepare it again before the money is released.",
                  { n: names.length, names: names.join(", ") });
+    }
+
+    // ------------------------------------------- WDGAP PR-E: paid another way
+    get paidOther() {
+        return (this.state.data && this.state.data.paid_other)
+            || { count: 0, people: [], methods: [], can_mark: false };
+    }
+    get paidOtherTitle() {
+        const n = this.paidOther.count || 0;
+        return n === 1 ? _t("1 person was paid another way") : _t("%s people were paid another way", n);
+    }
+    /** The left-out rows that can be marked (not the people on hold). */
+    get markable() {
+        const v = (this.state.data && this.state.data.validation) || {};
+        return this.paidOther.can_mark ? (v.excluded || []).filter((x) => x.slip_id) : [];
+    }
+    get selectedIds() {
+        return this.markable.map((x) => x.slip_id).filter((id) => this.state.sel[id]);
+    }
+    get allSelected() {
+        return this.markable.length > 0 && this.selectedIds.length === this.markable.length;
+    }
+    isSelected(x) { return !!this.state.sel[x.slip_id]; }
+    toggleSel(x) {
+        if (!x.slip_id) { return; }
+        this.state.sel[x.slip_id] = !this.state.sel[x.slip_id];
+    }
+    toggleAll() {
+        const on = !this.allSelected;
+        for (const x of this.markable) { this.state.sel[x.slip_id] = on; }
+    }
+    get markLabel() {
+        const n = this.selectedIds.length;
+        return n === 1 ? _t("Mark 1 person as paid") : _t("Mark %s people as paid", n);
+    }
+    get payOtherTooMany() {
+        return this.selectedIds.length > (this.paidOther.max_at_once || 50);
+    }
+    get payOtherReady() {
+        const f = this.state.payOther;
+        return !!(f && f.method && (f.note || "").trim().length >= 6
+                  && this.selectedIds.length && !this.payOtherTooMany
+                  && (!f.date || f.date <= (this.paidOther.today || f.date)));
+    }
+    openPayOther() {
+        if (!this.selectedIds.length) {
+            this.notif.add(_t("Tick the people who were paid another way first."), { type: "warning" });
+            return;
+        }
+        this.state.undo = null;
+        this.state.payOther = { method: "", note: "", date: this.paidOther.today || "" };
+    }
+    closePayOther() { this.state.payOther = null; }
+    setPayMethod(key) { if (this.state.payOther) { this.state.payOther.method = key; } }
+    onPayNote(ev) { if (this.state.payOther) { this.state.payOther.note = ev.target.value; } }
+    onPayDate(ev) { if (this.state.payOther) { this.state.payOther.date = ev.target.value; } }
+    onPayOtherKey(ev) {
+        if (ev.key === "Escape") { ev.preventDefault(); this.closePayOther(); }
+        else if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); this.confirmPayOther(); }
+    }
+    async confirmPayOther() {
+        if (this.state.busy || !this.payOtherReady) { return; }
+        const f = this.state.payOther;
+        const ids = this.selectedIds;
+        this.state.busy = true;
+        try {
+            this.state.data = await this.orm.call(MODEL, "mark_paid_other",
+                [this.state.runId, ids, f.method, f.note.trim(), f.date || false]);
+            this.state.payOther = null;
+            this.state.sel = {};
+            this.notif.add(ids.length === 1
+                ? _t("1 person is marked as paid. They will not be in any bank file.")
+                : _t("%s people are marked as paid. They will not be in any bank file.", ids.length),
+                { type: "success" });
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+    openUndo(person) {
+        this.state.payOther = null;
+        this.state.undo = { slipId: person.slip_id, reason: "" };
+    }
+    closeUndo() { this.state.undo = null; }
+    onUndoReason(ev) { if (this.state.undo) { this.state.undo.reason = ev.target.value; } }
+    get undoReady() { return !!(this.state.undo && (this.state.undo.reason || "").trim().length >= 6); }
+    onUndoKey(ev) {
+        if (ev.key === "Escape") { ev.preventDefault(); this.closeUndo(); }
+        else if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); this.confirmUndo(); }
+    }
+    async confirmUndo() {
+        if (this.state.busy || !this.undoReady) { return; }
+        const u = this.state.undo;
+        this.state.busy = true;
+        try {
+            this.state.data = await this.orm.call(MODEL, "undo_paid_other",
+                [this.state.runId, u.slipId, u.reason.trim()]);
+            this.state.undo = null;
+            this.notif.add(_t("Marked as not paid. Their pay is still to pay."), { type: "success" });
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+    get paidOtherSinceText() {
+        const names = this.bankFile.paid_other_since || [];
+        return names.length === 1
+            ? _t("%s has been marked as paid another way since this file was prepared. Prepare it again before the money is released.", names[0])
+            : _t("%(n)s people in this file have been marked as paid another way since it was prepared (%(names)s). Prepare it again before the money is released.",
+                 { n: names.length, names: names.join(", ") });
+    }
+    get tooManyText() {
+        return _t("Mark at most %s people at once.", this.paidOther.max_at_once || 50);
     }
 
     async releaseHold(person) {

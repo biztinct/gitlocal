@@ -89,6 +89,10 @@ class VietnamBankExportWizard(models.TransientModel):
         if not slips and self.payslip_run_id:
             slips = self.payslip_run_id.slip_ids
         slips = slips.filtered(lambda s: s.state == 'done')
+        # WDGAP PR-E: pay that was paid another way (cash, cheque, …) is never
+        # in any bank file, whichever door asks for one.
+        if 'pb_paid_method' in slips._fields:
+            slips = slips.filtered(lambda s: not s.pb_paid_method)
         if self.pb_unpaid_only:
             slips = slips.filtered(lambda s: not s.pb_paid_on)
         return slips

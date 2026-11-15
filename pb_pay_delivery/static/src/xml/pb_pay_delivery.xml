@@ -103,6 +103,9 @@
               <span t-if="m.paid" class="pt paid">
                 <t t-out="ic('checkCircle',12)"/> <b t-esc="money(m.paid, m.symbol)"/> <span>paid</span>
               </span>
+              <span t-if="m.paid_other" class="pt paid other">
+                <t t-out="ic('banknote',12)"/> <b t-esc="money(m.paid_other, m.symbol)"/> <span>paid another way</span>
+              </span>
               <span t-attf-class="pt {{ m.to_pay ? 'due' : 'zero' }}">
                 <t t-out="ic('clock',12)"/> <b t-esc="money(m.to_pay, m.symbol)"/> <span>still to pay</span>
               </span>
@@ -192,8 +195,24 @@
               </div>
 
               <div t-if="state.showExcl and state.data.validation.excluded.length" class="pbpd-excl">
+                <!-- WDGAP PR-E: tick the people paid outside the bank file -->
+                <div t-if="markable.length" class="pbpd-excl-bar">
+                  <label class="pbpd-tick">
+                    <input type="checkbox" t-att-checked="allSelected" t-on-change="toggleAll"/>
+                    <span>All</span>
+                  </label>
+                  <span class="hint">Paid some of them in cash, by cheque or by another transfer? Tick them and record it.</span>
+                  <button class="pbpd-btn ghost sm" t-att-disabled="state.busy or !selectedIds.length"
+                          t-on-click="openPayOther">
+                    <span t-out="ic('banknote',13)"/><span>Paid another way</span>
+                  </button>
+                </div>
                 <div t-foreach="state.data.validation.excluded" t-as="x" t-key="x.employee_id"
-                     class="row">
+                     t-attf-class="row {{ isSelected(x) ? 'sel' : '' }}">
+                  <label t-if="markable.length" class="pbpd-tick">
+                    <input type="checkbox" t-att-checked="isSelected(x)"
+                           t-att-aria-label="x.employee" t-on-change="() => this.toggleSel(x)"/>
+                  </label>
                   <button class="emp link" t-on-click="() => this.openEmployeeBank(x.employee_id)"
                           title="Open the employee record to fix the bank account">
                     <t t-esc="x.employee"/>
@@ -202,6 +221,79 @@
                   <span class="reasons">
                     <span t-foreach="x.reasons" t-as="rs" t-key="rs_index" class="chip" t-esc="rs"/>
                   </span>
+                </div>
+              </div>
+              <!-- the one form: how, a note, the day (WDGAP PR-E) -->
+              <div t-if="state.showExcl and state.payOther" class="pbpd-payother" t-on-keydown="onPayOtherKey">
+                  <div class="pt-h">
+                    <span class="ico" t-out="ic('banknote',15)"/>
+                    <span class="t" t-esc="markLabel"/>
+                  </div>
+                  <div class="pt-methods" role="radiogroup" aria-label="How was it paid?">
+                    <button t-foreach="paidOther.methods" t-as="mt" t-key="mt.key" type="button"
+                            role="radio" t-att-aria-checked="state.payOther.method === mt.key ? 'true' : 'false'"
+                            t-attf-class="chip {{ state.payOther.method === mt.key ? 'active' : '' }}"
+                            t-on-click="() => this.setPayMethod(mt.key)">
+                      <t t-esc="mt.label"/>
+                    </button>
+                  </div>
+                  <label class="pbpd-field">
+                    <span>Note <em>(at least 6 characters)</em></span>
+                    <textarea rows="2" t-att-value="state.payOther.note" t-on-input="onPayNote"
+                              placeholder="e.g. cheque 004512, or cash handed over by the site manager"/>
+                  </label>
+                  <label class="pbpd-field date">
+                    <span>Paid on</span>
+                    <input type="date" t-att-value="state.payOther.date" t-att-max="paidOther.today"
+                           t-on-input="onPayDate"/>
+                  </label>
+                  <div t-if="payOtherTooMany" class="pbpd-block">
+                    <span t-out="ic('alert',14)"/> <span t-esc="tooManyText"/>
+                  </div>
+                  <div class="pt-actions">
+                    <span class="keys">Ctrl + Enter to confirm · Esc to cancel</span>
+                    <button class="pbpd-btn ghost sm" t-on-click="closePayOther">Cancel</button>
+                    <button class="pbpd-btn primary sm" t-att-disabled="state.busy or !payOtherReady"
+                            t-on-click="confirmPayOther">
+                      <span t-out="ic('check',13)"/><span t-esc="markLabel"/>
+                    </button>
+                  </div>
+              </div>
+
+              <!-- WDGAP PR-E: the people paid outside the bank file. Quiet: they
+                   are paid; the one action is to say they were not after all. -->
+              <div t-if="paidOther.count" class="pbpd-paidother">
+                <div class="gh">
+                  <span class="ico" t-out="ic('banknote',15)"/>
+                  <span class="t" t-esc="paidOtherTitle"/>
+                  <span class="s">Not in any bank file · counted as paid</span>
+                </div>
+                <div t-foreach="paidOther.people" t-as="p" t-key="p.slip_id" class="hrow">
+                  <div class="who">
+                    <span class="emp" t-esc="p.employee"/>
+                    <span class="pbpd-chip ok" t-esc="p.method_label"/>
+                  </div>
+                  <div class="why" t-esc="p.note"/>
+                  <div class="meta">
+                    <span t-if="p.by">Marked by <t t-esc="p.by"/></span>
+                    <span t-if="p.on_date" class="dot">•</span>
+                    <span t-if="p.on_date" t-esc="shortDate(p.on_date)"/>
+                  </div>
+                  <div class="amt" t-esc="money(p.amount, p.symbol)"/>
+                  <button t-if="p.can_undo and !(state.undo and state.undo.slipId === p.slip_id)"
+                          class="pbpd-btn ghost sm" t-att-disabled="state.busy"
+                          t-on-click="() => this.openUndo(p)">
+                    <span t-out="ic('undo',13)"/><span>Not paid after all</span>
+                  </button>
+                  <div t-if="state.undo and state.undo.slipId === p.slip_id" class="pbpd-undo"
+                       t-on-keydown="onUndoKey">
+                    <input type="text" t-att-value="state.undo.reason" t-on-input="onUndoReason"
+                           placeholder="Why was it not paid? (at least 6 characters)"
+                           aria-label="Why was it not paid?"/>
+                    <button class="pbpd-btn ghost sm" t-on-click="closeUndo">Cancel</button>
+                    <button class="pbpd-btn primary sm" t-att-disabled="state.busy or !undoReady"
+                            t-on-click="confirmUndo"><span>Confirm</span></button>
+                  </div>
                 </div>
               </div>
 
@@ -256,6 +348,10 @@
               <!-- WDGAP PR-C: a file prepared before somebody in it was held -->
               <div t-if="bankFile.held_since and bankFile.held_since.length" class="pbpd-block">
                 <span t-out="ic('alert',14)"/> <span t-esc="heldSinceText"/>
+              </div>
+              <!-- WDGAP PR-E: a file prepared before somebody in it was paid another way -->
+              <div t-if="bankFile.paid_other_since and bankFile.paid_other_since.length" class="pbpd-block">
+                <span t-out="ic('alert',14)"/> <span t-esc="paidOtherSinceText"/>
               </div>
 
               <!-- WDGAP PR-C: after money went out, the people still to pay -->
