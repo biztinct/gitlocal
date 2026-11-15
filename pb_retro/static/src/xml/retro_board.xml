@@ -321,7 +321,7 @@
                     <span class="pbrw-av"><t t-out="icon('user', 15)"/></span>
                     <span class="pbrw-person-id">
                       <b t-esc="pc.name"/>
-                      <small><t t-esc="pc.months.length"/> months<t t-if="pc.changed"> · <t t-esc="pc.changed"/> would change</t></small>
+                      <small t-esc="personSub(pc)"/>
                     </span>
                     <span class="pbrw-person-net"><small>Take-home</small><b t-att-class="signClass(pc.net_sign)" t-esc="pc.net"/></span>
                     <t t-out="icon(isOpen(pc) ? 'chevronUp' : 'chevronDown', 16)"/>
@@ -338,6 +338,7 @@
                         <span class="pbrw-month-net" t-if="pm.lines.length">Take-home <b t-att-class="signClass(pm.net_sign)" t-esc="pm.net"/></span>
                         <button t-if="pm.payslip_id" class="pbim-btn-sm ghost" t-on-click="() => this.openPayslip(pm.payslip_id)"><t t-out="icon('external', 13)"/> Payslip</button>
                       </div>
+                      <p t-if="pm.why.length" class="pbrw-month-why"><t t-out="icon('info', 13)"/> <span><t t-foreach="pm.why" t-as="wy" t-key="wy_index"><t t-if="wy_index"> · </t><t t-esc="wy"/></t></span></p>
                       <table t-if="pm.lines.length" class="pbrw-lines">
                         <thead><tr><th>Pay item</th><th class="num">Was</th><th class="num">Would be</th><th class="num">Difference</th></tr></thead>
                         <tbody>
@@ -409,7 +410,7 @@
               <t t-elif="W.step === 2">
                 <p class="pbrw-muted">Click the first month, then the last. At most <t t-esc="W.monthCap"/> months.</p>
                 <div class="pbrw-months">
-                  <button t-foreach="wizScheme ? wizScheme.months : []" t-as="mo" t-key="mo.month" type="button" class="pbrw-month-pick" t-att-class="monthState(mo)" t-att-disabled="!mo.payslips" t-on-click="() => this.pickMonth(mo)">
+                  <button t-foreach="wizMonths" t-as="mo" t-key="mo.month" type="button" class="pbrw-month-pick" t-att-class="monthState(mo)" t-att-disabled="!mo.payslips" t-on-click="() => this.pickMonth(mo)">
                     <b t-esc="mo.short"/>
                     <small><t t-esc="fmtInt(mo.payslips)"/> payslips</small>
                     <small t-if="mo.other" class="pbrw-month-other">+<t t-esc="mo.other"/> extra</small>
@@ -508,7 +509,7 @@
             <div class="pbrw-modal-foot">
               <span class="pbrw-foot-note" t-if="W.step === 4 and W.preview">
                 <t t-if="changesIncluded + W.whatifs.length === 0">Nothing to change yet: the result will show every payslip as it is.</t>
-                <t t-else=""><t t-esc="changesIncluded"/> contract changes and <t t-esc="W.whatifs.length"/> what-if values will be used.</t>
+                <t t-else="" t-esc="usedSentence"/>
               </span>
               <button t-if="W.step > 1" class="pbim-btn ghost" t-on-click="prevStep">Back</button>
               <button t-if="W.step &lt; 4" class="pbim-btn primary" t-att-disabled="!canNext" t-on-click="nextStep">Next <t t-out="icon('arrowRight', 14)"/></button>

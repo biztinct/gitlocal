@@ -1,0 +1,2014 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_retro
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 08:00+0000\n"
+"PO-Revision-Date: 2026-11-15 08:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "%(item)s: stored %(stored)s, worked out again %(today)s"
+msgstr "%(item)s: tersimpan %(stored)s, dihitung ulang %(today)s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "%(month)s: %(n)s of %(d)s days"
+msgstr "%(month)s: %(n)s dari %(d)s hari"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%(months)s · %(n)s would change"
+msgstr "%(months)s · %(n)s akan berubah"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s contract changes"
+msgstr "%s perubahan kontrak"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s months"
+msgstr "%s bulan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s what-if values"
+msgstr "%s nilai seandainya"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s · 1 would change"
+msgstr "%s · 1 akan berubah"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ", entered"
+msgstr ", dimasukkan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ", so not counted again."
+msgstr ", jadi tidak dihitung lagi."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ", worked out again"
+msgstr ", dihitung ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ". Fix it in Formula Studio, then work it out again."
+msgstr ". Perbaiki di Formula Studio, lalu hitung ulang."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "1 contract change"
+msgstr "1 perubahan kontrak"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "1 month"
+msgstr "1 bulan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "1 what-if value"
+msgstr "1 nilai seandainya"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ": not counted again."
+msgstr ": tidak dihitung lagi."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ": not re-worked."
+msgstr ": tidak dihitung ulang."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ": stored"
+msgstr ": tersimpan"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "A closed or cancelled re-work cannot be changed."
+msgstr ""
+"Perhitungan ulang yang sudah ditutup atau dibatalkan tidak dapat diubah."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "A closed or cancelled re-work cannot be worked out again."
+msgstr ""
+"Perhitungan ulang yang sudah ditutup atau dibatalkan tidak dapat dihitung "
+"lagi."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"A formula has an error for these people, so their payslips could not be "
+"worked out. The rest were."
+msgstr ""
+"Sebuah rumus bermasalah untuk orang-orang ini, jadi slip gaji mereka tidak "
+"dapat dihitung. Sisanya sudah dihitung."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"A pay rise entered late, a corrected allowance, a figure you want to try: "
+"Payobook works the finished payslips out again with the scheme's own tax and"
+" insurance formulas and shows every difference, person by person and month "
+"by month."
+msgstr ""
+"Kenaikan gaji yang terlambat dimasukkan, tunjangan yang dikoreksi, angka "
+"yang ingin Anda coba: Payobook menghitung ulang slip gaji yang sudah selesai"
+" dengan rumus pajak dan asuransi skema itu sendiri dan menunjukkan setiap "
+"selisih, per orang dan per bulan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid ""
+"A re-work covers at most %(cap)s months; %(n)s were picked. Split it into "
+"two re-works."
+msgstr ""
+"Satu perhitungan ulang mencakup paling banyak %(cap)s bulan; %(n)s dipilih. "
+"Bagi menjadi dua perhitungan ulang."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid ""
+"A re-work covers at most %(cap)s people; these months have %(n)s. Pick the "
+"people, or fewer months."
+msgstr ""
+"Satu perhitungan ulang mencakup paling banyak %(cap)s orang; bulan-bulan ini"
+" memiliki %(n)s. Pilih orangnya, atau lebih sedikit bulan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "A re-work covers at most %s people."
+msgstr "Satu perhitungan ulang mencakup paling banyak %s orang."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid ""
+"A what-if value is for a payslip this re-work does not cover. Check its "
+"person and month."
+msgstr ""
+"Sebuah nilai seandainya ditujukan untuk slip gaji yang tidak dicakup "
+"perhitungan ulang ini. Periksa orang dan bulannya."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "A what-if value must be for a payslip of the re-work's pay scheme."
+msgstr ""
+"Nilai seandainya harus untuk slip gaji dari skema gaji perhitungan ulang "
+"ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Add a what-if value"
+msgstr "Tambah nilai seandainya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "All re-works"
+msgstr "Semua perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Already paid back"
+msgstr "Sudah dibayar kembali"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Amounts in %s"
+msgstr "Jumlah dalam %s"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Back"
+msgstr "Kembali"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Back to every re-work"
+msgstr "Kembali ke semua perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Cancel"
+msgstr "Batalkan"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__cancelled
+msgid "Cancelled"
+msgstr "Dibatalkan"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__cancelled_on
+msgid "Cancelled on"
+msgstr "Dibatalkan pada"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Cancelled."
+msgstr "Dibatalkan."
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__drift
+msgid "Cannot be compared exactly"
+msgstr "Tidak dapat dibandingkan dengan tepat"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Change"
+msgstr "Ubah"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Change this re-work"
+msgstr "Ubah perhitungan ulang ini"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Checked first: each payslip is worked out again with nothing changed, so you"
+" know the comparison is fair."
+msgstr ""
+"Diperiksa dulu: setiap slip gaji dihitung ulang tanpa perubahan apa pun, "
+"jadi Anda tahu perbandingannya adil."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Clear"
+msgstr "Kosongkan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Click the first month, then the last. At most"
+msgstr "Klik bulan pertama, lalu bulan terakhir. Paling banyak"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__closed
+msgid "Closed"
+msgstr "Ditutup"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__closed_by
+msgid "Closed by"
+msgstr "Ditutup oleh"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__closed_on
+msgid "Closed on"
+msgstr "Ditutup pada"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Closed. It stays here as a record and cannot be worked out again."
+msgstr ""
+"Ditutup. Tetap di sini sebagai catatan dan tidak dapat dihitung ulang."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__company_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__company_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__company_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Compared exactly"
+msgstr "Dibandingkan dengan tepat"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Contract amount for %(item)s: %(old)s to %(new)s from %(day)s"
+msgstr "Jumlah kontrak untuk %(item)s: %(old)s menjadi %(new)s mulai %(day)s"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Contract amounts changed after the payslips were worked out"
+msgstr "Jumlah kontrak yang berubah setelah slip gaji dihitung"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__excluded_change_ids
+msgid "Contract changes left out"
+msgstr "Perubahan kontrak yang dikecualikan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__error
+msgid "Could not be worked out"
+msgstr "Tidak dapat dihitung"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__counts
+msgid "Counted in totals"
+msgstr "Dihitung dalam total"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__create_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__create_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__create_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__create_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__create_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__create_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__currency_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__currency_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__date_from
+msgid "Date From"
+msgstr "Dari tanggal"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__date_to
+msgid "Date To"
+msgstr "Sampai tanggal"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Deductions"
+msgstr "Potongan"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__diff_deductions
+msgid "Diff Deductions"
+msgstr "Selisih potongan"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__diff_employer_cost
+msgid "Diff Employer Cost"
+msgstr "Selisih biaya pemberi kerja"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__diff_gross
+msgid "Diff Gross"
+msgstr "Selisih bruto"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__diff_net
+msgid "Diff Net"
+msgstr "Selisih bersih"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__diff
+msgid "Difference"
+msgstr "Selisih"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__line_ids
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "Differences"
+msgstr "Selisih"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_board__display_name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__display_name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__display_name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__display_name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Done."
+msgstr "Selesai."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__draft
+msgid "Draft"
+msgstr "Draf"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__employee_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__employee_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__employee_name
+msgid "Employee name"
+msgstr "Nama karyawan"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Employer cost"
+msgstr "Biaya pemberi kerja"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Enter in a note adds the next row."
+msgstr "Enter di catatan menambah baris berikutnya."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__error_why
+msgid "Error Why"
+msgstr "Alasan galat"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Every payslip was worked out by the version of the scheme in use today."
+msgstr "Setiap slip gaji dihitung dengan versi skema yang dipakai hari ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Every re-work"
+msgstr "Semua perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Every what-if value needs a note: say where the new figure comes from."
+msgstr ""
+"Setiap nilai seandainya perlu catatan: sebutkan dari mana angka baru itu "
+"berasal."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Everyone"
+msgstr "Semua orang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__people__all
+msgid "Everyone in those pay runs"
+msgstr "Semua orang dalam penggajian tersebut"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Excel files cannot be made on this server yet."
+msgstr "Berkas Excel belum dapat dibuat di server ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Extra and top-up runs are not re-worked: they pay something on top of the "
+"month, not the month itself."
+msgstr ""
+"Penggajian tambahan dan susulan tidak dihitung ulang: keduanya membayar "
+"sesuatu di atas bulan itu, bukan bulan itu sendiri."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Extra or top-up payslips are listed but not re-worked"
+msgstr ""
+"slip gaji tambahan atau susulan dicantumkan tetapi tidak dihitung ulang"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__skip_reason__extra
+msgid "Extra run"
+msgstr "Penggajian tambahan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Find a person"
+msgstr "Cari seseorang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Find a person by name or code"
+msgstr "Cari orang menurut nama atau kode"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Find a re-work by its reason or pay scheme…"
+msgstr "Cari perhitungan ulang menurut alasan atau skema gaji…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Finding the finished payslips…"
+msgstr "Mencari slip gaji yang sudah selesai…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "For example: the October pay rise was entered late"
+msgstr "Contoh: kenaikan gaji Oktober terlambat dimasukkan"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__month_from
+msgid "From month"
+msgstr "Dari bulan"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Gross pay"
+msgstr "Gaji bruto"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_board__id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "It could not be worked out."
+msgstr "Tidak dapat dihitung."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"It could not be worked out. Work it out again; if it stays, ask your "
+"administrator."
+msgstr ""
+"Tidak dapat dihitung. Hitung ulang; jika tetap begitu, tanyakan "
+"administrator Anda."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__drift_json
+msgid "Items that do not reproduce"
+msgstr "Pos yang tidak sama lagi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Kept as a record, with an Excel file to share."
+msgstr "Disimpan sebagai catatan, dengan berkas Excel untuk dibagikan."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__band
+msgid "Kind of line"
+msgstr "Jenis baris"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__write_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__write_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__write_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__write_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__write_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__write_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Latest months first"
+msgstr "Bulan terbaru dulu"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Left out of this re-work."
+msgstr "Dikecualikan dari perhitungan ulang ini."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__line_ids
+msgid "Line"
+msgstr "Baris"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Loading"
+msgstr "Memuat"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Made"
+msgstr "Dibuat"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Made by"
+msgstr "Dibuat oleh"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__month
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__month
+msgid "Month"
+msgstr "Bulan"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Months"
+msgstr "Bulan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "New re-work"
+msgstr "Perhitungan ulang baru"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "New value"
+msgstr "Nilai baru"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Newest first"
+msgstr "Terbaru dulu"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Next"
+msgstr "Berikutnya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "No change"
+msgstr "Tidak berubah"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__same
+msgid "No difference"
+msgstr "Tidak ada selisih"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "No finished payslip was found for these months."
+msgstr "Tidak ada slip gaji selesai untuk bulan-bulan ini."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "No pay item would change."
+msgstr "Tidak ada pos gaji yang berubah."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"No pay scheme has finished payslips yet. A re-work starts once a pay run is "
+"finished."
+msgstr ""
+"Belum ada skema gaji dengan slip gaji selesai. Perhitungan ulang dimulai "
+"setelah sebuah penggajian selesai."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "No re-works match these filters"
+msgstr "Tidak ada perhitungan ulang yang cocok dengan filter ini"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__scheme_unknown
+msgid "No scheme stamp"
+msgstr "Tanpa cap skema"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__no_inputs
+msgid "No stored figures"
+msgstr "Tanpa angka tersimpan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nobody found."
+msgstr "Tidak ada yang ditemukan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nobody matches."
+msgstr "Tidak ada yang cocok."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nobody's pay would change."
+msgstr "Gaji tidak ada yang berubah."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "None found. Use the what-if values below to try a figure."
+msgstr ""
+"Tidak ada. Gunakan nilai seandainya di bawah untuk mencoba sebuah angka."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__skipped
+msgid "Not re-worked"
+msgstr "Tidak dihitung ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Not worked out yet"
+msgstr "Belum dihitung"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__note
+msgid "Note"
+msgstr "Catatan"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid ""
+"Nothing has been paid or changed. These are what the payslips would say, "
+"worked out again with today's figures."
+msgstr ""
+"Belum ada yang dibayar atau diubah. Inilah yang akan tertulis di slip gaji "
+"jika dihitung ulang dengan angka hari ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Nothing has been paid or changed. To pay a difference today, add it as a "
+"one-off in Updates."
+msgstr ""
+"Belum ada yang dibayar atau diubah. Untuk membayar selisih hari ini, "
+"tambahkan sebagai pembayaran sekali di Pembaruan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nothing needs a look."
+msgstr "Tidak ada yang perlu diperiksa."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nothing to change yet: the result will show every payslip as it is."
+msgstr ""
+"Belum ada yang diubah: hasilnya akan menampilkan setiap slip gaji apa "
+"adanya."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Nothing: no contract amount was changed after these payslips were worked "
+"out, and no what-if value was typed. Every difference below would be zero."
+msgstr ""
+"Tidak ada: tidak ada jumlah kontrak yang berubah setelah slip gaji ini "
+"dihitung, dan tidak ada nilai seandainya yang diketik. Setiap selisih di "
+"bawah akan nol."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "Only a draft or worked-out re-work can be cancelled."
+msgstr ""
+"Hanya perhitungan ulang draf atau yang sudah dihitung yang dapat dibatalkan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "Only a worked-out re-work can be closed."
+msgstr "Hanya perhitungan ulang yang sudah dihitung yang dapat ditutup."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Only the people I pick"
+msgstr "Hanya orang yang saya pilih"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__people__picked
+msgid "Only the people picked"
+msgstr "Hanya orang yang dipilih"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Open"
+msgstr "Terbuka"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Open Updates"
+msgstr "Buka Pembaruan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Open all"
+msgstr "Buka semua"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Opening the re-work…"
+msgstr "Membuka perhitungan ulang…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_palette.js:0
+msgid "Past months"
+msgstr "Bulan lalu"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_palette.js:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.actions.act_window,name:pb_retro.action_pb_retro_review
+#: model:ir.actions.client,name:pb_retro.action_pb_retro_board
+#: model:ir.model,name:pb_retro.model_pb_retro_review
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_list
+msgid "Past-month re-work"
+msgstr "Perhitungan ulang bulan lalu"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_board
+msgid "Past-month re-work board data"
+msgstr "Data papan perhitungan ulang bulan lalu"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Past-month re-work · %s"
+msgstr "Perhitungan ulang bulan lalu · %s"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_whatif
+msgid "Past-month re-work: a what-if value"
+msgstr "Perhitungan ulang bulan lalu: nilai seandainya"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_line
+msgid "Past-month re-work: one difference"
+msgstr "Perhitungan ulang bulan lalu: satu selisih"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_slip
+msgid "Past-month re-work: one payslip"
+msgstr "Perhitungan ulang bulan lalu: satu slip gaji"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__name
+msgid "Pay item"
+msgstr "Pos gaji"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__code
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__code
+msgid "Pay item code"
+msgstr "Kode pos gaji"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__error_item
+msgid "Pay item with an error"
+msgstr "Pos gaji yang bermasalah"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__run_name
+msgid "Pay run"
+msgstr "Penggajian"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__config_id
+msgid "Pay scheme"
+msgstr "Skema gaji"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Pay scheme, A to Z"
+msgstr "Skema gaji, A sampai Z"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_palette.js:0
+msgid "Payroll"
+msgstr "Penggajian"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__payslip_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__payslip_id
+msgid "Payslip"
+msgstr "Slip gaji"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__slip_ids
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "Payslips"
+msgstr "Slip gaji"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__people
+msgid "People"
+msgstr "Orang"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__employee_ids
+msgid "People picked"
+msgstr "Orang yang dipilih"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Person by person"
+msgstr "Per orang"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Pick a pay item for every what-if value."
+msgstr "Pilih pos gaji untuk setiap nilai seandainya."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Pick all shown"
+msgstr "Pilih semua yang tampil"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Pick the months first."
+msgstr "Pilih bulannya dulu."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Pick the pay scheme first."
+msgstr "Pilih skema gajinya dulu."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Pick the person, month and pay item of every what-if value."
+msgstr "Pilih orang, bulan dan pos gaji untuk setiap nilai seandainya."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Pick…"
+msgstr "Pilih…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Press “Work it out” to compare every finished payslip of"
+msgstr "Tekan “Hitung” untuk membandingkan setiap slip gaji selesai dari"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Putting the result together…"
+msgstr "Menyusun hasil…"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__name
+msgid "Re-work"
+msgstr "Perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid ""
+"Re-working past months is for the people who approve pay runs. Ask your "
+"administrator for the payroll manager role to see this screen."
+msgstr ""
+"Perhitungan ulang bulan lalu adalah untuk orang yang menyetujui penggajian. "
+"Minta peran manajer penggajian kepada administrator untuk melihat layar ini."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid ""
+"Re-working past months is for the people who approve pay runs. Ask your "
+"administrator for the payroll manager role."
+msgstr ""
+"Perhitungan ulang bulan lalu adalah untuk orang yang menyetujui penggajian. "
+"Minta peran manajer penggajian kepada administrator."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Read the board again"
+msgstr "Muat ulang papan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Read-only. No payslip, pay run, loan or one-off is touched."
+msgstr ""
+"Hanya baca. Tidak ada slip gaji, penggajian, pinjaman atau pembayaran sekali"
+" yang disentuh."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Reading the re-works…"
+msgstr "Membaca perhitungan ulang…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Reading…"
+msgstr "Membaca…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Remove a filter, or start again from every re-work."
+msgstr "Hapus filter, atau mulai lagi dari semua perhitungan ulang."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Replaced by a what-if value for the same pay item."
+msgstr "Diganti oleh nilai seandainya untuk pos gaji yang sama."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__status
+msgid "Result"
+msgstr "Hasil"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__review_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__review_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__review_id
+msgid "Review"
+msgstr "Perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Same version of the scheme"
+msgstr "Versi skema yang sama"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/models/retro_review.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Say why this re-work is needed, in a few words."
+msgstr "Sebutkan singkat mengapa perhitungan ulang ini diperlukan."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__scheme_changed
+msgid "Scheme changed since"
+msgstr "Skema berubah sejak itu"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__scheme_hash
+msgid "Scheme stamp when worked out"
+msgstr "Cap skema saat dihitung"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__sequence
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Show every re-work"
+msgstr "Tampilkan semua perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Show more people"
+msgstr "Tampilkan lebih banyak orang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Showing"
+msgstr "Menampilkan"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__skip_reason
+msgid "Skip Reason"
+msgstr "Alasan dilewati"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__slip_row_id
+msgid "Slip Row"
+msgstr "Baris slip"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Start a re-work"
+msgstr "Mulai perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Take-home"
+msgstr "Gaji bersih"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Take-home difference"
+msgstr "Selisih gaji bersih"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "That cannot be done here."
+msgstr "Itu tidak dapat dilakukan di sini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "That could not be done."
+msgstr "Itu tidak dapat dilakukan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "That is more than"
+msgstr "Itu lebih dari"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "That payslip is no longer there."
+msgstr "Slip gaji itu sudah tidak ada."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The Excel file could not be made."
+msgstr "Berkas Excel tidak dapat dibuat."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Koneksi mungkin terputus. Filter Anda tetap disimpan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "The formula for “"
+msgstr "Rumus untuk “"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "The formula for “%(item)s” has an error for this person (%(why)s)."
+msgstr "Rumus untuk “%(item)s” bermasalah untuk orang ini (%(why)s)."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "The last month comes before the first month."
+msgstr "Bulan terakhir berada sebelum bulan pertama."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The pay schemes could not be read."
+msgstr "Skema gaji tidak dapat dibaca."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The payslip could not be opened."
+msgstr "Slip gaji tidak dapat dibuka."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The people could not be read."
+msgstr "Daftar orang tidak dapat dibaca."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The people could not load."
+msgstr "Daftar orang tidak dapat dimuat."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The re-work could not be saved."
+msgstr "Perhitungan ulang tidak dapat disimpan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The re-work could not be worked out."
+msgstr "Perhitungan ulang tidak dapat dihitung."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The re-works could not be read just now."
+msgstr "Perhitungan ulang tidak dapat dibaca saat ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "The re-works could not load"
+msgstr "Perhitungan ulang tidak dapat dimuat"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid ""
+"The re-works could not load. Check your connection, then press Try again."
+msgstr ""
+"Perhitungan ulang tidak dapat dimuat. Periksa koneksi Anda, lalu tekan Coba "
+"lagi."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "The scheme changed after this was worked out"
+msgstr "Skema berubah setelah ini dihitung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "This one is for the people who approve pay runs"
+msgstr "Bagian ini untuk orang yang menyetujui penggajian"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "This pay scheme belongs to a company you do not work in."
+msgstr "Skema gaji ini milik perusahaan tempat Anda tidak bekerja."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "This pay scheme belongs to another company."
+msgstr "Skema gaji ini milik perusahaan lain."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "This payslip cannot be compared exactly"
+msgstr "Slip gaji ini tidak dapat dibandingkan dengan tepat"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "This re-work belongs to a company you do not work in."
+msgstr "Perhitungan ulang ini milik perusahaan tempat Anda tidak bekerja."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "This re-work could not be opened."
+msgstr "Perhitungan ulang ini tidak dapat dibuka."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "This re-work is no longer there."
+msgstr "Perhitungan ulang ini sudah tidak ada."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__work_ms
+msgid "Time to work out (ms)"
+msgstr "Waktu hitung (ms)"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__month_to
+msgid "To month"
+msgstr "Sampai bulan"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__skip_reason__topup
+msgid "Top-up run"
+msgstr "Penggajian susulan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Type a number for every what-if value."
+msgstr "Ketik angka untuk setiap nilai seandainya."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Updates could not be opened."
+msgstr "Pembaruan tidak dapat dibuka."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__value
+msgid "Value"
+msgstr "Nilai"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__was
+msgid "Was"
+msgstr "Semula"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__was_deductions
+msgid "Was Deductions"
+msgstr "Potongan semula"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__was_employer_cost
+msgid "Was Employer Cost"
+msgstr "Biaya pemberi kerja semula"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__was_gross
+msgid "Was Gross"
+msgstr "Bruto semula"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__was_net
+msgid "Was Net"
+msgstr "Bersih semula"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__overlay_json
+msgid "What changed"
+msgstr "Apa yang berubah"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "What happens next"
+msgstr "Apa yang terjadi selanjutnya"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__whatif_ids
+msgid "What if"
+msgstr "Seandainya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "What if %(item)s was %(value)s: %(note)s"
+msgstr "Seandainya %(item)s adalah %(value)s: %(note)s"
+
+#. module: pb_retro
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "What it covers"
+msgstr "Cakupannya"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "What the re-work covers could not be worked out."
+msgstr "Cakupan perhitungan ulang tidak dapat ditentukan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "What would last month's payslips say with what you know now?"
+msgstr ""
+"Apa yang akan tertulis di slip gaji bulan lalu dengan yang Anda ketahui "
+"sekarang?"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Where it is"
+msgstr "Posisinya"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Where the figure comes from"
+msgstr "Dari mana angka berasal"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Which pay scheme's payslips should be worked out again?"
+msgstr "Slip gaji dari skema gaji mana yang harus dihitung ulang?"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__cause
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__reason
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Will be used: %(changes)s and %(whatifs)s."
+msgstr "Akan dipakai: %(changes)s dan %(whatifs)s."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Work finished payslips out again with today's figures and see exactly what "
+"would change. Nothing is paid or changed."
+msgstr ""
+"Hitung ulang slip gaji yang sudah selesai dengan angka hari ini dan lihat "
+"persis apa yang akan berubah. Tidak ada yang dibayar atau diubah."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Work it out"
+msgstr "Hitung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Work it out again to compare with the scheme as it is now."
+msgstr "Hitung ulang untuk membandingkan dengan skema saat ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Work out again"
+msgstr "Hitung ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__done
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "Worked out"
+msgstr "Sudah dihitung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Worked out again with nothing changed, these payslips do not give the "
+"figures stored on them: today's scheme or data has moved since. Their "
+"differences are measured against that worked-out-again figure, not the "
+"stored one, and are marked ≈."
+msgstr ""
+"Dihitung ulang tanpa perubahan apa pun, slip gaji ini tidak memberikan angka"
+" yang tersimpan: skema atau data hari ini sudah bergeser. Selisihnya diukur "
+"terhadap angka hitung ulang itu, bukan angka tersimpan, dan ditandai ≈."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__baseline
+msgid "Worked out again, nothing changed"
+msgstr "Dihitung ulang, tanpa perubahan"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__worked_out_by
+msgid "Worked out by"
+msgstr "Dihitung oleh"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__worked_out_on
+msgid "Worked out on"
+msgstr "Dihitung pada"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Worked out with today's version of the scheme"
+msgstr "Dihitung dengan versi skema hari ini"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Worked out with today's version of the scheme."
+msgstr "Dihitung dengan versi skema hari ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Worked out. Nothing has been paid or changed."
+msgstr "Sudah dihitung. Belum ada yang dibayar atau diubah."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Working out"
+msgstr "Menghitung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Worth a look"
+msgstr "Perlu diperiksa"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__would_be
+msgid "Would be"
+msgstr "Akan menjadi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__changed
+msgid "Would change"
+msgstr "Akan berubah"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "a corrected figure for one person and month"
+msgstr "angka koreksi untuk satu orang dan satu bulan"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "a pay item"
+msgstr "sebuah pos gaji"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "across"
+msgstr "untuk"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "and"
+msgstr "dan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "by"
+msgstr "oleh"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "cannot be compared exactly"
+msgstr "tidak dapat dibandingkan dengan tepat"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "closed"
+msgstr "ditutup"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "could not be worked out"
+msgstr "tidak dapat dihitung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "draft"
+msgstr "draf"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "extra"
+msgstr "tambahan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "for 1 person"
+msgstr "untuk 1 orang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "from"
+msgstr "mulai"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "in"
+msgstr "di"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "in all"
+msgstr "seluruhnya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "it cannot be worked out"
+msgstr "tidak dapat dihitung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "months"
+msgstr "bulan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "months with finished payslips · latest"
+msgstr "bulan dengan slip gaji selesai · terbaru"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "months."
+msgstr "bulan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "months. Split it into two re-works."
+msgstr "bulan. Bagi menjadi dua perhitungan ulang."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "more"
+msgstr "lagi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "more pay items"
+msgstr "pos gaji lagi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "more: type a name to find them."
+msgstr "lagi: ketik nama untuk mencarinya."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "not re-worked"
+msgstr "tidak dihitung ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "on the pay item"
+msgstr "pada pos gaji"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "payslips"
+msgstr "slip gaji"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "payslips carry no record of which version worked them out."
+msgstr "slip gaji tidak mencatat versi mana yang menghitungnya."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "payslips in"
+msgstr "slip gaji dalam"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"payslips were worked out with an earlier version. Payobook does not keep "
+"earlier versions as a whole, so today's formulas are used for every month."
+msgstr ""
+"slip gaji dihitung dengan versi sebelumnya. Payobook tidak menyimpan versi "
+"sebelumnya secara utuh, jadi rumus hari ini dipakai untuk setiap bulan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "payslips…"
+msgstr "slip gaji…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "people"
+msgstr "orang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "people ·"
+msgstr "orang ·"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "people. Pick the people, or fewer months."
+msgstr "orang. Pilih orangnya, atau lebih sedikit bulan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "picked"
+msgstr "dipilih"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "re-works"
+msgstr "perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "s"
+msgstr "dtk"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "to"
+msgstr "menjadi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "with what it would say today."
+msgstr "dengan yang akan tertulis hari ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "worked out"
+msgstr "sudah dihitung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "· This payslip kept no record of the figures it was worked out from."
+msgstr ""
+"· Slip gaji ini tidak menyimpan angka yang dipakai untuk menghitungnya."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "“%s” is not a pay item a value can be typed for."
+msgstr "“%s” bukan pos gaji yang nilainya dapat diketik."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "” has an error for this person ("
+msgstr "” bermasalah untuk orang ini ("
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "≈ cannot be compared exactly"
+msgstr "≈ tidak dapat dibandingkan dengan tepat"

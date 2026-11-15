@@ -732,21 +732,33 @@ class PbRetroBoard(models.AbstractModel):
                 for item in json.loads(row.overlay_json or '[]'):
                     k = '%s-%s' % (item.get('kind'), item.get('change_id') or item.get('whatif_id'))
                     causes[k] = item
+                month_why = []
                 for line in row.line_ids.sorted(lambda l: (l.sequence, l.id)):
                     why = []
                     for c in json.loads(line.cause or '[]'):
                         item = causes.get('%s-%s' % (c.get('kind'), c.get('id')))
                         if item:
                             why.append(self._overlay_label(item, cur))
+                    for text in why:
+                        if text not in month_why:
+                            month_why.append(text)
+                    # money taken off or paid by the employer: going up is the
+                    # bad direction, so the colour follows take-home
+                    flip = -1 if line.band in ('deduction', 'employer') else 1
                     lines.append({
                         'id': line.id, 'name': line.name or line.code, 'band': line.band,
                         'counts': line.counts,
                         'was': self._plain(line.was, cur),
                         'would_be': self._plain(line.would_be, cur),
                         'diff': self._plain_signed(line.diff, cur),
-                        'sign': self._sign(line.diff),
+                        'sign': self._sign(line.diff) * flip,
                         'why': why,
                     })
+                # a reason is said once for the month; a line repeats it only
+                # when its own reasons are not the month's
+                for entry in lines:
+                    if entry['why'] == month_why:
+                        entry['why'] = []
                 net += row.diff_net or 0.0
                 months.append({
                     'id': row.id, 'payslip_id': row.payslip_id.id,
@@ -755,6 +767,7 @@ class PbRetroBoard(models.AbstractModel):
                     'net': self._signed(row.diff_net, cur), 'net_sign': self._sign(row.diff_net),
                     'was_net': self._money(row.was_net, cur),
                     'lines': lines,
+                    'why': month_why,
                     'issue': self._issue(row, cur) if row.status in ('drift', 'error', 'skipped')
                     else False,
                 })

@@ -1,0 +1,1998 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_retro
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 08:00+0000\n"
+"PO-Revision-Date: 2026-11-15 08:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "%(item)s: stored %(stored)s, worked out again %(today)s"
+msgstr "%(item)s: đã lưu %(stored)s, tính lại %(today)s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "%(month)s: %(n)s of %(d)s days"
+msgstr "%(month)s: %(n)s trên %(d)s ngày"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%(months)s · %(n)s would change"
+msgstr "%(months)s · %(n)s sẽ thay đổi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s contract changes"
+msgstr "%s thay đổi hợp đồng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s months"
+msgstr "%s tháng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s what-if values"
+msgstr "%s giá trị giả định"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s · 1 would change"
+msgstr "%s · 1 sẽ thay đổi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ", entered"
+msgstr ", nhập ngày"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ", so not counted again."
+msgstr ", nên không tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ", worked out again"
+msgstr ", tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ". Fix it in Formula Studio, then work it out again."
+msgstr ". Hãy sửa trong Formula Studio, rồi tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "1 contract change"
+msgstr "1 thay đổi hợp đồng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "1 month"
+msgstr "1 tháng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "1 what-if value"
+msgstr "1 giá trị giả định"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ": not counted again."
+msgstr ": không tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ": not re-worked."
+msgstr ": không tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ": stored"
+msgstr ": đã lưu"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "A closed or cancelled re-work cannot be changed."
+msgstr "Không thể thay đổi một lần tính lại đã đóng hoặc đã hủy."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "A closed or cancelled re-work cannot be worked out again."
+msgstr "Không thể tính lại một lần tính lại đã đóng hoặc đã hủy."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"A formula has an error for these people, so their payslips could not be "
+"worked out. The rest were."
+msgstr ""
+"Một công thức bị lỗi với những người này, nên phiếu lương của họ không tính "
+"lại được. Những phiếu còn lại đã được tính."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"A pay rise entered late, a corrected allowance, a figure you want to try: "
+"Payobook works the finished payslips out again with the scheme's own tax and"
+" insurance formulas and shows every difference, person by person and month "
+"by month."
+msgstr ""
+"Một lần tăng lương nhập muộn, một khoản phụ cấp được sửa, một con số bạn "
+"muốn thử: Payobook tính lại các phiếu lương đã hoàn tất bằng chính công thức"
+" thuế và bảo hiểm của chế độ lương, và cho thấy mọi chênh lệch, theo từng "
+"người và từng tháng."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid ""
+"A re-work covers at most %(cap)s months; %(n)s were picked. Split it into "
+"two re-works."
+msgstr ""
+"Một lần tính lại gồm tối đa %(cap)s tháng; đã chọn %(n)s. Hãy chia thành hai"
+" lần tính lại."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid ""
+"A re-work covers at most %(cap)s people; these months have %(n)s. Pick the "
+"people, or fewer months."
+msgstr ""
+"Một lần tính lại gồm tối đa %(cap)s người; các tháng này có %(n)s. Hãy chọn "
+"người, hoặc ít tháng hơn."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "A re-work covers at most %s people."
+msgstr "Một lần tính lại gồm tối đa %s người."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid ""
+"A what-if value is for a payslip this re-work does not cover. Check its "
+"person and month."
+msgstr ""
+"Một giá trị giả định thuộc về phiếu lương mà lần tính lại này không bao gồm."
+" Hãy kiểm tra người và tháng."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "A what-if value must be for a payslip of the re-work's pay scheme."
+msgstr ""
+"Giá trị giả định phải thuộc một phiếu lương của chế độ lương được tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Add a what-if value"
+msgstr "Thêm giá trị giả định"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "All re-works"
+msgstr "Tất cả lần tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Already paid back"
+msgstr "Đã trả bù"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Amounts in %s"
+msgstr "Số tiền bằng %s"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Back to every re-work"
+msgstr "Về danh sách tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__cancelled_on
+msgid "Cancelled on"
+msgstr "Hủy ngày"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Cancelled."
+msgstr "Đã hủy."
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__drift
+msgid "Cannot be compared exactly"
+msgstr "Không so sánh chính xác được"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Change this re-work"
+msgstr "Thay đổi lần tính lại này"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Checked first: each payslip is worked out again with nothing changed, so you"
+" know the comparison is fair."
+msgstr ""
+"Kiểm tra trước: mỗi phiếu lương được tính lại khi không có gì thay đổi, để "
+"bạn biết phép so sánh là công bằng."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Clear"
+msgstr "Bỏ chọn"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Click the first month, then the last. At most"
+msgstr "Bấm tháng đầu, rồi tháng cuối. Tối đa"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__closed
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__closed_by
+msgid "Closed by"
+msgstr "Người đóng"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__closed_on
+msgid "Closed on"
+msgstr "Đóng ngày"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Closed. It stays here as a record and cannot be worked out again."
+msgstr "Đã đóng. Nó được giữ lại làm hồ sơ và không thể tính lại."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__company_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__company_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__company_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Compared exactly"
+msgstr "So sánh chính xác"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Contract amount for %(item)s: %(old)s to %(new)s from %(day)s"
+msgstr "Số tiền hợp đồng của %(item)s: %(old)s thành %(new)s từ %(day)s"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Contract amounts changed after the payslips were worked out"
+msgstr "Số tiền hợp đồng thay đổi sau khi phiếu lương đã được tính"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__excluded_change_ids
+msgid "Contract changes left out"
+msgstr "Thay đổi hợp đồng được bỏ qua"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__error
+msgid "Could not be worked out"
+msgstr "Không tính lại được"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__counts
+msgid "Counted in totals"
+msgstr "Tính vào tổng"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__create_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__create_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__create_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__create_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__create_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__create_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__currency_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__currency_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__date_from
+msgid "Date From"
+msgstr "Từ ngày"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__date_to
+msgid "Date To"
+msgstr "Đến ngày"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Deductions"
+msgstr "Khấu trừ"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__diff_deductions
+msgid "Diff Deductions"
+msgstr "Chênh lệch khấu trừ"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__diff_employer_cost
+msgid "Diff Employer Cost"
+msgstr "Chênh lệch chi phí doanh nghiệp"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__diff_gross
+msgid "Diff Gross"
+msgstr "Chênh lệch tổng thu nhập"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__diff_net
+msgid "Diff Net"
+msgstr "Chênh lệch thực nhận"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__diff
+msgid "Difference"
+msgstr "Chênh lệch"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__line_ids
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "Differences"
+msgstr "Chênh lệch"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_board__display_name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__display_name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__display_name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__display_name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__employee_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__employee_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__employee_name
+msgid "Employee name"
+msgstr "Tên nhân viên"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Employer cost"
+msgstr "Chi phí doanh nghiệp"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Enter in a note adds the next row."
+msgstr "Nhấn Enter trong ô ghi chú để thêm dòng mới."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__error_why
+msgid "Error Why"
+msgstr "Lý do lỗi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Every payslip was worked out by the version of the scheme in use today."
+msgstr ""
+"Mọi phiếu lương đã được tính bằng phiên bản chế độ lương đang dùng hôm nay."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Every re-work"
+msgstr "Mọi lần tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Every what-if value needs a note: say where the new figure comes from."
+msgstr "Mỗi giá trị giả định cần một ghi chú: cho biết con số mới lấy từ đâu."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Everyone"
+msgstr "Mọi người"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__people__all
+msgid "Everyone in those pay runs"
+msgstr "Mọi người trong các đợt lương đó"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Excel files cannot be made on this server yet."
+msgstr "Máy chủ này chưa tạo được tệp Excel."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Extra and top-up runs are not re-worked: they pay something on top of the "
+"month, not the month itself."
+msgstr ""
+"Đợt lương bổ sung và đợt trả thêm không được tính lại: chúng trả thêm ngoài "
+"tháng, không phải lương của tháng."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Extra or top-up payslips are listed but not re-worked"
+msgstr "phiếu lương bổ sung hoặc trả thêm được liệt kê nhưng không tính lại"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__skip_reason__extra
+msgid "Extra run"
+msgstr "Đợt lương bổ sung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Find a person by name or code"
+msgstr "Tìm người theo tên hoặc mã"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Find a re-work by its reason or pay scheme…"
+msgstr "Tìm lần tính lại theo lý do hoặc chế độ lương…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Finding the finished payslips…"
+msgstr "Đang tìm các phiếu lương đã hoàn tất…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "For example: the October pay rise was entered late"
+msgstr "Ví dụ: lần tăng lương tháng 10 được nhập muộn"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__month_from
+msgid "From month"
+msgstr "Từ tháng"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Gross pay"
+msgstr "Tổng thu nhập"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_board__id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "It could not be worked out."
+msgstr "Không tính lại được."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"It could not be worked out. Work it out again; if it stays, ask your "
+"administrator."
+msgstr ""
+"Không tính lại được. Hãy tính lại; nếu vẫn vậy, hãy hỏi quản trị viên."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__drift_json
+msgid "Items that do not reproduce"
+msgstr "Các khoản không khớp lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Kept as a record, with an Excel file to share."
+msgstr "Được lưu làm hồ sơ, kèm tệp Excel để chia sẻ."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__band
+msgid "Kind of line"
+msgstr "Loại dòng"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__write_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__write_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__write_uid
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__write_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__write_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__write_date
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Latest months first"
+msgstr "Tháng mới nhất trước"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Left out of this re-work."
+msgstr "Bỏ qua trong lần tính lại này."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__line_ids
+msgid "Line"
+msgstr "Dòng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Loading"
+msgstr "Đang tải"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Made"
+msgstr "Tạo"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Made by"
+msgstr "Người tạo"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__month
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__month
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Months"
+msgstr "Tháng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "New re-work"
+msgstr "Tính lại mới"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "New value"
+msgstr "Giá trị mới"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Newest first"
+msgstr "Mới nhất trước"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Next"
+msgstr "Tiếp"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "No change"
+msgstr "Không đổi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__same
+msgid "No difference"
+msgstr "Không chênh lệch"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "No finished payslip was found for these months."
+msgstr "Không tìm thấy phiếu lương đã hoàn tất nào cho các tháng này."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "No pay item would change."
+msgstr "Không khoản lương nào thay đổi."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"No pay scheme has finished payslips yet. A re-work starts once a pay run is "
+"finished."
+msgstr ""
+"Chưa chế độ lương nào có phiếu lương hoàn tất. Có thể tính lại khi một đợt "
+"lương đã hoàn tất."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "No re-works match these filters"
+msgstr "Không có lần tính lại nào khớp bộ lọc"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__scheme_unknown
+msgid "No scheme stamp"
+msgstr "Không có dấu chế độ lương"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__no_inputs
+msgid "No stored figures"
+msgstr "Không có số liệu đã lưu"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nobody found."
+msgstr "Không tìm thấy ai."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nobody matches."
+msgstr "Không ai khớp."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nobody's pay would change."
+msgstr "Lương của không ai thay đổi."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "None found. Use the what-if values below to try a figure."
+msgstr "Không có. Dùng giá trị giả định bên dưới để thử một con số."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__skipped
+msgid "Not re-worked"
+msgstr "Không tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Not worked out yet"
+msgstr "Chưa tính"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid ""
+"Nothing has been paid or changed. These are what the payslips would say, "
+"worked out again with today's figures."
+msgstr ""
+"Chưa trả hay thay đổi gì. Đây là những gì phiếu lương sẽ ghi nếu tính lại "
+"với số liệu hôm nay."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Nothing has been paid or changed. To pay a difference today, add it as a "
+"one-off in Updates."
+msgstr ""
+"Chưa trả hay thay đổi gì. Để trả một khoản chênh lệch hôm nay, hãy thêm nó "
+"như một khoản một lần trong Cập nhật."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nothing needs a look."
+msgstr "Không có gì cần xem."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Nothing to change yet: the result will show every payslip as it is."
+msgstr ""
+"Chưa có gì thay đổi: kết quả sẽ hiển thị mọi phiếu lương như hiện tại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Nothing: no contract amount was changed after these payslips were worked "
+"out, and no what-if value was typed. Every difference below would be zero."
+msgstr ""
+"Không có gì: không số tiền hợp đồng nào thay đổi sau khi các phiếu lương này"
+" được tính, và chưa nhập giá trị giả định nào. Mọi chênh lệch bên dưới đều "
+"bằng không."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "Only a draft or worked-out re-work can be cancelled."
+msgstr "Chỉ có thể hủy lần tính lại ở trạng thái nháp hoặc đã tính."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "Only a worked-out re-work can be closed."
+msgstr "Chỉ có thể đóng lần tính lại đã tính."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Only the people I pick"
+msgstr "Chỉ những người tôi chọn"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__people__picked
+msgid "Only the people picked"
+msgstr "Chỉ những người được chọn"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Open"
+msgstr "Đang mở"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Open Updates"
+msgstr "Mở Cập nhật"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Open all"
+msgstr "Mở tất cả"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Opening the re-work…"
+msgstr "Đang mở lần tính lại…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_palette.js:0
+msgid "Past months"
+msgstr "Tháng trước"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_palette.js:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.actions.act_window,name:pb_retro.action_pb_retro_review
+#: model:ir.actions.client,name:pb_retro.action_pb_retro_board
+#: model:ir.model,name:pb_retro.model_pb_retro_review
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_list
+msgid "Past-month re-work"
+msgstr "Tính lại tháng trước"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_board
+msgid "Past-month re-work board data"
+msgstr "Dữ liệu bảng tính lại tháng trước"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Past-month re-work · %s"
+msgstr "Tính lại tháng trước · %s"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_whatif
+msgid "Past-month re-work: a what-if value"
+msgstr "Tính lại tháng trước: một giá trị giả định"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_line
+msgid "Past-month re-work: one difference"
+msgstr "Tính lại tháng trước: một chênh lệch"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_slip
+msgid "Past-month re-work: one payslip"
+msgstr "Tính lại tháng trước: một phiếu lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__name
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__name
+msgid "Pay item"
+msgstr "Khoản lương"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__code
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__code
+msgid "Pay item code"
+msgstr "Mã khoản lương"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__error_item
+msgid "Pay item with an error"
+msgstr "Khoản lương bị lỗi"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__run_name
+msgid "Pay run"
+msgstr "Đợt lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__config_id
+msgid "Pay scheme"
+msgstr "Chế độ lương"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Pay scheme, A to Z"
+msgstr "Chế độ lương, A đến Z"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_palette.js:0
+msgid "Payroll"
+msgstr "Tiền lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__payslip_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__payslip_id
+msgid "Payslip"
+msgstr "Phiếu lương"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__slip_ids
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__people
+msgid "People"
+msgstr "Người"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__employee_ids
+msgid "People picked"
+msgstr "Người được chọn"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Person by person"
+msgstr "Theo từng người"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Pick a pay item for every what-if value."
+msgstr "Chọn khoản lương cho mỗi giá trị giả định."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Pick all shown"
+msgstr "Chọn tất cả đang hiện"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Pick the months first."
+msgstr "Hãy chọn tháng trước."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Pick the pay scheme first."
+msgstr "Hãy chọn chế độ lương trước."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Pick the person, month and pay item of every what-if value."
+msgstr "Chọn người, tháng và khoản lương cho mỗi giá trị giả định."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Pick…"
+msgstr "Chọn…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Press “Work it out” to compare every finished payslip of"
+msgstr "Bấm “Tính” để so sánh mọi phiếu lương đã hoàn tất của"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Putting the result together…"
+msgstr "Đang tổng hợp kết quả…"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__name
+msgid "Re-work"
+msgstr "Tính lại"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid ""
+"Re-working past months is for the people who approve pay runs. Ask your "
+"administrator for the payroll manager role to see this screen."
+msgstr ""
+"Tính lại tháng trước dành cho người duyệt đợt lương. Hãy xin quản trị viên "
+"vai trò quản lý tiền lương để xem màn hình này."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid ""
+"Re-working past months is for the people who approve pay runs. Ask your "
+"administrator for the payroll manager role."
+msgstr ""
+"Tính lại tháng trước dành cho người duyệt đợt lương. Hãy xin quản trị viên "
+"vai trò quản lý tiền lương."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Read the board again"
+msgstr "Tải lại bảng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Read-only. No payslip, pay run, loan or one-off is touched."
+msgstr ""
+"Chỉ đọc. Không phiếu lương, đợt lương, khoản vay hay khoản một lần nào bị "
+"động đến."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Reading the re-works…"
+msgstr "Đang đọc các lần tính lại…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Reading…"
+msgstr "Đang đọc…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Remove a filter, or start again from every re-work."
+msgstr "Bỏ một bộ lọc, hoặc bắt đầu lại từ mọi lần tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Replaced by a what-if value for the same pay item."
+msgstr "Được thay bằng giá trị giả định cho cùng khoản lương."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__status
+msgid "Result"
+msgstr "Kết quả"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__review_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__review_id
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__review_id
+msgid "Review"
+msgstr "Lần tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Same version of the scheme"
+msgstr "Cùng phiên bản chế độ lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/models/retro_review.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Say why this re-work is needed, in a few words."
+msgstr "Hãy nói ngắn gọn vì sao cần tính lại."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__scheme_changed
+msgid "Scheme changed since"
+msgstr "Chế độ lương đã thay đổi từ đó"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__scheme_hash
+msgid "Scheme stamp when worked out"
+msgstr "Dấu chế độ lương khi tính"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__sequence
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Show every re-work"
+msgstr "Hiện mọi lần tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Show more people"
+msgstr "Hiện thêm người"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__skip_reason
+msgid "Skip Reason"
+msgstr "Lý do bỏ qua"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__slip_row_id
+msgid "Slip Row"
+msgstr "Dòng phiếu lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Start a re-work"
+msgstr "Bắt đầu tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Take-home"
+msgstr "Thực nhận"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Take-home difference"
+msgstr "Chênh lệch thực nhận"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "That cannot be done here."
+msgstr "Không thể làm việc đó ở đây."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "That could not be done."
+msgstr "Không làm được việc đó."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "That is more than"
+msgstr "Như vậy là nhiều hơn"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "That payslip is no longer there."
+msgstr "Phiếu lương đó không còn nữa."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The Excel file could not be made."
+msgstr "Không tạo được tệp Excel."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể mất kết nối. Bộ lọc của bạn vẫn được giữ."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "The formula for “"
+msgstr "Công thức của “"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "The formula for “%(item)s” has an error for this person (%(why)s)."
+msgstr "Công thức của “%(item)s” bị lỗi với người này (%(why)s)."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "The last month comes before the first month."
+msgstr "Tháng cuối đứng trước tháng đầu."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The pay schemes could not be read."
+msgstr "Không đọc được các chế độ lương."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The payslip could not be opened."
+msgstr "Không mở được phiếu lương."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The people could not be read."
+msgstr "Không đọc được danh sách người."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The people could not load."
+msgstr "Không tải được danh sách người."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The re-work could not be saved."
+msgstr "Không lưu được lần tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The re-work could not be worked out."
+msgstr "Không tính được lần tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The re-works could not be read just now."
+msgstr "Lúc này không đọc được các lần tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "The re-works could not load"
+msgstr "Không tải được các lần tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid ""
+"The re-works could not load. Check your connection, then press Try again."
+msgstr "Không tải được các lần tính lại. Kiểm tra kết nối, rồi bấm Thử lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "The scheme changed after this was worked out"
+msgstr "Chế độ lương đã thay đổi sau khi tính"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "This one is for the people who approve pay runs"
+msgstr "Phần này dành cho người duyệt đợt lương"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "This pay scheme belongs to a company you do not work in."
+msgstr "Chế độ lương này thuộc một công ty bạn không làm việc."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "This pay scheme belongs to another company."
+msgstr "Chế độ lương này thuộc công ty khác."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "This payslip cannot be compared exactly"
+msgstr "Phiếu lương này không so sánh chính xác được"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "This re-work belongs to a company you do not work in."
+msgstr "Lần tính lại này thuộc một công ty bạn không làm việc."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "This re-work could not be opened."
+msgstr "Không mở được lần tính lại này."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "This re-work is no longer there."
+msgstr "Lần tính lại này không còn nữa."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__work_ms
+msgid "Time to work out (ms)"
+msgstr "Thời gian tính (ms)"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__month_to
+msgid "To month"
+msgstr "Đến tháng"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__skip_reason__topup
+msgid "Top-up run"
+msgstr "Đợt trả thêm"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Type a number for every what-if value."
+msgstr "Nhập một số cho mỗi giá trị giả định."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Updates could not be opened."
+msgstr "Không mở được Cập nhật."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_whatif__value
+msgid "Value"
+msgstr "Giá trị"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__was
+msgid "Was"
+msgstr "Trước đây"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__was_deductions
+msgid "Was Deductions"
+msgstr "Khấu trừ trước đây"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__was_employer_cost
+msgid "Was Employer Cost"
+msgstr "Chi phí doanh nghiệp trước đây"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__was_gross
+msgid "Was Gross"
+msgstr "Tổng thu nhập trước đây"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__was_net
+msgid "Was Net"
+msgstr "Thực nhận trước đây"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_slip__overlay_json
+msgid "What changed"
+msgstr "Điều gì đã thay đổi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "What happens next"
+msgstr "Điều gì xảy ra tiếp theo"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__whatif_ids
+msgid "What if"
+msgstr "Giả định"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "What if %(item)s was %(value)s: %(note)s"
+msgstr "Giả định %(item)s là %(value)s: %(note)s"
+
+#. module: pb_retro
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "What it covers"
+msgstr "Phạm vi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "What the re-work covers could not be worked out."
+msgstr "Không xác định được phạm vi của lần tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "What would last month's payslips say with what you know now?"
+msgstr "Phiếu lương tháng trước sẽ ghi gì với những gì bạn biết bây giờ?"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Where the figure comes from"
+msgstr "Con số lấy từ đâu"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Which pay scheme's payslips should be worked out again?"
+msgstr "Phiếu lương của chế độ lương nào cần tính lại?"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__cause
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__reason
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Will be used: %(changes)s and %(whatifs)s."
+msgstr "Sẽ dùng: %(changes)s và %(whatifs)s."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Work finished payslips out again with today's figures and see exactly what "
+"would change. Nothing is paid or changed."
+msgstr ""
+"Tính lại các phiếu lương đã hoàn tất với số liệu hôm nay và xem chính xác "
+"điều gì sẽ thay đổi. Không có gì được trả hay thay đổi."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Work it out"
+msgstr "Tính"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Work it out again to compare with the scheme as it is now."
+msgstr "Hãy tính lại để so sánh với chế độ lương hiện tại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Work out again"
+msgstr "Tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__done
+#: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+msgid "Worked out"
+msgstr "Đã tính"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"Worked out again with nothing changed, these payslips do not give the "
+"figures stored on them: today's scheme or data has moved since. Their "
+"differences are measured against that worked-out-again figure, not the "
+"stored one, and are marked ≈."
+msgstr ""
+"Khi tính lại mà không thay đổi gì, các phiếu lương này không ra đúng số đã "
+"lưu: chế độ lương hoặc dữ liệu hôm nay đã khác. Chênh lệch của chúng được đo"
+" so với con số tính lại đó, không phải con số đã lưu, và được đánh dấu ≈."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__baseline
+msgid "Worked out again, nothing changed"
+msgstr "Tính lại, không thay đổi gì"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__worked_out_by
+msgid "Worked out by"
+msgstr "Người tính"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__worked_out_on
+msgid "Worked out on"
+msgstr "Tính ngày"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Worked out with today's version of the scheme"
+msgstr "Tính bằng phiên bản chế độ lương hôm nay"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Worked out with today's version of the scheme."
+msgstr "Tính bằng phiên bản chế độ lương hôm nay."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Worked out. Nothing has been paid or changed."
+msgstr "Đã tính. Chưa trả hay thay đổi gì."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Working out"
+msgstr "Đang tính"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Worth a look"
+msgstr "Nên xem"
+
+#. module: pb_retro
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__would_be
+msgid "Would be"
+msgstr "Sẽ là"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__changed
+msgid "Would change"
+msgstr "Sẽ thay đổi"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "a corrected figure for one person and month"
+msgstr "một con số đã sửa cho một người và một tháng"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "a pay item"
+msgstr "một khoản lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "across"
+msgstr "cho"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "and"
+msgstr "và"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "cannot be compared exactly"
+msgstr "không so sánh chính xác được"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "closed"
+msgstr "đã đóng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "could not be worked out"
+msgstr "không tính lại được"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "draft"
+msgstr "nháp"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "extra"
+msgstr "bổ sung"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "for 1 person"
+msgstr "cho 1 người"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "from"
+msgstr "từ"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "in"
+msgstr "trong"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "in all"
+msgstr "tổng cộng"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "it cannot be worked out"
+msgstr "không thể tính được"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "months"
+msgstr "tháng"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "months with finished payslips · latest"
+msgstr "tháng có phiếu lương hoàn tất · gần nhất"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "months."
+msgstr "tháng."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "months. Split it into two re-works."
+msgstr "tháng. Hãy chia thành hai lần tính lại."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "more pay items"
+msgstr "khoản lương nữa"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "more: type a name to find them."
+msgstr "nữa: gõ tên để tìm."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "not re-worked"
+msgstr "không tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "on the pay item"
+msgstr "trên khoản lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "payslips"
+msgstr "phiếu lương"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "payslips carry no record of which version worked them out."
+msgstr "phiếu lương không ghi lại phiên bản nào đã tính chúng."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "payslips in"
+msgstr "phiếu lương trong"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid ""
+"payslips were worked out with an earlier version. Payobook does not keep "
+"earlier versions as a whole, so today's formulas are used for every month."
+msgstr ""
+"phiếu lương đã được tính bằng phiên bản cũ hơn. Payobook không lưu trọn vẹn "
+"các phiên bản cũ, nên công thức hôm nay được dùng cho mọi tháng."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "payslips…"
+msgstr "phiếu lương…"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "people"
+msgstr "người"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "people ·"
+msgstr "người ·"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "people. Pick the people, or fewer months."
+msgstr "người. Hãy chọn người, hoặc ít tháng hơn."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "picked"
+msgstr "đã chọn"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "re-works"
+msgstr "lần tính lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "s"
+msgstr "giây"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "to"
+msgstr "thành"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "with what it would say today."
+msgstr "với những gì nó sẽ ghi hôm nay."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "worked out"
+msgstr "đã tính"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "· This payslip kept no record of the figures it was worked out from."
+msgstr "· Phiếu lương này không lưu số liệu đã dùng để tính."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_review.py:0
+msgid "“%s” is not a pay item a value can be typed for."
+msgstr "“%s” không phải khoản lương có thể nhập giá trị."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "” has an error for this person ("
+msgstr "” bị lỗi với người này ("
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "≈ cannot be compared exactly"
+msgstr "≈ không so sánh chính xác được"

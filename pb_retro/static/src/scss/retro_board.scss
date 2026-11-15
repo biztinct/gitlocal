@@ -283,6 +283,11 @@
                    small { color: rgba(255, 255, 255, .82); } }
     }
     .pbrw-month-other { color: #8A4B02 !important; }
+    .pbrw-month-pick.is-end .pbrw-month-other { color: #FDE68A !important; }
+    .pbrw-in.pbrw-find { width: 240px; }
+    .pbrw-month-why { display: flex; gap: 6px; align-items: flex-start; margin: 0 0 6px;
+        font-size: 12.5px; color: var(--pbim-muted, #64748B);
+        svg { flex: 0 0 auto; margin-top: 2px; } }
     .pbrw-pickline { display: flex; align-items: center; gap: 6px; margin: 12px 0 0; font-size: 13.5px; }
     .pbrw-people-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 12px 0 8px;
         .pbrw-in { width: 280px; } }

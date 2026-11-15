@@ -566,6 +566,24 @@ export class PbRetroBoard extends Component {
         }
         return "";
     }
+    get usedSentence() {
+        const c = this.changesIncluded;
+        const w = this.state.wiz.whatifs.length;
+        const cs = c === 1 ? _t("1 contract change") : _t("%s contract changes", c);
+        const ws = w === 1 ? _t("1 what-if value") : _t("%s what-if values", w);
+        return _t("Will be used: %(changes)s and %(whatifs)s.", { changes: cs, whatifs: ws });
+    }
+    get wizMonths() {
+        const sc = this.wizScheme;
+        return sc ? [...sc.months].reverse() : [];
+    }
+    personSub(pc) {
+        const n = pc.months.length;
+        const months = n === 1 ? _t("1 month") : _t("%s months", n);
+        if (!pc.changed) { return months; }
+        return pc.changed === 1 ? _t("%s · 1 would change", months)
+                                : _t("%(months)s · %(n)s would change", { months, n: pc.changed });
+    }
     get changesIncluded() {
         const w = this.state.wiz;
         const changes = (w.preview && w.preview.changes) || [];
