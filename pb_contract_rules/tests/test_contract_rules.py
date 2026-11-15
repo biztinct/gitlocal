@@ -156,7 +156,10 @@ class TestContractRules(TransactionCase):
         emp = self._emp()
         c1 = self._contract(emp, date(2024, 1, 1), date(2024, 12, 31), state='close')
         c2 = self._contract(emp, date(2025, 1, 1), date(2026, 12, 31), prev=c1)
-        drawer = self.env['pb.contractlife'].get_contract(c2.id)
+        # through the RPC door, the way the board calls it (walk finding:
+        # an override without @api.model turned the id into a recordset)
+        from odoo.service.model import call_kw
+        drawer = call_kw(self.env['pb.contractlife'], 'get_contract', [c2.id], {})
         self.assertEqual(drawer['fixed_term']['count'], 2)
         self.assertEqual(drawer['fixed_term']['tone'], 'rose')
         self.assertIn('permanent', drawer['fixed_term']['next'])

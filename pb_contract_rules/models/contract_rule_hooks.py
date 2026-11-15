@@ -121,6 +121,7 @@ class PbContractExtensionRules(models.Model):
 class PbContractLifeRules(models.AbstractModel):
     _inherit = 'pb.contractlife'
 
+    @api.model
     def get_contract(self, contract_id):
         answer = super().get_contract(contract_id)
         contract = self.env['hr.contract'].browse(int(contract_id)).exists()

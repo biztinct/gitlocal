@@ -153,6 +153,7 @@ class PbVendorsAgency(models.AbstractModel):
     """The agency's drawer in Vendors lists the people it supplies."""
     _inherit = 'pb.vendors'
 
+    @api.model
     def get_vendor(self, vendor_id):
         answer = super().get_vendor(vendor_id)
         if not self.env.user.has_group('hr.group_hr_user'):

@@ -244,7 +244,7 @@ class PbJobChange(models.Model):
         return self._json('paid_months_json', [])
 
     @api.model
-    def _label(self, field, key):
+    def _sel_label(self, field, key):
         """A selection value in the reader's language (model terms)."""
         if not key:
             return ''
@@ -715,7 +715,7 @@ class PbJobChange(models.Model):
     # ==================================================================
     def _headline(self):
         self.ensure_one()
-        label = self._label('reason_kind', self.reason_kind) or _('Job change')
+        label = self._sel_label('reason_kind', self.reason_kind) or _('Job change')
         return _("%(what)s · %(who)s", what=label,
                  who=self.employee_id.sudo().name or '')
 
@@ -775,7 +775,7 @@ class PbJobChange(models.Model):
     def _approval_capabilities(self):
         return {
             'facts': self._fact_specs(),
-            'kinds': [{'key': k, 'label': self._label('reason_kind', k)}
+            'kinds': [{'key': k, 'label': self._sel_label('reason_kind', k)}
                       for k, _v in REASON_KINDS],
             'evidence': [{'key': 'reason_given',
                           'label': _('A reason was written down')}],
@@ -818,7 +818,7 @@ class PbJobChange(models.Model):
 
     def _approval_card_count(self, request):
         self.ensure_one()
-        return self._label('reason_kind', self.sudo().reason_kind)
+        return self._sel_label('reason_kind', self.sudo().reason_kind)
 
     def _rows(self, show_pay=True):
         """`[(label, now, new)]` — every value that moves, in words."""
@@ -826,7 +826,9 @@ class PbJobChange(models.Model):
         rec = self.sudo()
         before = rec.before()
         emp = rec.employee_id
-        contract = rec.contract_id
+        # A draft (or the screen's unsaved copy) has no contract stamped yet:
+        # "now" is the running contract (found on the walk: "0 ₫ → …").
+        contract = rec.contract_id or rec._running_contract(emp)
         rows = []
         words = {
             'company_id': _('Company'), 'job_id': _('Job'),
@@ -907,7 +909,7 @@ class PbJobChange(models.Model):
                  {'label': _('Starts on'),
                   'value': self._day(rec.effective_date)},
                  {'label': _('What'),
-                  'value': self._label('reason_kind', rec.reason_kind)}]
+                  'value': self._sel_label('reason_kind', rec.reason_kind)}]
         pct = (facts.get('pay_rise_pct') or {}).get('value') or 0.0
         if pct:
             chips.append({'label': _('Rise'), 'value': '{:+.1f}%'.format(pct)})

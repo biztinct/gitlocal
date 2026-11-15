@@ -99,11 +99,11 @@ class PbJobChangeBoard(models.AbstractModel):
 
     @api.model
     def _state_label(self, state):
-        return self._jc()._label('state', state)
+        return self._jc()._sel_label('state', state)
 
     @api.model
     def _kind_label(self, kind):
-        return self._jc()._label('reason_kind', kind)
+        return self._jc()._sel_label('reason_kind', kind)
 
     # ============================================================ the board
     @api.model

@@ -129,6 +129,8 @@ class TestAgencyStaff(TransactionCase):
         self.assertTrue(res['ok'])
         row = ob.get_worker(res['id'])
         self.assertEqual(row['agency'], 'S8B Staffing Partners', "agency name read for HR")
+        w_row = ob.get_worker(w.id)
+        self.assertEqual(w_row['job_title'], 'Picker', "walk finding: the drawer's Role box was empty")
         with self.assertRaises(AccessError):
             ob.delete_worker(res['id'])
         manager = self._user('s8b_ag_mgr', ['base.group_user', 'hr.group_hr_manager'])
@@ -170,7 +172,8 @@ class TestAgencyStaff(TransactionCase):
     # ================================================================ AG7
     def test_ag07_vendor_drawer(self):
         self._worker()
-        answer = self.env['pb.vendors'].get_vendor(self.vendor.id)
+        from odoo.service.model import call_kw
+        answer = call_kw(self.env['pb.vendors'], 'get_vendor', [self.vendor.id], {})
         self.assertEqual([r['name'] for r in answer['agency_staff']], ['S8B Picker'])
         vendor_user = self._user('s8b_ag_vendor', [
             'base.group_user', 'pb_vendor_access.group_vendor_manager'])

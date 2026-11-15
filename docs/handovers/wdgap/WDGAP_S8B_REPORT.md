@@ -72,7 +72,7 @@ Three NEW modules; **no existing file was edited** (everything else by
   guided flow (1 What changes · 2 The details · 3 When and why) with a live
   "What this does" panel worked out on the server, one change's page (status,
   before/after, sign-off progress, banners, letter, take back, cancel).
-  Doors: **"Change job"** button in the person's side panel header + a chip
+  Doors: a **"Change job"** icon button (tooltip "Change job: …") in the person's side panel header + a chip
   when a change is waiting or starts later; **"Change job"** in the org chart
   person panel; ⌘K 4460 "Change someone's job", 4461 "Job changes".
 - Rights: prepare/see = HR manager, pay manager, payroll manager; pay
@@ -152,7 +152,7 @@ Probe for it with `'pb.job.change' in env`.
 Local database `wdgap_s8b_t` (copy of `upd_p6_t_tpl` brought to the worktree
 tree, 33 modules `-u`, `pb_retro` installed), dropped afterwards.
 
-### 3.1 New suites — 38 tests, 0 failed
+### 3.1 New suites — 32 tests (JC1–JC15, CR1–CR9, AG1–AG8), 0 failed
 
 | # | Case | Result |
 |---|---|---|
@@ -191,17 +191,82 @@ tree, 33 modules `-u`, `pb_retro` installed), dropped afterwards.
 
 ### 3.2 Suites of the modules inherited from (no file edited)
 
-RESULTS_PLACEHOLDER
+Run on the same database before the new modules existed (baseline) and with
+them installed (after), same code otherwise:
+
+| Suite | Baseline | After |
+|---|---|---|
+| pb_contract_lifecycle, pb_employee_vault, biz_audit_trail, pb_lifecycle, pb_orgchart, pb_scheme_map, pb_vendor_access | 0 failed | 0 failed |
+| pb_pay | 2 failed: `TestVietnameseIsComplete.test_t4c…` (catalogue), `TestPayBands.test_t02…` (timing, 3.05 s > 2 s) | 1 failed: the same t4c, identical assertion text; t02 passed (timing) |
+| pb_people_hub | 2 failed: `test_the_contracts_action_opens_the_board_with_a_way_back`, `test_the_lens_order_matches_the_mockup` | the same 2, identical assertion text |
+| pb_records | 1 failed: `TestRecordsR4Polish.test_15f…` (timing) | 0 failed (timing) |
+| **Total** | 696 tests (after) | **3 failed, 0 errors — all in the baseline set, same messages** |
+
+The after-run includes the three new suites.
 
 Static gates: `py_compile` every file, `node --check` every JS file, every XML
 parses, white-label grep of the three modules' XML/JS/SCSS/PO clean, PO gate
 (`PoFileReader`) on all six files: placeholders identical per entry, no
-"Odoo" in any msgstr — pb_job_change 299 entries (258 code strings that reach
+"Odoo" in any msgstr — pb_job_change 300 entries (258 code strings that reach
 a screen), pb_contract_rules 57 (21), pb_agency_staff 93 (86), in vi and id.
 Untranslated entries are only generic inherited field labels (Created by,
 Followers…).
 
-WALK_PLACEHOLDER
+### 3.3 Browser walk (local `s8b.localhost:8795`, `--max-cron-threads=0`)
+
+Seed (local only, scratchpad `s8b/seed.py`): DEMO An Tran (Accountant, Finance,
+20,000,000 ₫ + meal 730,000 ₫, a finished October payslip on scheme "DEMO
+Office — End-Month"), DEMO Lan Nguyen (manager with a login), DEMO Binh Le
+(2nd fixed-term contract, renewed from the first, ends in 30 days), three
+DEMO agency staff of "DEMO Staffing Partners".
+
+- People › Employees: "+2 agency staff" beside "4 Headcount" (headcount
+  unchanged); "Change job" on An's side panel opens the guided flow.
+- Change job: kinds, sections, step 2 (job → Senior Accountant, team → Tax,
+  pay 26,000,000 ₫, meal 1,000,000 ₫), step 3 (15 Oct, a past month): the
+  panel said "a date in the past", "starts in a month already paid: October
+  2026", the route "Their manager (DEMO Lan Boss) → HR lead → Finance
+  approver" and "Finance signs too, because the rise is above the guidance".
+  Sent → "Sent for approval — DEMO Lan Boss"; page "Waiting for DEMO Lan Boss".
+- Decided seat by seat (manager, HR, Finance — DEMO logins): Done. The page
+  shows before/after, the paid-month banner and "Re-work those months" → the
+  Past-month re-work opened straight on a NEW draft re-work "DEMO Office —
+  End-Month · Oct 2026 · Change job JC00105: DEMO An Tran's change starts on
+  15 Oct 2026, in a month already paid."
+- Employees: An reads Senior Accountant · DEMO Tax; monthly wage total moved
+  to 41.0M; org chart card moved under DEMO Tax; the org chart person panel
+  shows "Change job". Timeline: ONE item "Job changed — Promotion · From 15
+  Oct 2026 · Job … · Team … · Monthly pay … · Meal allowance …".
+- People › Agency staff (inside the hub, rail did not scroll): glance 2 on
+  site / 1 starting later / 1 ending in 30 days / 0 ended, filters, drawer.
+- People › Contracts › Binh: "Fixed-term contract 2 in a row · In a row since
+  15 Dec 2024 · The next one should be permanent under Vietnam rule" (rose)
+  with "The rule"; "Extend it" shows the red "This goes past the fixed-term
+  rule" box with the counted line, the source and "Make it permanent
+  instead", which switches the dialog to Make it permanent.
+- vi / id: server sentences come back translated (state "Hoàn tất", kind
+  "Thăng chức", rows "Công việc"; Indonesian rule sentence "Ini akan menjadi
+  kontrak waktu tertentu ke-3 berturut-turut…").
+- Console: no errors on any of these screens.
+
+Walk findings, all fixed and covered by a test where it was logic:
+1. Kind buttons had no words — a second `_label` method of the same model
+   (record names) shadowed the selection-label helper → renamed
+   `_sel_label`; JC1 asserts the labels.
+2. "Monthly pay 0 ₫ → …" in the preview — the unsaved copy had no contract;
+   "now" now reads the running contract; JC9 asserts it.
+3. The contract decision drawer raised "missing 1 required positional
+   argument" — my `get_contract` override (and the Vendors `get_vendor` one)
+   lacked `@api.model`, so the RPC id became a recordset → fixed; CR6 and AG7
+   now call through `call_kw`, the RPC door.
+4. Agency drawer's Role box empty (`job_title` not returned) → fixed; AG4.
+5. The person panel header was crowded by a fourth button → "Change job" is
+   an icon button with its words in the tooltip; capitalised status badges
+   ("On Site") → `text-transform: none`; the person picker's search had a
+   double border; sign-off step "now" dot.
+6. Locally the letter is not printed (no wkhtmltopdf on the Mac: "Unable to
+   find Wkhtmltopdf"); caught, logged, the change still applies. The server
+   has it; in tests the letter is made (HTML).
 
 ## 4. Rails
 

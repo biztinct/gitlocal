@@ -159,6 +159,10 @@ class TestJobChange(TransactionCase):
         self.assertEqual(flow['draft']['new_job_id'], self.job_b.id)
         self.assertTrue(flow['draft']['change_pay'])
         self.assertEqual(flow['draft']['source'], 'internal_hire')
+        self.assertEqual([k['label'] for k in flow['kinds']],
+                         ['Promotion', 'Transfer', 'Pay change', 'Something else'],
+                         "found on the walk: the kind buttons had no words")
+        self.assertEqual(self.Board._state_label('pending'), 'Waiting for approval')
         with self.assertRaises(UserError):
             self.JC.pb_start_for_employee(999999999)
 
@@ -448,6 +452,10 @@ class TestJobChange(TransactionCase):
     # ================================================================ JC9
     def test_jc09_checks_before_sending(self):
         emp, _c = self._person()
+        # the preview's "now" reads the running contract (walk finding)
+        rows = {r['label']: r for r in self.Board.preview(self._vals(emp))['rows']}
+        self.assertIn('10,000,000', rows['Monthly pay']['now'])
+        self.assertIn('500,000', rows['Meal allowance']['now'])
         nothing = self.Board.preview({'employee_id': emp.id, 'reason': 'x',
                                       'effective_date': fields.Date.to_string(self._today())})
         self.assertFalse(nothing['ok'])

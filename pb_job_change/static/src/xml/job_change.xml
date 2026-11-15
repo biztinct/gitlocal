@@ -133,7 +133,7 @@
           <div class="pbim-panel pbjc-pick">
             <label class="pbjc-search">
               <t t-out="icon('search', 16)"/>
-              <input type="search" class="pbjc-in" placeholder="Type a name…" t-att-value="state.pick.term" t-on-input="onPickTerm" autofocus="autofocus"/>
+              <input type="search" placeholder="Type a name…" t-att-value="state.pick.term" t-on-input="onPickTerm" autofocus="autofocus"/>
             </label>
             <div t-if="state.pick.loading and !state.pick.rows.length" class="pbjc-muted">Looking…</div>
             <div t-elif="!state.pick.rows.length" class="pbjc-muted">Nobody by that name in your companies.</div>

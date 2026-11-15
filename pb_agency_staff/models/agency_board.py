@@ -240,6 +240,7 @@ class PbAgencyBoard(models.AbstractModel):
     def get_worker(self, worker_id):
         w = self._worker(worker_id)
         return dict(self._row(w), **{
+            'job_title': w.job_title or '',
             'vendor_id': w.vendor_id.id, 'department_id': w.department_id.id,
             'work_location_id': w.work_location_id.id,
             'manager_id': w.manager_id.id, 'company_id': w.company_id.id,

@@ -461,7 +461,7 @@ export class PbJobChange extends Component {
     }
 
     stepTone(status) {
-        return { approved: "ok", done: "ok", open: "now", pending: "wait", skipped: "muted", rejected: "bad", returned: "bad" }[status] || "wait";
+        return { approved: "ok", done: "ok", open: "now", active: "now", pending: "wait", skipped: "muted", rejected: "bad", returned: "bad" }[status] || "wait";
     }
 }
 

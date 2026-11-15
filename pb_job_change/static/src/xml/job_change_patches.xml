@@ -9,8 +9,8 @@
   <!-- The person's side panel: "Change job" before "Contract". -->
   <t t-name="pb_job_change.Employee360Drawer" t-inherit="pb_employee_vault.Employee360Drawer" t-inherit-mode="extension">
     <xpath expr="//div[hasclass('pev-head-side')]/button[hasclass('pev-full')][1]" position="before">
-      <button class="pev-full pbjc-door" t-if="pbJc.allowed" t-on-click="openChangeJob" title="Promotion, transfer or pay change, signed off once">
-        <t t-out="pbJcIcon('briefcase', 14)"/> Change job
+      <button class="pev-full pbjc-door" t-if="pbJc.allowed" t-on-click="openChangeJob" title="Change job: promotion, transfer or pay change, signed off once" aria-label="Change job">
+        <t t-out="pbJcIcon('trendingUp', 15)"/>
       </button>
     </xpath>
   </t>

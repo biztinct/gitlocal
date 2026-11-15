@@ -50,7 +50,7 @@
     .pbim-btn.danger { color: var(--pbim-rose, #DC2668); }
 }
 
-.pbag-badge {
+.pbim .pbim-badge.pbag-badge, .pbag-badge {
     text-transform: none; white-space: nowrap;
     &.is-on_site { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
     &.is-upcoming { background: #E5EDFD; color: #1E40AF; }
