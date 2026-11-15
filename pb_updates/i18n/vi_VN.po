@@ -8375,6 +8375,7 @@ msgstr "Đã ngừng."
 #. odoo-javascript
 #: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
 #: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__tax_year
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__tax_year_label
 msgid "Tax year"
 msgstr "Năm tính thuế"
 
@@ -9355,3 +9356,20 @@ msgstr "Tạm ứng giữa tháng · được tính cho đến khi phiếu lươ
 #: code:addons/pb_updates/models/updates_ytd.py:0
 msgid "Each month is counted once in the year to date: a mid-month advance is part of that month's month-end payslip, so it is not added again. Until that month-end payslip is finished, the advance is counted on its own."
 msgstr "Mỗi tháng chỉ được tính một lần trong số lũy kế từ đầu năm: khoản tạm ứng giữa tháng là một phần của phiếu lương cuối tháng đó, nên không cộng thêm lần nữa. Cho đến khi phiếu lương cuối tháng đó hoàn tất, khoản tạm ứng được tính riêng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Each number is what the person was paid, or had taken off, from %(first)s (the start of the tax year) up to %(date)s — before your company ran payroll on %(product)s. Take them from the previous payroll's year-to-date report."
+msgstr "Mỗi số là khoản người đó đã được trả, hoặc đã bị khấu trừ, từ %(first)s (đầu năm tính thuế) đến %(date)s — trước khi công ty bạn chạy lương trên %(product)s. Lấy các số này từ báo cáo lũy kế của hệ thống tính lương trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Tax year %(year)s: what each person was paid and taxed from the start of the tax year to %(date)s, before your company ran payroll here."
+msgstr "Năm tính thuế %(year)s: số mỗi người đã được trả và bị tính thuế từ đầu năm tính thuế đến %(date)s, trước khi công ty bạn chạy lương tại đây."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__tax_year_start_month
+msgid "Tax year starts in (month)"
+msgstr "Năm tính thuế bắt đầu từ (tháng)"

@@ -926,7 +926,7 @@
               <div class="pbme-tile">
                 <div class="pbme-tile-l"><t t-esc="labels[c_index]"/></div>
                 <div class="pbme-tile-v" t-out="ytd[c]" t-options='{"widget": "monetary", "display_currency": currency}'/>
-                <div class="pbme-tile-y" t-if="ytd_year">YTD <t t-esc="ytd_year"/></div>
+                <div class="pbme-tile-y" t-if="ytd_year"><t t-if="ytd_label">Tax year <t t-esc="ytd_label"/></t><t t-else="">YTD <t t-esc="ytd_year"/></t></div>
               </div>
             </t>
           </div>

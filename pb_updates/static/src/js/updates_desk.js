@@ -396,7 +396,7 @@ export class PbUpdatesDesk extends Component {
     historyLine(h) {
         const bits = [whenLabel(h.date)];
         if (h.kind === "ytd") {
-            if (h.covers_to) { bits.push(_t("tax year %(year)s, up to %(date)s", { year: h.tax_year, date: dayLabel(h.covers_to) })); }
+            if (h.covers_to) { bits.push(_t("tax year %(year)s, up to %(date)s", { year: h.tax_year_label || h.tax_year, date: dayLabel(h.covers_to) })); }
             bits.push(_t("%(figures)s for %(people)s", {
                 figures: plural(h.values, _t("1 figure"), _t("%s figures")),
                 people: plural(h.people, _t("1 person"), _t("%s people")) }));
@@ -1349,6 +1349,7 @@ export class PbUpdatesDesk extends Component {
                 covers_to: res.covers_to || "",
                 covers_label: res.covers_label || "",
                 tax_year: res.tax_year || 0,
+                tax_year_label: res.tax_year_label || "",
                 late: res.late || 0,
                 // UPDATES P2d — a sheet of one-off pay items for one month.
                 oneoff: !!res.oneoff,
@@ -1900,7 +1901,7 @@ export class PbUpdatesDesk extends Component {
     get doneWhenLine() {
         const d = this.state.done;
         if (d && d.kind === "ytd") {
-            const bits = [_t("Tax year %(year)s, up to %(date)s", { year: d.tax_year, date: dayLabel(d.covers_to) || d.covers_label })];
+            const bits = [_t("Tax year %(year)s, up to %(date)s", { year: d.tax_year_label || d.tax_year, date: dayLabel(d.covers_to) || d.covers_label })];
             if (d.replaced) { bits.push(plural(d.replaced, _t("1 replaces an earlier figure"), _t("%s replace earlier figures"))); }
             if (d.cleared) { bits.push(plural(d.cleared, _t("1 removed"), _t("%s removed"))); }
             if (d.not_set) { bits.push(plural(d.not_set, _t("1 could not be set"), _t("%s could not be set"))); }
