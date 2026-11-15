@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_expense_allowance_approver,pb.expense.allowance team approver,model_pb_expense_allowance,hr_expense.group_hr_expense_team_approver,1,0,0,0
+access_pb_expense_allowance_manager,pb.expense.allowance expense manager,model_pb_expense_allowance,hr_expense.group_hr_expense_manager,1,1,1,1
+access_pb_expense_allowance_payroll,pb.expense.allowance payroll manager,model_pb_expense_allowance,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
