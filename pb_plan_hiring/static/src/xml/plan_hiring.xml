@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- The dock row of an approved plan: the door and how far it has gone. -->
+  <t t-inherit="pb_decision_room.PbDecisionRoom" t-inherit-mode="extension">
+    <xpath expr="//button[@t-on-click='() => this.keepEditing(row)']" position="after">
+      <button t-if="row.approved and pbHiringOf(row) and pbHiringOf(row).lines" class="is-good" t-on-click="() => this.openPlanHiring(row)">Hiring requests</button>
+    </xpath>
+    <xpath expr="//small[hasclass('dr-decided')]" position="after">
+      <small t-if="row.approved and pbHiringLine(row)" class="dr-decided phr-made" t-esc="pbHiringLine(row)"/>
+    </xpath>
+  </t>
+
+  <!-- The role page on the Hiring board names the plan the request came from. -->
+  <t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
+    <xpath expr="//nav[hasclass('pbhr-workspace-nav')]" position="after">
+      <div t-if="state.drawer and state.drawer.pb_plan" class="phr-from"><t t-out="ic('trendingUp',14)"/> <span>From the approved plan <b t-esc="state.drawer.pb_plan.name"/></span></div>
+    </xpath>
+  </t>
+
+  <t t-name="pb_plan_hiring.PlanHiringDialog">
+    <Dialog title.translate="Hiring requests from the plan" size="'lg'">
+      <div class="phr">
+        <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the plan…</span></div>
+        <t t-else="">
+          <p class="phr-lead">
+            <b t-esc="props.planName"/> ·
+            <span><t t-esc="made"/> of <t t-esc="hires.length"/> hires already have a request.</span>
+          </p>
+          <p class="phr-hint">Each line you tick becomes a draft hiring request for that team, with the month as the date wanted. Nothing is sent in: the manager finishes each request and sends it in as usual.</p>
+          <div t-if="state.data and !state.data.can_raise" class="phr-warn"><t t-out="ic('lock',15)"/> <span t-esc="state.data.cannot_raise"/></div>
+          <div t-if="!hires.length and !leavers.length" class="phr-none">This plan adds nobody, so there is nothing to ask for.</div>
+
+          <div t-if="hires.length" class="phr-list" role="list">
+            <div t-foreach="hires" t-as="ln" t-key="ln.key" class="phr-row" role="listitem"
+                 t-att-class="{ 'is-done': ln.request, 'is-off': !ln.can_make and !ln.request }">
+              <span class="phr-tick">
+                <input t-if="ln.can_make" type="checkbox" t-att-checked="state.picks[ln.key]" t-att-aria-label="ln.team_name" t-on-change="() => this.toggle(ln)"/>
+                <t t-elif="ln.request" t-out="ic('checkCircle',16)"/>
+                <t t-else="" t-out="ic('minusCircle',16)"/>
+              </span>
+              <span class="phr-what">
+                <b><t t-esc="ln.n"/> · <t t-esc="ln.role_name"/></b>
+                <small><t t-esc="ln.team_name or ''"/> · <t t-esc="ln.month_name"/></small>
+                <input t-if="ln.can_make and ln.needs_title and state.picks[ln.key]" class="phr-in" placeholder="Job title, for example Store assistant" t-att-value="state.titles[ln.key] or ''" t-on-input="(ev) => this.setTitle(ln, ev)"/>
+              </span>
+              <span class="phr-state">
+                <button t-if="ln.request" type="button" class="phr-link" t-on-click="() => this.openRequest(ln)"><t t-esc="ln.request.name"/> · <t t-esc="ln.request.state"/></button>
+                <small t-elif="ln.why" t-esc="ln.why"/>
+              </span>
+            </div>
+          </div>
+
+          <div t-if="leavers.length" class="phr-leavers">
+            <b>Not handled here</b>
+            <span t-foreach="leavers" t-as="ln" t-key="ln.key"><t t-esc="-ln.n"/> leaving · <t t-esc="ln.team_name or ''"/> · <t t-esc="ln.month_name"/></span>
+          </div>
+        </t>
+      </div>
+      <t t-set-slot="footer">
+        <button class="btn btn-primary" t-att-disabled="state.busy or !picked.length or missingTitle or (state.data and !state.data.can_raise)" t-on-click="make">
+          <t t-if="picked.length">Make <t t-esc="picked.length"/> draft requests</t>
+          <t t-else="">Nothing to make</t>
+        </button>
+        <button class="btn btn-secondary" t-on-click="props.close">Close</button>
+      </t>
+    </Dialog>
+  </t>
+
+</templates>
