@@ -136,23 +136,49 @@ function remember(key, value) {
     }
 }
 
-/** The four surfaces of the Pay area. All of them are live now. */
+/**
+ * WDGAP S8-A — the one seam for tabs another module brings (Scales first).
+ *
+ * `pb_pay_tabs` holds `{ key, icon, label, title, Component, before }`; an
+ * entry is drawn as a tab in front of the tab named by `before` (at the end
+ * when there is none) and its Component fills the screen while it is open.
+ * The extra tab loads itself: this screen reads nothing for it.
+ */
+const EXTRA_TABS = "pb_pay_tabs";
+
+export function extraTabs() {
+    return registry.category(EXTRA_TABS).getEntries()
+        .map(([key, entry]) => Object.assign({ key }, entry, { extra: true, ready: true }));
+}
+
+/** The four surfaces of the Pay area, plus any a module adds. */
 function tabDefs() {
-    return [
+    const out = [
         { key: "bands", icon: "sliders", label: _t("Bands"), ready: true },
         { key: "fairness", icon: "scale", label: _t("Fairness"), ready: true },
         { key: "review", icon: "checkCircle", label: _t("Review"),
           ready: true },
         { key: "changes", icon: "pencil", label: _t("Changes"), ready: true },
     ];
+    for (const tab of extraTabs()) {
+        const at = out.findIndex((t) => t.key === tab.before);
+        if (at < 0) { out.push(tab); } else { out.splice(at, 0, tab); }
+    }
+    return out;
 }
 
 /** The word in the breadcrumb, per surface. */
 function tabName(key) {
+    const extra = extraTabs().find((t) => t.key === key);
+    if (extra) { return extra.title || extra.label; }
     if (key === "fairness") { return _t("Fairness"); }
     if (key === "review") { return _t("Pay review"); }
     if (key === "changes") { return _t("Pay changes"); }
     return _t("Pay bands");
+}
+
+function isExtraTab(key) {
+    return extraTabs().some((t) => t.key === key);
 }
 
 export class PbPayScreen extends Component {
@@ -186,8 +212,8 @@ export class PbPayScreen extends Component {
             loaded: false,
             busy: false,
             failed: "",
-            tab: ["fairness", "review", "changes"].includes(context.pb_tab)
-                ? context.pb_tab : "bands",
+            tab: (["fairness", "review", "changes"].includes(context.pb_tab)
+                || isExtraTab(context.pb_tab)) ? context.pb_tab : "bands",
             focus: context.pb_focus || "",
 
             // ---- bands
@@ -246,7 +272,8 @@ export class PbPayScreen extends Component {
 
         onWillStart(async () => {
             this.env.config.setDisplayName(tabName(this.state.tab));
-            if (this.state.tab === "review" || this.state.tab === "changes") {
+            if (this.state.tab === "review" || this.state.tab === "changes"
+                || isExtraTab(this.state.tab)) {
                 this.state.loaded = true;
                 return;
             }
@@ -286,6 +313,11 @@ export class PbPayScreen extends Component {
     ic(name, size = 16) { return ic(name, size); }
 
     get tabs() { return tabDefs(); }
+
+    /** The open tab when a module brought it (WDGAP S8-A), else null. */
+    get extraTab() {
+        return extraTabs().find((t) => t.key === this.state.tab) || null;
+    }
 
     /**
      * Inside the People hub, say which of the four tabs is showing, so the
@@ -378,7 +410,7 @@ export class PbPayScreen extends Component {
         this.state.tab = key;
         this._publishTab();
         this.env.config.setDisplayName(tabName(key));
-        if (key === "review" || key === "changes") { return; }
+        if (key === "review" || key === "changes" || tab.extra) { return; }
         if (!this.state.board) {
             this.state.busy = true;
             await this.load();
