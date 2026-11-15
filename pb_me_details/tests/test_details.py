@@ -106,11 +106,17 @@ class TestS6aDetails(TransactionCase):
         with self.assertRaises(UserError):
             self._ask('id_paper', {'paper_kind': 'national_id',
                                    'paper_number': '079200001234'})
+        with self.assertRaises(UserError):          # no "valid until" date
+            self._ask('id_paper', {'paper_kind': 'national_id',
+                                   'paper_number': '079200001234'},
+                      upload=(PDF, 'cccd.pdf', 'application/pdf'))
         req = self._ask('id_paper', {'paper_kind': 'national_id',
-                                     'paper_number': '079200001234'},
+                                     'paper_number': '079200001234',
+                                     'paper_expiry': '2040-01-01'},
                         upload=(PDF, 'cccd.pdf', 'application/pdf'))
         self.assertNotEqual(self.emp.sudo().identification_id, '079200001234')
         decide(self.env, req)
+        self.assertEqual(req.state, 'approved')
         self.assertEqual(self.emp.sudo().identification_id, '079200001234')
         doc = req.document_id
         self.assertTrue(doc.verified)

@@ -154,7 +154,8 @@ class TestS6aCertificates(TransactionCase):
             slip = Slip.create({'employee_id': self.emp.id,
                                 'contract_id': self.contract.id,
                                 'date_from': '2026-10-01', 'date_to': '2026-10-31'})
-            slip.sudo().write({'pb_pay_hold': True})
+            slip.sudo().write({'pb_pay_hold': True,
+                               'pb_hold_reason': 'S6A test hold reason'})
             with self.assertRaises(UserError):
                 self._ask('salary')
 

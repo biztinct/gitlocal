@@ -198,6 +198,13 @@ class PbMeDetailRequest(models.Model):
             if not attachment:
                 raise UserError(_("Add a photo or scan of the paper, so HR can "
                                   "check it."))
+            # The documents area keeps these papers with their end date
+            # (the category says an expiry is required): ask for it here, or
+            # the approval could not be carried out.
+            category = self.sudo().env.ref(PAPER_FIELDS[vals['paper_kind']][2],
+                                           raise_if_not_found=False)
+            if category and category.requires_expiry and not vals.get('paper_expiry'):
+                raise UserError(_("Write the date the paper is valid until."))
         if kind == 'photo' and not attachment:
             raise UserError(_("Choose the photo to use."))
         if kind == 'marital' and not vals.get('marital'):
@@ -499,16 +506,16 @@ class PbMeDetailRequest(models.Model):
     def pb_label(self):
         """A one-line title, in the reader's language."""
         self.ensure_one()
-        _t = self.env._
+        _ = self.env._
         kind = self.kind
         if kind == 'family_add':
-            return _t("Add %s to my family", self.f_name or '')
+            return _("Add %s to my family", self.f_name or '')
         if kind == 'family_change':
-            return _t("Change %s", self.f_name or self.member_id.name or '')
+            return _("Change %s", self.f_name or self.member_id.name or '')
         if kind == 'family_remove':
-            return _t("Remove %s", self.f_name or self.member_id.name or '')
+            return _("Remove %s", self.f_name or self.member_id.name or '')
         if kind == 'id_paper':
-            return self._pb_paper_label() or _t("ID paper")
+            return self._pb_paper_label() or _("ID paper")
         if kind == 'photo':
-            return _t("New photo")
-        return _t("Marital status")
+            return _("New photo")
+        return _("Marital status")

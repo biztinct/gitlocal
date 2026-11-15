@@ -1,0 +1,187 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:08+0000\n"
+"PO-Revision-Date: 2026-11-15 16:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "A change to your bank account is already waiting for approval. Take it back first if you want to send a different one."
+msgstr "Perubahan rekening bank Anda sudah menunggu persetujuan. Tarik kembali dulu jika ingin mengirim yang lain."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Backup for %s, who cannot approve their own bank details"
+msgstr "Pengganti %s, yang tidak boleh menyetujui data bank miliknya sendiri"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank details need a second person. Nobody other than the employee has approved this change, so nothing was written."
+msgstr "Data bank memerlukan orang kedua. Belum ada orang selain karyawan yang menyetujui perubahan ini, jadi tidak ada yang dicatat."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank details need a second person. You cannot approve a change to your own bank account, or one you proposed."
+msgstr "Data bank memerlukan orang kedua. Anda tidak boleh menyetujui perubahan rekening Anda sendiri, atau yang Anda usulkan."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank document"
+msgstr "Dokumen bank"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Choose the bank document to upload."
+msgstr "Pilih dokumen bank yang akan diunggah."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__pb_origin__self_service
+msgid "My Payobook"
+msgstr "My Payobook"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__proposed_by_id
+msgid "Proposed by"
+msgstr "Diusulkan oleh"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_decision_note
+msgid "Reason given"
+msgstr "Alasan"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__pb_origin__staff
+msgid "Staff screen"
+msgstr "Layar staf"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_origin
+msgid "Started from"
+msgstr "Dimulai dari"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Taken back by %s"
+msgstr "Ditarik kembali oleh %s"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_approval.py:0 code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The account number looks right"
+msgstr "Nomor rekening tampak benar"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The file can be a PDF, JPG or PNG."
+msgstr "File dapat berupa PDF, JPG, atau PNG."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The file is larger than 10 MB. Try a smaller copy, or a photo of the page."
+msgstr "File lebih dari 10 MB. Coba salinan yang lebih kecil, atau foto halamannya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account does not look like yours; the approver will ask about it"
+msgstr "Nama pada rekening tidak mirip dengan nama Anda; penyetuju akan menanyakannya"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account is close to yours; the approver will look at it"
+msgstr "Nama pada rekening mirip dengan nama Anda; penyetuju akan memeriksanya"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account matches yours"
+msgstr "Nama pada rekening cocok dengan nama Anda"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This account number is already on file for somebody else"
+msgstr "Nomor rekening ini sudah tercatat untuk orang lain"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This account number is already on file for somebody else, so it cannot be sent from here. Ask HR to check it with you."
+msgstr "Nomor rekening ini sudah tercatat untuk orang lain, jadi tidak dapat dikirim dari sini. Minta HR memeriksanya bersama Anda."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already decided, so it cannot be taken back."
+msgstr "Perubahan ini sudah diputuskan, jadi tidak dapat ditarik kembali."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already sent."
+msgstr "Perubahan ini sudah dikirim."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already sent. Take it back first to change it."
+msgstr "Perubahan ini sudah dikirim. Tarik kembali dulu untuk mengubahnya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This login cannot approve bank details. One of the company's own people has to approve them."
+msgstr "Akun ini tidak dapat menyetujui data bank. Harus disetujui oleh orang perusahaan sendiri."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Type the account number before sending."
+msgstr "Ketik nomor rekening sebelum mengirim."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_employee_bank_history__change_source__updates
+msgid "Updates or Records"
+msgstr "Pembaruan atau Catatan"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Waiting for a second person. Nobody else in %s can approve bank details yet — add one in Access."
+msgstr "Menunggu orang kedua. Belum ada orang lain di %s yang dapat menyetujui data bank — tambahkan di Akses."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Waiting for a second person. Nobody else named to approve bank details in %s can approve this yet — add a person to the bank details route in Settings › Approval Matrix."
+msgstr "Menunggu orang kedua. Belum ada orang lain yang ditunjuk menyetujui data bank di %s yang dapat menyetujui ini — tambahkan orang ke alur data bank di Pengaturan › Matriks Persetujuan."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__pb_decision_note
+msgid "What the approver wrote when they sent it back or turned it down. The employee sees it on My Payobook."
+msgstr "Yang ditulis penyetuju saat mengembalikan atau menolaknya. Karyawan melihatnya di My Payobook."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "You can only change your own bank details."
+msgstr "Anda hanya dapat mengubah data bank Anda sendiri."

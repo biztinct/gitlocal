@@ -1440,3 +1440,176 @@ msgstr "tại"
 #: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "A change to your bank account is already waiting for approval. Take it back first if you want to send a different one."
+msgstr "Một thay đổi tài khoản ngân hàng của bạn đang chờ duyệt. Hãy rút lại trước nếu muốn gửi thay đổi khác."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Backup for %s, who cannot approve their own bank details"
+msgstr "Người thay %s, người không được duyệt thông tin ngân hàng của chính mình"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank details need a second person. Nobody other than the employee has approved this change, so nothing was written."
+msgstr "Thông tin ngân hàng cần người thứ hai. Chưa ai ngoài nhân viên duyệt thay đổi này nên chưa có gì được ghi."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank details need a second person. You cannot approve a change to your own bank account, or one you proposed."
+msgstr "Thông tin ngân hàng cần người thứ hai. Bạn không được duyệt thay đổi tài khoản của chính mình hoặc thay đổi do bạn đề nghị."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank document"
+msgstr "Giấy tờ ngân hàng"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Choose the bank document to upload."
+msgstr "Hãy chọn giấy tờ ngân hàng để tải lên."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__pb_origin__self_service
+msgid "My Payobook"
+msgstr "My Payobook"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__proposed_by_id
+msgid "Proposed by"
+msgstr "Người đề nghị"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_decision_note
+msgid "Reason given"
+msgstr "Lý do"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__pb_origin__staff
+msgid "Staff screen"
+msgstr "Màn hình nhân sự"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_origin
+msgid "Started from"
+msgstr "Bắt đầu từ"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Taken back by %s"
+msgstr "%s đã rút lại"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_approval.py:0 code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The account number looks right"
+msgstr "Số tài khoản có vẻ đúng"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The file can be a PDF, JPG or PNG."
+msgstr "Tệp có thể là PDF, JPG hoặc PNG."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The file is larger than 10 MB. Try a smaller copy, or a photo of the page."
+msgstr "Tệp lớn hơn 10 MB. Hãy thử bản nhỏ hơn hoặc ảnh chụp trang."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account does not look like yours; the approver will ask about it"
+msgstr "Tên chủ tài khoản không giống tên bạn; người duyệt sẽ hỏi lại"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account is close to yours; the approver will look at it"
+msgstr "Tên chủ tài khoản gần giống tên bạn; người duyệt sẽ xem lại"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account matches yours"
+msgstr "Tên chủ tài khoản khớp với tên bạn"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This account number is already on file for somebody else"
+msgstr "Số tài khoản này đã có trong hồ sơ của người khác"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This account number is already on file for somebody else, so it cannot be sent from here. Ask HR to check it with you."
+msgstr "Số tài khoản này đã có trong hồ sơ của người khác nên không gửi được từ đây. Hãy nhờ nhân sự kiểm tra cùng bạn."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already decided, so it cannot be taken back."
+msgstr "Thay đổi này đã được quyết định nên không rút lại được."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already sent."
+msgstr "Thay đổi này đã được gửi."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already sent. Take it back first to change it."
+msgstr "Thay đổi này đã được gửi. Hãy rút lại trước để sửa."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This login cannot approve bank details. One of the company's own people has to approve them."
+msgstr "Tài khoản này không được duyệt thông tin ngân hàng. Phải do người của chính công ty duyệt."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Type the account number before sending."
+msgstr "Hãy nhập số tài khoản trước khi gửi."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_employee_bank_history__change_source__updates
+msgid "Updates or Records"
+msgstr "Cập nhật hoặc Hồ sơ"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Waiting for a second person. Nobody else in %s can approve bank details yet — add one in Access."
+msgstr "Đang chờ người thứ hai. Chưa có ai khác trong %s được duyệt thông tin ngân hàng — hãy thêm người trong Quyền truy cập."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Waiting for a second person. Nobody else named to approve bank details in %s can approve this yet — add a person to the bank details route in Settings › Approval Matrix."
+msgstr "Đang chờ người thứ hai. Chưa có ai khác được chỉ định duyệt thông tin ngân hàng trong %s có thể duyệt — hãy thêm người vào quy trình thông tin ngân hàng trong Cài đặt › Ma trận phê duyệt."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__pb_decision_note
+msgid "What the approver wrote when they sent it back or turned it down. The employee sees it on My Payobook."
+msgstr "Nội dung người duyệt ghi khi trả lại hoặc từ chối. Nhân viên thấy trên My Payobook."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "You can only change your own bank details."
+msgstr "Bạn chỉ được thay đổi thông tin ngân hàng của chính mình."

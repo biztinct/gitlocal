@@ -1,0 +1,1644 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:09+0000\n"
+"PO-Revision-Date: 2026-11-15 16:09+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "%s is not waiting for a tax decision."
+msgstr "%s không chờ quyết định về thuế."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "%s: confirmed for tax. Pay uses it from the next pay run."
+msgstr "%s: đã xác nhận cho thuế. Lương áp dụng từ kỳ trả lương tiếp theo."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "%s: pay is left as it is."
+msgstr "%s: giữ nguyên lương."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<b>A photo or scan of the paper</b>"
+msgstr "<b>Ảnh chụp hoặc bản quét giấy tờ</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<b>A second person approves it</b><span>Somebody in your company who is not you checks it. Then your pay goes to the new account.</span>"
+msgstr "<b>Một người thứ hai phê duyệt</b><span>Một người khác trong công ty (không phải bạn) kiểm tra. Sau đó lương của bạn được chuyển vào tài khoản mới.</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<b>Check what we read</b><span>The document is read for you. Correct anything that is wrong.</span>"
+msgstr "<b>Kiểm tra thông tin đã đọc</b><span>Hệ thống đọc giấy tờ giúp bạn. Hãy sửa nếu có gì sai.</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<b>Counts for tax</b>"
+msgstr "<b>Tính giảm trừ thuế</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<b>HR sent this back.</b>"
+msgstr "<b>Bộ phận nhân sự đã trả lại.</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<b>Reason:</b>"
+msgstr "<b>Lý do:</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<b>Upload a bank document</b><span>A bank letter, a statement, the first page of your passbook or a cancelled cheque showing your name and the account number.</span>"
+msgstr "<b>Tải lên giấy tờ ngân hàng</b><span>Thư xác nhận của ngân hàng, sao kê, trang đầu sổ tiết kiệm hoặc séc đã huỷ có tên bạn và số tài khoản.</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "<b>Why:</b>"
+msgstr "<b>Lý do:</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<option value=\"\">Choose…</option>"
+msgstr "<option value=\"\">Chọn…</option>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_profile_details
+msgid "<span class=\"pbmd-door-tx\"><b>Family, ID papers, photo and bank account</b><span>See them all and ask for a change</span></span>"
+msgstr "<span class=\"pbmd-door-tx\"><b>Gia đình, giấy tờ tuỳ thân, ảnh và tài khoản ngân hàng</b><span>Xem tất cả và đề nghị thay đổi</span></span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span class=\"pbmd-dot\" aria-hidden=\"true\"/><span>Valid until</span>"
+msgstr "<span class=\"pbmd-dot\" aria-hidden=\"true\"/><span>Có hiệu lực đến</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span class=\"pbmd-dot\" aria-hidden=\"true\"/><span>born</span>"
+msgstr "<span class=\"pbmd-dot\" aria-hidden=\"true\"/><span>sinh ngày</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span class=\"pbmd-drop-t\"><b>Choose a photo</b><span>JPG or PNG, up to 10 MB</span></span>"
+msgstr "<span class=\"pbmd-drop-t\"><b>Chọn ảnh</b><span>JPG hoặc PNG, tối đa 10 MB</span></span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<span class=\"pbmd-drop-t\"><b>Choose the document</b><span>PDF, JPG or PNG, up to 10 MB</span></span>"
+msgstr "<span class=\"pbmd-drop-t\"><b>Chọn giấy tờ</b><span>PDF, JPG hoặc PNG, tối đa 10 MB</span></span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span class=\"pbmd-wait\">new photo waiting for HR</span>"
+msgstr "<span class=\"pbmd-wait\">ảnh mới đang chờ nhân sự duyệt</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_form
+msgid ""
+"<span invisible=\"tax_action == 'end'\">Pay does not count this person for tax yet. Check their papers, then press Confirm for tax: the tax relief starts from the next pay run.</span>\n"
+"                        <span invisible=\"tax_action != 'end'\">Pay still counts this person for tax. Press Confirm for tax to stop counting them from the next pay run.</span>"
+msgstr ""
+"<span invisible=\"tax_action == 'end'\">Lương chưa tính người này để giảm trừ thuế. Hãy kiểm tra giấy tờ, rồi bấm Xác nhận cho thuế: giảm trừ bắt đầu từ kỳ trả lương tiếp theo.</span>\n"
+"                        <span invisible=\"tax_action != 'end'\">Lương vẫn đang tính người này để giảm trừ thuế. Bấm Xác nhận cho thuế để ngừng tính từ kỳ trả lương tiếp theo.</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span><b>Covered by insurance</b><small>Included in your company's insurance cover.</small></span>"
+msgstr "<span><b>Được bảo hiểm</b><small>Nằm trong phạm vi bảo hiểm của công ty.</small></span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Account number</span>"
+msgstr "<span>Số tài khoản</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<span>Account on file now:</span>"
+msgstr "<span>Tài khoản hiện có trong hồ sơ:</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Bank</span>"
+msgstr "<span>Ngân hàng</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Branch</span>"
+msgstr "<span>Chi nhánh</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Date of birth</span>"
+msgstr "<span>Ngày sinh</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Full name</span>"
+msgstr "<span>Họ và tên</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>ID or birth certificate number</span>"
+msgstr "<span>Số CCCD hoặc giấy khai sinh</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Marital status</span>"
+msgstr "<span>Tình trạng hôn nhân</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Name on the account</span>"
+msgstr "<span>Tên chủ tài khoản</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span>New bank account</span>"
+msgstr "<span>Tài khoản ngân hàng mới</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Note to HR (optional)</span>"
+msgstr "<span>Ghi chú cho nhân sự (không bắt buộc)</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Number on the paper</span>"
+msgstr "<span>Số trên giấy tờ</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span>Reason:</span>"
+msgstr "<span>Lý do:</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Relationship</span>"
+msgstr "<span>Quan hệ</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Valid until</span>"
+msgstr "<span>Có hiệu lực đến</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<span>What kind of document</span>"
+msgstr "<span>Loại giấy tờ</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Which paper</span>"
+msgstr "<span>Giấy tờ nào</span>"
+
+#. module: pb_me_details
+#: model:biz.approval.process,description:pb_me_details.process_me_details
+msgid "A change somebody asks for on My Payobook to their family, ID papers, photo or marital status."
+msgstr "Thay đổi mà một người đề nghị trên My Payobook về gia đình, giấy tờ tuỳ thân, ảnh hoặc tình trạng hôn nhân."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "A change to somebody's details is proposed on My Payobook."
+msgstr "Thay đổi thông tin của một người được đề nghị trên My Payobook."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "A clear photo of your face, looking at the camera. It is shown to your colleagues and on the clock-in screens."
+msgstr "Ảnh rõ khuôn mặt, nhìn thẳng vào máy ảnh. Ảnh hiển thị cho đồng nghiệp và trên màn hình chấm công."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "A family member who counts for tax"
+msgstr "Người thân được tính giảm trừ thuế"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "A family member who counts for tax changes your pay only after the pay team confirms it."
+msgstr "Người thân được tính giảm trừ thuế chỉ làm thay đổi lương sau khi bộ phận lương xác nhận."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "A proposed change cannot be edited here. The employee changes it on My Payobook."
+msgstr "Không thể sửa đề nghị thay đổi ở đây. Nhân viên sửa trên My Payobook."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "A second person in your company is checking it. Your pay keeps going to the account on file until then."
+msgstr "Một người khác trong công ty đang kiểm tra. Cho đến lúc đó, lương vẫn được chuyển vào tài khoản hiện có."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Account number"
+msgstr "Số tài khoản"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_needaction model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Add %s to my family"
+msgstr "Thêm %s vào gia đình"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__family_add model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Add a family member"
+msgstr "Thêm người thân"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Add a photo or scan of the paper, so HR can check it."
+msgstr "Hãy thêm ảnh chụp hoặc bản quét giấy tờ để nhân sự kiểm tra."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "After you approve, it waits for the pay team to confirm it for tax"
+msgstr "Sau khi bạn duyệt, mục này chờ bộ phận lương xác nhận cho thuế"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "Already added. Choose a file only to replace it."
+msgstr "Đã thêm. Chỉ chọn tệp nếu muốn thay."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__approval_state
+msgid "Approval status"
+msgstr "Trạng thái phê duyệt"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__state__approved model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Approved and written to the employee record."
+msgstr "Đã duyệt và ghi vào hồ sơ nhân viên."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Ask HR to remove"
+msgstr "Đề nghị nhân sự xoá"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được đề nghị quyết định"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_attachment_count model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Back to my details"
+msgstr "Quay lại thông tin của tôi"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Bank account"
+msgstr "Tài khoản ngân hàng"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__before_json
+msgid "Before Json"
+msgstr "Dữ liệu trước"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Born"
+msgstr "Sinh ngày"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Branch"
+msgstr "Chi nhánh"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__sibling model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__sibling
+msgid "Brother or sister"
+msgstr "Anh chị em"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "Cancel"
+msgstr "Huỷ"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Change %s"
+msgstr "Thay đổi %s"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__family_change model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "Change a family member"
+msgstr "Thay đổi người thân"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change bank account"
+msgstr "Đổi tài khoản ngân hàng"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change marital status"
+msgstr "Đổi tình trạng hôn nhân"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change photo"
+msgstr "Đổi ảnh"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_form
+msgid "Change to details"
+msgstr "Thay đổi thông tin"
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_pb_me_detail_request
+msgid "Change to my details"
+msgstr "Thay đổi thông tin của tôi"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change waiting for HR"
+msgstr "Thay đổi đang chờ nhân sự"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family_board.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_list
+msgid "Changes to details"
+msgstr "Các thay đổi thông tin"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Check this family member's papers, then press Confirm for tax. Pay changes only after that."
+msgstr "Kiểm tra giấy tờ của người thân này, rồi bấm Xác nhận cho thuế. Lương chỉ thay đổi sau đó."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Check what we read"
+msgstr "Kiểm tra thông tin đã đọc"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__child model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__child
+msgid "Child"
+msgstr "Con"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose how they are related to you."
+msgstr "Hãy chọn quan hệ với bạn."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/controllers/portal.py:0
+msgid "Choose the bank document to upload."
+msgstr "Hãy chọn giấy tờ ngân hàng để tải lên."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose the family member to change."
+msgstr "Hãy chọn người thân cần thay đổi."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose the photo to use."
+msgstr "Hãy chọn ảnh để dùng."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose which paper this is."
+msgstr "Hãy chọn loại giấy tờ."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose your marital status."
+msgstr "Hãy chọn tình trạng hôn nhân."
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__company_id model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0 code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_form
+msgid "Confirm for tax"
+msgstr "Xác nhận cho thuế"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__tax_confirmed_by
+msgid "Confirmed by"
+msgstr "Người xác nhận"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_state__confirmed
+msgid "Confirmed for tax"
+msgstr "Đã xác nhận cho thuế"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Confirmed for tax by %s."
+msgstr "%s đã xác nhận cho thuế."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__tax_confirmed_on
+msgid "Confirmed on"
+msgstr "Ngày xác nhận"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__counts_for_tax model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_counts_for_tax model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_search
+msgid "Counts for tax"
+msgstr "Tính giảm trừ thuế"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Counts for tax · waiting for HR to confirm"
+msgstr "Tính giảm trừ thuế · chờ nhân sự xác nhận"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Counts for tax. Confirming starts the tax relief from the next pay run."
+msgstr "Tính giảm trừ thuế. Xác nhận sẽ bắt đầu giảm trừ từ kỳ trả lương tiếp theo."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__insured model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_insured model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Covered by insurance"
+msgstr "Được bảo hiểm"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__create_uid model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__create_date model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__birthdate model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_birthdate
+msgid "Date of birth"
+msgstr "Ngày sinh"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_form
+msgid "Decide this in Approvals."
+msgstr "Quyết định mục này trong Phê duyệt."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__decided_on
+msgid "Decided on"
+msgstr "Ngày quyết định"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Detail"
+msgstr "Thông tin"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__display_name model:ir.model.fields,field_description:pb_me_details.field_pb_family_board__display_name model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__display_name model:ir.model.fields,field_description:pb_me_details.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_me_details.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__divorced
+msgid "Divorced"
+msgstr "Đã ly hôn"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__employee_id model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Dữ liệu trang chủ nhân viên"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "Empty"
+msgstr "Trống"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__seat_user_ids
+msgid "Everyone a published approval route has asked to decide this. Being here is not a permission to change anything."
+msgstr "Mọi người mà quy trình phê duyệt đã đề nghị quyết định việc này. Có tên ở đây không có nghĩa là được thay đổi gì."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Everything your company keeps about you, in one place. Ask for a change here: your record is updated once it is approved."
+msgstr "Mọi thông tin công ty lưu về bạn ở cùng một nơi. Đề nghị thay đổi tại đây: hồ sơ được cập nhật sau khi được duyệt."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0 code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Family"
+msgstr "Gia đình"
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_pb_family_board
+msgid "Family and details board"
+msgstr "Bảng gia đình và thông tin"
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_pb_employee_family model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__member_id model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_form model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_form
+msgid "Family member"
+msgstr "Người thân"
+
+#. module: pb_me_details
+#: model:ir.actions.act_window,name:pb_me_details.action_pb_employee_family model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_list
+msgid "Family members"
+msgstr "Người thân"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Family members are changed through My Payobook or by HR."
+msgstr "Người thân được thay đổi qua My Payobook hoặc do nhân sự."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Family members employees added or changed on My Payobook. A family member who counts for tax reaches pay only when the pay team confirms it here."
+msgstr "Người thân mà nhân viên đã thêm hoặc thay đổi trên My Payobook. Người thân được tính giảm trừ thuế chỉ ảnh hưởng đến lương khi bộ phận lương xác nhận tại đây."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Family of"
+msgstr "Người thân của"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "Family · confirm family members for tax"
+msgstr "Gia đình · xác nhận người thân cho thuế"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_home_details
+msgid "Family, ID papers, photo and bank account"
+msgstr "Gia đình, giấy tờ tuỳ thân, ảnh và tài khoản ngân hàng"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 code:addons/pb_me_details/models/detail_request.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__attachment_id
+msgid "File"
+msgstr "Tệp"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__document_id
+msgid "Filed as"
+msgstr "Lưu thành"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Find a person…"
+msgstr "Tìm một người…"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_follower_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_partner_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng, ví dụ fa-tasks"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "HR checks it first. Nothing changes on your record until it is approved."
+msgstr "Nhân sự kiểm tra trước. Hồ sơ của bạn không thay đổi cho đến khi được duyệt."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "HR has it. Nothing changes on your record until it is approved."
+msgstr "Nhân sự đang xử lý. Hồ sơ của bạn không thay đổi cho đến khi được duyệt."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "HR sent %s changes back"
+msgstr "Nhân sự đã trả lại %s thay đổi"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "HR sent a change back"
+msgstr "Nhân sự đã trả lại một thay đổi"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "HR sent a change to your details back."
+msgstr "Nhân sự đã trả lại một thay đổi thông tin của bạn."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__has_message model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__spouse model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__spouse
+msgid "Husband or wife"
+msgstr "Vợ hoặc chồng"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__id model:ir.model.fields,field_description:pb_me_details.field_pb_family_board__id model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__id model:ir.model.fields,field_description:pb_me_details.field_pb_me_home__id model:ir.model.fields,field_description:pb_me_details.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__id_number model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_id_number
+msgid "ID or birth certificate number"
+msgstr "Số CCCD hoặc giấy khai sinh"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__id_paper model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_form
+msgid "ID paper"
+msgstr "Giấy tờ tuỳ thân"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "ID papers"
+msgstr "Giấy tờ tuỳ thân"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng chỉ hoạt động ngoại lệ."
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_needaction model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_has_error model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_has_sms_error model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_has_error model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_is_follower model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_is_follower
+msgid "Is Follower"
+msgstr "Là người theo dõi"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__write_uid model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__write_date model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_form
+msgid "Leave pay as it is"
+msgstr "Giữ nguyên lương"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__cohabitant
+msgid "Living together"
+msgstr "Sống chung"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 code:addons/pb_me_details/models/detail_request.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__marital model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__marital model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Marital status"
+msgstr "Tình trạng hôn nhân"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__married
+msgid "Married"
+msgstr "Đã kết hôn"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_has_error model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Hạn hoạt động của tôi"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_home_details
+msgid "My details"
+msgstr "Thông tin của tôi"
+
+#. module: pb_me_details
+#: model:biz.approval.process,name:pb_me_details.process_me_details
+msgid "My details changes"
+msgstr "Thay đổi thông tin cá nhân"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__name model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Name on the account"
+msgstr "Tên chủ tài khoản"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__paper_kind__national_id
+msgid "National ID card"
+msgstr "Căn cước công dân"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "New account"
+msgstr "Tài khoản mới"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "New bank account"
+msgstr "Tài khoản ngân hàng mới"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "New bank account %s"
+msgstr "Tài khoản ngân hàng mới %s"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "New photo"
+msgstr "Ảnh mới"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Sự kiện lịch của hoạt động tiếp theo"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Hạn hoạt động tiếp theo"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "No bank account on file yet."
+msgstr "Chưa có tài khoản ngân hàng trong hồ sơ."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "No change is waiting for approval. New ones arrive in Approvals."
+msgstr "Không có thay đổi nào chờ duyệt. Thay đổi mới sẽ đến mục Phê duyệt."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "No family members on file."
+msgstr "Chưa có người thân trong hồ sơ."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "No longer counts for tax. Confirming stops the tax relief from the next pay run."
+msgstr "Không còn tính giảm trừ thuế. Xác nhận sẽ ngừng giảm trừ từ kỳ trả lương tiếp theo."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_state__none
+msgid "Not counted for tax"
+msgstr "Không tính giảm trừ thuế"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Not counted for tax, decided by %s."
+msgstr "Không tính giảm trừ thuế, do %s quyết định."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Not now"
+msgstr "Để sau"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Not on file"
+msgstr "Chưa có trong hồ sơ"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Not sent yet"
+msgstr "Chưa gửi"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__note
+msgid "Note from the employee"
+msgstr "Ghi chú của nhân viên"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Nothing here"
+msgstr "Không có gì"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Nothing waits for a tax decision"
+msgstr "Không có mục nào chờ quyết định thuế"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Nothing was decided in the last 30 days."
+msgstr "Không có quyết định nào trong 30 ngày qua."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Now"
+msgstr "Hiện tại"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__paper_number
+msgid "Number"
+msgstr "Số"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_needaction_counter model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số việc cần làm"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_has_error_counter model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_needaction_counter model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_has_error_counter model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị lỗi gửi"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family_board.py:0
+msgid "Only HR and the pay team can see this."
+msgstr "Chỉ nhân sự và bộ phận lương mới xem được."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Only a change that is waiting for HR can be taken back."
+msgstr "Chỉ rút lại được thay đổi đang chờ nhân sự."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Only the pay team can confirm a family member for tax."
+msgstr "Chỉ bộ phận lương mới được xác nhận người thân cho thuế."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Only the pay team can decide this."
+msgstr "Chỉ bộ phận lương mới được quyết định việc này."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Open"
+msgstr "Mở"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "Open Approvals from Home to decide these."
+msgstr "Mở Phê duyệt từ Trang chủ để quyết định."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__other model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "PDF, JPG or PNG, up to 10 MB"
+msgstr "PDF, JPG hoặc PNG, tối đa 10 MB"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__paper_kind
+msgid "Paper"
+msgstr "Giấy tờ"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__parent model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__parent
+msgid "Parent"
+msgstr "Cha mẹ"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__paper_kind__passport
+msgid "Passport"
+msgstr "Hộ chiếu"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__photo model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Photo"
+msgstr "Ảnh"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Proposed"
+msgstr "Đề nghị"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__rating_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "Read the document"
+msgstr "Đọc giấy tờ"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Read the list again"
+msgstr "Đọc lại danh sách"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "Read why, then change it and send it again"
+msgstr "Đọc lý do, rồi sửa và gửi lại"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Reading the family list…"
+msgstr "Đang đọc danh sách người thân…"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__decision_note
+msgid "Reason given"
+msgstr "Lý do"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__name
+msgid "Reference"
+msgstr "Mã"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__relationship model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_relationship
+msgid "Relationship"
+msgstr "Quan hệ"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Remove"
+msgstr "Xoá"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Remove %s"
+msgstr "Xoá %s"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__family_remove
+msgid "Remove a family member"
+msgstr "Xoá người thân"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_search
+msgid "Removed"
+msgstr "Đã xoá"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Removed from the family list. Confirming stops the tax relief from the next pay run."
+msgstr "Đã xoá khỏi danh sách người thân. Xác nhận sẽ ngừng giảm trừ từ kỳ trả lương tiếp theo."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_user_id
+msgid "Responsible User"
+msgstr "Người phụ trách"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_has_sms_error model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Send for approval"
+msgstr "Gửi phê duyệt"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "Send to HR"
+msgstr "Gửi nhân sự"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Sent back"
+msgstr "Bị trả lại"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Sent for approval. Your pay goes to the new account once a second person approves it."
+msgstr "Đã gửi phê duyệt. Lương sẽ chuyển vào tài khoản mới khi người thứ hai duyệt."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__submitted_on
+msgid "Sent on"
+msgstr "Ngày gửi"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Sent to HR. Nothing changes on your record until it is approved."
+msgstr "Đã gửi nhân sự. Hồ sơ của bạn không thay đổi cho đến khi được duyệt."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__single
+msgid "Single"
+msgstr "Độc thân"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_action__add
+msgid "Start counting"
+msgstr "Bắt đầu tính"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái theo hoạt động\n"
+"Quá hạn: Đã qua ngày hạn\n"
+"Hôm nay: Hoạt động hôm nay\n"
+"Đã lên kế hoạch: Hoạt động sắp tới."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_action__end
+msgid "Stop counting"
+msgstr "Ngừng tính"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Take it back"
+msgstr "Rút lại"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Taken back by %s"
+msgstr "%s đã rút lại"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Taken back. You can change it and send it again."
+msgstr "Đã rút lại. Bạn có thể sửa và gửi lại."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Taken back. Your pay keeps going to the account on file."
+msgstr "Đã rút lại. Lương vẫn được chuyển vào tài khoản hiện có."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__tax_state
+msgid "Tax"
+msgstr "Thuế"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__vn_dependent_id
+msgid "Tax dependant"
+msgstr "Người phụ thuộc thuế"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Tax dependants are not kept in this database."
+msgstr "Hệ thống này không lưu người phụ thuộc thuế."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "That change is not yours to edit."
+msgstr "Bạn không được sửa thay đổi này."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "That did not go through. Please try again."
+msgstr "Chưa thực hiện được. Vui lòng thử lại."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family_board.py:0
+msgid "That family member could not be found."
+msgstr "Không tìm thấy người thân này."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "That family member is not on your record."
+msgstr "Người thân này không có trong hồ sơ của bạn."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "That kind of change is not offered here."
+msgstr "Loại thay đổi này không có ở đây."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The date of birth cannot be in the future."
+msgstr "Ngày sinh không thể ở tương lai."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "The document could not be read automatically. Type the details exactly as they appear on it."
+msgstr "Không đọc tự động được giấy tờ. Hãy nhập thông tin đúng như trên giấy tờ."
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__counts_for_tax
+msgid "The employee says this person depends on them for tax. In a Vietnam company HR confirms it before pay uses it."
+msgstr "Nhân viên khai người này là người phụ thuộc để giảm trừ thuế. Ở công ty Việt Nam, nhân sự xác nhận trước khi lương sử dụng."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "The family list could not be read just now. Try again in a moment."
+msgstr "Hiện chưa đọc được danh sách người thân. Thử lại sau giây lát."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The family member no longer exists."
+msgstr "Người thân này không còn tồn tại."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The file can be a PDF, JPG or PNG."
+msgstr "Tệp có thể là PDF, JPG hoặc PNG."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The file is larger than 10 MB. Try a smaller copy, or a photo of the page."
+msgstr "Tệp lớn hơn 10 MB. Hãy thử bản nhỏ hơn hoặc ảnh chụp trang."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "The new photo"
+msgstr "Ảnh mới"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "The one on your record"
+msgstr "Ảnh trong hồ sơ"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "The pay team confirms this."
+msgstr "Bộ phận lương sẽ xác nhận."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The photo can be a JPG or PNG."
+msgstr "Ảnh có thể là JPG hoặc PNG."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The photo is missing."
+msgstr "Thiếu ảnh."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "The photo on file"
+msgstr "Ảnh trong hồ sơ"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The same change is already waiting for HR. Take it back first if you want to send a different one."
+msgstr "Thay đổi tương tự đang chờ nhân sự. Hãy rút lại trước nếu muốn gửi thay đổi khác."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "The tax status of a family member is set by the Confirm for tax button only."
+msgstr "Trạng thái thuế của người thân chỉ được đặt bằng nút Xác nhận cho thuế."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "They depend on you financially."
+msgstr "Người này phụ thuộc tài chính vào bạn."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "They depend on you, so they reduce the tax on your pay once the pay team confirms it."
+msgstr "Người này phụ thuộc vào bạn, nên được giảm trừ thuế trên lương sau khi bộ phận lương xác nhận."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "This one is for HR and the pay team"
+msgstr "Mục này dành cho nhân sự và bộ phận lương"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__state__refused model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ trên bản ghi."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Update"
+msgstr "Cập nhật"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__paper_expiry
+msgid "Valid until"
+msgstr "Có hiệu lực đến"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__state__hr_review model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Waiting for HR"
+msgstr "Chờ nhân sự"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_state__waiting model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_search
+msgid "Waiting for HR to confirm for tax"
+msgstr "Chờ nhân sự xác nhận cho thuế"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Waiting for approval"
+msgstr "Chờ phê duyệt"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "We read your document. Check every detail against it, correct anything that is wrong, then send it."
+msgstr "Chúng tôi đã đọc giấy tờ của bạn. Hãy đối chiếu từng thông tin, sửa chỗ sai rồi gửi."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__website_message_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trang web"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__website_message_ids model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang web"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__kind
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "What is changing"
+msgstr "Nội dung thay đổi"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "When"
+msgstr "Khi nào"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__tax_action
+msgid "When HR confirms"
+msgstr "Khi nhân sự xác nhận"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "When an approved family change could change somebody's tax, it waits here until the pay team confirms it."
+msgstr "Khi một thay đổi về gia đình đã duyệt có thể làm thay đổi thuế của ai đó, nó chờ ở đây cho đến khi bộ phận lương xác nhận."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Where your pay is sent."
+msgstr "Nơi nhận lương của bạn."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__widower
+msgid "Widowed"
+msgstr "Goá"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__paper_kind__permit
+msgid "Work permit"
+msgstr "Giấy phép lao động"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Write the date the paper is valid until."
+msgstr "Hãy nhập ngày giấy tờ hết hiệu lực."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Write the family member's name."
+msgstr "Hãy nhập tên người thân."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Write the number printed on the paper."
+msgstr "Hãy nhập số in trên giấy tờ."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Yes, send to HR"
+msgstr "Có, gửi nhân sự"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "You can only change your own details."
+msgstr "Bạn chỉ được thay đổi thông tin của chính mình."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Your change"
+msgstr "Thay đổi của bạn"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Your changes"
+msgstr "Các thay đổi của bạn"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Your pay goes to this account from now on."
+msgstr "Từ nay lương được chuyển vào tài khoản này."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "Your pay keeps going to the account on file until the new one is approved."
+msgstr "Lương vẫn được chuyển vào tài khoản hiện có cho đến khi tài khoản mới được duyệt."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Your record is updated."
+msgstr "Hồ sơ của bạn đã được cập nhật."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "Your turn"
+msgstr "Đến lượt bạn"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "change waiting for HR"
+msgstr "thay đổi đang chờ nhân sự"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "changes waiting for approval"
+msgstr "thay đổi chờ phê duyệt"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "decided in the last 30 days"
+msgstr "đã quyết định trong 30 ngày qua"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "waiting for HR to confirm for tax"
+msgstr "chờ nhân sự xác nhận cho thuế"

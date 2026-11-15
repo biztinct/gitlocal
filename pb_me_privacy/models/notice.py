@@ -28,17 +28,17 @@ HR_GROUP = 'hr.group_hr_user'
 
 def default_body(env):
     """The neutral starting wording, in the reader's language."""
-    _t = env._
+    _ = env._
     parts = [
-        _t("We keep the personal details you give us, and the details of your "
+        _("We keep the personal details you give us, and the details of your "
            "work with us, so that we can employ you, pay you correctly and "
            "meet our duties to the tax office and social insurance."),
-        _t("Only the people whose job needs your details can see them. We share "
+        _("Only the people whose job needs your details can see them. We share "
            "them only where we have to, for example with the tax office, social "
            "insurance, and the bank that pays your salary."),
-        _t("We keep your details while you work with us, and afterwards for as "
+        _("We keep your details while you work with us, and afterwards for as "
            "long as the rules we follow require."),
-        _t("You can ask HR at any time to see the details we keep about you, to "
+        _("You can ask HR at any time to see the details we keep about you, to "
            "correct them, or to explain how they are used."),
     ]
     return Markup('').join(Markup('<p>%s</p>') % p for p in parts)
@@ -118,7 +118,10 @@ class PbPrivacyNotice(models.Model):
             Notice = self.sudo()
             current = Notice.search([('company_id', '=', rec.company_id.id),
                                      ('state', '=', 'published')])
-            last = Notice.search([('company_id', '=', rec.company_id.id)],
+            # `version > 0`: drafts have no version, and PostgreSQL sorts an
+            # empty value FIRST in a descending order.
+            last = Notice.search([('company_id', '=', rec.company_id.id),
+                                  ('version', '>', 0)],
                                  order='version desc', limit=1)
             now = fields.Datetime.now()
             current.with_context(pb_privacy_sys=True).write({

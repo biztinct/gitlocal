@@ -13,14 +13,15 @@ DETAILS_TILE = '/my/details'
 
 try:
     from odoo.addons.pb_me_portal.models import pb_me_home
-    # In "Me", right after the profile tile. No short `text` here (the home
-    # test wants every registry text in pb_me_portal's .po): the template's
-    # words are this module's.
+    # Under "More" (C-3): pb_me_portal's own home test pins the list of
+    # "Me" tiles, and this phase may not edit pb_me_portal. The orchestrator
+    # moves it into "Me" in one prep commit (report §8). No short `text`
+    # here (the home test wants every registry text in pb_me_portal's .po).
     pb_me_home.TILES.setdefault(DETAILS_TILE, {
-        'group': 'me',
+        'group': 'more',
         'icon': 'user-check',
         'tone': 'indigo',
-        'seq': pb_me_home.GROUPS.index('me') * 100 + 1,
+        'seq': pb_me_home.GROUPS.index('more') * 100 + 0,
     })
 except Exception:                           # noqa: BLE001 — a tile is not fatal
     _logger.warning('pb_me_details: the My details tile could not be placed',

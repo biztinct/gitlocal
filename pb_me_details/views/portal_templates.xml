@@ -255,7 +255,7 @@
                     <option t-foreach="options['paper']" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == v.get('paper_kind')" t-esc="op[1]"/>
                   </select>
                 </label>
-                <label><span>Valid until</span><input type="date" name="paper_expiry" t-att-value="v.get('paper_expiry') or ''"/></label>
+                <label><span>Valid until</span><input type="date" name="paper_expiry" required="required" t-att-value="v.get('paper_expiry') or ''"/></label>
                 <label class="pbme-form-wide"><span>Number on the paper</span><input type="text" name="paper_number" required="required" maxlength="40" t-att-value="v.get('paper_number') or ''"/></label>
               </div>
               <label class="pbmd-drop"><input type="file" name="file" accept="application/pdf,image/png,image/jpeg"/><span class="pbmd-drop-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="16"/></t></span><span class="pbmd-drop-t"><b>A photo or scan of the paper</b><span t-if="req and req.attachment_id">Already added. Choose a file only to replace it.</span><span t-else="">PDF, JPG or PNG, up to 10 MB</span></span></label>
