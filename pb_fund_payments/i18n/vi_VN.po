@@ -1,0 +1,2330 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 00:14+0000\n"
+"PO-Revision-Date: 2026-11-15 00:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid " · %(amount)s paid on %(day)s"
+msgstr " · đã trả %(amount)s ngày %(day)s"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid " · reference %s"
+msgstr " · mã tham chiếu %s"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%(month)s worked out: %(what)s."
+msgstr "Đã tính %(month)s: %(what)s."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"%(paid)s was paid but %(owed)s is owed. Say why the amounts differ, in a few"
+" words."
+msgstr ""
+"Đã trả %(paid)s nhưng số phải trả là %(owed)s. Hãy ghi ngắn gọn lý do hai số"
+" khác nhau."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "%(state)s · %(owed)s owed%(paid)s"
+msgstr "%(state)s · phải trả %(owed)s%(paid)s"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s changed since approval"
+msgstr "%s thay đổi sau khi duyệt"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "%s funds added."
+msgstr "Đã thêm %s quỹ."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s new"
+msgstr "%s mới"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s no longer owed"
+msgstr "%s không còn phải trả"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "%s payments"
+msgstr "%s khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "%s payments are past their due date"
+msgstr "%s khoản nộp đã quá hạn"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "%s payslips"
+msgstr "%s phiếu lương"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s updated"
+msgstr "%s được cập nhật"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ ký duyệt"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s worked out again: nothing changed."
+msgstr "Đã tính lại %s: không có gì thay đổi."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ", so a note is needed."
+msgstr ", nên cần ghi chú."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ". The payslips now add up to"
+msgstr ". Các phiếu lương hiện cộng lại là"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "1 finished payslip this month"
+msgstr "1 phiếu lương đã hoàn tất trong tháng này"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "1 fund added."
+msgstr "Đã thêm 1 quỹ."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "1 payment"
+msgstr "1 khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "1 payment is past its due date"
+msgstr "1 khoản nộp đã quá hạn"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ ký duyệt"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"; the approved figure was not changed. Reopen it to use the new figure."
+msgstr "; số đã duyệt không bị thay đổi. Hãy mở lại để dùng số mới."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "A few words the next person will understand."
+msgstr "Vài chữ để người sau hiểu được."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "A new fund or office"
+msgstr "Quỹ hoặc cơ quan mới"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"A pay item is not printed on payslips, so there is nothing to add up for it."
+msgstr ""
+"Một khoản mục lương không in trên phiếu lương, nên không có gì để cộng."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "A receipt is attached once the payment is approved."
+msgstr "Biên lai được đính kèm sau khi khoản nộp đã được duyệt."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Add 1 fund"
+msgstr "Thêm 1 quỹ"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Add one"
+msgstr "Thêm mới"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Add one myself"
+msgstr "Tự thêm"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "All payments"
+msgstr "Tất cả khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Already paid to"
+msgstr "Đã nộp cho"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Amount paid ("
+msgstr "Số tiền đã trả ("
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Amounts in %s"
+msgstr "Số tiền bằng %s"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_biz_approval_request_seat
+msgid "Approval Request Seat"
+msgstr "Người được hỏi duyệt"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__approval_state
+msgid "Approval status"
+msgstr "Trạng thái phê duyệt"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Approvals could not be opened."
+msgstr "Không mở được Phê duyệt."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__approved_on
+msgid "Approved On"
+msgstr "Duyệt ngày"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Approved — it can be paid now."
+msgstr "Đã duyệt — có thể nộp ngay."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__approved
+msgid "Approved, not paid"
+msgstr "Đã duyệt, chưa nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Approved. Pay it, then record the payment with its receipt."
+msgstr "Đã duyệt. Hãy nộp tiền, rồi ghi nhận khoản nộp kèm biên lai."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Approved: %s may now be paid."
+msgstr "Đã duyệt: có thể nộp %s."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được hỏi duyệt"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Attach the receipt"
+msgstr "Đính kèm biên lai"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Attach the receipt or the bank confirmation first — a payment is marked as "
+"paid only with its proof."
+msgstr ""
+"Hãy đính kèm biên lai hoặc xác nhận của ngân hàng trước — khoản nộp chỉ được"
+" đánh dấu đã nộp khi có chứng từ."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Attach the receipt or the bank confirmation first."
+msgstr "Hãy đính kèm biên lai hoặc xác nhận của ngân hàng trước."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Attaching…"
+msgstr "Đang đính kèm…"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__bank_details
+msgid ""
+"Bank, account and anything else the person making the payment needs. Shown "
+"on the board; no bank file is made from it."
+msgstr ""
+"Ngân hàng, số tài khoản và những gì người nộp tiền cần. Hiển thị trên bảng; "
+"không tạo tệp ngân hàng từ đây."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Bank, account number, anything the person paying needs"
+msgstr "Ngân hàng, số tài khoản, những gì người nộp cần"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__breakdown_json
+msgid "Breakdown Json"
+msgstr "Chi tiết theo khoản mục"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Cancelled — nothing is owed on it any more."
+msgstr "Đã hủy — không còn phải trả gì."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Cancelled: the finished payslips of %s no longer owe this fund anything."
+msgstr "Đã hủy: các phiếu lương đã hoàn tất của %s không còn nợ quỹ này."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Change"
+msgstr "Sửa"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__live_diff
+msgid "Changed since approval"
+msgstr "Thay đổi sau khi duyệt"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__company_id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__company_id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__create_uid
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__create_uid
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__create_date
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__create_date
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__create_date
+msgid "Created on"
+msgstr "Tạo lúc"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__paid_difference
+msgid "Difference"
+msgstr "Chênh lệch"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_biz_approval_request_seat__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payments__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Download this month as an Excel file"
+msgstr "Tải tháng này về dạng tệp Excel"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__due_date
+msgid "Due by"
+msgstr "Hạn nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__due_day
+msgid "Due by day"
+msgstr "Hạn nộp vào ngày"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Due date"
+msgstr "Hạn nộp"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Due in the next 7 days"
+msgstr "Đến hạn trong 7 ngày tới"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Due soonest first"
+msgstr "Gần hạn nhất trước"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Each fund or office has the pay items that belong to it. What is owed is "
+"added up from those items on the month's finished payslips — never typed in."
+msgstr ""
+"Mỗi quỹ hoặc cơ quan có các khoản mục lương thuộc về nó. Số phải trả được "
+"cộng từ các khoản đó trên phiếu lương đã hoàn tất của tháng — không bao giờ "
+"nhập tay."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Employee"
+msgstr "Người lao động"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__amount_employee
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payee_item__share__employee
+msgid "Employee share"
+msgstr "Phần người lao động"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Employer"
+msgstr "Doanh nghiệp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Employer cost"
+msgstr "Chi phí doanh nghiệp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__amount_employer
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payee_item__share__employer
+msgid "Employer share"
+msgstr "Phần doanh nghiệp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Every pay item taken off pay or paid by the employer already belongs to a "
+"fund — or no active pay scheme has one."
+msgstr ""
+"Mọi khoản trừ lương hoặc doanh nghiệp đóng đều đã thuộc về một quỹ — hoặc "
+"không chương trình lương nào đang dùng có khoản như vậy."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Excel files cannot be made on this server yet."
+msgstr "Máy chủ này chưa tạo được tệp Excel."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Figures"
+msgstr "Số liệu"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__figures_changed
+msgid "Figures changed since approval"
+msgstr "Số liệu thay đổi sau khi duyệt"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Figures changed since approval:"
+msgstr "Số liệu thay đổi sau khi duyệt:"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Find a fund, an office or a payment reference…"
+msgstr "Tìm quỹ, cơ quan hoặc mã tham chiếu…"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Find a pay item by name or code"
+msgstr "Tìm khoản mục lương theo tên hoặc mã"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "For example Social insurance office"
+msgstr "Ví dụ: Cơ quan bảo hiểm xã hội"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "For example the company's code at the fund"
+msgstr "Ví dụ: mã đơn vị của công ty tại quỹ"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_palette.js:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:biz.approval.process,name:pb_fund_payments.process_fundpay
+#: model:ir.actions.act_window,name:pb_fund_payments.action_pb_fund_payment
+#: model:ir.actions.client,name:pb_fund_payments.action_pb_fund_payments_board
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_list
+msgid "Fund and tax payments"
+msgstr "Nộp quỹ và thuế"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Fund and tax payments are changed only from the Fund & tax payments board: "
+"the amount owed comes from the payslips, and an approved or paid payment "
+"changes only by reopening it."
+msgstr ""
+"Khoản nộp quỹ và thuế chỉ được thay đổi từ bảng Nộp quỹ và thuế: số phải trả"
+" lấy từ phiếu lương, và khoản đã duyệt hoặc đã nộp chỉ thay đổi khi mở lại."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Fund and tax payments are looked after by the pay team. Ask your "
+"administrator for payroll rights to see this screen."
+msgstr ""
+"Nộp quỹ và thuế do bộ phận lương phụ trách. Hãy nhờ quản trị viên cấp quyền "
+"tính lương để xem màn hình này."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Fund and tax payments are worked out from finished payslips on the Fund & "
+"tax payments board; they cannot be typed in."
+msgstr ""
+"Khoản nộp quỹ và thuế được tính từ phiếu lương đã hoàn tất trên bảng Nộp quỹ"
+" và thuế; không thể nhập tay."
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_pb_fund_payments
+msgid "Fund and tax payments board data"
+msgstr "Dữ liệu bảng nộp quỹ và thuế"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Fund and tax payments · %s"
+msgstr "Nộp quỹ và thuế · %s"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_pb_fund_payee
+msgid "Fund or office the company pays"
+msgstr "Quỹ hoặc cơ quan công ty nộp tiền"
+
+#. module: pb_fund_payments
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_form
+msgid "Fund or tax payment"
+msgstr "Khoản nộp quỹ hoặc thuế"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Fund payment paid"
+msgstr "Đã nộp quỹ"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Fund payment reopened"
+msgstr "Mở lại khoản nộp quỹ"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Fund payments"
+msgstr "Nộp quỹ"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_palette.js:0
+msgid "Funds & tax"
+msgstr "Quỹ & thuế"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Give the fund or office a name."
+msgstr "Hãy đặt tên cho quỹ hoặc cơ quan."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__bank_details
+msgid "How to pay them"
+msgstr "Cách nộp tiền"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "How to pay them (optional)"
+msgstr "Cách nộp tiền (không bắt buộc)"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_biz_approval_request_seat__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payments__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_has_error
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_is_follower
+msgid "Is Follower"
+msgstr "Đang theo dõi"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"It goes back to “To pay”, is worked out again from the payslips, and needs a"
+" new approval."
+msgstr ""
+"Khoản này quay về “Cần nộp”, được tính lại từ phiếu lương và cần duyệt lại."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__item_count
+msgid "Item Count"
+msgstr "Số khoản mục"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Its own payment"
+msgstr "Khoản nộp riêng"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Its pay items come from schemes paying in %s. Each currency is worked out as"
+" its own payment."
+msgstr ""
+"Các khoản mục của nó đến từ chương trình lương trả bằng %s. Mỗi loại tiền "
+"được tính thành một khoản nộp riêng."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Largest amount first"
+msgstr "Số tiền lớn nhất trước"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__write_uid
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__write_uid
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật bởi"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__write_date
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__write_date
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lúc"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__live_owed
+msgid "Latest reading"
+msgstr "Số đọc gần nhất"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Left to pay"
+msgstr "Còn phải nộp"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__live_head_count
+msgid "Live Head Count"
+msgstr "Số người hiện tại"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Loading payments"
+msgstr "Đang tải các khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Made on"
+msgstr "Tạo lúc"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Mark as paid"
+msgstr "Đánh dấu đã nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Marked as paid only with its proof: the receipt or the bank's confirmation."
+msgstr ""
+"Chỉ đánh dấu đã nộp khi có chứng từ: biên lai hoặc xác nhận của ngân hàng."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Marked as paid. The receipt is kept with it."
+msgstr "Đã đánh dấu đã nộp. Biên lai được lưu kèm."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Marked as paid: %(amount)s on %(day)s%(ref)s."
+msgstr "Đã đánh dấu đã nộp: %(amount)s ngày %(day)s%(ref)s."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Name the insurance funds and the tax office once, with the pay items that "
+"belong to each. Payobook can read your pay schemes and suggest them — you "
+"check them before anything is saved."
+msgstr ""
+"Khai báo một lần các quỹ bảo hiểm và cơ quan thuế, cùng các khoản mục lương "
+"thuộc về từng nơi. Payobook có thể đọc chương trình lương và gợi ý — bạn "
+"kiểm tra trước khi lưu."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Needs attention"
+msgstr "Cần chú ý"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Next month"
+msgstr "Tháng sau"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "No finished payslips this month yet"
+msgstr "Tháng này chưa có phiếu lương hoàn tất"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "No pay item found"
+msgstr "Không tìm thấy khoản mục lương"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "No pay items yet — nothing is owed to it."
+msgstr "Chưa có khoản mục lương — không phải trả gì."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "No payments match these filters"
+msgstr "Không có khoản nộp nào khớp bộ lọc"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "No payslips of %s are finished yet, so nothing is owed yet."
+msgstr "Chưa có phiếu lương nào của %s hoàn tất, nên chưa phải trả gì."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nobody yet."
+msgstr "Chưa có ai."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "None yet. Pick them from the list below."
+msgstr "Chưa có. Hãy chọn từ danh sách bên dưới."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Not approved: %s. The money is still owed; send it again when it is right."
+msgstr "Không được duyệt: %s. Số tiền vẫn phải trả; hãy gửi lại khi đã đúng."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Nothing could be suggested just now."
+msgstr "Hiện chưa gợi ý được gì."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Nothing has been worked out for this month yet."
+msgstr "Tháng này chưa được tính."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Nothing is owed on this payment."
+msgstr "Khoản này không phải trả gì."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Nothing is owed to this fund for that month any more."
+msgstr "Tháng đó không còn phải trả gì cho quỹ này."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nothing left to suggest"
+msgstr "Không còn gì để gợi ý"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nothing matches “"
+msgstr "Không có kết quả cho “"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nothing was found on the payslips for this fund."
+msgstr "Không tìm thấy gì trên phiếu lương cho quỹ này."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nothing worked out yet for"
+msgstr "Chưa tính cho"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số việc cần làm"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị lỗi gửi"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Only a payment that is still to pay can be sent for approval."
+msgstr "Chỉ khoản còn “Cần nộp” mới gửi duyệt được."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Only a payroll manager or a finance role can change these."
+msgstr "Chỉ quản lý lương hoặc vai trò tài chính mới sửa được."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Only an approved or paid payment can be reopened."
+msgstr "Chỉ khoản đã duyệt hoặc đã nộp mới mở lại được."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Only an approved payment can be marked as paid."
+msgstr "Chỉ khoản đã duyệt mới đánh dấu đã nộp được."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Only the people who may prepare a bank file — a payroll manager or a finance"
+" role — can change fund and tax payments."
+msgstr ""
+"Chỉ người được lập tệp ngân hàng — quản lý lương hoặc vai trò tài chính — "
+"mới sửa được khoản nộp quỹ và thuế."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Open in Approvals"
+msgstr "Mở trong Phê duyệt"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__amount_owed
+msgid "Owed"
+msgstr "Phải trả"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__paid_amount
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__paid
+msgid "Paid"
+msgstr "Đã nộp"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__paid_by
+msgid "Paid By"
+msgstr "Người nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Paid late"
+msgstr "Nộp trễ"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__paid_on
+msgid "Paid on"
+msgstr "Ngày nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Past due"
+msgstr "Quá hạn"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__is_late
+msgid "Past its due date"
+msgstr "Đã quá hạn"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Past its due date, not paid"
+msgstr "Quá hạn, chưa nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Past its due date."
+msgstr "Đã quá hạn."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Pay %(payee)s · %(month)s"
+msgstr "Nộp cho %(payee)s · %(month)s"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__rule_id
+msgid "Pay item"
+msgstr "Khoản mục lương"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_pb_fund_payee_item
+msgid "Pay item owed to a fund or office"
+msgstr "Khoản mục lương phải nộp cho quỹ hoặc cơ quan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__item_ids
+msgid "Pay items"
+msgstr "Khoản mục lương"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Pay items that belong to it"
+msgstr "Các khoản mục lương thuộc về nơi này"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__month
+msgid "Pay month"
+msgstr "Tháng lương"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__config_id
+msgid "Pay scheme"
+msgstr "Chương trình lương"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__payee_id
+msgid "Pay to"
+msgstr "Nộp cho"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Pay to, A to Z"
+msgstr "Nộp cho, A đến Z"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Pay together with"
+msgstr "Nộp chung với"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__payee_id
+msgid "Payee"
+msgstr "Nơi nhận"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Payment"
+msgstr "Khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__payment_reference
+msgid "Payment reference"
+msgstr "Mã tham chiếu"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Payment reference (optional)"
+msgstr "Mã tham chiếu (không bắt buộc)"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_pb_fund_payment
+msgid "Payment to a fund or office"
+msgstr "Khoản nộp cho quỹ hoặc cơ quan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_palette.js:0
+msgid "Payroll"
+msgstr "Tính lương"
+
+#. module: pb_fund_payments
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_form
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_line_list
+msgid "Payslip lines"
+msgstr "Dòng phiếu lương"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Payslip lines behind %s"
+msgstr "Các dòng phiếu lương của %s"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__slip_ids
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__head_count
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__breakdown_json
+msgid "Per pay item: scheme, code, share, amount, people."
+msgstr "Theo khoản mục: chương trình, mã, phần, số tiền, số người."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Pick a pay month"
+msgstr "Chọn tháng lương"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Pick the pay month first."
+msgstr "Hãy chọn tháng lương trước."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Press the button to add up what the finished payslips of the month owe each "
+"fund and the tax office."
+msgstr ""
+"Bấm nút để cộng số mà phiếu lương đã hoàn tất của tháng phải nộp cho từng "
+"quỹ và cơ quan thuế."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Previous month"
+msgstr "Tháng trước"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Read from what each pay item does to net pay: taken off pay is the employee "
+"share, an employer cost is the employer share. Rename them, put two together"
+" if one office collects both, untick anything that is not paid to an outside"
+" office."
+msgstr ""
+"Đọc từ tác động của mỗi khoản mục đến lương thực nhận: khoản trừ lương là "
+"phần người lao động, chi phí doanh nghiệp là phần doanh nghiệp. Đổi tên, gộp"
+" hai nơi nếu một cơ quan thu cả hai, bỏ chọn những gì không nộp cho cơ quan "
+"bên ngoài."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Read the board again"
+msgstr "Đọc lại bảng"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reading what is owed…"
+msgstr "Đang đọc số phải trả…"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__evidence_attachment_id
+msgid "Receipt"
+msgstr "Biên lai"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Receipt attached"
+msgstr "Đã đính kèm biên lai"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Record the payment"
+msgstr "Ghi nhận khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__reference_text
+msgid "Reference to quote"
+msgstr "Mã cần ghi khi nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reference to quote (optional)"
+msgstr "Mã cần ghi khi nộp (không bắt buộc)"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reference to quote:"
+msgstr "Mã cần ghi khi nộp:"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Remove"
+msgstr "Gỡ bỏ"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Remove a filter above, or start again from every payment of the month."
+msgstr "Bỏ một bộ lọc ở trên, hoặc xem lại mọi khoản nộp của tháng."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Removed. Payments already worked out for it are kept."
+msgstr "Đã gỡ. Các khoản nộp đã tính cho nơi này vẫn được giữ."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reopen"
+msgstr "Mở lại"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__reopen_reason
+msgid "Reopen Reason"
+msgstr "Lý do mở lại"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reopen this payment"
+msgstr "Mở lại khoản nộp này"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Reopened. It is back to “To pay” and needs a new approval."
+msgstr "Đã mở lại. Khoản này quay về “Cần nộp” và cần duyệt lại."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Reopened: %(why)s. It was %(before)s; it needs a new approval."
+msgstr "Mở lại: %(why)s. Trước đó: %(before)s; cần duyệt lại."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Saved. Work the month out again to see it in the figures."
+msgstr "Đã lưu. Hãy tính lại tháng để thấy trong số liệu."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Say who you pay first: press “Who we pay” and add the funds and offices, or "
+"let Payobook suggest them."
+msgstr ""
+"Hãy khai báo nơi nộp trước: bấm “Nơi nộp tiền” và thêm các quỹ, cơ quan, "
+"hoặc để Payobook gợi ý."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Say why this payment is being reopened."
+msgstr "Hãy ghi lý do mở lại khoản nộp này."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Say why, in a few words."
+msgstr "Hãy ghi ngắn gọn lý do."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "See the payslip lines"
+msgstr "Xem các dòng phiếu lương"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Sent back: %s"
+msgstr "Bị trả lại: %s"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Sent for approval."
+msgstr "Đã gửi duyệt."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Sent for approval: %s owed."
+msgstr "Đã gửi duyệt: phải trả %s."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__share
+msgid "Share"
+msgstr "Phần"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Show every payment"
+msgstr "Hiện mọi khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Show them"
+msgstr "Xem các khoản này"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Some of its pay items are already included in another total. Pick the total "
+"or its parts, not both, or the amount is counted twice."
+msgstr ""
+"Một số khoản mục đã nằm trong một khoản tổng khác. Hãy chọn khoản tổng hoặc "
+"các phần của nó, không chọn cả hai, nếu không số tiền bị tính hai lần."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Suggest from my pay schemes"
+msgstr "Gợi ý từ chương trình lương của tôi"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Suggested from your pay schemes"
+msgstr "Gợi ý từ chương trình lương của bạn"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Suggested funds"
+msgstr "Các quỹ được gợi ý"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Taken off pay"
+msgstr "Trừ vào lương"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payee.py:0
+msgid ""
+"Taken off pay, with no employer share. Untick it if it is not paid to an "
+"outside office — a loan repayment or a salary advance, for example."
+msgstr ""
+"Trừ vào lương, không có phần doanh nghiệp. Bỏ chọn nếu khoản này không nộp "
+"cho cơ quan bên ngoài — ví dụ tiền trả vay hoặc tạm ứng lương."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "That cannot be done here."
+msgstr "Không làm được việc đó ở đây."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "That could not be done."
+msgstr "Không làm được."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "That could not be removed."
+msgstr "Không gỡ được."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "That could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "That file could not be read."
+msgstr "Không đọc được tệp đó."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "That file is empty."
+msgstr "Tệp đó trống."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "That file is larger than 15 MB."
+msgstr "Tệp đó lớn hơn 15 MB."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The Excel file could not be made."
+msgstr "Không tạo được tệp Excel."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The amount paid is not"
+msgstr "Số tiền đã trả không phải là"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The amount paid is not what is owed. Say why, in a few words."
+msgstr "Số tiền đã trả khác số phải trả. Hãy ghi ngắn gọn lý do."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "The amount paid must be above zero."
+msgstr "Số tiền đã trả phải lớn hơn 0."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể mất kết nối. Bộ lọc của bạn vẫn được giữ."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payee.py:0
+msgid "The due day is a day of the month, from 1 to 31."
+msgstr "Ngày hạn nộp là một ngày trong tháng, từ 1 đến 31."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"The finished payslips of %s hold none of the pay items your funds are set up"
+" with."
+msgstr ""
+"Phiếu lương đã hoàn tất của %s không có khoản mục nào mà các quỹ của bạn "
+"được thiết lập."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__month
+msgid "The first day of the month the payslips' periods end in."
+msgstr "Ngày đầu tháng mà kỳ của phiếu lương kết thúc."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__name
+msgid ""
+"The fund or office, as the person paying it knows it (for example Social "
+"insurance office, Tax office)."
+msgstr ""
+"Quỹ hoặc cơ quan, theo tên người nộp tiền quen gọi (ví dụ Cơ quan bảo hiểm "
+"xã hội, Cơ quan thuế)."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The funds could not be added."
+msgstr "Không thêm được các quỹ."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The funds could not be read."
+msgstr "Không đọc được các quỹ."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__currency_id
+msgid ""
+"The money this fund is usually paid in. A pay item from a pay scheme in "
+"another currency is worked out as its own payment — two currencies are never"
+" added together."
+msgstr ""
+"Loại tiền thường dùng để nộp quỹ này. Khoản mục từ chương trình lương bằng "
+"loại tiền khác được tính thành khoản nộp riêng — không bao giờ cộng hai loại"
+" tiền với nhau."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The month could not be worked out."
+msgstr "Không tính được tháng này."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The oldest is from"
+msgstr "Khoản cũ nhất từ"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "The payment date cannot be in the future."
+msgstr "Ngày nộp không thể ở tương lai."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__due_day
+msgid "The payment is due by this day of the month after the pay month."
+msgstr "Hạn nộp là ngày này của tháng sau tháng lương."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The payments could not be read just now."
+msgstr "Hiện chưa đọc được các khoản nộp."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The payments could not load"
+msgstr "Không tải được các khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid ""
+"The payments could not load. Check your connection, then press Try again."
+msgstr "Không tải được các khoản nộp. Hãy kiểm tra kết nối rồi bấm Thử lại."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The payslip lines could not be opened."
+msgstr "Không mở được các dòng phiếu lương."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The payslips changed after this payment was sent for approval"
+msgstr "Phiếu lương đã thay đổi sau khi khoản nộp này được gửi duyệt"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"The payslips changed after this payment was sent for approval: they now add "
+"up to %(now)s (%(diff)s). The approved figures were not changed."
+msgstr ""
+"Phiếu lương đã thay đổi sau khi khoản nộp này được gửi duyệt: hiện cộng lại "
+"là %(now)s (%(diff)s). Số đã duyệt không bị thay đổi."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The people behind it"
+msgstr "Những người trong khoản này"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The proof"
+msgstr "Chứng từ"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The receipt could not be attached."
+msgstr "Không đính kèm được biên lai."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "The steps above the table, plus payments that were cancelled."
+msgstr "Các bước phía trên bảng, cùng các khoản đã hủy."
+
+#. module: pb_fund_payments
+#: model:ir.model.constraint,message:pb_fund_payments.constraint_pb_fund_payment_payee_month_currency_live
+msgid "This fund already has a payment for that month in that currency."
+msgstr "Quỹ này đã có khoản nộp cho tháng đó bằng loại tiền đó."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "This one is for the pay team"
+msgstr "Màn hình này dành cho bộ phận lương"
+
+#. module: pb_fund_payments
+#: model:ir.model.constraint,message:pb_fund_payments.constraint_pb_fund_payee_item_payee_rule_uniq
+msgid "This pay item is already listed for this payee."
+msgstr "Khoản mục này đã có trong nơi nộp này."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "This payee no longer exists."
+msgstr "Nơi nộp này không còn nữa."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "This payment could not be opened."
+msgstr "Không mở được khoản nộp này."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "This payment has already been sent in."
+msgstr "Khoản nộp này đã được gửi."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "This payment is no longer waiting for approval."
+msgstr "Khoản nộp này không còn chờ duyệt."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "This payment is not waiting for approval."
+msgstr "Khoản nộp này không chờ duyệt."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "This payment no longer exists."
+msgstr "Khoản nộp này không còn nữa."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__to_pay
+msgid "To pay"
+msgstr "Cần nộp"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_line_list
+msgid "Total"
+msgstr "Tổng"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Type the amount that was paid as a number."
+msgstr "Hãy nhập số tiền đã trả bằng số."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee_item__code
+msgid "Unique code for this rule (e.g., BASIC, HRA, PIT)"
+msgstr "Mã duy nhất của khoản mục (ví dụ BASIC, HRA, PIT)"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__currency_id
+msgid "Usual currency"
+msgstr "Loại tiền thường dùng"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__waiting
+msgid "Waiting for approval"
+msgstr "Chờ duyệt"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn website"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên website"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "What happened"
+msgstr "Diễn biến"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "What is being paid"
+msgstr "Khoản đang được nộp"
+
+#. module: pb_fund_payments
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_form
+msgid "What is owed"
+msgstr "Số phải trả"
+
+#. module: pb_fund_payments
+#: model:biz.approval.process,description:pb_fund_payments.process_fundpay
+msgid "What is paid to insurance funds and the tax office after a pay run."
+msgstr "Số nộp cho các quỹ bảo hiểm và cơ quan thuế sau mỗi kỳ lương."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "What the bank or the fund called the payment"
+msgstr "Tên ngân hàng hoặc quỹ đặt cho khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"What the pay runs owe insurance funds and the tax office, what was paid, and"
+" the receipt."
+msgstr ""
+"Số các kỳ lương phải nộp cho quỹ bảo hiểm và cơ quan thuế, số đã nộp và biên"
+" lai."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__reference_text
+msgid ""
+"What to write in the payment reference, for example the company's code at "
+"the fund."
+msgstr ""
+"Nội dung ghi trong phần tham chiếu khi nộp, ví dụ mã đơn vị của công ty tại "
+"quỹ."
+
+#. module: pb_fund_payments
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_form
+msgid "What was paid"
+msgstr "Số đã nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"When the month's payslips are finished, press the button to add up what they"
+" owe."
+msgstr "Khi phiếu lương của tháng hoàn tất, bấm nút để cộng số phải nộp."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Where every payment is"
+msgstr "Mỗi khoản nộp đang ở đâu"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Who does the company pay after payroll?"
+msgstr "Sau mỗi kỳ lương, công ty nộp tiền cho ai?"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Who we pay"
+msgstr "Nơi nộp tiền"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__difference_note
+msgid "Why the amount differs"
+msgstr "Lý do số tiền khác"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Withdraw"
+msgstr "Rút lại"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Withdrawn from the board"
+msgstr "Rút lại từ bảng"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Withdrawn. It is back to “To pay”."
+msgstr "Đã rút lại. Khoản này quay về “Cần nộp”."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Withdrawn: %s"
+msgstr "Đã rút lại: %s"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Work out what we owe for"
+msgstr "Tính số phải nộp cho"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__worked_out_by
+msgid "Worked Out By"
+msgstr "Người tính"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__worked_out_on
+msgid "Worked Out On"
+msgstr "Tính lúc"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Worked out again: %s owed."
+msgstr "Đã tính lại: phải trả %s."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Worked out from"
+msgstr "Tính từ"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Worked out from %(n)s finished payslips: %(amount)s owed."
+msgstr "Tính từ %(n)s phiếu lương đã hoàn tất: phải trả %(amount)s."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Worked out from %s finished payslips of the month."
+msgstr "Tính từ %s phiếu lương đã hoàn tất của tháng."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Worked out from finished payslips"
+msgstr "Tính từ phiếu lương đã hoàn tất"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Worked out."
+msgstr "Đã tính."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Working it out…"
+msgstr "Đang tính…"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "against what was owed."
+msgstr "so với số phải trả."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "and"
+msgstr "và"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "approved, not paid"
+msgstr "đã duyệt, chưa nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "attached"
+msgstr "đã đính kèm"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "attaching a receipt"
+msgstr "đính kèm biên lai"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "changed since approval"
+msgstr "thay đổi sau khi duyệt"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "employee,"
+msgstr "người lao động,"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "employer items"
+msgstr "khoản doanh nghiệp"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "figures_changed"
+msgstr ""
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "finished payslips"
+msgstr "phiếu lương đã hoàn tất"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "finished payslips this month"
+msgstr "phiếu lương đã hoàn tất trong tháng này"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "for “"
+msgstr "cho “"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "funds"
+msgstr "quỹ"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "marking a fund payment as paid"
+msgstr "đánh dấu đã nộp quỹ"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "more — see the payslip lines for everybody."
+msgstr "người nữa — xem các dòng phiếu lương để thấy tất cả."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "no reason given"
+msgstr "không ghi lý do"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "of the month after the pay month"
+msgstr "của tháng sau tháng lương"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "of the next month ·"
+msgstr "của tháng sau ·"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "on"
+msgstr "ngày"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "paid"
+msgstr "đã nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "payments"
+msgstr "khoản nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "people"
+msgstr "người"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "reopening a fund payment"
+msgstr "mở lại khoản nộp quỹ"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "sending a fund payment for approval"
+msgstr "gửi duyệt khoản nộp quỹ"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "state"
+msgstr ""
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "to pay"
+msgstr "cần nộp"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "waiting for approval"
+msgstr "chờ duyệt"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "working out what is owed"
+msgstr "tính số phải trả"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "· included in another total"
+msgstr "· đã nằm trong khoản tổng khác"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "— with"
+msgstr "— đang ở"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payee.py:0
+msgid ""
+"“%(item)s” is already paid to %(payee)s. A pay item can belong to one payee "
+"only, or it would be paid twice."
+msgstr ""
+"“%(item)s” đã được nộp cho %(payee)s. Một khoản mục chỉ thuộc về một nơi "
+"nộp, nếu không sẽ bị nộp hai lần."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payee.py:0
+msgid "“%s” belongs to a pay scheme of another company."
+msgstr "“%s” thuộc chương trình lương của công ty khác."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "”. Check the spelling, or search by a fund or a payment reference."
+msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo quỹ hoặc mã tham chiếu."
