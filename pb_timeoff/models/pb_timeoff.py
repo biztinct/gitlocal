@@ -16,7 +16,7 @@ one-permission-world split: reads sudo, mutations real-user.
 
 from datetime import date, timedelta
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 # Officer set (verified against the installed repo hr_holidays — the officer
@@ -297,7 +297,14 @@ class PbTimeoff(models.AbstractModel):
 
     def _balances(self, page):
         """Employee × allocation-based leave type: validated allocations −
-        validated taken. Server-paged (never unbounded — the 4.5k demo world)."""
+        validated taken. Server-paged (never unbounded — the 4.5k demo world).
+
+        WDGAP S5-A: days that have RUN OUT (an allocation whose validity ended
+        before today) count no more, and neither do the days taken from them —
+        the same rule core's own "balance after" follows, so the HR board, the
+        employee page and the manager's "left after this" give one number.
+        The kinds are the companies' own and the shared ones (the board used
+        to list every company's kinds)."""
         Emp = self.env['hr.employee']
         co_ids = self._co_ids()
         domain = [('active', '=', True), ('company_id', 'in', co_ids)]
@@ -306,34 +313,23 @@ class PbTimeoff(models.AbstractModel):
                           offset=page * _BALANCE_PAGE, limit=_BALANCE_PAGE)
         # allocation-based types only (requires_allocation Boolean, C18.22)
         types = self.env['hr.leave.type'].search(
-            [('requires_allocation', '=', True)])
-        type_by_id = {t.id: t for t in types}
+            [('requires_allocation', '=', True),
+             '|', ('company_id', '=', False), ('company_id', 'in', co_ids)])
         if not emps or not types:
             return {'page': page, 'page_size': _BALANCE_PAGE, 'total': total,
                     'has_more': (page + 1) * _BALANCE_PAGE < total,
                     'types': [self._type_chip(t) for t in types], 'rows': []}
 
         # validated allocations + taken, grouped once each (bounded to the page)
-        Alloc = self.env['hr.leave.allocation']
-        alloc_g = Alloc.read_group(
-            [('employee_id', 'in', emps.ids), ('state', '=', 'validate'),
-             ('holiday_status_id', 'in', types.ids)],
-            ['number_of_days:sum'], ['employee_id', 'holiday_status_id'],
-            lazy=False)
-        taken_g = self.env['hr.leave'].read_group(
-            [('employee_id', 'in', emps.ids), ('state', '=', 'validate'),
-             ('holiday_status_id', 'in', types.ids)],
-            ['number_of_days:sum'], ['employee_id', 'holiday_status_id'],
-            lazy=False)
-        alloc = self._fold_group(alloc_g)
-        taken = self._fold_group(taken_g)
+        nums = self._pb_balance_numbers(emps.ids, types.ids)
 
         rows = []
         for e in emps:
             cells = {}
             for t in types:
-                a = alloc.get((e.id, t.id), 0.0)
-                k = taken.get((e.id, t.id), 0.0)
+                n = nums.get((e.id, t.id)) or {}
+                a = n.get('allocated', 0.0)
+                k = n.get('taken', 0.0)
                 bal = round(a - k, 2)
                 cells[t.id] = {'allocated': round(a, 2), 'taken': round(k, 2),
                                'balance': bal, 'low': bal <= 2.0 and a > 0}
@@ -353,6 +349,76 @@ class PbTimeoff(models.AbstractModel):
             if not (emp and typ):
                 continue
             out[(emp[0], typ[0])] = g.get('number_of_days') or 0.0
+        return out
+
+    # ------------------------------------------------------------- balances
+    # WDGAP S5-A (FACTS finding 5, ledger S5-4). One balance rule for every
+    # Payobook reader: "validated allocations minus validated taken", as it
+    # always was, LESS the days that have run out. An allocation has run out
+    # when its validity ended before today (`date_to < today`); its days no
+    # longer count, and nor do the days core charged to it while it was
+    # valid (core charges a request to the allocation that runs out first,
+    # `hr.employee._get_consumed_leaves`). With no allocation that has run
+    # out the answer is EXACTLY the old one, read the old way.
+
+    @api.model
+    def _pb_expired_parts(self, emp_ids, type_ids, today=None):
+        """``{(employee_id, type_id): (days_ran_out, taken_from_them)}`` —
+        empty when nothing has run out, without asking core anything."""
+        today = today or fields.Date.context_today(self)
+        if not emp_ids or not type_ids:
+            return {}
+        Alloc = self.env['hr.leave.allocation'].sudo()
+        expired = Alloc.search([
+            ('employee_id', 'in', list(emp_ids)), ('holiday_status_id', 'in', list(type_ids)),
+            ('state', '=', 'validate'), ('date_to', '!=', False), ('date_to', '<', today)])
+        if not expired:
+            return {}
+        emps = expired.employee_id
+        kinds = expired.holiday_status_id
+        consumed = emps._get_consumed_leaves(kinds, target_date=today)[0]
+        out = {}
+        for alloc in expired:
+            key = (alloc.employee_id.id, alloc.holiday_status_id.id)
+            data = consumed.get(alloc.employee_id, {}).get(alloc.holiday_status_id, {}).get(alloc)
+            taken = float((data or {}).get('leaves_taken') or 0.0)
+            if alloc.holiday_status_id.request_unit == 'hour' and taken:
+                # core counts an hours kind in hours; this board in days
+                hours = alloc.number_of_hours_display or 0.0
+                per_day = (hours / alloc.number_of_days) if alloc.number_of_days and hours else (
+                    alloc.employee_id._get_hours_per_day(alloc.date_from) or 8.0)
+                taken = taken / per_day if per_day else 0.0
+            days, used = out.get(key, (0.0, 0.0))
+            out[key] = (days + (alloc.number_of_days or 0.0), used + taken)
+        return out
+
+    @api.model
+    def _pb_balance_numbers(self, emp_ids, type_ids, today=None):
+        """``{(employee_id, type_id): {'allocated', 'taken', 'balance'}}`` for
+        every pair that has an allocation or a taken day (sudo read; the
+        caller has already decided the reader may see these people)."""
+        emp_ids, type_ids = list(emp_ids or []), list(type_ids or [])
+        if not emp_ids or not type_ids:
+            return {}
+        Alloc = self.env['hr.leave.allocation'].sudo()
+        alloc = self._fold_group(Alloc.read_group(
+            [('employee_id', 'in', emp_ids), ('state', '=', 'validate'),
+             ('holiday_status_id', 'in', type_ids)],
+            ['number_of_days:sum'], ['employee_id', 'holiday_status_id'], lazy=False))
+        taken = self._fold_group(self.env['hr.leave'].sudo().read_group(
+            [('employee_id', 'in', emp_ids), ('state', '=', 'validate'),
+             ('holiday_status_id', 'in', type_ids)],
+            ['number_of_days:sum'], ['employee_id', 'holiday_status_id'], lazy=False))
+        gone = self._pb_expired_parts(emp_ids, type_ids, today=today)
+        out = {}
+        for key in set(alloc) | set(taken):
+            a = alloc.get(key, 0.0)
+            k = taken.get(key, 0.0)
+            if key in gone:
+                a -= gone[key][0]
+                k -= gone[key][1]
+            a, k = round(max(a, 0.0), 4), round(max(k, 0.0), 4)
+            out[key] = {'allocated': a, 'taken': k, 'balance': round(a - k, 4)}
         return out
 
     def _apply_types(self):
