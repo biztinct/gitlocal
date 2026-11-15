@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 15:25+0000\n"
-"PO-Revision-Date: 2026-11-15 15:25+0000\n"
+"POT-Creation-Date: 2026-11-15 20:12+0000\n"
+"PO-Revision-Date: 2026-11-15 20:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: vi_VN\n"
@@ -37,90 +37,10 @@ msgstr ""
 "bậc khác trước, hoặc lưu trữ cấp bậc."
 
 #. module: pb_org_structure
-#. odoo-python
-#: code:addons/pb_org_structure/models/cost_centre.py:0
-msgid ""
-"%(n)s contracts carry the code \"%(code)s\", so it cannot be changed here — "
-"that would rewrite what they say. Add a new cost centre and move people to "
-"it from a date instead."
-msgstr ""
-"%(n)s hợp đồng đang mang mã \"%(code)s\", nên không thể đổi mã ở đây — làm "
-"vậy sẽ viết lại nội dung các hợp đồng đó. Hãy thêm trung tâm chi phí mới và "
-"chuyển mọi người sang từ một ngày."
-
-#. module: pb_org_structure
-#. odoo-python
-#: code:addons/pb_org_structure/models/org_board.py:0
-msgid "%(n)s jobs are at \"%(level)s\". Move them to another level first."
-msgstr ""
-"%(n)s vị trí đang ở cấp \"%(level)s\". Hãy chuyển chúng sang cấp khác trước."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%(n)s people move to %(code)s from %(date)s."
-msgstr "%(n)s người chuyển sang %(code)s từ %(date)s."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s are already there."
-msgstr "%s người đã ở đó rồi."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s changes are waiting for their date. They are made on the day."
-msgstr "%s thay đổi đang chờ đến ngày. Chúng sẽ được thực hiện đúng ngày."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s changes waiting for their date"
-msgstr "%s thay đổi đang chờ đến ngày"
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s contracts"
-msgstr "%s hợp đồng"
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s contracts not on the list"
-msgstr "%s hợp đồng chưa có trong danh sách"
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s cost centres added to the list. No contract was changed."
-msgstr ""
-"Đã thêm %s trung tâm chi phí vào danh sách. Không hợp đồng nào bị thay đổi."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s jobs"
-msgstr "%s vị trí"
-
-#. module: pb_org_structure
 #. odoo-javascript
 #: code:addons/pb_org_structure/static/src/js/org_board.js:0
 msgid "%s only"
 msgstr "Chỉ %s"
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s people moved."
-msgstr "Đã chuyển %s người."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s roles with somebody to hire"
-msgstr "%s vị trí còn cần tuyển"
 
 #. module: pb_org_structure
 #. odoo-javascript
@@ -208,10 +128,22 @@ msgid "Add them to the list"
 msgstr "Thêm vào danh sách"
 
 #. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Added to the list: %s. No contract was changed."
+msgstr "Đã thêm vào danh sách: %s. Không hợp đồng nào bị thay đổi."
+
+#. module: pb_org_structure
 #. odoo-python
 #: code:addons/pb_org_structure/models/org_board.py:0
 msgid "All jobs"
 msgstr "Tất cả vị trí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Already there: %s."
+msgstr "Đã ở đó: %s."
 
 #. module: pb_org_structure
 #. odoo-javascript
@@ -259,6 +191,18 @@ msgstr "Sửa trung tâm chi phí"
 #: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
 msgid "Change the level"
 msgstr "Sửa cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s"
+msgstr "Thay đổi đang chờ đến ngày: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s. They are made on the day."
+msgstr "Thay đổi đang chờ đến ngày: %s. Chúng sẽ được thực hiện đúng ngày."
 
 #. module: pb_org_structure
 #. odoo-javascript
@@ -384,6 +328,30 @@ msgstr "Hợp đồng"
 #: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__contract_ids
 msgid "Contracts"
 msgstr "Hợp đồng"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"Contracts carrying the code \"%(code)s\": %(n)s. It cannot be changed here —"
+" that would rewrite what they say. Add a new cost centre and move people to "
+"it from a date instead."
+msgstr ""
+"Hợp đồng mang mã \"%(code)s\": %(n)s. Không thể đổi mã ở đây — làm vậy sẽ "
+"viết lại nội dung các hợp đồng đó. Hãy thêm trung tâm chi phí mới và chuyển "
+"mọi người sang từ một ngày."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts not on the list: %s"
+msgstr "Hợp đồng chưa có trong danh sách: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts: %s"
+msgstr "Hợp đồng: %s"
 
 #. module: pb_org_structure
 #. odoo-javascript
@@ -739,9 +707,21 @@ msgid "Jobs are not open to you"
 msgstr "Bạn không xem được mục Vị trí"
 
 #. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Jobs at \"%(level)s\": %(n)s. Move them to another level first."
+msgstr "Vị trí ở cấp \"%(level)s\": %(n)s. Hãy chuyển chúng sang cấp khác trước."
+
+#. module: pb_org_structure
 #: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_ids
 msgid "Jobs at this level"
 msgstr "Vị trí ở cấp này"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Jobs: %s"
+msgstr "Vị trí: %s"
 
 #. module: pb_org_structure
 #: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__write_uid
@@ -1077,10 +1057,22 @@ msgstr ""
 "Không thể bắt đầu việc tuyển mới nào cho vị trí này."
 
 #. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People moved: %s."
+msgstr "Số người đã chuyển: %s."
+
+#. module: pb_org_structure
 #. odoo-python
 #: code:addons/pb_org_structure/models/org_board.py:0
 msgid "People to hire"
 msgstr "Người cần tuyển"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People who move to %(code)s from %(date)s: %(n)s."
+msgstr "Số người chuyển sang %(code)s từ %(date)s: %(n)s."
 
 #. module: pb_org_structure
 #: model:ir.model,name:pb_org_structure.model_pb_org_structure
@@ -1131,6 +1123,12 @@ msgstr "Mở lại"
 #: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
 msgid "Roles paused one by one"
 msgstr "Vị trí tạm dừng riêng lẻ"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Roles with somebody to hire: %s"
+msgstr "Vị trí còn cần tuyển: %s"
 
 #. module: pb_org_structure
 #. odoo-javascript

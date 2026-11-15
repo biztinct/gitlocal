@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 15:25+0000\n"
-"PO-Revision-Date: 2026-11-15 15:25+0000\n"
+"POT-Creation-Date: 2026-11-15 20:12+0000\n"
+"PO-Revision-Date: 2026-11-15 20:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: id_ID\n"
@@ -37,89 +37,10 @@ msgstr ""
 "dulu, atau arsipkan level ini."
 
 #. module: pb_org_structure
-#. odoo-python
-#: code:addons/pb_org_structure/models/cost_centre.py:0
-msgid ""
-"%(n)s contracts carry the code \"%(code)s\", so it cannot be changed here — "
-"that would rewrite what they say. Add a new cost centre and move people to "
-"it from a date instead."
-msgstr ""
-"%(n)s kontrak memakai kode \"%(code)s\", jadi kode ini tidak bisa diubah di "
-"sini — itu akan mengubah isi kontrak tersebut. Tambahkan pusat biaya baru "
-"dan pindahkan orang ke sana mulai suatu tanggal."
-
-#. module: pb_org_structure
-#. odoo-python
-#: code:addons/pb_org_structure/models/org_board.py:0
-msgid "%(n)s jobs are at \"%(level)s\". Move them to another level first."
-msgstr ""
-"%(n)s jabatan berada di level \"%(level)s\". Pindahkan dulu ke level lain."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%(n)s people move to %(code)s from %(date)s."
-msgstr "%(n)s orang pindah ke %(code)s mulai %(date)s."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s are already there."
-msgstr "%s orang sudah ada di sana."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s changes are waiting for their date. They are made on the day."
-msgstr "%s perubahan menunggu tanggalnya. Perubahan dibuat pada hari itu."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s changes waiting for their date"
-msgstr "%s perubahan menunggu tanggalnya"
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s contracts"
-msgstr "%s kontrak"
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s contracts not on the list"
-msgstr "%s kontrak belum ada di daftar"
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s cost centres added to the list. No contract was changed."
-msgstr "%s pusat biaya ditambahkan ke daftar. Tidak ada kontrak yang diubah."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s jobs"
-msgstr "%s jabatan"
-
-#. module: pb_org_structure
 #. odoo-javascript
 #: code:addons/pb_org_structure/static/src/js/org_board.js:0
 msgid "%s only"
 msgstr "Hanya %s"
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s people moved."
-msgstr "%s orang dipindahkan."
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s roles with somebody to hire"
-msgstr "%s jabatan masih perlu diisi"
 
 #. module: pb_org_structure
 #. odoo-javascript
@@ -208,10 +129,22 @@ msgid "Add them to the list"
 msgstr "Tambahkan ke daftar"
 
 #. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Added to the list: %s. No contract was changed."
+msgstr "Ditambahkan ke daftar: %s. Tidak ada kontrak yang diubah."
+
+#. module: pb_org_structure
 #. odoo-python
 #: code:addons/pb_org_structure/models/org_board.py:0
 msgid "All jobs"
 msgstr "Semua jabatan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Already there: %s."
+msgstr "Sudah di sana: %s."
 
 #. module: pb_org_structure
 #. odoo-javascript
@@ -259,6 +192,18 @@ msgstr "Ubah pusat biaya"
 #: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
 msgid "Change the level"
 msgstr "Ubah level"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s"
+msgstr "Perubahan menunggu tanggalnya: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s. They are made on the day."
+msgstr "Perubahan menunggu tanggalnya: %s. Perubahan dibuat pada hari itu."
 
 #. module: pb_org_structure
 #. odoo-javascript
@@ -384,6 +329,30 @@ msgstr "Kontrak"
 #: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__contract_ids
 msgid "Contracts"
 msgstr "Kontrak"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"Contracts carrying the code \"%(code)s\": %(n)s. It cannot be changed here —"
+" that would rewrite what they say. Add a new cost centre and move people to "
+"it from a date instead."
+msgstr ""
+"Kontrak dengan kode \"%(code)s\": %(n)s. Kode ini tidak bisa diubah di sini "
+"— itu akan mengubah isi kontrak tersebut. Tambahkan pusat biaya baru dan "
+"pindahkan orang ke sana mulai suatu tanggal."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts not on the list: %s"
+msgstr "Kontrak belum ada di daftar: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts: %s"
+msgstr "Kontrak: %s"
 
 #. module: pb_org_structure
 #. odoo-javascript
@@ -739,9 +708,21 @@ msgid "Jobs are not open to you"
 msgstr "Jabatan tidak terbuka untuk Anda"
 
 #. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Jobs at \"%(level)s\": %(n)s. Move them to another level first."
+msgstr "Jabatan di level \"%(level)s\": %(n)s. Pindahkan dulu ke level lain."
+
+#. module: pb_org_structure
 #: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_ids
 msgid "Jobs at this level"
 msgstr "Jabatan di level ini"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Jobs: %s"
+msgstr "Jabatan: %s"
 
 #. module: pb_org_structure
 #: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__write_uid
@@ -1076,10 +1057,22 @@ msgstr ""
 " Tidak ada yang baru yang bisa dimulai untuk jabatan ini."
 
 #. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People moved: %s."
+msgstr "Orang yang dipindahkan: %s."
+
+#. module: pb_org_structure
 #. odoo-python
 #: code:addons/pb_org_structure/models/org_board.py:0
 msgid "People to hire"
 msgstr "Yang perlu direkrut"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People who move to %(code)s from %(date)s: %(n)s."
+msgstr "Orang yang pindah ke %(code)s mulai %(date)s: %(n)s."
 
 #. module: pb_org_structure
 #: model:ir.model,name:pb_org_structure.model_pb_org_structure
@@ -1130,6 +1123,12 @@ msgstr "Membuka kembali"
 #: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
 msgid "Roles paused one by one"
 msgstr "Jabatan yang dijeda satu per satu"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Roles with somebody to hire: %s"
+msgstr "Jabatan yang masih perlu diisi: %s"
 
 #. module: pb_org_structure
 #. odoo-javascript

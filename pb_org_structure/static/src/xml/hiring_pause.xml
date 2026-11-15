@@ -12,7 +12,14 @@
     </xpath>
   </t>
 
-  <!-- The role page: the banner, right under the section tabs. -->
+  <!-- The role page header: the same chip, beside the request and advert chips. -->
+  <t t-inherit="pb_hiring.RolePage" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbhr-role-chips')]" position="inside">
+      <span t-if="state.drawer.pb_paused" class="pbhr-pill is-amber" t-att-title="state.drawer.pb_paused_reason"><t t-out="ic('pause',12)"/> Hiring paused</span>
+    </xpath>
+  </t>
+
+  <!-- The role's Details tab: the banner, right under the section tabs. -->
   <t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
     <xpath expr="//nav[hasclass('pbhr-workspace-nav')]" position="after">
       <div t-if="state.drawer and state.drawer.pb_paused_reason" class="pbos-hp" role="status">

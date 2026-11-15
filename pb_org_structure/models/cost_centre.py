@@ -99,7 +99,7 @@ class PbCostCentre(models.Model):
                     n = len(cc._contracts_using())
                     if n:
                         raise UserError(_(
-                            "%(n)s contracts carry the code \"%(code)s\", so it "
+                            "Contracts carrying the code \"%(code)s\": %(n)s. It "
                             "cannot be changed here — that would rewrite what "
                             "they say. Add a new cost centre and move people "
                             "to it from a date instead.", n=n, code=cc.code))

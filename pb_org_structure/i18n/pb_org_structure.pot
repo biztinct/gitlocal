@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 15:25+0000\n"
-"PO-Revision-Date: 2026-11-15 15:25+0000\n"
+"POT-Creation-Date: 2026-11-15 20:12+0000\n"
+"PO-Revision-Date: 2026-11-15 20:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: \n"
@@ -33,84 +33,9 @@ msgid ""
 msgstr ""
 
 #. module: pb_org_structure
-#. odoo-python
-#: code:addons/pb_org_structure/models/cost_centre.py:0
-msgid ""
-"%(n)s contracts carry the code \"%(code)s\", so it cannot be changed here — "
-"that would rewrite what they say. Add a new cost centre and move people to "
-"it from a date instead."
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-python
-#: code:addons/pb_org_structure/models/org_board.py:0
-msgid "%(n)s jobs are at \"%(level)s\". Move them to another level first."
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%(n)s people move to %(code)s from %(date)s."
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s are already there."
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s changes are waiting for their date. They are made on the day."
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s changes waiting for their date"
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s contracts"
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s contracts not on the list"
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s cost centres added to the list. No contract was changed."
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s jobs"
-msgstr ""
-
-#. module: pb_org_structure
 #. odoo-javascript
 #: code:addons/pb_org_structure/static/src/js/org_board.js:0
 msgid "%s only"
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s people moved."
-msgstr ""
-
-#. module: pb_org_structure
-#. odoo-javascript
-#: code:addons/pb_org_structure/static/src/js/org_board.js:0
-msgid "%s roles with somebody to hire"
 msgstr ""
 
 #. module: pb_org_structure
@@ -195,9 +120,21 @@ msgid "Add them to the list"
 msgstr ""
 
 #. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Added to the list: %s. No contract was changed."
+msgstr ""
+
+#. module: pb_org_structure
 #. odoo-python
 #: code:addons/pb_org_structure/models/org_board.py:0
 msgid "All jobs"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Already there: %s."
 msgstr ""
 
 #. module: pb_org_structure
@@ -245,6 +182,18 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
 msgid "Change the level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s. They are made on the day."
 msgstr ""
 
 #. module: pb_org_structure
@@ -368,6 +317,27 @@ msgstr ""
 #: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
 #: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__contract_ids
 msgid "Contracts"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"Contracts carrying the code \"%(code)s\": %(n)s. It cannot be changed here —"
+" that would rewrite what they say. Add a new cost centre and move people to "
+"it from a date instead."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts not on the list: %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts: %s"
 msgstr ""
 
 #. module: pb_org_structure
@@ -712,8 +682,20 @@ msgid "Jobs are not open to you"
 msgstr ""
 
 #. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Jobs at \"%(level)s\": %(n)s. Move them to another level first."
+msgstr ""
+
+#. module: pb_org_structure
 #: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_ids
 msgid "Jobs at this level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Jobs: %s"
 msgstr ""
 
 #. module: pb_org_structure
@@ -1038,9 +1020,21 @@ msgid ""
 msgstr ""
 
 #. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People moved: %s."
+msgstr ""
+
+#. module: pb_org_structure
 #. odoo-python
 #: code:addons/pb_org_structure/models/org_board.py:0
 msgid "People to hire"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People who move to %(code)s from %(date)s: %(n)s."
 msgstr ""
 
 #. module: pb_org_structure
@@ -1091,6 +1085,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
 msgid "Roles paused one by one"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Roles with somebody to hire: %s"
 msgstr ""
 
 #. module: pb_org_structure

@@ -30,6 +30,8 @@
         <t t-call="pb_import_kit.QuietSteps">
           <t t-set="qSteps" t-value="steps"/>
           <t t-set="qStepsLabel" t-value="'Jobs, levels, cost centres and hiring pause'"/>
+          <!-- bound here: inside a t-call a bare method name loses `this` -->
+          <t t-set="qStepPick" t-value="(key) => this.qStepPick(key)"/>
         </t>
 
         <!-- ============================== JOBS ============================== -->
@@ -53,7 +55,7 @@
               <button type="button" class="pbim-btn ghost" t-on-click="() => kit.home()">Start again</button>
             </div>
             <t t-else="">
-              <div class="pbos-table" role="table" aria-label="Jobs">
+              <div class="pbos-table pbos-jobs" t-att-class="{ 'pbos-nobands': !state.head.has_pay_bands }" role="table" aria-label="Jobs">
                 <div class="pbos-tr pbos-th" role="row">
                   <span role="columnheader">Job</span>
                   <span role="columnheader">Level</span>
@@ -68,8 +70,8 @@
                   <span role="cell" class="pbos-name"><b t-esc="jb.name"/><small t-if="multiCompany" t-esc="jb.company"/></span>
                   <span role="cell"><t t-if="jb.level" t-esc="jb.level"/><i t-else="" class="pbos-muted">No level yet</i></span>
                   <span role="cell" t-esc="jb.team"/>
-                  <span role="cell" class="num" t-esc="jb.people"/>
-                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !jb.to_hire }" t-esc="jb.to_hire"/>
+                  <span role="cell" class="num"><small class="pbos-m">People</small> <t t-esc="jb.people"/></span>
+                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !jb.to_hire }"><small class="pbos-m">To hire</small> <t t-esc="jb.to_hire"/></span>
                   <span t-if="state.head.has_pay_bands" role="cell"><t t-esc="jb.band"/><small t-if="jb.family" t-esc="jb.family"/></span>
                   <span role="cell">
                     <span t-if="jb.paused" class="pbos-pill is-amber" t-att-title="jb.paused_reason"><t t-out="ic('pause', 12)"/> Paused</span>
@@ -159,9 +161,9 @@
                 <div t-foreach="state.cc.rows" t-as="cc" t-key="cc.id" class="pbos-tr pbos-cc" t-att-class="{ 'is-off': !cc.active }" role="row">
                   <span role="cell" class="pbos-code" t-esc="cc.code"/>
                   <span role="cell"><t t-esc="cc.name"/><small t-if="multiCompany" t-esc="cc.company"/></span>
-                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.contracts }" t-esc="cc.contracts"/>
-                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.teams }" t-esc="cc.teams"/>
-                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.waiting }" t-esc="cc.waiting"/>
+                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.contracts }"><small class="pbos-m">Contracts</small> <t t-esc="cc.contracts"/></span>
+                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.teams }"><small class="pbos-m">Teams</small> <t t-esc="cc.teams"/></span>
+                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.waiting }"><small class="pbos-m">Waiting</small> <t t-esc="cc.waiting"/></span>
                   <span role="cell" class="pbos-rowacts">
                     <t t-if="state.cc.can_manage">
                       <button type="button" class="pbos-icon" title="Change" t-on-click="() => this.editCost(cc)"><t t-out="ic('pencil', 14)"/></button>

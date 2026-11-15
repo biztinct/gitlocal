@@ -263,7 +263,9 @@ class PbOrgStructure(models.AbstractModel):
         if 'description' in vals:
             text = (vals.get('description') or '').strip()
             write['description'] = Markup('').join(
-                Markup('<p>%s</p>') % part for part in re.split(r'\n\s*\n', text)
+                # one paragraph per line, so reading it back (one line per
+                # paragraph) and saving again gives the same text
+                Markup('<p>%s</p>') % part.strip() for part in text.split('\n')
                 if part.strip()) if text else False
         if write:
             job.write(write)
@@ -332,7 +334,7 @@ class PbOrgStructure(models.AbstractModel):
             raise UserError(_("That level is no longer there."))
         if level.job_count:
             raise UserError(_(
-                "%(n)s jobs are at \"%(level)s\". Move them to another level "
+                "Jobs at \"%(level)s\": %(n)s. Move them to another level "
                 "first.", n=level.job_count, level=level.name))
         level.active = False
         return self._level_rows()
@@ -408,7 +410,10 @@ class PbOrgStructure(models.AbstractModel):
             'state': move.state,
             'state_label': dict(move._fields['state']._description_selection(
                 self.env)).get(move.state, ''),
-            'before': move.old_text or move.contract_id.costcenter or '',
+            # what it was when the change was made; for a waiting one, what
+            # the contract says today
+            'before': (move.old_text or '') if move.state == 'done'
+            else (move.contract_id.costcenter or ''),
             'problem': move.problem or '',
             'note': move.note or '',
         }

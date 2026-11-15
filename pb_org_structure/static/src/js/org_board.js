@@ -118,20 +118,20 @@ export class PbOrgJobs extends Component {
     }
 
     // ------------------------------------------- whole sentences (PRD-3)
-    nContracts(n) { return _t("%s contracts", n); }
-    nJobs(n) { return _t("%s jobs", n); }
-    nOpenRoles(n) { return _t("%s roles with somebody to hire", n); }
+    nContracts(n) { return _t("Contracts: %s", n); }
+    nJobs(n) { return _t("Jobs: %s", n); }
+    nOpenRoles(n) { return _t("Roles with somebody to hire: %s", n); }
     companyOnly(name) { return _t("%s only", name); }
     fromDate(d) { return _t("from %s", d); }
     pausedWith(name) { return _t("Paused with %s", name); }
     get previewLine() {
         const p = this.state.move.preview || {};
         const cc = this.moveCostCentre;
-        return _t("%(n)s people move to %(code)s from %(date)s.",
+        return _t("People who move to %(code)s from %(date)s: %(n)s.",
                   { n: p.moving || 0, code: (cc && cc.code) || "", date: p.from || "" });
     }
     get alreadyLine() {
-        return _t("%s are already there.", (this.state.move.preview || {}).already || 0);
+        return _t("Already there: %s.", (this.state.move.preview || {}).already || 0);
     }
 
     // --------------------------------------------------------------- steps
@@ -154,8 +154,8 @@ export class PbOrgJobs extends Component {
               sub: k.levels ? _t("lowest first") : _t("None set yet"), flag: "", flagTone: "" },
             { key: "cost", n: k.cost_centres || 0, title: _t("Cost centres"), on: t === "cost",
               countLabel: "", count: k.cost_centres || 0,
-              sub: k.scheduled ? _t("%s changes waiting for their date", k.scheduled) : _t("on the list"),
-              flag: k.unlisted ? _t("%s contracts not on the list", k.unlisted) : "",
+              sub: k.scheduled ? _t("Changes waiting for their date: %s", k.scheduled) : _t("on the list"),
+              flag: k.unlisted ? _t("Contracts not on the list: %s", k.unlisted) : "",
               flagTone: "amber" },
             { key: "pause", n: paused, title: _t("Hiring pause"), on: t === "pause",
               countLabel: "", count: paused,
@@ -255,7 +255,7 @@ export class PbOrgJobs extends Component {
         const cc = await this.call("make_list_from_contracts");
         if (cc) {
             this.state.cc = cc;
-            this.say(_t("%s cost centres added to the list. No contract was changed.", cc.made || 0));
+            this.say(_t("Added to the list: %s. No contract was changed.", cc.made || 0));
             await this.loadHead();
         }
     }
@@ -321,8 +321,8 @@ export class PbOrgJobs extends Component {
         if (res) {
             this.state.cc = res;
             this.say(res.waiting
-                ? _t("%s changes are waiting for their date. They are made on the day.", res.waiting)
-                : _t("%s people moved.", res.moved || 0));
+                ? _t("Changes waiting for their date: %s. They are made on the day.", res.waiting)
+                : _t("People moved: %s.", res.moved || 0));
             Object.assign(this.state.move, { people: [], preview: null, note: "" });
             await this.loadHead();
         }

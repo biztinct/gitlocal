@@ -65,8 +65,8 @@ export class PlanHiringDialog extends Component {
     get madeLine() {
         return _t("%(made)s of %(all)s hires already have a request.", { made: this.made, all: this.hires.length });
     }
-    get makeLabel() { return _t("Make %s draft requests", this.picked.length); }
-    leavingLine(line) { return _t("%s leaving", -line.n); }
+    get makeLabel() { return _t("Make draft requests (%s)", this.picked.length); }
+    leavingLine(line) { return _t("Leaving: %s", -line.n); }
     toggle(line) { this.state.picks[line.key] = !this.state.picks[line.key]; }
     setTitle(line, ev) { this.state.titles[line.key] = ev.target.value; }
 
@@ -76,7 +76,7 @@ export class PlanHiringDialog extends Component {
             const picks = this.picked.map((l) => ({ key: l.key, title: this.state.titles[l.key] || "" }));
             const res = await this.orm.call(MODEL, "pb_make_hiring_requests", [this.props.planId, picks]);
             this.apply(res);
-            this.notif.add(_t("%s draft hiring requests made. Nothing has been sent in.", res.made || 0),
+            this.notif.add(_t("Draft hiring requests made: %s. Nothing has been sent in.", res.made || 0),
                            { type: "success" });
             if (this.props.onDone) {
                 this.props.onDone({ lines: this.hires.length, made: this.made });

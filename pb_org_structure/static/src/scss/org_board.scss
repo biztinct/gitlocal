@@ -33,6 +33,7 @@
         .num { text-align: right; font-variant-numeric: tabular-nums; }
         &.is-off { opacity: .55; }
     }
+    .pbos-nobands .pbos-tr { grid-template-columns: 2.2fr 1.2fr 1.6fr .7fr .7fr 1fr; }
     .pbos-th { cursor: default; background: var(--pbim-soft); color: var(--pbim-muted);
         font-size: 12px; font-weight: 600; text-transform: none; }
     .pbos-tr.pbos-cc { grid-template-columns: 1fr 2fr .8fr .6fr .7fr auto; cursor: default; }
@@ -146,8 +147,12 @@
     .pbos-empty-ic { display: inline-flex; width: 52px; height: 52px; border-radius: 50%;
         align-items: center; justify-content: center; background: var(--pbim-soft); color: var(--pbim-muted); }
 
+    .pbos-tr small.pbos-m { display: none; }
     @media (max-width: 760px) {
-        .pbos-tr, .pbos-tr.pbos-cc, .pbos-tr.pbos-mv { grid-template-columns: 1fr 1fr; }
+        .pbos-tr, .pbos-tr.pbos-cc, .pbos-tr.pbos-mv,
+        .pbos-nobands .pbos-tr { grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+        .pbos-tr .num { text-align: left; }
+        .pbos-tr small.pbos-m { display: inline; }
         .pbos-th { display: none; }
         .pbos-rung { grid-template-columns: 30px 1fr; }
         .pbos-rung-jobs, .pbos-rung-acts { grid-column: 2; }
