@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-B — PayAI for employees (E5): company policies only.
+       Reuses pb_me_portal's .pbme kit; `.pbpa-*` is this module's thin
+       layer (static/src/scss/ask_policy.scss). Every word a person sees is
+       here; the controller passes facts and keys only. One sentence per
+       line (one translation term each). -->
+
+  <template id="portal_breadcrumbs_pbpa" name="Company policies: breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="39">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'pbpa_ask'" class="breadcrumb-item active">Company policies</li>
+    </xpath>
+  </template>
+
+  <!-- The tile: drawn only when the person is offered PayAI at all. -->
+  <template id="portal_my_home_pbpa" name="Company policies: home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="49">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Company policies</t>
+        <t t-set="text">Ask PayAI, answered from the policies</t>
+        <t t-set="url" t-value="'/my/ask-policy'"/>
+        <t t-set="placeholder_count" t-value="'pbpa_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- Lucide "sparkles", drawn here so pb_me_portal's icon set is not
+       edited (C-3). -->
+  <template id="pbpa_sparkles" name="PayAI glyph">
+    <svg t-att-width="isz or 18" t-att-height="isz or 18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+  </template>
+
+  <template id="portal_ask_policy" name="Company policies (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbpa">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Company policies</t>
+          <t t-set="hero_sub">Ask PayAI about the company's policies. It answers only from the policy files HR has shared, and tells you which one it used.</t>
+        </t>
+
+        <div class="pbpa-grid">
+          <div class="pbpa-main">
+            <form class="pbpa-card pbpa-ask" method="post" action="/my/ask-policy" data-pbpa-form="">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <label class="pbpa-label" for="pbpa-q">Your question</label>
+              <div class="pbpa-box">
+                <textarea id="pbpa-q" name="question" class="pbpa-input" rows="3" required="required" t-att-maxlength="max_question" data-pbpa-q="" placeholder="For example: How many days of leave do I get when I get married?"><t t-out="result and result['question'] or ''"/></textarea>
+                <button type="submit" class="pbme-btn pbme-btn--primary pbpa-send" data-pbpa-submit="">
+                  <t t-call="pb_me_payai.pbpa_sparkles"><t t-set="isz" t-value="16"/></t><span>Ask</span>
+                </button>
+              </div>
+              <p class="pbpa-hint">For your own leave or pay, open your Leave or Payslips page: PayAI does not read your records.</p>
+              <span class="pbpa-thinking" aria-live="polite" data-pbpa-thinking="">Reading the policies…</span>
+            </form>
+
+            <section t-if="result and result['state'] == 'answered'" class="pbpa-card pbpa-answer" aria-live="polite">
+              <div class="pbpa-who"><span class="pbpa-av"><t t-call="pb_me_payai.pbpa_sparkles"><t t-set="isz" t-value="16"/></t></span><b>PayAI</b></div>
+              <div class="pbpa-text" t-out="result['answer']"/>
+              <div class="pbpa-sources">
+                <span class="pbpa-sources-h">From the policy</span>
+                <span t-foreach="result['sources']" t-as="s" class="pbpa-source">
+                  <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="14"/></t>
+                  <b t-out="s['title']"/><span t-if="s['section']" class="pbpa-source-sec" t-out="s['section']"/>
+                </span>
+              </div>
+              <p class="pbpa-check">Answers come from the policy text. If something matters, check with HR.</p>
+              <a class="pbme-btn pbme-btn--ghost" t-att-href="ask_hr_url">
+                <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>Ask HR instead
+              </a>
+            </section>
+
+            <section t-elif="result and result['state'] in ('not_found', 'failed', 'limit_person', 'limit_company')" class="pbpa-card pbpa-answer pbpa-answer--none" aria-live="polite">
+              <div class="pbpa-who"><span class="pbpa-av"><t t-call="pb_me_payai.pbpa_sparkles"><t t-set="isz" t-value="16"/></t></span><b>PayAI</b></div>
+              <p t-if="result['state'] == 'not_found'" class="pbpa-text">I could not find the answer in the company's policies. HR can answer it.</p>
+              <p t-elif="result['state'] == 'failed'" class="pbpa-text">I could not answer just now. Try again in a few minutes, or ask HR.</p>
+              <p t-elif="result['state'] == 'limit_person'" class="pbpa-text">You have asked as many questions as one person can today. Ask HR, or try again tomorrow.</p>
+              <p t-else="" class="pbpa-text">The company has used today's questions. Ask HR, or try again tomorrow.</p>
+              <a class="pbme-btn pbme-btn--primary" t-att-href="ask_hr_url">
+                <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>Ask HR, with my question
+              </a>
+            </section>
+          </div>
+
+          <aside class="pbpa-side">
+            <div class="pbpa-card">
+              <h2 class="pbpa-h2">The policies PayAI reads</h2>
+              <ul class="pbpa-pols">
+                <li t-foreach="policies" t-as="p"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="14"/></t><span t-out="p"/></li>
+              </ul>
+            </div>
+            <div class="pbpa-card pbpa-private">
+              <h2 class="pbpa-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="15"/></t>Your privacy</h2>
+              <p>Your question goes to the company's AI service without your name, and with names, phone numbers and amounts taken out. Only the matching policy text goes with it.</p>
+              <p>Your question is not kept. HR sees only how many questions were asked.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

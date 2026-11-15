@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pb_me_payai.PbPolicyDesk">
+        <div class="pbim pbpd">
+            <div t-if="state.loading" class="pbpd-quiet"><span>Loading…</span></div>
+            <div t-elif="state.failed" class="pbpd-empty">
+                <span class="pbpd-empty-ic" t-out="ic('alert', 22)"/>
+                <h3>The policies could not be read</h3>
+                <p>Reload the page. If it keeps happening, tell your administrator.</p>
+            </div>
+            <t t-else="">
+                <t t-set="d" t-value="state.d"/>
+                <header class="pbpd-head">
+                    <div>
+                        <h2 class="pbpd-h1">Company policies</h2>
+                        <p class="pbpd-sub">Upload the handbook and policy files. Employees ask PayAI about them on their own pages, and PayAI answers only from these words.</p>
+                    </div>
+                </header>
+
+                <section class="pbpd-card pbpd-status">
+                    <div class="pbpd-status-main">
+                        <span t-att-class="isLive ? 'pbpd-dot is-on' : 'pbpd-dot'"/>
+                        <div>
+                            <b>PayAI for employees</b>
+                            <span class="pbpd-live" t-out="liveWords"/>
+                        </div>
+                    </div>
+                    <div class="pbpd-facts">
+                        <div class="pbpd-fact">
+                            <span class="pbpd-fact-h">AI account</span>
+                            <span t-if="d.ready" class="pbpd-ok"><t t-out="ic('checkCircle', 14)"/><span>Set up</span></span>
+                            <span t-else="" class="pbpd-muted"><t t-out="ic('info', 14)"/><span>Not set up yet. An administrator adds it in the PayAI settings.</span></span>
+                        </div>
+                        <div class="pbpd-fact">
+                            <span class="pbpd-fact-h">Questions today</span>
+                            <span><b t-out="d.usage.today.all"/> <span>asked</span> · <b t-out="d.usage.today.answered"/> <span>answered from a policy</span> · <b t-out="d.usage.today.not_found"/> <span>not in the policies</span></span>
+                        </div>
+                        <div class="pbpd-fact">
+                            <span class="pbpd-fact-h">This month</span>
+                            <span><b t-out="d.usage.month.all"/> <span>asked</span> · <b t-out="d.usage.month.ai"/> <span>used the AI account</span></span>
+                        </div>
+                    </div>
+                    <div class="pbpd-controls">
+                        <button type="button" t-att-class="d.on ? 'pbim-btn ghost pbim-btn-sm' : 'pbim-btn primary pbim-btn-sm'"
+                                t-att-disabled="state.busy or !d.can_switch or (!d.on and !d.ready)" t-on-click="toggleOn">
+                            <t t-if="d.on"><t t-out="ic('powerOff', 14)"/><span>Switch off for employees</span></t>
+                            <t t-else=""><t t-out="ic('sparkles', 14)"/><span>Switch on for employees</span></t>
+                        </button>
+                        <div class="pbpd-limits">
+                            <label><span>Per person per day</span>
+                                <input type="number" min="0" max="1000" class="pbpd-num" t-att-value="state.limits.person"
+                                       t-att-disabled="!d.can_switch" t-on-change="(ev) => this.onLimit('person', ev)"/></label>
+                            <label><span>Per company per day</span>
+                                <input type="number" min="0" max="100000" class="pbpd-num" t-att-value="state.limits.company"
+                                       t-att-disabled="!d.can_switch" t-on-change="(ev) => this.onLimit('company', ev)"/></label>
+                            <button t-if="d.can_switch" type="button" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.busy" t-on-click="saveLimits">Save limits</button>
+                        </div>
+                    </div>
+                    <p t-if="!d.can_switch" class="pbpd-foot">Only an HR manager switches PayAI on for employees and sets the limits.</p>
+                </section>
+
+                <section class="pbpd-card">
+                    <h3 class="pbpd-h2">Policy files<span class="pbpd-n" t-out="d.documents.length"/></h3>
+                    <div class="pbpd-upload">
+                        <input type="text" class="pbpd-input" placeholder="Title, for example Leave policy" t-att-value="state.upload.name" t-on-input="onName"/>
+                        <select class="pbpd-input pbpd-select" t-on-change="onLang">
+                            <option t-foreach="d.languages" t-as="l" t-key="l.key" t-att-value="l.key" t-att-selected="state.upload.language === l.key" t-out="l.label"/>
+                        </select>
+                        <input type="file" t-ref="file" class="pbpd-file" accept=".pdf,.docx,.txt,.md" t-on-change="onPick"/>
+                        <button type="button" class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.busy" t-on-click="upload">
+                            <t t-out="ic('upload', 14)"/><span>Upload</span>
+                        </button>
+                    </div>
+                    <p class="pbpd-foot">PDF with text, Word (.docx) or plain text, up to 10 MB. A file stays private until you publish it.</p>
+
+                    <div t-if="!d.documents.length" class="pbpd-empty pbpd-empty--in">
+                        <span class="pbpd-empty-ic" t-out="ic('bookOpen', 22)"/>
+                        <h3>No policy files yet</h3>
+                        <p>Upload the staff handbook first: it answers most questions people ask.</p>
+                    </div>
+                    <ol t-else="" class="pbpd-list">
+                        <li t-foreach="d.documents" t-as="doc" t-key="doc.id" class="pbpd-row">
+                            <span class="pbpd-row-ic" t-out="ic('fileText', 16)"/>
+                            <div class="pbpd-row-body">
+                                <b t-out="doc.name"/>
+                                <span class="pbpd-meta">
+                                    <span t-out="doc.language_label"/>
+                                    <span t-if="doc.readable"><t t-out="doc.sections"/> sections</span>
+                                    <span t-else="" class="pbpd-warn">No words found</span>
+                                    <span t-if="doc.uploaded_on">Uploaded <t t-out="doc.uploaded_on"/></span>
+                                </span>
+                            </div>
+                            <div class="pbpd-row-act">
+                                <button type="button" t-att-class="doc.published ? 'pbpd-pub is-on' : 'pbpd-pub'" role="switch"
+                                        t-att-aria-checked="doc.published ? 'true' : 'false'" t-att-disabled="state.busy or !doc.readable"
+                                        t-on-click="() => this.publish(doc)">
+                                    <span class="pbpd-pub-knob"/><span t-if="doc.published">Published</span><span t-else="">Not published</span>
+                                </button>
+                                <button type="button" class="pbpd-icon-btn" title="Remove" t-att-disabled="state.busy" t-on-click="() => this.remove(doc)" t-out="ic('trash', 15)"/>
+                            </div>
+                        </li>
+                    </ol>
+                </section>
+            </t>
+        </div>
+    </t>
+
+</templates>

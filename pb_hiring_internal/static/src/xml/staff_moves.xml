@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pb_hiring_internal.PbStaffMoves">
+        <div class="pbim pbsm">
+            <div t-if="state.loading" class="pbsm-quiet"><span>Loading…</span></div>
+            <div t-elif="state.failed" class="pbsm-empty">
+                <span class="pbsm-empty-ic" t-out="ic('alert', 22)"/>
+                <h3>Staff moves could not be read</h3>
+                <p>Reload the page. If it keeps happening, tell your administrator.</p>
+            </div>
+            <t t-else="">
+                <t t-set="d" t-value="state.d"/>
+                <header class="pbsm-head">
+                    <div>
+                        <h2 class="pbsm-h1">Staff moves</h2>
+                        <p class="pbsm-sub">People who applied from inside the company, and which roles staff can see.</p>
+                    </div>
+                </header>
+
+                <p class="pbsm-strip">
+                    <span class="pbsm-stat"><b t-out="d.counts.open_to_staff"/> <span>roles open to staff</span></span>
+                    <span class="pbsm-stat"><b t-out="d.counts.applications"/> <span>staff applications in play</span></span>
+                    <span t-att-class="d.counts.job_change_to_do ? 'pbsm-stat is-act' : 'pbsm-stat'"><b t-out="d.counts.job_change_to_do"/> <span>job changes to do</span></span>
+                </p>
+
+                <nav class="pbsm-tabs" role="tablist">
+                    <button type="button" role="tab" t-att-aria-selected="state.tab === 'applications' ? 'true' : 'false'"
+                            t-att-class="state.tab === 'applications' ? 'pbsm-tab is-on' : 'pbsm-tab'" t-on-click="() => this.setTab('applications')">
+                        <span>Applications</span><span class="pbsm-n" t-out="d.applications.length"/>
+                    </button>
+                    <button type="button" role="tab" t-att-aria-selected="state.tab === 'roles' ? 'true' : 'false'"
+                            t-att-class="state.tab === 'roles' ? 'pbsm-tab is-on' : 'pbsm-tab'" t-on-click="() => this.setTab('roles')">
+                        <span>Who can apply</span><span class="pbsm-n" t-out="d.roles.length"/>
+                    </button>
+                </nav>
+
+                <!-- ============================== applications -->
+                <t t-if="state.tab === 'applications'">
+                    <div t-if="!d.applications.length" class="pbsm-empty">
+                        <span class="pbsm-empty-ic" t-out="ic('users', 22)"/>
+                        <h3>No staff applications yet</h3>
+                        <p>Open a role to staff under “Who can apply”. Staff then see it on their own pages and can apply in one press.</p>
+                    </div>
+                    <ol t-else="" class="pbsm-list">
+                        <li t-foreach="d.applications" t-as="a" t-key="a.id" t-att-class="a.live ? 'pbsm-row' : 'pbsm-row is-done'">
+                            <span class="pbsm-av" t-out="initials(a.name)"/>
+                            <div class="pbsm-who">
+                                <b t-out="a.name"/>
+                                <span class="pbsm-move">
+                                    <span t-out="a.now or a.now_department"/>
+                                    <span class="pbsm-arrow" t-out="ic('arrowRight', 13)"/>
+                                    <span class="pbsm-to" t-out="a.role"/>
+                                </span>
+                            </div>
+                            <div class="pbsm-facts">
+                                <span class="pbsm-chip" t-att-title="a.stage" t-out="stateWord(a.state)"/>
+                                <span t-if="a.manager_told_on" class="pbsm-told"><t t-out="ic('check', 13)"/><span>Manager told</span> <t t-out="a.manager_told_on"/></span>
+                                <span t-elif="a.manager" class="pbsm-told is-quiet"><t t-out="ic('eyeOff', 13)"/><span>Manager not told yet</span></span>
+                            </div>
+                            <div class="pbsm-act">
+                                <t t-if="a.job_change === 'to_do'">
+                                    <button t-if="d.job_change_available" type="button" class="pbim-btn primary pbim-btn-sm pbsm-btn"
+                                            t-att-disabled="state.busy" t-on-click="() => this.startJobChange(a)">
+                                        <t t-out="ic('briefcase', 14)"/><span>Start the job change</span>
+                                    </button>
+                                    <span t-else="" class="pbsm-todo"><t t-out="ic('info', 14)"/><span>Job change to do: change their job on their employee record.</span></span>
+                                </t>
+                                <t t-elif="a.job_change === 'opened'">
+                                    <button type="button" class="pbim-btn ghost pbim-btn-sm pbsm-btn" t-att-disabled="state.busy" t-on-click="() => this.startJobChange(a)">
+                                        <t t-out="ic('briefcase', 14)"/><span>Open the job change</span>
+                                    </button>
+                                </t>
+                            </div>
+                        </li>
+                    </ol>
+                </t>
+
+                <!-- ============================== roles -->
+                <t t-else="">
+                    <div t-if="!d.roles.length" class="pbsm-empty">
+                        <span class="pbsm-empty-ic" t-out="ic('briefcase', 22)"/>
+                        <h3>No open roles</h3>
+                        <p>When a role is open for candidates, you choose here whether staff can apply.</p>
+                    </div>
+                    <ol t-else="" class="pbsm-list">
+                        <li t-foreach="d.roles" t-as="r" t-key="r.id" class="pbsm-row pbsm-row--role">
+                            <div class="pbsm-who">
+                                <b t-out="r.title"/>
+                                <span class="pbsm-meta">
+                                    <span t-if="r.department" t-out="r.department"/>
+                                    <span t-if="r.published">On the careers page</span>
+                                    <span t-if="r.paused" class="pbsm-flag">Hiring paused: hidden from staff</span>
+                                    <span t-if="r.staff_applications"><t t-out="r.staff_applications"/> from staff</span>
+                                </span>
+                            </div>
+                            <div class="pbsm-act">
+                                <span t-if="lockedWord(r)" class="pbsm-lock"><t t-out="ic('lock', 13)"/><span t-out="lockedWord(r)"/></span>
+                                <div t-else="" class="pbsm-seg" role="radiogroup" t-att-aria-label="r.title">
+                                    <button t-foreach="d.postings" t-as="p" t-key="p.key" type="button" role="radio"
+                                            t-att-aria-checked="r.posting === p.key ? 'true' : 'false'"
+                                            t-att-class="r.posting === p.key ? 'pbsm-seg-b is-on' : 'pbsm-seg-b'"
+                                            t-att-disabled="state.busy" t-on-click="() => this.setPosting(r, p.key)" t-out="p.label"/>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                    <p class="pbsm-foot">A staff-only role never goes on the careers page. Choosing it for a role already there takes the role off.</p>
+                </t>
+            </t>
+        </div>
+    </t>
+
+</templates>
