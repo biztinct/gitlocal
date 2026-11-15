@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- The Kinds of leave screen. Opened from Settings > HR and the command
+       palette by this XMLID (never a bare tag: a bare tag returns through a
+       breadcrumb labelled "Unnamed", R180). No menu: the stock Time Off menus
+       are pruned for every tenant user (FACTS finding 1), so a menu would be
+       a door nobody sees. -->
+  <record id="action_pb_leave_kinds" model="ir.actions.client">
+    <field name="name">Kinds of leave</field>
+    <field name="tag">pb_leave_kinds</field>
+  </record>
+</odoo>
