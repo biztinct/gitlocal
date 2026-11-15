@@ -1,0 +1,21 @@
+// pb_contract_rules — the fixed-term rule on the contract decisions board.
+// pbim tokens, flat fills, rose = past the rule (owner ruling J3: red warning).
+
+.pbcr-chain {
+    display: flex; align-items: flex-start; gap: 10px; margin: 4px 0 12px; padding: 10px 12px;
+    border-radius: 10px; background: var(--pbim-bg, #F5F6FA); font-size: 13px;
+    > svg { flex: 0 0 auto; margin-top: 2px; color: var(--pbim-primary, #5A4BB0); }
+    > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    small { color: var(--pbim-muted, #64748B); font-size: 12px; }
+    &.is-amber { background: var(--pbim-amber-soft, #FEF3C7); > svg { color: #B45309; } }
+    &.is-rose { background: #FDE8EF; > svg { color: #BE123C; } small { color: #9F1239; } }
+}
+
+.pbcr-limit {
+    margin: 12px 0; padding: 12px 14px; border-radius: 12px;
+    background: #FDE8EF; border: 1px solid #F9A8C4; color: #881337;
+    .pbcr-limit-h { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #9F1239; }
+    ul { margin: 0 0 6px 18px; padding: 0; font-size: 13px; }
+    .pbcr-limit-sub { margin: 4px 0; font-size: 12.5px; color: #9F1239; }
+    .pbim-btn { margin-top: 6px; }
+}

@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_job_change_hr,pb.job.change hr manager,model_pb_job_change,hr.group_hr_manager,1,1,1,0
+access_pb_job_change_pay,pb.job.change pay manager,model_pb_job_change,pb_pay.group_pay_manager,1,1,1,0
+access_pb_job_change_payroll,pb.job.change payroll manager,model_pb_job_change,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
+access_pb_job_change_system,pb.job.change system,model_pb_job_change,base.group_system,1,1,1,1
+access_pb_job_change_seat,pb.job.change anyone asked to decide,model_pb_job_change,base.group_user,1,0,0,0
+access_pb_job_change_line_hr,pb.job.change.line hr manager,model_pb_job_change_line,hr.group_hr_manager,1,1,1,1
+access_pb_job_change_line_pay,pb.job.change.line pay manager,model_pb_job_change_line,pb_pay.group_pay_manager,1,1,1,1
+access_pb_job_change_line_payroll,pb.job.change.line payroll manager,model_pb_job_change_line,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_job_change_line_seat,pb.job.change.line anyone asked to decide,model_pb_job_change_line,base.group_user,1,0,0,0
