@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The "Time into pay" section of the weekly Close.
+     Comment rules of the Close lens apply: never a double hyphen inside a
+     comment, never a comment between a t-if and its t-else, one class
+     attribute plus at most one t-att-class or t-attf-class per element.
+     One translatable sentence per line (ledger PRD-3). -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_time_pay.TimePayClose">
+    <section class="pbtp" t-if="d">
+
+      <div class="pbtp-head">
+        <span class="pbtp-head__ic" t-out="ic('clock', 16)"/>
+        <div class="pbtp-head__t">
+          <h2>Time into pay</h2>
+          <p>What the clock punches say about this week. Nothing here is paid until a manager decides.</p>
+        </div>
+      </div>
+
+      <div class="pbtp-glance">
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="''"/>
+        </t>
+      </div>
+
+      <!-- what the last action did, kept until dismissed -->
+      <div class="pbmc-bres" t-if="state.result">
+        <div class="pbmc-bres__h">
+          <span t-out="ic('check', 13)"/>
+          <b t-esc="state.result.title"/>
+          <div class="pbmc-bres__sp"/>
+          <button class="pbmc-bres__x" t-on-click="() => this.dismissResult()">Dismiss</button>
+        </div>
+        <div class="pbmc-bres__s" t-if="state.result.skipped.length">
+          <div class="pbmc-bres__st" t-esc="skippedLabel"/>
+          <div t-foreach="state.result.skipped" t-as="s" t-key="s.key + s_index"
+               class="pbmc-bres__r">
+            <b t-esc="s.name"/>
+            <span t-esc="s.date"/>
+            <span t-esc="s.reason"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== paid from a pay data file ===================== -->
+      <div class="pbtp-file" t-if="fileSchemes.length">
+        <span class="pbtp-file__ic" t-out="ic('fileSpreadsheet', 16)"/>
+        <div class="pbtp-file__t">
+          <b>Paid from a pay data file</b>
+          <p>
+            <span t-esc="fileSchemes.join(', ')"/>.
+            <span>Confirmed minutes and approved overtime do not reach these payslips by themselves.</span>
+            <span>They are shown here for you to include in the file.</span>
+          </p>
+          <button class="pbmc-b pbmc-b--out" t-if="fileMonth.rows and fileMonth.rows.length"
+                  t-on-click="() => this.toggleFile()">
+            <span t-out="ic('table', 12)"/>
+            <span t-if="!state.showFile" t-esc="showFiguresLabel"/>
+            <span t-if="state.showFile">Hide the figures</span>
+          </button>
+          <table class="pbmc-t pbtp-file__tbl" t-if="state.showFile and fileMonth.rows">
+            <thead>
+              <tr>
+                <th>Person</th>
+                <th class="pbmc-t__num">Weekday</th>
+                <th class="pbmc-t__num">Rest day</th>
+                <th class="pbmc-t__num">Public holiday</th>
+                <th class="pbmc-t__num">Night</th>
+                <th class="pbmc-t__num">Bonus hours</th>
+                <th class="pbmc-t__num">Late minutes</th>
+                <th class="pbmc-t__num">Early minutes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="fileMonth.rows" t-as="fr" t-key="fr.employee_id">
+                <td t-esc="fr.name"/>
+                <td class="pbmc-t__num" t-esc="hours(fr.weekday)"/>
+                <td class="pbmc-t__num" t-esc="hours(fr.weekend)"/>
+                <td class="pbmc-t__num" t-esc="hours(fr.holiday)"/>
+                <td class="pbmc-t__num" t-esc="hours(fr.night)"/>
+                <td class="pbmc-t__num" t-esc="hours(fr.bonus)"/>
+                <td class="pbmc-t__num" t-esc="fr.late"/>
+                <td class="pbmc-t__num" t-esc="fr.early"/>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ====================== overtime suggestions ====================== -->
+      <div class="pbtp-card">
+        <div class="pbtp-card__h">
+          <span class="pbtp-card__ic" t-out="ic('zap', 14)"/>
+          <b>Overtime suggested from clock punches</b>
+          <span class="pbtp-count" t-att-class="d.suggestions_total ? 'is-on' : ''" t-esc="d.suggestions_total"/>
+          <div class="pbtp-sp"/>
+          <span class="pbtp-sub" t-if="d.suggestions_total" t-esc="hoursLabel(d.suggestions_hours)"/>
+        </div>
+        <p class="pbtp-card__p">Only suggestions. Accepting one sends an ordinary overtime request on the usual approval route.</p>
+
+        <div class="pbtp-empty" t-if="!sugg.length">
+          <span t-out="ic('checkCircle', 18)"/>
+          <span>No overtime suggested this week.</span>
+        </div>
+
+        <t t-if="sugg.length">
+          <div class="pbtp-bar" t-if="canDecide">
+            <label class="pbtp-all">
+              <input type="checkbox" t-att-checked="allSPicked" t-on-click="() => this.pickAllS()"/>
+              <span>All</span>
+            </label>
+            <div class="pbtp-seg" role="group" aria-label="When approved">
+              <button class="pbtp-seg__b" t-att-class="state.choice === 'pay' ? 'is-on' : ''"
+                      t-on-click="() => this.setChoice('pay')">Pay it</button>
+              <button class="pbtp-seg__b" t-att-class="state.choice === 'time_off' ? 'is-on' : ''"
+                      t-on-click="() => this.setChoice('time_off')">Give time off</button>
+            </div>
+            <div class="pbtp-sp"/>
+            <button class="pbmc-b pbmc-b--pri" t-att-disabled="!pickedS.length or state.busy"
+                    t-on-click="() => this.acceptPicked()">
+              <span t-out="ic('check', 12)"/>
+              <span>Accept <t t-esc="pickedS.length"/></span>
+            </button>
+          </div>
+          <p class="pbtp-hint" t-if="canDecide and state.choice === 'time_off'">Accepted hours become time off in lieu when the overtime is approved, hour for hour, and are not also paid.</p>
+
+          <table class="pbmc-t pbtp-t">
+            <thead>
+              <tr>
+                <th t-if="canDecide"/>
+                <th>Person · day</th>
+                <th>Kind</th>
+                <th class="pbmc-t__num">Hours</th>
+                <th>Why</th>
+                <th/>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="sugg" t-as="row" t-key="row.key">
+                <td t-if="canDecide" class="pbtp-ck">
+                  <input type="checkbox" t-att-checked="state.pickS[row.key]"
+                         t-att-disabled="!suggActionable(row)"
+                         t-on-click="() => this.togglePickS(row)"/>
+                </td>
+                <td>
+                  <span class="pbmc-emp">
+                    <img class="pbmc-emp__a" t-att-src="row.avatar_url" alt="" loading="lazy"/>
+                    <span class="pbmc-emp__t">
+                      <span class="pbmc-emp__n" t-esc="row.name"/>
+                      <span class="pbmc-emp__d" t-esc="row.day_label"/>
+                    </span>
+                  </span>
+                </td>
+                <td><span class="pbtp-chip" t-esc="row.kind_label"/></td>
+                <td class="pbmc-t__num"><b t-esc="hoursLabel(row.hours)"/></td>
+                <td class="pbtp-why">
+                  <span t-esc="row.basis_label"/>
+                  <span class="pbtp-why__n" t-esc="whyLine(row)"/>
+                </td>
+                <td class="pbmc-acts">
+                  <span class="pbtp-tag" t-if="row.locked"><span t-out="ic('lock', 10)"/><span>Day locked</span></span>
+                  <span class="pbtp-tag" t-if="!row.locked and row.own">Yours</span>
+                  <t t-if="suggActionable(row)">
+                    <button class="pbmc-b pbmc-b--ghost" t-att-disabled="state.busy"
+                            t-on-click="() => this.openDismiss(row)">Not overtime</button>
+                    <button class="pbmc-b pbmc-b--out" t-att-disabled="state.busy"
+                            t-on-click="() => this.acceptOne(row)">Accept</button>
+                  </t>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="pbtp-more" t-if="d.suggestions_total > sugg.length" t-esc="moreLabel(sugg.length, d.suggestions_total)"/>
+        </t>
+      </div>
+
+      <!-- ===================== late arrivals, early leaving ===================== -->
+      <div class="pbtp-card">
+        <div class="pbtp-card__h">
+          <span class="pbtp-card__ic" t-out="ic('hourglass', 14)"/>
+          <b>Late arrivals and early leaving</b>
+          <span class="pbtp-count" t-att-class="ls.open ? 'is-on' : ''" t-esc="ls.open"/>
+        </div>
+        <p class="pbtp-card__p">
+          <span t-esc="graceLabel"/>
+          <span>Only confirmed minutes reach pay.</span>
+        </p>
+        <p class="pbtp-info" t-if="!d.late_in_pay">
+          <span t-out="ic('info', 12)"/>
+          <span>Shown for information: no pay scheme has a late minutes pay item yet, so these minutes do not hold the week.</span>
+        </p>
+
+        <div class="pbtp-empty" t-if="!late.length">
+          <span t-out="ic('checkCircle', 18)"/>
+          <span>Nobody was late or left early this week.</span>
+        </div>
+
+        <t t-if="late.length">
+          <div class="pbtp-bar" t-if="canDecide">
+            <label class="pbtp-all">
+              <input type="checkbox" t-att-checked="allLPicked" t-on-click="() => this.pickAllL()"/>
+              <span>All</span>
+            </label>
+            <div class="pbtp-sp"/>
+            <button class="pbmc-b pbmc-b--ghost" t-att-disabled="!pickedL.length or state.busy"
+                    t-on-click="() => this.excusePicked()">
+              <span>Excuse <t t-esc="pickedL.length"/></span>
+            </button>
+            <button class="pbmc-b pbmc-b--pri" t-att-disabled="!pickedL.length or state.busy"
+                    t-on-click="() => this.confirmPicked()">
+              <span t-out="ic('check', 12)"/>
+              <span>Confirm <t t-esc="pickedL.length"/></span>
+            </button>
+          </div>
+
+          <table class="pbmc-t pbtp-t">
+            <thead>
+              <tr>
+                <th t-if="canDecide"/>
+                <th>Person · day</th>
+                <th>Kind</th>
+                <th class="pbmc-t__num">Minutes</th>
+                <th>Expected · punched</th>
+                <th>Decision</th>
+                <th/>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="late" t-as="row" t-key="row.key">
+                <td t-if="canDecide" class="pbtp-ck">
+                  <input type="checkbox" t-att-checked="state.pickL[row.key]"
+                         t-att-disabled="!lateActionable(row)"
+                         t-on-click="() => this.togglePickL(row)"/>
+                </td>
+                <td>
+                  <span class="pbmc-emp">
+                    <img class="pbmc-emp__a" t-att-src="row.avatar_url" alt="" loading="lazy"/>
+                    <span class="pbmc-emp__t">
+                      <span class="pbmc-emp__n" t-esc="row.name"/>
+                      <span class="pbmc-emp__d" t-esc="row.day_label"/>
+                    </span>
+                  </span>
+                </td>
+                <td><span class="pbtp-chip" t-esc="row.kind_label"/></td>
+                <td class="pbmc-t__num">
+                  <b t-esc="row.minutes"/>
+                  <span class="pbtp-was" t-if="row.changed" t-esc="wasLabel(row)"/>
+                </td>
+                <td class="pbtp-why">
+                  <t t-if="row.expected"><t t-esc="row.expected"/> · <t t-esc="row.actual"/></t>
+                  <span class="pbtp-why__n" t-esc="row.basis_label"/>
+                </td>
+                <td>
+                  <span class="pbtp-state" t-attf-class="pbtp-state--{{ lateStateTone(row) }}" t-esc="lateStateLabel(row)"/>
+                  <span class="pbtp-note" t-if="row.note" t-esc="row.note"/>
+                </td>
+                <td class="pbmc-acts">
+                  <span class="pbtp-tag" t-if="row.locked"><span t-out="ic('lock', 10)"/><span>Day locked</span></span>
+                  <span class="pbtp-tag" t-if="!row.locked and row.own">Yours</span>
+                  <t t-if="lateActionable(row)">
+                    <button class="pbmc-b pbmc-b--ghost" t-if="row.state !== 'excused' or row.changed"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.excuseOne(row)">Excuse</button>
+                    <button class="pbmc-b pbmc-b--out" t-if="row.state !== 'confirmed' or row.changed"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.confirmOne(row)">Confirm</button>
+                  </t>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="pbtp-more" t-if="d.late_total > late.length" t-esc="moreLabel(late.length, d.late_total)"/>
+        </t>
+      </div>
+
+      <!-- ========================= note dialog ========================= -->
+      <div class="pbmc-scrim" t-if="state.note" t-on-click="() => this.cancelNote()">
+        <div class="pbmc-modal" t-on-click.stop="() => {}">
+          <h5 t-esc="state.note.title"/>
+          <p class="pbmc-modal__p" t-if="state.note.mode === 'excuse'">Excused minutes never reach pay. The decision and your note are kept with the day.</p>
+          <p class="pbmc-modal__p" t-if="state.note.mode === 'dismiss'">The suggestion stops showing. Nothing is paid and no overtime request is made.</p>
+          <textarea class="pbmc-ta" rows="3"
+                    placeholder="Note (optional)"
+                    t-att-value="state.noteText"
+                    t-on-input="(ev) => this.onNote(ev)"/>
+          <div class="pbmc-modal__a">
+            <button class="pbmc-b pbmc-b--ghost" t-on-click="() => this.cancelNote()">Cancel</button>
+            <button class="pbmc-b pbmc-b--pri" t-att-disabled="state.busy"
+                    t-on-click="() => this.confirmNote()">
+              <span t-if="state.note.mode === 'excuse'">Excuse</span>
+              <span t-if="state.note.mode === 'dismiss'">Not overtime</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </t>
+
+</templates>

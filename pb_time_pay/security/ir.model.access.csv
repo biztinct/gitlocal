@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_time_late_officer,pb.time.late officer,model_pb_time_late,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_time_late_payroll,pb.time.late payroll,model_pb_time_late,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_time_late_system,pb.time.late system,model_pb_time_late,base.group_system,1,1,1,1
+access_pb_time_ot_dismiss_officer,pb.time.ot.dismiss officer,model_pb_time_ot_dismiss,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_time_ot_dismiss_system,pb.time.ot.dismiss system,model_pb_time_ot_dismiss,base.group_system,1,1,1,1

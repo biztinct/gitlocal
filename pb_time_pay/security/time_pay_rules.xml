@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Multi-company: a decision about somebody's minutes is visible only in
+         the companies the reader is working in. Writes go through the Close
+         facade (sudo, after its own gate), never through these. -->
+    <record id="rule_pb_time_late_company" model="ir.rule">
+        <field name="name">Late minutes: own companies</field>
+        <field name="model_id" ref="model_pb_time_late"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_pb_time_ot_dismiss_company" model="ir.rule">
+        <field name="name">Not-overtime marks: own companies</field>
+        <field name="model_id" ref="model_pb_time_ot_dismiss"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Pay it / Give time off on the overtime form. The choice is shown, and
+         changed only by the two buttons (the model refuses a direct write),
+         while the overtime is still being decided. -->
+    <record id="view_overtime_request_form_time_pay" model="ir.ui.view">
+        <field name="name">hr.overtime.request.form.time.pay</field>
+        <field name="model">hr.overtime.request</field>
+        <field name="inherit_id" ref="pb_hr_workforce.view_overtime_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_refuse']" position="after">
+                <button name="action_pb_give_time_off" string="Give time off instead"
+                        type="object" class="btn-secondary"
+                        invisible="state not in ('draft', 'submitted') or pb_comp_choice == 'time_off'"
+                        groups="hr_attendance.group_hr_attendance_officer"/>
+                <button name="action_pb_pay_it" string="Pay it instead"
+                        type="object" class="btn-secondary"
+                        invisible="state not in ('draft', 'submitted') or pb_comp_choice != 'time_off'"
+                        groups="hr_attendance.group_hr_attendance_officer"/>
+            </xpath>
+            <xpath expr="//field[@name='rate_display']" position="after">
+                <field name="pb_comp_choice" invisible="1"/>
+                <field name="pb_comp_label" string="Paid or time off"/>
+                <field name="pb_toil_allocation_id"
+                       invisible="not pb_toil_allocation_id"/>
+                <field name="pb_from_punches"
+                       invisible="not pb_from_punches"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
