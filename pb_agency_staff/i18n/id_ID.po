@@ -1,0 +1,563 @@
+# Translation of Payobook module pb_agency_staff (Indonesian).
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "%s has been added. They are not an employee and are never in a pay run."
+msgstr "%s sudah ditambahkan. Bukan karyawan dan tidak pernah masuk penggajian."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "%s has been removed."
+msgstr "%s sudah dihapus."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "%s has been updated."
+msgstr "%s sudah diperbarui."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "A file can be at most 10 MB."
+msgstr "Satu berkas paling besar 10 MB."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Add a file (PDF, PNG or JPG)"
+msgstr "Tambah berkas (PDF, PNG atau JPG)"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Add someone"
+msgstr "Tambah orang"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Add someone from an agency"
+msgstr "Tambah orang dari agen"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Added last"
+msgstr "Terakhir ditambahkan"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__vendor_id
+msgid "Agency"
+msgstr "Agen"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff_patches.js:0 code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.actions.client,name:pb_agency_staff.action_pb_agency_staff model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_list
+msgid "Agency staff"
+msgstr "Tenaga alih daya"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Agency staff are looked after by HR"
+msgstr "Tenaga alih daya diurus oleh HR"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Agency staff are looked after by HR. Ask your administrator for an HR role to see this list."
+msgstr "Tenaga alih daya diurus oleh HR. Minta administrator memberi peran HR untuk melihat daftar ini."
+
+#. module: pb_agency_staff
+#: model:ir.model,name:pb_agency_staff.model_pb_agency_worker model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Agency staff member"
+msgstr "Tenaga alih daya"
+
+#. module: pb_agency_staff
+#: model:ir.model,name:pb_agency_staff.model_pb_agency_board
+msgid "Agency staff — screen data"
+msgstr "Tenaga alih daya — data layar"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Dates"
+msgstr "Tanggal"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Delete"
+msgstr "Hapus"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Document"
+msgstr "Dokumen"
+
+#. module: pb_agency_staff
+#: model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__attachment_ids
+msgid "Documents"
+msgstr "Dokumen"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__email
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 model:ir.model.fields.selection,name:pb_agency_staff.selection__pb_agency_worker__status__ended
+msgid "Ended"
+msgstr "Berakhir"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Ending in 30 days"
+msgstr "Berakhir dalam 30 hari"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Ending soon"
+msgstr "Segera berakhir"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Ending soonest"
+msgstr "Berakhir paling cepat"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__date_end
+msgid "Ends"
+msgstr "Berakhir"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Everyone"
+msgstr "Semua"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "Find by name, role or agency…"
+msgstr "Cari menurut nama, peran atau agen…"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Keep a light record for each of them: the agency, the site and team, their manager here, their dates and their papers. They are shown beside your headcount, not in it."
+msgstr "Simpan catatan ringkas untuk masing-masing: agen, lokasi dan tim, atasan di sini, tanggal dan dokumennya. Mereka ditampilkan di samping jumlah karyawan, bukan di dalamnya."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Last day is today"
+msgstr "Hari terakhir hari ini"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__manager_id
+msgid "Manager here"
+msgstr "Atasan di sini"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Name, A to Z"
+msgstr "Nama, A sampai Z"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "No papers yet: an agency agreement, an ID copy, a site pass."
+msgstr "Belum ada dokumen: perjanjian agen, salinan identitas, kartu akses lokasi."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Nobody matches these filters"
+msgstr "Tidak ada yang cocok dengan filter"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Not an employee · never in a pay run"
+msgstr "Bukan karyawan · tidak pernah masuk penggajian"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Not set"
+msgstr "Belum diisi"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__notes model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Notes"
+msgstr "Catatan"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 model:ir.model.fields.selection,name:pb_agency_staff.selection__pb_agency_worker__status__on_site
+msgid "On site"
+msgstr "Di lokasi"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Only PDF, PNG or JPG files can be added."
+msgstr "Hanya berkas PDF, PNG atau JPG yang bisa ditambahkan."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Only an HR manager can delete somebody from this list. Set an end date instead."
+msgstr "Hanya manajer HR yang bisa menghapus orang dari daftar ini. Isi tanggal berakhir saja."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Papers"
+msgstr "Dokumen"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff_patches.js:0
+msgid "People"
+msgstr "Karyawan"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff_patches.js:0
+msgid "People an agency supplies — not on your payroll"
+msgstr "Orang yang disediakan agen — tidak dalam penggajian Anda"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "People an agency supplies. They are not employees: never in a pay run, never on a payslip, never in your headcount."
+msgstr "Orang yang disediakan agen. Mereka bukan karyawan: tidak pernah masuk penggajian, slip gaji, atau jumlah karyawan Anda."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__phone
+msgid "Phone"
+msgstr "Telepon"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Pick a company you work in."
+msgstr "Pilih perusahaan tempat Anda bekerja."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Read the list again"
+msgstr "Baca ulang daftar"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Reading the list…"
+msgstr "Membaca daftar…"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Recorded: %(who)s's last day is %(day)s."
+msgstr "Tercatat: hari terakhir %(who)s adalah %(day)s."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__job_title
+msgid "Role"
+msgstr "Peran"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Save first, then add their papers."
+msgstr "Simpan dulu, lalu tambahkan dokumennya."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Show everyone"
+msgstr "Tampilkan semua"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Showing"
+msgstr "Menampilkan"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__work_location_id
+msgid "Site"
+msgstr "Lokasi"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 model:ir.model.fields.selection,name:pb_agency_staff.selection__pb_agency_worker__status__upcoming
+msgid "Starting later"
+msgstr "Mulai nanti"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__date_start
+msgid "Starts"
+msgstr "Mulai"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__status
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__department_id
+msgid "Team"
+msgstr "Tim"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Team and site"
+msgstr "Tim dan lokasi"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "That could not be done."
+msgstr "Itu tidak bisa dilakukan."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_worker.py:0
+msgid "The %(what)s belongs to another company."
+msgstr "%(what)s milik perusahaan lain."
+
+#. module: pb_agency_staff
+#: model:ir.model.fields,help:pb_agency_staff.field_pb_agency_worker__vendor_id
+msgid "The agency that supplies them, from Vendors."
+msgstr "Agen yang menyediakan mereka, dari Vendor."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 code:addons/pb_agency_staff/models/agency_worker.py:0
+msgid "The end date cannot be before the start date."
+msgstr "Tanggal berakhir tidak boleh sebelum tanggal mulai."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "The file could not be added."
+msgstr "Berkas tidak bisa ditambahkan."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "The file could not be removed."
+msgstr "Berkas tidak bisa dihapus."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "The list could not be read just now."
+msgstr "Daftar belum bisa dibaca sekarang."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "The list could not load"
+msgstr "Daftar tidak bisa dimuat"
+
+#. module: pb_agency_staff
+#: model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Their name"
+msgstr "Namanya"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Their people here"
+msgstr "Orang mereka di sini"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "This could not be saved."
+msgstr "Ini tidak bisa disimpan."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "This file could not be read."
+msgstr "Berkas ini tidak bisa dibaca."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "This person could not be opened."
+msgstr "Orang ini tidak bisa dibuka."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "This person is no longer on the list."
+msgstr "Orang ini sudah tidak ada di daftar."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Type a name…"
+msgstr "Ketik nama…"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Type their name."
+msgstr "Ketik namanya."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Where they are"
+msgstr "Posisi mereka"
+
+#. module: pb_agency_staff
+#: model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Where they work"
+msgstr "Tempat mereka bekerja"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Who is working here through an agency?"
+msgstr "Siapa yang bekerja di sini lewat agen?"
+
+#. module: pb_agency_staff
+#: model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Who supplies them"
+msgstr "Siapa yang menyediakan"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0 code:addons/pb_agency_staff/static/src/js/agency_staff_patches.js:0
+msgid "agency staff"
+msgstr "tenaga alih daya"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "ended"
+msgstr "berakhir"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "ending in 30 days"
+msgstr "berakhir dalam 30 hari"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_worker.py:0
+msgid "manager"
+msgstr "atasan"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "more"
+msgstr "lagi"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "on site"
+msgstr "di lokasi"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "starting later"
+msgstr "mulai nanti"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_worker.py:0
+msgid "team"
+msgstr "tim"

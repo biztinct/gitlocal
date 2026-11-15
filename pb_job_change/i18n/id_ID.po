@@ -1,0 +1,1774 @@
+# Translation of Payobook module pb_job_change (Indonesian).
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(co)s pays in %(cur)s. Type the new monthly pay in %(cur)s too."
+msgstr "%(co)s membayar dalam %(cur)s. Ketik gaji bulanan baru dalam %(cur)s juga."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(m)s reports to %(p)s, so %(p)s cannot report to %(m)s."
+msgstr "%(m)s melapor ke %(p)s, jadi %(p)s tidak bisa melapor ke %(m)s."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(what)s belongs to %(co)s, not %(target)s."
+msgstr "%(what)s milik %(co)s, bukan %(target)s."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(who)s already has a job change waiting (%(ref)s). Finish or cancel that one first."
+msgstr "%(who)s sudah punya perubahan jabatan yang menunggu (%(ref)s). Selesaikan atau batalkan dulu."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%s has no running contract, so their pay cannot be changed here."
+msgstr "%s tidak punya kontrak yang berjalan, jadi gajinya tidak bisa diubah di sini."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "(written automatically on its start date)"
+msgstr "(ditulis otomatis pada tanggal mulainya)"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ", a date in the past. It is written when it is signed off and recorded as starting that day."
+msgstr ", tanggal yang sudah lewat. Perubahan ditulis saat disetujui dan dicatat mulai pada hari itu."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ", early that morning. Nothing has changed yet."
+msgstr ", pagi-pagi hari itu. Belum ada yang berubah."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ". Check their next payslip with the pay team."
+msgstr ". Periksa slip gaji berikutnya bersama tim penggajian."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ". Once it is signed off it waits, and is written that morning."
+msgstr ". Setelah disetujui, perubahan menunggu dan ditulis pagi hari itu."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ". The person, their contract and their pay now read the new details."
+msgstr ". Karyawan, kontrak dan gajinya kini memakai rincian baru."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "A change can start at most a year ahead."
+msgstr "Perubahan paling lambat bisa dimulai setahun ke depan."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "A change can start at most a year back."
+msgstr "Perubahan paling jauh bisa dimulai setahun ke belakang."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "A job change was not made: %s"
+msgstr "Perubahan jabatan tidak dilakukan: %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "A new job or job title"
+msgstr "Jabatan atau sebutan jabatan baru"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "A pay line cannot be below zero."
+msgstr "Komponen gaji tidak boleh di bawah nol."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "A promotion, a move and a pay rise: one request"
+msgstr "Promosi, mutasi dan kenaikan gaji: satu permintaan"
+
+#. module: pb_job_change
+#: model:biz.approval.process,description:pb_job_change.process_jobchange
+msgid "A promotion, a transfer or a pay change for one person, signed off once for the whole change: their manager, then HR, then Finance when the rise is above the guidance."
+msgstr "Promosi, mutasi atau perubahan gaji untuk satu orang, disetujui sekali untuk seluruh perubahan: atasannya, lalu HR, lalu Keuangan bila kenaikan di atas pedoman."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "A reason was written down"
+msgstr "Alasan sudah ditulis"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "A start date in a month already paid is allowed, and the pay team can re-work that month."
+msgstr "Tanggal mulai di bulan yang sudah dibayar diperbolehkan, dan tim penggajian dapat menghitung ulang bulan itu."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Above the top of the band"
+msgstr "Di atas batas atas rentang"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Add"
+msgstr "Tambah"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Add a pay line from their scheme…"
+msgstr "Tambah komponen gaji dari skemanya…"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "After"
+msgstr "Sesudah"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "All job changes"
+msgstr "Semua perubahan jabatan"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__approval_request_id
+msgid "Approval"
+msgstr "Persetujuan"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__approval_state
+msgid "Approval status"
+msgstr "Status persetujuan"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__scheduled
+msgid "Approved, starts later"
+msgstr "Disetujui, mulai nanti"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Approved. It starts on %s and is written that morning."
+msgstr "Disetujui. Mulai %s dan ditulis pagi hari itu."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__seat_user_ids
+msgid "Asked to decide"
+msgstr "Diminta memutuskan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Back"
+msgstr "Kembali"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Before"
+msgstr "Sebelum"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__draft
+msgid "Being prepared"
+msgstr "Sedang disiapkan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Bigger than the guidance allows"
+msgstr "Lebih besar dari yang diizinkan pedoman"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__undo_until
+msgid "Can be taken back until"
+msgstr "Bisa dibatalkan sampai"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Cancel it"
+msgstr "Batalkan"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__cancelled
+msgid "Cancelled"
+msgstr "Dibatalkan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Cancelled from the job change."
+msgstr "Dibatalkan dari perubahan jabatan."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Cancelled. Nothing was changed."
+msgstr "Dibatalkan. Tidak ada yang berubah."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Change it"
+msgstr "Ubah"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/js/job_change_patches.js:0 code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0 model:ir.actions.client,name:pb_job_change.action_pb_job_change_new
+msgid "Change job"
+msgstr "Ubah jabatan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Change job %(ref)s, from %(day)s"
+msgstr "Ubah jabatan %(ref)s, mulai %(day)s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Change job %(ref)s: %(who)s's change starts on %(day)s, in a month already paid."
+msgstr "Ubah jabatan %(ref)s: perubahan %(who)s mulai %(day)s, di bulan yang sudah dibayar."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Change job ·"
+msgstr "Ubah jabatan ·"
+
+#. module: pb_job_change
+#: model:ir.model,name:pb_job_change.model_pb_job_change_board
+msgid "Change job — screen data"
+msgstr "Ubah jabatan — data layar"
+
+#. module: pb_job_change
+#: model:ir.actions.server,name:pb_job_change.ir_cron_job_change_start_due_ir_actions_server
+msgid "Change job: start approved changes on their day"
+msgstr "Ubah jabatan: jalankan perubahan yang disetujui pada harinya"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_palette.js:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Change someone's job"
+msgstr "Ubah jabatan seseorang"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Changes"
+msgstr "Berubah"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Changes (shown to the pay team)"
+msgstr "Berubah (ditampilkan untuk tim penggajian)"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__change_pay
+msgid "Changes pay"
+msgstr "Mengubah gaji"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Changing somebody's job is for HR and the pay team. Ask your administrator for the HR manager role to see this screen."
+msgstr "Mengubah jabatan seseorang adalah tugas HR dan tim penggajian. Minta administrator memberi peran manajer HR untuk melihat layar ini."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Changing somebody's job is for HR and the pay team. Ask your administrator for the HR manager role."
+msgstr "Mengubah jabatan seseorang adalah tugas HR dan tim penggajian. Minta administrator memberi peran manajer HR."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Choose the day the change starts."
+msgstr "Pilih tanggal perubahan dimulai."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Closed"
+msgstr "Ditutup"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Could not be started on %s; it will be tried again."
+msgstr "Tidak bisa dimulai pada %s; akan dicoba lagi."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Could not be started on three different days, so nothing was written. Prepare it again."
+msgstr "Tidak bisa dimulai pada tiga hari berbeda, jadi tidak ada yang ditulis. Siapkan lagi."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__applied
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__applied_by
+msgid "Done by"
+msgstr "Dilakukan oleh"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__applied_at
+msgid "Done on"
+msgstr "Selesai pada"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Done. %(who)s's change from %(day)s is in place."
+msgstr "Selesai. Perubahan %(who)s mulai %(day)s sudah berlaku."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Done. %s's new job details are in place."
+msgstr "Selesai. Rincian jabatan baru %s sudah berlaku."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Every job change"
+msgstr "Semua perubahan jabatan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Finance approver"
+msgstr "Penyetuju keuangan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Finance signs too, because the rise is above the guidance."
+msgstr "Keuangan juga menyetujui, karena kenaikan di atas pedoman."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Find a job change by person or reference…"
+msgstr "Cari perubahan jabatan menurut orang atau referensi…"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_inherits.py:0
+msgid "From %s"
+msgstr "Mulai %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0
+msgid "HR lead"
+msgstr "Kepala HR"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "How big the rise is"
+msgstr "Seberapa besar kenaikannya"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "It could not be sent: %s"
+msgstr "Tidak bisa dikirim: %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Its day has not come yet."
+msgstr "Harinya belum tiba."
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Job"
+msgstr "Jabatan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Job and title"
+msgstr "Jabatan dan sebutan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model,name:pb_job_change.model_pb_job_change model:ir.model.fields,field_description:pb_job_change.field_pb_pay_apply__job_change_id model_terms:ir.ui.view,arch_db:pb_job_change.view_pb_job_change_form
+msgid "Job change"
+msgstr "Perubahan jabatan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Job change from %s"
+msgstr "Perubahan jabatan mulai %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_letter_template__letter_type__job_change
+msgid "Job change letter"
+msgstr "Surat perubahan jabatan"
+
+#. module: pb_job_change
+#: model:ir.model,name:pb_job_change.model_pb_job_change_line
+msgid "Job change pay line"
+msgstr "Komponen gaji perubahan jabatan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_inherits.py:0
+msgid "Job change taken back — %s"
+msgstr "Perubahan jabatan dibatalkan — %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Job change waiting for approval"
+msgstr "Perubahan jabatan menunggu persetujuan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_inherits.py:0
+msgid "Job changed — %s"
+msgstr "Jabatan diubah — %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_palette.js:0 code:addons/pb_job_change/static/src/js/job_change_patches.js:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:biz.approval.process,name:pb_job_change.process_jobchange model:ir.actions.client,name:pb_job_change.action_pb_job_change model_terms:ir.ui.view,arch_db:pb_job_change.view_pb_job_change_list
+msgid "Job changes"
+msgstr "Perubahan jabatan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Job title"
+msgstr "Sebutan jabatan"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__letter_id
+msgid "Letter"
+msgstr "Surat"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Loading"
+msgstr "Memuat"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Looking…"
+msgstr "Mencari…"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Manager"
+msgstr "Atasan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Monthly pay"
+msgstr "Gaji bulanan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Monthly pay and pay lines"
+msgstr "Gaji bulanan dan komponen gaji"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Moves them to another pay scheme"
+msgstr "Memindahkan ke skema gaji lain"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Moves them to another team or manager"
+msgstr "Memindahkan ke tim atau atasan lain"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__new_amount model_terms:ir.ui.view,arch_db:pb_job_change.view_pb_job_change_form
+msgid "New"
+msgstr "Baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_company_id
+msgid "New company"
+msgstr "Perusahaan baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_job_id
+msgid "New job"
+msgstr "Jabatan baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_job_title
+msgid "New job title"
+msgstr "Sebutan jabatan baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_parent_id
+msgid "New manager"
+msgstr "Atasan baru"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_wage
+msgid "New monthly pay"
+msgstr "Gaji bulanan baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_work_location_id
+msgid "New place of work"
+msgstr "Tempat kerja baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_department_id
+msgid "New team"
+msgstr "Tim baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_resource_calendar_id
+msgid "New working hours"
+msgstr "Jam kerja baru"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Newest first"
+msgstr "Terbaru dulu"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Next"
+msgstr "Lanjut"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "No job changes match these filters"
+msgstr "Tidak ada perubahan jabatan yang cocok dengan filter"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "No month already paid is affected."
+msgstr "Tidak ada bulan yang sudah dibayar yang terdampak."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "No sign-off was needed."
+msgstr "Tidak perlu persetujuan."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Nobody by that name in your companies."
+msgstr "Tidak ada orang dengan nama itu di perusahaan Anda."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Not done yet"
+msgstr "Belum selesai"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Not sent yet."
+msgstr "Belum dikirim."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Nothing changes yet."
+msgstr "Belum ada yang berubah."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Nothing changes yet. Choose a new job, team, manager or pay."
+msgstr "Belum ada yang berubah. Pilih jabatan, tim, atasan atau gaji baru."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Nothing is paid back by itself: the pay team works out any difference on the next pay run."
+msgstr "Tidak ada yang dibayar kembali otomatis: tim penggajian menghitung selisihnya pada penggajian berikutnya."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Nothing is written before the start date."
+msgstr "Tidak ada yang ditulis sebelum tanggal mulai."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Nothing was changed: %s's running contract is not the one this change was prepared on."
+msgstr "Tidak ada yang diubah: kontrak berjalan %s bukan kontrak yang dipakai saat perubahan ini disiapkan."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Nothing was changed: somebody else changed %s since this was sent in. Send it back and prepare it again against what is there now."
+msgstr "Tidak ada yang diubah: orang lain mengubah %s sejak ini dikirim. Kembalikan dan siapkan lagi berdasarkan data sekarang."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__old_amount
+msgid "Now"
+msgstr "Sekarang"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Only a change that has not been written yet can be cancelled."
+msgstr "Hanya perubahan yang belum ditulis yang bisa dibatalkan."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Only the person who prepared it, HR or the pay team can cancel a job change."
+msgstr "Hanya penyiap, HR atau tim penggajian yang bisa membatalkan perubahan jabatan."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Only the person who prepared it, HR or the pay team can take a job change back."
+msgstr "Hanya penyiap, HR atau tim penggajian yang bisa menarik kembali perubahan jabatan."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0
+msgid "Open the job change"
+msgstr "Buka perubahan jabatan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Open the re-work"
+msgstr "Buka perhitungan ulang"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Paid by"
+msgstr "Dibayar oleh"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Paid by changes from"
+msgstr "Skema pembayar berubah dari"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0 code:addons/pb_job_change/static/src/js/job_change_patches.js:0
+msgid "Past-month re-work"
+msgstr "Hitung ulang bulan lalu"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Past-month re-work is not part of this database. Tell the pay team: they can work out any difference by hand on the next pay run."
+msgstr "Hitung ulang bulan lalu tidak ada di sistem ini. Beri tahu tim penggajian: mereka bisa menghitung selisihnya secara manual pada penggajian berikutnya."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_patches.js:0
+msgid "Past-month re-work is not part of this database. The pay team can work out any difference by hand on the next pay run."
+msgstr "Hitung ulang bulan lalu tidak ada di sistem ini. Tim penggajian bisa menghitung selisihnya secara manual pada penggajian berikutnya."
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Pay"
+msgstr "Gaji"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__reason_kind__pay
+msgid "Pay change"
+msgstr "Perubahan gaji"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Pay changed"
+msgstr "Gaji diubah"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Pay is changed by the pay team. Leave pay unchanged and ask them to add it."
+msgstr "Gaji diubah oleh tim penggajian. Biarkan gaji tetap dan minta mereka menambahkannya."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__name
+msgid "Pay item"
+msgstr "Komponen gaji"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__code
+msgid "Pay item code"
+msgstr "Kode komponen gaji"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__line_ids
+msgid "Pay lines"
+msgstr "Komponen gaji"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Pay scheme"
+msgstr "Skema gaji"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__apply_ids
+msgid "Pay written"
+msgstr "Gaji yang ditulis"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_palette.js:0
+msgid "People"
+msgstr "Karyawan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "People could not be read just now."
+msgstr "Daftar orang belum bisa dibaca sekarang."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__employee_id
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Person, A to Z"
+msgstr "Orang, A sampai Z"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Pick everything that changes. It all starts on the same day and is signed off once."
+msgstr "Pilih semua yang berubah. Semuanya mulai pada hari yang sama dan disetujui sekali."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Pick somebody who still works here."
+msgstr "Pilih orang yang masih bekerja di sini."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Pick the person, say what changes and from which day. Their manager, HR and, when the rise is above the guidance, Finance sign it off once. Everything is written together on the start date, with one letter and one line on their timeline."
+msgstr "Pilih orangnya, sebutkan apa yang berubah dan mulai kapan. Atasannya, HR dan, bila kenaikan di atas pedoman, Keuangan menyetujui sekali. Semuanya ditulis bersamaan pada tanggal mulai, dengan satu surat dan satu baris di riwayatnya."
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Place of work"
+msgstr "Tempat kerja"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__user_id
+msgid "Prepared by"
+msgstr "Disiapkan oleh"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__reason_kind__promotion
+msgid "Promotion"
+msgstr "Promosi"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_letter_template__letter_type__promotion
+msgid "Promotion letter"
+msgstr "Surat promosi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0
+msgid "Promotion, transfer or pay change, signed off once"
+msgstr "Promosi, mutasi atau perubahan gaji, disetujui sekali"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Promotions, transfers and pay changes, each one signed off once and written on its start date."
+msgstr "Promosi, mutasi dan perubahan gaji, masing-masing disetujui sekali dan ditulis pada tanggal mulainya."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__rework_id
+msgid "Re-work"
+msgstr "Hitung ulang"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Re-work those months"
+msgstr "Hitung ulang bulan-bulan itu"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Read the board again"
+msgstr "Baca ulang papan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Reading the job changes…"
+msgstr "Membaca perubahan jabatan…"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__name
+msgid "Reference"
+msgstr "Referensi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Remove a filter, or start again from every job change."
+msgstr "Hapus filter, atau mulai lagi dari semua perubahan jabatan."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Rise"
+msgstr "Kenaikan"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__contract_id
+msgid "Running contract"
+msgstr "Kontrak berjalan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Save for later"
+msgstr "Simpan untuk nanti"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Saved. It stays here until you send it."
+msgstr "Tersimpan. Tetap di sini sampai Anda mengirimnya."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Say why, in a few words. The people who sign it off read this first."
+msgstr "Tulis alasannya singkat. Para penyetuju membaca ini lebih dulu."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Send for sign-off"
+msgstr "Kirim untuk disetujui"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__returned
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Sent for approval — %s"
+msgstr "Dikirim untuk persetujuan — %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Sent for approval."
+msgstr "Dikirim untuk persetujuan."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Sent."
+msgstr "Terkirim."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Show every job change"
+msgstr "Tampilkan semua perubahan jabatan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Showing"
+msgstr "Menampilkan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Sign-off"
+msgstr "Persetujuan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Signed off. It is written on"
+msgstr "Disetujui. Ditulis pada"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Somebody cannot be their own manager."
+msgstr "Seseorang tidak bisa menjadi atasannya sendiri."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Somebody has changed %s's details since, so this cannot be taken back here."
+msgstr "Seseorang telah mengubah rincian %s sejak itu, jadi ini tidak bisa ditarik kembali di sini."
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__reason_kind__other
+msgid "Something else"
+msgstr "Lainnya"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__started_by_job
+msgid "Started automatically"
+msgstr "Dimulai otomatis"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__source
+msgid "Started from"
+msgstr "Dimulai dari"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__source_ref
+msgid "Started from (reference)"
+msgstr "Dimulai dari (referensi)"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Starting soonest"
+msgstr "Mulai paling cepat"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Starts in a month already paid"
+msgstr "Mulai di bulan yang sudah dibayar"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Starts later"
+msgstr "Mulai nanti"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__effective_date
+msgid "Starts on"
+msgstr "Mulai pada"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Starts today: written as soon as it is signed off."
+msgstr "Mulai hari ini: ditulis begitu disetujui."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Steps"
+msgstr "Langkah"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Take it back"
+msgstr "Tarik kembali"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__undone
+msgid "Taken back"
+msgstr "Ditarik kembali"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__undone_by
+msgid "Taken back by"
+msgstr "Ditarik kembali oleh"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__undone_at
+msgid "Taken back on"
+msgstr "Ditarik kembali pada"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Taken back. The old details are in place again."
+msgstr "Ditarik kembali. Rincian lama berlaku lagi."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Taken back: change job %s"
+msgstr "Ditarik kembali: ubah jabatan %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Team"
+msgstr "Tim"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Team and place"
+msgstr "Tim dan tempat"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Team, manager, place of work, working hours or company"
+msgstr "Tim, atasan, tempat kerja, jam kerja atau perusahaan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Tell the pay team: they can work out any difference by hand on the next pay run."
+msgstr "Beri tahu tim penggajian: mereka bisa menghitung selisihnya secara manual pada penggajian berikutnya."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "That cannot be done here."
+msgstr "Itu tidak bisa dilakukan di sini."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "That could not be done."
+msgstr "Itu tidak bisa dilakukan."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "That person is not in a company you work in."
+msgstr "Orang itu tidak berada di perusahaan tempat Anda bekerja."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "That person is not on the system any more."
+msgstr "Orang itu sudah tidak ada di sistem."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Koneksi mungkin terputus. Filter Anda tetap disimpan."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The contract has changed since, so this cannot be taken back here."
+msgstr "Kontrak telah berubah sejak itu, jadi ini tidak bisa ditarik kembali di sini."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The details"
+msgstr "Rinciannya"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "The job changes could not be read just now."
+msgstr "Perubahan jabatan belum bisa dibaca sekarang."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The job changes could not load"
+msgstr "Perubahan jabatan tidak bisa dimuat"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The letter"
+msgstr "Suratnya"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "The letter could not be opened."
+msgstr "Surat tidak bisa dibuka."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new job"
+msgstr "Jabatan baru"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new manager"
+msgstr "Atasan baru"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new monthly pay cannot be below zero."
+msgstr "Gaji bulanan baru tidak boleh di bawah nol."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The new pay is above the top of the band for this job."
+msgstr "Gaji baru di atas batas atas rentang untuk jabatan ini."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new place of work"
+msgstr "Tempat kerja baru"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new team"
+msgstr "Tim baru"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new working hours"
+msgstr "Jam kerja baru"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The paid months have no pay scheme on them, so they cannot be re-worked here."
+msgstr "Bulan yang sudah dibayar tidak memiliki skema gaji, jadi tidak bisa dihitung ulang di sini."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The pay on the contract has changed since, so this cannot be taken back here."
+msgstr "Gaji di kontrak telah berubah sejak itu, jadi ini tidak bisa ditarik kembali di sini."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The pay team adds pay changes"
+msgstr "Tim penggajian menambahkan perubahan gaji"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The people who approve pay runs can re-work those months from here."
+msgstr "Orang yang menyetujui penggajian bisa menghitung ulang bulan-bulan itu dari sini."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The time to take this back ran out on %s. Prepare another job change instead, which keeps a record of both."
+msgstr "Waktu untuk menarik kembali berakhir pada %s. Siapkan perubahan jabatan lain, yang mencatat keduanya."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Their manager"
+msgstr "Atasannya"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Their manager has a login"
+msgstr "Atasannya punya login"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Their pay scheme reads what this changes, in:"
+msgstr "Skema gajinya membaca apa yang diubah ini, di:"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "There is no letter for this change."
+msgstr "Tidak ada surat untuk perubahan ini."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "There is nothing here to take back."
+msgstr "Tidak ada yang bisa ditarik kembali."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This change has not been written yet."
+msgstr "Perubahan ini belum ditulis."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This change is being written right now. Look again in a minute."
+msgstr "Perubahan sedang ditulis. Lihat lagi sebentar lagi."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This change is no longer waiting for its day."
+msgstr "Perubahan ini tidak lagi menunggu harinya."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This change starts in a month already paid"
+msgstr "Perubahan ini mulai di bulan yang sudah dibayar"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This change starts in a month already paid:"
+msgstr "Perubahan ini mulai di bulan yang sudah dibayar:"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This change starts on a date in the past."
+msgstr "Perubahan ini mulai pada tanggal yang sudah lewat."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This could not be checked just now."
+msgstr "Ini belum bisa diperiksa sekarang."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This could not be saved."
+msgstr "Ini tidak bisa disimpan."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This could not be sent."
+msgstr "Ini tidak bisa dikirim."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This job change could not be opened."
+msgstr "Perubahan jabatan ini tidak bisa dibuka."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "This job change has already been sent in, so it cannot be changed."
+msgstr "Perubahan jabatan ini sudah dikirim, jadi tidak bisa diubah."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This job change has already been sent in."
+msgstr "Perubahan jabatan ini sudah dikirim."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "This job change is no longer there."
+msgstr "Perubahan jabatan ini sudah tidak ada."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This job change was cancelled, so nothing was written."
+msgstr "Perubahan jabatan ini dibatalkan, jadi tidak ada yang ditulis."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This job change was taken back, so this letter no longer describes what happened."
+msgstr "Perubahan jabatan ini ditarik kembali, jadi surat ini tidak lagi sesuai."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This one is for HR and the pay team"
+msgstr "Ini untuk HR dan tim penggajian"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This person could not be opened."
+msgstr "Orang ini tidak bisa dibuka."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This person has no running contract, so their pay cannot be changed here."
+msgstr "Orang ini tidak punya kontrak berjalan, jadi gajinya tidak bisa diubah di sini."
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__reason_kind__transfer
+msgid "Transfer"
+msgstr "Mutasi"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_letter_template__letter_type__transfer
+msgid "Transfer letter"
+msgstr "Surat mutasi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__rejected
+msgid "Turned down"
+msgstr "Ditolak"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Type a name…"
+msgstr "Ketik nama…"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Type every pay line as a number."
+msgstr "Ketik setiap komponen gaji sebagai angka."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Type the new monthly pay as a number."
+msgstr "Ketik gaji bulanan baru sebagai angka."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Type the new monthly pay or a pay line, or leave pay unchanged."
+msgstr "Ketik gaji bulanan baru atau komponen gaji, atau biarkan gaji tetap."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Unchanged"
+msgstr "Tetap"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Unchanged. Type a name…"
+msgstr "Tetap. Ketik nama…"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Waiting for"
+msgstr "Menunggu"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__pending
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "What"
+msgstr "Apa"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What changes"
+msgstr "Apa yang berubah"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What has changed, and why now. The people who sign it off read this first."
+msgstr "Apa yang berubah, dan mengapa sekarang. Para penyetuju membaca ini lebih dulu."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "What kind"
+msgstr "Jenis"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__reason_kind
+msgid "What kind of change"
+msgstr "Jenis perubahan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What kind of change is it?"
+msgstr "Perubahan jenis apa ini?"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What moves?"
+msgstr "Apa yang berubah?"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What this does"
+msgstr "Apa yang terjadi"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "What would change"
+msgstr "Apa yang akan berubah"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "When and why"
+msgstr "Kapan dan mengapa"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "When it is done, the pay team can open a Past-month re-work for those months. Nothing is paid back by itself."
+msgstr "Setelah selesai, tim penggajian bisa membuka Hitung ulang bulan lalu untuk bulan-bulan itu. Tidak ada yang dibayar kembali otomatis."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Where it is"
+msgstr "Posisinya"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Who"
+msgstr "Siapa"
+
+#. module: pb_job_change
+#: model_terms:ir.ui.view,arch_db:pb_job_change.view_pb_job_change_form
+msgid "Who and when"
+msgstr "Siapa dan kapan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Who signs it off"
+msgstr "Siapa yang menyetujui"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Whole company"
+msgstr "Seluruh perusahaan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Whose job is changing?"
+msgstr "Jabatan siapa yang berubah?"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__reason
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__block_note
+msgid "Why it could not be done"
+msgstr "Mengapa tidak bisa dilakukan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Working hours"
+msgstr "Jam kerja"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Working it out…"
+msgstr "Menghitung…"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "You can only move people to a company you work in."
+msgstr "Anda hanya bisa memindahkan orang ke perusahaan tempat Anda bekerja."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "You can take it back for"
+msgstr "Anda bisa menariknya kembali selama"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "You see first if the move changes who pays them."
+msgstr "Anda melihat lebih dulu bila perpindahan mengubah skema yang membayar mereka."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "being prepared"
+msgstr "sedang disiapkan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "company"
+msgstr "perusahaan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "company on the contract"
+msgstr "perusahaan di kontrak"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "done"
+msgstr "selesai"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "hours after it was written, as long as nobody has changed these details since."
+msgstr "jam setelah ditulis, selama tidak ada yang mengubah rincian ini sejak itu."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "job"
+msgstr "jabatan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "job changes"
+msgstr "perubahan jabatan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "job on the contract"
+msgstr "jabatan di kontrak"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "job title"
+msgstr "sebutan jabatan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "manager"
+msgstr "atasan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "monthly pay"
+msgstr "gaji bulanan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "more"
+msgstr "lagi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "pay"
+msgstr "gaji"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "place of work"
+msgstr "tempat kerja"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "start later"
+msgstr "mulai nanti"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "team"
+msgstr "tim"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "team on the contract"
+msgstr "tim di kontrak"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "the running contract"
+msgstr "kontrak berjalan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "to"
+msgstr "ke"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "waiting for approval"
+msgstr "menunggu persetujuan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "was paid with the old figures. Nothing is paid back by itself."
+msgstr "sudah dibayar dengan angka lama. Tidak ada yang dibayar kembali otomatis."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "working hours"
+msgstr "jam kerja"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "working hours on the contract"
+msgstr "jam kerja di kontrak"

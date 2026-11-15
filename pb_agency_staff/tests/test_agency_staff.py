@@ -68,8 +68,12 @@ class TestAgencyStaff(TransactionCase):
         self.assertEqual(
             self.env['hr.employee'].with_context(active_test=False).search_count([]),
             emp_before, "no employee is made")
+        # the record's OWN fields (mail.thread brings followers and messages)
         targets = {f.comodel_name for f in self.W._fields.values()
-                   if f.type in ('many2one', 'one2many', 'many2many')}
+                   if f.type in ('many2one', 'one2many', 'many2many')
+                   and getattr(f, '_module', '') == 'pb_agency_staff'
+                   and f.name not in ('create_uid', 'write_uid')}
+        self.assertIn('pb.vendor', targets)
         for forbidden in ('hr.contract', 'hr.payslip', 'hr.payslip.run', 'res.users',
                           'hr.attendance', 'hr.version'):
             self.assertNotIn(forbidden, targets)

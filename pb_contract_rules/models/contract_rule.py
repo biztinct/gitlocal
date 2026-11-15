@@ -18,8 +18,6 @@ no end date ends the row. Contracts signed before the system are not on it:
 HR types their number (and months) once on the person, and they are added.
 """
 import logging
-from datetime import timedelta
-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.misc import format_date
@@ -103,10 +101,14 @@ class PbContractRule(models.Model):
         if not country:
             return self.browse()
         company_id = (employee.company_id or self.env.company).id
-        return self.sudo().search([
-            ('active', '=', True), ('country_id', '=', country),
-            ('company_id', 'in', [company_id, False])],
-            order='company_id desc, sequence, id', limit=1)
+        base = [('active', '=', True), ('country_id', '=', country)]
+        for scope in ([('company_id', '=', company_id)],
+                      [('company_id', '=', False)]):
+            found = self.sudo().search(base + scope, order='sequence, id',
+                                       limit=1)
+            if found:
+                return found
+        return self.browse()
 
     # ==================================================================
     # Counting
@@ -115,6 +117,9 @@ class PbContractRule(models.Model):
     def _is_fixed(self, contract):
         if not contract or not contract.date_end or contract.state == 'cancel':
             return False
+        # A trial agreement is not a labour contract. (`vietnam_contract_type`
+        # defaults to "indefinite" on every contract, so it cannot say
+        # "permanent"; only its "probation" value is read.)
         if getattr(contract, 'vietnam_contract_type', False) == 'probation':
             return False
         if getattr(contract, 'pb_payroll_contract_type', False) == 'probation':

@@ -282,7 +282,9 @@ class TestJobChange(TransactionCase):
         start = self._today() + timedelta(days=3)
         rec2 = self._rec(self._send(emp2, effective_date=fields.Date.to_string(start)))
         self.assertEqual(rec2.state, 'scheduled')
-        emp2.sudo().write({'department_id': self.dept_b.id})
+        dept_c = self.env['hr.department'].create(
+            {'name': 'S8B Audit', 'company_id': self.company.id})
+        emp2.sudo().write({'department_id': dept_c.id})
         with patch.object(type(self.JC), '_today_for', lambda s, company=None: start):
             tally = self.JC._cron_start_due()
         self.assertEqual(tally.get('returned'), 1)
@@ -472,7 +474,8 @@ class TestJobChange(TransactionCase):
         known = dict(self.env['pb.letter.template']._fields['letter_type'].selection)
         for key in ('promotion', 'transfer', 'job_change', 'pay_change', 'custom'):
             self.assertIn(key, known)
-        known_letter = dict(self.env['pb.hr.letter']._fields['letter_type'].selection)
+        known_letter = dict(self.env['pb.hr.letter']._fields['letter_type']
+                            ._description_selection(self.env))
         self.assertIn('transfer', known_letter)
         self._fast()
         emp, _c = self._person()
@@ -528,8 +531,12 @@ class TestJobChange(TransactionCase):
         emp, contract = self._person()
         month = self._today().replace(day=1)
         slip = self._done_slip(emp, contract, (month - timedelta(days=1)).replace(day=1))
+        rule = self.env['hr.salary.rule'].search([], limit=1)
+        if not rule:
+            self.skipTest('no salary rule on this database')
         self.env['hr.payslip.line'].create({
             'slip_id': slip.id, 'name': 'Basic', 'code': 'BASIC',
+            'salary_rule_id': rule.id,
             'category_id': self.env.ref('om_hr_payroll.BASIC').id,
             'contract_id': contract.id, 'employee_id': emp.id,
             'amount': 10_000_000.0, 'quantity': 1, 'rate': 100})
@@ -557,3 +564,46 @@ class TestJobChange(TransactionCase):
                              for t in titles), "field lines folded away")
         job_item = [it for it in items if it['title'].startswith('Job changed')][0]
         self.assertIn('S8B Tax', job_item['detail'])
+
+    # ================================================================ JC15
+    def _seat(self, role_key, user):
+        role = self.env['biz.approval.role'].sudo().search([('key', '=', role_key)], limit=1)
+        Resp = self.env['biz.approval.responsibility'].sudo()
+        Resp.with_context(active_test=False).search([
+            ('company_id', '=', self.company.id), ('role_id', '=', role.id),
+            ('scope_key', '=', '')]).write({'active': False})
+        Resp.create({'company_id': self.company.id, 'role_id': role.id,
+                     'scope_key': '', 'user_id': user.id})
+
+    def test_jc15_signed_off_by_people_without_hr_rights(self):
+        """The real route, decided seat by seat: their line manager (a plain
+        login, ledger W2B-2), the HR lead, then Finance because the rise is
+        above the guidance. The last decider writes it."""
+        hr_lead = self._user('s8b_hrlead', ['base.group_user', 'hr.group_hr_manager'])
+        finance = self._user('s8b_fin', ['base.group_user'])    # no HR, no payroll
+        self._seat('hr_lead', hr_lead)
+        self._seat('finance', finance)
+        emp, contract = self._person()
+        rec = self._rec(self._send(emp, new_wage=13_000_000.0))
+        Engine = self.env['biz.approval.engine']
+        order = []
+        for _guard in range(5):
+            request = rec.sudo().approval_request_id
+            if request.state not in ('pending', 'blocked'):
+                break
+            self.assertEqual(request.state, 'pending', request.block_reason)
+            step = request.step_ids.filtered(lambda s: s.status == 'active')[:1]
+            seat = step.seat_ids.filtered(lambda s: s.status == 'open')[:1]
+            order.append(step.key)
+            self.env.flush_all()
+            self.env.invalidate_all()
+            Engine.with_user(seat.acting_user_id).with_context(
+                allowed_company_ids=[self.company.id]).decide(
+                    request.id, step.key, 'approve', 'ok')
+            rec.invalidate_recordset()
+        self.assertEqual(order, ['mgr', 'hr', 'fin'])
+        self.assertEqual(rec.state, 'applied', rec.block_note)
+        self.assertEqual(rec.applied_by, finance)
+        contract.invalidate_recordset()
+        self.assertEqual(contract.wage, 13_000_000.0)
+        self.assertEqual(contract.job_id, self.job_b)

@@ -39,12 +39,8 @@ class PbLetterTemplateJobChange(models.Model):
         ondelete={key: 'set default' for key, _label in NEW_LETTER_TYPES})
 
 
-class PbHrLetterJobChange(models.Model):
-    _inherit = 'pb.hr.letter'
-
-    letter_type = fields.Selection(
-        selection_add=NEW_LETTER_TYPES,
-        ondelete={key: 'set null' for key, _label in NEW_LETTER_TYPES})
+# `pb.hr.letter.letter_type` is related to its template's, so it follows the
+# selection_add above by itself (a selection_add on it is ignored).
 
 
 class BizAuditEntryJobChange(models.Model):

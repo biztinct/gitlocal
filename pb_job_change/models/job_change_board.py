@@ -99,11 +99,11 @@ class PbJobChangeBoard(models.AbstractModel):
 
     @api.model
     def _state_label(self, state):
-        return _(dict(STATES).get(state) or '')
+        return self._jc()._label('state', state)
 
     @api.model
     def _kind_label(self, kind):
-        return _(dict(REASON_KINDS).get(kind) or '')
+        return self._jc()._label('reason_kind', kind)
 
     # ============================================================ the board
     @api.model
@@ -167,7 +167,7 @@ class PbJobChangeBoard(models.AbstractModel):
             {'key': 'kind', 'label': _('What kind'), 'icon': 'tag',
              'group': 'people', 'type': 'choice', 'pinned': True,
              'requires': ['reason_kind'],
-             'options': [{'value': k, 'label': _(v), 'tone': 'slate',
+             'options': [{'value': k, 'label': self._kind_label(k), 'tone': 'slate',
                           'domain': [('reason_kind', '=', k)]}
                          for k, v in REASON_KINDS]},
             {'key': 'team', 'label': _('Team'), 'icon': 'building',
@@ -363,7 +363,7 @@ class PbJobChangeBoard(models.AbstractModel):
             'person': self._person(emp), 'now': now, 'lines': lines,
             'addable': addable, 'can_pay': can_pay,
             'options': self._options(company),
-            'kinds': [{'key': k, 'label': _(v)} for k, v in REASON_KINDS],
+            'kinds': [{'key': k, 'label': self._kind_label(k)} for k, _v in REASON_KINDS],
             'draft': draft,
             'today': fields.Date.to_string(Change._today_for(company)),
             'change_id': rec.id if rec else 0,

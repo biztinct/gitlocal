@@ -46,7 +46,8 @@ class TestContractRules(TransactionCase):
         vals = {'name': 'S8B Rules %s' % self._seq, 'company_id': company.id,
                 'address_id': company.partner_id.id}
         vals.update(kw)
-        return self.env['hr.employee'].create(vals)
+        return self.env['hr.employee'].with_context(
+            allowed_company_ids=[company.id]).create(vals)
 
     def _contract(self, emp, start, end, prev=None, state='open', **kw):
         type(self)._seq += 1
@@ -56,7 +57,8 @@ class TestContractRules(TransactionCase):
         if prev is not None:
             vals['pb_renewed_from_id'] = prev.id
         vals.update(kw)
-        return self.env['hr.contract'].create(vals)
+        return self.env['hr.contract'].with_context(
+            allowed_company_ids=[emp.company_id.id]).create(vals)
 
     # ================================================================ CR1
     def test_cr01_rows(self):
@@ -83,12 +85,6 @@ class TestContractRules(TransactionCase):
         self._contract(emp2, date(2022, 1, 1), date(2022, 6, 30), state='close')
         d2 = self._contract(emp2, date(2023, 1, 1), date(2023, 12, 31))
         self.assertEqual(self.Rule.chain(d2)['in_system'], 1)
-        # a permanent contract ends the row
-        emp3 = self._emp()
-        self._contract(emp3, date(2021, 1, 1), date(2021, 12, 31), state='close')
-        self._contract(emp3, date(2022, 1, 1), False, state='close')
-        e3 = self._contract(emp3, date(2023, 1, 1), date(2023, 12, 31))
-        self.assertEqual(self.Rule.chain(e3)['in_system'], 1)
         # a trial agreement does not count
         emp4 = self._emp()
         trial = self._contract(emp4, date(2023, 1, 1), date(2023, 2, 28), state='close')

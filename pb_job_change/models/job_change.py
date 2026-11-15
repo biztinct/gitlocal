@@ -244,6 +244,14 @@ class PbJobChange(models.Model):
         return self._json('paid_months_json', [])
 
     @api.model
+    def _label(self, field, key):
+        """A selection value in the reader's language (model terms)."""
+        if not key:
+            return ''
+        return dict(self._fields[field]._description_selection(self.env)).get(
+            key, '')
+
+    @api.model
     def _may_prepare(self, user=None):
         user = user or self.env.user
         return bool(self.env.su or user._is_admin()
@@ -707,8 +715,8 @@ class PbJobChange(models.Model):
     # ==================================================================
     def _headline(self):
         self.ensure_one()
-        label = dict(REASON_KINDS).get(self.reason_kind) or _('Job change')
-        return _("%(what)s · %(who)s", what=_(label),
+        label = self._label('reason_kind', self.reason_kind) or _('Job change')
+        return _("%(what)s · %(who)s", what=label,
                  who=self.employee_id.sudo().name or '')
 
     def _approval_validate(self):
@@ -767,7 +775,8 @@ class PbJobChange(models.Model):
     def _approval_capabilities(self):
         return {
             'facts': self._fact_specs(),
-            'kinds': [{'key': k, 'label': _(v)} for k, v in REASON_KINDS],
+            'kinds': [{'key': k, 'label': self._label('reason_kind', k)}
+                      for k, _v in REASON_KINDS],
             'evidence': [{'key': 'reason_given',
                           'label': _('A reason was written down')}],
             'scope_levels': [_('Whole company')],
@@ -809,7 +818,7 @@ class PbJobChange(models.Model):
 
     def _approval_card_count(self, request):
         self.ensure_one()
-        return _(dict(REASON_KINDS).get(self.sudo().reason_kind) or '')
+        return self._label('reason_kind', self.sudo().reason_kind)
 
     def _rows(self, show_pay=True):
         """`[(label, now, new)]` — every value that moves, in words."""
@@ -898,7 +907,7 @@ class PbJobChange(models.Model):
                  {'label': _('Starts on'),
                   'value': self._day(rec.effective_date)},
                  {'label': _('What'),
-                  'value': _(dict(REASON_KINDS).get(rec.reason_kind) or '')}]
+                  'value': self._label('reason_kind', rec.reason_kind)}]
         pct = (facts.get('pay_rise_pct') or {}).get('value') or 0.0
         if pct:
             chips.append({'label': _('Rise'), 'value': '{:+.1f}%'.format(pct)})
