@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pb_contract_rule_list" model="ir.ui.view">
+        <field name="name">pb.contract.rule.list</field>
+        <field name="model">pb.contract.rule</field>
+        <field name="arch" type="xml">
+            <list string="Fixed-term contract rules">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="max_in_row"/>
+                <field name="max_months_each"/>
+                <field name="max_months_total"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_contract_rule_form" model="ir.ui.view">
+        <field name="name">pb.contract.rule.form</field>
+        <field name="model">pb.contract.rule</field>
+        <field name="arch" type="xml">
+            <form string="Fixed-term contract rule">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Vietnam rule"/></h1>
+                    </div>
+                    <group>
+                        <group string="Where it applies">
+                            <field name="country_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="The limits">
+                            <field name="max_in_row"/>
+                            <field name="max_months_each"/>
+                            <field name="max_months_total"/>
+                            <field name="gap_days"/>
+                        </group>
+                    </group>
+                    <group string="In plain words">
+                        <field name="counts_note" nolabel="1" colspan="2" placeholder="What counts towards the limit"/>
+                    </group>
+                    <group string="Where the rule comes from">
+                        <field name="source_note" nolabel="1" colspan="2" placeholder="The law or policy, and who confirmed it"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_contract_rule" model="ir.actions.act_window">
+        <field name="name">Fixed-term contract rules</field>
+        <field name="res_model">pb.contract.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No fixed-term contract rules yet</p>
+            <p>Add one per country: how many fixed-term contracts may follow each other, and how long they may run in total.</p>
+        </field>
+    </record>
+
+    <!-- The earlier-contract numbers on the employee form, HR only. -->
+    <record id="view_employee_form_fixed_term" model="ir.ui.view">
+        <field name="name">hr.employee.form.fixed.term</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='hr_settings']/group[@name='settings_group']" position="inside">
+                <group string="Fixed-term contracts before this system" name="pb_fixed_term" groups="hr.group_hr_user">
+                    <field name="pb_fixed_term_before"/>
+                    <field name="pb_fixed_term_months_before"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

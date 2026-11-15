@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- The catalogue row this module owns (engine rule: every row is created
+         by the module that owns the business object, never in
+         pb_approval_config/data/processes.xml). noupdate so a business that
+         rewords it keeps its wording; `model_name` is re-pointed by the seed
+         (ledger AM45). -->
+    <record id="process_jobchange" model="biz.approval.process">
+        <field name="key">jobchange</field>
+        <field name="name">Job changes</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.job.change</field>
+        <field name="money" eval="True"/>
+        <field name="description">A promotion, a transfer or a pay change for one person, signed off once for the whole change: their manager, then HR, then Finance when the rise is above the guidance.</field>
+        <field name="sequence">245</field>
+    </record>
+
+</odoo>

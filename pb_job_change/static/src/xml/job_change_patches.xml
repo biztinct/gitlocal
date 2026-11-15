@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Change job's doors on other modules' screens (template inheritance,
+       no edit of their files). Every sentence on one line (PRD-3).
+       ==================================================================== -->
+
+  <!-- The person's side panel: "Change job" before "Contract". -->
+  <t t-name="pb_job_change.Employee360Drawer" t-inherit="pb_employee_vault.Employee360Drawer" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pev-head-side')]/button[hasclass('pev-full')][1]" position="before">
+      <button class="pev-full pbjc-door" t-if="pbJc.allowed" t-on-click="openChangeJob" title="Promotion, transfer or pay change, signed off once">
+        <t t-out="pbJcIcon('briefcase', 14)"/> Change job
+      </button>
+    </xpath>
+  </t>
+
+  <!-- The chip on the same panel, when a change is waiting or starts later. -->
+  <t t-name="pb_job_change.JobChangeChip">
+    <button t-if="state.data.id" type="button" class="pev-chip pbjc-chip" t-att-class="state.data.state === 'scheduled' ? 'tone-info' : 'tone-warn'" t-on-click="open" title="Open the job change">
+      <t t-out="icon('briefcase', 13)"/> <t t-esc="state.data.label"/>
+    </button>
+  </t>
+
+  <!-- The org chart person panel: "Change job" in the footer. -->
+  <t t-name="pb_job_change.PbOrgChart" t-inherit="pb_orgchart.PbOrgChart" t-inherit-mode="extension">
+    <xpath expr="//aside[@data-coach='oc-side']/div[hasclass('sf')]" position="before">
+      <div t-if="pbJc.allowed and sideNode and !sideNode.isRole and sideNode.empId" class="sf pbjc-ocdoor">
+        <button class="pboc-btn outline sm" t-on-click="() => this.pbJcOpen(sideNode)"><t t-out="pbJcIcon('briefcase', 15)"/> Change job</button>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

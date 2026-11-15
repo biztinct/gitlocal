@@ -1,0 +1,64 @@
+// pb_agency_staff — People › Agency staff. pbim tokens, flat fills, one accent.
+// Slate marks "not ours": agency staff are never in the teal employee theme.
+
+.pbim.pbag {
+    .pbag-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+    .pbag-head-actions { display: flex; gap: 8px; margin-left: auto; }
+    .pbag-locked { text-align: center; padding: 40px 24px; }
+    .pbag-locked-ic { color: var(--pbim-muted, #64748B); margin-bottom: 8px; }
+    .pbag-muted { color: var(--pbim-muted, #64748B); font-size: 13px; }
+    .pbag-start {
+        display: flex; gap: 18px; align-items: flex-start; padding: 26px; margin-bottom: 14px;
+        border-radius: var(--pbim-r, 14px); background: var(--pbim-slate-soft, #EEF1F5); border: 1px solid #E2E8F0;
+        h2 { font-size: 19px; font-weight: 800; margin: 0 0 6px; }
+        p { max-width: 680px; margin: 0 0 12px; }
+    }
+    .pbag-start-ic { flex: 0 0 auto; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; background: #fff; color: var(--pbim-slate, #475569); }
+    .pbag-table { width: 100%; }
+    .pbag-row { cursor: pointer; &:hover, &:focus-visible { background: var(--pbim-bg, #F5F6FA); outline: none; } }
+    .pbag-who { display: inline-flex; align-items: center; gap: 10px; }
+    .pbag-who-tx { display: flex; flex-direction: column; small { color: var(--pbim-muted, #64748B); font-size: 12px; } }
+    .pbag-sub { display: block; color: var(--pbim-muted, #64748B); font-size: 12px; }
+    .pbag-av { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
+               background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #475569);
+               &.lg { width: 44px; height: 44px; border-radius: 12px; } }
+    .pbag-skel { height: 120px; border-radius: 12px; background: var(--pbim-bg, #F5F6FA); }
+    .pbag-empty { text-align: center; padding: 24px; }
+    .pbag-foot { display: flex; align-items: center; gap: 10px; padding: 10px 2px; font-size: 13px; color: var(--pbim-muted, #64748B); }
+
+    .pbag-scrim { position: fixed; inset: 0; z-index: 1050; background: rgba(15, 23, 42, .32); display: flex; justify-content: flex-end; }
+    .pbag-drawer { width: 460px; max-width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column;
+                   box-shadow: -8px 0 32px rgba(15, 23, 42, .18); animation: pbag-in .22s ease-out both; }
+    .pbag-dhead { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--pbim-line, #EEF1F5);
+                  h2 { font-size: 18px; font-weight: 800; margin: 0; } small { color: var(--pbim-muted, #64748B); }
+                  .pbag-dhead-tx { flex: 1; display: flex; flex-direction: column; } }
+    .pbag-form { flex: 1; overflow: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;
+                 label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 13px; } }
+    .pbag-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pbag-in { padding: 8px 10px; border-radius: 10px; border: 1px solid var(--pbim-line, #E2E8F0); font-weight: 400; font-size: 13.5px;
+               &:focus { outline: none; border-color: var(--pbim-primary, #5A4BB0); box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); } }
+    .pbag-combo { position: relative; }
+    .pbag-combo-list { position: absolute; z-index: 5; left: 0; right: 0; top: 100%; background: #fff; border: 1px solid var(--pbim-line, #E2E8F0);
+                       border-radius: 10px; box-shadow: 0 8px 24px rgba(15, 23, 42, .12); max-height: 220px; overflow: auto;
+                       button { display: flex; flex-direction: column; width: 100%; padding: 8px 10px; border: 0; background: transparent; text-align: left;
+                                small { color: var(--pbim-muted, #64748B); font-weight: 400; } &:hover { background: var(--pbim-bg, #F5F6FA); } } }
+    .pbag-files h4 { font-size: 13px; font-weight: 700; margin: 8px 0 4px; }
+    .pbag-file { display: flex; align-items: center; gap: 8px; font-size: 13px; a { flex: 1; } }
+    .pbag-upload { position: relative; overflow: hidden; align-self: flex-start; flex-direction: row !important;
+                   input { position: absolute; inset: 0; opacity: 0; cursor: pointer; } }
+    .pbag-dfoot { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--pbim-line, #EEF1F5); }
+    .pbim-btn.danger { color: var(--pbim-rose, #DC2668); }
+}
+
+.pbag-badge {
+    text-transform: none; white-space: nowrap;
+    &.is-on_site { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+    &.is-upcoming { background: #E5EDFD; color: #1E40AF; }
+    &.is-ended { background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #64748B); }
+    &.is-ending { background: var(--pbim-amber-soft, #FEF3C7); color: #8A4B02; }
+}
+.pbag-vlist { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.pbag-vrow { display: grid; grid-template-columns: 1fr auto; column-gap: 8px; font-size: 13px;
+             small { grid-column: 1; color: var(--pbim-muted, #64748B); } .pbag-badge { grid-row: 1 / span 2; grid-column: 2; align-self: center; } }
+
+@keyframes pbag-in { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
