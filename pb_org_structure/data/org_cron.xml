@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Quiet: makes the cost-centre changes whose date has come. Nothing to
+         do on a database where nobody has dated one. Sends nothing. -->
+    <record id="cron_pb_cost_centre_moves" model="ir.cron">
+        <field name="name">Organisation: make cost-centre changes on their date</field>
+        <field name="model_id" ref="model_pb_cost_centre_move"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_apply_due()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

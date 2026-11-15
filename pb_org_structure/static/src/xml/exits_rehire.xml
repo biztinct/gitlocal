@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Would we hire them again? In the Exits drawer, for HR only (the server
+       sends `pb_rehire` only to people who may answer it). -->
+  <t t-inherit="pb_offboarding.PbExitsBoard" t-inherit-mode="extension">
+    <xpath expr="//h3[@t-if='state.drawer.feedback']" position="before">
+      <t t-if="state.drawer.pb_rehire">
+        <h3 class="exb-drawer-h3">Would we hire them again?</h3>
+        <div class="pbos-rh">
+          <div class="pbos-seg" role="radiogroup" aria-label="Would we hire them again?">
+            <button t-foreach="state.drawer.pb_rehire.options" t-as="op" t-key="op.key" type="button"
+                    t-att-class="{ on: state.drawer.pb_rehire.value === op.key }"
+                    t-att-aria-pressed="state.drawer.pb_rehire.value === op.key ? 'true' : 'false'"
+                    t-on-click="() => this.pbRehirePick(op.key)" t-esc="op.label"/>
+          </div>
+          <textarea class="pbos-in" rows="2" placeholder="Why (seen by HR only)" t-att-value="state.drawer.pb_rehire.note" t-on-change="(ev) => this.pbRehireNote(ev.target.value)"/>
+          <small t-if="state.drawer.pb_rehire.by" class="pbos-muted"><span>Seen by HR only.</span> <t t-esc="state.drawer.pb_rehire.by"/> · <t t-esc="state.drawer.pb_rehire.on"/></small>
+          <small t-else="" class="pbos-muted">Seen by HR only. It shows on the Hiring board if they apply again.</small>
+        </div>
+      </t>
+    </xpath>
+  </t>
+
+</templates>

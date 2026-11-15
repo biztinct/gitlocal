@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- People › Jobs, also reachable on its own (the palette's probe). -->
+    <record id="action_pb_org_jobs" model="ir.actions.client">
+        <field name="name">Jobs</field>
+        <field name="tag">pb_org_jobs</field>
+    </record>
+
+    <!-- The job form: the level beside the team. -->
+    <record id="view_hr_job_form_pb_org" model="ir.ui.view">
+        <field name="name">hr.job.form.pb_org_structure</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='job']/field[@name='department_id']" position="after">
+                <field name="pb_level_id" options="{'no_create': True}"/>
+                <field name="pb_hiring_paused" readonly="1" invisible="not pb_hiring_paused"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The employee form, HR only: would we hire them again? -->
+    <record id="view_employee_form_pb_rehire" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb_rehire</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='hr_settings']/group[@name='settings_group']" position="after">
+                <group name="pb_rehire" string="If they leave" groups="hr.group_hr_user">
+                    <field name="pb_rehire"/>
+                    <field name="pb_rehire_note" invisible="not pb_rehire"/>
+                    <field name="pb_rehire_by" readonly="1" invisible="not pb_rehire"/>
+                    <field name="pb_rehire_on" readonly="1" invisible="not pb_rehire"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Plain lists for the administrator (the Jobs tab is the real screen). -->
+    <record id="view_pb_job_level_list" model="ir.ui.view">
+        <field name="name">pb.job.level.list</field>
+        <field name="model">pb.job.level</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                <field name="job_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_cost_centre_list" model="ir.ui.view">
+        <field name="name">pb.cost.centre.list</field>
+        <field name="model">pb.cost.centre</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_cost_centre_move_list" model="ir.ui.view">
+        <field name="name">pb.cost.centre.move.list</field>
+        <field name="model">pb.cost.centre.move</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="employee_id"/>
+                <field name="cost_centre_id"/>
+                <field name="date_start"/>
+                <field name="old_text"/>
+                <field name="state" widget="badge"/>
+                <field name="problem"/>
+            </list>
+        </field>
+    </record>
+</odoo>
