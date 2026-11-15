@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_privacy_notice_hr,pb.privacy.notice hr,model_pb_privacy_notice,hr.group_hr_user,1,1,1,1
+access_pb_privacy_notice_system,pb.privacy.notice system,model_pb_privacy_notice,base.group_system,1,1,1,1
+access_pb_privacy_consent_hr,pb.privacy.consent hr,model_pb_privacy_consent,hr.group_hr_user,1,0,0,0
+access_pb_privacy_consent_system,pb.privacy.consent system,model_pb_privacy_consent,base.group_system,1,0,0,0

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       People › Privacy. Loop variables: companies `co`, rows `rw`.
+       Every sentence a person reads sits on one line (ledger PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_me_privacy.PbPrivacyLens">
+    <div class="pbim pbim-page pbpvl" t-att-class="{ 'pbpvl--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the answers…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pbpvl-locked">
+          <div class="pbpvl-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for HR</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+          <div class="pbpvl-head">
+            <div class="pbpvl-head-id">
+              <h1 class="pbim-h1" t-if="!props.embedded">Privacy</h1>
+              <p class="pbim-sub">Who has read your privacy notice and given an answer. Record paper consent for people without a login.</p>
+            </div>
+            <div class="pbpvl-head-actions">
+              <select t-if="state.companies.length &gt; 1" class="pbpvl-company" t-on-change="onCompany" aria-label="Company">
+                <option t-foreach="state.companies" t-as="co" t-key="co.id" t-att-value="co.id" t-att-selected="co.id === state.companyId" t-esc="co.name"/>
+              </select>
+              <button class="pbim-btn ghost" t-on-click="() => this.load()" title="Read the answers again" aria-label="Read the answers again"><t t-out="icon('refresh', 15)"/></button>
+            </div>
+          </div>
+
+          <!-- ======================= no notice yet ======================= -->
+          <div t-if="!state.notice" class="pbpvl-start">
+            <div class="pbpvl-start-ic"><t t-out="icon('shieldCheck', 30)"/></div>
+            <div class="pbpvl-start-tx">
+              <h2>No privacy notice is published for <t t-esc="state.company"/></h2>
+              <p>Until you publish one, nobody is asked anything. When you publish it, each employee reads it the next time they open My Payobook and answers "I have read and agree" or "I do not agree".</p>
+              <ul class="pbpvl-start-list">
+                <li><t t-out="icon('fileText', 15)"/> <span>Start from a plain, neutral wording and change it to say what your company really does.</span></li>
+                <li><t t-out="icon('users', 15)"/> <span>Asked once per version. A new version asks everybody again.</span></li>
+                <li><t t-out="icon('shieldCheck', 15)"/> <span>Nobody is locked out: either answer continues to My Payobook.</span></li>
+              </ul>
+              <button class="pbim-btn primary" t-on-click="() => this.openNotice(false)"><t t-out="icon('pencil', 15)"/> <t t-if="state.draftId">Carry on writing the notice</t><t t-else="">Write the notice</t></button>
+            </div>
+          </div>
+
+          <t t-else="">
+            <!-- ======================= the notice ======================= -->
+            <div class="pbim-panel pbpvl-notice">
+              <span class="pbpvl-notice-ic"><t t-out="icon('fileCheck', 18)"/></span>
+              <div class="pbpvl-notice-tx">
+                <div class="pbpvl-notice-t" t-esc="state.notice.title"/>
+                <div class="pbpvl-notice-s"><span>Version</span> <b t-esc="state.notice.version"/><span class="pbpvl-dot" aria-hidden="true"/><span>Published by</span> <b t-esc="state.notice.published_by"/></div>
+              </div>
+              <div class="pbpvl-notice-a">
+                <button class="pbim-btn ghost" t-on-click="() => this.openNotice(false)"><t t-out="icon('eye', 15)"/> See the notice</button>
+                <button class="pbim-btn ghost" t-on-click="() => this.openNotice(true)"><t t-out="icon('pencil', 15)"/> Write a new version</button>
+              </div>
+            </div>
+
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
+
+            <div class="pbpvl-tools">
+              <label class="pbpvl-search">
+                <t t-out="icon('search', 15)"/>
+                <input type="search" placeholder="Find a person…" t-att-value="state.search" t-on-input="onSearch" aria-label="Find a person"/>
+              </label>
+              <span class="pbpvl-count"><b t-esc="state.shown"/> of <b t-esc="state.total"/></span>
+            </div>
+
+            <div t-if="!state.rows.length" class="pbim-empty pbpvl-empty">
+              <h3>Nobody here</h3>
+              <p>Nobody matches what you picked. Clear the search or press the number again.</p>
+            </div>
+
+            <div t-else="" class="pbim-tablewrap">
+              <table class="pbim-table pbpvl-table">
+                <thead>
+                  <tr><th>Person</th><th>Answer</th><th>When</th><th>How</th><th/></tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="state.rows" t-as="rw" t-key="rw.employee_id">
+                    <td>
+                      <div class="pbpvl-name" t-esc="rw.name"/>
+                      <div class="pbpvl-job"><t t-esc="rw.job"/><t t-if="!rw.has_login"><span t-if="rw.job" class="pbpvl-dot" aria-hidden="true"/>No login</t></div>
+                    </td>
+                    <td><span t-att-class="'pbpvl-pill pbpvl-pill--' + rw.status"><i class="pbpvl-pill-dot" aria-hidden="true"/><t t-esc="statusLabel(rw.status)"/></span></td>
+                    <td class="pbpvl-muted"><t t-esc="rw.when ? rw.when.slice(0, 10) : '—'"/></td>
+                    <td class="pbpvl-muted">
+                      <t t-if="rw.how === 'paper'">On paper, recorded by <t t-esc="rw.by"/></t>
+                      <t t-elif="rw.how === 'screen'">On My Payobook</t>
+                      <t t-else="">—</t>
+                    </td>
+                    <td class="pbpvl-act">
+                      <t t-if="rw.status === 'not_yet' or rw.status === 'declined'">
+                        <t t-if="state.confirmFor === rw.employee_id">
+                          <span class="pbpvl-confirm">Signed paper form seen?</span>
+                          <button class="pbim-btn primary sm" t-att-disabled="state.busy" t-on-click="() => this.recordPaper(rw)"><t t-out="icon('check', 14)"/> Yes, record it</button>
+                          <button class="pbim-btn ghost sm" t-on-click="cancelPaper">Cancel</button>
+                        </t>
+                        <button t-else="" class="pbim-btn ghost sm" t-on-click="() => this.askPaper(rw)"><t t-out="icon('fileCheck', 14)"/> Record paper consent</button>
+                      </t>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p t-if="state.more" class="pbpvl-more">The first 200 people are shown. Search for a name to find somebody further down.</p>
+            </div>
+          </t>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

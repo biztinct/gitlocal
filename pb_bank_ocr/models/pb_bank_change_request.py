@@ -47,6 +47,9 @@ _SYS_FIELDS = frozenset({
     'cur_bank_name', 'cur_bank_branch', 'cur_account_name',
     'cur_account_number', 'v_format_ok', 'v_format_msg', 'name_match_score',
     'name_match_band', 'duplicate_ids', 'resolved_bank_id',
+    # WDGAP S6-A: where the request came from, who proposed it, and the
+    # approver's reason when it was sent back or turned down.
+    'pb_origin', 'proposed_by_id', 'pb_decision_note',
 })
 # What the approvers review: frozen to the owner once the request leaves
 # draft (HR/finance may still correct the extraction during review), and
@@ -213,6 +216,14 @@ class PbBankChangeRequest(models.Model):
                         raise AccessError(_(
                             "Only HR can re-target a bank change request."))
         return super().write(vals)
+
+    # WDGAP S6-A (FACTS §0.3): this body sat under `return super().write()`
+    # with its `def` line lost, so it never ran and the base rule applied
+    # (submit open to anybody with write access; the finance rung admitted
+    # only the payroll-manager group). Restored as it was written. Under a
+    # published route the engine decides who may act; this is the record's
+    # own ladder, used where a company has no route, and the buttons' answer.
+    def _approval_can(self, from_state, to_state):
         self.ensure_one()
         if self.env.su or self.env.user._is_admin():
             return True
@@ -303,6 +314,10 @@ class PbBankChangeRequest(models.Model):
         # client-sent truthy from_bank_request must NOT skip the audit (C18.24),
         # hence the object() identity, not a boolean.
         emp.with_context(from_bank_request=_BANK_AUDIT_TOKEN).write(new)
+        # WDGAP S6-A (FACTS §0.1): the employee's bank accounts (what the
+        # Updates sheet, the Records screen and the employee form read) say
+        # the same as the four fields the bank file reads.
+        self._pb_mirror_to_accounts(emp, new)
         self.env['pb.employee.bank.history'].sudo().create({
             'employee_id': emp.id,
             'change_source': 'ocr_request',
@@ -473,6 +488,9 @@ class PbBankChangeRequest(models.Model):
             if want_bank and emp.vietnam_bank_name and want_bank not in fold(emp.vietnam_bank_name):
                 continue  # same number, different bank → not a dup
             out |= emp
+        # WDGAP S6-A: the same number held as a bank ACCOUNT of somebody else
+        # (written by the Updates sheet or a pay data file) is a duplicate too.
+        out |= self._pb_duplicates_in_accounts(digits, want_bank)
         return out
 
     # ---------------------------------------------------- create / defaults

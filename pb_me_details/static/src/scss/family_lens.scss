@@ -1,0 +1,51 @@
+// =====================================================================
+//  People › Family — .pbfl-* (WDGAP S6-A). Tokens only, flat colours,
+//  quiet board: the one coloured thing is the tax tick waiting.
+// =====================================================================
+
+.pbim.pbfl {
+    .pbfl-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+    .pbfl-head-actions { display: flex; gap: 8px; }
+    .pbfl-locked { text-align: center; padding: 40px 24px; }
+    .pbfl-locked-ic { color: var(--pbim-muted); margin-bottom: 8px; }
+    .pbfl-dot { display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .55; margin: 0 7px; vertical-align: middle; }
+
+    .pbfl-tools { margin: 14px 0 12px; }
+    .pbfl-search {
+        display: flex; align-items: center; gap: 8px; max-width: 340px; margin: 0;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm); padding: 0 10px; background: var(--pbim-surface); color: var(--pbim-muted);
+        input { border: 0; outline: none; padding: 8px 0; font: inherit; font-size: 13px; width: 100%; background: transparent; color: var(--pbim-text); }
+        &:focus-within { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+
+    .pbfl-empty { text-align: center; padding: 34px 20px; }
+    .pbfl-empty-ic { color: var(--pbim-green); margin-bottom: 6px; }
+
+    .pbfl-cards { display: grid; gap: 12px; }
+    .pbfl-card { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; padding: 16px 18px; border-left: 3px solid var(--pbim-amber); }
+    .pbfl-card-main { min-width: 0; flex: 1; }
+    .pbfl-card-t { font-size: 15px; font-weight: 800; color: var(--pbim-ink); }
+    .pbfl-rel { margin-left: 8px; font-size: 12px; font-weight: 700; color: var(--pbim-slate); background: var(--pbim-slate-soft); padding: 2px 8px; border-radius: 999px; vertical-align: 1px; }
+    .pbfl-card-s { font-size: 13px; color: var(--pbim-muted); margin-top: 2px; b { color: var(--pbim-text); } }
+    .pbfl-card-f { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 6px; font-size: 12.5px; color: var(--pbim-muted); b { color: var(--pbim-text); font-weight: 700; } }
+    .pbfl-what {
+        display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding: 8px 10px; border-radius: 10px;
+        background: var(--pbim-amber-soft); color: var(--pbim-ink); font-size: 13px; line-height: 1.45;
+        svg { flex: none; margin-top: 2px; color: var(--pbim-amber); }
+        &.is-end svg { color: var(--pbim-rose); }
+    }
+    .pbfl-card-a { display: flex; flex-direction: column; gap: 8px; align-items: stretch; min-width: 190px; }
+    .pbfl-note { font-size: 12.5px; color: var(--pbim-muted); }
+
+    .pbfl-strong { font-weight: 700; color: var(--pbim-ink); }
+    .pbfl-muted { color: var(--pbim-muted); font-size: 12.5px; }
+    .pbfl-pill { display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+    .pbfl-pill--hr_review { background: var(--pbim-amber-soft); color: var(--pbim-ink); }
+    .pbfl-pill--approved { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbfl-pill--refused { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+
+    @media (max-width: 720px) {
+        .pbfl-head, .pbfl-card { flex-direction: column; align-items: stretch; }
+        .pbfl-card-a { min-width: 0; }
+    }
+}
