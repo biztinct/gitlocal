@@ -119,8 +119,11 @@ class PbPolicyAnswer(models.AbstractModel):
     # ================================================================ search
     @api.model
     def _search(self, employee, question):
-        """The best few sections for `question`, best first, with a score.
-        A section matches on at least a third of the question's words."""
+        """The best few sections for `question`, best first. A section must
+        share at least two of the question's meaningful words (one for a
+        one-word question); more shared words and a matching heading rank it
+        higher. A long question full of greetings and contact details still
+        finds its section."""
         words = tokens(question)
         if not words:
             return []
@@ -130,7 +133,7 @@ class PbPolicyAnswer(models.AbstractModel):
         lang = self.env.lang or 'en_US'
         sections = self.env['pb.policy.section'].sudo().search(
             [('document_id', 'in', docs.ids)])
-        need = max(1, -(-len(words) // 3))
+        need = min(2, len(words))
         scored = []
         for sec in sections:
             keys = set((sec.keys or '').split())

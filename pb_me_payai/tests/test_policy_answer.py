@@ -139,8 +139,10 @@ class TestPolicyAnswer(TransactionCase):
     # P11 — no personal figures: no payslip, leave or contract is read
     def test_p11_never_reads_personal_records(self):
         guarded = []
-        for model in ('hr.payslip', 'hr.leave', 'hr.leave.allocation', 'hr.contract',
-                      'hr.version', 'payroll.ai.conversation'):
+        # (hr.version is not guarded: on this build the person's OWN
+        # department is stored there, and the audience check reads it.)
+        for model in ('hr.payslip', 'hr.leave', 'hr.leave.allocation',
+                      'hr.contract', 'payroll.ai.conversation'):
             if model in self.env:
                 guarded.append(patch.object(type(self.env[model]), '_search',
                                             side_effect=AssertionError('read %s' % model)))

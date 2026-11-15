@@ -1,0 +1,879 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_me_payai
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 00:00+0000\n"
+"PO-Revision-Date: 2026-11-16 00:00+0000\n"
+"Last-Translator: Payobook Translation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "<b>PayAI</b>"
+msgstr "<b>PayAI</b>"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "<span class=\"pbpa-sources-h\">From the policy</span>"
+msgstr "<span class=\"pbpa-sources-h\">Dari kebijakan</span>"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"<span class=\"pbpa-thinking\" aria-live=\"polite\" data-pbpa-"
+"thinking=\"\">Reading the policies…</span>"
+msgstr ""
+"<span class=\"pbpa-thinking\" aria-live=\"polite\" "
+"data-pbpa-thinking=\"\">Membaca kebijakan…</span>"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "<span>Ask</span>"
+msgstr "<span>Tanya</span>"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "AI account"
+msgstr "Akun AI"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_question__outcome__answered
+msgid "Answered from a policy"
+msgstr "Dijawab dari kebijakan"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"Answers come from the policy text. If something matters, check with HR."
+msgstr ""
+"Jawaban berasal dari teks kebijakan. Jika sesuatu penting, pastikan dengan "
+"HR."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid ""
+"Answers come only from the policy files HR publishes under Home, Policies. "
+"Never personal figures. Uses this company's AI account."
+msgstr ""
+"Jawaban hanya berasal dari file kebijakan yang diterbitkan HR di Beranda, "
+"Kebijakan. Tidak pernah angka pribadi. Memakai akun AI perusahaan ini."
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_document__language__any
+msgid "Any language"
+msgstr "Semua bahasa"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Ask HR instead"
+msgstr "Tanya HR saja"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Ask HR, with my question"
+msgstr "Tanya HR dengan pertanyaan saya"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"Ask PayAI about the company's policies. It answers only from the policy "
+"files HR has shared, and tells you which one it used."
+msgstr ""
+"Tanyakan kebijakan perusahaan kepada PayAI. PayAI hanya menjawab dari file "
+"kebijakan yang dibagikan HR, dan memberi tahu file mana yang dipakai."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_my_home_pbpa
+msgid "Ask PayAI, answered from the policies"
+msgstr "Tanya PayAI, dijawab dari kebijakan"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__asked_on
+msgid "Asked On"
+msgstr "Ditanyakan pada"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Choose a file first."
+msgstr "Pilih file terlebih dahulu."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid ""
+"Choose limits between 0 and 1,000 per person and 0 and 100,000 per company."
+msgstr ""
+"Pilih batas antara 0 dan 1.000 per orang dan 0 dan 100.000 per perusahaan."
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__company_id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__company_id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_breadcrumbs_pbpa
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_my_home_pbpa
+msgid "Company policies"
+msgstr "Kebijakan perusahaan"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_document
+msgid "Company policy file"
+msgstr "File kebijakan perusahaan"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_res_config_settings
+msgid "Config Settings"
+msgstr "Pengaturan Konfigurasi"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_question__outcome__failed
+msgid "Could not answer just then"
+msgstr "Tidak dapat menjawab saat itu"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__create_uid
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__create_uid
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__create_date
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__create_date
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_question__outcome__limit
+msgid "Daily limit reached"
+msgstr "Batas harian tercapai"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Daily limits"
+msgstr "Batas harian"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Daily limits saved."
+msgstr "Batas harian tersimpan."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__day
+msgid "Day"
+msgstr "Hari"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_payroll_ai_config__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_answer__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_desk__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__document_id
+msgid "Document"
+msgstr "Dokumen"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,help:pb_me_payai.field_res_company__pb_policy_ai_person_day
+#: model:ir.model.fields,help:pb_me_payai.field_res_config_settings__pb_policy_ai_person_day
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Each question PayAI answers costs a little on the AI account."
+msgstr "Setiap pertanyaan yang dijawab PayAI memakan sedikit biaya di akun AI."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__published
+msgid "Employees can ask about it"
+msgstr "Karyawan dapat bertanya tentangnya"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__pb_policy_ai_on
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__pb_policy_ai_on
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Employees may ask PayAI about company policies"
+msgstr "Karyawan boleh bertanya kepada PayAI tentang kebijakan perusahaan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Employees no longer ask about it."
+msgstr "Karyawan tidak lagi bertanya tentangnya."
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_document__language__en_us
+msgid "English"
+msgstr "Bahasa Inggris"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__file
+msgid "File"
+msgstr "File"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__filename
+msgid "File name"
+msgstr "Nama file"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "For example: How many days of leave do I get when I get married?"
+msgstr "Contoh: Berapa hari cuti yang saya dapat ketika menikah?"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"For your own leave or pay, open your Leave or Payslips page: PayAI does not "
+"read your records."
+msgstr ""
+"Untuk cuti atau gaji Anda sendiri, buka halaman Cuti atau Slip gaji: PayAI "
+"tidak membaca data Anda."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Give the policy a title."
+msgstr "Beri judul pada kebijakan."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__heading_keys
+msgid "Heading search words"
+msgstr "Kata pencarian judul"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "I could not answer just now. Try again in a few minutes, or ask HR."
+msgstr ""
+"Saya belum dapat menjawab sekarang. Coba lagi beberapa menit lagi, atau "
+"tanya HR."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"I could not find the answer in the company's policies. HR can answer it."
+msgstr ""
+"Saya tidak menemukan jawabannya di kebijakan perusahaan. HR dapat "
+"menjawabnya."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_payroll_ai_config__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_answer__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_desk__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_document__language__id_id
+msgid "Indonesian"
+msgstr "Bahasa Indonesia"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__language
+msgid "Language"
+msgstr "Bahasa"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__write_uid
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__write_uid
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__write_date
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__write_date
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,help:pb_me_payai.field_pb_policy_document__department_ids
+msgid "Leave empty for everyone in the company."
+msgstr "Kosongkan untuk semua orang di perusahaan."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "No policy files yet"
+msgstr "Belum ada file kebijakan"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid ""
+"No words could be read from %(name)s. A scanned file has no words: upload "
+"the original document instead."
+msgstr ""
+"Tidak ada kata yang dapat dibaca dari %(name)s. File pindaian tidak "
+"memiliki kata: unggah dokumen aslinya."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "No words could be read from this file, so it cannot be published."
+msgstr ""
+"Tidak ada kata yang dapat dibaca dari file ini, jadi tidak dapat "
+"diterbitkan."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "No words found"
+msgstr "Tidak ada kata"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Not available yet: this company has no AI account set up."
+msgstr "Belum tersedia: perusahaan ini belum menyiapkan akun AI."
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_question__outcome__not_found
+msgid "Not in the policies"
+msgstr "Tidak ada di kebijakan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Not published"
+msgstr "Belum diterbitkan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Not set up yet. An administrator adds it in the PayAI settings."
+msgstr "Belum disiapkan. Administrator menambahkannya di pengaturan PayAI."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__section_count
+msgid "Number of sections"
+msgstr "Jumlah bagian"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Off. Employees do not see it."
+msgstr "Mati. Karyawan tidak melihatnya."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid ""
+"On, but no policy is published yet. Employees do not see it until one is."
+msgstr ""
+"Menyala, tetapi belum ada kebijakan yang diterbitkan. Karyawan belum "
+"melihatnya sampai ada yang diterbitkan."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "On. Employees see Company policies on their own pages."
+msgstr ""
+"Menyala. Karyawan melihat Kebijakan perusahaan di halaman mereka sendiri."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Only an HR manager changes the daily limits."
+msgstr "Hanya manajer HR yang mengubah batas harian."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid ""
+"Only an HR manager switches PayAI on for employees and sets the limits."
+msgstr ""
+"Hanya manajer HR yang menyalakan PayAI untuk karyawan dan mengatur batasnya."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Only an HR manager switches PayAI on for employees."
+msgstr "Hanya manajer HR yang menyalakan PayAI untuk karyawan."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__department_ids
+msgid "Only for these departments"
+msgstr "Hanya untuk departemen ini"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,help:pb_me_payai.field_pb_policy_document__published
+msgid "Only published files are searched for an employee question."
+msgstr "Hanya file yang diterbitkan yang dicari untuk pertanyaan karyawan."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Only the HR team manages company policies."
+msgstr "Hanya tim HR yang mengelola kebijakan perusahaan."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__outcome
+msgid "Outcome"
+msgstr "Hasil"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid ""
+"PDF with text, Word (.docx) or plain text, up to 10 MB. A file stays private"
+" until you publish it."
+msgstr ""
+"PDF berisi teks, Word (.docx) atau teks biasa, maksimal 10 MB. File tetap "
+"pribadi sampai Anda menerbitkannya."
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_payroll_ai_config
+msgid "PayAI Configuration"
+msgstr "Konfigurasi PayAI"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,help:pb_me_payai.field_res_company__pb_policy_ai_on
+#: model:ir.model.fields,help:pb_me_payai.field_res_config_settings__pb_policy_ai_on
+msgid ""
+"PayAI answers only from the policy files HR publishes, never with personal "
+"figures. Every question uses this company's AI account."
+msgstr ""
+"PayAI hanya menjawab dari file kebijakan yang diterbitkan HR, tidak pernah "
+"dengan angka pribadi. Setiap pertanyaan memakai akun AI perusahaan ini."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "PayAI for employees"
+msgstr "PayAI untuk karyawan"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Per company"
+msgstr "Per perusahaan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Per company per day"
+msgstr "Per perusahaan per hari"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Per person"
+msgstr "Per orang"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Per person per day"
+msgstr "Per orang per hari"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Policies"
+msgstr "Kebijakan"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__document_ids
+msgid "Policies used"
+msgstr "Kebijakan yang dipakai"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_answer
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__payroll_ai_config__purpose__policy_answers
+msgid "Policy answers for employees"
+msgstr "Jawaban kebijakan untuk karyawan"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_desk
+msgid "Policy answers: the HR desk"
+msgstr "Jawaban kebijakan: meja HR"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Policy files"
+msgstr "File kebijakan"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_question
+msgid "Policy question asked by an employee"
+msgstr "Pertanyaan kebijakan dari karyawan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Published"
+msgstr "Diterbitkan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Published. Employees can ask about it."
+msgstr "Diterbitkan. Karyawan dapat bertanya tentangnya."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_payroll_ai_config__purpose
+msgid "Purpose"
+msgstr "Tujuan"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__pb_policy_ai_company_day
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__pb_policy_ai_company_day
+msgid "Questions per company per day"
+msgstr "Pertanyaan per perusahaan per hari"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__pb_policy_ai_person_day
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__pb_policy_ai_person_day
+msgid "Questions per person per day"
+msgstr "Pertanyaan per orang per hari"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Questions today"
+msgstr "Pertanyaan hari ini"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid ""
+"Read %(n)s sections from %(name)s. Publish it when it is ready for "
+"employees."
+msgstr ""
+"Membaca %(n)s bagian dari %(name)s. Terbitkan ketika sudah siap untuk "
+"karyawan."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Reload the page. If it keeps happening, tell your administrator."
+msgstr "Muat ulang halaman. Jika terus terjadi, beri tahu administrator Anda."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Remove “%s”? Employees can no longer ask about it."
+msgstr "Hapus “%s”? Karyawan tidak dapat lagi bertanya tentangnya."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Removed."
+msgstr "Dihapus."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Save limits"
+msgstr "Simpan batas"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__keys
+msgid "Search words"
+msgstr "Kata pencarian"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__heading
+msgid "Section"
+msgstr "Bagian"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_section
+msgid "Section of a company policy file"
+msgstr "Bagian dari file kebijakan perusahaan"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__section_ids
+msgid "Sections"
+msgstr "Bagian"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Set up"
+msgstr "Sudah disiapkan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Switch off for employees"
+msgstr "Matikan untuk karyawan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Switch on for employees"
+msgstr "Nyalakan untuk karyawan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Switched off for employees."
+msgstr "Dimatikan untuk karyawan."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Switched on for employees."
+msgstr "Dinyalakan untuk karyawan."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "That did not go through."
+msgstr "Belum berhasil."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "That file could not be read. Try again."
+msgstr "File tidak dapat dibaca. Coba lagi."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+#: code:addons/pb_me_payai/models/policy_document.py:0
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "That file is bigger than 10 MB. Upload a smaller one, or split it."
+msgstr ""
+"File lebih besar dari 10 MB. Unggah yang lebih kecil, atau pecah file-nya."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "That file is empty."
+msgstr "File itu kosong."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "That policy is not there any more."
+msgstr "Kebijakan itu sudah tidak ada."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "The company has used today's questions. Ask HR, or try again tomorrow."
+msgstr ""
+"Perusahaan sudah memakai jatah pertanyaan hari ini. Tanya HR, atau coba "
+"lagi besok."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "The policies PayAI reads"
+msgstr "Kebijakan yang dibaca PayAI"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "The policies could not be read"
+msgstr "Kebijakan tidak dapat dibaca"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__text
+msgid "The words read from the file"
+msgstr "Kata yang dibaca dari file"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "This month"
+msgstr "Bulan ini"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__name
+msgid "Title"
+msgstr "Judul"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Title, for example Leave policy"
+msgstr "Judul, misalnya Kebijakan cuti"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Type the limits as whole numbers."
+msgstr "Ketik batas sebagai bilangan bulat."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Upload"
+msgstr "Unggah"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Upload a PDF, a Word file (.docx) or a text file."
+msgstr "Unggah file PDF, Word (.docx) atau file teks."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid ""
+"Upload the handbook and policy files. Employees ask PayAI about them on "
+"their own pages, and PayAI answers only from these words."
+msgstr ""
+"Unggah buku panduan dan file kebijakan. Karyawan bertanya kepada PayAI "
+"tentangnya di halaman mereka sendiri, dan PayAI hanya menjawab dari "
+"kata-kata ini."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Upload the staff handbook first: it answers most questions people ask."
+msgstr ""
+"Unggah buku panduan karyawan terlebih dahulu: buku itu menjawab sebagian "
+"besar pertanyaan orang."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Uploaded"
+msgstr "Diunggah"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__called_ai
+msgid "Used the AI account"
+msgstr "Memakai akun AI"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_document__language__vi_vn
+msgid "Vietnamese"
+msgstr "Bahasa Vietnam"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__body
+msgid "Words"
+msgstr "Kata-kata"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"You have asked as many questions as one person can today. Ask HR, or try "
+"again tomorrow."
+msgstr ""
+"Anda sudah mengajukan pertanyaan sebanyak yang boleh untuk satu orang hari "
+"ini. Tanya HR, atau coba lagi besok."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Your privacy"
+msgstr "Privasi Anda"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Your question"
+msgstr "Pertanyaan Anda"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"Your question goes to the company's AI service without your name, and with "
+"names, phone numbers and amounts taken out. Only the matching policy text "
+"goes with it."
+msgstr ""
+"Pertanyaan Anda dikirim ke layanan AI perusahaan tanpa nama Anda, dan "
+"dengan nama, nomor telepon, serta jumlah uang dihapus. Hanya teks kebijakan "
+"yang cocok yang ikut dikirim."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Your question is not kept. HR sees only how many questions were asked."
+msgstr ""
+"Pertanyaan Anda tidak disimpan. HR hanya melihat berapa banyak pertanyaan "
+"yang diajukan."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "answered from a policy"
+msgstr "dijawab dari kebijakan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "asked"
+msgstr "ditanyakan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "not in the policies"
+msgstr "tidak ada di kebijakan"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "sections"
+msgstr "bagian"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "used the AI account"
+msgstr "memakai akun AI"
