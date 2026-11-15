@@ -130,18 +130,21 @@ class PbMeCertificate(models.Model):
             if waiting:
                 raise UserError(_("A salary certificate is already waiting for "
                                   "HR. You will see it here when it is ready."))
-        cert = self.sudo().create({
-            'employee_id': employee.id,
-            'company_id': employee.company_id.id,
-            'kind': kind,
-            'purpose': purpose,
-            'purpose_note': (note or '').strip()[:80] or False,
-            'lang': lang,
-        })
-        if kind == 'employment':
-            cert._pb_issue()
-        else:
-            cert._pb_send()
+        # One savepoint: a certificate that could not be printed or sent
+        # leaves nothing behind (no half-made number in the person's list).
+        with self.env.cr.savepoint():
+            cert = self.sudo().create({
+                'employee_id': employee.id,
+                'company_id': employee.company_id.id,
+                'kind': kind,
+                'purpose': purpose,
+                'purpose_note': (note or '').strip()[:80] or False,
+                'lang': lang,
+            })
+            if kind == 'employment':
+                cert._pb_issue()
+            else:
+                cert._pb_send()
         return cert
 
     def _pb_send(self):
@@ -246,7 +249,15 @@ class PbMeCertificate(models.Model):
             })
         letter.subject = '%s %s' % (template.with_context(
             lang=rec.lang or 'en_US').subject or template.name, rec.name)
-        letter.with_context(lang=rec.lang or 'en_US').action_generate()
+        try:
+            letter.with_context(lang=rec.lang or 'en_US').action_generate()
+        except Exception:                   # noqa: BLE001 — said in plain words
+            # The printing service can be missing or busy; the person reads a
+            # plain sentence, never the technical one (white-label).
+            _logger.exception('pb_me_letters: certificate %s could not be printed',
+                              rec.name)
+            raise UserError(_("The certificate could not be printed. Try again "
+                              "in a moment."))
         if not letter.attachment_id:
             raise UserError(_("The certificate could not be printed. Try again "
                               "in a moment."))

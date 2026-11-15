@@ -65,3 +65,10 @@
 @keyframes pbml-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes pbml-toast-in { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @keyframes pbml-toast-out { to { opacity: 0; transform: translate(-50%, 8px); visibility: hidden; } }
+
+// pb_me_portal's form grid styles inputs, not selects.
+.pbme.pbml .pbme-form-grid select {
+    border: 1px solid var(--pbim-line); border-radius: 9px; padding: 9px 11px; font-size: 13.5px;
+    font-family: inherit; color: var(--pbim-text); background: #fff; width: 100%;
+    &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+}

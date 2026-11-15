@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 16:09+0000\n"
-"PO-Revision-Date: 2026-11-15 16:09+0000\n"
+"POT-Creation-Date: 2026-11-15 16:31+0000\n"
+"PO-Revision-Date: 2026-11-15 16:31+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: id_ID\n"
@@ -305,12 +305,6 @@ msgstr "Tambah anggota keluarga"
 #: code:addons/pb_me_details/models/detail_request.py:0
 msgid "Add a photo or scan of the paper, so HR can check it."
 msgstr "Tambahkan foto atau pindaian dokumen agar HR dapat memeriksanya."
-
-#. module: pb_me_details
-#. odoo-python
-#: code:addons/pb_me_details/models/detail_approval.py:0
-msgid "After you approve, it waits for the pay team to confirm it for tax"
-msgstr "Setelah Anda setujui, ini menunggu tim penggajian mengonfirmasi untuk pajak"
 
 #. module: pb_me_details
 #: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
@@ -1495,6 +1489,12 @@ msgstr "Menunggu HR mengonfirmasi untuk pajak"
 #: code:addons/pb_me_details/models/pb_me_home.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
 msgid "Waiting for approval"
 msgstr "Menunggu persetujuan"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "Waits for the pay team to confirm"
+msgstr "Menunggu konfirmasi tim penggajian"
 
 #. module: pb_me_details
 #: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank

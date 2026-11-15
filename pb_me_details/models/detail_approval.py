@@ -139,8 +139,7 @@ class PbMeDetailRequestApproval(models.Model):
         if rec.kind in ('family_add', 'family_change') and rec.f_counts_for_tax \
                 and (rec.company_id.country_id.code or '') == 'VN':
             chips.append({'label': _('Tax'),
-                          'value': _('After you approve, it waits for the pay '
-                                     'team to confirm it for tax')})
+                          'value': _('Waits for the pay team to confirm')})
         return {'title': rec.pb_label(),
                 'columns': [_('Now'), _('Proposed')],
                 'rows': rows, 'chips': chips,
