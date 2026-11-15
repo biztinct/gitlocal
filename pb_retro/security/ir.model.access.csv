@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_retro_review_manager,pb.retro.review manager,model_pb_retro_review,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_retro_whatif_manager,pb.retro.whatif manager,model_pb_retro_whatif,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_retro_slip_manager,pb.retro.slip manager,model_pb_retro_slip,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_retro_line_manager,pb.retro.line manager,model_pb_retro_line,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_retro_review_admin,pb.retro.review admin,model_pb_retro_review,base.group_system,1,1,1,1
+access_pb_retro_whatif_admin,pb.retro.whatif admin,model_pb_retro_whatif,base.group_system,1,1,1,1
+access_pb_retro_slip_admin,pb.retro.slip admin,model_pb_retro_slip,base.group_system,1,1,1,1
+access_pb_retro_line_admin,pb.retro.line admin,model_pb_retro_line,base.group_system,1,1,1,1
