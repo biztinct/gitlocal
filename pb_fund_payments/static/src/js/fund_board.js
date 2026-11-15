@@ -187,7 +187,10 @@ export class PbFundPaymentsBoard extends Component {
             this.notif.add(res.msg || _t("Worked out."), {
                 type: (res.created || res.updated || res.unchanged || res.changed) ? "success" : "info",
             });
-            await this.refresh();
+            // New rows can make new filter sections worth showing (a panel
+            // laid out over an empty month has none): lay it out again.
+            await this.load();
+            await this.kit.reconfigure({ ctx: { month: this.state.month } });
         } catch (e) {
             this.notif.add(this._msg(e, _t("The month could not be worked out.")), { type: "danger" });
         } finally {

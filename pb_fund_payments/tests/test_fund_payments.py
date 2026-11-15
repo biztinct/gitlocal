@@ -676,11 +676,12 @@ class TestFundPaymentsInstall(TransactionCase):
     default routes, the rules and the screens."""
 
     def test_T18_install_is_silent(self):
-        self.assertFalse(self.env['pb.fund.payee'].sudo().with_context(
-            active_test=False).search_count([]), "no payee is shipped")
-        self.assertFalse(self.env['pb.fund.payment'].sudo().search_count([]),
-                         "no payment is shipped")
+        # Judged on what the MODULE ships (its ir.model.data), not on a count
+        # of rows: a database people have already used holds their own payees.
         data = self.env['ir.model.data'].sudo().search([('module', '=', 'pb_fund_payments')])
+        self.assertFalse(data.filtered(lambda d: d.model in (
+            'pb.fund.payee', 'pb.fund.payee.item', 'pb.fund.payment')),
+            "no payee or payment is shipped")
         allowed = {'ir.model', 'ir.model.fields', 'ir.model.fields.selection',
                    'ir.model.access', 'ir.rule', 'ir.ui.view', 'ir.actions.client',
                    'ir.actions.act_window', 'biz.approval.process', 'ir.model.constraint',

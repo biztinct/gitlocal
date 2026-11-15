@@ -45,7 +45,7 @@
               <button class="pbim-btn ghost" t-on-click="exportXlsx" t-att-disabled="!state.total" title="Download this month as an Excel file">
                 <t t-out="icon('fileSpreadsheet', 15)"/> Excel
               </button>
-              <button t-if="state.canWrite" class="pbim-btn" t-att-disabled="state.working" t-on-click="workOut">
+              <button t-if="state.canWrite" class="pbim-btn primary" t-att-disabled="state.working" t-on-click="workOut">
                 <t t-out="icon('calculator', 15)"/>
                 <t t-if="state.working"> Working it out…</t>
                 <t t-else=""> Work out what we owe for <t t-esc="state.monthLabel"/></t>
@@ -97,7 +97,7 @@
               <h2>Who does the company pay after payroll?</h2>
               <p>Name the insurance funds and the tax office once, with the pay items that belong to each. Payobook can read your pay schemes and suggest them — you check them before anything is saved.</p>
               <div class="pbfp-start-acts">
-                <button t-if="state.canWrite" class="pbim-btn" t-on-click="openSuggest"><t t-out="icon('sparkles', 15)"/> Suggest from my pay schemes</button>
+                <button t-if="state.canWrite" class="pbim-btn primary" t-on-click="openSuggest"><t t-out="icon('sparkles', 15)"/> Suggest from my pay schemes</button>
                 <button class="pbim-btn ghost" t-on-click="openSetup"><t t-out="icon('plus', 15)"/> Add one myself</button>
               </div>
             </div>
@@ -125,7 +125,7 @@
             <div class="pbfp-empty-ic"><t t-out="icon('alert', 30)"/></div>
             <h3>The payments could not load</h3>
             <p>The connection may have dropped. Your filters are kept.</p>
-            <button class="pbim-btn" t-on-click="retry"><t t-out="icon('refresh', 14)"/> Try again</button>
+            <button class="pbim-btn primary" t-on-click="retry"><t t-out="icon('refresh', 14)"/> Try again</button>
           </div>
 
           <div t-elif="state.rows.length" class="pbim-tablewrap pbfp-tablewrap">
@@ -191,7 +191,7 @@
             <h3>Nothing worked out yet for <t t-esc="state.monthLabel"/></h3>
             <p t-if="state.slips">Press the button to add up what the finished payslips of the month owe each fund and the tax office.</p>
             <p t-else="">When the month's payslips are finished, press the button to add up what they owe.</p>
-            <button t-if="state.canWrite" class="pbim-btn" t-att-disabled="state.working" t-on-click="workOut"><t t-out="icon('calculator', 14)"/> Work out what we owe for <t t-esc="state.monthLabel"/></button>
+            <button t-if="state.canWrite" class="pbim-btn primary" t-att-disabled="state.working" t-on-click="workOut"><t t-out="icon('calculator', 14)"/> Work out what we owe for <t t-esc="state.monthLabel"/></button>
           </div>
 
           <div t-else="" class="pbim-empty pbfp-empty">
@@ -252,8 +252,8 @@
 
               <!-- the moves -->
               <div class="pbfp-dr-acts" t-if="!state.act">
-                <button t-if="P.can.submit" class="pbim-btn" t-att-disabled="state.payBusy" t-on-click="() => this.move('submit')"><t t-out="icon('send', 14)"/> Send for approval</button>
-                <button t-if="P.can.pay" class="pbim-btn" t-att-disabled="state.payBusy" t-on-click="() => this.startAct('pay')"><t t-out="icon('receipt', 14)"/> Record the payment</button>
+                <button t-if="P.can.submit" class="pbim-btn primary" t-att-disabled="state.payBusy" t-on-click="() => this.move('submit')"><t t-out="icon('send', 14)"/> Send for approval</button>
+                <button t-if="P.can.pay" class="pbim-btn primary" t-att-disabled="state.payBusy" t-on-click="() => this.startAct('pay')"><t t-out="icon('receipt', 14)"/> Record the payment</button>
                 <button t-if="P.state === 'waiting' and P.request_id" class="pbim-btn ghost" t-on-click="openRequest"><t t-out="icon('inbox', 14)"/> Open in Approvals</button>
                 <button t-if="P.can.withdraw" class="pbim-btn ghost" t-att-disabled="state.payBusy" t-on-click="() => this.move('withdraw')"><t t-out="icon('undo', 14)"/> Withdraw</button>
                 <button t-if="P.can.reopen" class="pbim-btn ghost danger" t-att-disabled="state.payBusy" t-on-click="() => this.startAct('reopen')"><t t-out="icon('rotate', 14)"/> Reopen</button>
@@ -295,7 +295,7 @@
                 </label>
                 <div class="pbfp-act-foot">
                   <button type="button" class="pbim-btn ghost" t-on-click="cancelAct">Back</button>
-                  <button type="submit" class="pbim-btn" t-att-disabled="state.payBusy or state.act.uploading or !state.act.attachment"><t t-out="icon('check', 14)"/> Mark as paid</button>
+                  <button type="submit" class="pbim-btn primary" t-att-disabled="state.payBusy or state.act.uploading or !state.act.attachment"><t t-out="icon('check', 14)"/> Mark as paid</button>
                 </div>
               </form>
               <form t-else="" class="pbfp-act" t-on-submit.prevent="doAct">
@@ -408,7 +408,7 @@
                 </div>
                 <p t-if="!state.setup.can_write" class="pbfp-muted pbfp-pad">Only a payroll manager or a finance role can change these.</p>
                 <div class="pbfp-modal-foot">
-                  <button class="pbim-btn" t-on-click="closeSetup">Done</button>
+                  <button class="pbim-btn primary" t-on-click="closeSetup">Done</button>
                 </div>
               </t>
 
@@ -473,7 +473,7 @@
                 <div class="pbfp-modal-foot">
                   <button t-if="E.id" class="pbim-btn ghost danger pbfp-left" t-on-click="() => this.archivePayee(E)"><t t-out="icon('trash', 14)"/> Remove</button>
                   <button class="pbim-btn ghost" t-on-click="cancelEdit">Back</button>
-                  <button class="pbim-btn" t-att-disabled="state.saving" t-on-click="savePayee"><t t-out="icon('check', 14)"/> Save</button>
+                  <button class="pbim-btn primary" t-att-disabled="state.saving" t-on-click="savePayee"><t t-out="icon('check', 14)"/> Save</button>
                 </div>
               </t>
             </div>
@@ -515,7 +515,7 @@
               </div>
               <div class="pbfp-modal-foot">
                 <button class="pbim-btn ghost" t-on-click="closeSuggest">Cancel</button>
-                <button class="pbim-btn" t-att-disabled="state.suggestBusy or !suggestCount" t-on-click="acceptSuggestions">
+                <button class="pbim-btn primary" t-att-disabled="state.suggestBusy or !suggestCount" t-on-click="acceptSuggestions">
                   <t t-out="icon('check', 14)"/>
                   <t t-if="suggestCount === 1"> Add 1 fund</t>
                   <t t-else=""> Add <t t-esc="suggestCount"/> funds</t>

@@ -367,11 +367,13 @@ class PbFundPayments(models.AbstractModel):
             'slips': len(rec.slip_ids),
             'bank_details': payee.bank_details or '',
             'reference_text': payee.reference_text or '',
-            'due_full': format_date(self.env, rec.due_date) if rec.due_date else '',
+            'due_full': format_date(self.env, rec.due_date, date_format='d MMM y')
+            if rec.due_date else '',
             'worked_out': format_datetime(self.env, rec.worked_out_on, dt_format='d MMM y, HH:mm')
             if rec.worked_out_on else '',
             'live_owed_label': rec._money(rec.live_owed),
-            'paid_on': format_date(self.env, rec.paid_on) if rec.paid_on else '',
+            'paid_on': format_date(self.env, rec.paid_on, date_format='d MMM y')
+            if rec.paid_on else '',
             'reference': rec.payment_reference or '',
             'note': rec.difference_note or '',
             'receipt': {'id': receipt.id, 'name': receipt.name,
@@ -565,7 +567,14 @@ class PbFundPayments(models.AbstractModel):
                 'employee_items': len([i for i in items if i['share'] == 'employee']),
                 'employer_items': len([i for i in items if i['share'] == 'employer']),
             })
-        currencies = self.env['res.currency'].search([('active', '=', True)], order='name')
+        # Active currencies, plus every currency a payee or a pay scheme of
+        # these companies uses — a scheme may pay in a currency the database
+        # keeps inactive (SC1), and a select without it shows the wrong one.
+        Currency = self.env['res.currency'].sudo().with_context(active_test=False)
+        used = self.env['pb.fund.payee'].search(self._scope()).mapped('currency_id') \
+            | self.env['hr.formula.config'].sudo().search([
+                ('company_id', 'in', self.env.companies.ids)]).mapped('currency_id')
+        currencies = (Currency.search([('active', '=', True)]) | used).sorted('name')
         return {'payees': out, 'can_write': self._can_write(),
                 'currencies': [{'id': c.id, 'name': c.name} for c in currencies],
                 'company_currency_id': self.env.company.currency_id.id}

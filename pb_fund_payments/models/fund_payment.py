@@ -502,7 +502,8 @@ class PbFundPayment(models.Model):
             'difference_note': note or False, 'paid_by': self.env.uid,
         })
         self._log(_("Marked as paid: %(amount)s on %(day)s%(ref)s.",
-                    amount=self._money(amount), day=format_date(self.env, day),
+                    amount=self._money(amount),
+                    day=format_date(self.env, day, date_format='d MMM y'),
                     ref=(_(" · reference %s", self.payment_reference)
                          if self.payment_reference else '')))
         self.audit(self, 'paid_on', _('Fund payment paid'), '',
@@ -673,7 +674,8 @@ class PbFundPayment(models.Model):
         chips = [
             {'label': _('Pay to'), 'value': payee.name or ''},
             {'label': _('Pay month'), 'value': self._month_label(self.month)},
-            {'label': _('Due by'), 'value': format_date(self.env, self.due_date)
+            {'label': _('Due by'), 'value': format_date(self.env, self.due_date,
+                                                        date_format='d MMM y')
              if self.due_date else ''},
             {'label': _('People'), 'value': str(self.head_count)},
             {'label': _('Employee share'), 'value': self._money(self.amount_employee)},
