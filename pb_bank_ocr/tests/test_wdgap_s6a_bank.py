@@ -308,4 +308,5 @@ class TestS6aBank(TransactionCase):
             {'who': {'mode': 'role'}},
             [{'user_id': support.id, 'name': 'Support', 'active': True}],
             None, {}, self.company)
-        self.assertEqual(keep, [])
+        # never seated; (BK1) the Updates second person stands in instead
+        self.assertNotIn(support.id, [p['user_id'] for p in keep])

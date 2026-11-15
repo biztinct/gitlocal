@@ -8,13 +8,20 @@ bank details are kept, and the approved change is written by the one path
 that writes them (`_apply_to_master`).
 
 THE SAME PEOPLE AS THE UPDATES SHEET (FACTS §10 design default; UPDATES
-D13–D15). A request started on My Payobook travels the "Bank details from
-Records and Updates" route (`records_bank`, pb_records) when it exists: ONE
-second person — never the person who proposed it nor the person it is
-about, never a self-service, support or demo login, and on rize the people
-that route names. Without pb_records it keeps its own route. Fail-closed:
-a self-service change is never written without a second person's yes, even
+D13–D15; owner ruling BK1, 2026-11-16: "nobody can change where pay goes
+alone, whichever screen they use"). EVERY bank change — started on My
+Payobook or typed by HR on the staff bank screen — travels the "Bank details
+from Records and Updates" route (`records_bank`, pb_records) when it exists:
+ONE second person, never the person who proposed (typed) it nor the person
+it is about, never a self-service, support or demo login, on rize the
+people that route names, and the route's own independence setting as each
+database has it. Without pb_records the record keeps its own route.
+Fail-closed: a change is never written without a second person's yes, even
 on a route that says "No approval needed".
+
+ALREADY ON THEIR WAY. A request sent in before BK1 travels the old two-step
+`bankchange` route; it keeps the rules it was sent under
+(`_pb_second_person_rule`). Bank details already on record are untouched.
 
 THE PORTAL ENTRY. `pb_portal_start` is the only way in for an employee login
 (which holds no right on this model): the caller passes the SESSION's
@@ -64,18 +71,29 @@ class PbBankChangeRequestSelfService(models.Model):
     def _pb_records_bank_process(self):
         return self.env['biz.approval.process'].sudo()._by_key(RECORDS_BANK_KEY)
 
+    def _pb_second_person_rule(self):
+        """BK1: every bank change needs one second person — except a request
+        already sent in on the old two-step `bankchange` route before the
+        ruling, which keeps the rules it was sent under (a request is never
+        changed under somebody's feet)."""
+        self.ensure_one()
+        request = self.sudo().approval_request_id
+        if request and request.state in ('pending', 'blocked', 'approved', 'applied') \
+                and request.process_id.key != RECORDS_BANK_KEY:
+            return False
+        return True
+
     def _approval_process_key_for(self):
         self.ensure_one()
-        if self._pb_self_service() and self._pb_records_bank_process():
+        if self._pb_records_bank_process():
             return RECORDS_BANK_KEY
         return super()._approval_process_key_for()
 
     def _engine_managed(self):
-        """For a My Payobook request the question is asked of the route it
-        actually travels (the Updates bank route), not of `bankchange`."""
+        """The question is asked of the route the request actually travels
+        (the Updates bank route), not of `bankchange`."""
         self.ensure_one()
-        process = self._pb_records_bank_process() \
-            if self._pb_self_service() else None
+        process = self._pb_records_bank_process()
         if not process:
             return super()._engine_managed()
         return bool(self.env['biz.approval.binding'].sudo().search_count([
@@ -119,8 +137,8 @@ class PbBankChangeRequestSelfService(models.Model):
         self.ensure_one()
         rec = self.sudo()
         engine = self.env['biz.approval.engine']
-        never = rec._pb_never_decide() if rec._pb_self_service() \
-            else self.env['res.users']
+        rule = rec._pb_second_person_rule()
+        never = rec._pb_never_decide() if rule else self.env['res.users']
         keep = []
         for person in people or []:
             uid = person.get('user_id')
@@ -137,7 +155,7 @@ class PbBankChangeRequestSelfService(models.Model):
         allowed = set(users.filtered(lambda u: not rec._pb_excluded(u)).ids)
         keep = [p for p in keep if p.get('active', True)
                 and p['user_id'] in allowed]
-        if keep or not rec._pb_self_service():
+        if keep or not rule:
             if keep:
                 blocking = issue and issue.get('level') == 'block'
                 return keep, (None if blocking else issue)
@@ -151,7 +169,7 @@ class PbBankChangeRequestSelfService(models.Model):
                                  company.name),
                         'fixes': []}
         if 'pb.records.apply' in self.env:
-            found, via = self.env['pb.records.apply']._second_people(
+            found, via = self.env['pb.records.apply'].sudo()._second_people(
                 company, rec._pb_proposer())
             found = found - never
             if found:
@@ -166,7 +184,7 @@ class PbBankChangeRequestSelfService(models.Model):
         """Opt-in engine hook: a sentence when `user` may not APPROVE."""
         self.ensure_one()
         rec = self.sudo()
-        if rec._pb_self_service() and user in rec._pb_never_decide():
+        if rec._pb_second_person_rule() and user in rec._pb_never_decide():
             return _("Bank details need a second person. You cannot approve a "
                      "change to your own bank account, or one you proposed.")
         if rec._pb_excluded(user):
@@ -194,11 +212,12 @@ class PbBankChangeRequestSelfService(models.Model):
     def _before_approval_transition(self, to_state):
         if to_state == 'approved':
             for rec in self:
-                if rec._pb_self_service() and not rec._pb_second_person_approved():
+                if rec._pb_second_person_rule() \
+                        and not rec._pb_second_person_approved():
                     raise UserError(_(
                         "Bank details need a second person. Nobody other than "
-                        "the employee has approved this change, so nothing "
-                        "was written."))
+                        "the person who asked for this change has approved "
+                        "it, so nothing was written."))
         return super()._before_approval_transition(to_state)
 
     def _approval_apply(self, request):
@@ -310,6 +329,13 @@ class PbBankChangeRequestSelfService(models.Model):
             rec.write(vals)
             rec.action_validate()
         return rec
+
+    def action_submit(self):
+        """BK1: HR's staff bank screen sends through the same route; a
+        company that has none yet gets the shipped "a second person" one."""
+        for rec in self:
+            rec._pb_ensure_route()
+        return super().action_submit()
 
     def _pb_ensure_route(self):
         """A company with no Updates bank route yet gets the shipped one ("a

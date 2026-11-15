@@ -1456,8 +1456,8 @@ msgstr "Người thay %s, người không được duyệt thông tin ngân hàn
 #. module: pb_bank_ocr
 #. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
-msgid "Bank details need a second person. Nobody other than the employee has approved this change, so nothing was written."
-msgstr "Thông tin ngân hàng cần người thứ hai. Chưa ai ngoài nhân viên duyệt thay đổi này nên chưa có gì được ghi."
+msgid "Bank details need a second person. Nobody other than the person who asked for this change has approved it, so nothing was written."
+msgstr "Thông tin ngân hàng cần người thứ hai. Chưa ai ngoài người đề nghị thay đổi này duyệt nó nên chưa có gì được ghi."
 
 #. module: pb_bank_ocr
 #. odoo-python

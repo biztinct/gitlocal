@@ -28,8 +28,8 @@ msgstr "Pengganti %s, yang tidak boleh menyetujui data bank miliknya sendiri"
 #. module: pb_bank_ocr
 #. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
-msgid "Bank details need a second person. Nobody other than the employee has approved this change, so nothing was written."
-msgstr "Data bank memerlukan orang kedua. Belum ada orang selain karyawan yang menyetujui perubahan ini, jadi tidak ada yang dicatat."
+msgid "Bank details need a second person. Nobody other than the person who asked for this change has approved it, so nothing was written."
+msgstr "Data bank memerlukan orang kedua. Belum ada orang selain yang mengajukan perubahan ini yang menyetujuinya, jadi tidak ada yang dicatat."
 
 #. module: pb_bank_ocr
 #. odoo-python
