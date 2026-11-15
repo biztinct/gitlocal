@@ -16,7 +16,7 @@ try:
 except Exception:  # pragma: no cover
     requests = None
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 # MAPFIX A — one code generator for every path that names a column.
 from odoo.addons.pb_hr_payroll_formula.models import component_code as component_code_mod
@@ -13951,11 +13951,15 @@ class PbFormulaStudio(models.AbstractModel):
         # only" figures — insurance caps, tax reliefs, the tax base — and the
         # gross line on top of its own parts: ₫159M of "deductions" against a
         # ₫17.8M net on the demo Retail scheme (2026-10-11).
-        Line = self.env['hr.payslip.line'].sudo()
-        lines = Line.browse()
-        for vals in slip_lines:
-            lines |= Line.new(vals)
-        totals = lines.pb_pay_totals()
+        #
+        # WDGAP W2-F (F-5): the lines must BELONG to an in-memory payslip.
+        # pb_payruns' `pb_pay_totals` totals per `slip_id`, so bare
+        # `hr.payslip.line.new()` lines added up to 0 for everything and the
+        # Earnings / Deductions boxes never showed (ledger W2C-1). Still
+        # `.new()` — nothing is saved.
+        totals = self.env['hr.payslip'].sudo().new({
+            'line_ids': [Command.create(vals) for vals in slip_lines],
+        }).line_ids.pb_pay_totals()
         sub_list = [{'group': g, 'value': round(totals[k], 2)}
                     for g, k in (('Earnings', 'gross'), ('Deductions', 'deductions'),
                                  (EMPLOYER_GROUP, 'employer_cost'))
