@@ -2221,3 +2221,32 @@ msgstr "— với"
 #: code:addons/pb_loans/static/src/xml/loans_board.xml:0
 msgid "”. Check the spelling, or search by a person or a reason."
 msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo người hoặc lý do."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "%(month)s: %(why)s. The rest stays in the balance and the plan runs on."
+msgstr "%(month)s: %(why)s. Phần còn lại vẫn nằm trong số dư và kế hoạch tiếp tục."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Cut from %(planned)s to %(taken)s so take-home is not below zero"
+msgstr "Giảm từ %(planned)s xuống %(taken)s để lương thực nhận không dưới 0"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "(newest loan cut first)"
+msgstr "(khoản vay mới nhất được giảm trước)"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "Loan instalment cut from %(planned)s to %(taken)s so take-home is not below zero · %(left)s left"
+msgstr "Khoản trả góp vay được giảm từ %(planned)s xuống %(taken)s để lương thực nhận không dưới 0 · còn lại %(left)s"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__pb_loan_cut
+msgid "Loan instalment cut"
+msgstr "Khoản trả góp vay đã giảm"

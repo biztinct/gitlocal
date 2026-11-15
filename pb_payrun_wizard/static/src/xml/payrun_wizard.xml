@@ -419,6 +419,11 @@
                                     <t t-out="ic('shield',13)"/>
                                     <span>Anyone in the file who is not in Payobook yet will be listed, not paid.</span>
                                 </div>
+                                <!-- WDGAP PR-E — an Extra run keeps only the
+                                     people picked; said before computing. -->
+                                <t t-if="isExtraRun and pf.extra" t-call="pb_payrun_wizard.ExtraFileNote">
+                                    <t t-set="note" t-value="pf.extra"/>
+                                </t>
                             </t>
 
                             <!-- RECORDS R3 — the quiet way out. A pay run is
@@ -498,6 +503,9 @@
                                 </p>
                             </div>
                         </div>
+                        <t t-if="state.summary.sheet and state.summary.sheet.extra" t-call="pb_payrun_wizard.ExtraFileNote">
+                            <t t-set="note" t-value="state.summary.sheet.extra"/>
+                        </t>
                         <div class="pw-fallback" t-if="(state.summary.skipped_components || []).length">
                             <t t-out="ic('alert',14)"/>
                             <span>
@@ -645,6 +653,23 @@
 </t>
 
     <!-- The scheme cards, behind the Payroll scheme field (owner 2026-10-08). -->
+    <!-- WDGAP PR-E (E1): what an Extra run keeps of a pay data file. Every
+         sentence comes from the server, already in the reader's language. -->
+    <t t-name="pb_payrun_wizard.ExtraFileNote">
+        <div class="pw-extrafile">
+            <span class="pw-extrafile-ico"><t t-out="ic('userPlus',15)"/></span>
+            <div class="pw-extrafile-body">
+                <div class="pw-extrafile-t" t-esc="note.sentence"/>
+                <div class="pw-extrafile-w" t-if="note.warning">
+                    <t t-out="ic('alert',13)"/><span t-esc="note.warning"/>
+                </div>
+                <div class="pw-extrafile-w" t-if="note.advance_sentence">
+                    <t t-out="ic('alert',13)"/><span t-esc="note.advance_sentence"/>
+                </div>
+            </div>
+        </div>
+    </t>
+
     <t t-name="pb_payrun_wizard.SchemePickerDialog">
         <Dialog title="title" size="'lg'" footer="false" contentClass="'pw-schemedlg'">
             <div class="pw-schemedlg__body">

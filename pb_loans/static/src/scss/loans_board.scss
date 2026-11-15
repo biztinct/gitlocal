@@ -171,6 +171,7 @@
         width: 100%; border-collapse: collapse; font-size: 13px;
         td { padding: 8px 4px; border-top: 1px solid var(--pbim-line-2, #F1F5F9); vertical-align: top; }
         td small { display: block; color: var(--pbim-muted, #64748B); font-size: 11.5px; }
+        td small.pbln-hist-why { color: #8A5A0B; margin-top: 2px; }
         td.num { text-align: right; font-variant-numeric: tabular-nums; }
         tr.is-released td { color: var(--pbim-muted, #64748B); text-decoration: line-through; }
         tr.is-released td .pbln-badge { text-decoration: none; }

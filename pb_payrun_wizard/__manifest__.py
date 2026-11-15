@@ -12,7 +12,7 @@
     # 1.44.0: WDGAP PR-D — Extra run: only the people picked (always asked
     # for, refused by name when the scheme does not pay them), needs a name,
     # meets / clears / adopts nothing, any number of times a month.
-    'version': '19.0.1.44.0',
+    'version': '19.0.1.45.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

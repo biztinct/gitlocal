@@ -1108,9 +1108,14 @@ export class PayrunWizard extends Component {
         if (!configId || !s.file_b64) { return; }
         s.checking = true;
         try {
+            // WDGAP PR-E — an Extra run also asks who of the people picked
+            // the file carries, so the step can say it before computing.
+            const args = [configId, s.file_b64, s.file_name];
+            if (this.isExtraRun && this.state.who.picked.length) {
+                args.push([...this.state.who.picked]);
+            }
             const res = await this.orm.silent.call(
-                "pb.payrun.wizard", "preflight_spreadsheet",
-                [configId, s.file_b64, s.file_name]);
+                "pb.payrun.wizard", "preflight_spreadsheet", args);
             s.preflight = res;
             // A file that cannot be read is refused HERE, with the reason, and
             // is never carried into a run (C7 — no silent fallback).

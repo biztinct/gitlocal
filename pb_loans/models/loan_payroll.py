@@ -30,13 +30,26 @@ nothing is fed and the payslip is flagged (R4: never raise into the run).
 WHO PAYS: only a REGULAR run (`pb_run_kind`), never a mid-month advance
 scheme, only the scheme the person is paid by for that month (the scheme map,
 when it answers), one instalment per loan per pay month whatever happens.
+
+TAKE-HOME NEVER BELOW ZERO (WDGAP PR-E, E3 — owner: "Take what fits, move the
+rest to next month"). After a payslip is worked out with the planned
+instalment, if its take-home (`hr.payslip.pb_net_amount`, the one way the
+product reads net) is below zero, the instalment is cut by the shortfall —
+newest loan first, never below zero, rounded in the person's favour — and
+the payslip is worked out ONCE more with the smaller amount (`pb_loans_cap`
+in the context, read by `_plan_for_slip`). Never a third time: if other
+deductions still leave take-home below zero, it is left and flagged as
+before. The untaken part simply stays in the balance (the plan runs a month
+longer); nothing else is created. Only payslips that took an instalment AND
+came out below zero are worked out twice.
 """
+import json
 import logging
 import uuid
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools import float_compare
+from odoo.tools import float_compare, float_round
 
 from .loan import (DONE_SLIP_STATES, LIVE_LINE_STATES, TAKING_STATES,
                    month_of)
@@ -283,6 +296,10 @@ class PbLoanPlan(models.Model):
         leaving_day = employee.sudo().departure_date if 'departure_date' in employee._fields else False
         start = fields.Date.to_date(date_from) or month
         end = fields.Date.to_date(date_to)
+        # WDGAP PR-E: the second pass of a payslip whose take-home went below
+        # zero carries the smaller instalments ({loan id: amount}).
+        cap = self.env.context.get('pb_loans_cap')
+        cap = cap if isinstance(cap, dict) else None
         items, issue = [], False
         for loan in loans:
             mine = loan.repayment_ids.filtered(
@@ -299,6 +316,9 @@ class PbLoanPlan(models.Model):
                        and start <= leaving_day <= end)
             amount = available if leaving else min(loan.plan_amount or 0.0, available)
             amount = loan.currency_id.round(amount)
+            if cap is not None and (loan.id in cap or str(loan.id) in cap):
+                capped = cap.get(loan.id, cap.get(str(loan.id)))
+                amount = loan.currency_id.round(max(min(amount, float(capped or 0.0)), 0.0))
             if amount <= 0:
                 continue
             items.append({'loan': loan, 'amount': amount, 'leaving': bool(leaving)})
@@ -307,7 +327,8 @@ class PbLoanPlan(models.Model):
         total = currency.round(sum(i['amount'] for i in items))
         return {'month': month, 'code': rule.code if rule else False,
                 'items': items, 'total': total, 'issue': issue,
-                'held': bool(held), 'currency': currency}
+                'held': bool(held), 'currency': currency,
+                'capped': cap is not None}
 
     @api.model
     def _pb_scheme_pays(self, employee, config, on_date):
@@ -360,7 +381,7 @@ class PbLoanPlan(models.Model):
                 lines = {i['loan'].id: i['amount'] for i in items}
             else:
                 issue = 'other_source'
-        elif code and plan.get('held'):
+        elif code and (plan.get('held') or plan.get('capped')):
             # A recompute without the instalment it took before: say 0 so the
             # stored value is not carried over (`action_recompute_formula_lines`
             # keeps a stored value only for codes nothing answers).
@@ -493,6 +514,12 @@ class HrPayslipLoans(models.Model):
         help='Why this payslip did not take a loan instalment the person owes.')
     pb_loan_line_ids = fields.One2many('pb.loan.repayment', 'payslip_id',
                                        string='Loan repayments', readonly=True)
+    #: WDGAP PR-E — the instalments this payslip planned and what it took
+    #: after cutting them so take-home is not below zero. JSON
+    #: {"planned": {loan id: amount}, "taken": {loan id: amount}}; empty when
+    #: nothing was cut.
+    pb_loan_cut = fields.Text(string='Loan instalment cut', readonly=True,
+                              copy=False)
 
     # ------------------------------------------------------------ seam 1
     def _get_formula_input_values(self, config, provenance=None):
@@ -525,6 +552,8 @@ class HrPayslipLoans(models.Model):
         for slip in self:
             if hasattr(slip, '_application_mode') and slip._application_mode():
                 super(HrPayslipLoans, slip)._pb_compute_sheet_with_formulas()
+                slip._pb_loans_application_floor(
+                    lambda s: super(HrPayslipLoans, s)._pb_compute_sheet_with_formulas())
                 continue
             token = used_start(self.env)
             try:
@@ -533,7 +562,11 @@ class HrPayslipLoans(models.Model):
             except Exception:
                 used_end(self.env, token)
                 raise
-            Line._sync_slip(slip, used_end(self.env, token))
+            used, cut = slip._pb_loans_floor(
+                used_end(self.env, token),
+                lambda s: super(HrPayslipLoans, s)._pb_compute_sheet_with_formulas())
+            Line._sync_slip(slip, used)
+            slip._pb_loans_record_cut(cut, used)
         return True
 
     def action_recompute_formula_lines(self):
@@ -542,6 +575,8 @@ class HrPayslipLoans(models.Model):
         for slip in self:
             if hasattr(slip, '_application_mode') and slip._application_mode():
                 result = super(HrPayslipLoans, slip).action_recompute_formula_lines()
+                slip._pb_loans_application_floor(
+                    lambda s: super(HrPayslipLoans, s).action_recompute_formula_lines())
                 continue
             token = used_start(self.env)
             try:
@@ -551,8 +586,143 @@ class HrPayslipLoans(models.Model):
             except Exception:
                 used_end(self.env, token)
                 raise
-            Line._sync_slip(slip, used_end(self.env, token))
+            used, cut = slip._pb_loans_floor(
+                used_end(self.env, token),
+                lambda s: super(HrPayslipLoans, s).action_recompute_formula_lines())
+            Line._sync_slip(slip, used)
+            slip._pb_loans_record_cut(cut, used)
         return result
+
+    # --------------------------------------- WDGAP PR-E: take-home floor
+    def _pb_loans_shortfall(self, currency):
+        """How far take-home is below zero, rounded UP to the currency's
+        smallest unit (so the cut instalment rounds DOWN — in the person's
+        favour); 0 when it is not below zero."""
+        self.ensure_one()
+        try:
+            net = self.sudo().pb_net_amount()
+        except Exception:       # noqa: BLE001 — R4: never raise into the run
+            _logger.exception('pb_loans: could not read take-home of %s', self.id)
+            return 0.0
+        rounding = currency.rounding or 0.01
+        if float_compare(net, 0.0, precision_rounding=rounding) >= 0:
+            return 0.0
+        return float_round(-net, precision_rounding=rounding, rounding_method='UP')
+
+    @api.model
+    def _pb_loans_cut_plan(self, taken, shortfall, currency):
+        """{loan id: smaller amount} — the shortfall taken off the NEWEST loan
+        first (the highest id), then the next, never below zero."""
+        cap = {int(k): float(v) for k, v in (taken or {}).items()}
+        left = shortfall
+        for loan_id in sorted(cap, reverse=True):
+            if left <= 0:
+                break
+            cut = min(cap[loan_id], left)
+            cap[loan_id] = currency.round(cap[loan_id] - cut)
+            left = currency.round(left - cut)
+        return cap
+
+    def _pb_loans_floor(self, used, rerun):
+        """After the first pass: if the payslip took an instalment and its
+        take-home is below zero, work it out once more with the instalments
+        cut by the shortfall. Returns `(used, cut)` — the bookkeeping of the
+        pass that counts, and `{'planned', 'taken'}` when it cut (else None).
+
+        Never a third pass: a second pass is itself never floored (the cap in
+        the context says so) and its answer is final."""
+        self.ensure_one()
+        taken = (used or {}).get('lines') or {}
+        if not taken or self.env.context.get('pb_loans_cap') is not None \
+                or not self.id:
+            return used, None
+        Loan = self.env['pb.loan'].sudo()
+        loans = Loan.browse([int(i) for i in taken]).exists()
+        if not loans:
+            return used, None
+        currency = loans[:1].currency_id or self.company_id.currency_id
+        shortfall = self._pb_loans_shortfall(currency)
+        if not shortfall:
+            return used, None
+        cap = self._pb_loans_cut_plan(taken, shortfall, currency)
+        token = used_start(self.env)
+        try:
+            rerun(self.with_context(pb_loans_token=token, pb_loans_cap=cap,
+                                    pb_loans_slip_id=self.id))
+        except Exception:
+            used_end(self.env, token)
+            raise
+        second = used_end(self.env, token)
+        if not second.get('seen'):
+            # the second pass did not reach a loan seam (cannot happen on
+            # the paths that wrap this) — keep the first pass's answer
+            return used, None
+        return second, {'planned': {str(k): v for k, v in taken.items()},
+                        'taken': {str(k): v for k, v in
+                                  (second.get('lines') or {}).items()}}
+
+    def _pb_loans_application_floor(self, rerun):
+        """The same floor in application-data mode, where the instalment is
+        reserved from the resolved sources (`_application_resolve_inputs`)."""
+        self.ensure_one()
+        if self.env.context.get('pb_loans_cap') is not None:
+            return
+        Line = self.env['pb.loan.repayment'].sudo()
+        held = Line.search([('payslip_id', '=', self.id), ('kind', '=', 'payroll'),
+                            ('state', 'in', LIVE_LINE_STATES)])
+        taken = {line.loan_id.id: line.amount for line in held}
+        cut = None
+        if taken:
+            currency = held[:1].loan_id.currency_id or self.company_id.currency_id
+            shortfall = self._pb_loans_shortfall(currency)
+            if shortfall:
+                cap = self._pb_loans_cut_plan(taken, shortfall, currency)
+                rerun(self.with_context(pb_loans_cap=cap))
+                held = Line.search([('payslip_id', '=', self.id),
+                                    ('kind', '=', 'payroll'),
+                                    ('state', 'in', LIVE_LINE_STATES)])
+                cut = {'planned': {str(k): v for k, v in taken.items()},
+                       'taken': {str(l.loan_id.id): l.amount for l in held}}
+        self._pb_loans_record_cut(cut, {'seen': True})
+
+    def _pb_loans_record_cut(self, cut, used):
+        """Keep what was cut on the payslip (for the review flag) and say so
+        on the repayment line and on the loan — once, not on every
+        recompute that cuts the same way."""
+        self.ensure_one()
+        if not (used or {}).get('seen') and not cut:
+            return
+        slip = self.sudo()
+        if cut and not any(float(cut['taken'].get(k) or 0.0) < float(v)
+                           for k, v in cut['planned'].items()):
+            cut = None
+        value = json.dumps(cut, sort_keys=True) if cut else False
+        if (slip.pb_loan_cut or False) == value:
+            return
+        slip.with_context(pb_loans_issue_write=True).write({'pb_loan_cut': value})
+        if not cut:
+            return
+        Loan = self.env['pb.loan'].sudo()
+        Line = self.env['pb.loan.repayment'].sudo()
+        month = month_of(slip.date_to)
+        for loan_id, planned in sorted(cut['planned'].items()):
+            loan = Loan.browse(int(loan_id)).exists()
+            if not loan:
+                continue
+            got = float(cut['taken'].get(loan_id) or 0.0)
+            if got >= float(planned):
+                continue
+            why = _("Cut from %(planned)s to %(taken)s so take-home is not below "
+                    "zero", planned=loan._money(float(planned)),
+                    taken=loan._money(got))
+            line = Line.search([('loan_id', '=', loan.id), ('payslip_id', '=', slip.id),
+                                ('kind', '=', 'payroll'),
+                                ('state', 'in', LIVE_LINE_STATES)], limit=1)
+            if line:
+                line._write_line({'reason': why})
+            loan._post(_("%(month)s: %(why)s. The rest stays in the balance and "
+                         "the plan runs on.", month=loan._month_label(month),
+                         why=why))
 
     # -------------------------------------------- application-data mode
     def _application_resolve_inputs(self, config):
@@ -673,6 +843,18 @@ class PayrollImportBatchLoans(models.Model):
             raise
         used = used_end(self.env, token)
         if payslip:
-            self.env['pb.loan.repayment'].sudo()._sync_slip(
-                payslip.with_env(self.env), used)
+            slip = payslip.with_env(self.env)
+            cut = None
+            if (used or {}).get('lines'):
+                # WDGAP PR-E: the second pass of a file payslip is the file's
+                # own "recalculate" — which reads the row through the import
+                # line, so the line must already point at its payslip
+                # (`action_process` writes the same value right after).
+                if line and not line.payslip_id:
+                    line.payslip_id = slip.id
+                used, cut = slip._pb_loans_floor(
+                    used, lambda s: super(HrPayslipLoans, s)
+                    .action_recompute_formula_lines())
+            self.env['pb.loan.repayment'].sudo()._sync_slip(slip, used)
+            slip._pb_loans_record_cut(cut, used)
         return payslip

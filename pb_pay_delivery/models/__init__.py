@@ -6,6 +6,7 @@ from . import bank_export_wizard
 from . import bank_file
 from . import payment_release
 from . import pay_hold
+from . import paid_other
 from . import payroll_journal
 from . import payslip_delivery
 from . import approval_seed

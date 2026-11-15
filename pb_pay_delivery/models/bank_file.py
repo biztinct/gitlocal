@@ -322,6 +322,12 @@ class PbBankFile(models.Model):
         self.ensure_one()
         return self._pb_file_slips().filtered(lambda s: s.pb_pay_hold)
 
+    def _pb_paid_other_in_file(self):
+        """Payslips in this file that have been marked as paid another way
+        since it was prepared (WDGAP PR-E): the bank must not pay them too."""
+        self.ensure_one()
+        return self._pb_file_slips().filtered(lambda s: s.pb_paid_method)
+
     def _pb_total_parts(self):
         """The run's total, taken apart: what this file pays and why the
         rest is not in it."""
@@ -329,14 +335,18 @@ class PbBankFile(models.Model):
         Wizard = self.env['vietnam.bank.export.wizard']
         in_file = self._pb_file_slips()
         done = self.run_id.sudo().slip_ids.filtered(lambda s: s.state == 'done')
-        run_total = held = paid = expected = 0.0
-        held_n = paid_n = 0
+        run_total = held = paid = other_way = expected = 0.0
+        held_n = paid_n = other_way_n = 0
         for slip in done:
             net = Wizard._slip_net(slip)
             run_total += net
             if slip.pb_pay_hold:
                 held += net
                 held_n += 1
+            elif slip.pb_paid_method:
+                # WDGAP PR-E: paid outside any bank file (cash, cheque, …)
+                other_way += net
+                other_way_n += 1
             elif slip.pb_paid_on and slip not in in_file:
                 paid += net
                 paid_n += 1
@@ -344,7 +354,9 @@ class PbBankFile(models.Model):
                 expected += net
         file_total = float(self.control_total or 0.0)
         return {'run_total': run_total, 'held': held, 'held_count': held_n,
-                'paid': paid, 'paid_count': paid_n, 'expected': expected,
+                'paid': paid, 'paid_count': paid_n,
+                'paid_other': other_way, 'paid_other_count': other_way_n,
+                'expected': expected,
                 'file_total': file_total, 'other': expected - file_total}
 
     @api.model
@@ -356,7 +368,8 @@ class PbBankFile(models.Model):
         (2 people)'; '' when the file simply is the run."""
         self.ensure_one()
         p = self._pb_total_parts()
-        if not p['held_count'] and not p['paid_count']:
+        if not p['held_count'] and not p['paid_count'] \
+                and not p['paid_other_count']:
             return ''
         fmt = '{:,.0f}'.format
         bits = [_("Bank file %(file)s = run %(run)s",
@@ -369,6 +382,10 @@ class PbBankFile(models.Model):
             bits.append(_("− %(amount)s paid by an earlier file (%(people)s)",
                           amount=fmt(p['paid']),
                           people=self._pb_people(p['paid_count'])))
+        if p['paid_other_count']:
+            bits.append(_("− %(amount)s paid another way (%(people)s)",
+                          amount=fmt(p['paid_other']),
+                          people=self._pb_people(p['paid_other_count'])))
         if abs(p['other']) >= 0.01:
             bits.append(_("− %(amount)s left out for other reasons",
                           amount=fmt(p['other'])))
