@@ -457,6 +457,7 @@ export class Contract360Drawer extends Component {
         this.action = useService("action");
         this.dialog = useService("dialog");
         this.notif = useService("notification");
+        this.overlay = useService("overlay");
         this.state = useState({
             loaded: false, shown: false,
             tab: TABS.includes(this.props.tab) ? this.props.tab : "terms", d: null,
@@ -479,6 +480,7 @@ export class Contract360Drawer extends Component {
             saving: false,
             busy: false,       // a lifecycle action is running
             asking: false,     // a confirmation dialog owns Escape
+            takeHome: false,   // WDGAP W2-C — the take-home card owns Escape
         });
         // Non-reactive: the cell a popover floats beside. Putting a DOM node in
         // reactive state makes OWL proxy it, and a proxied element is not the
@@ -604,7 +606,7 @@ export class Contract360Drawer extends Component {
      * that guard, dismissing "Leave them?" would immediately ask it again.
      */
     onKey(ev) {
-        if (this.state.asking) { return; }
+        if (this.state.asking || this.state.takeHome) { return; }
         if ((ev.key === "Enter") && (ev.metaKey || ev.ctrlKey)) {
             if (!this.canWrite) { return; }
             ev.preventDefault();
@@ -810,6 +812,36 @@ export class Contract360Drawer extends Component {
         this.onChanged();
     }
     cancelEdit() { this.state.edit = null; }
+
+    // =====================================================================
+    //  WDGAP W2-C — "Work back from take-home", beside the wage
+    // =====================================================================
+    //
+    // The card lives in pb_formula_studio, which this module does not depend
+    // on: it is found through the soft registry and the link simply does not
+    // show when that module is absent. It is offered only where the person
+    // could type the wage themselves (an editable, unmasked wage), because
+    // "Use this amount" does exactly that — it STAGES the figure in this open
+    // form. Nothing is written until the Save bar is pressed, and a wage
+    // change then goes through whatever approval it already needs.
+    get takeHomeDoor() {
+        return registry.category("pb_take_home").get("open", null);
+    }
+    showTakeHome(f) {
+        return Boolean(f.name === "wage" && this.takeHomeDoor && this.canEdit(f)
+            && !this.header.wage_masked);
+    }
+    get takeHomeLabel() { return _t("Work back from take-home"); }
+    openTakeHome(f) {
+        const door = this.takeHomeDoor;
+        if (!door || this.state.takeHome) { return; }
+        this.state.edit = null;
+        this.state.takeHome = true;
+        door(this.overlay, {
+            contractId: Number(this.props.contractId),
+            onUse: (value) => this.commitTerm(f, value),
+        }, () => { this.state.takeHome = false; });
+    }
 
     /** The writable terms, in the order they are painted. */
     editableTermNames() {

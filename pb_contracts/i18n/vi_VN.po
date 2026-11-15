@@ -2191,3 +2191,9 @@ msgstr "Không có gì cần kiểm tra"
 #: code:addons/pb_contracts/static/src/xml/contracts.xml:0
 msgid "Every answer Payobook filled in by itself has been confirmed or changed by a person."
 msgstr "Mọi câu trả lời Payobook tự điền đều đã được một người xác nhận hoặc sửa."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Work back from take-home"
+msgstr "Tính ngược từ lương thực nhận"

@@ -307,6 +307,11 @@
                           was <t t-esc="termWas(f)"/>
                         </span>
                         <span class="pbc-hint" t-if="f.hint and !isTermDirty(f.name)" t-esc="f.hint"/>
+                        <!-- WDGAP W2-C — a quiet door beside the wage. -->
+                        <button t-if="showTakeHome(f)" type="button" class="pbc-takehome"
+                                t-on-click.stop="() => this.openTakeHome(f)" t-on-keydown.stop="">
+                          <t t-out="ic('calculator',13)"/> <span t-esc="takeHomeLabel"/>
+                        </button>
                         <span class="pbc-refuse" t-if="hasRefusal('term', f.name)">
                           <span class="pbc-dot"/><span t-esc="refusalFor('term', f.name)"/>
                         </span>
