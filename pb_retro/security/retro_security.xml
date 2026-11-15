@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         Who reads a re-work (WDGAP W2-D1 §1.6): payroll managers and
+         administrators (ACL), only for the companies they work in (these
+         global rules). The board checks the same group before every call.
+         ================================================================== -->
+
+    <record id="rule_pb_retro_review_company" model="ir.rule">
+        <field name="name">Past-month re-work: company</field>
+        <field name="model_id" ref="model_pb_retro_review"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_retro_whatif_company" model="ir.rule">
+        <field name="name">Past-month re-work value: company</field>
+        <field name="model_id" ref="model_pb_retro_whatif"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_retro_slip_company" model="ir.rule">
+        <field name="name">Past-month re-work payslip: company</field>
+        <field name="model_id" ref="model_pb_retro_slip"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_retro_line_company" model="ir.rule">
+        <field name="name">Past-month re-work difference: company</field>
+        <field name="model_id" ref="model_pb_retro_line"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>
