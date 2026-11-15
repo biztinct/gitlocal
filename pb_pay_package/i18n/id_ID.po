@@ -1,0 +1,423 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_pay_package
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:20+0000\n"
+"PO-Revision-Date: 2026-11-15 16:20+0000\n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "% a month"
+msgstr "% per bulan"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"%(basic)s at %(basic_value)s and what the scheme adds to it already cost "
+"%(now)s a month, more than %(month)s. Lower the share for basic pay."
+msgstr "%(basic)s sebesar %(basic_value)s dan yang ditambahkan skema di atasnya sudah menelan %(now)s per bulan, lebih dari %(month)s. Turunkan porsi gaji pokok."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"%(items)s is not kept on the contract in this pay scheme, so these figures "
+"cannot be filled in from here."
+msgstr "%(items)s tidak disimpan di kontrak pada skema gaji ini, jadi angka-angka ini tidak bisa diisi dari sini."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"%(month)s a month cannot be reached exactly: the scheme's rounding jumps "
+"over it. Closest: %(item)s %(v1)s gives %(n1)s; %(item)s %(v2)s gives "
+"%(n2)s."
+msgstr "%(month)s per bulan tidak bisa dicapai tepat: pembulatan skema melompatinya. Terdekat: %(item)s %(v1)s menghasilkan %(n1)s; %(item)s %(v2)s menghasilkan %(n2)s."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "A fixed amount"
+msgstr "Jumlah tetap"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "A month"
+msgstr "Per bulan"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"A total of %(year)s a year (%(month)s a month) needs %(item)s of %(value)s, "
+"with %(basic)s at %(basic_value)s."
+msgstr "Total %(year)s per tahun (%(month)s per bulan) memerlukan %(item)s sebesar %(value)s, dengan %(basic)s sebesar %(basic_value)s."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "A year"
+msgstr "Per tahun"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Basic pay"
+msgstr "Gaji pokok"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"Basic pay and the item that takes the rest must be two different pay items."
+msgstr "Gaji pokok dan pos yang menampung sisanya harus dua pos gaji yang berbeda."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid "Basic pay is a share of the total from 1% to 100%."
+msgstr "Gaji pokok adalah porsi dari total, dari 1% sampai 100%."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Build from a total"
+msgstr "Susun dari total"
+
+#. module: pb_pay_package
+#: model:ir.model,name:pb_pay_package.model_pb_pay_package
+msgid "Build pay from a total package"
+msgstr "Susun gaji dari total paket"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Choose a pay item…"
+msgstr "Pilih pos gaji…"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_pay_package__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Employer contributions"
+msgstr "Iuran perusahaan"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"Even with %(item)s at %(value)s the total is %(now)s a month, below "
+"%(month)s."
+msgstr "Bahkan dengan %(item)s sebesar %(value)s totalnya %(now)s per bulan, di bawah %(month)s."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Gross pay"
+msgstr "Gaji kotor"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid ""
+"Gross pay plus the employer's contributions, as the scheme works them out."
+msgstr "Gaji kotor ditambah iuran perusahaan, sebagaimana dihitung skema."
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_pay_package__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "New"
+msgstr "Baru"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"No pay scheme pays this person yet, so there is nothing to build the total "
+"with. Put their team on a pay scheme first."
+msgstr "Belum ada skema gaji yang membayar orang ini, jadi belum ada dasar untuk menyusun total. Masukkan timnya ke skema gaji dulu."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Nothing is saved. This only works the figures out."
+msgstr "Tidak ada yang disimpan. Ini hanya menghitung angkanya."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Now"
+msgstr "Sekarang"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Only what changed"
+msgstr "Hanya yang berubah"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Pay item"
+msgstr "Pos gaji"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Pay scheme"
+msgstr "Skema gaji"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid "Pick the pay item that is basic pay."
+msgstr "Pilih pos gaji yang merupakan gaji pokok."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid "Pick the pay item that takes the rest."
+msgstr "Pilih pos gaji yang menampung sisanya."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Reading this person's pay…"
+msgstr "Membaca gaji orang ini…"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Share of the total"
+msgstr "Porsi dari total"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Show every line"
+msgstr "Tampilkan semua baris"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid "Stopped after %(n)s tries without settling on a figure."
+msgstr "Berhenti setelah %(n)s percobaan tanpa menemukan angka."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Take-home"
+msgstr "Gaji bersih"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Takes the rest"
+msgstr "Menampung sisanya"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "The payslip at these figures"
+msgstr "Slip gaji dengan angka ini"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"The total cannot be worked out: the formula for “%(name)s” has an error at "
+"%(value)s (%(why)s). Fix it in Formula Studio first."
+msgstr "Total tidak bisa dihitung: rumus “%(name)s” error pada %(value)s (%(why)s). Perbaiki dulu di Formula Studio."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"The total cannot be worked out: the formula for “%(name)s” has an error for "
+"this person (%(why)s). Fix it in Formula Studio first."
+msgstr "Total tidak bisa dihitung: rumus “%(name)s” error untuk orang ini (%(why)s). Perbaiki dulu di Formula Studio."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"The total does not change when %(item)s changes, so it cannot take the rest."
+" Pick another pay item."
+msgstr "Total tidak berubah saat %(item)s berubah, jadi pos ini tidak bisa menampung sisanya. Pilih pos gaji lain."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"The total goes down when %(item)s goes up, so it cannot take the rest. Pick "
+"a pay item that adds to pay."
+msgstr "Total turun saat %(item)s naik, jadi pos ini tidak bisa menampung sisanya. Pilih pos yang menambah gaji."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid ""
+"They go into the contract form. Nothing is saved until you press Save there,"
+" and the change then goes for approval like any other pay change."
+msgstr "Angka-angka ini masuk ke formulir kontrak. Tidak ada yang disimpan sampai Anda menekan Simpan di sana, lalu perubahan diajukan untuk persetujuan seperti perubahan gaji lainnya."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/build_total.js:0
+msgid "This could not be worked out just now. Try again in a moment."
+msgstr "Belum bisa dihitung sekarang. Coba lagi sebentar lagi."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"This pay scheme does not have the pay items a total can be split into (it "
+"needs at least a basic pay and one item that takes the rest)."
+msgstr "Skema gaji ini tidak punya pos gaji untuk membagi total (perlu setidaknya gaji pokok dan satu pos yang menampung sisanya)."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"This pay scheme has no gross pay line, so a total package cannot be worked "
+"out on it."
+msgstr "Skema gaji ini tidak punya baris gaji kotor, jadi total paket tidak bisa dihitung."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"This scheme does not give a total that is a number for this person, so "
+"nothing can be worked out."
+msgstr "Skema ini tidak menghasilkan total berupa angka untuk orang ini, jadi tidak ada yang bisa dihitung."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Total"
+msgstr "Total"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Total a month"
+msgstr "Total per bulan"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Total package"
+msgstr "Total paket"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid ""
+"Type a total, then work it out. Every pay item the scheme works out from "
+"basic pay follows by itself."
+msgstr "Ketik total, lalu hitung. Setiap pos yang dihitung skema dari gaji pokok mengikuti dengan sendirinya."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid "Type basic pay as an amount above zero."
+msgstr "Ketik gaji pokok sebagai jumlah di atas nol."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid "Type the total package, as an amount above zero."
+msgstr "Ketik total paket sebagai jumlah di atas nol."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Use these figures"
+msgstr "Gunakan angka ini"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Work it out"
+msgstr "Hitung"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Worked out in"
+msgstr "Dihitung dalam"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/build_total.js:0
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "a month"
+msgstr "per bulan"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "a month ·"
+msgstr "per bulan ·"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/build_total.js:0
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "a year"
+msgstr "per tahun"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "tries"
+msgstr "percobaan"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "was"
+msgstr "sebelumnya"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"“%(names)s” already adds gross pay, so it is a total of its own and is not "
+"counted again."
+msgstr "“%(names)s” sudah memuat gaji kotor, jadi itu total tersendiri dan tidak dihitung lagi."

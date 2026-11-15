@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WDGAP S8-A — the Pay screen draws a tab another module brings
+     (`pb_pay_tabs`, read by `extraTab` in pay_hub.js): its own heading, its
+     own line under it, and its Component in place of the bands. Inherited,
+     never edited (lane rule). No double hyphen in any comment (W22). -->
+<templates xml:space="preserve">
+  <t t-inherit="pb_pay.PbPayScreen" t-inherit-mode="extension">
+    <xpath expr="//h1[@t-else='']" position="before">
+      <h1 class="pay-h" t-elif="extraTab" t-esc="extraTab.title or extraTab.label"/>
+    </xpath>
+    <xpath expr="//p[@t-else='']" position="before">
+      <p class="pay-s" t-elif="extraTab" t-esc="extraTab.subtitle or ''"/>
+    </xpath>
+    <xpath expr="//t[@t-if=&quot;state.tab === 'changes'&quot;]" position="after">
+      <t t-if="extraTab">
+        <t t-component="extraTab.Component" embedded="props.embedded"/>
+      </t>
+    </xpath>
+  </t>
+</templates>

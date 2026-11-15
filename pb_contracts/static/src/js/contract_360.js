@@ -843,6 +843,91 @@ export class Contract360Drawer extends Component {
         }, () => { this.state.takeHome = false; });
     }
 
+    // =====================================================================
+    //  WDGAP S8-A — "Build from a total", beside the take-home link
+    // =====================================================================
+    //
+    // Same shape as W2-C: the dialog lives in pb_pay_package (found through
+    // the soft registry `pb_build_total`, absent module = no link). Its
+    // "Use these figures" STAGES the wage and the pay lines in this open
+    // form; nothing is written until Save, which follows the contract's
+    // normal approval (money terms through the contract proposal).
+    get buildTotalDoor() {
+        return registry.category("pb_build_total").get("open", null);
+    }
+    showBuildTotal(f) {
+        return Boolean(f.name === "wage" && this.buildTotalDoor && this.canEdit(f)
+            && !this.header.wage_masked);
+    }
+    get buildTotalLabel() { return _t("Build from a total"); }
+    openBuildTotal(f) {
+        const door = this.buildTotalDoor;
+        if (!door || this.state.takeHome) { return; }
+        this.state.edit = null;
+        this.state.takeHome = true;
+        door(this.overlay, {
+            contractId: Number(this.props.contractId),
+            onUse: (answer) => this.useBuildTotal(f, answer),
+        }, () => { this.state.takeHome = false; });
+    }
+    /** `answer` = {wage: number|null, items: [{code, amount}]}. */
+    useBuildTotal(f, answer) {
+        if (!answer) { return; }
+        if (answer.wage !== null && answer.wage !== undefined) { this.commitTerm(f, answer.wage); }
+        const missed = [];
+        for (const item of (answer.items || [])) {
+            const row = this.compRows.find((r) => r.code === item.code);
+            if (row && this.canEditComp(row)) {
+                this.commitComp(row, item.amount);
+            } else {
+                missed.push(item.name || item.code);
+            }
+        }
+        if (missed.length) {
+            this.notif.add(_t("These pay lines could not be filled in here: %s", missed.join(", ")),
+                           { type: "warning" });
+        }
+    }
+
+    // =====================================================================
+    //  WDGAP S8-A — chips another module adds to the header
+    // =====================================================================
+    //
+    // `header.extra_chips` = [{key, icon, label, tone, title, stage_wage,
+    // stage_label, action: {model, method, args, label}}]. A chip may stage
+    // a wage (only where the person could type it themselves) or run ONE
+    // server method of the module that sent it, then the drawer reads again.
+    get extraChips() { return this.header.extra_chips || []; }
+    extraChipClass(chip) { return "pbc-chip pbc-xchip tone-" + (chip.tone || "muted"); }
+    canStageChip(chip) {
+        const f = this.termEntry("wage");
+        return Boolean(chip.stage_wage && f && this.canEdit(f) && !this.header.wage_masked);
+    }
+    stageChipWage(chip) {
+        const f = this.termEntry("wage");
+        if (!this.canStageChip(chip)) { return; }
+        this.state.tab = "terms";
+        this.commitTerm(f, chip.stage_wage);
+    }
+    async runChipAction(chip) {
+        const act = chip.action;
+        if (!act || this.state.busy) { return; }
+        if (this.isDirty) {
+            this.notif.add(_t("Save or discard your changes first."), { type: "warning" });
+            return;
+        }
+        this.state.busy = true;
+        try {
+            await this.orm.call(act.model, act.method, act.args || []);
+            await this.load();
+            if (this.props.onChanged) { this.props.onChanged(); }
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
     /** The writable terms, in the order they are painted. */
     editableTermNames() {
         const out = [];
