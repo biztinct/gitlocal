@@ -188,7 +188,7 @@
 
           <div t-elif="!state.total" class="pbim-empty pbfp-empty">
             <div class="pbfp-empty-ic"><t t-out="icon('calculator', 30)"/></div>
-            <h3>Nothing worked out for <t t-esc="state.monthLabel"/> yet</h3>
+            <h3>Nothing worked out yet for <t t-esc="state.monthLabel"/></h3>
             <p t-if="state.slips">Press the button to add up what the finished payslips of the month owe each fund and the tax office.</p>
             <p t-else="">When the month's payslips are finished, press the button to add up what they owe.</p>
             <button t-if="state.canWrite" class="pbim-btn" t-att-disabled="state.working" t-on-click="workOut"><t t-out="icon('calculator', 14)"/> Work out what we owe for <t t-esc="state.monthLabel"/></button>
