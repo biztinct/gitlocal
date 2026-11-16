@@ -32,7 +32,7 @@
               <span class="pbs-lbl">In force from</span>
               <input class="pbs-in" type="date" t-att-value="state.form.effective_date" t-att-disabled="!editable" t-on-change="(ev) => this.setForm('effective_date', ev)"/>
             </label>
-            <div class="pbrs-f">
+            <div class="pbrs-f pbrs-f-how">
               <span class="pbs-lbl">How</span>
               <div class="pbrs-seg">
                 <button type="button" t-att-class="{ 'is-on': state.form.method === 'percent' }" t-att-disabled="!editable" t-on-click="() => this.setMethod('percent')"><t t-out="ic('percent', 13)"/> <span>By a percentage</span></button>
@@ -180,6 +180,9 @@
           </button>
           <button class="pbim-btn ghost" t-if="d.can_cancel and d.name" t-att-disabled="state.busy" t-on-click="() => this.act('cancel')">
             <t t-out="ic('xCircle', 14)"/> <span>Cancel</span>
+          </button>
+          <button class="pbim-btn ghost" t-if="editable and d.state === 'draft' and !d.name" t-att-disabled="state.busy" t-on-click="() => this.act('remove')">
+            <t t-out="ic('trash', 14)"/> <span>Remove this draft</span>
           </button>
           <span class="pbrs-foot-note" t-if="d.can_send">One sign-off for the whole rise. Nobody's pay changes until it is approved, and then only from its start date.</span>
         </div>

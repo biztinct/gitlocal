@@ -2512,12 +2512,6 @@ msgid "Sign-off"
 msgstr "Persetujuan"
 
 #. module: pb_pay_scales
-#. odoo-javascript
-#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
-msgid "Starts from the table %s. That version is kept exactly as it was."
-msgstr "Dimulai dari tabel %s. Versi itu disimpan persis seperti adanya."
-
-#. module: pb_pay_scales
 #: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__base_version_id
 msgid "Starts from version"
 msgstr "Dimulai dari versi"
@@ -2916,3 +2910,23 @@ msgstr "Kenaikan biaya hidup tahunan yang disepakati dengan serikat"
 #: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
 msgid "You took them out of this rise."
 msgstr "Anda mengeluarkan mereka dari kenaikan ini."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Remove this draft"
+msgstr "Hapus draf ini"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Remove this draft? Nothing else is changed."
+msgstr "Hapus draf ini? Tidak ada hal lain yang berubah."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"Starts from the table now in force (%s). That table is kept exactly as it "
+"was."
+msgstr "Dimulai dari tabel yang berlaku sekarang (%s). Tabel itu disimpan persis seperti adanya."

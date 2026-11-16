@@ -154,13 +154,16 @@ export class ScaleRaiseDrawer extends Component {
         return _t("This rise starts in a month already paid (%s). After it is written, the pay team can re-work those months; nothing is paid back by itself.", unique.join(", "));
     }
     get baseLine() {
-        return _t("Starts from the table %s. That version is kept exactly as it was.", this.d.base_label || "");
+        return _t("Starts from the table now in force (%s). That table is kept exactly as it was.", this.d.base_label || "");
     }
     get waitingLine() { return _t("Waiting for %s.", this.d.waiting || ""); }
     get scheduledLine() {
         return _t("Approved. The new pay is written on %s. Until then it can be taken back and nobody's pay changes.", this.d.effective_label || "");
     }
     rowSub(row) {
+        if (!row.job) {
+            return _t("%(grade)s, step %(step)s", { grade: row.grade || "", step: row.step || "" });
+        }
         return _t("%(job)s · %(grade)s, step %(step)s", { job: row.job || "", grade: row.grade || "", step: row.step || "" });
     }
     costLine(row) { return _t("+%s a month", row.cost_label); }
@@ -241,6 +244,7 @@ export class ScaleRaiseDrawer extends Component {
         if (this.state.busy) { return; }
         if (verb === "take_back" && !window.confirm(_t("Take this rise back? Nobody's pay has changed yet, and the new version of the scale goes with it."))) { return; }
         if (verb === "cancel" && !window.confirm(_t("Cancel this rise? Nothing is changed."))) { return; }
+        if (verb === "remove" && !window.confirm(_t("Remove this draft? Nothing else is changed."))) { return; }
         this.state.busy = true;
         try {
             if (verb === "send" && this.state.touched) {
@@ -250,6 +254,11 @@ export class ScaleRaiseDrawer extends Component {
                 if (!this.d.can_send) { this.state.busy = false; return; }
             }
             const res = await this.orm.call(MODEL, "raise_act", [this.d.id, verb]);
+            if (verb === "remove") {
+                if (this.props.onChanged) { this.props.onChanged(); }
+                this.props.onClose();
+                return;
+            }
             if (verb === "rework") {
                 await this.openRework(res.review_id);
             } else if (res.read) {

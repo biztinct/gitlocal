@@ -662,6 +662,7 @@ export class PbPayScales extends Component {
     }
     get canRaise() { return Boolean(this.canWrite && this.scale && this.scale.version_count); }
     openRaise(id) {
+        if (this.state.raise) { return; }   // one drawer at a time (a slow first open)
         if (this.stagedCount && !window.confirm(_t("Leave without saving the table?"))) { return; }
         this.discard();
         this.state.drawer = null;

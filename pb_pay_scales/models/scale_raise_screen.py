@@ -162,7 +162,10 @@ class PbPayScalesRaiseScreen(models.AbstractModel):
                 scale.version_ids.sorted('date_from')[-1:]
             cells, rate, more = rec._new_table(base)
             problems = list(dict.fromkeys(rec._problems(cells) + more))
-            rows = rec._plan(cells) if cells else []
+            # Nobody is listed until the table actually goes up (a fresh draft
+            # at 0% would otherwise read as people "above" an unchanged step).
+            rises = any(float(c['new']) > float(c['old']) + 1e-9 for c in cells or [])
+            rows = rec._plan(cells) if rises else []
             costs = rec._costs_for(rows)
             people = [self._raise_row(r['contract'], r['placement'].grade_id,
                                       r['placement'].step_no, r['outcome'], r['why'],

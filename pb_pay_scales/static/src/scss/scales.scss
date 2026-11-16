@@ -257,6 +257,8 @@
     .pbrs-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px 14px; align-items: end; }
     .pbrs-f { display: flex; flex-direction: column; gap: 4px; min-width: 0; .pbs-lbl { margin-top: 0; } }
     .pbrs-f-wide { margin-top: 6px; }
+    .pbrs-f-how { grid-column: 1 / -1; order: -1; }
+    .pbrs-seg { align-self: flex-start; }
     .pbrs-seg {
         display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 10px; background: var(--pbs-line-soft);
         button {
@@ -269,8 +271,9 @@
     .pbrs-grid td.pbrs-cell { vertical-align: top; padding: 6px 8px; min-width: 120px; }
     .pbrs-cell-in { width: 100%; margin-bottom: 3px; }
     .pbrs-was { display: block; font-size: 12px; color: var(--pbs-mute); }
-    .pbrs-new { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 800; color: var(--pbs-i);
-                small { font-weight: 600; color: var(--pbs-mute); } }
+    .pbrs-new { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0 3px; font-size: 12px; font-weight: 800;
+                color: var(--pbs-i); white-space: nowrap;
+                small { flex-basis: 100%; font-weight: 600; color: var(--pbs-mute); } }
     .pbrs-problems { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px;
                      background: var(--pbs-warn-soft); margin: 4px 0; }
     .pbrs-problem { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; color: var(--pbs-warn); margin: 0; }
