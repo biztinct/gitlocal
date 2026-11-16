@@ -15,9 +15,10 @@ Nothing here changes anybody's pay by itself: editing the scale changes what
 the scale says, and a wage only moves through the contract's own save and its
 normal approval — or through "Raise the scale": one request that shows who
 moves, who keeps their pay and what it costs, signed off once by HR and
-Finance, and written on its start date with a letter for each person.
+Finance, and written on its start date with a letter for each person. A yearly
+Pay Review applied with a later start date waits for that day the same way.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -46,11 +47,13 @@ Finance, and written on its start date with a letter for each person.
             'pb_pay_scales/static/src/js/scale_chip.js',
             'pb_pay_scales/static/src/js/joiner_hint.js',
             'pb_pay_scales/static/src/js/scales_palette.js',
+            'pb_pay_scales/static/src/js/review_dated.js',
             'pb_pay_scales/static/src/xml/scales_tab.xml',
             'pb_pay_scales/static/src/xml/scale_raise.xml',
             'pb_pay_scales/static/src/xml/scale_chip.xml',
             'pb_pay_scales/static/src/xml/joiner_hint.xml',
             'pb_pay_scales/static/src/xml/pay_screen.xml',
+            'pb_pay_scales/static/src/xml/review_dated.xml',
         ],
     },
     'post_init_hook': 'post_init_hook',
