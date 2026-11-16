@@ -26,7 +26,7 @@ WDGAP S5-A — kinds of leave and how they are earned.
 
 Nothing is created or switched on by installing it.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Time Off',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',

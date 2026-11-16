@@ -36,7 +36,7 @@ WHAT IT NEVER DOES
   overtime from requests, and they do not take late minutes either. The Close
   says so on screen and lists what to put in the file.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -67,6 +67,10 @@ WHAT IT NEVER DOES
             'pb_time_pay/static/src/xml/time_pay_close.xml',
             'pb_time_pay/static/src/js/ot_desk_time_off.js',
             'pb_time_pay/static/src/xml/ot_desk_time_off.xml',
+        ],
+        # WDGAP S5-F (TP3): the late and early minutes page on My Payobook
+        'web.assets_frontend': [
+            'pb_time_pay/static/src/scss/time_pay_portal.scss',
         ],
     },
     'post_init_hook': 'post_init_hook',

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- One record per render (wkhtmltopdf on the server is unpatched,
+       LEARNING LN33). Rendered under sudo by pb.conduct.letter._make_pdf
+       only; nobody else holds a right on the model. -->
+  <record id="action_report_conduct_letter" model="ir.actions.report">
+    <field name="name">HR letter</field>
+    <field name="model">pb.conduct.letter</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">pb_conduct.report_conduct_letter</field>
+    <field name="report_file">pb_conduct.report_conduct_letter</field>
+    <field name="print_report_name">(object.title or 'Letter')</field>
+  </record>
+
+  <template id="report_conduct_letter">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="doc">
+        <t t-call="web.external_layout">
+          <t t-set="company" t-value="doc.company_id"/>
+          <div class="page">
+            <h3 t-out="doc.title"/>
+            <p class="text-muted"><t t-out="doc.employee_id.sudo().name"/></p>
+            <div style="white-space: pre-line; margin-top: 16px;" t-out="doc.body"/>
+          </div>
+        </t>
+      </t>
+    </t>
+  </template>
+</odoo>

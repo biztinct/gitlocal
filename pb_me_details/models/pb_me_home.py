@@ -20,7 +20,7 @@ try:
         'group': 'me',
         'icon': 'user-check',
         'tone': 'indigo',
-        'seq': pb_me_home.GROUPS.index('me') * 100 + 8,
+        'seq': pb_me_home.GROUPS.index('me') * 100 + 9,
     })
 except Exception:                           # noqa: BLE001 — a tile is not fatal
     _logger.warning('pb_me_details: the My details tile could not be placed',

@@ -4,3 +4,4 @@ from . import test_balances
 from . import test_setup
 from . import test_starters
 from . import test_portal
+from . import test_wdgap_s5f_countries

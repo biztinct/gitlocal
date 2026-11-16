@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from . import controllers
 from . import models
 from .models.time_pay import LATE_INPUT_CODES
 

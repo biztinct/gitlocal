@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         EMPLOYEE VOICE — WHO READS WHAT (WDGAP S9-C, owner ruling P4).
+
+         * Survey rounds, their questions, who was asked and the result
+           groups: HR (`hr.group_hr_user`) and system administrators, inside
+           the companies they can see (global company rules below).
+         * The sealed answers (`pb.voice.box`): NOBODY. Its one access line
+           grants nothing; only the results facade reads it, under sudo,
+           behind its own gate. So no list, no export, no Workflow Studio,
+           no API call reaches it.
+         * Action plans: HR; an owner reads and updates their OWN plan.
+         * Employees (portal logins) hold no right on any of these models:
+           My Payobook reads through the controller, keyed on the session.
+         ================================================================== -->
+
+    <record id="rule_pb_voice_round_company" model="ir.rule">
+        <field name="name">Survey round: companies I can see</field>
+        <field name="model_id" ref="model_pb_voice_round"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_voice_question_company" model="ir.rule">
+        <field name="name">Survey question: companies I can see</field>
+        <field name="model_id" ref="model_pb_voice_question"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_voice_invite_company" model="ir.rule">
+        <field name="name">Person asked: companies I can see</field>
+        <field name="model_id" ref="model_pb_voice_invite"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_voice_group_company" model="ir.rule">
+        <field name="name">Survey group: companies I can see</field>
+        <field name="model_id" ref="model_pb_voice_group"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('round_id.company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_voice_library_company" model="ir.rule">
+        <field name="name">Survey library: shared or my companies</field>
+        <field name="model_id" ref="model_pb_voice_library"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_voice_action_company" model="ir.rule">
+        <field name="name">Action plan: companies I can see</field>
+        <field name="model_id" ref="model_pb_voice_action"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_voice_action_owner" model="ir.rule">
+        <field name="name">Action plan: my own</field>
+        <field name="model_id" ref="model_pb_voice_action"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('owner_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_pb_voice_action_hr" model="ir.rule">
+        <field name="name">Action plan: HR</field>
+        <field name="model_id" ref="model_pb_voice_action"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user')), (4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

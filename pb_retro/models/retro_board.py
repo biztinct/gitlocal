@@ -644,11 +644,14 @@ class PbRetroBoard(models.AbstractModel):
         if person.status != 'payable':
             return '', ''
         state = rec.pay_state or ''
+        # BP1: a leaver is paid in their final payslip, never "the next pay run"
+        final = person.why == 'final'
+        later = _("Will be paid in their final payslip") if final \
+            else _("Will be paid in the next pay run")
         if state == 'waiting':
             return _("Waiting for approval"), 'amber'
         if not entries:
-            return (_("Will be paid in the next pay run"), 'blue') if state == 'approved' \
-                else ('', '')
+            return (later, 'blue') if state == 'approved' else ('', '')
         live = [e for e in entries if e.state != 'cancelled']
         if not live:
             return _("Cancelled"), 'rose'
@@ -659,11 +662,18 @@ class PbRetroBoard(models.AbstractModel):
         waiting = [e for e in live if e.state == 'open']
         if reserved and not waiting:
             return _("In pay run %s", reserved[0].run_id.name or ''), 'blue'
+        if final and waiting and (any(e.waited for e in waiting)
+                                  or not rec.sudo()._pb_final_payslip_to_come(
+                                      person.employee_id)):
+            # no next pay run for a leaver: whatever the final payslip did not
+            # take is settled by hand (cancel it here first)
+            return _("The final payslip does not take all of it — cancel the rest here "
+                     "and settle it by hand"), 'amber'
         if waiting and any(e.waited for e in waiting):
             return _("Part waits for the next pay run (take-home would go below zero)"), 'amber'
         if any(e.state == 'paid' for e in live) or reserved:
             return _("Part paid, the rest in the next pay run"), 'amber'
-        return _("Will be paid in the next pay run"), 'blue'
+        return later, 'blue'
 
     # ============================================================ the result
     @api.model

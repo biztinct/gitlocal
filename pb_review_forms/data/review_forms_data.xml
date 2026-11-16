@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Review forms screen (Settings › HR, and ⌘K). -->
+    <record id="action_review_forms" model="ir.actions.client">
+        <field name="name">Review forms</field>
+        <field name="tag">pb_review_forms_studio</field>
+    </record>
+
+    <data noupdate="1">
+
+        <!-- Where a finished review is filed in the person's documents.
+             noupdate so a customer may rename it. -->
+        <record id="cat_performance_review" model="pb.employee.document.category">
+            <field name="name">Performance review</field>
+            <field name="code">REVIEW</field>
+            <field name="requires_expiry" eval="False"/>
+            <field name="sequence">60</field>
+        </record>
+
+        <!-- Daily: share finished reviews whose "shown from" day has come.
+             QUIET: no email, safe on an empty database (nothing matches).
+             16:45 UTC — clear of the 17:30 benefits job and the 19:30
+             backups. -->
+        <record id="cron_review_release_due" model="ir.cron">
+            <field name="name">Review forms: share finished reviews on their day</field>
+            <field name="model_id" ref="model_pb_review_entry"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_release_due()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 16:45:00')"/>
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

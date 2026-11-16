@@ -62,9 +62,9 @@ class TestMeHome(TransactionCase):
         self.assertEqual(self.Home.tile_meta('/my/security')['title'],
                          'Sign-in & security')
         # registry order: Profile, Documents, Tax Sheet, My Things, Pay
-        # Package, My requests (TIERS T3a), Expenses (ETP E1), then the tiles
-        # other modules add to "Me" when they are loaded: My details and
-        # Certificates (WDGAP S6, owner ruling ME1)
+        # Package, My requests (TIERS T3a), Expenses (ETP E1), Letters from
+        # HR (WDGAP S9-B), then the tiles other modules add to "Me" when they
+        # are loaded: My details and Certificates (WDGAP S6, owner ruling ME1)
         me = sorted((m['seq'], url) for url, m in pb_me_home.TILES.items()
                     if m['group'] == 'me' and not m.get('hidden'))
         added = [u for u in ('/my/details', '/my/certificates')
@@ -72,7 +72,12 @@ class TestMeHome(TransactionCase):
         self.assertEqual([u for _s, u in me],
                          ['/my/profile', '/my/documents', '/my/taxsheet',
                           '/my/assets', '/my/compensation', '/my/requests',
-                          '/my/expenses'] + added)
+                          '/my/expenses', '/my/letters'] + added)
+        # WDGAP S9-A (RV4): My review sits right after My goals
+        growth = sorted((m['seq'], url) for url, m in pb_me_home.TILES.items()
+                        if m['group'] == 'growth' and not m.get('hidden'))
+        self.assertEqual([u for _s, u in growth][:2], ['/my/goals', '/my/review'])
+        self.assertEqual(self.Home.tile_meta('/my/review')['title'], 'My review')
 
     # ------------------------------------------------------------ test 3
     def _render_tile(self, url, title, text='Some text'):

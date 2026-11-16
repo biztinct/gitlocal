@@ -98,6 +98,13 @@
             <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
           </t>
 
+          <!-- ========== kinds for other countries (LV1): hidden, never lost ========== -->
+          <div t-if="otherCount or state.showOther" class="pblk-others">
+            <button type="button" class="pblk-others-btn" t-att-aria-pressed="state.showOther ? 'true' : 'false'" t-on-click="() => this.setShowOther(!state.showOther)">
+              <t t-out="icon('globe', 14)"/> <span t-esc="otherLabel"/>
+            </button>
+          </div>
+
           <!-- ================ the shared filter panel ================ -->
           <PbFilterLayout kit="kit" coach="'leave-kinds-filters'" searchPlaceholder="searchLabel">
 
@@ -148,6 +155,16 @@
 
           <div t-elif="!state.listLoaded" class="pblk-skeleton" aria-label="Loading">
             <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="pblk-skel-row"/>
+          </div>
+
+          <div t-elif="!state.total and otherCount and !state.showOther" class="pbim-empty pblk-empty">
+            <div class="pblk-empty-ic"><t t-out="icon('globe', 30)"/></div>
+            <h3>No kinds of leave for your countries yet</h3>
+            <p>The kinds there are belong to other countries. Show them, or start from the ready-made kinds for your country.</p>
+            <div class="pblk-empty-acts">
+              <button class="pbim-btn ghost" t-on-click="() => this.setShowOther(true)"><t t-out="icon('globe', 14)"/> <span t-esc="otherLabel"/></button>
+              <button t-if="state.canWrite" class="pbim-btn primary" t-on-click="() => this.openStarter()"><t t-out="icon('sparkles', 14)"/> <span>Ready-made kinds</span></button>
+            </div>
           </div>
 
           <div t-elif="!state.total" class="pbim-empty pblk-empty">
@@ -206,6 +223,10 @@
       <div t-if="K.loading or !D" class="pbim-busy"><div class="pbim-spin"/></div>
       <div t-else="" class="pblk-dr-body">
 
+        <div t-if="K.warning" class="pblk-banner is-amber" role="note">
+          <span class="pblk-banner-ic"><t t-out="icon('triangleAlert', 18)"/></span>
+          <div><b t-esc="K.warning"/></div>
+        </div>
         <div t-if="K.review" class="pblk-banner" role="note">
           <span class="pblk-banner-ic"><t t-out="icon('info', 18)"/></span>
           <div>
@@ -482,7 +503,13 @@
           <div class="pblk-field">
             <span>Country</span>
             <div class="pbim-seg pblk-seg-wrap">
-              <button t-foreach="options.countries or []" t-as="op" t-key="op.code" type="button" class="pbim-segbtn" t-att-class="{ 'on': ST.country === op.code }" t-on-click="() => this.pickCountry(op.code)" t-esc="op.label"/>
+              <button t-foreach="starterHome" t-as="op" t-key="op.code" type="button" class="pbim-segbtn" t-att-class="{ 'on': ST.country === op.code }" t-on-click="() => this.pickCountry(op.code)" t-esc="op.label"/>
+            </div>
+            <button t-if="starterOthers.length" type="button" class="pblk-others-btn" t-att-aria-expanded="ST.others ? 'true' : 'false'" t-on-click="toggleStarterOthers">
+              <t t-out="icon(ST.others ? 'chevronUp' : 'chevronDown', 14)"/> <span>Other countries</span>
+            </button>
+            <div t-if="ST.others and starterOthers.length" class="pbim-seg pblk-seg-wrap">
+              <button t-foreach="starterOthers" t-as="op" t-key="op.code" type="button" class="pbim-segbtn" t-att-class="{ 'on': ST.country === op.code }" t-on-click="() => this.pickCountry(op.code)" t-esc="op.label"/>
             </div>
           </div>
           <label t-if="(options.companies or []).length > 1" class="pblk-field pblk-narrow">
@@ -497,6 +524,10 @@
               <b>Each kind is added switched off.</b>
               <span>The figures follow the law named under each one, as we read it. Nothing reaches anyone until you check a kind and switch it on.</span>
             </div>
+          </div>
+          <div t-if="ST.warning" class="pblk-banner is-amber" role="note">
+            <span class="pblk-banner-ic"><t t-out="icon('triangleAlert', 18)"/></span>
+            <div><b t-esc="ST.warning"/></div>
           </div>
           <div t-if="ST.loading" class="pbim-busy"><div class="pbim-spin"/></div>
           <ul t-else="" class="pblk-starters">

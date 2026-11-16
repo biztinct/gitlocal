@@ -1,0 +1,2238 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_voice
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 12:47+0000\n"
+"PO-Revision-Date: 2026-11-16 12:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "% no"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "% yes,"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%(company)s would like to hear from you"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "%(n)s action plans from surveys are yours"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "%(n)s short surveys are waiting"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%(name)s's team"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%s (copy)"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid ""
+". Once sent, answers cannot be changed — not even by you, because nothing "
+"links them to you."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "<b>Action plans you own</b>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "<b>Your answers are anonymous.</b>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "<span class=\"pbv-k\">Would recommend working here</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span class=\"pbv-label\">Progress so far</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span class=\"pbv-label\">Status</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid ""
+"<span class=\"pbv-round-d\">Closed. HR shares what was heard and what "
+"happens next.</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "<span>Anonymous: nobody, not even HR, can see who said what.</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid ""
+"<span>Answers are anonymous: nobody, not even HR, can see who said what. "
+"Results and comments show only for groups with at least the number of "
+"answers below (never fewer than 5), and only after the survey closes.</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "<span>Open until</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span>Saved.</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid ""
+"<span>Thank you. Your answers are in, and nobody can see they are "
+"yours.</span>"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.constraint,message:pb_voice.constraint_pb_voice_invite_one_per_round
+msgid "A person is asked once per round."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A reminder: %(name)s"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A round can hold at most %(n)s questions."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.constraint,message:pb_voice.constraint_pb_voice_box_round_unique
+msgid "A round has one answer box."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid ""
+"A round needs at least %(n)s people, so nobody's answers can be picked out. "
+"This one would ask %(m)s."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A short survey is open: %(name)s."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "A short survey is waiting"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "A survey needs at least"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__intro
+msgid "A word to everyone"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "A word to everyone, shown at the top of the survey (optional)."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "Action plan"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__action_ids
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_list
+msgid "Action plans"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "Action plans are set up by HR."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Action plans you own"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Add"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Add at least one question people answer with a rating or a choice."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_library_pick
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Add from the library"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Add our company values"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_library_pick
+msgid "Add questions from the library"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Agree"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__scale
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__scale
+msgid "Agree or disagree (5 steps)"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "An action plan from a survey is yours"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Anonymous. Open until %(date)s."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Answer"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "Answer now"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Answer the survey"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Answered"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__answered_count
+msgid "Answered (at close)"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__kind
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__kind
+msgid "Answered as"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Answered, still open"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Answers"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__date_end
+msgid ""
+"Answers are taken until the end of this day. Results open the day after, or "
+"when you close it earlier."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"Answers wait sealed until the survey closes, then go in all at once. Results"
+" open then."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Ask HR to link it, then the surveys you are asked in appear here."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"Ask how it is going: pick a few questions from the library, choose who is "
+"asked and when it closes. People answer on My Payobook, anonymously."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__invited
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__invited_count
+msgid "Asked"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Average (1 to 5)"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Back to my home"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Back to surveys"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__draft
+msgid "Being set up"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__remind
+msgid ""
+"By email when this system sends email; on My Payobook the \"Needs you\" row "
+"stays until they answer, either way."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "By theme"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Can sign in"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__cell
+msgid "Cell"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Close now"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Close this survey now?"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid ""
+"Close this survey now? Nobody can answer afterwards, and the results open."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__closed
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Closed"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_closed
+msgid "Closed on"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Closed. Fewer than %(n)s people answered, so nothing was kept."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Closed. The results are ready."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Closes"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_end
+msgid "Closes on"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Comment"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Comments"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__communication
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__communication
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__communication
+msgid "Communication"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__company_ids
+msgid "Companies asked"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__company_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__company_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__company_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__company_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__company_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__company_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__company_id
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__company
+msgid "Company"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Copied. Change it, then send it out."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Copy"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Copy this survey?"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__create_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__create_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__create_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__create_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__create_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__create_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__create_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__create_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__create_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__create_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__create_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__create_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Delete"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Delete this survey?"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Deleted."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__department_id
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__department
+msgid "Department"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Disagree"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__display_name
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__done
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Done"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Done."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__date_due
+msgid "Due"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Edit"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__employee_id
+msgid "Employee"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_me_home
+msgid "Employee home page facts"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_round
+msgid "Employee survey round"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Employee surveys"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Employee surveys are run by HR."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.actions.server,name:pb_voice.cron_voice_daily_ir_actions_server
+msgid "Employee surveys: close, remind, tidy"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.actions.client,name:pb_voice.action_pb_voice_board
+msgid "Employee voice"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice
+msgid "Employee voice board and results"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__remind_every
+msgid "Every (days)"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Everyone asked"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Excel"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Extremely likely"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Favourable %"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__engagement
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__engagement
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__engagement
+msgid "Feeling about working here"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid ""
+"Fewer than %(n)s people answered, so nothing was kept and there are no "
+"results."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_library__options
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_question__options
+msgid "For \"Pick one option\": one option per line."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__library_id
+msgid "From the library"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "From the survey \"%(name)s\"."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Group"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__group_ids
+msgid "Groups"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "HR only"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__has_values
+msgid "Has Values"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Hidden"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid ""
+"Hidden to keep answers private: fewer than %(n)s answers, or the figures "
+"could be worked out from the groups shown beside it."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "How are we doing?"
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_enps
+msgid "How likely are you to recommend working here to a friend?"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__answered_count
+msgid "How many people answered, counted when the round closed."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_proud
+msgid "I am proud to work here."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_time_off
+msgid "I can take time off when I need it."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_recognised
+msgid "I get recognised when I do good work."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_grow
+msgid "I have chances to learn and grow here."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_expected
+msgid "I know what is expected of me at work."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_informed
+msgid "I know what is going on in the company."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_stay
+msgid "I see myself still working here in two years."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_anything
+msgid "Is there anything else you would like to tell us?"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "It has not been sent out, so nobody has seen it."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__kind
+msgid "Kind"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__write_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__write_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__write_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__write_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__write_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__write_uid
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__write_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__write_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__write_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__write_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__write_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__write_date
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__last_reminded
+msgid "Last reminder"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Late"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__growth
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__growth
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__growth
+msgid "Learning and growth"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_library__company_id
+msgid "Leave empty for a question every company can use."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__department_ids
+msgid "Leave empty to ask everyone in the companies above."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Make sign-in slips"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__marks
+msgid "Marks"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Monthly team catch-ups with every manager"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_manager_cares
+msgid "My manager cares about me as a person."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_manager_feedback
+msgid "My manager gives me useful feedback."
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_workload
+msgid "My workload is manageable."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__name
+msgid "Name"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Neither agree nor disagree"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "New action plan"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "New survey"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"No action plan yet. Pick a theme in the results and press +, or start one "
+"here."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "No company values are set up."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "No company values are set up. Add them under Praise first."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"No email here: people see the survey under \"Needs you\" on their home page "
+"until they answer."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No login yet"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.actions.act_window,help:pb_voice.action_pb_voice_library
+msgid "No questions in the library"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No questions yet. Press Edit, then \"Add from the library\"."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No survey matches. Press the number again to see every survey."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "No survey right now"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No survey yet"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid ""
+"Nobody can answer afterwards. The answers go in all at once and the results "
+"open."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid ""
+"Nobody, not even HR, can see who said what. Your answers are not stored with"
+" your name, and results show only for groups of"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Not at all likely"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__none
+msgid "Not closed yet"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Not sent out yet"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"On the Access screen, open People and press \"Logins for workers\": each "
+"person signs in with their employee code and a first password printed on a "
+"slip."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "One option per line"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Only a round that has not been sent out can be deleted."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Only an open round can be closed."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__department_ids
+msgid "Only these departments"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__open
+msgid "Open for answers"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Open for answers until %(date)s."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Open until"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid ""
+"Optional. Please leave out names and details that could show who you are."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__options
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__options
+msgid "Options"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__other
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__other
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__other
+msgid "Other"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__values
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__values
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__values
+msgid "Our values"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Overview"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__owner_id
+msgid "Owner"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__parent_id
+msgid "Parent"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Part of"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"People answer on My Payobook only. Somebody with no login cannot answer "
+"until they get one."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__invite_ids
+msgid "People asked"
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_values
+msgid "People here live our company values."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "People here live our value: %(v)s"
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_team_help
+msgid "People in my team help each other."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid ""
+"People see it on My Payobook at once. Its questions and who is asked cannot "
+"change afterwards."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_invite
+msgid "Person asked in a survey round"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__choice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__choice
+msgid "Pick one option"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Pick who owns it."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Plan an action on this theme"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Please answer: \"%(q)s\"."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__progress
+msgid "Progress note"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "Progress so far"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__text
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__text
+msgid "Question"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__question_count
+msgid "Question Count"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Question by question"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_list
+msgid "Question library"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__library_ids
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__question_ids
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Questions"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Read the board again"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Reading the surveys…"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.actions.act_window,help:pb_voice.action_pb_voice_library
+msgid ""
+"Ready-made questions HR can add to a survey. Every company can add its own."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__recognition
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__recognition
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__recognition
+msgid "Recognition"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Remind every 1 to 30 days."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__remind
+msgid "Remind people who have not answered"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Reminders by email every"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__result_state
+msgid "Results"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__floor
+msgid ""
+"Results and comments show only for groups with at least this many answers. "
+"It can never be lower than 5."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid ""
+"Results open when the round closes, so nobody can work out an answer by "
+"watching the numbers change."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__kept
+msgid "Results ready"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__round_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__round_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__round_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__round_id
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__round_id
+msgid "Round"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Same questions and people, as a new survey being set up."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Save"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Saved. The owner sees it on their home page."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_home_voice
+msgid "Say how it is going, anonymously"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Say what will be done, in a few words."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Score"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__sealed
+msgid "Sealed"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Send my answers"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Send out"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Send this survey out now?"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid ""
+"Send this survey out now? Its questions and who is asked cannot change "
+"afterwards."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_start
+msgid "Sent out on"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Sent out. People see it on My Payobook now."
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__sequence
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Share of people who agree. Groups of fewer than"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"Short anonymous surveys. Nobody, not even HR, can see who said what; results"
+" show only for groups of 5 or more answers."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Show results for"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__intro
+msgid "Shown at the top of the survey on My Payobook."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__floor
+msgid "Smallest group shown"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__state
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__state
+msgid "Status"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+#: code:addons/pb_voice/tests/test_voice_po.py:0
+msgid "Strongly agree"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Strongly disagree"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__round_id
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_breadcrumbs_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Survey"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_action
+msgid "Survey action plan"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_action
+msgid "Survey action plans"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_box
+msgid "Survey answers (sealed)"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__round_name
+msgid "Survey name"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_question
+msgid "Survey question"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_library
+#: model:ir.model,name:pb_voice.model_pb_voice_library
+msgid "Survey question library"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_group
+msgid "Survey results group"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_round
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_breadcrumbs_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_home_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_list
+msgid "Surveys"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Switch questions off, change their words, or add your own."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_search
+msgid "Switched off"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Talent"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__team
+msgid "Team"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__manager_id
+msgid "Team of"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Team voice"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__teamwork
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__teamwork
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__teamwork
+msgid "Teamwork"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Tell the company how it is going. Your answers are anonymous."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Tell us how it is going. It is anonymous."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "That cannot be done here."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "That could not be done."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/controllers/portal.py:0
+msgid "That did not go through. Nothing was saved — please try again."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The action plan could not be saved."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The closing date is in the past."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The groups could not be worked out."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "The owner needs a staff login to follow it up."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The question \"%(q)s\" needs at least two options, one per line."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid ""
+"The ready-made questions HR can add to a survey, in every language this "
+"system uses."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The results could not be read."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The round's own company must be one of the companies asked."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The smallest group shown can never be lower than %(n)s."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The survey \"%(name)s\" is still open."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The surveys could not be read just now."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__theme
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__theme
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__theme
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_search
+msgid "Theme"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "There are no results."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This action plan no longer exists."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "This one is for HR"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has already been sent out."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid ""
+"This round has been sent out, so its questions and who is asked can no "
+"longer change. Make a copy to ask again."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so its questions can no longer change."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so its questions stay."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so no question can be added."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round is closed."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This survey asked people in a company you cannot see."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "This survey could not be opened."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This survey is closed. Thank you."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This survey is not open."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This survey no longer exists."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"This system does not send email, so invitations and reminders show on "
+"people's My Payobook home, under \"Needs you\", until they answer."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid ""
+"Tick the questions to add. Their words come in every language this system "
+"uses."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__open
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "To do"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__too_few
+msgid "Too few answers, nothing kept"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Too few people answered the last survey to show any results."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Type a name"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__doing
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Under way"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Update"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Update its progress when you can."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Voice"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Waiting for your answers"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__wellbeing
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__wellbeing
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__wellbeing
+msgid "Wellbeing and workload"
+msgstr ""
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_start_stop
+msgid "What is one thing we should start, stop or keep doing?"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid ""
+"What the company said it would do after a survey. Update the progress as you"
+" go."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "What the company said it would do after each survey."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__name
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "What we will do"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "When"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid ""
+"When the company asks how it is going, the survey appears here and on your "
+"home page."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Who can answer"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Who is asked"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Would recommend"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__enps
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__enps
+msgid "Would recommend (0 to 10)"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__text
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__text
+msgid "Written comment"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Written comments"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/controllers/portal.py:0
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "You are not asked in this survey."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "You can only ask people in companies you can see."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "You can update the progress of your own action plans only."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "You have answered this survey. Thank you."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "You have answered. Thank you. It closes on"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid ""
+"Your answers are anonymous: nobody, not even HR, can see who said what. "
+"Results show only for groups of %(n)s or more people."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Your login is not linked to an employee record"
+msgstr ""
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__manager
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__manager
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__manager
+msgid "Your manager"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Your team"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid ""
+"Your team's answers are counted in the company's results. Results show only "
+"for groups of %(n)s or more answers, so nobody's answers can be picked out."
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "Your voice"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "action plans to do"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "action plans, some late"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "agree · average"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "and"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "answered ("
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "answered ·"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "answers are never shown, and written comments go to HR only."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "being set up"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "days to people who have not answered."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "hidden"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "maybe ·"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "more."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "no"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "of"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "of 5"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "open for answers"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid ""
+"or more people, after the survey closes. Written comments are read by HR "
+"only. You can answer once."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid ""
+"people with a login have no email: they see the survey on their home page."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "people, so nobody's answers can be picked out."
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "questions"
+msgstr ""
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "questions · open until"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "share who agree"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "with results"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "would not (0-6)"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "would recommend (9-10),"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "yes ·"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "· closed"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "· due"
+msgstr ""
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "· sent out"
+msgstr ""

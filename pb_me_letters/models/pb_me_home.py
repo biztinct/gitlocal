@@ -22,7 +22,7 @@ try:
         'group': 'me',
         'icon': 'file-text',
         'tone': 'blue',
-        'seq': pb_me_home.GROUPS.index('me') * 100 + 9,
+        'seq': pb_me_home.GROUPS.index('me') * 100 + 10,
     })
 except Exception:                           # noqa: BLE001 — a tile is not fatal
     _logger.warning('pb_me_letters: the certificates tile could not be placed',

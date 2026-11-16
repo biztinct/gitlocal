@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_review_form_user,Review form - goals administrator reads,model_pb_review_form,pb_goals.group_goals_user,1,0,0,0
+access_pb_review_form_manager,Review form - HR lead writes,model_pb_review_form,pb_goals.group_goals_manager,1,1,1,1
+access_pb_review_form_line_user,Review form line - goals administrator reads,model_pb_review_form_line,pb_goals.group_goals_user,1,0,0,0
+access_pb_review_form_line_manager,Review form line - HR lead writes,model_pb_review_form_line,pb_goals.group_goals_manager,1,1,1,1
+access_pb_review_entry_user,Filled-in review - the HR team reads,model_pb_review_entry,pb_goals.group_goals_user,1,0,0,0
+access_pb_review_answer_user,Review answer - the HR team reads,model_pb_review_answer,pb_goals.group_goals_user,1,0,0,0

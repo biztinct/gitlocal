@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3.
+
+     The page title of every printed report: the platform's fallback names the
+     platform. A report that sets `title` keeps it; otherwise the report's own
+     name (`biz_report_title`, models/ir_actions_report.py); otherwise a
+     neutral "Report". This is the browser tab of a report's web preview and
+     the document title of the PDF made from the same page. -->
+<odoo>
+    <template id="biz_report_layout_title" inherit_id="web.report_layout" name="Report page title">
+        <xpath expr="//head/title" position="replace">
+            <title t-esc="title or biz_report_title or env['ir.actions.report']._biz_default_title()"/>
+        </xpath>
+    </template>
+    <template id="biz_report_preview_layout_title" inherit_id="web.report_preview_layout" name="Report preview page title">
+        <xpath expr="//head/title" position="replace">
+            <title t-esc="title or biz_report_title or env['ir.actions.report']._biz_default_title()"/>
+        </xpath>
+    </template>
+</odoo>

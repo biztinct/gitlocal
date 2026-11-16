@@ -1936,3 +1936,39 @@ msgstr "chưa quyết định lương"
 #: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
 msgid "years:"
 msgstr "năm:"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Figures differ by state — check yours before switching on"
+msgstr "Số liệu khác nhau theo từng bang — hãy kiểm tra bang của bạn trước khi bật"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Hide kinds for other countries"
+msgstr "Ẩn các loại nghỉ của quốc gia khác"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Show kinds for other countries (%s)"
+msgstr "Hiện các loại nghỉ của quốc gia khác (%s)"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Other countries"
+msgstr "Quốc gia khác"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "No kinds of leave for your countries yet"
+msgstr "Chưa có loại nghỉ nào cho các quốc gia của bạn"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The kinds there are belong to other countries. Show them, or start from the ready-made kinds for your country."
+msgstr "Các loại nghỉ hiện có thuộc quốc gia khác. Hãy hiện chúng, hoặc bắt đầu từ các loại có sẵn cho quốc gia của bạn."
