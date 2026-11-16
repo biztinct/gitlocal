@@ -103,7 +103,7 @@ export class PbPeopleReports extends Component {
         return Math.max(1, ...s.map((r) => (this.shown(r.h) ? r.h.v : 0)));
     }
     get maxMove() {
-        const s = (this.state.data && this.state.data.series) || [];
+        const s = (this.state.data && this.state.data.quarters) || [];
         return Math.max(1, ...s.map((r) => Math.max(this.shown(r.j) ? r.j.v : 0, this.shown(r.l) ? r.l.v : 0)));
     }
     barStyle(c, max) {

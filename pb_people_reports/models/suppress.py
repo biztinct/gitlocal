@@ -47,12 +47,25 @@ class Suppressor:
         self.floor = floor
         self.values = {}
         self.sets = []
+        self.loose = []
         self.pairs = []
         self.derived = []
         self.hidden = set()
         self.forced = set()
+        #: public identities Σ coef·cell = 0, e.g. "this month's headcount =
+        #: last month's + joiners − leavers". Used by the audit and widening.
+        self.equations = []
+        #: cells hidden last when widening (totals that other screens show)
+        self.protect = set()
+        #: cells already shown on ANOTHER screen (a tile): hiding them here
+        #: would protect nothing, so the rules hide parts instead
+        self.public = set()
 
     # ------------------------------------------------------------ building
+    def add_equation(self, coefs):
+        coefs = {k: c for k, c in coefs.items() if k in self.values and c}
+        if len(coefs) >= 2:
+            self.equations.append(coefs)
     def cell(self, key, value):
         self.values[key] = int(value or 0)
         return key
@@ -60,6 +73,13 @@ class Suppressor:
     def add_set(self, total, parts):
         parts = [p for p in parts if p in self.values]
         if total in self.values and parts:
+            if sum(self.values[p] for p in parts) != self.values[total]:
+                # Not additive (one person in two companies of a group is
+                # counted once in the group): a reader cannot use it as an
+                # exact equation, so it is kept as "the total hides its parts"
+                # only — rule 2 — and left out of the audit.
+                self.loose.append((total, parts))
+                return
             self.sets.append((total, parts))
 
     def add_pair(self, a, b):
@@ -110,33 +130,62 @@ class Suppressor:
         belongs to (and the sets their hidden cells belong to): the first
         set met that still shows something non-zero loses its smallest shown
         part, or its total when no part is left."""
-        seen = set()
+        # Walk the sets reachable from the pinned cells (through hidden cells
+        # and pairs), in order of distance. A PART anywhere on that walk is
+        # hidden before any TOTAL: a total is on other screens and is worth
+        # more than one more hidden month or department.
+        seen, sets_in_order, eqs_in_order = set(), [], []
         queue = sorted(pinned, key=str)
         while queue:
             key = queue.pop(0)
             if key in seen:
                 continue
             seen.add(key)
-            for total, parts in self.sets:
+            for idx, (total, parts) in enumerate(self.sets):
                 if key != total and key not in parts:
                     continue
-                shown = sorted((p for p in parts if p not in self.hidden and self.values[p] > 0),
-                               key=lambda p: (self.values[p], str(p)))
-                if shown:
-                    self.hidden.add(shown[0])
-                    return True
-                if total not in self.hidden and self.values[total] > 0:
-                    self.hidden.add(total)
-                    return True
+                if idx not in sets_in_order:
+                    sets_in_order.append(idx)
                 queue.extend(c for c in [total] + parts if c in self.hidden and c not in seen)
             for a, b in self.pairs:
                 if key in (a, b):
                     other = b if key == a else a
-                    if other not in self.hidden:
+                    if other not in self.hidden and other not in self.public:
                         self.hidden.add(other)
                         return True
                     if other not in seen:
                         queue.append(other)
+            for eq in self.equations:
+                if key in eq:
+                    if eq not in eqs_in_order:
+                        eqs_in_order.append(eq)
+                    queue.extend(c for c in eq if c in self.hidden and c not in seen)
+        for idx in sets_in_order:
+            total, parts = self.sets[idx]
+            shown = sorted((p for p in parts if p not in self.hidden and self.values[p] > 0),
+                           key=lambda p: (self.values[p], str(p)))
+            if shown:
+                self.hidden.add(shown[0])
+                return True
+        # then a cell of a public identity that is not a protected total
+        # (one month's headcount rather than the year's leavers)
+        for eq in eqs_in_order:
+            shown = sorted((c for c in eq if c not in self.hidden and c not in self.protect
+                            and self.values[c] > 0), key=lambda c: (self.values[c], str(c)))
+            if shown:
+                self.hidden.add(shown[0])
+                return True
+        for idx in sets_in_order:
+            total, _parts = self.sets[idx]
+            if total not in self.hidden and total not in self.public and self.values[total] > 0:
+                self.hidden.add(total)
+                return True
+        for eq in eqs_in_order:
+            shown = sorted((c for c in eq if c not in self.hidden and self.values[c] > 0),
+                           key=lambda c: (self.values[c], str(c)))
+            if shown:
+                self.hidden.add(shown[0])
+                return True
         return False
 
     def _audit(self):
@@ -162,6 +211,13 @@ class Suppressor:
                 row[col[a]] += 1
             if b in col:
                 row[col[b]] -= 1
+            if any(row):
+                rows.append(row)
+        for eq in self.equations:
+            row = [Fraction(0)] * len(hidden)
+            for k, c in eq.items():
+                if k in col:
+                    row[col[k]] += c
             if any(row):
                 rows.append(row)
         # reduced row echelon form
@@ -268,6 +324,15 @@ class Suppressor:
             const += self.values[a] - self.values[b]
             if any(coef):
                 eqs.append((coef, const))
+        for eq in self.equations:
+            coef, const = [Fraction(0)] * len(hidden), Fraction(0)
+            for k, c in eq.items():
+                if k in col:
+                    coef[col[k]] += c
+                else:
+                    const -= c * self.values[k]
+            if any(coef):
+                eqs.append((coef, const))
         # the reduced rows are combinations of the same equations: recompute
         # their constants from the true values (they are what a reader derives)
         for row in reduced:
@@ -331,7 +396,7 @@ class Suppressor:
         changed = True
         while changed:
             changed = False
-            for total, parts in self.sets:
+            for total, parts in self.sets + self.loose:
                 nonzero = [p for p in parts if self.values[p] > 0]
                 if total in self.hidden:
                     for p in nonzero:
@@ -340,19 +405,27 @@ class Suppressor:
                 hid = [p for p in nonzero if p in self.hidden]
                 if not hid:
                     continue
+                # a reader cannot tell a hidden zero (hidden through a pair)
+                # from a hidden small number, so hidden zeros count here; the
+                # audit afterwards checks the result exactly.
+                hid_all = [p for p in parts if p in self.hidden]
                 s = sum(self.values[p] for p in hid)
-                if len(hid) >= 2 and s >= max(floor, len(hid) + 1):
+                if len(hid_all) >= 2 and s >= floor and \
+                        (len(hid_all) > len(hid) or s >= len(hid) + 1):
                     continue
                 shown = sorted((p for p in nonzero if p not in self.hidden),
                                key=lambda p: (self.values[p], str(p)))
                 if shown:
                     changed |= self._hide(shown[0])
                 else:
-                    changed |= self._hide(total)
+                    if total not in self.public:
+                        changed |= self._hide(total)
             for a, b in self.pairs:
                 if (a in self.hidden) != (b in self.hidden):
-                    changed |= self._hide(a)
-                    changed |= self._hide(b)
+                    if a not in self.public:
+                        changed |= self._hide(a)
+                    if b not in self.public:
+                        changed |= self._hide(b)
         return self
 
     # ------------------------------------------------------------ reading

@@ -49,6 +49,8 @@ from .suppress import FLOOR, Suppressor
 _logger = logging.getLogger(__name__)
 
 HR_GROUP = 'hr.group_hr_user'
+#: Groups from these modules do not count as "being HR" (they imply it).
+PAYROLL_MODULES = ('om_hr_payroll', 'payroll_analytics_approval', 'pb_payroll_ai_insights')
 VIEWS = ('headcount', 'movement', 'leaving', 'age_gender', 'service')
 FAR_PAST = date(1900, 1, 1)
 FAR_FUTURE = date(9999, 12, 31)
@@ -83,7 +85,26 @@ class PbPeopleReports(models.AbstractModel):
     # ============================================================ gates
     @api.model
     def _can_read(self):
-        return bool(self.env.su or self.env.user.has_group(HR_GROUP))
+        """HR staff. NOT the payroll team as such (owner ruling P6).
+
+        On this build every payroll officer also holds the HR officer group,
+        because the payroll groups IMPLY it. So "has the HR group" would hand
+        gender, age and leaving reasons to the whole payroll team. Here the HR
+        group must come from a group that is not a payroll group: somebody who
+        is both HR and payroll still passes through their HR group."""
+        if self.env.su:
+            return True
+        user = self.env.user
+        if not user.has_group(HR_GROUP):
+            return False
+        hr = self.env.ref(HR_GROUP)
+        own = user.sudo().group_ids
+        data = self.env['ir.model.data'].sudo().search_read(
+            [('model', '=', 'res.groups'), ('res_id', 'in', own.ids)], ['module', 'res_id'])
+        payroll_ids = {d['res_id'] for d in data
+                       if d['module'] in PAYROLL_MODULES or d['module'].startswith('pb_hr_payroll')}
+        others = own.filtered(lambda g: g.id not in payroll_ids)
+        return hr in others.sudo().all_implied_ids
 
     @api.model
     def can_open(self):
@@ -309,14 +330,16 @@ class PbPeopleReports(models.AbstractModel):
                 return False
             return not dept or d == dept
 
-        heads = []
-        for day in ends:
+        def head_on(day):
             n = 0
             for st in stretches:
-                if st['start'] <= day <= st['end']:
+                if st["start"] <= day < st["end"]:
                     if in_scope(self._rec_at(st, day), day):
                         n += 1
-            heads.append(n)
+            return n
+        heads = [head_on(day) for day in ends]
+        # the headcount the day before the period starts
+        h0 = head_on(start - timedelta(days=1))
         month_of = {(d.year, d.month): i for i, d in enumerate(ends)}
         joins = [0] * len(ends)
         leaves = [0] * len(ends)
@@ -336,12 +359,14 @@ class PbPeopleReports(models.AbstractModel):
         last = ends[-1]
         at_end = []
         for st in stretches:
-            if st['start'] <= last <= st['end']:
+            if st["start"] <= last < st["end"]:
                 rec = self._rec_at(st, last)
                 if in_scope(rec, last):
                     at_end.append((st, rec))
-        return {'heads': heads, 'joins': joins, 'leaves': leaves, 'at_end': at_end,
-                'leavers': leavers, 'joiners': joiners, 'stretches': stretches}
+        return {'ends': ends, 'heads': heads, 'h0': h0, 'joins': joins, 'leaves': leaves, 'at_end': at_end,
+                'leavers': leavers, 'joiners': joiners, 'stretches': stretches,
+                # without a department filter, this month = last month + joiners - leavers
+                'exact': not dept and not allowed_depts}
 
     # ============================================================ figures
     @api.model
@@ -362,7 +387,7 @@ class PbPeopleReports(models.AbstractModel):
         acc = defaultdict(lambda: {'h': 0, 'j': 0, 'l': 0, 'avg': 0.0, 'heads': [0] * len(ends)})
         for i, day in enumerate(ends):
             for st in m['stretches']:
-                if st['start'] <= day <= st['end']:
+                if st["start"] <= day < st["end"]:
                     d = self._dept_at(self._rec_at(st, day), day)
                     if allowed and d not in allowed:
                         continue
@@ -377,25 +402,48 @@ class PbPeopleReports(models.AbstractModel):
             row.pop('heads')
         return dict(acc)
 
+    @staticmethod
+    def _quarters(m):
+        """(joiners, leavers) per calendar quarter of the period."""
+        out = {}
+        for i, day in enumerate(m['ends']):
+            q = (day.month - 1) // 3
+            j, l = out.get(q, (0, 0))
+            out[q] = (j + m['joins'][i], l + m['leaves'][i])
+        return [out[q] for q in sorted(out)]
+
     @api.model
     def _series_suppressor(self, m, force=(), hide_all=False):
         """The month-by-month figures of one scope and their totals."""
+        # WHY QUARTERS. The headcount is shown for every month, so the change
+        # from one month to the next is public: joiners minus leavers. With
+        # joiners and leavers ALSO shown month by month, a reader can piece
+        # almost every small month together (the audit proves it, and then
+        # hides nearly everything for a small company). So joiners and
+        # leavers are shown by QUARTER and for the year; the headcount stays
+        # monthly. Each quarter's difference is still public (quarter-end
+        # headcounts), which the pairs below say.
         S = Suppressor()
         n = len(m['heads'])
+        S.cell('H0', m['h0'])
         for i in range(n):
             S.cell(('H', i), m['heads'][i])
-            S.cell(('J', i), m['joins'][i])
-            S.cell(('L', i), m['leaves'][i])
-            S.add_pair(('J', i), ('L', i))
+        quarters = self._quarters(m)
+        for q, (j, l) in enumerate(quarters):
+            S.cell(('J', q), j)
+            S.cell(('L', q), l)
+            S.add_pair(('J', q), ('L', q))
         S.cell('S:h_end', m['heads'][-1])
         S.cell('S:j', sum(m['joins']))
         S.cell('S:l', sum(m['leaves']))
-        S.add_set('S:j', [('J', i) for i in range(n)])
-        S.add_set('S:l', [('L', i) for i in range(n)])
+        S.add_set('S:j', [('J', q) for q in range(len(quarters))])
+        S.add_set('S:l', [('L', q) for q in range(len(quarters))])
         S.add_pair('S:j', 'S:l')
-        # the average is worked out from every month's headcount
-        S.add_derived('S:avg', [('H', i) for i in range(n)])
-        S.add_derived('S:rate', ['S:l', 'S:avg'])
+        # average headcount = (start + end) / 2, and turnover = leavers / it
+        S.add_derived('S:avg', ['H0', 'S:h_end'])
+        S.add_derived('S:rate', ['S:l', 'H0', 'S:h_end'])
+        # widening hides a month's headcount before one of these
+        S.protect = {'S:h_end', 'H0', 'S:j', 'S:l'}
         for key in force:
             S.force(key)
         if hide_all:
@@ -408,7 +456,38 @@ class PbPeopleReports(models.AbstractModel):
         return S
 
     @api.model
-    def _table_suppressor(self, rows, m, S_series):
+    def _breakdown_table(self, P, records, by, companies, m, S_series):
+        """The company / department table of a scope, suppressed — the ONE
+        way it is computed, used by the table on screen and by every child
+        screen's parent check.
+
+        Both directions: the table takes the hiding of the scope's own tiles
+        (its totals), AND each row takes the hiding its own screen needs on
+        its own (e.g. a company hides its leavers to protect its quarters),
+        so the table never shows a figure a child screen had to hide."""
+        scope_recs = [r for r in records if r['company_id'] in companies]
+        if by == 'company':
+            rows = self._breakdown(P, scope_recs, 'company', companies=companies)
+        else:
+            rows = self._breakdown(P, scope_recs, 'department')
+        own = {}
+        for key in rows:
+            ck = ('own', by, key)
+            if ck not in P['_cache']:
+                if by == 'company':
+                    rm = self._measure([r for r in scope_recs if r['company_id'] == key],
+                                       P['ends'], allowed_depts=P['allowed_depts'])
+                else:
+                    rm = self._measure(scope_recs, P['ends'], dept=key or None,
+                                       allowed_depts=P['allowed_depts'])
+                P['_cache'][ck] = self._series_suppressor(rm)
+            RS = P['_cache'][ck]
+            own[key] = {col for col, cell in (('h', 'S:h_end'), ('j', 'S:j'), ('l', 'S:l'))
+                        if RS.is_hidden(cell)}
+        return self._table_suppressor(rows, m, S_series, own=own), rows
+
+    @api.model
+    def _table_suppressor(self, rows, m, S_series, own=None):
         """The company / department table. Its totals are the scope's tiles,
         so whatever the tiles hide, the table's total hides too."""
         S = Suppressor()
@@ -421,13 +500,17 @@ class PbPeopleReports(models.AbstractModel):
             S.cell(('R', key, 'l'), r['l'])
             # a row's headcount change is its joiners less its leavers
             S.add_pair(('R', key, 'j'), ('R', key, 'l'))
-            S.add_derived(('R', key, 'rate'), [('R', key, 'l'), ('R', key, 'h')])
         for col in ('h', 'j', 'l'):
             S.add_set('T:%s' % col, [('R', k, col) for k in rows])
         S.add_pair('T:j', 'T:l')
         for col, cell in (('h', 'S:h_end'), ('j', 'S:j'), ('l', 'S:l')):
             if S_series.is_hidden(cell):
                 S.force('T:%s' % col)
+        for key, cols in (own or {}).items():
+            for col in cols:
+                S.force(('R', key, col))
+        # the totals are the scope's tiles, shown on screen already
+        S.public = {'T:h', 'T:j', 'T:l'} - S.forced
         return S.solve()
 
     @api.model
@@ -444,13 +527,12 @@ class PbPeopleReports(models.AbstractModel):
         force, too_small, parent = set(), False, None
         if dept:
             pm, PSs, _small = self._scope_figures(P, records, companies, None)
-            rows = self._breakdown(P, scope_recs, 'department')
-            parent = (self._table_suppressor(rows, pm, PSs), rows, dept)
+            PS, rows = self._breakdown_table(P, records, 'department', companies, pm, PSs)
+            parent = (PS, rows, dept)
         elif len(companies) == 1 and len(P['visible']) > 1:
             gm, GSs, _small = self._scope_figures(P, records, P['visible'], None)
-            all_recs = [r for r in records if r['company_id'] in P['visible']]
-            rows = self._breakdown(P, all_recs, 'company', companies=P['visible'])
-            parent = (self._table_suppressor(rows, gm, GSs), rows, companies[0])
+            PS, rows = self._breakdown_table(P, records, 'company', P['visible'], gm, GSs)
+            parent = (PS, rows, companies[0])
         if parent:
             PS, rows, key = parent
             if key not in rows or PS.is_hidden(('R', key, 'h')):
@@ -484,7 +566,7 @@ class PbPeopleReports(models.AbstractModel):
         B = self._shared(P)
         S, m = B['S'], B['m']
         n = len(P['ends'])
-        avg = sum(m['heads']) / n if n else 0
+        avg = (m['h0'] + m['heads'][-1]) / 2.0
         out = {
             'view': view,
             'title': self._view_labels()[view],
@@ -498,11 +580,18 @@ class PbPeopleReports(models.AbstractModel):
         }
         months = [format_date(self.env, d, date_format='MMM y') for d in P['ends']]
         if view in ('headcount', 'movement'):
-            out['series'] = [{
-                'month': months[i],
-                'h': S.out(('H', i)), 'j': S.out(('J', i)), 'l': S.out(('L', i)),
-                'net': self._net(S, m, i),
-            } for i in range(n)]
+            out['series'] = [{'month': months[i], 'h': S.out(('H', i))} for i in range(n)]
+            quarters = self._quarters(m)
+            last_i = {}
+            for i, day in enumerate(P['ends']):
+                last_i[(day.month - 1) // 3] = i
+            qkeys = sorted(last_i)
+            out['quarters'] = [{
+                'label': _('Q%(q)s %(year)s', q=qk + 1, year=P['year']),
+                'j': S.out(('J', q)), 'l': S.out(('L', q)),
+                'net': self._net(S, quarters, q, last_i[qk],
+                                 last_i[qkeys[q - 1]] if q else None, exact=m['exact']),
+            } for q, qk in enumerate(qkeys)]
             if view == 'headcount':
                 out['table'] = self._group_table(P, B)
                 out['crosscheck'] = self._crosscheck(P)
@@ -515,10 +604,16 @@ class PbPeopleReports(models.AbstractModel):
         return out
 
     @api.model
-    def _net(self, S, m, i):
-        if S.is_hidden(('J', i)) or S.is_hidden(('L', i)):
-            return {'v': None, 'h': True}
-        return {'v': m['joins'][i] - m['leaves'][i], 'h': False}
+    def _net(self, S, quarters, q, end_i, prev_i, exact=True):
+        """A quarter's joiners less its leavers: shown when both are shown,
+        or when the two headcounts around the quarter are (it is then simply
+        their difference, already on the screen)."""
+        prev = 'H0' if prev_i is None else ('H', prev_i)
+        j, l = quarters[q]
+        both_h = exact and not S.is_hidden(prev) and not S.is_hidden(('H', end_i))
+        if both_h or not (S.is_hidden(('J', q)) or S.is_hidden(('L', q))):
+            return {'v': j - l, 'h': False}
+        return {'v': None, 'h': True}
 
     @api.model
     def _tiles(self, S, m, avg):
@@ -537,27 +632,27 @@ class PbPeopleReports(models.AbstractModel):
         by = 'company' if len(P['companies']) > 1 else 'department'
         if P['department_id']:
             return {'by': by, 'rows': [], 'skipped': True}
-        # exactly the calls `_scope` makes for a child screen's parent check
-        rows = self._breakdown(P, B['records'], by, companies=P['companies'])
-        TS = self._table_suppressor(rows, B['m'], B['S'])
+        # exactly the call a child screen's parent check makes
+        TS, rows = self._breakdown_table(P, B['all_records'], by, P['companies'], B['m'], B['S'])
         if by == 'company':
             names = {c.id: c.name for c in self.env['res.company'].sudo().browse(list(rows))}
         else:
             names = {d.id: d.name for d in self.env['hr.department'].sudo().browse(
                 [k for k in rows if k])}
         out_rows = []
+        # No turnover % per row: it would need the row's start headcount,
+        # which this table does not show (and must not give away).
         for key, r in rows.items():
-            avg = r.get('avg') or 0
-            rate_h = TS.is_hidden(('R', key, 'rate')) or not avg
             out_rows.append({
                 'name': names.get(key) or _('No department'),
                 'h': TS.out(('R', key, 'h')), 'j': TS.out(('R', key, 'j')),
                 'l': TS.out(('R', key, 'l')),
-                'rate': {'v': None if rate_h else round(r['l'] * 100.0 / avg, 1), 'h': rate_h},
             })
         out_rows.sort(key=lambda x: x['name'] or '')
+        # the total row IS the tiles (same figures, same hiding as the tiles)
+        S = B['S']
         return {'by': by, 'rows': out_rows,
-                'total': {'h': TS.out('T:h'), 'j': TS.out('T:j'), 'l': TS.out('T:l')}}
+                'total': {'h': S.out('S:h_end'), 'j': S.out('S:j'), 'l': S.out('S:l')}}
 
     @api.model
     def _cat_keys(self, which):
@@ -624,6 +719,7 @@ class PbPeopleReports(models.AbstractModel):
             for k in keys:
                 S.cell(('G', k), counts.get(k, 0))
             S.add_set('T', [('G', k) for k in keys])
+            S.public = {"T"} - S.forced      # the tile, already on screen
             S.solve()
             return S, 'T', lambda k: ('G', k)
         gm, GS, _small = self._scope_figures(P, records, P['visible'], None)
@@ -646,6 +742,8 @@ class PbPeopleReports(models.AbstractModel):
         for k in keys:
             S.add_set(('G', k), [('X', c, k) for c in P['visible']])
         S.add_set('T', [('C', c) for c in P['visible']])
+        # the group and company totals are tiles, already on screen
+        S.public = ({"T"} | {("C", c) for c in P["visible"]}) - S.forced
         S.solve()
         if len(P['companies']) == 1:
             cid = P['companies'][0]
@@ -814,17 +912,18 @@ class PbPeopleReports(models.AbstractModel):
                     sheet.write(r, i, v)
                 r += 1
             r += 1
-        if data.get('series'):
-            table([_('Month'), _('Headcount'), _('Joiners'), _('Leavers'), _('Change')],
-                  [[s['month'], val(s['h']), val(s['j']), val(s['l']), val(s['net'])]
-                   for s in data['series']])
+        if data.get('series') and data['view'] == 'headcount':
+            table([_('Month'), _('Headcount')],
+                  [[s['month'], val(s['h'])] for s in data['series']])
+        if data.get('quarters'):
+            table([_('Quarter'), _('Joiners'), _('Leavers'), _('Change')],
+                  [[s['label'], val(s['j']), val(s['l']), val(s['net'])] for s in data['quarters']])
         if data.get('table') and data['table'].get('rows'):
             tb = data['table']
             table([_('Company') if tb['by'] == 'company' else _('Department'), _('Headcount'),
-                   _('Joiners'), _('Leavers'), _('Turnover %')],
-                  [[x['name'], val(x['h']), val(x['j']), val(x['l']), val(x['rate'])]
-                   for x in tb['rows']] +
-                  [[_('Total'), val(tb['total']['h']), val(tb['total']['j']), val(tb['total']['l']), '']])
+                   _('Joiners'), _('Leavers')],
+                  [[x['name'], val(x['h']), val(x['j']), val(x['l'])] for x in tb['rows']] +
+                  [[_('Total'), val(tb['total']['h']), val(tb['total']['j']), val(tb['total']['l'])]])
         if data.get('reasons'):
             table([_('Why they left'), _('People'), '%'],
                   [[x['label'], val(x['n']), val(x['pct'])] for x in data['reasons']])

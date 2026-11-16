@@ -60,31 +60,43 @@
           <!-- the tiles -->
           <div class="pbpr-tiles" t-att-class="{ 'is-busy': state.busy }">
             <div class="pbpr-tile"><span class="pbpr-k">Headcount at the end</span><b t-if="shown(D.tiles.h_end)" t-esc="num(D.tiles.h_end)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
-            <div class="pbpr-tile"><span class="pbpr-k">Average headcount</span><b t-if="shown(D.tiles.avg)" t-esc="num(D.tiles.avg)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Average headcount</span><b t-if="shown(D.tiles.avg)" t-esc="num(D.tiles.avg)"/><t t-else="" t-call="pb_people_reports.Hidden"/><small>start and end of the period</small></div>
             <div class="pbpr-tile"><span class="pbpr-k">Joiners</span><b t-if="shown(D.tiles.j)" t-esc="num(D.tiles.j)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
             <div class="pbpr-tile"><span class="pbpr-k">Leavers</span><b t-if="shown(D.tiles.l)" t-esc="num(D.tiles.l)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
             <div class="pbpr-tile"><span class="pbpr-k">Turnover</span><b t-if="shown(D.tiles.rate)" t-esc="pct(D.tiles.rate)"/><t t-else="" t-call="pb_people_reports.Hidden"/><small>leavers ÷ average headcount</small></div>
           </div>
 
           <!-- the months -->
-          <section t-if="D.series" class="pbpr-card">
-            <h3 t-if="D.view === 'headcount'">Headcount at each month-end</h3>
-            <h3 t-else="">Joiners and leavers by month</h3>
+          <section t-if="D.series and D.view === 'headcount'" class="pbpr-card">
+            <h3>Headcount at each month-end</h3>
             <table class="pbim-table pbpr-table">
-              <thead><tr><th>Month</th><th t-if="D.view === 'headcount'">Headcount</th><th class="num">Joiners</th><th class="num">Leavers</th><th class="num">Change</th></tr></thead>
+              <thead><tr><th>Month</th><th>Headcount</th></tr></thead>
               <tbody>
                 <tr t-foreach="D.series" t-as="sr" t-key="sr_index">
                   <td t-esc="sr.month"/>
-                  <td t-if="D.view === 'headcount'" class="pbpr-barcell">
+                  <td class="pbpr-barcell">
                     <span t-if="shown(sr.h)" class="pbpr-hbar"><i t-att-style="barStyle(sr.h, maxHead)"/></span>
                     <b t-if="shown(sr.h)" t-esc="num(sr.h)"/><t t-else="" t-call="pb_people_reports.Hidden"/>
                   </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section t-if="D.quarters and D.quarters.length" class="pbpr-card">
+            <h3>Joiners and leavers by quarter</h3>
+            <table class="pbim-table pbpr-table">
+              <thead><tr><th>Quarter</th><th class="num">Joiners</th><th class="num">Leavers</th><th class="num">Change</th></tr></thead>
+              <tbody>
+                <tr t-foreach="D.quarters" t-as="sr" t-key="sr_index">
+                  <td t-esc="sr.label"/>
                   <td class="num"><t t-if="shown(sr.j)"><span class="pbpr-mini is-in"><i t-att-style="barStyle(sr.j, maxMove)"/></span><t t-esc="num(sr.j)"/></t><t t-else="" t-call="pb_people_reports.Hidden"/></td>
                   <td class="num"><t t-if="shown(sr.l)"><span class="pbpr-mini is-out"><i t-att-style="barStyle(sr.l, maxMove)"/></span><t t-esc="num(sr.l)"/></t><t t-else="" t-call="pb_people_reports.Hidden"/></td>
                   <td class="num"><t t-if="shown(sr.net)" t-esc="netLabel(sr.net)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
                 </tr>
               </tbody>
             </table>
+            <p class="pbpr-note"><t t-out="icon('info', 13)"/> <span>Joiners and leavers are shown by quarter, not by month: with the headcount shown for every month, monthly figures would give small groups away.</span></p>
           </section>
 
           <!-- by company / department -->
@@ -92,14 +104,13 @@
             <h3 t-if="D.table.by === 'company'">By company</h3>
             <h3 t-else="">By department</h3>
             <table class="pbim-table pbpr-table">
-              <thead><tr><th t-if="D.table.by === 'company'">Company</th><th t-else="">Department</th><th class="num">Headcount at the end</th><th class="num">Joiners</th><th class="num">Leavers</th><th class="num">Turnover</th></tr></thead>
+              <thead><tr><th t-if="D.table.by === 'company'">Company</th><th t-else="">Department</th><th class="num">Headcount at the end</th><th class="num">Joiners</th><th class="num">Leavers</th></tr></thead>
               <tbody>
                 <tr t-foreach="D.table.rows" t-as="rw" t-key="rw_index">
                   <td t-esc="rw.name"/>
                   <td class="num"><t t-if="shown(rw.h)" t-esc="num(rw.h)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
                   <td class="num"><t t-if="shown(rw.j)" t-esc="num(rw.j)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
                   <td class="num"><t t-if="shown(rw.l)" t-esc="num(rw.l)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
-                  <td class="num"><t t-if="shown(rw.rate)" t-esc="pct(rw.rate)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
                 </tr>
               </tbody>
               <tfoot>
@@ -108,7 +119,6 @@
                   <th class="num"><t t-if="shown(D.table.total.h)" t-esc="num(D.table.total.h)"/><t t-else="" t-call="pb_people_reports.Hidden"/></th>
                   <th class="num"><t t-if="shown(D.table.total.j)" t-esc="num(D.table.total.j)"/><t t-else="" t-call="pb_people_reports.Hidden"/></th>
                   <th class="num"><t t-if="shown(D.table.total.l)" t-esc="num(D.table.total.l)"/><t t-else="" t-call="pb_people_reports.Hidden"/></th>
-                  <th/>
                 </tr>
               </tfoot>
             </table>

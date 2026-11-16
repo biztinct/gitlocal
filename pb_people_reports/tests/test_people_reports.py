@@ -69,9 +69,11 @@ class TestPeopleReports(TransactionCase):
             emp(cls.co_x, cls.d_mid, start_old, sex='female')
         for i in range(2):
             emp(cls.co_x, cls.d_mid, date(Y, 9, 1), sex='female')
-        # Y: 8 people
+        # Y: 8 people, and 5 joiners in April
         for i in range(8):
             emp(cls.co_y, cls.d_y, start_old)
+        for i in range(5):
+            emp(cls.co_y, cls.d_y, date(Y, 4, 1 + i))
         # a person who MOVES from X to Y on 1 August (one person, two records)
         cls.mover_x = emp(cls.co_x, cls.d_mid, start_old, end=date(Y, 7, 31))
         cls.mover_y = emp(cls.co_y, cls.d_y, date(Y, 8, 1))
@@ -116,7 +118,7 @@ class TestPeopleReports(TransactionCase):
         for e in Emp.search([('company_id', 'in', company_ids), ('name', 'like', 'DEMO R')]):
             start = e.date_of_joining if 'date_of_joining' in e._fields else e.contract_date_start
             end = e.departure_date
-            if (not start or start <= day) and (not end or end >= day):
+            if (not start or start <= day) and (not end or end > day):
                 if not dept or e.department_id.id == dept:
                     n += 1
         return n
@@ -134,6 +136,15 @@ class TestPeopleReports(TransactionCase):
     def test_80_hr_only(self):
         self.assertTrue(self.R().can_open())
         self.assertTrue(self.R().get_options()['allowed'])
+        # the payroll team holds the HR group only because payroll implies it:
+        # refused. Somebody who is HR AND payroll passes through the HR group.
+        self.assertTrue(self.u_pay.has_group('hr.group_hr_user'))
+        both = new_test_user(self.env, login='s9b_rep_both',
+                             groups=self.u_pay.group_ids.get_external_id() and ','.join(
+                                 v for v in self.u_pay.group_ids.get_external_id().values() if v)
+                             + ',hr.group_hr_user',
+                             company_id=self.co_x.id, company_ids=[(6, 0, self.co_x.ids)])
+        self.assertTrue(self.R(both, self.co_x).can_open())
         for user in (self.u_pay, self.u_portal):
             R = self.R(user, self.co_x)
             self.assertFalse(R.can_open())
@@ -161,9 +172,38 @@ class TestPeopleReports(TransactionCase):
             if not row['h']['h']:
                 self.assertEqual(row['h']['v'], self.head_at([self.co_x.id], day), day)
         self.assertEqual(len(data['series']), 12)
-        # March: 6 joiners in Big
-        self.assertEqual(data['series'][2]['j']['v'], 6)
-        self.assertEqual(data['tiles']['l']['v'], 6)      # 5 in June + the mover in July
+        self.assertEqual(len(data['quarters']), 4)
+        # a figure is either the truth or hidden (no value) — never anything else
+        for tile, truth in (('l', 6), ('j', 9)):        # X: 5 in June + the mover; 6+1+2
+            cell = data['tiles'][tile]
+            self.assertTrue(cell['v'] == truth if not cell['h'] else cell['v'] is None, tile)
+        # the headcount identity: end = start + joiners - leavers
+        self.assertEqual(data['tiles']['h_end']['v'],
+                         self.head_at([self.co_x.id], date(self.year - 1, 12, 31)) + 9 - 6)
+        # the whole group is big enough to keep its year totals
+        group = self.report()
+        self.assertEqual(group['tiles']['l']['v'], 5)     # the mover is not a group leaver
+        self.assertEqual(group['tiles']['j']['v'], 14)
+        self.assertFalse(group['tiles']['rate']['h'])
+        # every quarter that is shown is the truth; hidden ones carry no value
+        for q in data['quarters']:
+            for c in (q['j'], q['l']):
+                self.assertTrue(c['v'] is None if c['h'] else isinstance(c['v'], int))
+
+    def test_82b_no_quarter_can_be_worked_out(self):
+        """The year's totals and the shown quarters never pin a hidden quarter:
+        at least two hidden quarters, adding up to 5 or more."""
+        for co in (self.co_x, self.co_y, None):
+            params = {'company_id': co.id} if co else {}
+            data = self.report('movement', **params)
+            for side, tile in (('j', 'j'), ('l', 'l')):
+                if data['tiles'][tile]['h']:
+                    continue
+                hidden = [q for q in data['quarters'] if q[side]['h']]
+                if hidden:
+                    self.assertGreaterEqual(len(hidden), 2, (co, side))
+                    shown = sum(q[side]['v'] for q in data['quarters'] if not q[side]['h'])
+                    self.assertGreaterEqual(data['tiles'][tile]['v'] - shown, 5, (co, side))
 
     def test_83_small_department_hidden_with_its_complement(self):
         data = self.report(company_id=self.co_x.id)
@@ -220,9 +260,9 @@ class TestPeopleReports(TransactionCase):
         y = R._measure([r for r in records if r['company_id'] == self.co_y.id], P['ends'])
         # X: 5 leavers in June + the mover; Y: the mover joins; group: neither
         self.assertEqual(sum(x['leaves']), 6)
-        self.assertEqual(sum(y['joins']), 1)
+        self.assertEqual(sum(y['joins']), 6)          # 5 in April + the mover
         self.assertEqual(sum(group['leaves']), 5)
-        self.assertEqual(sum(group['joins']), sum(x['joins']))
+        self.assertEqual(sum(group['joins']), sum(x['joins']) + 5)
 
     def test_88_breakdowns_hide_small_groups_and_not_per_department(self):
         data = self.report('age_gender', company_id=self.co_x.id)
@@ -245,7 +285,20 @@ class TestPeopleReports(TransactionCase):
         self.assertEqual(per_dept['genders'], [])
         leaving = self.report('leaving', company_id=self.co_x.id)
         resigned = next(r for r in leaving['reasons'] if r['key'] == 'resigned')
-        self.assertEqual(resigned['n']['v'], 6)
+        # hidden with the company's leavers total, or the truth
+        if leaving['tiles']['l']['h']:
+            self.assertTrue(leaving['total']['h'])
+            self.assertTrue(resigned['n']['h'])
+        else:
+            self.assertEqual(resigned['n']['v'], 6)
+        group_leaving = self.report('leaving')
+        g_res = next(r for r in group_leaving['reasons'] if r['key'] == 'resigned')
+        # 5 for the group (the mover is no leaver there) — or hidden, because
+        # company X had to hide its own leavers and the group minus company Y
+        # would come close to giving X's away
+        self.assertTrue(g_res['n']['v'] == 5 if not g_res['n']['h'] else g_res['n']['v'] is None)
+        self.assertFalse(group_leaving['total']['h'])
+        self.assertEqual(group_leaving['total']['v'], 5)
 
     def test_89_group_and_company_breakdowns_cannot_be_subtracted(self):
         group = self.report('age_gender')

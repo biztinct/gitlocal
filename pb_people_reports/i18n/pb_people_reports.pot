@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 08:24+0000\n"
-"PO-Revision-Date: 2026-11-16 08:24+0000\n"
+"POT-Creation-Date: 2026-11-16 08:48+0000\n"
+"PO-Revision-Date: 2026-11-16 08:48+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -309,7 +309,15 @@ msgstr ""
 #. module: pb_people_reports
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Joiners and leavers by month"
+msgid ""
+"Joiners and leavers are shown by quarter, not by month: with the headcount "
+"shown for every month, monthly figures would give small groups away."
+msgstr ""
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Joiners and leavers by quarter"
 msgstr ""
 
 #. module: pb_people_reports
@@ -387,6 +395,20 @@ msgstr ""
 msgid ""
 "People reports are for HR. Ask your administrator if you believe you should "
 "see them."
+msgstr ""
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Q%(q)s %(year)s"
+msgstr ""
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Quarter"
 msgstr ""
 
 #. module: pb_people_reports
@@ -544,4 +566,10 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
 msgid "leavers ÷ average headcount"
+msgstr ""
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "start and end of the period"
 msgstr ""

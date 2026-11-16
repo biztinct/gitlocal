@@ -39,11 +39,16 @@ def attack(S):
     hidden = [k for k in S.values if S.is_hidden(k)]
     if not hidden:
         return {}
-    # every hidden cell holds at least one person (zeros are shown)
-    low = {k: (0 if S.values[k] == 0 else 1) for k in hidden}
+    # a hidden cell holds at least one person, unless it is part of a pair
+    # (a pair can hide a zero, and the reader cannot tell which)
+    in_pair = {k for ab in S.pairs for k in ab}
+    low = {k: (0 if k in in_pair else 1) for k in hidden}
     # the reader knows the grand total only when it is shown; otherwise give
     # the search a little room above the truth (still stricter than reality)
-    cap = S.values['T'] + (0 if not S.is_hidden('T') else 5)
+    if 'T' in S.values:
+        cap = S.values['T'] + (0 if not S.is_hidden('T') else 5)
+    else:
+        cap = max(S.values.values()) + 5
     possible = {k: set() for k in hidden}
     # a cell can never be more than any SHOWN total it is part of
     upper = {}
@@ -81,6 +86,41 @@ def attack(S):
                     return False
                 assign[u] = v
                 changed = True
+            # public identities: sum(coef * cell) == 0
+            for eq in S.equations:
+                unknown = [c for c in eq if known(assign, c) is None]
+                if not unknown:
+                    if sum(c * known(assign, k) for k, c in eq.items()) != 0:
+                        return False
+                elif len(unknown) == 1:
+                    u = unknown[0]
+                    rest = sum(c * known(assign, k) for k, c in eq.items() if k != u)
+                    if rest % eq[u]:
+                        return False
+                    v = -rest // eq[u]
+                    if v < low.get(u, 0) or v > upper.get(u, cap):
+                        return False
+                    assign[u] = v
+                    changed = True
+            # a pair's DIFFERENCE is public (the headcount change)
+            for a, b in S.pairs:
+                d = S.values[a] - S.values[b]
+                ka, kb = known(assign, a), known(assign, b)
+                if ka is not None and kb is not None:
+                    if ka - kb != d:
+                        return False
+                elif ka is not None:
+                    v = ka - d
+                    if v < low.get(b, 0) or v > upper.get(b, cap):
+                        return False
+                    assign[b] = v
+                    changed = True
+                elif kb is not None:
+                    v = kb + d
+                    if v < low.get(a, 0) or v > upper.get(a, cap):
+                        return False
+                    assign[a] = v
+                    changed = True
         return True
 
     def search(assign):
@@ -190,6 +230,43 @@ class TestSuppress(BaseCase):
         S.force('a')                 # hidden on another screen
         S.solve()
         self.assertTrue(S.is_hidden('b'))   # else 40 - 20 = a
+
+    def test_69_months_cannot_be_worked_out_from_the_headcount(self):
+        """Joiners and leavers by month, with the headcount change public."""
+        rnd = random.Random(20261117)
+        checked = 0
+        for _i in range(150):
+            n = rnd.choice([3, 4, 5])
+            joins = [rnd.choice([0, 0, 1, 2, 3, 5, 6, 8]) for _m in range(n)]
+            leaves = [rnd.choice([0, 0, 1, 2, 4, 5, 7]) for _m in range(n)]
+            # exactly the shape of the series on the Headcount screen
+            S = Suppressor()
+            h = [rnd.choice([3, 9, 20, 40])]
+            S.cell('H0', h[0])
+            for m in range(n):
+                h.append(max(0, h[-1] + joins[m] - leaves[m]))
+                leaves[m] = h[-2] + joins[m] - h[-1]
+                S.cell(('H', m), h[-1])
+                S.cell(('J', m), joins[m])
+                S.cell(('L', m), leaves[m])
+                prev = 'H0' if m == 0 else ('H', m - 1)
+                S.add_equation({('H', m): 1, prev: -1, ('J', m): -1, ('L', m): 1})
+            S.cell('SJ', sum(joins))
+            S.cell('SL', sum(leaves))
+            S.add_set('SJ', [('J', m) for m in range(n)])
+            S.add_set('SL', [('L', m) for m in range(n)])
+            S.add_equation({('H', n - 1): 1, 'H0': -1, 'SJ': -1, 'SL': 1})
+            S.protect = {'H0', 'SJ', 'SL'}
+            S.solve()
+            hidden = [k for k in S.values if S.is_hidden(k)]
+            if not hidden or len(hidden) > 10:
+                continue
+            for k, vals in attack(S).items():
+                if S.values[k]:
+                    self.assertGreater(len(vals), 1, 'joins %s leaves %s: %s = %s can be worked out'
+                                       % (joins, leaves, k, S.values[k]))
+            checked += 1
+        self.assertGreater(checked, 25)
 
     def test_70_nothing_hidden_can_be_worked_out(self):
         rnd = random.Random(20261116)

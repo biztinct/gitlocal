@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 08:24+0000\n"
-"PO-Revision-Date: 2026-11-16 08:24+0000\n"
+"POT-Creation-Date: 2026-11-16 08:48+0000\n"
+"PO-Revision-Date: 2026-11-16 08:48+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -310,8 +310,16 @@ msgstr "Người vào và người nghỉ"
 #. module: pb_people_reports
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Joiners and leavers by month"
-msgstr "Người vào và người nghỉ theo tháng"
+msgid ""
+"Joiners and leavers are shown by quarter, not by month: with the headcount "
+"shown for every month, monthly figures would give small groups away."
+msgstr "Người vào và người nghỉ được hiển thị theo quý, không theo tháng: vì số nhân viên đã hiện cho từng tháng, số liệu theo tháng sẽ làm lộ các nhóm nhỏ."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Joiners and leavers by quarter"
+msgstr "Người vào và người nghỉ theo quý"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -389,6 +397,20 @@ msgid ""
 "People reports are for HR. Ask your administrator if you believe you should "
 "see them."
 msgstr "Báo cáo nhân sự dành cho bộ phận Nhân sự. Hãy hỏi quản trị viên nếu bạn nghĩ mình cần xem."
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Q%(q)s %(year)s"
+msgstr "Quý %(q)s %(year)s"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Quarter"
+msgstr "Quý"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -546,3 +568,9 @@ msgstr "dưới 5"
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
 msgid "leavers ÷ average headcount"
 msgstr "người nghỉ ÷ số nhân viên bình quân"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "start and end of the period"
+msgstr "đầu kỳ và cuối kỳ"
