@@ -608,3 +608,27 @@ msgstr "Hợp đồng mới bắt đầu với các khoản lương giống hợ
 #: model:ir.model.fields,field_description:pb_people_advanced.field_pb_newhire_proposal__note
 msgid "Why"
 msgstr "Lý do"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Fixed-term"
+msgstr "Có thời hạn"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Kind of contract (Vietnam)"
+msgstr "Loại hợp đồng (Việt Nam)"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Open-ended"
+msgstr "Không thời hạn"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Seasonal"
+msgstr "Theo mùa vụ"

@@ -655,6 +655,11 @@ class PbContractReview(models.Model):
         }
         if date_end:
             vals['date_end'] = str(date_end)
+        else:
+            # WDGAP W3-B (RN1): the wizard now carries the old contract's
+            # Vietnam contract kind; a contract with no end date ("Make it
+            # permanent") is open-ended, as it always was.
+            vals['vn_kind'] = 'indefinite'
         res = Wizard.create_contract(vals)
         if res.get('error') or not res.get('contract_id'):
             self.message_post(body=_(
