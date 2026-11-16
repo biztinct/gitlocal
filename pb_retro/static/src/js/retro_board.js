@@ -30,6 +30,7 @@ const GLANCE_FILTERS = {
     draft: { where: ["draft"] },
     done: { where: ["done"] },
     closed: { where: ["closed"] },
+    topay: { payment: ["topay"] },
 };
 
 function blankWizard() {
@@ -64,6 +65,8 @@ export class PbRetroBoard extends Component {
             work: null,
             wiz: null,
             issuesOpen: false,
+            // WDGAP W2-D2 — the Payment strip
+            pay: { busy: false, cancelFor: null, reason: "", open: false },
         });
         this.kit = useFilterKit({
             model: MODEL,
@@ -136,6 +139,7 @@ export class PbRetroBoard extends Component {
         return [
             { key: "draft", n: k.draft || 0, label: _t("draft"), tone: tone(k.draft, "amber"), run: pick("draft") },
             { key: "done", n: k.done || 0, label: _t("worked out"), tone: tone(k.done, "blue"), run: pick("done") },
+            { key: "topay", n: k.topay || 0, label: _t("waiting to be paid"), tone: tone(k.topay, "amber"), run: pick("topay") },
             { key: "closed", n: k.closed || 0, label: _t("closed"), tone: "", run: pick("closed") },
         ];
     }
@@ -269,6 +273,80 @@ export class PbRetroBoard extends Component {
         } catch (e) {
             this.notif.add(this._msg(e, _t("The Excel file could not be made.")), { type: "danger" });
         }
+    }
+
+    // ------------------------------------------------------------ the payment (W2-D2)
+    get payment() { return (this.state.result && this.state.result.payment) || null; }
+    get payPayable() {
+        const p = this.payment;
+        return p ? p.people.filter((x) => x.status === "payable") : [];
+    }
+    get payOthers() {
+        const p = this.payment;
+        return p ? p.people.filter((x) => x.status !== "payable") : [];
+    }
+    get nextWords() {
+        const p = this.payment;
+        const st = p ? p.state : "";
+        if (st === "waiting") { return _t("Sent for approval. Nothing is paid until the Head of pay approves it."); }
+        if (st === "approved") { return _t("Approved. The next regular pay run of this scheme adds the difference as back-pay lines, with the tax and insurance worked out for those months."); }
+        if (st === "partly") { return _t("Part of the back pay is paid. The rest goes into the next regular pay run of this scheme."); }
+        if (st === "paid") { return _t("The back pay is paid. Those months stay as they were; the difference was paid in a later pay run."); }
+        if (st === "cancelled") { return _t("The payment was cancelled. Nothing more will be paid from this re-work."); }
+        return _t("Nothing has been paid or changed. Pay the difference in the next pay run, or add it as a one-off in Updates.");
+    }
+    async payMove(verb) {
+        const r = this.state.result;
+        if (!r || this.state.pay.busy) { return; }
+        this.state.pay.busy = true;
+        try {
+            const res = await this.orm.call(MODEL, "move", [r.id, verb]);
+            this.notif.add(res.msg || _t("Done."), { type: "success" });
+            await this.openReview(r.id);
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That could not be done.")), { type: "danger" });
+        } finally {
+            this.state.pay.busy = false;
+        }
+    }
+    askCancelPay(row) {
+        this.state.pay.cancelFor = row ? [row.employee_id] : [];
+        this.state.pay.cancelName = row ? row.name : "";
+        this.state.pay.reason = "";
+    }
+    closeCancelPay() { this.state.pay.cancelFor = null; this.state.pay.reason = ""; }
+    onPayReason(ev) { this.state.pay.reason = ev.target.value; }
+    async confirmCancelPay() {
+        const r = this.state.result;
+        const P = this.state.pay;
+        if (!r || P.busy || P.cancelFor === null) { return; }
+        if (!(P.reason || "").trim()) {
+            this.notif.add(_t("Say why this back pay is cancelled, in a few words."), { type: "warning" });
+            return;
+        }
+        P.busy = true;
+        try {
+            const res = await this.orm.call(MODEL, "cancel_backpay", [r.id, P.reason],
+                                            { employee_ids: P.cancelFor.length ? P.cancelFor : null });
+            this.notif.add(res.msg || _t("Done."), { type: "success" });
+            P.cancelFor = null;
+            await this.openReview(r.id);
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That could not be done.")), { type: "danger" });
+        } finally {
+            P.busy = false;
+        }
+    }
+    togglePayPeople() { this.state.pay.open = !this.state.pay.open; }
+    get cancelQuestion() {
+        const name = this.state.pay.cancelName;
+        return name ? _t("Cancel the back pay of %s?", name)
+            : _t("Cancel every back pay of this re-work that is not paid yet?");
+    }
+    get othersLabel() {
+        const n = this.payOthers.length;
+        return n === 1 ? _t("1 person not paid automatically or with nothing to pay")
+            : _t("%s people not paid automatically or with nothing to pay", this.fmtInt(n));
     }
 
     // ------------------------------------------------------------ working it out
@@ -617,6 +695,7 @@ export class PbRetroBoard extends Component {
     onKey(ev) {
         if (ev.key !== "Escape") { return; }
         if (this.state.wiz) { this.closeWizard(); return; }
+        if (this.state.pay.cancelFor !== null) { this.closeCancelPay(); return; }
         if (this.state.view === "result" && !this.state.work) { this.backToList(); }
     }
     signClass(sign) { return sign > 0 ? "is-up" : sign < 0 ? "is-down" : "is-zero"; }

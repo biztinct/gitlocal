@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_leave_earning_officer,pb.leave.earning time off officer,model_pb_leave_earning,hr_holidays.group_hr_holidays_user,1,0,0,0
+access_pb_leave_earning_hr,pb.leave.earning hr manager,model_pb_leave_earning,hr.group_hr_manager,1,0,0,0
+access_pb_leave_service_step_user,pb.leave.service.step read,model_pb_leave_service_step,base.group_user,1,0,0,0
+access_pb_leave_service_step_manager,pb.leave.service.step time off manager,model_pb_leave_service_step,hr_holidays.group_hr_holidays_manager,1,1,1,1

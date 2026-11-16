@@ -79,7 +79,8 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     # later module bolts a lens onto this workspace without editing it, exactly
     # as every other hub in the product already allows — with the dependency
     # running the other way, so the guests name the category by its string.
-    'version': '19.0.1.13.1',
+    # 19.0.1.14.0 — WDGAP S5-B: Close lens section slot `pb_close_lens_section`.
+    'version': '19.0.1.14.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

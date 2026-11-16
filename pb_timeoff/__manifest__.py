@@ -28,7 +28,10 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
     # it: a published revision is FROZEN (requests under way keep the rules
     # they were given), so the migration publishes a new revision instead of
     # writing over the old one. Found live; see the ledger.
-    'version': '19.0.1.11.0',
+    # 19.0.1.12.0 — WDGAP S5-A: the balance board ignores days that have run
+    # out (and the days taken from them), and lists only the companies' own
+    # kinds and the shared ones.
+    'version': '19.0.1.12.0',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',

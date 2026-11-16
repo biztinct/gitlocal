@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The Overtime desk: "Time off" beside Approve on each card and in the bulk
+     tray, and a chip on cards that will be (or were) given as time off. -->
+<templates xml:space="preserve">
+
+  <t t-inherit="pb_hr_workforce.PbOtDesk" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('acts')]/button[hasclass('primary')]" position="after">
+      <button class="pbot-btn tiny ghost" t-att-title="timeOffTitle()"
+              t-on-click="() => this.approveTimeOffOne(q.id)">
+        <span t-out="ic('clock',13)"/><span>Time off</span>
+      </button>
+    </xpath>
+    <xpath expr="//div[hasclass('typ')]" position="inside">
+      <span class="chip" t-if="q.time_off" t-esc="q.time_off_label"/>
+    </xpath>
+    <xpath expr="//div[hasclass('pbot-tray')]/button[hasclass('primary')]" position="after">
+      <button class="pbot-btn ghost" t-att-title="timeOffTitle()" t-on-click="bulkApproveTimeOff">
+        <span t-out="ic('clock',15)"/><span>Approve as time off</span>
+      </button>
+    </xpath>
+  </t>
+
+</templates>

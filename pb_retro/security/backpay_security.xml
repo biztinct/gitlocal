@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         WDGAP W2-D2 — back pay.
+
+         A re-work: payroll managers and administrators read every re-work of
+         their companies (as before); anybody a published route asked to
+         decide its payment reads that one re-work and nothing else
+         (`seat_user_ids`, ledger AM60). Group rules OR together; the company
+         rule (retro_security.xml) is global (AND).
+
+         People sent for payment and back-pay entries: payroll managers and
+         administrators of the company only. No portal access at all: an
+         employee sees their own back pay only as lines of their own payslip,
+         through the payslip pages' ownership guard.
+         ================================================================== -->
+
+    <record id="rule_pb_retro_review_seat" model="ir.rule">
+        <field name="name">Past-month re-work: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_retro_review"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <record id="rule_pb_retro_review_manager" model="ir.rule">
+        <field name="name">Past-month re-work: payroll managers</field>
+        <field name="model_id" ref="model_pb_retro_review"/>
+        <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_manager')),
+                                    (4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_pb_retro_person_company" model="ir.rule">
+        <field name="name">Past-month re-work person: company</field>
+        <field name="model_id" ref="model_pb_retro_person"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_retro_backpay_company" model="ir.rule">
+        <field name="name">Back pay: company</field>
+        <field name="model_id" ref="model_pb_retro_backpay"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

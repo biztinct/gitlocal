@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- My Overtime: which hours became time off in lieu. Anchored on the
+         page's own tile row and the status cell of its table (collision list:
+         the self-service team keeps both). -->
+    <template id="portal_my_work_overtime_time_pay"
+              inherit_id="pb_ess_workforce.portal_my_work_overtime"
+              name="My Overtime: time off in lieu">
+        <xpath expr="//div[hasclass('pbme-tiles')]" position="inside">
+            <div class="pbme-tile" t-if="ot.get('total_time_off')">
+                <div class="pbme-tile-l">Given as time off</div>
+                <div class="pbme-tile-v"><t t-esc="ot['total_time_off']"/> h</div>
+            </div>
+        </xpath>
+        <xpath expr="//table[hasclass('pbew-wk')]/tbody/t/tr/td[last()]" position="inside">
+            <span t-if="r.get('time_off')" class="pbme-badge">Time off in lieu</span>
+        </xpath>
+    </template>
+</odoo>
