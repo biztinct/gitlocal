@@ -4,8 +4,8 @@
 Bank details that a pay data file brings wait for one second person
 (pb_bank_ocr holds them while the load runs). The load's own log said so; the
 wizard's result screen did not. Now its answer carries `bank_waiting` (the
-same sentence) and the template draws it. Without pb_bank_ocr installed the
-key is empty and nothing is drawn — this suite then only checks that.
+same sentence) when something waits, and the template draws it. With nothing
+waiting (or without pb_bank_ocr) the answer is exactly what it was.
 """
 import base64
 import io
@@ -82,9 +82,8 @@ class TestS6BankWaitingOnTheResult(TransactionCase):
             [['S6MBW1', 'S6M Bank Person', 730000,
               '123456789012', 'Vietcombank', 'S6M BANK PERSON']]))
         self.assertTrue(res['ok'], res.get('msg'))
-        self.assertIn('bank_waiting', res)
         if not self.has_bank:
-            self.assertEqual(res['bank_waiting'], '')
+            self.assertNotIn('bank_waiting', res)
             return
         self.assertIn('bank changes', res['bank_waiting'])
         # nothing moved where this person is paid
@@ -101,4 +100,4 @@ class TestS6BankWaitingOnTheResult(TransactionCase):
             ['Employee Code', 'Employee Name', 'Meal Allowance'],
             [['S6MBW1', 'S6M Bank Person', 730000]]))
         self.assertTrue(res['ok'], res.get('msg'))
-        self.assertEqual(res['bank_waiting'], '')
+        self.assertNotIn('bank_waiting', res, 'nothing waits: the answer is what it was')

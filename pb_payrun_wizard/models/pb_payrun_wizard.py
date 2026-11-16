@@ -2578,8 +2578,8 @@ class PbPayrunWizard(models.AbstractModel):
 
         # WDGAP S6-A BK2: bank details a file brings wait for a second person
         # (pb_bank_ocr holds them during the load). Say so on the result
-        # screen, as the load's own log does. Soft: without pb_bank_ocr the
-        # key is empty and the line is not drawn.
+        # screen, as the load's own log does. Soft: without pb_bank_ocr (or
+        # with nothing waiting) the key is absent and the line is not drawn.
         bank_waiting = ''
         Req = self.env.get('pb.bank.change.request')
         if Req is not None and hasattr(Req, '_pb_import_sentence'):
@@ -2593,7 +2593,9 @@ class PbPayrunWizard(models.AbstractModel):
         return {
             'ok': True,
             'batch_id': batch.id,
-            'bank_waiting': bank_waiting,
+            # only when something waits: an answer with no bank change is
+            # exactly what it was (the E1 golden pins the keys)
+            **({'bank_waiting': bank_waiting} if bank_waiting else {}),
             'run_id': run.id,
             **answer_extra,
             'rows': len(lines),
