@@ -1,17 +1,17 @@
-# WDGAP Step 6 (+ S8-D) — deploy report: merged, tested, rehearsed — HELD at the owner gate
+# WDGAP Step 6 (+ S8-D) — deploy report: merged, tested, rehearsed, LIVE ×5
 
-**Result: NOT LIVE. Held before go-live by the owner gate in handover §3** — the read-only bank
-check found employees whose two bank records disagree on **rize (198)** and **sudima (642)**; the
-owner sees the lists first. Everything up to the go-live is done: merge pushed to `19.1` at
-`7f2045121` (Step 6 + the S8-D scope addition), combined local runs at baseline, rize rehearsal
-passed, five fresh dumps kept. **The service was never stopped; no live module tree or database
-was changed.** Deploy notes: START 17:30 UTC, NOTE "held, nothing changed" 18:06 UTC, lock released.
+**Result: LIVE on all five databases** (payobook, payobook_template, p0clone, rize, sudima) from
+`19fd98032` (module trees = `7f2045121`), **409 s down** (19:46:36–19:53:25 UTC). First pass HELD at
+the owner gate (START 17:30, NOTE "held, nothing changed" 18:06); **the owner cleared the gate
+(2026-11-17 ~05:30 Sydney: "Go live now")**; second pass START 19:44, **DONE 19:56 UTC**. Step 6's
+eight new modules installed ×5; pb_bank_ocr, pb_records, pb_payrun_wizard and the six S8-D modules
+upgraded ×5. **"Make it permanent" no longer crashes** (tried as the QA user on payobook, undone).
+Then (owner-approved) **sudima added to the nightly backup** (§9). ABM, pbf_preview and every other
+database untouched; Codex modules (pb_people, pb_employee_vault, pb_scheme_map, pb_tenants) untouched.
 
-**Live bug still open:** "Make it permanent" on a contract decision raises an error on all five
-databases (S8-B's `pb_contract_rules._build_new_contract(start, new_end)` drops the
-`contract_type` keyword that `pb_contract_lifecycle/models/contract_review.py:590` passes). The
-fix is in S8-D (merged here, not live). S8-D touches none of Step 6's modules and can go live on
-its own (six modules, list in §4) if the owner wants it before the bank decision.
+History of the hold (kept below for the record): the read-only bank check found employees whose two
+bank records disagree on rize (198) and sudima (642); the owner saw the counts; the go-live changes
+none of those records; a separate approved copy task will close them.
 
 Merge-deploy-verify agent, 2026-11-16 (UTC). Handover `WDGAP_S6_DEPLOY_HANDOVER.md` (method of the
 S5/S8 deploy handovers) + coordinator additions (Step 9 first; S8-D merged into this go-live).
@@ -121,7 +121,36 @@ Lists (one CSV per site, numbers masked to the last 4): `outputs/wdgap-s6-bank-c
 contract lost pay lines at an earlier renewal: payobook 7 people (24 lines, all "by dates"),
 others 0. List: `outputs/wdgap-s8d-renewal-check-2026-11-17/`.
 
-## 4. Go live — NOT DONE (held)
+## 4. Go live (second pass, after the owner cleared the gate)
+
+- Deploy notes re-read: no open START (the held START closed by its NOTE). `origin/19.1` had not
+  moved (only this report's docs commit after `7f2045121`). Live trees of all 18 modules still =
+  `19.1` before the merge; Codex trees = `683c341f6` hashes.
+- Fresh dumps + file folders: `/odoo/backups/wdgap-s6-20261116T194441Z/` (payobook 82.5 MB,
+  payobook_template 29.9, p0clone 30.3, rize 43.5, sudima 30.2; each read back) + previous trees.
+  Evidence `/tmp/wdgap-s6-20261116T194441Z/`.
+- Activity check (request log, 15 min, rize/payobook): none at 19:46:32 → stop.
+- Stop 19:46:36 → port up 19:53:25: **409 s down.** Upgrades payobook_template 75 s, p0clone 69 s,
+  sudima 70 s, rize 70 s, payobook 110 s — all EXIT 0, **0 ERROR**, 0 Traceback.
+
+### Verification
+- **Trees**: all 18 server trees = commit. **Versions**: manifest = `latest_version` for all 18 on
+  all five (0 mismatches).
+- **Jobs**: one new quiet job per database, "Pay scales: write approved rises on their day" (S8-D;
+  163 on payobook, 99 elsewhere). payobook_template job 45 "Employee Vault: document expiry check"
+  was switched on by the upgrade and switched straight back off. payobook job 156 still OFF.
+- **Data, before = after on all five**: bank-file fields, bank accounts, employee–account links,
+  ID papers/marital, permits, dependants, contracts, contract pay lines (+ hash), pay-line changes,
+  pay records, runs, payslips, lines, line totals, receipts, claims, trips, candidates, hiring
+  requests, bank change requests, approval requests, mails, to-dos, active users.
+- **Silent install ×5**: 0 detail requests, family rows, certificates, notices, consents,
+  staff-open roles, internal candidates, policy files/questions, claim pay lines, advances,
+  recoveries, limits, extra payslip lines, scale rises; PayAI for employees off; claims "by
+  finance"; routes only: me_details, me_certificate, tripadvance, records_bank, scaleraise — one per
+  company (payobook 4 each, others 1); 0 requests.
+- Server log since start: **0 ERROR/CRITICAL, 0 Traceback**; one service process; sites 200 ×5.
+
+**Old held-pass notes (kept):**
 
 Ready to resume: `ssh Payobook19v2`; the staged trees `/tmp/deployWDGAPS6` and dumps
 `/odoo/backups/wdgap-s6-20261116T173025Z/` (+ file folders) are from 17:30 — **take fresh dumps
@@ -134,7 +163,26 @@ re-checks request-log activity (15 min) right before the stop and refuses if liv
 S8-D alone (if the owner wants the "Make it permanent" fix first): the six S8-D modules only,
 `-u` ×5; they share no file with Step 6.
 
-## 5. Checks on payobook.com — not done (nothing went live)
+## 5. Checks on payobook.com (look-only, as QA Test through the server methods; rolled back)
+
+| Screen | Result |
+|---|---|
+| My Payobook home (demo employee with own login) | "My details" and "Certificates" under **Me**; 3 "Needs you" rows |
+| Employment certificate (made and rolled back) | PDF, 199 KB, CERT/2026/0001 — no certificate kept (count 0 after) |
+| Privacy notice | nobody asked (no notice published) |
+| Internal roles for the employee | 0 (every role still outside-only) |
+| People › Family, People › Privacy | open (allowed); Privacy: no notice, 0 answers |
+| Compliance › Bank | 0 bank changes waiting, 0 import groups |
+| Home › Policies | PayAI for employees OFF, not set up |
+| "Approved claims are paid" | by finance on every company ×5 |
+| **Make it permanent** | tried on contract decision 11 (a demo fixed-term contract): a permanent contract with no end date is made — **no crash** — then undone |
+| A demo payslip PDF (144281) | renders, 152 KB |
+
+payobook counts identical before and after these checks. Other four sites: login 200.
+
+**S8-D renewal check (read-only, after go-live)**: payobook 7 people / 24 pay lines lost at an
+earlier renewal (all "by dates"); payobook_template, p0clone, rize, sudima 0. List:
+`outputs/wdgap-s8d-renewal-check-2026-11-17/` (never committed).
 
 ## 6. Questions for the owner (plain words)
 
@@ -171,6 +219,19 @@ S8-D alone (if the owner wants the "Make it permanent" fix first): the six S8-D 
 - S6-A sentence "1 bank changes are waiting…" (plural with one).
 - New `.po` headers in the eight new modules still say "Odoo Server 19.0" (not shown to anyone;
   only pb_bank_ocr's was caught by a gate and fixed).
+
+## 9. Sudima added to the nightly backup (owner card: "Yes, add it, keep 7 days")
+
+- Layout: `/odoo/ops/nightly_backup.py` (cron `/etc/cron.d/payobook-nightly-backup`, 19:30 UTC) reads
+  `/etc/payobook/nightly-backup.json`; retention per database, default 7, rize 30. A one-line edit.
+- Change: `databases` `[payobook, payobook_template, p0clone, rize]` → `[…, sudima]`. Retention and
+  the other four untouched (sudima takes the default 7). Script and schedule unchanged.
+- Run once by hand for sudima only (a temporary one-database config, deleted after):
+  `/odoo/nightly-backups/sudima/2026-11-16/` = `db.dump` 30,680,658 bytes (pg_restore --list ok),
+  `filestore/` 1,204 files (= live 1,204, hard links), `OK`.
+- Disk: 27 GB free of 77 before and after.
+- Undo: `sudo cp -p /etc/payobook/nightly-backup.json.before-sudima-20261116T195654Z
+  /etc/payobook/nightly-backup.json`. Recorded as a NOTE in the deploy notes (19:57 UTC).
 
 ## 8. New gotchas (ledger)
 
