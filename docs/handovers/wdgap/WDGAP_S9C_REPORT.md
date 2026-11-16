@@ -1,23 +1,3 @@
-# PAUSED (owner pause, 2026-11-16) — follow-up VC1 in progress
-
-**Where I stopped:** VC1 code and tests are committed (WIP). HR's results screen and the
-Excel download now list TEAMS (same team groups as the manager card); the "parts" rule
-now also covers mixed kinds (company minus shown departments AND teams; department minus
-shown teams). `pb_voice` suite on the recreated `wdgap_s9c_t`: **47 tests, 0 failures**
-(41 earlier + V01–V06 new team tests). pb_voice version 19.0.1.1.0. The test database
-`wdgap_s9c_t` is KEPT (walk company "DEMO Voice Walk" seeded; no server running).
-
-**Exact next step:**
-1. Run `walk_vc1.py` (scratchpad s9c) in `odoo-bin shell` to make a closed team survey,
-   start the walk server (`serve.sh`), check Talent › Voice › Results picker shows teams
-   ("DEMO Walk Manager's team · DEMO Floor") and the Excel has team rows; console clean.
-2. Re-export the .pot (`odoo-bin i18n export`, after `-u pb_voice`) and rebuild vi/id with
-   `mkpo.py` (no new user strings are expected).
-3. Final combined run `-u pb_me_portal,pb_me_team,pb_voice` with the three test tags;
-   compare to the baseline (pb_me_portal: the same 5 known failures; pb_me_team: 0).
-4. Write the "Follow-up VC1" section below (what changed, V01–V06, the mixed-kinds rule,
-   tiny teams never recorded), commit, push, drop `wdgap_s9c_t` and its file store.
-
 # WDGAP S9-C report — Employee voice (anonymous surveys)
 
 Branch `wdgap-s9c` (from `origin/19.1` @ `abc2259b6`). Implementer + tester + self-review.
@@ -193,9 +173,8 @@ views/static/data and every msgstr: none.
 2. **Every rating question must be answered; only comments are optional.** If a question
    could be skipped, a question answered by only one or two people in a team could give
    them away. Keep it required?
-3. **HR sees results by company and department; managers see their own team.** Should HR
-   also see each team's results? (Teams are about 5 people, so most would show as hidden,
-   and showing them to HR makes more combinations to hide.)
+3. ~~Should HR also see each team's results?~~ **Answered 2026-11-16 (ruling VC1): yes —
+   built, see "Follow-up VC1".** Questions 1, 2 and 4: keep as built / go live as written.
 4. **Library wording in Vietnamese and Indonesian** was written by us. Please have a native
    speaker read the 15 questions and the five answer words before customers use them.
 
@@ -207,7 +186,7 @@ views/static/data and every msgstr: none.
   the owner accepted); otherwise a plain "counted in the company's results" sentence.
 - No filter panel on the board (a company runs a few surveys a year): the glance numbers
   filter the cards instead.
-- First build groups: company, department, manager's team. No tenure or age bands.
+- Groups: company, department, manager's team (HR sees all three since VC1). No tenure or age bands.
 
 ## 10. Left for later
 
@@ -228,3 +207,50 @@ views/static/data and every msgstr: none.
 | S9C-4 | S9-C | Odoo 19 has no `--i18n-export` flag: `odoo-bin i18n export -c conf -d db -o file.pot module`, and it reads views from the DATABASE — `-u` the module first or the .pot carries the old view text. |
 | S9C-5 | S9-C | `cr.postcommit` / `cr.postrollback` callbacks do not run on a test's own savepoint; files a test writes outside the database stay. Clean them in `tearDownClass` (pb_voice tests remove their round folders). |
 | S9C-6 | S9-C | A native `<legend>` in a bordered card sits ON the card's top border; `float: left; width: 100%` on the legend plus `clear: both` on the next element puts it inside. |
+
+## Follow-up VC1 — HR sees results team by team (owner ruling 2026-11-16 evening)
+
+Ruling: HR also sees results TEAM BY TEAM (the same team groups the manager card uses), on
+the results screen and in the Excel download; every anonymity guarantee stays. Owner
+questions 1, 2 and 4: keep as built / go live with the wording as written.
+
+**What changed** (`pb_voice` 19.0.1.0.0 → 19.0.1.1.0, no other module touched):
+- `pb.voice.get_results`: team groups are now offered in the "Show results for" picker
+  (after companies and departments), labelled "<manager>'s team · <manager's department>";
+  the Excel download lists them the same way (it reads the same list).
+- `pb.voice._plan` PARTS rule widened: a shown group minus its shown parts of ANY MIX of
+  kinds (company − departments − teams; department − teams; company − teams) may not leave
+  1–4 answers; the remainder is counted from the cells outside the parts' union (never less
+  cautious than plain subtraction). Previously parts were checked one kind at a time —
+  enough while teams were only on managers' cards, not once HR sees all three kinds.
+  On a tie the finer group (the team) is hidden first.
+- Nothing new is stored. Team-level counts were already derivable: when a round is sent
+  out, each answer cell records only GROUP numbers (company, department, team) and only
+  for teams of 5 or more invited people whose cell also covers 5 or more invited people.
+  The person is never recorded with an answer, no day is stored, and a team of 1–4 is never
+  recorded at all (its people are counted one level up).
+
+**Tests (new V-series, plus R02 and the shared check updated):**
+
+| # | Test | Result |
+|---|---|---|
+| V01 | HR sees a team (7 of 7) with its figures and its own comments; Excel has the team row; groups ordered everyone → companies → departments → teams | PASS |
+| V02 | team with 4 answers: no figures, no count, no comment, Excel row "Hidden"; manager card does not show it | PASS |
+| V03 | team (5) inside its department (7): never both shown; Excel shows figures for at most one | PASS |
+| V04 | sibling teams: Anh's 5 + Binh's 5 + 3 others in one department → exactly one team hidden, the hidden team returns nothing, the shown team never carries the others' comments; with only the two teams answering both show | PASS |
+| V05 | tiny teams (1 person, 4 people) get no group in either company; every stored cell covers ≥5 invited; the lone member's answer lands in a cell of 7 with no team key and no date; "no small difference" check holds | PASS |
+| V06 | 8 random answer patterns over two teams + a team of one: no shown pair differs by 1–4, no shown group minus any mix of its shown parts leaves 1–4, hidden groups never carry a count | PASS |
+| R02 (updated) | Mai's team is now offered to HR, shown with its own comment only | PASS |
+| shared check | `_assert_no_small_differences` now checks every mix of kinds (used by R03–R05b, V03–V06) | — |
+
+**Suites vs baseline** (final combined run `-u pb_me_portal,pb_me_team,pb_voice`, after the last
+change): pb_voice **47 test methods, 0 failures**; pb_me_portal 125 tests with exactly the 5
+baseline items (test_05_grid, test_06_font, test_12_vi_po…, test_01_profile_change_flow…,
+test_t1_7…) = baseline; pb_me_team 22 tests, 0 failures = baseline. Translations: no new user-visible string; .pot re-exported and vi/id rebuilt,
+PO gate (P01–P03) passes.
+
+**Browser check** (own isolated context, local copy): Talent › Voice › a closed survey →
+"Show results for" lists "DEMO Walk Manager's team · DEMO Floor"; choosing it shows the
+team's figures (7 of 8 answered); Excel downloads (200); console clean.
+
+**Database:** `wdgap_s9c_t` recreated for VC1 and dropped at the end with its file store.
