@@ -217,6 +217,17 @@
                   <span t-attf-class="pbc-chip tone-{{ stateTone(header.state) }}">
                     <t t-out="ic('fileText',13)"/> <t t-esc="header.state_label || '—'"/>
                   </span>
+                  <!-- WDGAP S8-A — chips another module adds (the pay scale). -->
+                  <t t-foreach="extraChips" t-as="chip" t-key="chip.key">
+                    <span t-att-class="extraChipClass(chip)" t-att-title="chip.title || ''">
+                      <t t-out="ic(chip.icon || 'info',13)"/> <t t-esc="chip.label"/>
+                      <button t-if="canStageChip(chip)" type="button" class="pbc-xchip-b"
+                              t-on-click.stop="() => this.stageChipWage(chip)" t-esc="chip.stage_label"/>
+                      <button t-if="chip.action and canWrite" type="button" class="pbc-xchip-b"
+                              t-att-disabled="state.busy"
+                              t-on-click.stop="() => this.runChipAction(chip)" t-esc="chip.action.label"/>
+                    </span>
+                  </t>
                 </div>
               </div>
             </div>
@@ -311,6 +322,11 @@
                         <button t-if="showTakeHome(f)" type="button" class="pbc-takehome"
                                 t-on-click.stop="() => this.openTakeHome(f)" t-on-keydown.stop="">
                           <t t-out="ic('calculator',13)"/> <span t-esc="takeHomeLabel"/>
+                        </button>
+                        <!-- WDGAP S8-A — and building the pay from a total package. -->
+                        <button t-if="showBuildTotal(f)" type="button" class="pbc-takehome"
+                                t-on-click.stop="() => this.openBuildTotal(f)" t-on-keydown.stop="">
+                          <t t-out="ic('package',13)"/> <span t-esc="buildTotalLabel"/>
                         </button>
                         <span class="pbc-refuse" t-if="hasRefusal('term', f.name)">
                           <span class="pbc-dot"/><span t-esc="refusalFor('term', f.name)"/>

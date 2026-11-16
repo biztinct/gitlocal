@@ -178,6 +178,12 @@ from a pattern" and "Pay the difference in the next pay run".
   true 390 px check (500 px in the shared window); Vietnamese / Indonesian screens (PO gate only).
 - The rize back-pay walk (W2-D2 §10 c) — not possible on rize's trial data (above).
 - White-label follow-up: the printed payslip's web preview title "Odoo Report" (framework default).
+- Test follow-up found by the Step 8 deployer after this go-live (ledger S8M-5): `pb_hub`
+  `TestPaletteRowsFollowTheirTabs.test_every_tab_row_carries_its_tabs_gate` fails since the S5 merge —
+  S5-C's ⌘K row "Make shifts from a pattern" is deliberately for attendance MANAGERS while the Patterns
+  tab is for officers. Behaviour is right; the row belongs in that test's reviewed "narrower" list (one
+  line in `pb_hub`'s test). My runs did not include `pb_hub` (its tests run only when `pb_hub` is in
+  `-u`, S8M-1). Not changed here.
 - First customer view of Kinds of leave will be amber: every kind "Pay to decide" (80 on payobook, 108 on
   rize, 73 elsewhere) — owner question 1 below.
 

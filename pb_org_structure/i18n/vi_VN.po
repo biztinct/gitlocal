@@ -1,0 +1,1601 @@
+# Translation of the product server.
+# This file contains the translation of the following modules:
+# 	* pb_org_structure
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 20:12+0000\n"
+"PO-Revision-Date: 2026-11-15 20:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"\"%s\" is on contracts. Archive it instead, or move the people to another "
+"cost centre first."
+msgstr ""
+"\"%s\" đang có trên hợp đồng. Hãy lưu trữ, hoặc chuyển mọi người sang trung "
+"tâm chi phí khác trước."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/job_level.py:0
+msgid ""
+"\"%s\" is used by a job. Move the job to another level first, or archive the"
+" level instead."
+msgstr ""
+"\"%s\" đang được một vị trí công việc dùng. Hãy chuyển vị trí đó sang cấp "
+"bậc khác trước, hoặc lưu trữ cấp bậc."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s only"
+msgstr "Chỉ %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s without a level"
+msgstr "%s chưa có cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"A change of cost centre always starts on a date, today or later. Payslips "
+"already made keep the cost centre they were paid under."
+msgstr ""
+"Thay đổi trung tâm chi phí luôn bắt đầu từ một ngày, hôm nay hoặc sau đó. "
+"Phiếu lương đã làm giữ nguyên trung tâm chi phí lúc trả lương."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid ""
+"A cost centre change starts today or later. Payslips already made keep the "
+"cost centre they were paid under."
+msgstr ""
+"Thay đổi trung tâm chi phí bắt đầu từ hôm nay hoặc sau đó. Phiếu lương đã "
+"làm giữ nguyên trung tâm chi phí lúc trả lương."
+
+#. module: pb_org_structure
+#: model:ir.model.constraint,message:pb_org_structure.constraint_pb_cost_centre_code_company_unique
+msgid "A cost centre code is used once per company."
+msgstr "Mỗi mã trung tâm chi phí chỉ dùng một lần trong một công ty."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "A cost centre needs a code."
+msgstr "Trung tâm chi phí cần có mã."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A few lines a new colleague would understand"
+msgstr "Vài dòng mà đồng nghiệp mới có thể hiểu"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A pause covers the team and every team under it."
+msgstr "Tạm dừng áp dụng cho nhóm và mọi nhóm bên dưới."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A pause stops"
+msgstr "Tạm dừng sẽ ngừng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A whole team"
+msgstr "Cả một nhóm"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__active
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add a cost centre"
+msgstr "Thêm trung tâm chi phí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add a level"
+msgstr "Thêm cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add them to the list"
+msgstr "Thêm vào danh sách"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Added to the list: %s. No contract was changed."
+msgstr "Đã thêm vào danh sách: %s. Không hợp đồng nào bị thay đổi."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "All jobs"
+msgstr "Tất cả vị trí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Already there: %s."
+msgstr "Đã ở đó: %s."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Archive"
+msgstr "Lưu trữ"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Budget review until March"
+msgstr "Xem xét ngân sách đến tháng 3"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "CC-100"
+msgstr "CC-100"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change the cost centre"
+msgstr "Sửa trung tâm chi phí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change the level"
+msgstr "Sửa cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s"
+msgstr "Thay đổi đang chờ đến ngày: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s. They are made on the day."
+msgstr "Thay đổi đang chờ đến ngày: %s. Chúng sẽ được thực hiện đúng ngày."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Changes, waiting and recent"
+msgstr "Thay đổi đang chờ và gần đây"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid ""
+"Changing jobs, levels and cost centres is for HR managers. Ask one of them "
+"to make the change."
+msgstr ""
+"Việc thay đổi vị trí, cấp bậc và trung tâm chi phí dành cho quản lý nhân sự."
+" Hãy nhờ một người trong số họ."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a cost centre from the list."
+msgstr "Chọn một trung tâm chi phí trong danh sách."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "Choose a cost centre of the person's own company."
+msgstr "Chọn trung tâm chi phí thuộc công ty của người đó."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a cost centre of the team's own company."
+msgstr "Chọn trung tâm chi phí thuộc công ty của nhóm."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a date within the next twelve months."
+msgstr "Chọn một ngày trong vòng mười hai tháng tới."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a level of this job's company."
+msgstr "Chọn cấp bậc của công ty có vị trí này."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a team or the people to move."
+msgstr "Chọn một nhóm hoặc những người cần chuyển."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose one of your companies."
+msgstr "Chọn một trong các công ty của bạn."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose the date the new cost centre starts."
+msgstr "Chọn ngày trung tâm chi phí mới bắt đầu."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Choose yes, no or not sure."
+msgstr "Chọn có, không hoặc chưa chắc."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Choose…"
+msgstr "Chọn…"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Chosen people"
+msgstr "Những người được chọn"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model,name:pb_org_structure.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__company_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__company_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__contract_id
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__contract_ids
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"Contracts carrying the code \"%(code)s\": %(n)s. It cannot be changed here —"
+" that would rewrite what they say. Add a new cost centre and move people to "
+"it from a date instead."
+msgstr ""
+"Hợp đồng mang mã \"%(code)s\": %(n)s. Không thể đổi mã ở đây — làm vậy sẽ "
+"viết lại nội dung các hợp đồng đó. Hãy thêm trung tâm chi phí mới và chuyển "
+"mọi người sang từ một ngày."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts not on the list: %s"
+msgstr "Hợp đồng chưa có trong danh sách: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts: %s"
+msgstr "Hợp đồng: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model,name:pb_org_structure.model_pb_cost_centre
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__cost_centre_id
+msgid "Cost centre"
+msgstr "Trung tâm chi phí"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__pb_cost_centre_id
+msgid "Cost centre (from the list)"
+msgstr "Trung tâm chi phí (trong danh sách)"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__old_text
+msgid "Cost centre before"
+msgstr "Trung tâm chi phí trước đó"
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_cost_centre_move
+msgid "Cost centre change from a date"
+msgstr "Thay đổi trung tâm chi phí từ một ngày"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cost centre changes"
+msgstr "Thay đổi trung tâm chi phí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cost centres"
+msgstr "Trung tâm chi phí"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__problem
+msgid "Could not be made"
+msgstr "Không thực hiện được"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__create_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__create_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__create_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__create_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__create_date
+msgid "Created on"
+msgstr "Tạo lúc"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_exits__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_posting__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_requisition__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_org_structure__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_orgchart__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__done
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Each team's usual cost centre"
+msgstr "Trung tâm chi phí thường dùng của mỗi nhóm"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Every company"
+msgstr "Mọi công ty"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Every job and its level, the cost centres people are paid from, and where "
+"hiring is paused."
+msgstr ""
+"Mọi vị trí và cấp bậc, các trung tâm chi phí trả lương cho mọi người, và nơi"
+" đang tạm dừng tuyển dụng."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Every job has a level"
+msgstr "Vị trí nào cũng có cấp bậc"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_pb_cost_centre__code
+msgid "Exactly what contracts carry as their cost centre."
+msgstr "Đúng như nội dung trung tâm chi phí ghi trên hợp đồng."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Filled in on new contracts in that team that have no cost centre. It changes"
+" nobody who is already there."
+msgstr ""
+"Được điền vào hợp đồng mới của nhóm khi chưa có trung tâm chi phí. Không "
+"thay đổi ai đang ở đó."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_department__pb_cost_centre_id
+msgid ""
+"Filled in on new contracts in this team that have no cost centre. Moving "
+"people already here is done from a date, on the Jobs tab."
+msgstr ""
+"Được điền vào hợp đồng mới của nhóm khi chưa có trung tâm chi phí. Chuyển "
+"người đang ở đây được làm từ một ngày, trên thẻ Vị trí."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Find a job, a team or a level"
+msgstr "Tìm vị trí, nhóm hoặc cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__date_start
+msgid "From"
+msgstr "Từ ngày"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"From a date. A change dated today is made at once; a later one waits and is "
+"made on the day."
+msgstr ""
+"Từ một ngày. Thay đổi có ngày hôm nay được làm ngay; ngày sau sẽ chờ và được"
+" làm đúng ngày."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Give the cost centre a code."
+msgstr "Hãy đặt mã cho trung tâm chi phí."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Give the level a name."
+msgstr "Hãy đặt tên cho cấp bậc."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Head office"
+msgstr "Trụ sở chính"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Hiring"
+msgstr "Tuyển dụng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Hiring for this role"
+msgstr "Tuyển dụng cho vị trí này"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring is open everywhere"
+msgstr "Tuyển dụng đang mở ở mọi nơi"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "Hiring is paused for %(where)s."
+msgstr "Đang tạm dừng tuyển dụng cho %(where)s."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "Hiring is paused for %(where)s: %(reason)s"
+msgstr "Đang tạm dừng tuyển dụng cho %(where)s: %(reason)s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid "Hiring is paused."
+msgstr "Đang tạm dừng tuyển dụng."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring pause"
+msgstr "Tạm dừng tuyển dụng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_paused
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_paused
+msgid "Hiring paused"
+msgstr "Đã tạm dừng tuyển dụng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring paused for %s."
+msgstr "Đã tạm dừng tuyển dụng cho %s."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause
+msgid "Hiring paused for the company"
+msgstr "Tạm dừng tuyển dụng toàn công ty"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_self
+msgid "Hiring paused for this role"
+msgstr "Tạm dừng tuyển dụng cho vị trí này"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause
+msgid "Hiring paused for this team"
+msgstr "Tạm dừng tuyển dụng cho nhóm này"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Hiring restarted"
+msgstr "Đã mở lại tuyển dụng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring restarted for %s."
+msgstr "Đã mở lại tuyển dụng cho %s."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_exits__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_posting__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_requisition__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_org_structure__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_orgchart__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_org_structure
+#: model_terms:ir.ui.view,arch_db:pb_org_structure.view_employee_form_pb_rehire
+msgid "If they leave"
+msgstr "Nếu họ nghỉ việc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "It does not stop"
+msgstr "Không ngừng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Job"
+msgstr "Vị trí"
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_job_level
+msgid "Job level"
+msgstr "Cấp bậc công việc"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Job, A to Z"
+msgstr "Vị trí, A đến Z"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.actions.client,name:pb_org_structure.action_pb_org_jobs
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_count
+msgid "Jobs"
+msgstr "Vị trí"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid ""
+"Jobs and cost centres are looked after by the HR team. Ask them if you need "
+"something changed."
+msgstr ""
+"Vị trí và trung tâm chi phí do bộ phận nhân sự quản lý. Hãy hỏi họ nếu cần "
+"thay đổi."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Jobs appear here when people are given a job, or when a hiring request opens"
+" a role."
+msgstr ""
+"Vị trí xuất hiện ở đây khi ai đó được giao vị trí, hoặc khi một yêu cầu "
+"tuyển dụng mở vị trí."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Jobs are looked after by the HR team"
+msgstr "Vị trí do bộ phận nhân sự quản lý"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Jobs are looked after by the HR team."
+msgstr "Vị trí do bộ phận nhân sự quản lý."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Jobs are not open to you"
+msgstr "Bạn không xem được mục Vị trí"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Jobs at \"%(level)s\": %(n)s. Move them to another level first."
+msgstr "Vị trí ở cấp \"%(level)s\": %(n)s. Hãy chuyển chúng sang cấp khác trước."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_ids
+msgid "Jobs at this level"
+msgstr "Vị trí ở cấp này"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Jobs: %s"
+msgstr "Vị trí: %s"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__write_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__write_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__write_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__write_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_pb_job_level__company_id
+msgid "Leave empty to offer this level to every company."
+msgstr "Để trống để mọi công ty đều dùng được cấp bậc này."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_level_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__name
+msgid "Level"
+msgstr "Cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Level, lowest first"
+msgstr "Cấp bậc, thấp nhất trước"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Levels"
+msgstr "Cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading the cost centres…"
+msgstr "Đang tải trung tâm chi phí…"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading the jobs…"
+msgstr "Đang tải vị trí…"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Lowest first. Each job is given one level on its job page. Levels are names,"
+" not pay: nobody's pay changes when a level does."
+msgstr ""
+"Thấp nhất trước. Mỗi vị trí được gán một cấp bậc trên trang vị trí. Cấp bậc "
+"chỉ là tên gọi, không phải lương: không ai bị đổi lương khi cấp bậc thay "
+"đổi."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__done_on
+msgid "Made on"
+msgstr "Thực hiện lúc"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Most people to hire first"
+msgstr "Cần tuyển nhiều nhất trước"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move down"
+msgstr "Chuyển xuống"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move people to a cost centre"
+msgstr "Chuyển người sang trung tâm chi phí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move them"
+msgstr "Chuyển"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move up"
+msgstr "Chuyển lên"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "New site opened"
+msgstr "Mở địa điểm mới"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__no
+msgid "No"
+msgstr "Không"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No cost centres yet. Add one below."
+msgstr "Chưa có trung tâm chi phí. Thêm một cái bên dưới."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No job matches these filters"
+msgstr "Không có vị trí nào khớp bộ lọc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No jobs yet"
+msgstr "Chưa có vị trí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No level yet"
+msgstr "Chưa có cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No levels are set yet. Add them on the Levels part of this tab."
+msgstr "Chưa đặt cấp bậc nào. Hãy thêm ở phần Cấp bậc của thẻ này."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"No levels yet. Add the first one below, for example Associate, Senior, Lead "
+"and Head of."
+msgstr ""
+"Chưa có cấp bậc. Thêm cấp đầu tiên bên dưới, ví dụ Nhân viên, Cao cấp, "
+"Trưởng nhóm và Trưởng bộ phận."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "No team"
+msgstr "Không có nhóm"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No teams yet."
+msgstr "Chưa có nhóm."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Nobody to hire"
+msgstr "Không cần tuyển"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "None"
+msgstr "Không có"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "None set yet"
+msgstr "Chưa đặt"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Not paused"
+msgstr "Không tạm dừng"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__unsure
+msgid "Not sure"
+msgstr "Chưa chắc"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__note
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "On contracts, but not on the list"
+msgstr "Có trên hợp đồng nhưng chưa có trong danh sách"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Only a change still waiting for its date can be cancelled."
+msgstr "Chỉ hủy được thay đổi còn đang chờ đến ngày."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Open"
+msgstr "Đang mở"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__sequence
+msgid "Order"
+msgstr "Thứ tự"
+
+#. module: pb_org_structure
+#: model:ir.actions.server,name:pb_org_structure.cron_pb_cost_centre_moves_ir_actions_server
+msgid "Organisation: make cost-centre changes on their date"
+msgstr "Tổ chức: thực hiện thay đổi trung tâm chi phí đúng ngày"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause"
+msgstr "Tạm dừng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause hiring"
+msgstr "Tạm dừng tuyển dụng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause hiring for this role"
+msgstr "Tạm dừng tuyển dụng cho vị trí này"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Paused"
+msgstr "Đã tạm dừng"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_by
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_by
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_by
+msgid "Paused by"
+msgstr "Tạm dừng bởi"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_job__pb_hiring_paused
+msgid ""
+"Paused for this role, its team (or a team above it) or its company. New "
+"hiring requests and adverts stop; people already in progress carry on."
+msgstr ""
+"Tạm dừng cho vị trí này, nhóm của nó (hoặc nhóm cấp trên) hoặc công ty. Yêu "
+"cầu tuyển dụng và tin tuyển dụng mới bị ngừng; người đang trong quy trình "
+"vẫn tiếp tục."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_department__pb_hiring_paused
+msgid "Paused for this team, a team above it, or its company."
+msgstr "Tạm dừng cho nhóm này, nhóm cấp trên, hoặc công ty."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_on
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_on
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_on
+msgid "Paused on"
+msgstr "Tạm dừng lúc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Paused with %s"
+msgstr "Tạm dừng cùng %s"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid "Pausing or restarting hiring is for the talent lead and HR managers."
+msgstr ""
+"Tạm dừng hoặc mở lại tuyển dụng dành cho trưởng tuyển dụng và quản lý nhân "
+"sự."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pay band"
+msgstr "Khung lương"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid ""
+"People already in progress carry on, and offers can still be sent. Nothing "
+"new can be started for this role."
+msgstr ""
+"Người đang trong quy trình vẫn tiếp tục và vẫn gửi được thư mời nhận việc. "
+"Không thể bắt đầu việc tuyển mới nào cho vị trí này."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People moved: %s."
+msgstr "Số người đã chuyển: %s."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "People to hire"
+msgstr "Người cần tuyển"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People who move to %(code)s from %(date)s: %(n)s."
+msgstr "Số người chuyển sang %(code)s từ %(date)s: %(n)s."
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_org_structure
+msgid "People › Jobs (levels, cost centres, hiring pause)"
+msgstr "Nhân sự › Vị trí (cấp bậc, trung tâm chi phí, tạm dừng tuyển dụng)"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__employee_id
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_by
+msgid "Rehire answer by"
+msgstr "Người trả lời tuyển lại"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_on
+msgid "Rehire answer on"
+msgstr "Ngày trả lời tuyển lại"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Remove"
+msgstr "Bỏ"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restart hiring"
+msgstr "Mở lại tuyển dụng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restart hiring for this role"
+msgstr "Mở lại tuyển dụng cho vị trí này"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restarting"
+msgstr "Mở lại"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Roles paused one by one"
+msgstr "Vị trí tạm dừng riêng lẻ"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Roles with somebody to hire: %s"
+msgstr "Vị trí còn cần tuyển: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save the cost centre"
+msgstr "Lưu trung tâm chi phí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save the level"
+msgstr "Lưu cấp bậc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/exits_rehire.js:0
+msgid "Saved. Seen by HR only."
+msgstr "Đã lưu. Chỉ nhân sự xem được."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Say why hiring is paused — people who try to hire will read it."
+msgstr "Hãy nói vì sao tạm dừng tuyển dụng — người muốn tuyển sẽ đọc được."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "See who moves"
+msgstr "Xem ai được chuyển"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Seen by HR only."
+msgstr "Chỉ nhân sự xem được."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Seen by HR only. It shows on the Hiring board if they apply again."
+msgstr ""
+"Chỉ nhân sự xem được. Thông tin hiện trên bảng Tuyển dụng nếu họ ứng tuyển "
+"lại."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Senior"
+msgstr "Cao cấp"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Show more"
+msgstr "Xem thêm"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Somebody to hire"
+msgstr "Có người cần tuyển"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Start again"
+msgstr "Bắt đầu lại"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Team (and the teams under it)"
+msgstr "Nhóm (và các nhóm bên dưới)"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Teams"
+msgstr "Nhóm"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That change is no longer there."
+msgstr "Thay đổi đó không còn nữa."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That cost centre is no longer there."
+msgstr "Trung tâm chi phí đó không còn nữa."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "That did not work. Try again in a moment."
+msgstr "Không thực hiện được. Hãy thử lại sau giây lát."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That is more than %s people at once. Choose a smaller team."
+msgstr "Như vậy là hơn %s người cùng lúc. Hãy chọn nhóm nhỏ hơn."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That is not something this screen can do."
+msgstr "Màn hình này không làm được việc đó."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That job is no longer there."
+msgstr "Vị trí đó không còn nữa."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "That leaving checklist is no longer there."
+msgstr "Danh sách nghỉ việc đó không còn nữa."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That level is no longer there."
+msgstr "Cấp bậc đó không còn nữa."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That team is no longer there."
+msgstr "Nhóm đó không còn nữa."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "The contract was no longer running on that date."
+msgstr "Hợp đồng không còn hiệu lực vào ngày đó."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_contract__pb_cost_centre_id
+msgid ""
+"The cost centre in the list that this contract's cost centre names. Empty "
+"when the text matches nothing in the list."
+msgstr ""
+"Trung tâm chi phí trong danh sách mà nội dung trên hợp đồng này chỉ đến. Để "
+"trống khi nội dung không khớp mục nào."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "The ladder of job levels"
+msgstr "Thang cấp bậc công việc"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "The list"
+msgstr "Danh sách"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/job_level.py:0
+msgid "There is already a level called \"%s\"."
+msgstr "Đã có cấp bậc tên \"%s\"."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"These cost centres are typed on contracts and are not on the list yet. "
+"Adding them to the list changes no contract."
+msgstr ""
+"Các trung tâm chi phí này được ghi trên hợp đồng và chưa có trong danh sách."
+" Thêm vào danh sách không thay đổi hợp đồng nào."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "This change could not be made. Open it and try again."
+msgstr "Không thực hiện được thay đổi này. Hãy mở và thử lại."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "This company"
+msgstr "Công ty này"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "This company already has the cost centre \"%s\"."
+msgstr "Công ty này đã có trung tâm chi phí \"%s\"."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"This is where jobs, their levels, cost centres and hiring pauses are kept. "
+"Ask your HR administrator if you should see it."
+msgstr ""
+"Đây là nơi lưu vị trí, cấp bậc, trung tâm chi phí và các lần tạm dừng tuyển "
+"dụng. Hãy hỏi quản trị nhân sự nếu bạn cần xem."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid "This offer can still be sent."
+msgstr "Vẫn có thể gửi thư mời nhận việc này."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "To hire"
+msgstr "Cần tuyển"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Type a name"
+msgstr "Nhập tên"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_cost_centre_id
+msgid "Usual cost centre"
+msgstr "Trung tâm chi phí thường dùng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Waiting"
+msgstr "Đang chờ"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__scheduled
+msgid "Waiting for its date"
+msgstr "Đang chờ đến ngày"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "What it means"
+msgstr "Ý nghĩa"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "What the job is"
+msgstr "Công việc là gì"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__description
+msgid "What this level means"
+msgstr "Ý nghĩa của cấp bậc này"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Whether somebody would be hired again is recorded by HR."
+msgstr "Việc có tuyển lại một người hay không do nhân sự ghi nhận."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Who moves"
+msgstr "Ai được chuyển"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__note
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_note
+msgid "Why (rehire)"
+msgstr "Lý do (tuyển lại)"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Why (seen by HR only)"
+msgstr "Lý do (chỉ nhân sự xem được)"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_reason
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_reason_self
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_reason
+msgid "Why hiring is paused"
+msgstr "Lý do tạm dừng tuyển dụng"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Why is hiring paused?"
+msgstr "Vì sao tạm dừng tuyển dụng?"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here %(years)s · would rehire: %(answer)s"
+msgstr "Đã làm ở đây %(years)s · tuyển lại: %(answer)s"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here %s"
+msgstr "Đã làm ở đây %s"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here before"
+msgstr "Đã từng làm ở đây"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here before · would rehire: %s"
+msgstr "Đã từng làm ở đây · tuyển lại: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Works without day-to-day guidance"
+msgstr "Làm việc không cần hướng dẫn hằng ngày"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire
+msgid "Would rehire"
+msgstr "Tuyển lại"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_employee__pb_rehire
+msgid "Would the company hire this person again? Seen by HR only."
+msgstr "Công ty có tuyển lại người này không? Chỉ nhân sự xem được."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Would we hire them again?"
+msgstr "Chúng ta có tuyển lại họ không?"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__yes
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"candidates already in progress, interviews and offers. They carry on, with a"
+" warning that hiring is paused."
+msgstr ""
+"ứng viên đang trong quy trình, phỏng vấn và thư mời nhận việc. Chúng vẫn "
+"tiếp tục, kèm cảnh báo rằng tuyển dụng đang tạm dừng."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "from %s"
+msgstr "từ %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "jobs"
+msgstr "vị trí"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "lowest first"
+msgstr "thấp nhất trước"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"new hiring requests, sending one in, opening a role, adverts, the careers "
+"page and new open roles on the org chart."
+msgstr ""
+"yêu cầu tuyển dụng mới, gửi yêu cầu, mở vị trí, tin tuyển dụng, trang tuyển "
+"dụng và vị trí trống mới trên sơ đồ tổ chức."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "on the list"
+msgstr "trong danh sách"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "pay band"
+msgstr "khung lương"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "people in this job"
+msgstr "người ở vị trí này"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"puts everything back as it was. Nothing is changed while hiring is paused."
+msgstr ""
+"đưa mọi thứ về như cũ. Không có gì bị thay đổi trong lúc tạm dừng tuyển "
+"dụng."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "roles paused"
+msgstr "vị trí đang tạm dừng"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this company"
+msgstr "công ty này"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this role"
+msgstr "vị trí này"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this team"
+msgstr "nhóm này"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "to hire"
+msgstr "cần tuyển"

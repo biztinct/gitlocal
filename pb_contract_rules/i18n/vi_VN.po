@@ -1,0 +1,315 @@
+# Translation of Payobook module pb_contract_rules (Vietnamese).
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid ", plus %s typed in as earlier ones"
+msgstr ", cộng %s hợp đồng trước đó được nhập tay"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__max_months_each
+msgid "0 = no limit on one contract."
+msgstr "0 = không giới hạn cho một hợp đồng."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__gap_days
+msgid "A break longer than this starts a new row (days)"
+msgstr "Khoảng nghỉ dài hơn số này bắt đầu chuỗi mới (ngày)"
+
+#. module: pb_contract_rules
+#: model_terms:ir.actions.act_window,help:pb_contract_rules.action_pb_contract_rule
+msgid "Add one per country: how many fixed-term contracts may follow each other, and how long they may run in total."
+msgstr "Thêm một quy định cho mỗi quốc gia: bao nhiêu hợp đồng xác định thời hạn được ký liên tiếp, và tổng thời gian tối đa."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__max_months_total
+msgid "All fixed-term contracts in a row together, extensions included. 0 = no limit."
+msgstr "Tổng các hợp đồng xác định thời hạn liên tiếp, kể cả gia hạn. 0 = không giới hạn."
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "Asked to extend past the fixed-term rule (%(rule)s). %(why)s Reason given: %(reason)s"
+msgstr "Đề nghị gia hạn vượt quy định hợp đồng xác định thời hạn (%(rule)s). %(why)s Lý do: %(reason)s"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__gap_days
+msgid "Contracts linked by a renewal always count as in a row. Other contracts count when the next one starts within this many days of the last one ending."
+msgstr "Các hợp đồng nối bằng gia hạn luôn tính là liên tiếp. Các hợp đồng khác được tính khi hợp đồng sau bắt đầu trong số ngày này kể từ khi hợp đồng trước kết thúc."
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "Counted: %(n)s fixed-term contract(s) in a row on the system"
+msgstr "Đã đếm: %(n)s hợp đồng xác định thời hạn liên tiếp trên hệ thống"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__country_id
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_hr_employee__pb_fixed_term_before
+msgid "Earlier fixed-term contracts (before this system)"
+msgstr "Hợp đồng xác định thời hạn trước đây (trước hệ thống này)"
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,counts_note:pb_contract_rules.rule_vn
+msgid "Every fixed-term labour contract with this employer counts, also the ones signed before this system: type their number on the person. A trial (probation) agreement does not count."
+msgstr "Mọi hợp đồng lao động xác định thời hạn với người sử dụng lao động này đều được tính, kể cả các hợp đồng ký trước hệ thống này: nhập số lượng trên hồ sơ nhân viên. Hợp đồng thử việc không được tính."
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,counts_note:pb_contract_rules.rule_id
+msgid "Every time-based fixed-term contract (PKWT) with this employer counts, extensions included, also the ones signed before this system: type their number and months on the person."
+msgstr "Mọi hợp đồng xác định thời hạn theo thời gian (PKWT) với người sử dụng lao động này đều được tính, kể cả gia hạn và các hợp đồng ký trước hệ thống này: nhập số lượng và số tháng trên hồ sơ nhân viên."
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "Fixed-term contract %(n)s in a row"
+msgstr "Hợp đồng xác định thời hạn thứ %(n)s liên tiếp"
+
+#. module: pb_contract_rules
+#: model:ir.model,name:pb_contract_rules.model_pb_contract_rule model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "Fixed-term contract rule"
+msgstr "Quy định hợp đồng xác định thời hạn"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/js/contract_rules.js:0 model:ir.actions.act_window,name:pb_contract_rules.action_pb_contract_rule model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_list
+msgid "Fixed-term contract rules"
+msgstr "Quy định hợp đồng xác định thời hạn"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__max_in_row
+msgid "Fixed-term contracts allowed in a row"
+msgstr "Số hợp đồng xác định thời hạn liên tiếp được phép"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_employee_form_fixed_term
+msgid "Fixed-term contracts before this system"
+msgstr "Hợp đồng xác định thời hạn trước hệ thống này"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "Fixed-term contracts in a row would come to %(total)s months, more than the %(max)s months %(rule)s allows."
+msgstr "Các hợp đồng xác định thời hạn liên tiếp sẽ lên tới %(total)s tháng, vượt %(max)s tháng mà %(rule)s cho phép."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_hr_employee__pb_fixed_term_before
+msgid "Fixed-term contracts this person had with you, in a row, before their contracts were kept here. They count towards the fixed-term rule."
+msgstr "Các hợp đồng xác định thời hạn liên tiếp người này đã có với bạn, trước khi hợp đồng được lưu ở đây. Chúng được tính vào quy định."
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "Fixed-term rule"
+msgstr "Quy định hợp đồng xác định thời hạn"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "Goes past it"
+msgstr "Vượt quy định"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "Goes past the fixed-term rule"
+msgstr "Vượt quy định hợp đồng xác định thời hạn"
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,source_note:pb_contract_rules.rule_id
+msgid "Government Regulation 35/2021, article 8: a time-based fixed-term contract (PKWT), extensions included, runs at most 5 years in total. To confirm with an adviser."
+msgstr "Quy định Chính phủ Indonesia 35/2021, điều 8: hợp đồng xác định thời hạn theo thời gian (PKWT), kể cả gia hạn, tối đa 5 năm. Cần xác nhận với chuyên gia tư vấn."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_hr_employee__pb_fixed_term_months_before
+msgid "How long those earlier contracts ran in total, in months."
+msgstr "Tổng thời gian của các hợp đồng trước đó, tính bằng tháng."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__max_in_row
+msgid "How many fixed-term contracts may follow each other before the next one should be permanent. 0 = no limit on the number."
+msgstr "Bao nhiêu hợp đồng xác định thời hạn được ký liên tiếp trước khi hợp đồng tiếp theo phải là không xác định thời hạn. 0 = không giới hạn số lượng."
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "In a row since"
+msgstr "Liên tiếp từ"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "In plain words"
+msgstr "Diễn giải"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__counts_note
+msgid "In plain words, for the people who decide contracts."
+msgstr "Diễn giải đơn giản, cho người quyết định hợp đồng."
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,name:pb_contract_rules.rule_id
+msgid "Indonesia rule"
+msgstr "Quy định Indonesia"
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,source_note:pb_contract_rules.rule_vn
+msgid "Labour Code 2019, article 20: a fixed-term contract runs at most 36 months; when it ends, one more fixed-term contract may be signed, and after that the contract should be permanent. There are exceptions (older workers, foreign workers, some union officials and state-enterprise managers). To confirm with an adviser."
+msgstr "Bộ luật Lao động 2019, điều 20: hợp đồng xác định thời hạn tối đa 36 tháng; khi hết hạn chỉ được ký thêm một lần hợp đồng xác định thời hạn, sau đó phải ký hợp đồng không xác định thời hạn. Có ngoại lệ (người cao tuổi, lao động nước ngoài, một số cán bộ công đoàn và người quản lý doanh nghiệp nhà nước). Cần xác nhận với chuyên gia tư vấn."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__company_id
+msgid "Leave empty for every company in this country."
+msgstr "Để trống để áp dụng cho mọi công ty ở quốc gia này."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__max_months_each
+msgid "Longest single contract (months)"
+msgstr "Một hợp đồng dài nhất (tháng)"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__max_months_total
+msgid "Longest time in a row (months)"
+msgstr "Tổng thời gian liên tiếp dài nhất (tháng)"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "Make it permanent instead"
+msgstr "Chuyển sang hợp đồng không xác định thời hạn"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_hr_employee__pb_fixed_term_months_before
+msgid "Months on earlier fixed-term contracts (before this system)"
+msgstr "Số tháng của các hợp đồng xác định thời hạn trước đây (trước hệ thống này)"
+
+#. module: pb_contract_rules
+#: model_terms:ir.actions.act_window,help:pb_contract_rules.action_pb_contract_rule
+msgid "No fixed-term contract rules yet"
+msgstr "Chưa có quy định hợp đồng xác định thời hạn"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "One contract of %(span)s months is longer than the %(max)s months %(rule)s allows."
+msgstr "Một hợp đồng %(span)s tháng dài hơn %(max)s tháng mà %(rule)s cho phép."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__name
+msgid "Rule"
+msgstr "Quy định"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "The law or policy, and who confirmed it"
+msgstr "Luật hoặc chính sách, và ai đã xác nhận"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__source_note
+msgid "The law or policy, and who confirmed it."
+msgstr "Luật hoặc chính sách, và ai đã xác nhận."
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "The limits"
+msgstr "Giới hạn"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "The next one should be permanent under %s."
+msgstr "Theo %s, hợp đồng tiếp theo phải là không xác định thời hạn."
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "The numbers on a fixed-term rule cannot be below zero."
+msgstr "Các số trong quy định không thể nhỏ hơn 0."
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "The rule"
+msgstr "Quy định"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "This contract goes past the fixed-term rule (%(rule)s): %(why)s"
+msgstr "Hợp đồng này vượt quy định hợp đồng xác định thời hạn (%(rule)s): %(why)s"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "This goes past the fixed-term rule"
+msgstr "Việc này vượt quy định hợp đồng xác định thời hạn"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "This goes past the fixed-term rule (%(rule)s). %(why)s"
+msgstr "Việc này vượt quy định hợp đồng xác định thời hạn (%(rule)s). %(why)s"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "This would be fixed-term contract number %(n)s in a row. %(rule)s allows %(max)s, then the next one should be permanent."
+msgstr "Đây sẽ là hợp đồng xác định thời hạn thứ %(n)s liên tiếp. %(rule)s cho phép %(max)s, sau đó hợp đồng tiếp theo phải là không xác định thời hạn."
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,name:pb_contract_rules.rule_vn
+msgid "Vietnam rule"
+msgstr "Quy định Việt Nam"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__counts_note
+msgid "What counts"
+msgstr "Những gì được tính"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "What counts towards the limit"
+msgstr "Những gì được tính vào giới hạn"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "Where it applies"
+msgstr "Phạm vi áp dụng"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__source_note model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "Where the rule comes from"
+msgstr "Nguồn của quy định"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "You can still extend it: write down why in the box above. The reason is kept with the extension and its sign-off."
+msgstr "Bạn vẫn có thể gia hạn: hãy ghi lý do vào ô phía trên. Lý do được lưu cùng yêu cầu gia hạn và việc phê duyệt."
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "e.g. Vietnam rule"
+msgstr "vd. Quy định Việt Nam"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "includes earlier contracts typed on the person"
+msgstr "gồm các hợp đồng trước đó được nhập trên hồ sơ"

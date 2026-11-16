@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- People › Pay › Scales, as a record so a breadcrumb has a name (GR8). -->
+    <record id="action_pb_pay_scales" model="ir.actions.client">
+        <field name="name">Pay scales</field>
+        <field name="tag">pb_pay</field>
+        <field name="context">{'pb_tab': 'scales', 'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': '', 'context': {}}}</field>
+    </record>
+</odoo>

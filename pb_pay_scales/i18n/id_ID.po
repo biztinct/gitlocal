@@ -1,0 +1,1813 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_pay_scales
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:20+0000\n"
+"PO-Revision-Date: 2026-11-15 16:20+0000\n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/resolver.py:0
+msgid "%(amount)s — %(grade)s, step 1 of %(scale)s"
+msgstr "%(amount)s — %(grade)s, tingkat 1 dari %(scale)s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/resolver.py:0
+msgid "%(grade)s has no amount for step 1 yet."
+msgstr "%(grade)s belum punya jumlah untuk tingkat 1."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "%(grade)s, step %(step)s"
+msgstr "%(grade)s, tingkat %(step)s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "%(grade)s, step %(step)s of %(scale)s"
+msgstr "%(grade)s, tingkat %(step)s dari %(scale)s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/placement.py:0
+msgid "%(job)s is in a band for another country than the scale %(scale)s."
+msgstr "%(job)s ada di pita gaji negara lain dari skala %(scale)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/resolver.py:0
+msgid "%(job)s is not on a pay scale."
+msgstr "%(job)s belum ada di skala gaji."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "%(job)s sits on %(grade)s of %(scale)s."
+msgstr "%(job)s berada di %(grade)s pada %(scale)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"%(people)s placed on the step they are already paid. Nobody's pay changed."
+msgstr "%(people)s ditempatkan pada tingkat yang sudah mereka terima. Gaji siapa pun tidak berubah."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid ""
+"%(scale)s already has a version in force from %(since)s. Two versions cannot"
+" cover the same days."
+msgstr "%(scale)s sudah punya versi berlaku sejak %(since)s. Dua versi tidak boleh mencakup hari yang sama."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/resolver.py:0
+msgid "%(scale)s has no amounts in force on %(day)s."
+msgstr "%(scale)s tidak punya jumlah yang berlaku pada %(day)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/resolver.py:0
+msgid ""
+"%(scale)s is written in %(scale_money)s but this person is paid in "
+"%(pay_money)s, so it is not used."
+msgstr "%(scale)s ditulis dalam %(scale_money)s tetapi orang ini dibayar dalam %(pay_money)s, jadi tidak dipakai."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"%(scheme)s has no basic pay item filled from the contract wage, so the scale"
+" amount does not reach its payslips."
+msgstr "%(scheme)s tidak punya pos gaji pokok yang diisi dari gaji kontrak, jadi jumlah skala tidak sampai ke slip gajinya."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"%(scheme)s reads basic pay from the contract, so the scale reaches the "
+"payslip."
+msgstr "%(scheme)s membaca gaji pokok dari kontrak, jadi skala sampai ke slip gaji."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"%(scheme)s reads basic pay from the contract. When a pay data file is "
+"loaded, the file's basic pay wins over it."
+msgstr "%(scheme)s membaca gaji pokok dari kontrak. Saat file data gaji dimuat, gaji pokok dari file yang dipakai."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s sampai %(end)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "%s jobs"
+msgstr "%s jabatan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "%s people"
+msgstr "%s orang"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "'%s' is not a number."
+msgstr "'%s' bukan angka."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "+% all"
+msgstr "+% semua"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "1 job"
+msgstr "1 jabatan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "1 person"
+msgstr "1 orang"
+
+#. module: pb_pay_scales
+#: model:ir.model.constraint,message:pb_pay_scales.constraint_pb_pay_scale_placement_contract_uniq
+msgid "A contract stands in one place on one scale."
+msgstr "Satu kontrak berada di satu tempat pada satu skala."
+
+#. module: pb_pay_scales
+#: model:ir.model.constraint,message:pb_pay_scales.constraint_pb_pay_scale_package_package_uniq
+msgid "A grade fills each pay line once."
+msgstr "Satu golongan mengisi tiap pos gaji sekali."
+
+#. module: pb_pay_scales
+#: model:ir.model.constraint,message:pb_pay_scales.constraint_pb_pay_scale_cell_cell_uniq
+msgid "A grade has one amount per step in a version."
+msgstr "Satu golongan punya satu jumlah per tingkat dalam satu versi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "A grade needs a name."
+msgstr "Golongan perlu nama."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid ""
+"A job sits on one grade. A new joiner in that job starts on step 1. Only "
+"jobs that are in a pay band of this country can be put here."
+msgstr "Satu jabatan berada di satu golongan. Karyawan baru di jabatan itu mulai di tingkat 1. Hanya jabatan yang ada di pita gaji negara ini yang bisa ditaruh di sini."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "A new version must start after %(day)s, when the latest one starts."
+msgstr "Versi baru harus mulai setelah %(day)s, saat versi terbaru mulai."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid ""
+"A pay scale is a table: grades down the side, steps across the top, one "
+"monthly amount in each cell. Put a job on a grade and a new joiner's wage "
+"opens already filled from step 1."
+msgstr "Skala gaji adalah tabel: golongan di sisi, tingkat di atas, satu jumlah bulanan di tiap sel. Taruh jabatan di sebuah golongan dan gaji karyawan baru langsung terisi dari tingkat 1."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "A pay scale needs a name."
+msgstr "Skala gaji perlu nama."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "A scale cannot shrink by that much."
+msgstr "Skala tidak bisa menyusut sebanyak itu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "A scale has from 1 to %(top)s steps."
+msgstr "Skala punya 1 sampai %(top)s tingkat."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "A scale holds up to %(top)s grades."
+msgstr "Skala memuat paling banyak %(top)s golongan."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "A suggestion could not be worked out just now."
+msgstr "Saran belum bisa dihitung sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid ""
+"A table of grades and steps, one amount each, dated. A new joiner starts on "
+"step 1 of their job's grade. Nothing here changes anybody's pay."
+msgstr "Tabel golongan dan tingkat, satu jumlah tiap sel, bertanggal. Karyawan baru mulai di tingkat 1 golongan jabatannya. Tidak ada di sini yang mengubah gaji siapa pun."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "A version cannot end before it starts."
+msgstr "Versi tidak bisa berakhir sebelum dimulai."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__pin_reason__above_top
+msgid "Above the top step"
+msgstr "Di atas tingkat tertinggi"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Add a grade, for example Senior associate"
+msgstr "Tambah golongan, misalnya Staf senior"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Add a pay line, for example housing"
+msgstr "Tambah pos gaji, misalnya perumahan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Add grade"
+msgstr "Tambah golongan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__package_ids
+msgid "Allowances"
+msgstr "Tunjangan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Allowances with this grade"
+msgstr "Tunjangan dengan golongan ini"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__amount
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__amount
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__cell_ids
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__mode__amount
+msgid "Amounts"
+msgstr "Jumlah"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__rounding
+msgid ""
+"Amounts round to this unit (for example 10,000). Empty rounds to the "
+"currency."
+msgstr "Jumlah dibulatkan ke satuan ini (misalnya 10.000). Kosong dibulatkan menurut mata uang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "An allowance cannot be below zero."
+msgstr "Tunjangan tidak boleh di bawah nol."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "An amount on a scale cannot be below zero."
+msgstr "Jumlah di skala tidak boleh di bawah nol."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Ask the people who set pay bands to write one."
+msgstr "Minta orang yang mengatur pita gaji untuk membuatnya."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__base_rate
+msgid "Base rate"
+msgstr "Tarif dasar"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Bring to step"
+msgstr "Sesuaikan ke tingkat"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__source__hand
+msgid "By hand"
+msgstr "Manual"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__country_code__kh
+msgid "Cambodia"
+msgstr "Kamboja"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/joiner_hint.xml:0
+msgid "Choose a reason"
+msgstr "Pilih alasan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__code
+msgid "Code"
+msgstr "Kode"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__coefficient
+msgid "Coefficient"
+msgstr "Koefisien"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__mode__coefficient
+msgid "Coefficient × base rate"
+msgstr "Koefisien × tarif dasar"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__contract_id
+msgid "Contract"
+msgstr "Kontrak"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_hr_contract_advantage_change
+msgid "Contract Component Change"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__country_code
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__create_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__create_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__create_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__create_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__create_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__create_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__create_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__create_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__create_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__create_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Discard"
+msgstr "Buang"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_hr_contract_advantage_change__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_band_job__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scales__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_people_contract_wizard__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_people_onboard_wizard__display_name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_updates_desk__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__hr_contract__pb_scale_state__drifted
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__state__drifted
+msgid "Drifted"
+msgstr "Bergeser"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/placement.py:0
+msgid "Drifted · %(grade)s, step %(step)s"
+msgstr "Bergeser · %(grade)s, tingkat %(step)s"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_hr_contract
+msgid "Employee Contract"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Every cell is its coefficient times this rate."
+msgstr "Setiap sel adalah koefisiennya dikali tarif ini."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Every company in %(country)s"
+msgstr "Semua perusahaan di %(country)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Find a job"
+msgstr "Cari jabatan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale_version__base_rate
+msgid ""
+"For a scale written as coefficients: each cell is its coefficient times this"
+" rate."
+msgstr "Untuk skala koefisien: setiap sel adalah koefisiennya dikali tarif ini."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/resolver.py:0
+msgid "From %(grade)s on %(scale)s"
+msgstr "Dari %(grade)s pada %(scale)s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/joiners.py:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__hr_contract_advantage_change__change_source__pay_scale
+msgid "From the pay scale"
+msgstr "Dari skala gaji"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/joiner_hint.xml:0
+msgid "From the pay scale:"
+msgstr "Dari skala gaji:"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__grade_id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__grade_id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__grade_id
+msgid "Grade"
+msgstr "Golongan"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_package
+msgid "Grade allowance on a pay scale"
+msgstr "Tunjangan golongan pada skala gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_grade
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_band_job__pb_scale_grade_id
+msgid "Grade on a pay scale"
+msgstr "Golongan pada skala gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__grade_ids
+msgid "Grades"
+msgstr "Golongan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Grades, one per line"
+msgstr "Golongan, satu per baris"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Grow"
+msgstr "Naikkan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Grow every amount by (%)"
+msgstr "Naikkan semua jumlah sebesar (%)"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Grow the whole table by a percentage"
+msgstr "Naikkan seluruh tabel dengan persentase"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Grow this grade by a percentage"
+msgstr "Naikkan golongan ini dengan persentase"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Grow this step by a percentage"
+msgstr "Naikkan tingkat ini dengan persentase"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__source
+msgid "How"
+msgstr "Cara"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__step_count
+msgid "How many steps each grade has. One step is a plain grade table."
+msgstr "Berapa tingkat tiap golongan. Satu tingkat adalah tabel golongan biasa."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_hr_contract_advantage_change__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_band_job__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scales__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_people_contract_wizard__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_people_onboard_wizard__id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_updates_desk__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__message_has_error
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__date_from
+msgid "In force from"
+msgstr "Berlaku sejak"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "In force from %(start)s"
+msgstr "Berlaku sejak %(start)s"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__date_to
+msgid "In force until"
+msgstr "Berlaku sampai"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__country_code__in
+msgid "India"
+msgstr "India"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__country_code__id
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__family_id
+msgid "Job family"
+msgstr "Rumpun jabatan"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_band_job
+msgid "Job in a pay band"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__job_link_ids
+msgid "Jobs"
+msgstr "Jabatan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Jobs on this grade"
+msgstr "Jabatan di golongan ini"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Keep this pay"
+msgstr "Pertahankan gaji ini"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Kept from the contract"
+msgstr "Dipertahankan dari kontrak"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__pin_reason__retention
+msgid "Kept to retain them"
+msgstr "Dipertahankan agar mereka bertahan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__write_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__write_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__write_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__write_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__write_uid
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__write_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__write_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__write_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__write_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__write_date
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__company_ids
+msgid "Leave empty and every company in this country uses the scale."
+msgstr "Kosongkan dan semua perusahaan di negara ini memakai skala ini."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Leave without saving the table?"
+msgstr "Tinggalkan tanpa menyimpan tabel?"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Make the scale"
+msgstr "Buat skala"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Make the version"
+msgstr "Buat versi"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__country_code__my
+msgid "Malaysia"
+msgstr "Malaysia"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Mark on step"
+msgstr "Tandai di tingkat"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Mark on step %(step)s"
+msgstr "Tandai di tingkat %(step)s"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__source__match
+msgid "Matched to a step"
+msgstr "Cocok dengan tingkat"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__value
+msgid "Monthly amount"
+msgstr "Jumlah bulanan"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/joiners.py:0
+msgid "Monthly wage"
+msgstr "Gaji bulanan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Move down"
+msgstr "Pindah ke bawah"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Move up"
+msgstr "Pindah ke atas"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "New pay scale"
+msgstr "Skala gaji baru"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "New version"
+msgstr "Versi baru"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "No grades yet. Add the first one, for example Store associate."
+msgstr "Belum ada golongan. Tambahkan yang pertama, misalnya Staf toko."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/resolver.py:0
+msgid "No job is set, so no scale applies."
+msgstr "Belum ada jabatan, jadi tidak ada skala yang berlaku."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "No job yet."
+msgstr "Belum ada jabatan."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Nobody here."
+msgstr "Tidak ada siapa pun."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"Nobody on these grades' jobs is paid yet, so there is nothing to start from."
+" Put jobs on the grades first."
+msgstr "Belum ada yang dibayar di jabatan golongan ini, jadi belum ada titik awal. Taruh jabatan di golongan dulu."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid ""
+"Nobody's pay changes on that date. People whose pay no longer matches their "
+"new step show as Drifted, and somebody decides."
+msgstr "Gaji siapa pun tidak berubah pada tanggal itu. Orang yang gajinya tidak lagi cocok dengan tingkat baru tampil sebagai Bergeser, dan seseorang memutuskan."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Nobody's pay changes."
+msgstr "Gaji siapa pun tidak berubah."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Not on the scale yet · %(grade)s"
+msgstr "Belum di skala · %(grade)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Not placed"
+msgstr "Belum ditempatkan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Not placed yet"
+msgstr "Belum ditempatkan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__pin_note
+msgid "Note"
+msgstr "Catatan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__note
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__note
+msgid "Notes"
+msgstr "Catatan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Now on %s"
+msgstr "Sekarang di %s"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_hiring_offer
+msgid "Offer"
+msgstr "Penawaran"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__pin_reason__offer
+msgid "Offer agreed"
+msgstr "Sesuai penawaran yang disepakati"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__pin_reason__offer_match
+msgid "Offer match"
+msgstr "Menyamai tawaran lain"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__hr_contract__pb_scale_state__on
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__state__on
+msgid "On scale"
+msgstr "Sesuai skala"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/placement.py:0
+msgid "On scale · %(grade)s, step %(step)s"
+msgstr "Sesuai skala · %(grade)s, tingkat %(step)s"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_hr_contract__pb_scale_label
+msgid "On the pay scale"
+msgstr "Pada skala gaji"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "On this grade"
+msgstr "Di golongan ini"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Only a version that has not started yet can be removed."
+msgstr "Hanya versi yang belum mulai yang bisa dihapus."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Only the people who set pay bands can change a pay scale."
+msgstr "Hanya orang yang mengatur pita gaji yang bisa mengubah skala gaji."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__company_ids
+msgid "Only these companies"
+msgstr "Hanya perusahaan ini"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid ""
+"Open a person to see their contract. Bringing pay to the step is done there,"
+" and follows the contract's normal approval."
+msgstr "Buka seseorang untuk melihat kontraknya. Menyesuaikan gaji ke tingkat dilakukan di sana, dan mengikuti persetujuan kontrak yang biasa."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/placement.py:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__pin_reason__other
+msgid "Other reason"
+msgstr "Alasan lain"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Paid differently on purpose, with a reason."
+msgstr "Dibayar berbeda dengan sengaja, dengan alasan."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Paid exactly step %(step)s"
+msgstr "Dibayar tepat tingkat %(step)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Paid exactly their step."
+msgstr "Dibayar tepat sesuai tingkatnya."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__pin_reason__legacy
+msgid "Paid this before the scale"
+msgstr "Sudah dibayar segini sebelum ada skala"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_palette.js:0
+msgid "Pay"
+msgstr "Gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__band_id
+msgid "Pay band"
+msgstr "Pita gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__template_id
+msgid "Pay line"
+msgstr "Pos gaji"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid ""
+"Pay lines a new joiner on this grade gets as well as the wage, when their "
+"pay scheme has them."
+msgstr "Pos gaji yang diterima karyawan baru di golongan ini selain gaji, bila skema gajinya memilikinya."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Pay no longer matches the step. Somebody decides."
+msgstr "Gaji tidak lagi cocok dengan tingkat. Seseorang memutuskan."
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__name
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__scale_id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__scale_id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__scale_id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_version__scale_id
+msgid "Pay scale"
+msgstr "Skala gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_cell
+msgid "Pay scale amount"
+msgstr "Jumlah skala gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_hr_contract__pb_scale_state
+msgid "Pay scale standing"
+msgstr "Posisi pada skala gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_version
+msgid "Pay scale version"
+msgstr "Versi skala gaji"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_palette.js:0
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+#: model:ir.actions.client,name:pb_pay_scales.action_pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scales
+msgid "Pay scales"
+msgstr "Skala gaji"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"Pay scales are for the people who look after pay. Ask an administrator for "
+"access."
+msgstr "Skala gaji untuk orang yang mengurus gaji. Minta akses ke administrator."
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_people_contract_wizard
+msgid "Payobook guided contract creation"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_people_onboard_wizard
+msgid "Payobook guided employee onboarding"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "People are placed on the steps you are taking away. Move them first."
+msgstr "Ada orang di tingkat yang Anda hapus. Pindahkan mereka dulu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid ""
+"People are placed on this grade. Move them to another grade first, then "
+"remove it."
+msgstr "Ada orang di golongan ini. Pindahkan ke golongan lain dulu, lalu hapus."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"People are placed on this scale. Take them off it first, or keep the scale."
+msgstr "Ada orang di skala ini. Keluarkan mereka dulu, atau pertahankan skala."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "People could not be placed just now."
+msgstr "Orang belum bisa ditempatkan sekarang."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__country_code__ph
+msgid "Philippines"
+msgstr "Filipina"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Pick a country."
+msgstr "Pilih negara."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Pick why this pay is different from the scale."
+msgstr "Pilih alasan gaji ini berbeda dari skala."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__pinned
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__hr_contract__pb_scale_state__pinned
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__state__pinned
+msgid "Pinned"
+msgstr "Ditetapkan"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/placement.py:0
+msgid "Pinned · %(reason)s"
+msgstr "Ditetapkan · %(reason)s"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_placement
+msgid "Place on a pay scale"
+msgstr "Tempat pada skala gaji"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Place the %s people paid exactly a step"
+msgstr "Tempatkan %s orang yang dibayar tepat satu tingkat"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Place the 1 person paid exactly a step"
+msgstr "Tempatkan 1 orang yang dibayar tepat satu tingkat"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__placed_by
+msgid "Placed by"
+msgstr "Ditempatkan oleh"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__placed_on
+msgid "Placed on"
+msgstr "Ditempatkan pada"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid ""
+"Put them on step 1 of their grade, pinned at the pay they have now. Nothing "
+"about their pay changes."
+msgstr "Tempatkan mereka di tingkat 1 golongannya, ditetapkan pada gaji mereka sekarang. Gaji mereka tidak berubah sama sekali."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Put this person on a grade and step first."
+msgstr "Tempatkan orang ini di golongan dan tingkat dulu."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Reading the pay scales…"
+msgstr "Membaca skala gaji…"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Reading…"
+msgstr "Membaca…"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Remove the scale"
+msgstr "Hapus skala"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Remove this grade"
+msgstr "Hapus golongan ini"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Remove this grade and its amounts?"
+msgstr "Hapus golongan ini dan jumlahnya?"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Remove this pay scale? Its grades and amounts go with it."
+msgstr "Hapus skala gaji ini? Golongan dan jumlahnya ikut terhapus."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Remove this version"
+msgstr "Hapus versi ini"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Remove this version? It has not started yet."
+msgstr "Hapus versi ini? Versi ini belum mulai."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Rename"
+msgstr "Ganti nama"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Retail store scale"
+msgstr "Skala toko ritel"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__rounding
+msgid "Round to"
+msgstr "Bulatkan ke"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "Round to a unit above zero, or leave it empty."
+msgstr "Bulatkan ke satuan di atas nol, atau kosongkan."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Save %s changes"
+msgstr "Simpan %s perubahan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Save 1 change"
+msgstr "Simpan 1 perubahan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Save allowances"
+msgstr "Simpan tunjangan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid ""
+"Saving the table changes what the scale says. Nobody's pay changes: people "
+"whose pay no longer matches their step show as Drifted."
+msgstr "Menyimpan tabel mengubah isi skala. Gaji siapa pun tidak berubah: orang yang gajinya tidak lagi cocok dengan tingkatnya tampil sebagai Bergeser."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__scale_amount
+msgid "Scale amount"
+msgstr "Jumlah skala"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Scale details"
+msgstr "Rincian skala"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Scale says %(scale)s, paid %(paid)s"
+msgstr "Skala menyebut %(scale)s, dibayar %(paid)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Scales"
+msgstr "Skala"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__sequence
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_grade__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__country_code__sg
+msgid "Singapore"
+msgstr "Singapura"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_hr_contract_advantage_change__change_source
+msgid "Source"
+msgstr "Sumber"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__state
+msgid "Standing"
+msgstr "Status"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Start from what you pay"
+msgstr "Mulai dari yang Anda bayar"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__step_no
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__step_no
+msgid "Step"
+msgstr "Tingkat"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/joiner_hint.js:0
+msgid "Step %(step)s of %(grade)s on %(scale)s."
+msgstr "Tingkat %(step)s dari %(grade)s pada %(scale)s."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__step_count
+msgid "Steps"
+msgstr "Tingkat"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Steps in each grade"
+msgstr "Tingkat di tiap golongan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Store associate"
+msgstr "Staf toko"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"Suggested from what %(people)s on these jobs are paid today. Nothing is "
+"saved until you save the table."
+msgstr "Disarankan dari gaji %(people)s di jabatan ini saat ini. Tidak ada yang disimpan sampai Anda menyimpan tabel."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Take off this grade"
+msgstr "Keluarkan dari golongan ini"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__country_code__th
+msgid "Thailand"
+msgstr "Thailand"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "That band is for another country."
+msgstr "Pita gaji itu untuk negara lain."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "That contract is not one you can see."
+msgstr "Anda tidak bisa melihat kontrak itu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "That grade is no longer there."
+msgstr "Golongan itu sudah tidak ada."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "That job is no longer in a band."
+msgstr "Jabatan itu tidak lagi ada di pita gaji."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "That pay scale is no longer there."
+msgstr "Skala gaji itu sudah tidak ada."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "That version of the scale is no longer there."
+msgstr "Versi skala itu sudah tidak ada."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid ""
+"The allowances are saved. They are filled in for new joiners placed on this "
+"grade."
+msgstr "Tunjangan tersimpan. Tunjangan diisi untuk karyawan baru yang ditempatkan di golongan ini."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The allowances could not be saved just now."
+msgstr "Tunjangan belum bisa disimpan sekarang."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale_grade__band_id
+msgid "The band whose range this grade sits in, when there is one."
+msgstr "Pita gaji tempat golongan ini berada, bila ada."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The grade could not be added just now."
+msgstr "Golongan belum bisa ditambahkan sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The grade could not be moved just now."
+msgstr "Golongan belum bisa dipindah sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The grade could not be removed just now."
+msgstr "Golongan belum bisa dihapus sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The grade could not be renamed just now."
+msgstr "Golongan belum bisa diganti nama sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The job could not be put on this grade just now."
+msgstr "Jabatan belum bisa ditaruh di golongan ini sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The job could not be taken off this grade just now."
+msgstr "Jabatan belum bisa dikeluarkan dari golongan ini sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The new version could not be made just now."
+msgstr "Versi baru belum bisa dibuat sekarang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/joiners.py:0
+msgid ""
+"The offer had no monthly pay, so the contract wage came from the pay scale: "
+"%(line)s."
+msgstr "Penawaran tidak punya gaji bulanan, jadi gaji kontrak diambil dari skala gaji: %(line)s."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The pay scales could not be read just now. Try again in a moment."
+msgstr "Skala gaji belum bisa dibaca sekarang. Coba lagi sebentar lagi."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The people could not be read just now."
+msgstr "Daftar orang belum bisa dibaca sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The scale could not be made just now."
+msgstr "Skala belum bisa dibuat sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The scale could not be removed just now."
+msgstr "Skala belum bisa dihapus sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The scale could not be saved just now."
+msgstr "Skala belum bisa disimpan sekarang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "The scale has no amounts in force today."
+msgstr "Skala tidak punya jumlah yang berlaku hari ini."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "The scale says %(scale)s; this contract pays %(paid)s."
+msgstr "Skala menyebut %(scale)s; kontrak ini membayar %(paid)s."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid ""
+"The table as it will be from a date. The version in force now is kept as it "
+"is."
+msgstr "Tabel sebagaimana berlaku mulai suatu tanggal. Versi yang berlaku sekarang tetap seperti apa adanya."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The table could not be saved just now."
+msgstr "Tabel belum bisa disimpan sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The table is saved. Nobody's pay changed."
+msgstr "Tabel tersimpan. Gaji siapa pun tidak berubah."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "The version could not be removed just now."
+msgstr "Versi belum bisa dihapus sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Their job is on a grade; they are on no step."
+msgstr "Jabatan mereka ada di golongan; mereka belum di tingkat mana pun."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "This could not be saved just now."
+msgstr "Ini belum bisa disimpan sekarang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/joiner_hint.js:0
+msgid ""
+"This is not a step of the scale. The contract will be pinned at this pay. "
+"Why is it different?"
+msgstr "Ini bukan tingkat pada skala. Kontrak akan ditetapkan pada gaji ini. Mengapa berbeda?"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "This person could not be placed just now."
+msgstr "Orang ini belum bisa ditempatkan sekarang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "This scale"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/placement.py:0
+#: code:addons/pb_pay_scales/models/scale.py:0
+msgid "This scale has steps 1 to %(top)s."
+msgstr "Skala ini punya tingkat 1 sampai %(top)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "This scale is not used by %(company)s."
+msgstr "Skala ini tidak dipakai oleh %(company)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "This version has ended. It is kept exactly as it was."
+msgstr "Versi ini sudah berakhir. Disimpan persis seperti semula."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid ""
+"This version has ended. It is kept exactly as it was; make a new version "
+"instead."
+msgstr "Versi ini sudah berakhir dan disimpan persis seperti semula; buat versi baru saja."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid ""
+"This version has ended. It is kept exactly as it was; make a new version to "
+"change the amounts."
+msgstr "Versi ini sudah berakhir dan disimpan persis seperti semula; buat versi baru untuk mengubah jumlahnya."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Tick none and every company in this country uses the scale."
+msgstr "Jangan centang apa pun dan semua perusahaan di negara ini memakai skala ini."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__pin_reason__typed
+msgid "Typed when hired"
+msgstr "Diketik saat direkrut"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Unpin"
+msgstr "Lepas penetapan"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_updates_desk
+msgid "Updates"
+msgstr ""
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "Use step 1"
+msgstr "Pakai tingkat 1"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/joiner_hint.xml:0
+msgid "Use the scale amount"
+msgstr "Pakai jumlah skala"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_cell__version_id
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_package__version_id
+msgid "Version"
+msgstr "Versi"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "Version %(n)s of %(total)s"
+msgstr "Versi %(n)s dari %(total)s"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__version_ids
+msgid "Versions"
+msgstr "Versi"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale__country_code__vn
+msgid "Vietnam"
+msgstr "Vietnam"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_scale__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_placement__source__hire
+msgid "When hired"
+msgstr "Saat direkrut"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_placement__pin_reason
+msgid "Why it is different"
+msgstr "Alasan berbeda"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Write your first pay scale"
+msgstr "Buat skala gaji pertama Anda"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale__mode
+msgid "Written as"
+msgstr "Ditulis sebagai"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "You can change every answer later."
+msgstr "Anda bisa mengubah semua jawaban nanti."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/screen.py:0
+msgid "You cannot read the pay scales."
+msgstr "Anda tidak bisa membaca skala gaji."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "coming"
+msgstr "akan datang"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "ended"
+msgstr "berakhir"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "in force"
+msgstr "berlaku"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "no job"
+msgstr "belum ada jabatan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "nobody"
+msgstr "tidak ada"

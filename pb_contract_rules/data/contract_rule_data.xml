@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- The two starting rows (owner ruling J3). Policy, not pay numbers:
+         editable by HR, each with its source and "to confirm with an
+         adviser" (S8 facts §5). noupdate, so an HR edit is never overwritten
+         by an upgrade. -->
+    <record id="rule_vn" model="pb.contract.rule">
+        <field name="name">Vietnam rule</field>
+        <field name="sequence">10</field>
+        <field name="country_id" ref="base.vn"/>
+        <field name="max_in_row">2</field>
+        <field name="max_months_each">36</field>
+        <field name="max_months_total">0</field>
+        <field name="gap_days">30</field>
+        <field name="counts_note">Every fixed-term labour contract with this employer counts, also the ones signed before this system: type their number on the person. A trial (probation) agreement does not count.</field>
+        <field name="source_note">Labour Code 2019, article 20: a fixed-term contract runs at most 36 months; when it ends, one more fixed-term contract may be signed, and after that the contract should be permanent. There are exceptions (older workers, foreign workers, some union officials and state-enterprise managers). To confirm with an adviser.</field>
+    </record>
+
+    <record id="rule_id" model="pb.contract.rule">
+        <field name="name">Indonesia rule</field>
+        <field name="sequence">20</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="max_in_row">0</field>
+        <field name="max_months_each">0</field>
+        <field name="max_months_total">60</field>
+        <field name="gap_days">30</field>
+        <field name="counts_note">Every time-based fixed-term contract (PKWT) with this employer counts, extensions included, also the ones signed before this system: type their number and months on the person.</field>
+        <field name="source_note">Government Regulation 35/2021, article 8: a time-based fixed-term contract (PKWT), extensions included, runs at most 5 years in total. To confirm with an adviser.</field>
+    </record>
+
+</odoo>

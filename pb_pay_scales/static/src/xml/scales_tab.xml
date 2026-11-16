@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WDGAP S8-A — People › Pay › Scales. Written to the Pay screen's template
+     rules: the word for negation is never used in an expression, one class
+     attribute per element, no JavaScript global in an expression, and no
+     double hyphen in a comment (W22). Each sentence sits on one line so its
+     translation matches (PRD-3). -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_pay_scales.PbPayScales">
+    <div class="pbs">
+      <div class="pbim-busy" t-if="!state.loaded">Reading the pay scales…</div>
+      <div class="pbim-note" t-elif="state.failed" t-esc="state.failed"/>
+
+      <t t-elif="!d.allowed">
+        <div class="pbs-empty">
+          <span class="pbs-empty-ic" t-out="ic('lock', 26)"/>
+          <p t-esc="d.reason"/>
+        </div>
+      </t>
+
+      <!-- ============================== no scale yet: the empty state -->
+      <t t-elif="!scale">
+        <div class="pbs-empty pbs-empty-hero">
+          <span class="pbs-empty-ic" t-out="ic('layers', 30)"/>
+          <h3>Write your first pay scale</h3>
+          <p>A pay scale is a table: grades down the side, steps across the top, one monthly amount in each cell. Put a job on a grade and a new joiner's wage opens already filled from step 1.</p>
+          <button class="pbim-btn primary" t-if="canWrite" t-on-click="() => this.openNew()">
+            <t t-out="ic('plus', 14)"/> <span>New pay scale</span>
+          </button>
+          <p class="pbs-muted" t-else="">Ask the people who set pay bands to write one.</p>
+        </div>
+      </t>
+
+      <t t-else="">
+        <!-- ============================== the scales, one chip each -->
+        <div class="pbs-picks">
+          <button t-foreach="scales" t-as="s" t-key="s.id" type="button"
+                  t-attf-class="pbs-pick {{ s.id === scale.id ? 'is-on' : '' }}"
+                  t-on-click="() => this.pickScale(s.id)">
+            <span class="pbs-pick-n" t-esc="s.name"/>
+            <span class="pbs-pick-s"><t t-esc="s.country"/> · <t t-esc="s.currency"/> · <t t-esc="peopleLine(s.people)"/></span>
+            <span class="pbs-pick-w" t-if="s.drifted"><t t-out="ic('alert', 12)"/> <t t-esc="s.drifted"/></span>
+          </button>
+          <button class="pbs-pick pbs-pick-add" type="button" t-if="canWrite" t-on-click="() => this.openNew()">
+            <t t-out="ic('plus', 15)"/> <span>New pay scale</span>
+          </button>
+        </div>
+
+        <!-- ============================== the scale itself -->
+        <div class="pay-card pbs-card">
+          <div class="pbs-head">
+            <div class="pbs-head-id">
+              <h3 class="pbs-title" t-esc="scale.name"/>
+              <div class="pbs-meta">
+                <span class="pbs-tag"><t t-out="ic('globe', 13)"/> <t t-esc="scale.country"/> · <t t-esc="cur.name"/></span>
+                <span class="pbs-tag"><t t-out="ic('building', 13)"/> <t t-esc="scale.companies_label"/></span>
+                <span class="pbs-tag" t-if="isCoef"><t t-out="ic('calculator', 13)"/> <span>Coefficient × base rate</span></span>
+                <span class="pbs-tag"><t t-out="ic('users', 13)"/> <t t-esc="peopleLine(health.people)"/></span>
+              </div>
+            </div>
+            <div class="pbs-head-act" t-if="canWrite">
+              <button class="pbim-btn ghost sm" t-on-click="() => this.proposeFromWages()"
+                      t-att-disabled="!editable or state.busy">
+                <t t-out="ic('wand', 14)"/> <span>Start from what you pay</span>
+              </button>
+              <button class="pbim-btn ghost sm" t-on-click="() => this.openVersion()">
+                <t t-out="ic('calendarClock', 14)"/> <span>New version</span>
+              </button>
+              <button class="pbim-btn ghost sm" t-on-click="() => this.openSettings()" title="Scale details">
+                <t t-out="ic('settings', 14)"/>
+              </button>
+            </div>
+          </div>
+
+          <!-- versions: the dated tables, oldest first -->
+          <div class="pbs-vers">
+            <t t-foreach="scale.versions" t-as="v" t-key="v.id">
+              <button type="button" t-att-class="versionClass(v)" t-on-click="() => this.pickVersion(v.id)">
+                <span class="pbs-ver-l" t-esc="v.label"/>
+                <span class="pbs-ver-t" t-esc="versionTag(v)"/>
+              </button>
+            </t>
+            <span class="pbs-ver-n" t-if="version" t-esc="versionLine"/>
+            <button class="pbs-link" type="button" t-if="canWrite and version and version.editable and !version.ended and scale.version_count > 1 and version.date_from > d.today"
+                    t-on-click="() => this.removeVersion()">
+              <t t-out="ic('trash', 13)"/> <span>Remove this version</span>
+            </button>
+          </div>
+
+          <!-- the four cards: grey at zero, colour only where somebody has to act -->
+          <div class="pbs-cards">
+            <button type="button" t-att-class="hcClass('on')" t-on-click="() => this.openState('on')">
+              <div class="pay-hc-n" t-esc="health.on or 0"/>
+              <div class="pay-hc-l">On scale</div>
+              <div class="pay-hc-s">Paid exactly their step.</div>
+            </button>
+            <button type="button" t-att-class="hcClass('pinned')" t-on-click="() => this.openState('pinned')">
+              <div class="pay-hc-n" t-esc="health.pinned or 0"/>
+              <div class="pay-hc-l">Pinned</div>
+              <div class="pay-hc-s">Paid differently on purpose, with a reason.</div>
+            </button>
+            <button type="button" t-att-class="hcClass('drifted')" t-on-click="() => this.openState('drifted')">
+              <div class="pay-hc-n" t-esc="health.drifted or 0"/>
+              <div class="pay-hc-l">Drifted</div>
+              <div class="pay-hc-s">Pay no longer matches the step. Somebody decides.</div>
+            </button>
+            <button type="button" t-att-class="hcClass('unplaced')" t-on-click="() => this.openState('unplaced')">
+              <div class="pay-hc-n" t-esc="health.unplaced or 0"/>
+              <div class="pay-hc-l">Not placed yet</div>
+              <div class="pay-hc-s">Their job is on a grade; they are on no step.</div>
+              <div class="pay-hc-m" t-if="health.match and canWrite" t-esc="matchLine"/>
+            </button>
+          </div>
+
+          <div class="pbs-wire" t-if="wire.length">
+            <t t-foreach="wire" t-as="w" t-key="w_index">
+              <div t-attf-class="pbs-wire-r is-{{ w.tone }}">
+                <t t-if="w.tone === 'ok'" t-out="ic('checkCircle', 14)"/>
+                <t t-else="" t-out="ic('info', 14)"/>
+                <span t-esc="w.sentence"/>
+              </div>
+            </t>
+          </div>
+
+          <div class="pbs-note" t-if="version and version.ended">
+            <t t-out="ic('lock', 14)"/> <span t-esc="endedLine"/>
+          </div>
+
+          <!-- base rate, for a scale written as coefficients -->
+          <div class="pbs-base" t-if="isCoef and version">
+            <label class="pbs-lbl">Base rate</label>
+            <input class="pbs-in num" type="text" inputmode="decimal" t-att-value="baseRate()"
+                   t-att-disabled="!editable" t-on-change="onBaseRate"/>
+            <span class="pbs-muted">Every cell is its coefficient times this rate.</span>
+          </div>
+
+          <!-- ============================== the ladder -->
+          <div class="pbs-scroll" t-if="version">
+            <table class="pbs-grid">
+              <thead>
+                <tr>
+                  <th class="pbs-gh">Grade</th>
+                  <th t-foreach="steps" t-as="step" t-key="step" class="pbs-sh">
+                    <span>Step <t t-esc="step"/></span>
+                    <button t-if="editable" type="button" class="pbs-grow" t-att-title="growTitle('col')"
+                            t-on-click="() => this.openGrow('col', step)">+%</button>
+                    <div class="pbs-growbox" t-if="isGrowing('col', step)">
+                      <input class="pbs-in num" type="text" placeholder="5" t-on-input="onGrowInput"
+                             t-on-keydown="(ev) => ev.key === 'Enter' and this.applyGrow()"/>
+                      <button type="button" class="pbim-btn primary sm" t-on-click="() => this.applyGrow()">Grow</button>
+                    </div>
+                  </th>
+                  <th class="pbs-sh pbs-sh-all">
+                    <button t-if="editable" type="button" class="pbs-grow" t-att-title="growTitle('all')"
+                            t-on-click="() => this.openGrow('all', 0)">+% all</button>
+                    <div class="pbs-growbox" t-if="isGrowing('all', 0)">
+                      <input class="pbs-in num" type="text" placeholder="5" t-on-input="onGrowInput"
+                             t-on-keydown="(ev) => ev.key === 'Enter' and this.applyGrow()"/>
+                      <button type="button" class="pbim-btn primary sm" t-on-click="() => this.applyGrow()">Grow</button>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="grades" t-as="grade" t-key="grade.id">
+                  <th class="pbs-gr">
+                    <button type="button" class="pbs-gr-n" t-on-click="() => this.openGrade(grade)">
+                      <span t-esc="grade.name"/>
+                    </button>
+                    <span class="pbs-gr-s"><t t-esc="peopleLine(grade.people)"/> · <t t-esc="jobsLine(grade.jobs.length)"/></span>
+                    <span class="pbs-gr-mv" t-if="canWrite">
+                      <button type="button" class="pbs-ico" title="Move up" t-on-click="() => this.moveGrade(grade, 'up')" t-out="ic('chevronUp', 13)"/>
+                      <button type="button" class="pbs-ico" title="Move down" t-on-click="() => this.moveGrade(grade, 'down')" t-out="ic('chevronDown', 13)"/>
+                    </span>
+                  </th>
+                  <td t-foreach="steps" t-as="step" t-key="step" t-att-class="cellClass(grade, step)"
+                      t-on-click="() => this.startEdit(grade, step)">
+                    <t t-if="state.editing === key(grade, step)">
+                      <input class="pbs-in num pbs-cell-in" type="text" inputmode="decimal"
+                             t-att-value="rawOf(grade, step) or ''"
+                             t-on-keydown="(ev) => this.onCellKey(grade, step, ev)"
+                             t-on-blur="(ev) => this.commitEdit(grade, step, ev.target.value)"/>
+                    </t>
+                    <t t-else="">
+                      <span class="pbs-cell-v" t-esc="cellLabel(grade, step) or '·'"/>
+                      <span class="pbs-cell-c" t-if="isCoef and coefLabel(grade, step)">× <t t-esc="coefLabel(grade, step)"/></span>
+                      <button type="button" class="pbs-cell-p" t-on-click.stop="() => this.openCellPeople(grade, step)"
+                              t-att-disabled="!cellOf(grade, step).people">
+                        <t t-esc="peopleLine(cellOf(grade, step).people)"/>
+                      </button>
+                    </t>
+                  </td>
+                  <td class="pbs-row-grow">
+                    <button t-if="editable" type="button" class="pbs-grow" t-att-title="growTitle('row')"
+                            t-on-click="() => this.openGrow('row', grade.id)">+%</button>
+                    <div class="pbs-growbox" t-if="isGrowing('row', grade.id)">
+                      <input class="pbs-in num" type="text" placeholder="5" t-on-input="onGrowInput"
+                             t-on-keydown="(ev) => ev.key === 'Enter' and this.applyGrow()"/>
+                      <button type="button" class="pbim-btn primary sm" t-on-click="() => this.applyGrow()">Grow</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr t-if="canWrite" class="pbs-add">
+                  <th class="pbs-gr" t-att-colspan="steps.length + 2">
+                    <span class="pbs-add-ic" t-out="ic('plus', 14)"/>
+                    <input class="pbs-in" type="text" placeholder="Add a grade, for example Senior associate"
+                           t-att-value="state.newGrade" t-on-input="onNewGrade" t-on-keydown="addGrade"/>
+                    <button type="button" class="pbim-btn ghost sm" t-att-disabled="!state.newGrade" t-on-click="() => this.addGrade()">Add grade</button>
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="pbs-muted pbs-grid-empty" t-if="version and !grades.length">No grades yet. Add the first one, for example Store associate.</p>
+
+          <!-- the save bar -->
+          <div class="pbs-save" t-if="stagedCount">
+            <span class="pbs-save-l"><t t-out="ic('info', 14)"/> <span t-esc="safeLine"/></span>
+            <button class="pbim-btn ghost sm" t-on-click="() => this.discard()">Discard</button>
+            <button class="pbim-btn primary sm" t-att-disabled="state.busy" t-on-click="() => this.saveTable()">
+              <t t-out="ic('save', 14)"/> <span t-esc="saveLabel"/>
+            </button>
+          </div>
+        </div>
+      </t>
+
+      <!-- ============================== drawers -->
+      <div class="pay-scrim" t-if="state.drawer" t-on-click="() => this.closeDrawer()"/>
+
+      <div class="pay-drawer pbs-drawer" t-if="state.drawer and state.drawer.kind === 'people'">
+        <div class="pay-drawer-h">
+          <div>
+            <h3 class="pay-drawer-t" t-esc="state.drawer.title"/>
+            <p class="pay-drawer-s" t-esc="scale.name"/>
+          </div>
+          <button class="pay-x" t-on-click="() => this.closeDrawer()" title="Close" t-out="ic('x', 18)"/>
+        </div>
+        <div class="pbs-act-row" t-if="state.drawer.args.state === 'unplaced' and health.match and canWrite">
+          <button class="pbim-btn primary sm" t-att-disabled="state.busy" t-on-click="() => this.placeMatching()">
+            <t t-out="ic('checkCheck', 14)"/> <span t-esc="matchLine"/>
+          </button>
+          <span class="pbs-muted">Nobody's pay changes.</span>
+        </div>
+        <div class="pbim-busy" t-if="state.drawer.loading">Reading…</div>
+        <p class="pbs-muted" t-elif="!state.drawer.rows.length">Nobody here.</p>
+        <div class="pbs-people" t-else="">
+          <div class="pbs-person" t-foreach="state.drawer.rows" t-as="row" t-key="row.contract_id">
+            <div class="pbs-person-id">
+              <button type="button" class="pbs-person-n" t-on-click="() => this.openContract(row)" t-esc="row.name"/>
+              <span class="pbs-person-s"><t t-esc="row.job"/> · <t t-esc="row.wage"/></span>
+              <span class="pbs-person-l" t-esc="row.line"/>
+            </div>
+            <span t-att-class="stateTone(row)" t-esc="stateWord(row)"/>
+            <div class="pbs-person-a" t-if="canWrite">
+              <button t-if="row.state === 'unplaced' and !row.step" class="pbim-btn ghost sm" t-att-title="keepTitle"
+                      t-on-click="() => this.keepUnplaced(row)">
+                <span>Keep this pay</span>
+              </button>
+              <button t-if="row.state === 'unplaced' and row.step" class="pbim-btn ghost sm" t-on-click="() => this.placeRow(row)">
+                <span>Mark on step <t t-esc="row.step"/></span>
+              </button>
+              <button t-if="row.state === 'drifted'" class="pbim-btn ghost sm" t-on-click="() => this.keepPay(row)">
+                <span>Keep this pay</span>
+              </button>
+              <button t-if="row.state === 'pinned'" class="pbim-btn ghost sm" t-on-click="() => this.unpinRow(row)">
+                <span>Unpin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <p class="pbs-muted pbs-foot">Open a person to see their contract. Bringing pay to the step is done there, and follows the contract's normal approval.</p>
+      </div>
+
+      <div class="pay-drawer pbs-drawer" t-if="state.drawer and state.drawer.kind === 'grade' and drawerGrade">
+        <div class="pay-drawer-h">
+          <div>
+            <h3 class="pay-drawer-t" t-esc="drawerGrade.name"/>
+            <p class="pay-drawer-s"><t t-esc="scale.name"/> · <t t-esc="peopleLine(drawerGrade.people)"/></p>
+          </div>
+          <button class="pay-x" t-on-click="() => this.closeDrawer()" title="Close" t-out="ic('x', 18)"/>
+        </div>
+
+        <div class="pbs-sec" t-if="canWrite">
+          <label class="pbs-lbl">Name</label>
+          <div class="pbs-inline">
+            <input class="pbs-in" type="text" t-att-value="state.drawer.name" t-on-input="onDrawerName"/>
+            <button class="pbim-btn ghost sm" t-on-click="() => this.renameGrade()">Rename</button>
+          </div>
+        </div>
+
+        <div class="pbs-sec">
+          <h4 class="pbs-sec-h"><t t-out="ic('briefcase', 14)"/> <span>Jobs on this grade</span></h4>
+          <p class="pbs-muted">A job sits on one grade. A new joiner in that job starts on step 1. Only jobs that are in a pay band of this country can be put here.</p>
+          <div class="pbs-chips">
+            <span class="pbs-chip" t-foreach="drawerGrade.jobs" t-as="job" t-key="job.link_id">
+              <t t-esc="job.name"/>
+              <button t-if="canWrite" type="button" class="pbs-chip-x" title="Take off this grade" t-on-click="() => this.unlinkJob(job)" t-out="ic('x', 12)"/>
+            </span>
+            <span class="pbs-muted" t-if="!drawerGrade.jobs.length">No job yet.</span>
+          </div>
+          <t t-if="canWrite">
+            <input class="pbs-in" type="text" placeholder="Find a job" t-att-value="state.drawer.jobTerm" t-on-input="onJobTerm"/>
+            <div class="pbs-list">
+              <button type="button" class="pbs-list-r" t-foreach="state.drawer.jobRows" t-as="row" t-key="row.link_id"
+                      t-att-disabled="row.here" t-on-click="() => this.linkJob(row)">
+                <span class="pbs-list-n" t-esc="row.name"/>
+                <span class="pbs-list-s" t-esc="jobRowLine(row)"/>
+              </button>
+            </div>
+          </t>
+        </div>
+
+        <div class="pbs-sec" t-if="version">
+          <h4 class="pbs-sec-h"><t t-out="ic('package', 14)"/> <span>Allowances with this grade</span></h4>
+          <p class="pbs-muted">Pay lines a new joiner on this grade gets as well as the wage, when their pay scheme has them.</p>
+          <div class="pbs-pkg" t-foreach="state.drawer.package" t-as="line" t-key="line.template_id">
+            <span class="pbs-pkg-n"><t t-esc="line.name"/> <small t-esc="line.code"/></span>
+            <input class="pbs-in num" type="text" inputmode="decimal" t-att-value="line.amount"
+                   t-att-disabled="!editable" t-on-change="(ev) => this.onPkgAmount(line, ev)"/>
+            <button t-if="editable" type="button" class="pbs-ico" title="Remove" t-on-click="() => this.dropPkg(line_index)" t-out="ic('trash', 13)"/>
+          </div>
+          <t t-if="editable">
+            <input class="pbs-in" type="text" placeholder="Add a pay line, for example housing" t-att-value="state.drawer.pkgTerm" t-on-input="onPkgTerm"/>
+            <div class="pbs-list">
+              <button type="button" class="pbs-list-r" t-foreach="state.drawer.pkgRows" t-as="row" t-key="row.id" t-on-click="() => this.addPkg(row)">
+                <span class="pbs-list-n" t-esc="row.name"/>
+                <span class="pbs-list-s" t-esc="row.code"/>
+              </button>
+            </div>
+            <button class="pbim-btn primary sm" t-att-disabled="!state.drawer.pkgDirty" t-on-click="() => this.savePkg()">Save allowances</button>
+          </t>
+        </div>
+
+        <div class="pbs-sec" t-if="canWrite">
+          <button class="pbim-btn danger sm" t-on-click="() => this.removeGrade()"><t t-out="ic('trash', 13)"/> <span>Remove this grade</span></button>
+        </div>
+      </div>
+
+      <div class="pay-drawer pbs-drawer" t-if="state.drawer and state.drawer.kind === 'new'">
+        <div class="pay-drawer-h">
+          <div>
+            <h3 class="pay-drawer-t">New pay scale</h3>
+            <p class="pay-drawer-s">You can change every answer later.</p>
+          </div>
+          <button class="pay-x" t-on-click="() => this.closeDrawer()" title="Close" t-out="ic('x', 18)"/>
+        </div>
+        <div class="pbs-sec">
+          <label class="pbs-lbl">Name</label>
+          <input class="pbs-in" type="text" placeholder="Retail store scale" t-att-value="state.drawer.name" t-on-input="(ev) => this.onDrawer('name', ev)"/>
+          <label class="pbs-lbl">Country</label>
+          <select class="pbs-in" t-on-change="(ev) => this.onDrawer('country', ev)">
+            <option t-foreach="d.countries" t-as="c" t-key="c.code" t-att-value="c.code" t-att-selected="c.code === state.drawer.country" t-esc="c.name"/>
+          </select>
+          <label class="pbs-lbl">Steps in each grade</label>
+          <input class="pbs-in num" type="number" min="1" max="12" t-att-value="state.drawer.steps" t-on-input="(ev) => this.onDrawer('steps', ev)"/>
+          <label class="pbs-lbl">Written as</label>
+          <select class="pbs-in" t-on-change="(ev) => this.onDrawer('mode', ev)">
+            <option value="amount" t-att-selected="state.drawer.mode === 'amount'">Amounts</option>
+            <option value="coefficient" t-att-selected="state.drawer.mode === 'coefficient'">Coefficient × base rate</option>
+          </select>
+          <label class="pbs-lbl">Round to</label>
+          <input class="pbs-in num" type="text" placeholder="10000" t-att-value="state.drawer.rounding" t-on-input="(ev) => this.onDrawer('rounding', ev)"/>
+          <label class="pbs-lbl">In force from</label>
+          <input class="pbs-in" type="date" t-att-value="state.drawer.date_from" t-on-input="(ev) => this.onDrawer('date_from', ev)"/>
+          <label class="pbs-lbl">Grades, one per line</label>
+          <textarea class="pbs-in pbs-ta" rows="4" placeholder="Store associate" t-on-input="(ev) => this.onDrawer('grades', ev)" t-esc="state.drawer.grades"/>
+          <button class="pbim-btn primary" t-att-disabled="!state.drawer.name" t-on-click="() => this.createScale()">
+            <t t-out="ic('plus', 14)"/> <span>Make the scale</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pay-drawer pbs-drawer" t-if="state.drawer and state.drawer.kind === 'settings'">
+        <div class="pay-drawer-h">
+          <div>
+            <h3 class="pay-drawer-t">Scale details</h3>
+            <p class="pay-drawer-s" t-esc="scale.name"/>
+          </div>
+          <button class="pay-x" t-on-click="() => this.closeDrawer()" title="Close" t-out="ic('x', 18)"/>
+        </div>
+        <div class="pbs-sec">
+          <label class="pbs-lbl">Name</label>
+          <input class="pbs-in" type="text" t-att-value="state.drawer.name" t-on-input="(ev) => this.onDrawer('name', ev)"/>
+          <label class="pbs-lbl">Steps in each grade</label>
+          <input class="pbs-in num" type="number" min="1" max="12" t-att-value="state.drawer.steps" t-on-input="(ev) => this.onDrawer('steps', ev)"/>
+          <label class="pbs-lbl">Round to</label>
+          <input class="pbs-in num" type="text" t-att-value="state.drawer.rounding" t-on-input="(ev) => this.onDrawer('rounding', ev)"/>
+          <label class="pbs-lbl">Only these companies</label>
+          <p class="pbs-muted">Tick none and every company in this country uses the scale.</p>
+          <div class="pbs-checks">
+            <label class="pbs-check" t-foreach="d.companies" t-as="c" t-key="c.id">
+              <input type="checkbox" t-att-checked="hasCompany(c.id)" t-on-change="() => this.toggleCompany(c.id)"/>
+              <span t-esc="c.name"/>
+            </label>
+          </div>
+          <label class="pbs-lbl">Notes</label>
+          <textarea class="pbs-in pbs-ta" rows="3" t-on-input="(ev) => this.onDrawer('note', ev)" t-esc="state.drawer.note"/>
+          <div class="pbs-inline">
+            <button class="pbim-btn primary" t-on-click="() => this.saveSettings()"><t t-out="ic('save', 14)"/> <span>Save</span></button>
+            <button class="pbim-btn danger" t-on-click="() => this.removeScale()"><t t-out="ic('trash', 14)"/> <span>Remove the scale</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pay-drawer pbs-drawer" t-if="state.drawer and state.drawer.kind === 'version'">
+        <div class="pay-drawer-h">
+          <div>
+            <h3 class="pay-drawer-t">New version</h3>
+            <p class="pay-drawer-s">The table as it will be from a date. The version in force now is kept as it is.</p>
+          </div>
+          <button class="pay-x" t-on-click="() => this.closeDrawer()" title="Close" t-out="ic('x', 18)"/>
+        </div>
+        <div class="pbs-sec">
+          <label class="pbs-lbl">In force from</label>
+          <input class="pbs-in" type="date" t-att-value="state.drawer.date_from" t-on-input="(ev) => this.onDrawer('date_from', ev)"/>
+          <label class="pbs-lbl">Grow every amount by (%)</label>
+          <input class="pbs-in num" type="text" placeholder="0" t-att-value="state.drawer.grow" t-on-input="(ev) => this.onDrawer('grow', ev)"/>
+          <p class="pbs-muted">Nobody's pay changes on that date. People whose pay no longer matches their new step show as Drifted, and somebody decides.</p>
+          <button class="pbim-btn primary" t-att-disabled="!state.drawer.date_from" t-on-click="() => this.createVersion()">
+            <t t-out="ic('calendarClock', 14)"/> <span>Make the version</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

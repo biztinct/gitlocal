@@ -1,0 +1,1550 @@
+# Translation of the product server.
+# This file contains the translation of the following modules:
+# 	* pb_org_structure
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 20:12+0000\n"
+"PO-Revision-Date: 2026-11-15 20:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"\"%s\" is on contracts. Archive it instead, or move the people to another "
+"cost centre first."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/job_level.py:0
+msgid ""
+"\"%s\" is used by a job. Move the job to another level first, or archive the"
+" level instead."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s only"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s without a level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"A change of cost centre always starts on a date, today or later. Payslips "
+"already made keep the cost centre they were paid under."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid ""
+"A cost centre change starts today or later. Payslips already made keep the "
+"cost centre they were paid under."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.constraint,message:pb_org_structure.constraint_pb_cost_centre_code_company_unique
+msgid "A cost centre code is used once per company."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "A cost centre needs a code."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A few lines a new colleague would understand"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A pause covers the team and every team under it."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A pause stops"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A whole team"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__active
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add a cost centre"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add a level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add them to the list"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Added to the list: %s. No contract was changed."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "All jobs"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Already there: %s."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Archive"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Budget review until March"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "CC-100"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__cancelled
+msgid "Cancelled"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change the cost centre"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change the level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Changes waiting for their date: %s. They are made on the day."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Changes, waiting and recent"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid ""
+"Changing jobs, levels and cost centres is for HR managers. Ask one of them "
+"to make the change."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a cost centre from the list."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "Choose a cost centre of the person's own company."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a cost centre of the team's own company."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a date within the next twelve months."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a level of this job's company."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a team or the people to move."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose one of your companies."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose the date the new cost centre starts."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Choose yes, no or not sure."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Choose…"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Chosen people"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__code
+msgid "Code"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model,name:pb_org_structure.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__company_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__company_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__contract_id
+msgid "Contract"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__contract_ids
+msgid "Contracts"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"Contracts carrying the code \"%(code)s\": %(n)s. It cannot be changed here —"
+" that would rewrite what they say. Add a new cost centre and move people to "
+"it from a date instead."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts not on the list: %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Contracts: %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model,name:pb_org_structure.model_pb_cost_centre
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__cost_centre_id
+msgid "Cost centre"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__pb_cost_centre_id
+msgid "Cost centre (from the list)"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__old_text
+msgid "Cost centre before"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_cost_centre_move
+msgid "Cost centre change from a date"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cost centre changes"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cost centres"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__problem
+msgid "Could not be made"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__create_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__create_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__create_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__create_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_exits__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_posting__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_requisition__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_org_structure__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_orgchart__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__done
+msgid "Done"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Each team's usual cost centre"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Every company"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Every job and its level, the cost centres people are paid from, and where "
+"hiring is paused."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Every job has a level"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_pb_cost_centre__code
+msgid "Exactly what contracts carry as their cost centre."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Filled in on new contracts in that team that have no cost centre. It changes"
+" nobody who is already there."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_department__pb_cost_centre_id
+msgid ""
+"Filled in on new contracts in this team that have no cost centre. Moving "
+"people already here is done from a date, on the Jobs tab."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Find a job, a team or a level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__date_start
+msgid "From"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"From a date. A change dated today is made at once; a later one waits and is "
+"made on the day."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Give the cost centre a code."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Give the level a name."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Head office"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Hiring"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Hiring for this role"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring is open everywhere"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "Hiring is paused for %(where)s."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "Hiring is paused for %(where)s: %(reason)s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid "Hiring is paused."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring pause"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_paused
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_paused
+msgid "Hiring paused"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring paused for %s."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause
+msgid "Hiring paused for the company"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_self
+msgid "Hiring paused for this role"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause
+msgid "Hiring paused for this team"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Hiring restarted"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring restarted for %s."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_exits__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_posting__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_requisition__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_org_structure__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_orgchart__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_org_structure
+#: model_terms:ir.ui.view,arch_db:pb_org_structure.view_employee_form_pb_rehire
+msgid "If they leave"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "It does not stop"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Job"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_job_level
+msgid "Job level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Job, A to Z"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.actions.client,name:pb_org_structure.action_pb_org_jobs
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_count
+msgid "Jobs"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid ""
+"Jobs and cost centres are looked after by the HR team. Ask them if you need "
+"something changed."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Jobs appear here when people are given a job, or when a hiring request opens"
+" a role."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Jobs are looked after by the HR team"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Jobs are looked after by the HR team."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Jobs are not open to you"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Jobs at \"%(level)s\": %(n)s. Move them to another level first."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_ids
+msgid "Jobs at this level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Jobs: %s"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__write_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__write_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__write_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__write_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_pb_job_level__company_id
+msgid "Leave empty to offer this level to every company."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_level_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__name
+msgid "Level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Level, lowest first"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Levels"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading the cost centres…"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading the jobs…"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading…"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Lowest first. Each job is given one level on its job page. Levels are names,"
+" not pay: nobody's pay changes when a level does."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__done_on
+msgid "Made on"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Most people to hire first"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move down"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move people to a cost centre"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move them"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move up"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__name
+msgid "Name"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "New site opened"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__no
+msgid "No"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No cost centres yet. Add one below."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No job matches these filters"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No jobs yet"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No level yet"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No levels are set yet. Add them on the Levels part of this tab."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"No levels yet. Add the first one below, for example Associate, Senior, Lead "
+"and Head of."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "No team"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No teams yet."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Nobody to hire"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "None"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "None set yet"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Not paused"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__unsure
+msgid "Not sure"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__note
+msgid "Notes"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "On contracts, but not on the list"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Only a change still waiting for its date can be cancelled."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Open"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__sequence
+msgid "Order"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.actions.server,name:pb_org_structure.cron_pb_cost_centre_moves_ir_actions_server
+msgid "Organisation: make cost-centre changes on their date"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause hiring"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause hiring for this role"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Paused"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_by
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_by
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_by
+msgid "Paused by"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_job__pb_hiring_paused
+msgid ""
+"Paused for this role, its team (or a team above it) or its company. New "
+"hiring requests and adverts stop; people already in progress carry on."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_department__pb_hiring_paused
+msgid "Paused for this team, a team above it, or its company."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_on
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_on
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_on
+msgid "Paused on"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Paused with %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid "Pausing or restarting hiring is for the talent lead and HR managers."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pay band"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "People"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid ""
+"People already in progress carry on, and offers can still be sent. Nothing "
+"new can be started for this role."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People moved: %s."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "People to hire"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "People who move to %(code)s from %(date)s: %(n)s."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_org_structure
+msgid "People › Jobs (levels, cost centres, hiring pause)"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__employee_id
+msgid "Person"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_by
+msgid "Rehire answer by"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_on
+msgid "Rehire answer on"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Remove"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restart hiring"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restart hiring for this role"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restarting"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Roles paused one by one"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Roles with somebody to hire: %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save the cost centre"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save the level"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Saved."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/exits_rehire.js:0
+msgid "Saved. Seen by HR only."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Say why hiring is paused — people who try to hire will read it."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "See who moves"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Seen by HR only."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Seen by HR only. It shows on the Hiring board if they apply again."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Senior"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Show more"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Somebody to hire"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Start again"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__state
+msgid "Status"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Team"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Team (and the teams under it)"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Teams"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That change is no longer there."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That cost centre is no longer there."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "That did not work. Try again in a moment."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That is more than %s people at once. Choose a smaller team."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That is not something this screen can do."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That job is no longer there."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "That leaving checklist is no longer there."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That level is no longer there."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That team is no longer there."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "The contract was no longer running on that date."
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_contract__pb_cost_centre_id
+msgid ""
+"The cost centre in the list that this contract's cost centre names. Empty "
+"when the text matches nothing in the list."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "The ladder of job levels"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "The list"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/job_level.py:0
+msgid "There is already a level called \"%s\"."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"These cost centres are typed on contracts and are not on the list yet. "
+"Adding them to the list changes no contract."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "This change could not be made. Open it and try again."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "This company"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "This company already has the cost centre \"%s\"."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"This is where jobs, their levels, cost centres and hiring pauses are kept. "
+"Ask your HR administrator if you should see it."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid "This offer can still be sent."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "To hire"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Type a name"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_cost_centre_id
+msgid "Usual cost centre"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Waiting"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__scheduled
+msgid "Waiting for its date"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "What it means"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "What the job is"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__description
+msgid "What this level means"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Whether somebody would be hired again is recorded by HR."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Who moves"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__note
+msgid "Why"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_note
+msgid "Why (rehire)"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Why (seen by HR only)"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_reason
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_reason_self
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_reason
+msgid "Why hiring is paused"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Why is hiring paused?"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here %(years)s · would rehire: %(answer)s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here before"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here before · would rehire: %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Works without day-to-day guidance"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire
+msgid "Would rehire"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_employee__pb_rehire
+msgid "Would the company hire this person again? Seen by HR only."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Would we hire them again?"
+msgstr ""
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__yes
+msgid "Yes"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"candidates already in progress, interviews and offers. They carry on, with a"
+" warning that hiring is paused."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "from %s"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "jobs"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "lowest first"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"new hiring requests, sending one in, opening a role, adverts, the careers "
+"page and new open roles on the org chart."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "on the list"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "pay band"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "people in this job"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"puts everything back as it was. Nothing is changed while hiring is paused."
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "roles paused"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this company"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this role"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this team"
+msgstr ""
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "to hire"
+msgstr ""
