@@ -12,7 +12,7 @@ function lowerFirst(text){
    so a person's name ("Mai presses …") keeps its capital. */
 const SOFT_WORDS=new Set(['the','a','an','every','each','someone','somebody','by','when','it','they','records','all','no','nobody','waiting','whoever','one','any']);
 function softLower(text){const t=String(text||'').trim(),first=t.split(/\s/)[0];return SOFT_WORDS.has(first.toLowerCase())?first.toLowerCase()+t.slice(first.length):t;}
-function listWords(items,last='and'){
+function listWords(items,last=_t('and')){
  const xs=items.filter(Boolean);
  return xs.length<2?(xs[0]||''):xs.slice(0,-1).join(', ')+' '+last+' '+xs.at(-1);
 }
@@ -26,7 +26,8 @@ function localTime(value){
 const contract=()=>S.w?.metadata.contract||{};
 const catalogue=()=>S.w?.metadata.stage_catalogue?.stages||[];
 const areaName=()=>contract().area||S.w?.module||'';
-const possessive=name=>/s$/i.test(name)?name+'’':name+'’s';
+/* English only: in another language the phrase itself says whose (WF2 P6b). */
+const possessive=name=>_t.on?name:/s$/i.test(name)?name+'’':name+'’s';
 const isRecordFlow=()=>!!S.w?.source_model;
 const ownRows=()=>!!contract().own_stage_rows;
 const bindKey=b=>!b?null:b.kind==='core'?String(b.value):'yours:'+b.id;
@@ -65,22 +66,22 @@ function refreshWork(){
  if($('#sheet')?.open)renderSheet();
 }
 function existingProblem(){
- return S.existing?.state==='error'?`<div class="existing-error" role="status">${svgIcon('info')}<span>Could not load what already happens here.</span>${btn('existing-retry','Try again','history','small plain')}</div>`:'';
+ return S.existing?.state==='error'?`<div class="existing-error" role="status">${svgIcon('info')}<span>${_t('Could not load what already happens here.')}</span>${btn('existing-retry',_t('Try again'),'history','small plain')}</div>`:'';
 }
 const EFFECT_ICON={message:'email',todo:'task',record:'input',reminder:'bell',change:'state'};
 function effectLink(e){
  const s=e.settings;if(!s)return '';
- if(s.workflow_id)return btn('open-workflow','Open','external','small link',`data-id="${Number(s.workflow_id)}" aria-label="Open ${esc(e.owner)}"`);
+ if(s.workflow_id)return btn('open-workflow',_t('Open'),'external','small link',`data-id="${Number(s.workflow_id)}" aria-label="${_t('Open %(what)s',{what:esc(e.owner)})}"`);
  const owner=(S.w?.metadata.owners||[]).find(o=>o.action===s.action);
- return owner?btn('resource','Open','external','small link',`data-key="${esc(owner.key)}" aria-label="Open ${esc(owner.owner)}"`):'';
+ return owner?btn('resource',_t('Open'),'external','small link',`data-key="${esc(owner.key)}" aria-label="${_t('Open %(what)s',{what:esc(owner.owner)})}"`):'';
 }
 function effectRow(e){
  return `<div class="already-row"><span class="already-icon">${svgIcon(EFFECT_ICON[e.kind]||'state')}</span><div class="grow"><p>${esc(e.text)}</p><div class="already-foot"><small>${esc(e.owner)}</small>${effectLink(e)}</div>${e.detail?`<small class="already-detail">${esc(e.detail)}</small>`:''}</div></div>`;
 }
-function alreadyBlock(info,title='Already happens here',limit=0){
+function alreadyBlock(info,title=_t('Already happens here'),limit=0){
  const rows=info.effects;if(!rows.length)return '';
  const shown=limit&&rows.length>limit?rows.slice(0,limit):rows,rest=rows.slice(shown.length);
- return `<div class="already"><p class="already-title">${title}</p>${shown.map(effectRow).join('')}${rest.length?`<details class="already-more"><summary>${svgIcon('down')}${plural(rest.length,'more thing')}</summary>${rest.map(effectRow).join('')}</details>`:''}</div>`;
+ return `<div class="already"><p class="already-title">${title}</p>${shown.map(effectRow).join('')}${rest.length?`<details class="already-more"><summary>${svgIcon('down')}${_t.n(rest.length,'%(n)s more thing','%(n)s more things')}</summary>${rest.map(effectRow).join('')}</details>`:''}</div>`;
 }
 
 /* --------------------------------------------------- one section, described */
@@ -95,35 +96,35 @@ function sectionInfo(i,d=S.w.definition){
 }
 function sectionTitle(i){return S.w?sectionInfo(i).name:'';}
 function tagWords(info){
- if(info.kind==='area')return `${areaName()} owns this stage`;
- if(info.kind==='yours')return isRecordFlow()&&info.row.counts_as?`Your stage · counts as ${info.row.counts_as} in ${areaName()}`:'Your stage';
- if(info.kind==='missing')return 'This stage no longer exists';
- return 'Heading';
+ if(info.kind==='area')return _t('%(area)s owns this stage',{area:areaName()});
+ if(info.kind==='yours')return isRecordFlow()&&info.row.counts_as?_t('Your stage · counts as %(stage)s in %(area)s',{stage:info.row.counts_as,area:areaName()}):_t('Your stage');
+ if(info.kind==='missing')return _t('This stage no longer exists');
+ return _t('Heading');
 }
 const TAG_ICON={area:'lock',yours:'flag',missing:'alert',heading:'heading'};
 function stageTag(info){return `<span class="stage-tag ${info.kind}">${svgIcon(TAG_ICON[info.kind])}<span>${esc(tagWords(info))}</span></span>`;}
-function getsHere(info){return info.enters?`<p class="gets-here">${svgIcon('arrow')}<span>Gets here when: ${esc(softLower(info.enters))}</span></p>`:'';}
-function sectionMeta(info,limit=0){return `<div class="stage-meta">${stageTag(info)}${getsHere(info)}</div>${alreadyBlock(info,'Already happens here',limit)}`;}
+function getsHere(info){return info.enters?`<p class="gets-here">${svgIcon('arrow')}<span>${_t('Gets here when: %(how)s',{how:esc(softLower(info.enters))})}</span></p>`:'';}
+function sectionMeta(info,limit=0){return `<div class="stage-meta">${stageTag(info)}${getsHere(info)}</div>${alreadyBlock(info,_t('Already happens here'),limit)}`;}
 function exitsNote(){
  if(!S.w||!S.w.definition.stages.some(s=>s.bind))return '';
  const exits=catalogue().filter(s=>s.exit);if(!exits.length)return '';
- const text=exits.length===1&&exits[0].enters?`If ${softLower(exits[0].enters)}, it becomes ${exits[0].name}.`:`If it becomes ${listWords(exits.map(e=>e.name),'or')}, it stops there.`;
- return `<p class="exits-note">${svgIcon('stop')}<span>${esc(text)} Steps after that point do not run.</span></p>`;
+ const text=exits.length===1&&exits[0].enters?_t('If %(how)s, it becomes %(stage)s.',{how:softLower(exits[0].enters),stage:exits[0].name}):_t('If it becomes %(stages)s, it stops there.',{stages:listWords(exits.map(e=>e.name),_t('or'))});
+ return `<p class="exits-note">${svgIcon('stop')}<span>${esc(text)} ${_t('Steps after that point do not run.')}</span></p>`;
 }
 /* Across: the tag sits in the heading; what already happens folds into one line. */
 function acrossMeta(i){
  if(!S.w)return '';const info=sectionInfo(i);
- return {tag:stageTag(info),more:`${getsHere(info)}${info.effects.length?`<details class="already-line"><summary>${svgIcon('info')}${plural(info.effects.length,'thing')} already happen${info.effects.length===1?'s':''} here</summary>${info.effects.map(effectRow).join('')}</details>`:''}`};
+ return {tag:stageTag(info),more:`${getsHere(info)}${info.effects.length?`<details class="already-line"><summary>${svgIcon('info')}${_t.n(info.effects.length,'%(n)s thing already happens here','%(n)s things already happen here')}</summary>${info.effects.map(effectRow).join('')}</details>`:''}`};
 }
 /* Flowchart: the label keeps its height; a chip opens a popover. */
 function flowLabelExtras(i){
  if(!S.w)return '';const info=sectionInfo(i);
- return `<span class="flow-tag ${info.kind}" title="${esc(tagWords(info))}" aria-label="${esc(tagWords(info))}">${svgIcon(TAG_ICON[info.kind])}</span>${info.effects.length?`<button class="flow-chip" data-act="already-pop" data-index="${i}" aria-haspopup="dialog">${info.effects.length} already happen${info.effects.length===1?'s':''}</button>`:''}`;
+ return `<span class="flow-tag ${info.kind}" title="${esc(tagWords(info))}" aria-label="${esc(tagWords(info))}">${svgIcon(TAG_ICON[info.kind])}</span>${info.effects.length?`<button class="flow-chip" data-act="already-pop" data-index="${i}" aria-haspopup="dialog">${_t.n(info.effects.length,'%(n)s already happens','%(n)s already happen')}</button>`:''}`;
 }
 function openPopover(anchor,title,html){
  let p=$('#popover');
  if(!p){p=document.createElement('div');p.id='popover';p.setAttribute('role','dialog');document.body.appendChild(p);}
- p.innerHTML=`<div class="row between popover-head"><strong>${esc(title)}</strong>${btn('popover-close','','close','plain small','aria-label="Close"')}</div>${html}`;
+ p.innerHTML=`<div class="row between popover-head"><strong>${esc(title)}</strong>${btn('popover-close','','close','plain small','aria-label="'+_t('Close')+'"')}</div>${html}`;
  p.setAttribute('aria-label',title);p.hidden=false;
  const r=anchor.getBoundingClientRect(),w=Math.min(380,innerWidth-24);
  p.style.width=w+'px';p.style.left=Math.max(12,Math.min(r.left,innerWidth-w-12))+'px';
@@ -139,23 +140,25 @@ document.addEventListener('pointerdown',e=>{const p=$('#popover');if(p&&!p.hidde
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#popover')&&!$('#popover').hidden){closePopover();e.preventDefault();}});
 
 /* ----------------------------------------------------- the "When …" sentence */
+/* "3 days" in the When sentence (the start's offset). */
+const UNIT_WORDS={minutes:['%(n)s minute','%(n)s minutes'],hour:['%(n)s hour','%(n)s hours'],day:['%(n)s day','%(n)s days'],month:['%(n)s month','%(n)s months']};
 function whenWords(){
  const w=S.w,d=w.definition,t=d.trigger||{},fields=w.metadata.fields||[];
- const label=String(contract().label||w.module||'record').split(' ').map(x=>/^[A-Z0-9]{2,}$/.test(x)?x:x.toLowerCase()).join(' ');
- if(!w.source_model)return {subject:'someone',verb:t.kind==='manual'||!t.kind?`starts ${d.name}`:'starts it',scope:''};
- let verb={manual:'is started by a person',created:'is created',approval_applied:'has its approval finished'}[t.kind];
- if(t.kind==='changed'){const names=(t.fields||[]).map(k=>fields.find(f=>f.key===k)?.label).filter(Boolean);verb=names.length?`has ${listWords(names,'or')} changed`:'has a chosen field changed';}
+ const label=String(contract().label||w.module||_t('record')).split(' ').map(x=>/^[A-Z0-9]{2,}$/.test(x)?x:x.toLowerCase()).join(' ');
+ if(!w.source_model)return {subject:_t('someone'),verb:t.kind==='manual'||!t.kind?_t('starts %(name)s',{name:d.name}):_t('starts it'),scope:''};
+ let verb={manual:_t('is started by a person'),created:_t('is created'),approval_applied:_t('has its approval finished')}[t.kind];
+ if(t.kind==='changed'){const names=(t.fields||[]).map(k=>fields.find(f=>f.key===k)?.label).filter(Boolean);verb=names.length?_t('has %(fields)s changed',{fields:listWords(names,_t('or'))}):_t('has a chosen field changed');}
  if(t.kind==='date'){
-  const date=fields.find(f=>f.key===t.date_field)?.label,unit={minutes:'minute',hour:'hour',day:'day',month:'month'}[t.unit]||'day';
-  verb=!date?'reaches a date you choose':Number(t.delay)?`is ${plural(Number(t.delay),unit)} ${t.mode==='before'?'before':'after'} its ${date}`:`reaches its ${date}`;
+  const date=fields.find(f=>f.key===t.date_field)?.label,unit=UNIT_WORDS[t.unit]||UNIT_WORDS.day,amount=_t.n(Number(t.delay),...unit);
+  verb=!date?_t('reaches a date you choose'):Number(t.delay)?(t.mode==='before'?_t('is %(amount)s before its %(date)s',{amount,date}):_t('is %(amount)s after its %(date)s',{amount,date})):_t('reaches its %(date)s',{date});
  }
  /* A rule still being written (no value yet) is left out (WF2 P3b). */
  const ruled=conditionLeaves(d.scope).filter(r=>['set','unset'].includes(r.op)||!(r.value===''||r.value===null||r.value===undefined||(Array.isArray(r.value)&&!r.value.length))).length;
- return {subject:`${article(label)} ${label}`,verb:verb||'is started by a person',scope:ruled?`for ${softLower(w.scope_summary||'matching records')}`:'for everyone'};
+ return {subject:article(label)==='an'?_t('an %(record)s',{record:label}):_t('a %(record)s',{record:label}),verb:verb||_t('is started by a person'),scope:ruled?_t('for %(which)s',{which:softLower(w.scope_summary||_t('matching records'))}):_t('for everyone')};
 }
 function whenSentence(){
- const s=whenWords(),say=`When ${s.subject} ${s.verb}${s.scope?', '+s.scope:''}`;
- return `<section class="when-card" id="when-card"><button class="when-say" data-act="node" data-id="trigger" aria-label="${esc(say)}. Change when this starts."><span class="when-word">When</span> <span class="when-chip">${esc(s.subject)}</span> <span class="when-chip">${esc(s.verb)}</span>${s.scope?`<span class="when-comma">,</span> <span class="when-chip">${esc(s.scope)}</span>`:''}</button>${btn('node','Change','design','small','data-id="trigger" aria-label="Change when this workflow starts"')}</section>`;
+ const s=whenWords(),say=_t('When %(who)s %(what)s',{who:s.subject,what:s.verb})+(s.scope?', '+s.scope:'');
+ return `<section class="when-card" id="when-card"><button class="when-say" data-act="node" data-id="trigger" aria-label="${esc(say)}. ${_t('Change when this starts.')}"><span class="when-word">${_t('When')}</span> <span class="when-chip">${esc(s.subject)}</span> <span class="when-chip">${esc(s.verb)}</span>${s.scope?`<span class="when-comma">,</span> <span class="when-chip">${esc(s.scope)}</span>`:''}</button>${btn('node',_t('Change'),'design','small','data-id="trigger" aria-label="'+_t('Change when this workflow starts')+'"')}</section>`;
 }
 function refreshWhen(){const el=$('#when-card');if(el&&!el.contains(document.activeElement))el.outerHTML=whenSentence();}
 
@@ -165,9 +168,9 @@ function byStage(d){
  const columns=d.stages.map((st,i)=>{
   const info=sectionInfo(i,d),ids=d.order.filter(k=>byId(d,k).stage===i),next=d.order.find(k=>byId(d,k).stage>i)||null;
   const end=ts.find(t=>t.key==='main'&&t.stage===i&&t.before===next),empty=!ids.some(k=>k!=='trigger');
-  return `<section class="stage-column kind-${info.kind}" aria-label="Stage ${i+1}: ${esc(info.name)}"><header class="column-head"><div class="stage-head"><span class="stage-number">${i+1}</span><h3>${esc(info.name)}</h3><span class="column-count" aria-label="${plural(info.steps,'step')}">${info.steps}</span></div>${sectionMeta(info,3)}</header><div class="column-body">${journeySeq(d,ts,ids,'main',i,next)}${empty?'<p class="column-empty">No steps here yet. Add one, or drag a card in.</p>':''}${end?btn('add-at','Add a step','plus','column-add',`data-id="${esc(end.id)}"`):''}</div></section>`;
+  return `<section class="stage-column kind-${info.kind}" aria-label="${_t('Stage %(n)s: %(name)s',{n:i+1,name:esc(info.name)})}"><header class="column-head"><div class="stage-head"><span class="stage-number">${i+1}</span><h3>${esc(info.name)}</h3><span class="column-count" aria-label="${_t.n(info.steps,'%(n)s step','%(n)s steps')}">${info.steps}</span></div>${sectionMeta(info,3)}</header><div class="column-body">${journeySeq(d,ts,ids,'main',i,next)}${empty?`<p class="column-empty">${_t('No steps here yet. Add one, or drag a card in.')}</p>`:''}${end?btn('add-at',_t('Add a step'),'plus','column-add',`data-id="${esc(end.id)}"`):''}</div></section>`;
  }).join('');
- return `<div class="stage-board">${columns}<button class="stage-column add-stage-column" data-act="stages" data-at="end">${svgIcon('plus')}<strong>Add a stage</strong><small>${isRecordFlow()&&!ownRows()?`Your own, or one of ${esc(possessive(areaName()))}`:'Give your steps a new place'}</small></button></div>${exitsNote()}`;
+ return `<div class="stage-board">${columns}<button class="stage-column add-stage-column" data-act="stages" data-at="end">${svgIcon('plus')}<strong>${_t('Add a stage')}</strong><small>${isRecordFlow()&&!ownRows()?_t('Your own, or one of %(areas)s',{areas:esc(possessive(areaName()))}):_t('Give your steps a new place')}</small></button></div>${exitsNote()}`;
 }
 
 /* ----------------------------------------------------- section changes */
@@ -229,7 +232,7 @@ async function moveSection(from,to){
  const order=[...d.stages.keys()];order.splice(to,0,order.splice(from,1)[0]);
  const next=order.map(i=>d.stages[i]);
  const cores=next.filter(s=>s.bind?.kind==='core').map(s=>catIndex(s.bind));
- if(cores.some((c,i)=>i&&c<cores[i-1]))throw Error(`${possessive(areaName())} stages keep their own order.`);
+ if(cores.some((c,i)=>i&&c<cores[i-1]))throw Error(_t('%(areas)s stages keep their own order.',{areas:possessive(areaName())}));
  const anchors={},said=[];
  if(isRecordFlow()){
   const nearest=(arr,idx)=>{for(let k=idx-1;k>=0;k--)if(arr[k].bind?.kind==='core')return String(arr[k].bind.value);return null;};
@@ -237,13 +240,13 @@ async function moveSection(from,to){
    if(s.bind?.kind!=='yours')return;
    const before=nearest(d.stages,i),after=nearest(next,order.indexOf(i));
    if(before===after)return;
-   if(after===null)throw Error(`Your own stages come after one of ${possessive(areaName())} stages.`);
-   anchors[s.bind.id]=after;said.push(`“${catRow(s.bind)?.name||s.name}” will now count as ${catalogue().find(c=>c.id==='core:'+after)?.name||after}.`);
+   if(after===null)throw Error(_t('Your own stages come after one of %(areas)s stages.',{areas:possessive(areaName())}));
+   anchors[s.bind.id]=after;said.push(_t('“%(stage)s” will now count as %(other)s.',{stage:catRow(s.bind)?.name||s.name,other:catalogue().find(c=>c.id==='core:'+after)?.name||after}));
   });
  }
  const want=desiredOrder(next,anchors),pos=b=>want.indexOf(b.kind==='core'?String(b.value):b.id);
  const bound=next.filter(s=>s.bind&&catIndex(s.bind)>=0).map(s=>pos(s.bind));
- if(bound.some((p,i)=>i&&p<bound[i-1]))throw Error(`Those stages follow different ${areaName()} stages, so they keep this order.`);
+ if(bound.some((p,i)=>i&&p<bound[i-1]))throw Error(_t('Those stages follow different %(area)s stages, so they keep this order.',{area:areaName()}));
  await syncOrder(next,anchors);
  mutate(()=>{renumberSections(S.w.definition,i=>order.indexOf(i));S.w.definition.stages=next;},false);
  S.sheetFocus=`[data-row="${to}"] [data-act="${S.sheetMoveAct||'section-up'}"]`;
@@ -265,7 +268,7 @@ async function realignStages(){
   if(x.bind?.kind!=='yours')return;
   let near=null;for(let k=i-1;k>=0;k--)if(sections[k].bind?.kind==='core'){near=String(sections[k].bind.value);break;}
   const row=catRow(x.bind);
-  if(near!==null&&row&&String(row.anchor)!==near){anchors[x.bind.id]=near;said.push(`“${row.name}” counts as ${catalogue().find(c=>c.id==='core:'+near)?.name||near} again.`);}
+  if(near!==null&&row&&String(row.anchor)!==near){anchors[x.bind.id]=near;said.push(_t('“%(stage)s” counts as %(other)s again.',{stage:row.name,other:catalogue().find(c=>c.id==='core:'+near)?.name||near}));}
  });
  if(!said.length)return;
  try{await syncOrder(sections,anchors);notify(said.join(' '));loadExisting();}
@@ -305,66 +308,66 @@ function newStageForm(at,stage=null){
   anchor:stage?String(stage.anchor||''):anchor??(()=>{const pick=areaAdds()?choices.filter(c=>openStage(c.key)):choices;return pick.at(-1)?String(pick.at(-1).key):null;})(),anchorFixed:!!stage||anchor!==null,error:''};
 }
 function sheetIntro(){
- if(!isRecordFlow())return 'This is your own process, so every stage is yours.';
- if(areaAdds())return `${contract().label||'Record'} stages belong to ${areaName()}. A stage you add here is made in ${areaName()}, so it also shows on the ${areaName()} board.`;
- if(ownRows())return `${contract().label||'Record'} stages belong to ${areaName()}. Here you can use them and group steps under headings.`;
- if(!catalogue().some(s=>s.kind==='core'))return `${contract().label||'These'} records have no stages of their own, so this workflow groups its steps under headings.`;
- return `Stages with a lock belong to ${areaName()}. You can add your own between them, here, with no set-up by anyone else.`;
+ if(!isRecordFlow())return _t('This is your own process, so every stage is yours.');
+ if(areaAdds())return _t('%(record)s stages belong to %(area)s. A stage you add here is made in %(area)s, so it also shows on the %(area)s board.',{record:contract().label||_t('Record'),area:areaName()});
+ if(ownRows())return _t('%(record)s stages belong to %(area)s. Here you can use them and group steps under headings.',{record:contract().label||_t('Record'),area:areaName()});
+ if(!catalogue().some(s=>s.kind==='core'))return contract().label?_t('%(record)s records have no stages of their own, so this workflow groups its steps under headings.',{record:contract().label}):_t('These records have no stages of their own, so this workflow groups its steps under headings.');
+ return _t('Stages with a lock belong to %(area)s. You can add your own between them, here, with no set-up by anyone else.',{area:areaName()});
 }
-const TARGETS=[[0,'No target'],[24,'1 day'],[72,'3 days'],[168,'1 week'],[336,'2 weeks']];
+const TARGETS=[[0,_t('No target')],[24,_t('1 day')],[72,_t('3 days')],[168,_t('1 week')],[336,_t('2 weeks')]];
 function stageForm(){
  const f=S.stageForm,sections=S.w.definition.stages,prev=sections[f.at-1],prevName=prev?sectionInfo(f.at-1).name:'';
  const anchorName=catalogue().find(s=>s.kind==='core'&&String(s.key)===String(f.anchor))?.name;
  const choices=anchorChoices(sections,f.at),canReal=f.mode==='edit'||canRealAt(f.at,f.anchorFixed?f.anchor:null);
  const radio=(name,value,current,icon,title,text)=>`<label class="choice-card"><input type="radio" name="${name}" value="${value}" data-form="${name}" ${current===value?'checked':''}><span class="choice-icon">${svgIcon(icon)}</span><span><strong>${title}</strong><small>${text}</small></span></label>`;
- const real=areaAdds()?`It is added to ${esc(areaName())}, so it shows on the ${esc(areaName())} board and in ${esc(areaName())} set-up${anchorName?`, after ${esc(anchorName)}`:''}. Rename or hide it there.`:isRecordFlow()?`People see it on the record. ${anchorName?`It sits after ${esc(anchorName)}, and ${esc(areaName())} still treats the record as ${esc(anchorName)}`:`${esc(areaName())} still treats the record as the stage before it`}, so its reports and rules keep working.`:'People see where each request is, and the work waits for it.';
- const heading=f.mode==='edit'?'':`<fieldset><legend>What is it?</legend>${canReal?radio('kind','real',f.kind,'flag',areaAdds()?`A real ${esc(areaName())} stage`:'A real stage',real):''}${radio('kind','heading',f.kind,'heading','Just a heading','Groups steps in this picture only.')}${!canReal&&!ownRows()&&isRecordFlow()&&catalogue().some(s=>s.kind==='core')?`<p class="form-note">${svgIcon('info')}<span>A real stage here must come after one of ${esc(possessive(areaName()))} stages. Add theirs first, or add it further down.</span></p>`:''}</fieldset>`;
+ const A=esc(areaName()),real=areaAdds()?(anchorName?_t('It is added to %(area)s, so it shows on the %(area)s board and in %(area)s set-up, after %(stage)s. Rename or hide it there.',{area:A,stage:esc(anchorName)}):_t('It is added to %(area)s, so it shows on the %(area)s board and in %(area)s set-up. Rename or hide it there.',{area:A})):isRecordFlow()?(anchorName?_t('People see it on the record. It sits after %(stage)s, and %(area)s still treats the record as %(stage)s, so its reports and rules keep working.',{area:A,stage:esc(anchorName)}):_t('People see it on the record. %(area)s still treats the record as the stage before it, so its reports and rules keep working.',{area:A})):_t('People see where each request is, and the work waits for it.');
+ const heading=f.mode==='edit'?'':`<fieldset><legend>${_t('What is it?')}</legend>${canReal?radio('kind','real',f.kind,'flag',areaAdds()?_t('A real %(area)s stage',{area:esc(areaName())}):_t('A real stage'),real):''}${radio('kind','heading',f.kind,'heading',_t('Just a heading'),_t('Groups steps in this picture only.'))}${!canReal&&!ownRows()&&isRecordFlow()&&catalogue().some(s=>s.kind==='core')?`<p class="form-note">${svgIcon('info')}<span>${_t('A real stage here must come after one of %(areas)s stages. Add theirs first, or add it further down.',{areas:esc(possessive(areaName()))})}</span></p>`:''}</fieldset>`;
  let more='';
  if(f.kind==='real'&&canReal&&areaAdds()){
-  if(!f.anchorFixed)more+=field(`<span id="sf-anchor-label">Which ${esc(areaName())} stage does it come after?</span>`,`<select id="sf-anchor" data-form="anchor" aria-labelledby="sf-anchor-label">${opts(choices.filter(s=>openStage(s.key)).map(s=>[String(s.key),s.name]),f.anchor,null)}</select>`);
-  more+=`<p class="form-note">${svgIcon('people')}<span>A recruiter moves candidates into it, as with every ${esc(areaName())} stage.</span></p>`;
+  if(!f.anchorFixed)more+=field(`<span id="sf-anchor-label">${_t('Which %(area)s stage does it come after?',{area:esc(areaName())})}</span>`,`<select id="sf-anchor" data-form="anchor" aria-labelledby="sf-anchor-label">${opts(choices.filter(s=>openStage(s.key)).map(s=>[String(s.key),s.name]),f.anchor,null)}</select>`);
+  more+=`<p class="form-note">${svgIcon('people')}<span>${_t('A recruiter moves candidates into it, as with every %(area)s stage.',{area:esc(areaName())})}</span></p>`;
  }else if(f.kind==='real'&&canReal){
-  if(isRecordFlow()&&!f.anchorFixed)more+=field(`<span id="sf-anchor-label">Which ${esc(areaName())} stage does it come after?</span>`,`<select id="sf-anchor" data-form="anchor" aria-labelledby="sf-anchor-label">${opts(choices.map(s=>[String(s.key),s.name]),f.anchor,null)}</select>`);
-  const thing=isRecordFlow()?'record':'request';
-  more+=`<fieldset><legend>How does a ${thing} get here?</legend>${radio('enter','auto',f.enter,'arrow','By itself','When the steps before are finished.')}${radio('enter','person',f.enter,'people','A person moves it',`They get a “Move to” button on the ${thing}.`)}${isRecordFlow()?radio('enter','rule',f.enter,'branch','When a rule is true','For example: the amount is over a limit.'):''}</fieldset>`;
-  if(f.enter==='person')more+=`<div class="form-sub">${ownerControl('stageForm.owner',f.owner,'Who may move it',!isRecordFlow())}</div>`;
-  if(f.enter==='rule')more+=`<div class="form-sub"><label>The rule</label>${filterEditor(f.rule,'stageForm.rule',S.w.metadata.fields)}</div>`;
-  const rows=TARGETS.some(t=>t[0]===f.target)?TARGETS:[...TARGETS,[f.target,plural(f.target,'hour')]];
-  more+=field('<span id="sf-target-label">Target time in this stage</span>',`<select id="sf-target" data-form="target" aria-labelledby="sf-target-label">${opts(rows,f.target,null)}</select>`,'Shown beside the stage. Late work is chased by the approval reminders, never twice.');
+  if(isRecordFlow()&&!f.anchorFixed)more+=field(`<span id="sf-anchor-label">${_t('Which %(area)s stage does it come after?',{area:esc(areaName())})}</span>`,`<select id="sf-anchor" data-form="anchor" aria-labelledby="sf-anchor-label">${opts(choices.map(s=>[String(s.key),s.name]),f.anchor,null)}</select>`);
+  const rec=isRecordFlow();
+  more+=`<fieldset><legend>${rec?_t('How does a record get here?'):_t('How does a request get here?')}</legend>${radio('enter','auto',f.enter,'arrow',_t('By itself'),_t('When the steps before are finished.'))}${radio('enter','person',f.enter,'people',_t('A person moves it'),rec?_t('They get a “Move to” button on the record.'):_t('They get a “Move to” button on the request.'))}${rec?radio('enter','rule',f.enter,'branch',_t('When a rule is true'),_t('For example: the amount is over a limit.')):''}</fieldset>`;
+  if(f.enter==='person')more+=`<div class="form-sub">${ownerControl('stageForm.owner',f.owner,_t('Who may move it'),!isRecordFlow())}</div>`;
+  if(f.enter==='rule')more+=`<div class="form-sub"><label>${_t('The rule')}</label>${filterEditor(f.rule,'stageForm.rule',S.w.metadata.fields)}</div>`;
+  const rows=TARGETS.some(t=>t[0]===f.target)?TARGETS:[...TARGETS,[f.target,_t.n(f.target,'%(n)s hour','%(n)s hours')]];
+  more+=field(`<span id="sf-target-label">${_t('Target time in this stage')}</span>`,`<select id="sf-target" data-form="target" aria-labelledby="sf-target-label">${opts(rows,f.target,null)}</select>`,_t('Shown beside the stage. Late work is chased by the approval reminders, never twice.'));
  }
- const title=f.mode==='edit'?`Change “${esc(f.name)}”`:prevName?`New stage after “${esc(prevName)}”`:'New stage at the start';
- return `<li class="stage-form-wrap"><div class="stage-form" role="group" aria-labelledby="sf-title"><h3 id="sf-title">${title}</h3>${field('<span id="sf-name-label">Name</span>',`<input id="sf-name" data-form="name" maxlength="40" value="${esc(f.name)}" placeholder="For example: Payment scheduled" aria-labelledby="sf-name-label" autocomplete="off">`)}${ownRows()&&f.kind==='heading'?`<p class="form-note">${svgIcon('lock')}<span>${esc(contract().label||'Record')} stages are managed in ${esc(areaName())}. This adds a heading.</span></p>`:''}${heading}${more}${f.error?`<p class="form-error" role="alert">${svgIcon('alert')}<span>${esc(f.error)}</span></p>`:''}<div class="row form-buttons">${btn('sf-cancel','Cancel','','plain')}${btn('sf-save',f.mode==='edit'?'Save changes':f.kind==='heading'?'Add this heading':'Add this stage','check','primary')}</div></div></li>`;
+ const title=f.mode==='edit'?_t('Change “%(stage)s”',{stage:esc(f.name)}):prevName?_t('New stage after “%(stage)s”',{stage:esc(prevName)}):_t('New stage at the start');
+ return `<li class="stage-form-wrap"><div class="stage-form" role="group" aria-labelledby="sf-title"><h3 id="sf-title">${title}</h3>${field(`<span id="sf-name-label">${_t('Name')}</span>`,`<input id="sf-name" data-form="name" maxlength="40" value="${esc(f.name)}" placeholder="${_t('For example: Payment scheduled')}" aria-labelledby="sf-name-label" autocomplete="off">`)}${ownRows()&&f.kind==='heading'?`<p class="form-note">${svgIcon('lock')}<span>${_t('%(record)s stages are managed in %(area)s. This adds a heading.',{record:esc(contract().label||_t('Record')),area:esc(areaName())})}</span></p>`:''}${heading}${more}${f.error?`<p class="form-error" role="alert">${svgIcon('alert')}<span>${esc(f.error)}</span></p>`:''}<div class="row form-buttons">${btn('sf-cancel',_t('Cancel'),'','plain')}${btn('sf-save',f.mode==='edit'?_t('Save changes'):f.kind==='heading'?_t('Add this heading'):_t('Add this stage'),'check','primary')}</div></div></li>`;
 }
 function stageRow(i){
  const d=S.w.definition,info=sectionInfo(i),n=d.stages.length,row=info.row;
- const steps=plural(info.steps,'step');
- const facts=[info.enters?`Gets here when: ${esc(softLower(info.enters))}`:'',info.steps?steps:'No steps yet'];
- if(info.kind==='yours'&&row.target_hours)facts.push(`Target ${esc(TARGETS.find(t=>t[0]===row.target_hours)?.[1]||plural(row.target_hours,'hour'))}`);
- if(info.kind==='yours'&&row.count)facts.push(`<strong class="here-now">${row.count===1?'1 record is':row.count+' records are'} here now</strong>`);
+ const steps=_t.n(info.steps,'%(n)s step','%(n)s steps');
+ const facts=[info.enters?_t('Gets here when: %(how)s',{how:esc(softLower(info.enters))}):'',info.steps?steps:_t('No steps yet')];
+ if(info.kind==='yours'&&row.target_hours)facts.push(_t('Target %(time)s',{time:esc(TARGETS.find(t=>t[0]===row.target_hours)?.[1]||_t.n(row.target_hours,'%(n)s hour','%(n)s hours'))}));
+ if(info.kind==='yours'&&row.count)facts.push(`<strong class="here-now">${_t.n(row.count,'%(n)s record is here now','%(n)s records are here now')}</strong>`);
  const owner=areaOwner(),act=[];
  if(info.kind==='area'){
-  if(row.renamable)act.push(btn('shared-rename','Rename','design','small plain',`data-index="${i}"`));
-  if(row.removable)act.push(btn('area-stage-remove',`Remove from ${esc(areaName())}`,'trash','small plain danger',`data-index="${i}"`));
-  if(owner)act.push(btn('resource',`Open in ${esc(areaName())}`,'external','small plain',`data-key="${esc(owner.key)}"`));
-  act.push(btn('section-remove','Stop using here','','small plain',`data-index="${i}"`));
+  if(row.renamable)act.push(btn('shared-rename',_t('Rename'),'design','small plain',`data-index="${i}"`));
+  if(row.removable)act.push(btn('area-stage-remove',_t('Remove from %(area)s',{area:esc(areaName())}),'trash','small plain danger',`data-index="${i}"`));
+  if(owner)act.push(btn('resource',_t('Open in %(area)s',{area:esc(areaName())}),'external','small plain',`data-key="${esc(owner.key)}"`));
+  act.push(btn('section-remove',_t('Stop using here'),'','small plain',`data-index="${i}"`));
  }else if(info.kind==='yours'){
-  act.push(btn('sf-edit','Change','design','small plain',`data-index="${i}"`));
-  act.push(btn('section-remove','Remove from this workflow','','small plain',`data-index="${i}"`));
-  act.push(btn('stage-delete','Delete for everyone','trash','small plain danger',`data-index="${i}"`));
+  act.push(btn('sf-edit',_t('Change'),'design','small plain',`data-index="${i}"`));
+  act.push(btn('section-remove',_t('Remove from this workflow'),'','small plain',`data-index="${i}"`));
+  act.push(btn('stage-delete',_t('Delete for everyone'),'trash','small plain danger',`data-index="${i}"`));
  }else{
-  act.push(btn('heading-rename','Rename','design','small plain',`data-index="${i}"`));
-  if(info.kind==='missing')act.push(btn('section-unbind','Make it a heading','heading','small plain',`data-index="${i}"`));
-  act.push(btn('section-remove','Remove','','small plain',`data-index="${i}"`));
+  act.push(btn('heading-rename',_t('Rename'),'design','small plain',`data-index="${i}"`));
+  if(info.kind==='missing')act.push(btn('section-unbind',_t('Make it a heading'),'heading','small plain',`data-index="${i}"`));
+  act.push(btn('section-remove',_t('Remove'),'','small plain',`data-index="${i}"`));
  }
- const name=S.sheetRename===i?`<input class="rename-input" data-heading-name="${i}" value="${esc(d.stages[i].name)}" maxlength="60" aria-label="Heading name">`:`<strong class="stage-row-name">${esc(info.name)}</strong>`;
- const refused=S.sheetError?.index===i?`<div class="row-blocked is-error" role="alert">${svgIcon('alert')}<span>${esc(S.sheetError.text)}</span>${btn('sheet-error-close','','close','small plain','aria-label="Dismiss"')}</div>`:'';
- const blocked=S.sheetBlocked===i?`<div class="row-blocked" role="alert">${svgIcon('info')}<span>${info.steps===1?'Move its step first.':`Move its ${steps} first.`}</span>${btn('section-move-steps',`Move ${info.steps===1?'it':'them'} to “${esc(sectionInfo(i?i-1:1).name)}”`,'arrow','small',`data-index="${i}"`)}</div>`:'';
- return `<li class="stage-row kind-${info.kind}" data-row="${i}"><div class="stage-row-main"><span class="row-grip" data-section-drag="${i}" title="Drag to reorder" aria-hidden="true">${svgIcon('grip')}</span><span class="stage-number">${i+1}</span><div class="grow"><div class="row wrap stage-row-title">${name}${stageTag(info)}</div><p class="stage-row-facts">${facts.filter(Boolean).join(' · ')}</p></div><div class="row-move">${btn('section-up','','up','small plain',`data-index="${i}" aria-label="Move ${esc(info.name)} earlier" ${i===0?'disabled':''}`)}${btn('section-down','','down','small plain',`data-index="${i}" aria-label="Move ${esc(info.name)} later" ${i===n-1?'disabled':''}`)}</div></div><div class="row wrap stage-row-actions">${act.join('')}</div>${blocked}${refused}</li>`;
+ const name=S.sheetRename===i?`<input class="rename-input" data-heading-name="${i}" value="${esc(d.stages[i].name)}" maxlength="60" aria-label="${_t('Heading name')}">`:`<strong class="stage-row-name">${esc(info.name)}</strong>`;
+ const refused=S.sheetError?.index===i?`<div class="row-blocked is-error" role="alert">${svgIcon('alert')}<span>${esc(S.sheetError.text)}</span>${btn('sheet-error-close','','close','small plain','aria-label="'+_t('Dismiss')+'"')}</div>`:'';
+ const blocked=S.sheetBlocked===i?`<div class="row-blocked" role="alert">${svgIcon('info')}<span>${info.steps===1?_t('Move its step first.'):_t('Move its %(steps)s first.',{steps})}</span>${btn('section-move-steps',info.steps===1?_t('Move it to “%(stage)s”',{stage:esc(sectionInfo(i?i-1:1).name)}):_t('Move them to “%(stage)s”',{stage:esc(sectionInfo(i?i-1:1).name)}),'arrow','small',`data-index="${i}"`)}</div>`:'';
+ return `<li class="stage-row kind-${info.kind}" data-row="${i}"><div class="stage-row-main"><span class="row-grip" data-section-drag="${i}" title="${_t('Drag to reorder')}" aria-hidden="true">${svgIcon('grip')}</span><span class="stage-number">${i+1}</span><div class="grow"><div class="row wrap stage-row-title">${name}${stageTag(info)}</div><p class="stage-row-facts">${facts.filter(Boolean).join(' · ')}</p></div><div class="row-move">${btn('section-up','','up','small plain',`data-index="${i}" aria-label="${_t('Move %(stage)s earlier',{stage:esc(info.name)})}" ${i===0?'disabled':''}`)}${btn('section-down','','down','small plain',`data-index="${i}" aria-label="${_t('Move %(stage)s later',{stage:esc(info.name)})}" ${i===n-1?'disabled':''}`)}</div></div><div class="row wrap stage-row-actions">${act.join('')}</div>${blocked}${refused}</li>`;
 }
 function addSlot(at){
  if(S.stageForm&&S.stageForm.mode==='add'&&S.stageForm.at===at)return stageForm();
  const last=at===S.w.definition.stages.length;
- return `<li class="add-slot" data-section-slot="${at}">${btn('sf-open',last?'Add a stage at the end':'Add a stage here','plus','small plain',`data-at="${at}"`)}</li>`;
+ return `<li class="add-slot" data-section-slot="${at}">${btn('sf-open',last?_t('Add a stage at the end'):_t('Add a stage here'),'plus','small plain',`data-at="${at}"`)}</li>`;
 }
 function notUsedStrip(){
  if(!isRecordFlow())return '';
@@ -372,11 +375,11 @@ function notUsedStrip(){
  const free=catalogue().filter(s=>!s.exit&&!used.has(s.id));
  if(!free.length)return '';
  const core=free.filter(s=>s.kind==='core');
- return `<section class="not-used"><div class="row between wrap"><h3>Not used yet</h3>${core.length>1?btn('use-all','Use all of them','plus','small'):''}</div><p class="muted small">One click puts it in its place.</p><div class="row wrap">${free.map(s=>btn('use-stage',`${esc(s.name)}${s.kind==='yours'?' · your stage':''}`,s.kind==='core'?'lock':'flag','small chip-button',`data-id="${esc(s.id)}"`)).join('')}</div></section>`;
+ return `<section class="not-used"><div class="row between wrap"><h3>${_t('Not used yet')}</h3>${core.length>1?btn('use-all',_t('Use all of them'),'plus','small'):''}</div><p class="muted small">${_t('One click puts it in its place.')}</p><div class="row wrap">${free.map(s=>btn('use-stage',`${esc(s.name)}${s.kind==='yours'?' · '+_t('your stage'):''}`,s.kind==='core'?'lock':'flag','small chip-button',`data-id="${esc(s.id)}"`)).join('')}</div></section>`;
 }
 function anyTime(){
  const rows=existingRows().filter(e=>e.stage===null||e.stage===undefined);
- return rows.length?`<section class="any-time"><h3>Any time</h3><p class="muted small">Not tied to one stage.</p>${rows.map(effectRow).join('')}</section>`:'';
+ return rows.length?`<section class="any-time"><h3>${_t('Any time')}</h3><p class="muted small">${_t('Not tied to one stage.')}</p>${rows.map(effectRow).join('')}</section>`:'';
 }
 function focusKey(el){
  if(el.id)return '#'+CSS.escape(el.id);
@@ -388,16 +391,16 @@ function renderSheet(){
  const body=sheet.querySelector('.sheet-body'),top=body?.scrollTop||0,active=document.activeElement,keep=active&&sheet.contains(active)?focusKey(active):'';
  const d=S.w.definition,hiring=ownRows()&&areaOwner();
  const rows=d.stages.map((_,i)=>(S.stageForm?.mode==='edit'&&S.stageForm.index===i?stageForm():stageRow(i))+addSlot(i+1)).join('');
- sheet.innerHTML=`<header class="sheet-head"><div><div class="eyebrow">${esc(S.w.definition.name)}</div><h2 id="sheet-title">Stages</h2></div>${btn('sheet-done','Done','check','sheet-done')}</header><div class="sheet-body"><p class="sheet-intro">${esc(sheetIntro())}</p>${hiring?`<div class="banner sheet-banner">${svgIcon('lock')}<span>${esc(contract().label||'Record')} stages are managed in ${esc(areaName())}.</span>${btn('resource',`Open ${esc(areaName())} set-up`,'external','small',`data-key="${esc(hiring.key)}"`)}</div>`:''}${existingProblem()}<ol class="stage-list">${rows}</ol>${notUsedStrip()}${anyTime()}${exitsNote()}</div>`;
+ sheet.innerHTML=`<header class="sheet-head"><div><div class="eyebrow">${esc(S.w.definition.name)}</div><h2 id="sheet-title">${_t('Stages')}</h2></div>${btn('sheet-done',_t('Done'),'check','sheet-done')}</header><div class="sheet-body"><p class="sheet-intro">${esc(sheetIntro())}</p>${hiring?`<div class="banner sheet-banner">${svgIcon('lock')}<span>${_t('%(record)s stages are managed in %(area)s.',{record:esc(contract().label||_t('Record')),area:esc(areaName())})}</span>${btn('resource',_t('Open %(area)s set-up',{area:esc(areaName())}),'external','small',`data-key="${esc(hiring.key)}"`)}</div>`:''}${existingProblem()}<ol class="stage-list">${rows}</ol>${notUsedStrip()}${anyTime()}${exitsNote()}</div>`;
  const nb=sheet.querySelector('.sheet-body');if(nb)nb.scrollTop=top;
  const want=S.sheetFocus?sheet.querySelector(S.sheetFocus):keep?sheet.querySelector(keep):null;
  S.sheetFocus=null;want?.focus();
 }
 async function saveStageForm(){
  const f=S.stageForm,name=($('#sf-name')?.value??f.name).trim();f.name=name;
- if(!name){f.error='Give it a name.';renderSheet();$('#sf-name')?.focus();return;}
- if(f.kind==='real'&&f.enter==='person'&&['user','role'].includes(f.owner.kind)&&!f.owner.id){f.error='Choose who may move it.';renderSheet();return;}
- if(f.kind==='real'&&f.enter==='rule'&&!f.rule?.rules?.length){f.error='Add the rule that moves records here.';renderSheet();return;}
+ if(!name){f.error=_t('Give it a name.');renderSheet();$('#sf-name')?.focus();return;}
+ if(f.kind==='real'&&f.enter==='person'&&['user','role'].includes(f.owner.kind)&&!f.owner.id){f.error=_t('Choose who may move it.');renderSheet();return;}
+ if(f.kind==='real'&&f.enter==='rule'&&!f.rule?.rules?.length){f.error=_t('Add the rule that moves records here.');renderSheet();return;}
  const values={name,enter:f.enter,target_hours:Number(f.target)||0};
  if(f.enter==='person')values.enter_owner=f.owner;
  if(f.enter==='rule')values.enter_rule=f.rule;
@@ -406,13 +409,13 @@ async function saveStageForm(){
   if(f.mode==='edit'){
    S.w.metadata.stage_catalogue=await rpc('stage_update',[f.stageId,values]);
    const i=f.index;if(S.w.definition.stages[i].name!==name)mutate(()=>{S.w.definition.stages[i].name=name;},false);
-   S.stageForm=null;S.sheetFocus=`[data-row="${i}"] [data-act="sf-edit"]`;notify(`“${name}” is saved.`);
+   S.stageForm=null;S.sheetFocus=`[data-row="${i}"] [data-act="sf-edit"]`;notify(_t('“%(stage)s” is saved.',{stage:name}));
   }else if(f.kind==='real'&&areaAdds()&&canRealAt(f.at,f.anchorFixed?f.anchor:null)){
    const cat=await rpc('stage_add_area',[model,name,f.anchor]);S.w.metadata.stage_catalogue=cat;
    const key=cat.added?.key,made=catalogue().find(s=>s.kind==='core'&&String(s.key)===String(key));
    mutate(()=>insertSection(S.w.definition,f.at,{name:made?.name||name,bind:{kind:'core',value:key}}),false);
    S.stageForm=null;S.sheetFocus=`[data-row="${f.at}"] [data-act="section-remove"]`;S.flash=f.at;
-   notify(`“${made?.name||name}” is added to ${areaName()}. It shows on the ${areaName()} board too.`);
+   notify(_t('“%(stage)s” is added to %(area)s. It shows on the %(area)s board too.',{stage:made?.name||name,area:areaName()}));
    loadExisting();
   }else if(f.kind==='heading'||!canRealAt(f.at,f.anchorFixed?f.anchor:null)){
    mutate(()=>insertSection(S.w.definition,f.at,{name}),false);
@@ -425,7 +428,7 @@ async function saveStageForm(){
    try{await syncOrder(next);}catch(e){notify(e.message,true);}
    mutate(()=>insertSection(S.w.definition,f.at,{name:made.name,bind:{kind:'yours',id:made.key}}),false);
    S.stageForm=null;S.sheetFocus=`[data-row="${f.at}"] [data-act="sf-edit"]`;S.flash=f.at;
-   notify(model?`“${made.name}” added. It counts as ${made.counts_as} in ${areaName()}.`:`“${made.name}” added.`);
+   notify(model?_t('“%(stage)s” added. It counts as %(other)s in %(area)s.',{stage:made.name,other:made.counts_as,area:areaName()}):_t('“%(stage)s” added.',{stage:made.name}));
    loadExisting();
   }
  }catch(e){f.error=e.message;renderSheet();return;}
@@ -447,11 +450,11 @@ async function startWithOwnStages(){
 }
 async function offerOwnStages(model,holder){
  if(!holder)return;holder.innerHTML='';if(!model)return;
- holder.innerHTML='<p class="muted small own-stages-wait">Checking the stages these records already have…</p>';
+ holder.innerHTML='<p class="muted small own-stages-wait">'+_t('Checking the stages these records already have…')+'</p>';
  try{
   const c=await rpc('stage_catalogue',[model]),core=c.stages.filter(s=>s.kind==='core'&&!s.exit);
   if(!holder.isConnected)return;
-  holder.innerHTML=c.source==='declared'&&core.length?`<label class="check own-stages"><input type="checkbox" id="own-stages" checked> Start with the ${esc(possessive(lowerFirst(c.label)))} own stages</label><p class="own-stages-preview">${core.map(s=>`<span>${esc(s.name)}</span>`).join(svgIcon('chevron'))}</p>`:'';
+  holder.innerHTML=c.source==='declared'&&core.length?`<label class="check own-stages"><input type="checkbox" id="own-stages" checked> ${_t('Start with the %(record)s own stages',{record:esc(possessive(lowerFirst(c.label)))})}</label><p class="own-stages-preview">${core.map(s=>`<span>${esc(s.name)}</span>`).join(svgIcon('chevron'))}</p>`:'';
  }catch(e){if(holder.isConnected)holder.innerHTML='';}
 }
 
@@ -465,7 +468,7 @@ async function stageAction(name,el){
  }
  if(name==='sheet-done'){closeSheet();return true;}
  if(name==='existing-retry'){await loadExisting();return true;}
- if(name==='already-pop'){const info=sectionInfo(Number(el.dataset.index));openPopover(el,`Already happens in ${info.name}`,info.effects.map(effectRow).join(''));return true;}
+ if(name==='already-pop'){const info=sectionInfo(Number(el.dataset.index));openPopover(el,_t('Already happens in %(stage)s',{stage:info.name}),info.effects.map(effectRow).join(''));return true;}
  if(name==='popover-close'){closePopover();return true;}
  if(name==='open-workflow'){closeSheet();closePopover(false);await openWorkflow(el.dataset.id);return true;}
  if(name==='sf-open'){S.stageForm=newStageForm(Number(el.dataset.at));S.sheetBlocked=null;S.sheetFocus='#sf-name';renderSheet();return true;}
@@ -478,22 +481,22 @@ async function stageAction(name,el){
  if(name==='section-remove'){
   const info=sectionInfo(i);
   if(info.steps){S.sheetBlocked=i;S.sheetFocus='.row-blocked button';renderSheet();return true;}
-  if(d.stages.length<2){notify('Keep at least one stage.',true);return true;}
-  if(filtersUse(d,i)){notify('Update filters that use this stage before removing it.',true);return true;}
+  if(d.stages.length<2){notify(_t('Keep at least one stage.'),true);return true;}
+  if(filtersUse(d,i)){notify(_t('Update filters that use this stage before removing it.'),true);return true;}
   mutate(()=>removeSection(S.w.definition,i),false);
-  S.sheetFocus=`[data-section-slot="${i}"] button`;refreshWork();renderSheet();notify(`“${info.name}” is no longer used here. Undo is available.`);return true;
+  S.sheetFocus=`[data-section-slot="${i}"] button`;refreshWork();renderSheet();notify(_t('“%(stage)s” is no longer used here. Undo is available.',{stage:info.name}));return true;
  }
  if(name==='section-move-steps'){
   const to=i?i-1:1,target=sectionInfo(to).name;
   mutate(()=>{const dd=S.w.definition;for(const n of dd.nodes)if(n.type!=='trigger'&&n.stage===i)n.stage=to;renumberSections(dd,k=>k);},false);
-  S.sheetBlocked=null;S.sheetFocus=`[data-row="${i}"] [data-act="section-remove"]`;refreshWork();renderSheet();notify(`Steps moved to “${target}”. Undo is available.`);return true;
+  S.sheetBlocked=null;S.sheetFocus=`[data-row="${i}"] [data-act="section-remove"]`;refreshWork();renderSheet();notify(_t('Steps moved to “%(stage)s”. Undo is available.',{stage:target}));return true;
  }
  if(name==='section-unbind'){mutate(()=>{const s=S.w.definition.stages[i];delete s.bind;},false);refreshWork();renderSheet();return true;}
  if(name==='use-stage'){const row=catalogue().find(s=>s.id===el.dataset.id);if(row)useStages([row]);($('#sheet .not-used button')||$('#sheet .sheet-done'))?.focus();return true;}
- if(name==='use-all'){const used=new Set(d.stages.map(s=>catId(s.bind)));useStages(catalogue().filter(s=>s.kind==='core'&&!s.exit&&!used.has(s.id)));($('#sheet .not-used button')||$('#sheet .sheet-done'))?.focus();notify('The record’s own stages are in place. Your headings stay where they were.');return true;}
+ if(name==='use-all'){const used=new Set(d.stages.map(s=>catId(s.bind)));useStages(catalogue().filter(s=>s.kind==='core'&&!s.exit&&!used.has(s.id)));($('#sheet .not-used button')||$('#sheet .sheet-done'))?.focus();notify(_t('The record’s own stages are in place. Your headings stay where they were.'));return true;}
  if(name==='stage-delete'){
   const info=sectionInfo(i);
-  modal(`Delete “${info.name}” for everyone?`,`<p>It leaves the company’s list of stages, so no workflow can use it any more. ${info.steps?`Its ${plural(info.steps,'step')} here stay, under a heading with the same name.`:'Its place in this workflow goes too.'}</p>`,btn('close','Keep it')+btn('stage-delete-confirm','Delete for everyone','trash','danger',`data-index="${i}"`));
+  modal(_t('Delete “%(stage)s” for everyone?',{stage:info.name}),`<p>${_t('It leaves the company’s list of stages, so no workflow can use it any more.')} ${info.steps?_t('Its %(steps)s here stay, under a heading with the same name.',{steps:_t.n(info.steps,'%(n)s step','%(n)s steps')}):_t('Its place in this workflow goes too.')}</p>`,btn('close',_t('Keep it'))+btn('stage-delete-confirm',_t('Delete for everyone'),'trash','danger',`data-index="${i}"`));
   return true;
  }
  if(name==='stage-delete-confirm'){
@@ -501,12 +504,12 @@ async function stageAction(name,el){
   try{S.w.metadata.stage_catalogue=await rpc('stage_delete',[info.row.key]);}
   catch(e){S.sheetError={index:i,text:e.message};S.sheetFocus=`[data-row="${i}"] [data-act="stage-delete"]`;renderSheet();notify(e.message,true);return true;}
   mutate(()=>{const dd=S.w.definition;if(info.steps){dd.stages[i]={name:info.name};}else removeSection(dd,i);},false);
-  notify(info.steps?`“${info.name}” is deleted. Its steps here are now under a heading.`:`“${info.name}” is deleted.`);
+  notify(info.steps?_t('“%(stage)s” is deleted. Its steps here are now under a heading.',{stage:info.name}):_t('“%(stage)s” is deleted.',{stage:info.name}));
   loadExisting();refreshWork();renderSheet();return true;
  }
  if(name==='shared-rename'){
   const info=sectionInfo(i);S.renamingShared={index:i,row:info.row};
-  modal('Rename shared stage',field('<span id="shared-name-label">Stage name</span>',`<input id="shared-stage-name" value="${esc(info.name)}" maxlength="60" aria-labelledby="shared-name-label">`)+`<p class="muted">This renames the same stage everywhere in ${esc(areaName())}. Existing records keep their stage. Its behaviour and rules stay the same.</p>`,btn('close','Cancel')+btn('shared-rename-save','Save shared name','check','primary'));
+  modal(_t('Rename shared stage'),field(`<span id="shared-name-label">${_t('Stage name')}</span>`,`<input id="shared-stage-name" value="${esc(info.name)}" maxlength="60" aria-labelledby="shared-name-label">`)+`<p class="muted">${_t('This renames the same stage everywhere in %(area)s. Existing records keep their stage. Its behaviour and rules stay the same.',{area:esc(areaName())})}</p>`,btn('close',_t('Cancel'))+btn('shared-rename-save',_t('Save shared name'),'check','primary'));
   return true;
  }
  if(name==='shared-rename-save'){
@@ -519,7 +522,7 @@ async function stageAction(name,el){
  if(name==='move-record'){
   const p=S.progress;
   await rpc('move_record_stage',[p.source_model||'pb.workflow.run',p.source_model?p.source_id:p.id,Number(el.dataset.id)]);
-  notify(`Moved to ${el.dataset.name}.`);
+  notify(_t('Moved to %(stage)s.',{stage:el.dataset.name}));
   if(p.id)await action('refresh-progress');else await recordChooser(p.source_model,p.source_id);
   return true;
  }
@@ -558,24 +561,24 @@ function commitHeading(input,refocus=true){
 /* ------------------------------------------------------- record progress */
 function progressSentence(p){
  const r=p.record_stage,here=r?.current?.name;
- if(!p.id&&!p.native)return here?`No workflow has started for this record. It is at ${here}.`:'No workflow has started for this record.';
+ if(!p.id&&!p.native)return here?_t('No workflow has started for this record. It is at %(stage)s.',{stage:here}):_t('No workflow has started for this record.');
  const waiting=(p.steps||[]).find(s=>['waiting','active'].includes(s.state)&&!GROUPS.includes(byId(p.graph,s.key)?.type));
- if(waiting){const n=byId(p.graph,waiting.key);return waiting.owner?`Waiting for ${waiting.owner}: ${n?.title||'a step'}.`:`${n?.title||'Waiting'}: ${softLower(waiting.reason||'waiting')}.`;}
+ if(waiting){const n=byId(p.graph,waiting.key);return waiting.owner?_t('Waiting for %(who)s: %(step)s.',{who:waiting.owner,step:n?.title||_t('a step')}):_t('%(step)s: %(why)s.',{step:n?.title||_t('Waiting'),why:softLower(waiting.reason||_t('waiting'))});}
  if(p.gate?.reason)return p.gate.reason;
  const exit=r?.exits?.find(e=>e.here);
- if(exit&&['cancelled','done','rejected'].includes(p.state))return `Stopped: this is now ${exit.name}. Steps after that point do not run.`;
- return {done:'This workflow is finished.',cancelled:'This workflow was cancelled.',rejected:'This workflow was turned down.',held:'This workflow is on hold.',failed:'This workflow needs attention.',applied:'The approval is applied.'}[p.state]||`${status(p.state)}.`;
+ if(exit&&['cancelled','done','rejected'].includes(p.state))return _t('Stopped: this is now %(stage)s. Steps after that point do not run.',{stage:exit.name});
+ return {done:_t('This workflow is finished.'),cancelled:_t('This workflow was cancelled.'),rejected:_t('This workflow was turned down.'),held:_t('This workflow is on hold.'),failed:_t('This workflow needs attention.'),applied:_t('The approval is applied.')}[p.state]||`${status(p.state)}.`;
 }
 const TRACK_ICON={done:'check',here:'dot',later:'circle',passed:'minus',stopped:'stop'};
-const TRACK_WORDS={done:'Done',here:'Here now',later:'Later',passed:'It went past this stage',stopped:'Stopped'};
+const TRACK_WORDS={done:_t('Done'),here:_t('Here now'),later:_t('Later'),passed:_t('It went past this stage'),stopped:_t('Stopped')};
 function recordTrack(p){
  const r=p.record_stage;
  if(!r||!r.track?.length)return stageTrail(p.record_stages)+(p.native?approvalStageNote(p.record_stages):'');
- const steps=r.track.map(t=>`<li class="track-step ${t.state} kind-${t.kind}" ${t.state==='here'?'aria-current="step"':''} title="${esc(TRACK_WORDS[t.state]||'')}"><span class="track-icon">${svgIcon(TRACK_ICON[t.state]||'circle')}</span><span class="track-name"><strong>${esc(t.name)}</strong>${t.kind==='yours'&&t.counts_as?`<small>${svgIcon('flag')}counts as ${esc(t.counts_as)}</small>`:''}</span>${t.state==='here'?'<span class="here-tag">Here now</span>':`<span class="sr">${esc(TRACK_WORDS[t.state]||'')}</span>`}</li>`).join('');
- const exits=r.exits?.length?`<p class="track-exits">${svgIcon('stop')}<span>Can stop at</span>${r.exits.map(e=>`<span class="track-exit ${e.here?'here':''}">${esc(e.name)}${e.here?' · here now':''}</span>`).join('')}</p>`:'';
- const m=r.next_move,since=r.current?.since?`<small class="track-since">In ${esc(r.current.name)} since ${esc(localTime(r.current.since))}${r.current.by?` · moved by ${esc(r.current.by)}`:''}</small>`:'';
- const move=m?(m.allowed?btn('move-record',`Move to ${esc(m.name)}`,'arrow','primary',`data-id="${m.stage_id}" data-name="${esc(m.name)}"`):`<p class="track-who">${svgIcon('info')}<span>${esc(m.reason)}</span></p>`):'';
- return `<section class="record-track" aria-label="Where this record is"><div class="track-top"><p class="track-sentence">${esc(progressSentence(p))}</p>${move}</div><ol>${steps}</ol>${exits}${since}</section>${p.native?approvalStageNote(p.record_stages):''}`;
+ const steps=r.track.map(t=>`<li class="track-step ${t.state} kind-${t.kind}" ${t.state==='here'?'aria-current="step"':''} title="${esc(TRACK_WORDS[t.state]||'')}"><span class="track-icon">${svgIcon(TRACK_ICON[t.state]||'circle')}</span><span class="track-name"><strong>${esc(t.name)}</strong>${t.kind==='yours'&&t.counts_as?`<small>${svgIcon('flag')}${_t('counts as %(stage)s',{stage:esc(t.counts_as)})}</small>`:''}</span>${t.state==='here'?`<span class="here-tag">${_t('Here now')}</span>`:`<span class="sr">${esc(TRACK_WORDS[t.state]||'')}</span>`}</li>`).join('');
+ const exits=r.exits?.length?`<p class="track-exits">${svgIcon('stop')}<span>${_t('Can stop at')}</span>${r.exits.map(e=>`<span class="track-exit ${e.here?'here':''}">${esc(e.name)}${e.here?' · '+_t('here now'):''}</span>`).join('')}</p>`:'';
+ const m=r.next_move,since=r.current?.since?`<small class="track-since">${_t('In %(stage)s since %(when)s',{stage:esc(r.current.name),when:esc(localTime(r.current.since))})}${r.current.by?' · '+_t('moved by %(who)s',{who:esc(r.current.by)}):''}</small>`:'';
+ const move=m?(m.allowed?btn('move-record',_t('Move to %(stage)s',{stage:esc(m.name)}),'arrow','primary',`data-id="${m.stage_id}" data-name="${esc(m.name)}"`):`<p class="track-who">${svgIcon('info')}<span>${esc(m.reason)}</span></p>`):'';
+ return `<section class="record-track" aria-label="${_t('Where this record is')}"><div class="track-top"><p class="track-sentence">${esc(progressSentence(p))}</p>${move}</div><ol>${steps}</ol>${exits}${since}</section>${p.native?approvalStageNote(p.record_stages):''}`;
 }
 
 /* ------------------------------------------------------------- review */
@@ -584,13 +587,13 @@ function reviewAlready(r={}){
  if(!rows.length&&!others.length&&!rules.length)return S.existing?.state==='error'?existingProblem():'';
  const groups=[],seen=new Set();
  for(const s of catalogue()){const key=s.kind==='core'?String(s.key):'yours:'+s.key,hit=rows.filter(e=>e.stage!==null&&e.stage!==undefined&&String(e.stage)===key);hit.forEach(e=>seen.add(e));if(hit.length)groups.push([s.name,hit]);}
- const other=rows.filter(e=>e.stage!==null&&e.stage!==undefined&&!seen.has(e));if(other.length)groups.push(['Other stages',other]);
- const any=rows.filter(e=>e.stage===null||e.stage===undefined);if(any.length)groups.push(['Any time',any]);
+ const other=rows.filter(e=>e.stage!==null&&e.stage!==undefined&&!seen.has(e));if(other.length)groups.push([_t('Other stages'),other]);
+ const any=rows.filter(e=>e.stage===null||e.stage===undefined);if(any.length)groups.push([_t('Any time'),any]);
  /* The two older banners ("Existing automation to review", "Also active
     for these records") now live here, with one confirmation box (WF2 P3b). */
- const wfRow=w=>`<div class="already-row"><span class="already-icon">${svgIcon('flow')}</span><div class="grow"><p>${esc(w.name)}</p><div class="already-foot"><small>${esc(w.trigger_label||'')}${w.scope_summary?' · '+esc(w.scope_summary):''}</small>${btn('open-workflow','Open','external','small link',`data-id="${Number(w.id)}" aria-label="Open ${esc(w.name)}"`)}</div></div></div>`;
- const ruleRow=a=>`<div class="already-row"><span class="already-icon">${svgIcon('state')}</span><div class="grow"><p>${esc(a.name)}</p><div class="already-foot"><small>Automated rules</small></div></div></div>`;
- const extra=(others.length?`<div class="already-group"><h4>Other workflows that start for these records</h4>${others.map(wfRow).join('')}</div>`:'')+(rules.length?`<div class="already-group"><h4>Automated rules</h4>${rules.map(ruleRow).join('')}</div>`:'');
- const ack=others.length||(r.automations||[]).length?`<label class="check already-ack"><input type="checkbox" id="ack-automation"> I checked these; this workflow adds different work.</label>`:'';
- return `<section class="review-already"><h3>Already happens for these records</h3><p class="muted small">These keep running as they are. Your steps add to them.</p>${groups.map(([name,list])=>`<div class="already-group"><h4>${esc(name)}</h4>${list.map(effectRow).join('')}</div>`).join('')}${extra}${ack}</section>`;
+ const wfRow=w=>`<div class="already-row"><span class="already-icon">${svgIcon('flow')}</span><div class="grow"><p>${esc(w.name)}</p><div class="already-foot"><small>${esc(w.trigger_label||'')}${w.scope_summary?' · '+esc(w.scope_summary):''}</small>${btn('open-workflow',_t('Open'),'external','small link',`data-id="${Number(w.id)}" aria-label="${_t('Open %(what)s',{what:esc(w.name)})}"`)}</div></div></div>`;
+ const ruleRow=a=>`<div class="already-row"><span class="already-icon">${svgIcon('state')}</span><div class="grow"><p>${esc(a.name)}</p><div class="already-foot"><small>${_t('Automated rules')}</small></div></div></div>`;
+ const extra=(others.length?`<div class="already-group"><h4>${_t('Other workflows that start for these records')}</h4>${others.map(wfRow).join('')}</div>`:'')+(rules.length?`<div class="already-group"><h4>${_t('Automated rules')}</h4>${rules.map(ruleRow).join('')}</div>`:'');
+ const ack=others.length||(r.automations||[]).length?`<label class="check already-ack"><input type="checkbox" id="ack-automation"> ${_t('I checked these; this workflow adds different work.')}</label>`:'';
+ return `<section class="review-already"><h3>${_t('Already happens for these records')}</h3><p class="muted small">${_t('These keep running as they are. Your steps add to them.')}</p>${groups.map(([name,list])=>`<div class="already-group"><h4>${esc(name)}</h4>${list.map(effectRow).join('')}</div>`).join('')}${extra}${ack}</section>`;
 }
