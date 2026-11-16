@@ -199,6 +199,9 @@ export class PbVoiceBoard extends Component {
             await this.load();
             if (res.deleted) {
                 this.closeRound();
+            } else if (c.verb === "close") {
+                this.state.results = null;
+                await this.openRound({ id: r.id }, "results");
             } else {
                 await this.openRound({ id: res.id || r.id });
             }

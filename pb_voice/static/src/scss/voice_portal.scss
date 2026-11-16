@@ -25,6 +25,15 @@
     border-radius: var(--pbim-r, 14px);
 }
 .pbme.pbv, .pbmt .pbv-team {
+    // the kit's button colours are scoped to the home page; same look here
+    .pbme-btn--pri {
+        background: var(--pbim-primary, #5A4BB0); border-color: var(--pbim-primary, #5A4BB0); color: #fff;
+        &:hover { background: var(--pbim-primary-hover, #4A3D96); border-color: var(--pbim-primary-hover, #4A3D96); color: #fff; }
+    }
+    .pbme-btn--out {
+        color: var(--pbim-primary, #5A4BB0); border-color: var(--pbim-primary-light, #C9C3E8);
+        &:hover { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+    }
     .pbv-note { color: var(--pbim-muted, #64748B); font-size: 13px; margin: 0 0 10px; }
     .pbv-pill {
         display: inline-flex; align-items: center; white-space: nowrap;
@@ -88,7 +97,8 @@
     }
     .pbv-q-t {
         display: flex; gap: 10px; align-items: baseline; font-size: 15.5px; font-weight: 700;
-        color: var(--pbim-ink, #1B1733); margin: 0 0 12px; float: none; width: 100%;
+        color: var(--pbim-ink, #1B1733); margin: 0 0 12px; padding: 0; float: left; width: 100%;
+        + * { clear: both; }
     }
     .pbv-q-n {
         flex: 0 0 auto; font-size: 12px; font-weight: 800; color: var(--pbim-primary, #5A4BB0);
@@ -163,5 +173,9 @@
         display: flex; gap: 8px; align-items: center; color: var(--pbim-muted, #64748B);
         background: var(--pbim-slate-soft, #EEF1F5); border-radius: 12px; padding: 12px 14px; margin: 0;
     }
-    .pbv-team-plans { margin-top: 14px; > b { display: block; margin-bottom: 6px; } }
+    .pbv-team-plans { margin-top: 14px; > b { display: block; margin-bottom: 6px; }
+        .pbme-badge {
+            flex: 0 0 34px; height: 34px; border-radius: 10px; display: inline-grid; place-items: center;
+            background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+        } }
 }

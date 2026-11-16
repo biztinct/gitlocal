@@ -12,7 +12,8 @@ in at least one survey (``portal_templates.xml``).
 """
 import logging
 
-from odoo import api, fields, models
+from odoo import api, models
+from odoo.tools import format_date
 
 _logger = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ class PbMeHomeVoice(models.AbstractModel):
                 label=(_('A short survey is waiting') if len(waiting) == 1
                        else _('%(n)s short surveys are waiting', n=len(waiting))),
                 sub=_('Anonymous. Open until %(date)s.',
-                      date=fields.Date.to_string(first['date_end'])),
+                      date=format_date(self.env, first['date_end'])),
                 icon='heart', tone='pink',
                 sentence=_('Tell us how it is going. It is anonymous.'))
         try:

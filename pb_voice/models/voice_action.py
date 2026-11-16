@@ -8,6 +8,7 @@ standard to-do and, on My Payobook, by a "Needs you" row while it is open.
 """
 
 from odoo import api, fields, models
+from odoo.tools import format_date
 from odoo.exceptions import AccessError, UserError
 
 from .voice_common import ACTION_STATES, THEMES
@@ -95,6 +96,7 @@ class PbVoiceAction(models.Model):
             'theme_label': themes.get(rec.theme, ''),
             'owner': rec.owner_id.name or '', 'owner_id': rec.owner_id.id,
             'date_due': fields.Date.to_string(rec.date_due) if rec.date_due else '',
+            'date_due_label': format_date(self.env, rec.date_due) if rec.date_due else '',
             'state': rec.state, 'state_label': states.get(rec.state, ''),
             'progress': rec.progress or '',
             'round': rec.round_id.name or '',

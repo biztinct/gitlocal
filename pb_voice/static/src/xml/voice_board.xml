@@ -111,7 +111,8 @@
                   <section class="pbvo-hero">
                     <div class="pbvo-hero-cell"><span class="pbvo-k">Asked</span><b t-esc="R.state === 'draft' ? R.who.asked : R.invited"/></div>
                     <div class="pbvo-hero-cell"><span class="pbvo-k">Answered</span><b t-esc="R.state === 'draft' ? '-' : R.answered"/></div>
-                    <div class="pbvo-hero-cell"><span class="pbvo-k">Closes</span><b class="sm" t-esc="R.date_end"/></div>
+                    <div t-if="R.state === 'closed'" class="pbvo-hero-cell"><span class="pbvo-k">Closed</span><b class="sm" t-esc="R.date_closed"/></div>
+                    <div t-else="" class="pbvo-hero-cell"><span class="pbvo-k">Closes</span><b class="sm" t-esc="R.date_end"/></div>
                     <div class="pbvo-hero-cell"><span class="pbvo-k">Smallest group shown</span><b t-esc="R.floor"/></div>
                   </section>
                   <p t-if="R.state === 'open'" class="pbvo-line"><t t-out="icon('lock', 14)"/> Answers wait sealed until the survey closes, then go in all at once. Results open then.</p>
@@ -255,7 +256,7 @@
                   <ul t-if="PL.length" class="pbvo-plans">
                     <li t-foreach="PL" t-as="pl" t-key="pl.id" t-on-click="() => this.editPlan(pl)" tabindex="0">
                       <span class="pbvo-plan-ic"><t t-out="icon('listChecks', 15)"/></span>
-                      <span class="pbvo-plan-tx"><b t-esc="pl.name"/><small><t t-esc="pl.theme_label"/> · <t t-esc="pl.owner"/><t t-if="pl.date_due"> · due <t t-esc="pl.date_due"/></t></small></span>
+                      <span class="pbvo-plan-tx"><b t-esc="pl.name"/><small><t t-esc="pl.theme_label"/> · <t t-esc="pl.owner"/><t t-if="pl.date_due"> · due <t t-esc="pl.date_due_label"/></t></small></span>
                       <span class="pbim-badge pbvo-badge" t-att-class="pl.overdue ? 'is-late' : 'is-' + pl.state"><t t-if="pl.overdue">Late</t><t t-else="" t-esc="pl.state_label"/></span>
                     </li>
                   </ul>

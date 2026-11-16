@@ -145,7 +145,7 @@
                 <span class="pbv-plan-ic"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="18"/></t></span>
                 <span class="pbv-plan-body">
                   <b t-out="pl['name']"/>
-                  <span class="pbv-round-d"><t t-out="pl['theme_label']"/><t t-if="pl['round']"> · <t t-out="pl['round']"/></t><t t-if="pl['date_due']"> · due <t t-out="pl['date_due']"/></t></span>
+                  <span class="pbv-round-d"><t t-out="pl['theme_label']"/><t t-if="pl['round']"> · <t t-out="pl['round']"/></t><t t-if="pl['date_due']"> · due <t t-out="pl['date_due_label']"/></t></span>
                 </span>
                 <span t-att-class="'pbv-pill is-' + ('late' if pl['overdue'] else pl['state'])"><t t-if="pl['overdue']">Late</t><t t-else="" t-out="pl['state_label']"/></span>
               </div>
@@ -264,7 +264,7 @@
           <ul class="pbmt-list">
             <li t-foreach="pbv_team['plans']" t-as="tp" class="pbmt-row">
               <span class="pbme-badge pbme-badge--indigo" aria-hidden="true"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="16"/></t></span>
-              <span class="pbmt-row-body"><b t-out="tp['name']"/><span class="pbmt-row-d"><t t-out="tp['theme_label']"/><t t-if="tp['date_due']"> · due <t t-out="tp['date_due']"/></t></span></span>
+              <span class="pbmt-row-body"><b t-out="tp['name']"/><span class="pbmt-row-d"><t t-out="tp['theme_label']"/><t t-if="tp['date_due']"> · due <t t-out="tp['date_due_label']"/></t></span></span>
               <a class="pbme-btn pbme-btn--out" href="/my/voice#plans">Update</a>
             </li>
           </ul>

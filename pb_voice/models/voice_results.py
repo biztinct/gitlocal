@@ -29,6 +29,7 @@ import json
 import logging
 
 from odoo import api, fields, models
+from odoo.tools import format_date
 from odoo.exceptions import AccessError, UserError
 
 from .voice_common import SCALE_WORDS
@@ -106,9 +107,9 @@ class PbVoice(models.AbstractModel):
             'result_state': rnd.result_state,
             'result_label': rstates.get(rnd.result_state, ''),
             'companies': ', '.join(rnd.sudo().company_ids.mapped('name')),
-            'date_start': fields.Date.to_string(rnd.date_start) if rnd.date_start else '',
-            'date_end': fields.Date.to_string(rnd.date_end) if rnd.date_end else '',
-            'date_closed': fields.Date.to_string(rnd.date_closed) if rnd.date_closed else '',
+            'date_start': format_date(self.env, rnd.date_start) if rnd.date_start else '',
+            'date_end': format_date(self.env, rnd.date_end) if rnd.date_end else '',
+            'date_closed': format_date(self.env, rnd.date_closed) if rnd.date_closed else '',
             'questions': rnd.question_count,
             'invited': invited,
             'answered': answered,
@@ -127,7 +128,7 @@ class PbVoice(models.AbstractModel):
         row.update({
             'intro': rnd.intro or '',
             'remind': rnd.remind, 'remind_every': rnd.remind_every,
-            'last_reminded': fields.Date.to_string(rnd.last_reminded) if rnd.last_reminded else '',
+            'last_reminded': format_date(self.env, rnd.last_reminded) if rnd.last_reminded else '',
             'floor': rnd.floor,
             'questions_list': [{
                 'id': q.id, 'text': q.text, 'kind': q.kind,

@@ -67,7 +67,7 @@
     // --------------------------------------------------------- the drawer
     .pbvo-scrim { position: fixed; inset: 0; background: rgba(16, 12, 40, .25); z-index: 1040; }
     .pbvo-drawer {
-        position: fixed; top: 0; right: 0; bottom: 0; width: min(640px, 100vw); z-index: 1041;
+        position: fixed; top: 0; right: 0; bottom: 0; width: 640px; max-width: 100vw; z-index: 1041;
         background: var(--pbim-bg, #F7F7FB); box-shadow: -12px 0 40px rgba(16, 12, 40, .15);
         display: flex; flex-direction: column; overflow: hidden;
         &.is-busy { opacity: .85; }
@@ -119,6 +119,12 @@
     // --------------------------------------------------------- results
     .pbvo-res-bar { display: flex; gap: 10px; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
     .pbvo-pick { display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; }
+    select.pbim-input, input.pbim-input {
+        width: 100%; min-height: 36px; padding: 6px 10px; font: inherit; font-size: 13.5px;
+        border: 1px solid var(--pbvo-line); border-radius: 10px; background: var(--pbim-surface, #fff);
+        color: var(--pbvo-ink);
+        &:focus { outline: 2px solid var(--pbvo-primary); outline-offset: 1px; border-color: var(--pbvo-primary); }
+    }
     .pbvo-themes, .pbvo-dist { list-style: none; padding: 0; margin: 0;
         li { display: grid; grid-template-columns: minmax(110px, 1fr) 2fr 44px auto; gap: 10px; align-items: center;
              padding: 5px 0; font-size: 13px; }

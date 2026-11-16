@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 08:05+0000\n"
-"PO-Revision-Date: 2026-11-16 08:05+0000\n"
+"POT-Creation-Date: 2026-11-16 08:34+0000\n"
+"PO-Revision-Date: 2026-11-16 08:34+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -447,6 +447,8 @@ msgid ""
 msgstr ""
 
 #. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
 #: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__closed
 #: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
 msgid "Closed"
@@ -1532,6 +1534,7 @@ msgstr ""
 #. module: pb_voice
 #. odoo-python
 #: code:addons/pb_voice/models/voice_common.py:0
+#: code:addons/pb_voice/tests/test_voice_po.py:0
 msgid "Strongly agree"
 msgstr ""
 
