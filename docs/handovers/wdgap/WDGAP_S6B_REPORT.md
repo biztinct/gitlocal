@@ -1,20 +1,7 @@
 # WDGAP S6-B — Apply and ask — report
 
-> **PAUSED** (owner pause, 2026-11-16, during the PA1 / IM1 follow-up).
-> Done and committed as WIP: IM1 (no "Before they join" list for internal moves, one note +
-> "Joining your team" for the new manager) and PA1 (question log without any person,
-> `_log_access = False`; separate coded daily counter `pb.policy.quota`; HR list "Could not
-> answer" first + Excel; numbers only under 5 people), tests IM1-1/2 and PA1-1…7, vi/id PO
-> files refilled (PO gate passes locally). Versions bumped to 19.0.1.1.0.
-> **Exact next step on resume:** test database `wdgap_s6b_t` is kept (both modules installed,
-> clean dump at `scratchpad/s6b/clean.dump`). Run
-> `bash scratchpad/s6b/go.sh f1 -u pb_hiring_internal,pb_me_payai --test-enable --test-tags /pb_hiring_internal,/pb_me_payai`
-> and fix any failure (the run was stopped at test 54 of ~70, no failure reported yet); then the
-> neighbour run `/pb_hiring,/pb_me_portal,/pb_ask_hr` (compare with §4.2), a short walk of
-> Home › Policies questions list and `/my/jobs/moves`, write report sections "Follow-up PA1"
-> and "Follow-up IM1", commit, push, drop `wdgap_s6b_t`.
-
-**Status: DONE** (2026-11-16). Branch `wdgap-s6b` (from `origin/19.1` @ `abc2259b6`). Two NEW
+**Status: DONE, including the owner follow-ups PA1 and IM1** (2026-11-17; modules now
+19.0.1.1.0, 72 new tests green on a fresh install). Branch `wdgap-s6b` (from `origin/19.1` @ `abc2259b6`). Two NEW
 modules, no existing file edited. Built, tested (64 new tests, 0 failed; neighbour suites equal
 to baseline), browser-walked and self-reviewed by the S6-B builder. Not deployed. Test database
 dropped. C-1 / C-2 checked against `origin/wdgap-s8b` (S8-B report §2) and `origin/wdgap-s8c`
@@ -118,9 +105,8 @@ dropped. C-1 / C-2 checked against `origin/wdgap-s8b` (S8-B report §2) and `ori
   policy sections, and the question after the company's full employee names (+ the asker's
   own name parts and login name) are replaced by placeholders and `generic_scrub` takes out
   emails, phones, long numbers and amounts. Never the employee's name, login, email, id,
-  department, job or any record. The question's words are NOT stored: `pb.policy.question`
-  keeps who/when/outcome/which policy (for limits and counts); HR sees counts only (the log is
-  readable by administrators only).
+  department, job or any record. What is KEPT changed with owner ruling PA1 — see
+  "Follow-up PA1" (scrubbed question by day, never the person).
 - **No personal figures, no general knowledge**: nothing in the module reads a payslip, leave,
   contract or the back-office PayAI engine/data queries (tested by guard + source scan); the
   instruction forbids outside knowledge and guessing.
@@ -211,7 +197,7 @@ point) is replaced in every test; the AI account row is a local provider kind ne
 | P3 | Another company's AI account never borrowed | PASS |
 | P4 | Document-reading engine / keyed provider without key not used; own PayAI row used | PASS |
 | P5 | File read into sections at headings; search finds the right section, nothing for unrelated words | PASS |
-| P6 | Answered, names policy + section; log row without the question's words | PASS |
+| P6 | Answered, names policy + section; log row holds the scrubbed question and the section (PA1) | PASS |
 | P7 | Not in the files: no call; model `NO_ANSWER` → not found | PASS |
 | P8 | **Egress**: exact messages carry only role/content; no name, given name, manager name, email, phone, login, job, department or company; placeholders present; question + excerpt present | PASS |
 | P9 | Daily limits per person and per company, no call once reached | PASS |
@@ -268,12 +254,13 @@ Static gates: Python compiles, XML parses, no "Odoo" in any XML/PO/user string o
 - **How the manager is told**: in-app only (inbox note for staff who use the inbox + a "Needs
   you" line and `/my/jobs/moves` for everyone). No email of its own (tenant email is off on
   purpose on three databases).
-- **Internal moves skip pb_hiring's "joined" automations** (`hooks_p8` `_fire('joined')`) and the
-  "Before they join" emails still run as for any signed offer — see owner question 3.
+- **Internal moves skip pb_hiring's "joined" automations** (`hooks_p8` `_fire('joined')`) and,
+  since IM1, the "Before they join" list.
 - **PayAI search is keyword-based**, no vector store (FACTS §6.6 "simple keyword/section search
   first"). A scanned PDF has no words and cannot be published.
-- **The question's words are not stored** (privacy). HR sees counts, not questions — owner
-  question 2.
+- PA1 "no finer time than the day": the list is ordered newest day first; within a day the
+  order is the order of asking (no time is shown or stored).
+- PA1 "people who may use PayAI" is counted as active employees of the company with a login.
 - Policy answers reuse the company's existing PayAI account when it has no separate
   "Policy answers for employees" row (owner: "uses the database's existing AI account").
 
@@ -296,12 +283,101 @@ Static gates: Python compiles, XML parses, no "Odoo" in any XML/PO/user string o
 1. **Should a manager ever be able to see that someone in their team applied earlier than the
    offer?** Today: no, unless the manager is on that role's hiring team (then the employee is
    warned before applying). Nothing to decide unless you want a change.
-2. **Should HR see the questions people ask PayAI?** Today the words are not kept; HR sees only
-   how many questions were asked, answered, and not found. Keeping the words would help HR fix
-   gaps in the policies, but people may type private things into the box.
-3. **When someone moves inside the company, should the "Before they join" emails (laptop, buddy,
-   first chat) still go to them?** Today they still go, as for any signed offer. Turning them off
-   for internal moves is a small follow-up.
+2. ~~Should HR see the questions people ask PayAI?~~ **Answered by the owner (PA1)** — see
+   "Follow-up PA1".
+3. ~~Should the "Before they join" emails still go to an internal mover?~~ **Answered by the
+   owner (IM1)** — see "Follow-up IM1".
+4. **Papers request for internal movers.** When a company asks candidates for their papers (ID,
+   certificates) at offer time, an internal mover is still asked like anyone else. They already
+   gave their papers when they joined. Turn it off for internal moves too? (Small change, same
+   way as IM1.)
+
+## Follow-up PA1 — HR reads the questions, never who asked (owner ruling 2026-11-16)
+
+**Built** (`pb_me_payai` → 19.0.1.1.0):
+- `pb.policy.question` now keeps: company, **day** (no time), the question **after the existing
+  scrub** (company names → `[person-N]`, the asker's own name parts and login name, emails,
+  phones, long numbers, amounts — the same copy that may be sent; the typed original is never
+  written), outcome, whether the AI account was used, the policy file(s) and the section used.
+  It keeps NO employee, login, session, address or time of day, and `_log_access = False`
+  removes the ORM's own `create_uid` / `write_uid` / `create_date` / `write_date` columns
+  from the table altogether. No relational field points at a person model.
+- The per-person daily limit moved to a separate model `pb.policy.quota`: one row per person per
+  day keyed by an HMAC of (employee id, day) with a per-database secret
+  (`ir.config_parameter` `pb_me_payai.quota_secret`, made on first use, administrator-only),
+  fields `key / day / count` only, `_log_access = False`, rows of earlier days deleted on the
+  next question. Nothing on a question row points at the counter or back: no shared id, order
+  or timestamp. The company limit counts the day's question rows (a company is not a person).
+- Access: HR has NO direct access to either table (administrator read only). HR reads the
+  questions only through `pb.policy.desk.get_questions(which)` — `not_answered` (default),
+  `answered`, `all`; rows are `{day, question, policy, section, answered, outcome}` (no id).
+- **Small companies**: fewer than 5 active employees with a login in the company → the desk
+  shows numbers only ("Numbers only in a small company"), the list is empty and the Excel
+  route answers 404.
+- **HR screen**: Home › Policies › "Questions people asked" — quiet list, chips "Could not
+  answer" (first, default) / Answered / All, "Excel" download
+  (`/pb_me_payai/questions.xlsx?company_id=…&which=…`, HR gate, company must be one of the
+  reader's; columns Day, Question (names taken out), Policy, Section, Answered).
+- Employee privacy card now says: "The question is kept without your name, so HR can improve
+  the policies. Nothing records who asked it."
+
+**Tests** (all PASS): PA1-1 the stored row holds no name/phone/email, day only; the table has
+only `id, company_id, day, question, outcome, called_ai, section_id` columns (no ORM stamps, no
+person column) and no relational field to a person model · PA1-2 counter table columns
+`id, key, day, count` only; key is not the employee id or login; a new key each day; earlier
+days deleted; no field links questions and counter · PA1-3 an HR manager (all HR rights) gets
+AccessError on both tables and on the counter secret; the desk rows carry only the six keys; no
+chatter on question rows · PA1-4 small company: numbers only, empty list · PA1-5 "Could not
+answer" first, Answered shows policy + section · PA1-6 Excel over HTTP as HR contains the
+questions without the name/phone; an employee login and a plain staff login are refused ·
+PA1-7 small company: no file (404). P6 / P9 / P13 updated for the new storage; per-person and
+per-company limits still proven (P9).
+
+## Follow-up IM1 — no new-joiner list for an internal move (owner ruling 2026-11-16)
+
+**Seam**: the "Before they join" list (laptop, buddy, first chat — every email and reminder
+hangs off those items) is laid out by `pb.hiring.offer._lay_out_prejoin`
+(`pb_hiring/models/joining_p6.py`, called from `_on_signed` at signing). That is `pb_hiring`,
+not `pb_lifecycle`, so it is overridden from `pb_hiring_internal` by inheritance — no STOP.
+
+**Built** (`pb_hiring_internal` → 19.0.1.1.0):
+- For an internal candidate `_lay_out_prejoin` makes NO items (so no laptop/buddy/chat email or
+  reminder) and tells the NEW manager once (`_pbhi_tell_new_manager`): stamps
+  `hr.applicant.pb_new_manager_told_on` / `pb_new_manager_id`, one in-app note in their inbox
+  when they use it ("<name> is joining your team as <job> from <date>. They already work here,
+  so HR changes their job on their record."), and a "Needs you" line on their own home
+  ("<name> is joining your team") linking to `/my/jobs/moves`, which now has a "Joining your
+  team" section. A note on the offer records it for the hiring team.
+- External hires: unchanged (super is called).
+- Not changed (open question 4): the papers request at offer time; the recruiter can still add
+  a "Before they join" item by hand from the board (a person's own choice).
+
+**Tests** (all PASS): IM1-1 internal: signed offer has no list, no new-joiner email to them, the
+new manager gets exactly one note, a second call tells nobody again, the "Needs you" row shows ·
+IM1-2 external: the list has every template item exactly as before.
+
+## Follow-up runs (2026-11-16, fresh `wdgap_s6b_t`)
+
+- **New suites**: FRESH install (`-i`) of both modules with their tests on a restored clean copy:
+  **72 tests, 0 failed, 0 errors** (pb_hiring_internal 47 incl. IM1-1/2 and static gates; pb_me_payai 43 incl.
+  PA1-1…7, static gates — every page word has vi + id, no "Odoo").
+- **Neighbour suites** with both modules installed (`/pb_hiring`, `/pb_me_portal`,
+  `/pb_ask_hr`, 660 tests): 13 failed + 4 errors — **exactly the same 17 as §4.2** (10
+  pb_hiring baseline; 7 pb_me_portal / pb_ask_hr baseline). No new failure.
+- **Browser walk** (wide desktop window this time, own host name `s6b.localhost:8496` —
+  ledger S6B-8): the employee asked two questions (one with their name and phone); Home ›
+  Policies › "Questions people asked" showed "Could not answer" first with "16 Nov 2026 · Can I
+  bring my dog to the office? · Not in the policies"; Answered / All chips; "Excel" downloaded
+  a valid spreadsheet (200, xlsx); the employee's privacy card reads "The question is kept
+  without your name…"; console clean.
+- **Walk finding, fixed**: the question log took "today" in each reader's own time zone, so
+  HR in Sydney saw "0 asked today" for a question an employee asked on the same UTC day.
+  The log, the limits and the counts now use ONE calendar day (`fields.Date.today()`).
+- **origin/19.1 since my base** (Step 5, Step 8 merge, people-profile work): no change to
+  `pb_hiring`, `pb_me_portal`, `pb_ask_hr`, `pb_payroll_ai_insights` or `pb_home_hub`
+  (`git diff --stat HEAD...origin/19.1` on those folders is empty). 19.1 now carries S8-B's
+  real `pb.job.change` and S8-C's `pb_hiring_paused`: after the merge, B31 / B3b should be
+  re-run against the real ones (deploy seam note in §6).
 
 ## 8. Left for later
 
@@ -334,6 +410,13 @@ Static gates: Python compiles, XML parses, no "Odoo" in any XML/PO/user string o
   137). Long suites: `nohup bash script &` + `disown` from a scratch script, then poll a file.
 - **S6B-7**: The browser walk caught the PayAI → Ask HR hand-off putting the employee's question
   in the web address (history, server logs). Any "carry text to another page" goes in a POST body.
+- **S6B-8**: Browser cookies are per HOST, not per port: another builder signed in on
+  `127.0.0.1:8741` made every page of my server on `127.0.0.1:8496` answer 403 (their session
+  cookie, a user id from their database). Signing out there would also sign them out. Walk on a
+  host name of your own (`<phase>.localhost:<port>`; Chrome resolves `*.localhost`).
+- **S6B-9**: `fields.Date.context_today` follows each READER's time zone; a "day" stored by an
+  employee's request and counted by HR in another time zone disagree. For a shared daily
+  count/limit use one calendar day for everybody.
 - **S6B-4**: Local `-u` of 33 behind modules on the 150 MB template took 40 minutes with
   seven other builders on the Mac; dump the upgraded copy once (`pg_dump -Fc`, 18 MB) instead of
   re-upgrading.

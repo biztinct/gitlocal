@@ -283,7 +283,7 @@ class PbPolicyQuestion(models.Model):
 
     company_id = fields.Many2one('res.company', required=True, index=True)
     day = fields.Date(required=True, index=True,
-                      default=fields.Date.context_today)
+                      default=lambda self: fields.Date.today())
     question = fields.Text(string='Question (names taken out)')
     outcome = fields.Selection([
         ('answered', 'Answered from a policy'),

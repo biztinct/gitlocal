@@ -59,7 +59,7 @@ class TestPolicyQuestions(TransactionCase):
     def test_pa1_01_row_holds_no_person(self):
         self._ask(NAME_QUESTION)
         row = self._rows()[:1]
-        self.assertEqual(row.day, fields.Date.context_today(row))
+        self.assertEqual(row.day, fields.Date.today())
         for secret in ('Trần Thị DEMO Lụa', 'Lụa', '912 345 678',
                        'demo.lua.s6b@example.com'):
             self.assertNotIn(secret, row.question, 'PA1-1: %s kept' % secret)
@@ -86,7 +86,7 @@ class TestPolicyQuestions(TransactionCase):
         self.assertEqual(len(quota), 1)
         self.assertNotIn(str(self.emp.id), [quota.key])
         self.assertNotIn(self.share.login, quota.key)
-        today = fields.Date.context_today(quota)
+        today = fields.Date.today()
         other_day = self.Answer._quota_key(self.emp, fields.Date.add(today, days=-1))
         self.assertNotEqual(other_day, quota.key, 'a new code every day')
         # an old day's counter is deleted on the next question

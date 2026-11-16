@@ -184,7 +184,7 @@ class PbPolicyAnswer(models.AbstractModel):
         """Today's counter row for `employee` (made empty when absent).
         Rows of earlier days are deleted first: no history is kept."""
         Quota = self.env['pb.policy.quota'].sudo()
-        today = fields.Date.context_today(self)
+        today = fields.Date.today()  # one calendar day for everybody (PA1)
         Quota.search([('day', '<', today)]).unlink()
         key = self._quota_key(employee.sudo(), today)
         return Quota.search([('key', '=', key), ('day', '=', today)], limit=1) \
@@ -198,7 +198,7 @@ class PbPolicyAnswer(models.AbstractModel):
         day's question rows (a company is not a person)."""
         employee = employee.sudo()
         company = employee.company_id
-        today = fields.Date.context_today(self)
+        today = fields.Date.today()  # one calendar day for everybody (PA1)
         if self._quota(employee).count >= max(0, company.pb_policy_ai_person_day):
             return 'person'
         ours = self.env['pb.policy.question'].sudo().search_count(
@@ -420,7 +420,7 @@ class PbPolicyAnswer(models.AbstractModel):
     @api.model
     def _usage(self, company):
         """The counts HR sees: today and this month, per outcome."""
-        today = fields.Date.context_today(self)
+        today = fields.Date.today()  # one calendar day for everybody (PA1)
         first = today.replace(day=1)
         Log = self.env['pb.policy.question'].sudo()
         res = {}
