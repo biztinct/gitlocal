@@ -1,34 +1,5 @@
 # WDGAP S6-C — Claims paid in pay: report
 
-## PAUSED (owner pause, 2026-11-16) — Follow-up TA1
-
-**Done and pushed**: TA1 code (`98fdd7950`): settling a trip advance goes to the Head of
-pay; its own suite green (pb_trip_advance 21 tests, 0 failed); vi + id PO gate green;
-browser walk done (employee pages show "waiting for approval" in en and vi; the
-settlement sits in the Head of pay's Approvals with the right card; Approve → settled,
-taxi claim covered, 1,800,000 open to the pay run; console clean).
-Regression after TA1 (`after2`, 15 suites, 666 tests): every earlier baseline failure the
-same, plus 5 failures in the two APPROVAL suites, which had no baseline on this copy:
-`TestInboxFacade.test_u10…` (AccessError in the engine outbox via biz_access),
-`TestApprovalStaticContract.test_the_look…` (inbox.scss colour `#F8F9FC`),
-`TestP7Vietnamese.test_z06d / z06e` (other modules' Vietnamese), `TestVietnameseIsComplete
-.test_u13` (pb_approval_config's own untranslated terms). None names a trip advance.
-
-**Where I stopped**: proving those 5 are pre-existing. `scratchpad/s6c/base3.sh` (recreates
-`wdgap_s6c_t` WITHOUT any S6-C module, then runs `/pb_approval_config,/biz_approval_workflow`)
-was STARTED and STOPPED at the pause during its database set-up; `wdgap_s6c_t` is kept but
-is a half-upgraded copy — recreate it.
-
-**Exact next step on resume**:
-1. `bash scratchpad/s6c/base3.sh` (≈30 min; poll `base3.done`), then
-   `bash scratchpad/s6c/summ.sh base3`; compare its failure list with the 5 above
-   (`after2_failures.txt`). Expected: the same 5 (pre-existing) → write that into the
-   "REGRESSION_TA1" line of the Follow-up TA1 section below. If any of the 5 is NOT in
-   base3, investigate that one before anything else.
-2. Remove this PAUSED block, commit the report, push, drop `wdgap_s6c_t` and
-   `~/odoo19/data/filestore/wdgap_s6c_t` (`scratchpad/s6c/drop.sh`), plain summary to the
-   coordinator.
-
 Branch `wdgap-s6c` (from `origin/19.1` at `abc2259b6`). Three NEW modules, **no file of
 any existing module edited** (everything by inheritance). Not merged, not deployed, no
 live server touched. Owner ruling E6; FACTS §7, §8 (lane), §10 defaults.
@@ -447,7 +418,32 @@ money):
 `pb_trip_advance`: 21 tests, 0 failed (runner count 25). PO gate: pb_trip_advance 171
 entries in vi and id, 0 empty, 0 placeholder mismatch, 0 vendor word.
 
-REGRESSION_TA1
+**Existing suites after TA1** (`after2`: the 13 earlier suites + `/pb_approval_config`,
+`/biz_approval_workflow`, 666 tests in the runner): 12 failed, 19 errors = the 30 known
+baseline failures of §4b (the formula suite was not re-run: TA1 touches no payslip code)
+**plus 5 in the two approval suites**, which had no baseline on this copy. Baseline for
+those two recorded afterwards on a fresh copy with NONE of the S6-C modules installed
+(`base3`: 219 tests, 4 failed, 1 error): exactly the same 5 —
+`TestInboxFacade.test_u10…` (AccessError in the engine outbox via biz_access),
+`TestApprovalStaticContract.test_the_look…` (inbox.scss colour `#F8F9FC`),
+`TestP7Vietnamese.test_z06d` / `test_z06e` (other modules' Vietnamese),
+`TestVietnameseIsComplete.test_u13` (pb_approval_config's own untranslated terms).
+**Failure set after TA1 = baseline.** Not ours; reported for whoever owns those suites.
+
+**Browser walk (TA1)** on the local copy (`s6c.localhost:8955`, no jobs): seeded a
+settlement by the pay-team login (Hoa) with a separate Head of pay (Minh). Employee
+Expenses page and home card: "Not spent 1,800,000 ₫ · waiting for approval … nothing comes
+off your pay before that." (Vietnamese checked from the page source: "… đang chờ duyệt;
+trước đó không có gì bị trừ vào lương của bạn."); the pay run computed while waiting took
+no deduction and did not pay the trip's taxi claim. Head of pay › Approvals: "Trip cash
+advance · DEMO Linh Tran · BT/2026/0153 — Your turn — sent in by DEMO Hoa Pay", card with
+advance 3,000,000, claimed 1,200,000, not spent 1,800,000, taken back from pay, the claim
+it was spent on, and Approve / Send it back / Turn it down. Approve → advance settled,
+taxi claim covered (paid), 1,800,000 open to the next pay run. Console clean. Seen: the
+Head of pay (payroll manager without a trips role) does not see the trip on the trips
+board — the trip's own visibility rules, unchanged; Approvals is the door. The inbox
+shows the engine's "Amount" fact beside "Advance given" (same figure), as expense claims
+do.
 
 **Deploy note (unchanged tier)**: install `pb_trip_advance` at 19.0.1.1.0 with the other
 two; after install check each company's Head of pay holder (the seed takes the first
