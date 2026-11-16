@@ -2576,9 +2576,24 @@ class PbPayrunWizard(models.AbstractModel):
                 len(picked)) if kept else ''
             answer_extra = {'extra': extra_note}
 
+        # WDGAP S6-A BK2: bank details a file brings wait for a second person
+        # (pb_bank_ocr holds them during the load). Say so on the result
+        # screen, as the load's own log does. Soft: without pb_bank_ocr the
+        # key is empty and the line is not drawn.
+        bank_waiting = ''
+        Req = self.env.get('pb.bank.change.request')
+        if Req is not None and hasattr(Req, '_pb_import_sentence'):
+            try:
+                bank_waiting = Req._pb_import_sentence(
+                    'hr.payroll.import.batch,%s' % batch.id) or ''
+            except Exception:   # noqa: BLE001 — a note is never fatal
+                _logger.warning("Payrun wizard: bank-waiting note failed "
+                                "for batch %s", batch.id, exc_info=True)
+
         return {
             'ok': True,
             'batch_id': batch.id,
+            'bank_waiting': bank_waiting,
             'run_id': run.id,
             **answer_extra,
             'rows': len(lines),

@@ -503,6 +503,9 @@
                                 </p>
                             </div>
                         </div>
+                        <!-- WDGAP S6-A BK2: bank details from the file wait for a second person. -->
+                        <p class="pw-warn" t-if="state.summary.sheet and state.summary.sheet.bank_waiting"
+                           t-esc="state.summary.sheet.bank_waiting"/>
                         <t t-if="state.summary.sheet and state.summary.sheet.extra" t-call="pb_payrun_wizard.ExtraFileNote">
                             <t t-set="note" t-value="state.summary.sheet.extra"/>
                         </t>

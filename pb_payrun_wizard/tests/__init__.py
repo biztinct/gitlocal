@@ -21,3 +21,4 @@ from . import test_run_kind
 from . import test_wdgap_prd_extra_run
 from . import test_wdgap_pre_extra_file
 from . import test_wdgap_w2f_advance_once
+from . import test_wdgap_s6_bank_waiting
