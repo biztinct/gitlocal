@@ -55,6 +55,7 @@ export class PbBankOcr extends Component {
             refuseNote: "",
             history: null,
             step: "",            // quiet board: the step pressed ('' = the lanes)
+            confirmImport: "",   // BK2: the import whose "Approve all" asks once more
         });
         onWillStart(async () => { await this.load(); });
     }
@@ -107,6 +108,26 @@ export class PbBankOcr extends Component {
         });
     }
     pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    // ------------------------------------------- BK2: approve all in a file
+    /** First press asks; the second approves every waiting change from that
+     *  import that this reader may decide. */
+    async approveImport(imp) {
+        if (this.state.confirmImport !== imp.key) {
+            this.state.confirmImport = imp.key;
+            return;
+        }
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(MODEL, "approve_import", [imp.key]);
+            this.notif.add(res.sentence, { type: res.approved ? "success" : "warning" });
+        } finally {
+            this.state.busy = false;
+            this.state.confirmImport = "";
+            await this.load();
+        }
+    }
+    cancelImport() { this.state.confirmImport = ""; }
     get stepCards() { return this.allCards.filter((c) => c.state === this.state.step); }
     get stepTitle() {
         const st = this.stepDefs.find((x) => x.key === this.state.step);

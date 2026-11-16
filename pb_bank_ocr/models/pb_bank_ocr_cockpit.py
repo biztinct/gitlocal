@@ -86,6 +86,8 @@ class PbBankOcr(models.AbstractModel):
                 'finance_pending': len(fin),
             },
             'provider': self._provider_info(),
+            # WDGAP S6-A BK2: waiting changes from imports this reader decides
+            'imports': Req._pb_import_groups(),
         }
 
     def _provider_info(self):
@@ -116,6 +118,12 @@ class PbBankOcr(models.AbstractModel):
             return cfg.get_provider().test_connection()
         except Exception as e:
             return {'success': False, 'message': str(e), 'latency_ms': 0}
+
+    @api.model
+    def approve_import(self, key):
+        """WDGAP S6-A BK2 — "Approve all in this file" (the engine still
+        refuses any change this reader imported or is not asked to decide)."""
+        return self.env['pb.bank.change.request'].pb_approve_import(key)
 
     # --------------------------------------------------------- request CRUD
     @api.model

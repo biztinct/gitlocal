@@ -1,0 +1,74 @@
+// =====================================================================
+//  Certificates on My Payobook — .pbml-* (WDGAP S6-A). A thin layer on the
+//  .pbme kit; tokens only, flat colours, quiet palette.
+// =====================================================================
+
+.pbme.pbml {
+    max-width: 1040px; margin-left: auto; margin-right: auto;
+
+    .pbml-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .pbml-ask, .pbml-list { padding: 20px 22px; margin: 0; animation: pbml-in 260ms ease-out both; }
+    .pbml-list { animation-delay: 60ms; }
+    .pbml-h2 { margin: 0 0 14px; font-size: 16px; font-weight: 800; color: var(--pbim-ink); }
+    .pbml-form { display: flex; flex-direction: column; gap: 14px; }
+    .pbml-actions { display: flex; gap: 8px; }
+    .pbml-dot { display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .55; margin: 0 7px; vertical-align: middle; }
+
+    .pbml-choices { display: grid; gap: 10px; }
+    .pbml-choice {
+        position: relative; display: flex; gap: 12px; align-items: flex-start; margin: 0; padding: 14px 16px; cursor: pointer;
+        border: 1.5px solid var(--pbim-line); border-radius: 14px; background: var(--pbim-surface); transition: border-color .15s, background-color .15s;
+        input { position: absolute; opacity: 0; pointer-events: none; }
+        &:has(input:checked) { border-color: var(--pbim-primary); background: var(--pbim-primary-light); }
+        &:has(input:focus-visible) { box-shadow: 0 0 0 3px var(--pbim-ring); }
+        &.is-off { cursor: not-allowed; opacity: .6; }
+    }
+    .pbml-choice-ic { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: var(--pbim-surface); color: var(--pbim-primary); border: 1px solid var(--pbim-line); flex: none; }
+    .pbml-choice-tx {
+        display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--pbim-muted);
+        b { font-size: 14.5px; color: var(--pbim-ink); }
+        em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--pbim-primary); margin-top: 2px; }
+    }
+
+    .pbml-empty { display: flex; gap: 12px; align-items: center; color: var(--pbim-muted); font-size: 13.5px; p { margin: 0; } }
+    .pbml-empty-ic { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--pbim-slate-soft); color: var(--pbim-slate); flex: none; }
+    .pbml-rows { list-style: none; margin: 0; padding: 0; }
+    .pbml-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--pbim-line); }
+    .pbml-row:first-child { border-top: 0; }
+    .pbml-row-main { min-width: 0; }
+    .pbml-row-t { font-weight: 700; color: var(--pbim-ink); font-size: 14px; }
+    .pbml-row-s { font-size: 12.5px; color: var(--pbim-muted); margin-top: 2px; }
+    .pbml-why { color: var(--pbim-text); }
+    .pbml-dl { padding: 7px 12px; }
+    .pbml-pill { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+    .pbml-pill--wait { background: var(--pbim-surface); border: 1px solid var(--pbim-line); color: var(--pbim-text); }
+    .pbml-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pbim-amber); }
+
+    .pbml-alert {
+        display: flex; align-items: flex-start; gap: 10px; margin: 0 0 14px; padding: 11px 14px; border-radius: 12px;
+        background: var(--pbim-rose-soft); color: var(--pbim-ink); font-size: 13.5px; font-weight: 600; line-height: 1.45;
+        .pbme-ic { color: var(--pbim-rose); flex: none; margin-top: 1px; }
+    }
+    .pbml-toast {
+        position: fixed; z-index: 1060; left: 50%; bottom: 24px; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px);
+        padding: 11px 18px 11px 12px; border-radius: 14px; background: var(--pbim-ink); color: #fff; box-shadow: var(--pbim-sh-lg);
+        font-size: 13.5px; font-weight: 600;
+        animation: pbml-toast-in 320ms cubic-bezier(.2, .7, .3, 1) both, pbml-toast-out 400ms ease-in 5s forwards;
+    }
+    .pbml-toast-ic { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pbim-green); color: #fff; flex: none; }
+
+    @media (max-width: 820px) { .pbml-grid { grid-template-columns: minmax(0, 1fr); } }
+    @media (prefers-reduced-motion: reduce) { .pbml-ask, .pbml-list, .pbml-toast { animation: none; } }
+}
+
+@keyframes pbml-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pbml-toast-in { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes pbml-toast-out { to { opacity: 0; transform: translate(-50%, 8px); visibility: hidden; } }
+
+// pb_me_portal's form grid styles inputs, not selects.
+.pbme.pbml .pbme-form-grid select {
+    border: 1px solid var(--pbim-line); border-radius: 9px; padding: 9px 11px; font-size: 13.5px;
+    font-family: inherit; color: var(--pbim-text); background: #fff; width: 100%;
+    &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+}

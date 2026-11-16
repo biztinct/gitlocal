@@ -17,6 +17,9 @@ _BANK_FIELDS = ('vietnam_bank_name', 'vietnam_bank_branch',
 # put THIS object in it. A forged truthy flag still logs a 'manual' row.
 _BANK_AUDIT_TOKEN = object()
 
+#: Sources a caller may NAME for a direct write's history row (WDGAP S6-A).
+_NAMED_SOURCES = ('updates',)
+
 
 class PbEmployeeBankHistory(models.Model):
     _name = 'pb.employee.bank.history'
@@ -28,6 +31,9 @@ class PbEmployeeBankHistory(models.Model):
     change_source = fields.Selection([
         ('ocr_request', 'OCR Request'),
         ('manual', 'Manual Edit'),
+        # WDGAP S6-A: a change approved on the Updates sheet or the Records
+        # screen, copied into the four fields the bank file reads.
+        ('updates', 'Updates or Records'),
     ], string='Source', required=True, default='manual')
     request_id = fields.Many2one('pb.bank.change.request', string='Request', index=True)
 
@@ -63,13 +69,19 @@ class HrEmployeeBankAudit(models.Model):
         before = {rec.id: {f: rec[f] for f in _BANK_FIELDS} for rec in self}
         res = super().write(vals)
         History = self.env['pb.employee.bank.history'].sudo()
+        # WDGAP S6-A: the Updates / Records bank lane names itself. Only a
+        # LABEL: the row is written either way, with who and when, so a forged
+        # value can relabel a row but never skip one.
+        source = self.env.context.get('pb_bank_history_source')
+        if source not in _NAMED_SOURCES:
+            source = 'manual'
         for rec in self:
             old = before.get(rec.id, {})
             if all((old.get(f) or '') == (rec[f] or '') for f in _BANK_FIELDS):
                 continue  # nothing actually changed
             History.create({
                 'employee_id': rec.id,
-                'change_source': 'manual',
+                'change_source': source,
                 'old_bank_name': old.get('vietnam_bank_name') or '',
                 'new_bank_name': rec.vietnam_bank_name or '',
                 'old_bank_branch': old.get('vietnam_bank_branch') or '',

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S6-A — two certificates to start from, in the letter library
+         (Settings > Letters) beside the experience letter. noupdate="1" so a
+         company that rewords one keeps its wording through every upgrade; a
+         company's OWN template of the same kind wins over these
+         (`pb.me.certificate._pb_template`).
+
+         Placeholders filled by the engine: ${employee_name} ${job_title}
+         ${department} ${company} ${joining_date} ${date}; added by
+         pb_me_letters: ${certificate_no} ${purpose} ${salary}. The salary is
+         the running contract's agreed wage, worked out by the server. -->
+
+    <record id="letter_template_employment_cert" model="pb.letter.template">
+        <field name="name">Employment certificate</field>
+        <field name="letter_type">employment_cert</field>
+        <field name="subject">Employment Certificate</field>
+        <field name="sequence">12</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Certificate number: <strong>${certificate_no}</strong></p>
+                <p>To whom it may concern,</p>
+                <p>This is to certify that <strong>${employee_name}</strong> is employed by ${company} as <strong>${job_title}</strong> in the ${department} team, and has been employed since ${joining_date}.</p>
+                <p>This certificate is issued on ${date} at the employee's request, for: ${purpose}.</p>
+            </div>
+        </field>
+    </record>
+
+    <record id="letter_template_salary_cert" model="pb.letter.template">
+        <field name="name">Salary certificate</field>
+        <field name="letter_type">salary_cert</field>
+        <field name="subject">Salary Certificate</field>
+        <field name="sequence">13</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Certificate number: <strong>${certificate_no}</strong></p>
+                <p>To whom it may concern,</p>
+                <p>This is to certify that <strong>${employee_name}</strong> is employed by ${company} as <strong>${job_title}</strong> in the ${department} team, and has been employed since ${joining_date}.</p>
+                <p>Their agreed monthly salary is <strong>${salary}</strong> before tax and other deductions.</p>
+                <p>This certificate is issued on ${date} at the employee's request, for: ${purpose}.</p>
+            </div>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,588 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:32+0000\n"
+"PO-Revision-Date: 2026-11-15 16:32+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<b>Salary certificate</b><span>Also shows your agreed monthly salary.</span>"
+msgstr "<b>Surat keterangan gaji</b><span>Juga mencantumkan gaji bulanan yang disepakati.</span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<i class=\"pbml-pill-dot\" aria-hidden=\"true\"/>Waiting for HR"
+msgstr "<i class=\"pbml-pill-dot\" aria-hidden=\"true\"/>Menunggu HR"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span class=\"pbml-choice-tx\"><b>Employment certificate</b><span>Says you work here, as what, and since when. No pay figures.</span><em>Ready at once</em></span>"
+msgstr "<span class=\"pbml-choice-tx\"><b>Surat keterangan kerja</b><span>Menyatakan Anda bekerja di sini, sebagai apa, dan sejak kapan. Tanpa angka gaji.</span><em>Langsung siap</em></span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span>Language</span>"
+msgstr "<span>Bahasa</span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span>Reason:</span>"
+msgstr "<span>Alasan:</span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span>What it is for</span>"
+msgstr "<span>Untuk keperluan</span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span>Who it is for (optional)</span>"
+msgstr "<span>Ditujukan kepada (opsional)</span>"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__purpose__bank
+msgid "A bank or a loan"
+msgstr "Bank atau pinjaman"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "A certificate cannot be edited here."
+msgstr "Surat keterangan tidak dapat diubah di sini."
+
+#. module: pb_me_letters
+#: model:biz.approval.process,description:pb_me_letters.process_me_certificate
+msgid "A certificate showing somebody's agreed salary, asked for on My Payobook."
+msgstr "Surat keterangan yang mencantumkan gaji yang disepakati seseorang, diminta di My Payobook."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "A salary certificate cannot be issued while your pay is on hold. Ask HR."
+msgstr "Surat keterangan gaji tidak dapat diterbitkan selama gaji Anda ditahan. Tanya HR."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "A salary certificate is already waiting for HR. You will see it here when it is ready."
+msgstr "Surat keterangan gaji sudah menunggu HR. Anda akan melihatnya di sini setelah siap."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "A salary certificate needs a running contract with a salary on it. Ask HR."
+msgstr "Surat keterangan gaji memerlukan kontrak yang berjalan dengan gaji di dalamnya. Tanya HR."
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__purpose__visa
+msgid "A visa or travel"
+msgstr "Visa atau perjalanan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_needaction
+msgid "Action Needed"
+msgstr "Perlu tindakan"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "Agreed monthly salary"
+msgstr "Gaji bulanan yang disepakati"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__approval_request_id
+msgid "Approval"
+msgstr "Persetujuan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__approval_state
+msgid "Approval status"
+msgstr "Status persetujuan"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Ask for a certificate"
+msgstr "Minta surat keterangan"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Ask for a certificate for a bank, a visa or a landlord. Each one is numbered and kept in your documents."
+msgstr "Minta surat keterangan untuk bank, visa, atau pemilik rumah sewa. Setiap surat diberi nomor dan disimpan di dokumen Anda."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Ask for it"
+msgstr "Minta"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__state__draft
+msgid "Asked"
+msgstr "Diminta"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "Asked for"
+msgstr "Diminta"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__seat_user_ids
+msgid "Asked to decide"
+msgstr "Diminta memutuskan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_attachment_count
+msgid "Attachment Count"
+msgstr "Jumlah lampiran"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__kind model_terms:ir.ui.view,arch_db:pb_me_letters.view_pb_me_certificate_form
+msgid "Certificate"
+msgstr "Surat keterangan"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "Certificate %s issued."
+msgstr "Surat keterangan %s diterbitkan."
+
+#. module: pb_me_letters
+#: model:ir.model,name:pb_me_letters.model_pb_me_certificate
+msgid "Certificate asked for on My Payobook"
+msgstr "Surat keterangan yang diminta di My Payobook"
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_employment_cert model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "Certificate number: <strong>${certificate_no}</strong>"
+msgstr "Nomor surat keterangan: <strong>${certificate_no}</strong>"
+
+#. module: pb_me_letters
+#: model:ir.actions.act_window,name:pb_me_letters.action_pb_me_certificate model_terms:ir.ui.view,arch_db:pb_me_letters.portal_breadcrumbs_certificates model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_home_certificates model_terms:ir.ui.view,arch_db:pb_me_letters.view_pb_me_certificate_list
+msgid "Certificates"
+msgstr "Surat keterangan"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "Certificates are asked for on My Payobook."
+msgstr "Surat keterangan diminta di My Payobook."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "Choose which certificate you need."
+msgstr "Pilih surat keterangan yang Anda perlukan."
+
+#. module: pb_me_letters
+#: model:ir.model,name:pb_me_letters.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0 model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__purpose_note
+msgid "Details"
+msgstr "Rincian"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_letter_template__display_name model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__display_name model:ir.model.fields,field_description:pb_me_letters.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_me_letters.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0
+msgid "Download it as a PDF"
+msgstr "Unduh sebagai PDF"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_me_letters
+#: model:ir.model,name:pb_me_letters.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data beranda karyawan"
+
+#. module: pb_me_letters
+#: model:pb.letter.template,subject:pb_me_letters.letter_template_employment_cert
+msgid "Employment Certificate"
+msgstr "Surat Keterangan Kerja"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_home_certificates
+msgid "Employment and salary certificates"
+msgstr "Surat keterangan kerja dan gaji"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_letter_template__letter_type__employment_cert model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__kind__employment model:pb.letter.template,name:pb_me_letters.letter_template_employment_cert
+msgid "Employment certificate"
+msgstr "Surat keterangan kerja"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__seat_user_ids
+msgid "Everyone a published approval route has asked to decide this. Being here is not a permission to change anything."
+msgstr "Semua orang yang diminta memutuskan ini oleh alur persetujuan. Tercantum di sini bukan izin untuk mengubah apa pun."
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__document_id
+msgid "Filed as"
+msgstr "Disimpan sebagai"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__downloaded_on
+msgid "First downloaded"
+msgstr "Pertama diunduh"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_follower_ids
+msgid "Followers"
+msgstr "Pengikut"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Pengikut (Mitra)"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "For example the name of the bank or the embassy"
+msgstr "Misalnya nama bank atau kedutaan"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "HR checks it first"
+msgstr "HR memeriksanya dulu"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "HR lead"
+msgstr "Pimpinan HR"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__has_message
+msgid "Has Message"
+msgstr "Ada pesan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_letter_template__id model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__id model:ir.model.fields,field_description:pb_me_letters.field_pb_me_home__id model:ir.model.fields,field_description:pb_me_letters.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_has_error model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jika dicentang, beberapa pesan gagal terkirim."
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_is_follower
+msgid "Is Follower"
+msgstr "Adalah pengikut"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.view_pb_me_certificate_form
+msgid "Issue it from Approvals: approving it prints the certificate and files it in the employee's documents."
+msgstr "Terbitkan dari Persetujuan: menyetujuinya mencetak surat keterangan dan menyimpannya di dokumen karyawan."
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__issued_by
+msgid "Issued by"
+msgstr "Diterbitkan oleh"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__issued_on
+msgid "Issued on"
+msgstr "Diterbitkan pada"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__lang
+msgid "Language"
+msgstr "Bahasa"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__letter_id
+msgid "Letter"
+msgstr "Surat"
+
+#. module: pb_me_letters
+#: model:ir.model,name:pb_me_letters.model_pb_letter_template
+msgid "Letter Template"
+msgstr "Templat surat"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_letter_template__letter_type
+msgid "Letter type"
+msgstr "Jenis surat"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_has_error
+msgid "Message Delivery error"
+msgstr "Kesalahan pengiriman pesan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_ids
+msgid "Messages"
+msgstr "Pesan"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "New"
+msgstr "Baru"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "No certificate wording is set up yet. Ask HR."
+msgstr "Kata-kata surat keterangan belum diatur. Tanya HR."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "None yet. The ones you ask for are kept here and in your documents."
+msgstr "Belum ada. Surat yang Anda minta disimpan di sini dan di dokumen Anda."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Not available: ask HR"
+msgstr "Tidak tersedia: tanya HR"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__name
+msgid "Number"
+msgstr "Nomor"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Jumlah tindakan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_has_error_counter
+msgid "Number of errors"
+msgstr "Jumlah kesalahan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Jumlah pesan yang perlu tindakan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Jumlah pesan yang gagal terkirim"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__rating_ids
+msgid "Ratings"
+msgstr "Penilaian"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__state__issued
+msgid "Ready"
+msgstr "Siap"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__decision_note
+msgid "Reason given"
+msgstr "Alasan"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__purpose__rental
+msgid "Renting a home"
+msgstr "Menyewa rumah"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Kesalahan pengiriman SMS"
+
+#. module: pb_me_letters
+#: model:pb.letter.template,subject:pb_me_letters.letter_template_salary_cert
+msgid "Salary Certificate"
+msgstr "Surat Keterangan Gaji"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_letter_template__letter_type__salary_cert model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__kind__salary model:pb.letter.template,name:pb_me_letters.letter_template_salary_cert
+msgid "Salary certificate"
+msgstr "Surat keterangan gaji"
+
+#. module: pb_me_letters
+#: model:biz.approval.process,name:pb_me_letters.process_me_certificate
+msgid "Salary certificates"
+msgstr "Surat keterangan gaji"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Sent to HR. You will see the certificate here when it is ready."
+msgstr "Dikirim ke HR. Anda akan melihat surat keterangan di sini setelah siap."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "Shows pay figures"
+msgstr "Mencantumkan angka gaji"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__purpose__other
+msgid "Something else"
+msgstr "Hal lain"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "Taken back"
+msgstr "Ditarik kembali"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "The certificate"
+msgstr "Surat keterangan"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "The certificate could not be printed. Try again in a moment."
+msgstr "Surat keterangan belum dapat dicetak. Coba lagi sebentar lagi."
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "Their agreed monthly salary is <strong>${salary}</strong> before tax and other deductions."
+msgstr "Gaji bulanan yang disepakati adalah <strong>${salary}</strong> sebelum pajak dan potongan lainnya."
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_employment_cert model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "This certificate is issued on ${date} at the employee's request, for: ${purpose}."
+msgstr "Surat keterangan ini diterbitkan pada ${date} atas permintaan karyawan, untuk: ${purpose}."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "This certificate is not ready yet."
+msgstr "Surat keterangan ini belum siap."
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_employment_cert model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "This is to certify that <strong>${employee_name}</strong> is employed by ${company} as <strong>${job_title}</strong> in the ${department} team, and has been employed since ${joining_date}."
+msgstr "Dengan ini menerangkan bahwa <strong>${employee_name}</strong> bekerja di ${company} sebagai <strong>${job_title}</strong> di tim ${department}, sejak ${joining_date}."
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_employment_cert model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "To whom it may concern,"
+msgstr "Kepada yang berkepentingan,"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__state__refused model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Turned down"
+msgstr "Ditolak"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__state__hr_review
+msgid "Waiting for HR"
+msgstr "Menunggu HR"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__website_message_ids
+msgid "Website Messages"
+msgstr "Pesan situs web"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__website_message_ids
+msgid "Website communication history"
+msgstr "Riwayat komunikasi situs web"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0 model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__purpose
+msgid "What it is for"
+msgstr "Untuk keperluan"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "You can only ask for your own certificate."
+msgstr "Anda hanya dapat meminta surat keterangan Anda sendiri."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Your certificate is ready. Download it below."
+msgstr "Surat keterangan Anda siap. Unduh di bawah."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Your certificates"
+msgstr "Surat keterangan Anda"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0
+msgid "Your salary certificate is ready"
+msgstr "Surat keterangan gaji Anda siap"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0
+msgid "Your salary certificate is ready."
+msgstr "Surat keterangan gaji Anda siap."
