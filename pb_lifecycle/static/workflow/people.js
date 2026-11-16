@@ -14,49 +14,49 @@ if(EMBED)document.documentElement.classList.add('is-embed');
 function dayWords(v){const d=new Date(String(v||'').slice(0,10)+'T00:00:00');return isNaN(d)?String(v||''):d.toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});}
 
 /* ---------------------------------------------------------- the inspector */
-function teamRows(){return (S.w?.metadata.teams||[]).map(t=>[t.id,t.members?`${t.name} · ${t.members===1?'1 person':t.members+' people'}`:`${t.name} · nobody on it yet`]);}
+function teamRows(){return (S.w?.metadata.teams||[]).map(t=>[t.id,t.members?`${t.name} · ${_t.n(t.members,'%(n)s person','%(n)s people')}`:`${t.name} · ${_t('nobody on it yet')}`]);}
 function teamPicker(path,owner){
  const teams=S.w?.metadata.teams||[];
- if(!teams.length)return stepEmpty('team','There are no teams yet. Make one in Approvals › Who approves (“A group of people”).');
+ if(!teams.length)return stepEmpty('team',_t('There are no teams yet. Make one in Approvals › Who approves (“A group of people”).'));
  const team=teams.find(t=>t.id===owner.id);
- return field('<span id="team-label">Team</span>',`<select data-edit="${path}.id" aria-labelledby="team-label">${opts(teamRows(),owner.id)}</select>`)
-  +(team&&!team.members?hint('Nobody is on this team here yet, so the task would have nobody to go to. Add people in Approvals › Who approves.','alert','warn'):'')
-  +hint('Anyone on the team sees it in their Approvals list and can take it. The first to take it does it; the others see who has it. Only staff logins are counted.','team');
+ return field(`<span id="team-label">${_t('Team')}</span>`,`<select data-edit="${path}.id" aria-labelledby="team-label">${opts(teamRows(),owner.id)}</select>`)
+  +(team&&!team.members?hint(_t('Nobody is on this team here yet, so the task would have nobody to go to. Add people in Approvals › Who approves.'),'alert','warn'):'')
+  +hint(_t('Anyone on the team sees it in their Approvals list and can take it. The first to take it does it; the others see who has it. Only staff logins are counted.'),'team');
 }
 function personHints(n){
  const kind=n.owner?.kind;let html='';
- if(['subject','manager','field','initiator'].includes(kind))html+=hint('People with an employee-home login do this on their home page. Someone with no login gets a private link by email, when their work email is known.','link');
- html+=hint(S.w?.metadata.late_words||'Reminded a day after it is due, then their manager is told a day later — the same way approvals work.','clock');
- html+=hint('If the person is away and has someone covering for them in Approvals, it goes to the person covering.','away');
+ if(['subject','manager','field','initiator'].includes(kind))html+=hint(_t('People with an employee-home login do this on their home page. Someone with no login gets a private link by email, when their work email is known.'),'link');
+ html+=hint(S.w?.metadata.late_words||_t('Reminded a day after it is due, then their manager is told a day later — the same way approvals work.'),'clock');
+ html+=hint(_t('If the person is away and has someone covering for them in Approvals, it goes to the person covering.'),'away');
  return html;
 }
 
 /* ------------------------------------------------- my tasks, task page */
 function taskChips(t){
  const out=[];
- if(t.late)out.push(pill('Late','failed'));
- else if(t.due)out.push(pill('Due '+dayWords(t.due),''));
- if(t.sent_back)out.push(pill('Sent back','waiting'));
- if(t.team)out.push(`<span class="pill team">${svgIcon('team')}${t.team.taken?esc(t.team.name)+' · '+esc(t.team.taken_by||'taken'):'Team: '+esc(t.team.name)+' · nobody has taken it'}</span>`);
- if(t.covering_for)out.push(`<span class="pill">${svgIcon('away')}Covering for ${esc(t.covering_for)}</span>`);
+ if(t.late)out.push(pill(_t('Late'),'failed'));
+ else if(t.due)out.push(pill(_t('Due %(day)s',{day:dayWords(t.due)}),''));
+ if(t.sent_back)out.push(pill(_t('Sent back'),'waiting'));
+ if(t.team)out.push(`<span class="pill team">${svgIcon('team')}${t.team.taken?esc(t.team.name)+' · '+esc(t.team.taken_by||_t('taken')):_t('Team: %(team)s · nobody has taken it',{team:esc(t.team.name)})}</span>`);
+ if(t.covering_for)out.push(`<span class="pill">${svgIcon('away')}${_t('Covering for %(who)s',{who:esc(t.covering_for)})}</span>`);
  return out.join('');
 }
 function tasks(){
  const rows=S.boot.tasks||[];
- const card=t=>`<div class="card task-card ${t.late?'is-late':''}"><div class="row"><span class="type-icon ${t.kind}">${svgIcon(t.kind)}</span><div class="grow"><h2>${esc(t.name)}</h2><small>${esc(t.workflow)}${t.record?' · '+esc(t.record):''}</small></div></div><div class="row wrap task-chips">${taskChips(t)}</div><div class="row wrap">${t.can_take?btn('take','Take it','check','primary',`data-id="${t.id}"`)+btn('task','Look first','arrow','',`data-id="${t.id}"`):btn('task',t.kind==='input'?'Fill in details':t.kind==='confirm'?'Read and confirm':'Open task','arrow','primary',`data-id="${t.id}"`)}${t.can_release?btn('release','Put it back','','plain',`data-id="${t.id}"`):''}</div></div>`;
- return `<main class="page"><div class="pagehead"><div><h1>My tasks</h1><p class="muted">The next small steps that move work forward. They are in your Approvals list too.</p></div>${btn('tasks','Refresh','history')}</div>${rows.length?`<div class="cards">${rows.map(card).join('')}</div>`:'<div class="empty"><span class="type-icon trigger">'+svgIcon('check')+'</span><h2>You’re all caught up</h2><p class="muted">Tasks given to you, or to a team you are on, appear here and in Approvals.</p></div>'}</main>`;
+ const card=t=>`<div class="card task-card ${t.late?'is-late':''}"><div class="row"><span class="type-icon ${t.kind}">${svgIcon(t.kind)}</span><div class="grow"><h2>${esc(t.name)}</h2><small>${esc(t.workflow)}${t.record?' · '+esc(t.record):''}</small></div></div><div class="row wrap task-chips">${taskChips(t)}</div><div class="row wrap">${t.can_take?btn('take',_t('Take it'),'check','primary',`data-id="${t.id}"`)+btn('task',_t('Look first'),'arrow','',`data-id="${t.id}"`):btn('task',t.kind==='input'?_t('Fill in details'):t.kind==='confirm'?_t('Read and confirm'):_t('Open task'),'arrow','primary',`data-id="${t.id}"`)}${t.can_release?btn('release',_t('Put it back'),'','plain',`data-id="${t.id}"`):''}</div></div>`;
+ return `<main class="page"><div class="pagehead"><div><h1>${_t('My tasks')}</h1><p class="muted">${_t('The next small steps that move work forward. They are in your Approvals list too.')}</p></div>${btn('tasks',_t('Refresh'),'history')}</div>${rows.length?`<div class="cards">${rows.map(card).join('')}</div>`:'<div class="empty"><span class="type-icon trigger">'+svgIcon('check')+'</span><h2>'+_t('You’re all caught up')+'</h2><p class="muted">'+_t('Tasks given to you, or to a team you are on, appear here and in Approvals.')+'</p></div>'}</main>`;
 }
 function peopleExtras(t){
  let html='';
- if(t.team&&!t.team.taken)html+=`<div class="banner team-banner" role="note">${svgIcon('team')}<div><strong>For the team ${esc(t.team.name)}</strong><p>Nobody has taken it yet. Answering it takes it for you, or take it first so the others know.</p></div>${btn('take','Take it','check','primary',`data-id="${t.id}"`)}</div>`;
- else if(t.team&&t.team.mine)html+=`<div class="banner team-banner is-mine" role="note">${svgIcon('team')}<div><strong>You took this for the team ${esc(t.team.name)}</strong></div>${btn('release','Put it back','','plain',`data-id="${t.id}"`)}</div>`;
- if(t.covering_for)html+=`<div class="banner" role="note">${svgIcon('away')}<span>You are covering for ${esc(t.covering_for)} while they are away.</span></div>`;
- if(t.due)html+=`<p class="task-due ${t.late?'is-late':''}">${svgIcon('clock')}${t.late?'Late · it was due ':'Needed by '}${esc(dayWords(t.due))}</p>`;
+ if(t.team&&!t.team.taken)html+=`<div class="banner team-banner" role="note">${svgIcon('team')}<div><strong>${_t('For the team %(team)s',{team:esc(t.team.name)})}</strong><p>${_t('Nobody has taken it yet. Answering it takes it for you, or take it first so the others know.')}</p></div>${btn('take',_t('Take it'),'check','primary',`data-id="${t.id}"`)}</div>`;
+ else if(t.team&&t.team.mine)html+=`<div class="banner team-banner is-mine" role="note">${svgIcon('team')}<div><strong>${_t('You took this for the team %(team)s',{team:esc(t.team.name)})}</strong></div>${btn('release',_t('Put it back'),'','plain',`data-id="${t.id}"`)}</div>`;
+ if(t.covering_for)html+=`<div class="banner" role="note">${svgIcon('away')}<span>${_t('You are covering for %(who)s while they are away.',{who:esc(t.covering_for)})}</span></div>`;
+ if(t.due)html+=`<p class="task-due ${t.late?'is-late':''}">${svgIcon('clock')}${t.late?_t('Late · it was due %(day)s',{day:esc(dayWords(t.due))}):_t('Needed by %(day)s',{day:esc(dayWords(t.due))})}</p>`;
  return html;
 }
 /* After a task is done: back to My tasks, or tell the inbox around us. */
 function taskFinished(){
- if(EMBED&&parent!==window){parent.postMessage({type:'pb.workflow.task.done',id:S.task?.id},location.origin);S.page='done';$('#app').innerHTML=`<main class="form-page embed-done"><div class="card"><span class="type-icon trigger">${svgIcon('check')}</span><h2>Done</h2><p class="muted">It has moved on to the next step.</p></div></main>`;return;}
+ if(EMBED&&parent!==window){parent.postMessage({type:'pb.workflow.task.done',id:S.task?.id},location.origin);S.page='done';$('#app').innerHTML=`<main class="form-page embed-done"><div class="card"><span class="type-icon trigger">${svgIcon('check')}</span><h2>${_t('Done')}</h2><p class="muted">${_t('It has moved on to the next step.')}</p></div></main>`;return;}
  return action('tasks');
 }
 
@@ -67,7 +67,7 @@ function peopleProgress(step){
  if(step.team)html+=`<p class="progress-chip">${svgIcon('team')}${esc(step.team)}</p>`;
  if(step.covering)html+=`<p class="progress-chip">${svgIcon('away')}${esc(step.covering)}</p>`;
  if(step.done_by)html+=`<p class="progress-chip">${svgIcon('link')}${esc(step.done_by)}</p>`;
- if(step.link){html+=`<div class="link-box"><p>${svgIcon('link')}<span>${esc(step.link.text)}${step.link.until?' · works until '+esc(dayWords(step.link.until)):''}${step.link.opened?' · opened':' · not opened yet'}</span></p>${step.link.can_resend?btn('resend-link','Send the link again','email','small',`data-id="${step.id}"`)+'<small>A new link replaces the old one.</small>':''}</div>`;}
+ if(step.link){html+=`<div class="link-box"><p>${svgIcon('link')}<span>${esc(step.link.text)}${step.link.until?' · '+_t('works until %(day)s',{day:esc(dayWords(step.link.until))}):''}${step.link.opened?' · '+_t('opened'):' · '+_t('not opened yet')}</span></p>${step.link.can_resend?btn('resend-link',_t('Send the link again'),'email','small',`data-id="${step.id}"`)+'<small>'+_t('A new link replaces the old one.')+'</small>':''}</div>`;}
  return html;
 }
 
@@ -75,7 +75,7 @@ function peopleProgress(step){
 function reviewPeople(r){
  const rows=r.people_notes||[];
  if(!rows.length)return '';
- return `<section class="review-people"><h3>Who takes part</h3>${rows.map(x=>`<div class="checkrow ${x.tone==='warn'?'is-warning':''}"><span class="check-icon" aria-hidden="true">${svgIcon(x.code==='team'?'team':x.tone==='warn'?'alert':'link')}</span><div>${esc(x.text)} ${btn('fix','Open step','','small plain',`data-id="${esc(x.id)}"`)}</div></div>`).join('')}</section>`;
+ return `<section class="review-people"><h3>${_t('Who takes part')}</h3>${rows.map(x=>`<div class="checkrow ${x.tone==='warn'?'is-warning':''}"><span class="check-icon" aria-hidden="true">${svgIcon(x.code==='team'?'team':x.tone==='warn'?'alert':'link')}</span><div>${esc(x.text)} ${btn('fix',_t('Open step'),'','small plain',`data-id="${esc(x.id)}"`)}</div></div>`).join('')}</section>`;
 }
 
 /* ---------------------------------------------------------- the verbs */
@@ -83,32 +83,32 @@ const _p4aAction=action;
 action=async function(name,el){
  const id=el?.dataset?.id;
  if(name==='take'){
-  try{const t=await rpc('take',[Number(id)]);notify('It is yours now. The rest of the team sees that you have it.');
+  try{const t=await rpc('take',[Number(id)]);notify(_t('It is yours now. The rest of the team sees that you have it.'));
    if(S.page==='task'){S.task=t;S.answers=clone(t.answers);S.errors={};render();}
    else{S.boot.tasks=await rpc('tasks');render();}}
   catch(e){notify(e.message,true);S.boot.tasks=await rpc('tasks');if(S.page==='tasks')render();}
   return;
  }
  if(name==='release'){
-  try{await rpc('release',[Number(id)]);notify('Put back for the team.');}catch(e){notify(e.message,true);}
+  try{await rpc('release',[Number(id)]);notify(_t('Put back for the team.'));}catch(e){notify(e.message,true);}
   if(EMBED&&parent!==window&&S.page==='task'){parent.postMessage({type:'pb.workflow.task.done',id:Number(id)},location.origin);return;}
   return _p4aAction('tasks',el);
  }
  if(name==='resend-link'){
-  try{const r=await rpc('resend_link',[Number(id)]);notify(`A new link was sent to ${r.sent_to}. The old one no longer works.`);await _p4aAction('refresh-progress',el);}
+  try{const r=await rpc('resend_link',[Number(id)]);notify(_t('A new link was sent to %(who)s. The old one no longer works.',{who:r.sent_to}));await _p4aAction('refresh-progress',el);}
   catch(e){notify(e.message,true);}
   return;
  }
  if(name==='area-stage-remove'){
   const i=Number(el.dataset.index),info=sectionInfo(i);S.removingArea={index:i,row:info.row};
-  modal(`Remove “${info.name}” from ${areaName()}?`,`<p>It comes off every ${esc(areaName())} board and preset, and this section becomes a heading. ${esc(areaName())} refuses while anyone is in it.</p><p class="muted">Its history stays. Only stages your company added can be removed.</p>`,btn('close','Keep it')+btn('area-stage-remove-yes','Remove it','trash','danger'));
+  modal(_t('Remove “%(stage)s” from %(area)s?',{stage:info.name,area:areaName()}),`<p>${_t('It comes off every %(area)s board and preset, and this section becomes a heading. %(area)s refuses while anyone is in it.',{area:esc(areaName())})}</p><p class="muted">${_t('Its history stays. Only stages your company added can be removed.')}</p>`,btn('close',_t('Keep it'))+btn('area-stage-remove-yes',_t('Remove it'),'trash','danger'));
   return;
  }
  if(name==='area-stage-remove-yes'){
   const r=S.removingArea;
   try{const cat=await rpc('stage_remove_area',[S.w.source_model,r.row.key]);S.w.metadata.stage_catalogue=cat;close();
    mutate(()=>{for(const s of S.w.definition.stages)if(s.bind?.kind==='core'&&String(s.bind.value)===String(r.row.key))delete s.bind;},false);
-   notify(cat.removed?.note||'Removed.');S.sheetError=null;refreshWork();renderSheet();}
+   notify(cat.removed?.note||_t('Removed.'));S.sheetError=null;refreshWork();renderSheet();}
   catch(e){close();S.sheetError={index:r.index,text:e.message};renderSheet();}
   return;
  }
@@ -116,7 +116,7 @@ action=async function(name,el){
 };
 /* Step cards name a team as a team. */
 const _p4aOwnerName=ownerName;
-ownerName=function(n){if(n?.owner?.kind==='team'){const t=(S.w?.metadata.teams||[]).find(x=>x.id===n.owner.id);return t?'Team: '+t.name:'Choose a team';}return _p4aOwnerName(n);};
+ownerName=function(n){if(n?.owner?.kind==='team'){const t=(S.w?.metadata.teams||[]).find(x=>x.id===n.owner.id);return t?_t('Team: %(team)s',{team:t.name}):_t('Choose a team');}return _p4aOwnerName(n);};
 /* An area may word its own value on the step card ("Adds the tag “IT”"). */
 const _p4aNewSummary=newSummary;
 newSummary=function(n){if(n?.type==='update'&&!n.value_from){const f=safeSpec(n.field);if(f?.card_words&&n.value!==undefined&&n.value!==''){const o=(f.options||[]).find(x=>String(x.key??x)===String(n.value));if(o)return f.card_words.replace('%s',o.label??o);}}return _p4aNewSummary(n);};
