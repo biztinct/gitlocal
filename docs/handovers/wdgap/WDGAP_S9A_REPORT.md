@@ -1,24 +1,5 @@
 # WDGAP S9-A — report: review forms
 
-> **PAUSED (owner pause, 2026-11-16) — Follow-up RV1 is built but its test run was stopped
-> part-way.** Kept: local database `wdgap_s9a_t` (fresh copy, `-u all -i pb_review_forms`
-> done with the RV1 code; translations re-exported, 304/304 vi + id, PO gate clean).
-> What the stopped run had already shown (59 of ~340 tests started): the five known
-> pb_me_portal baseline failures, plus ONE new one —
-> `pb_me_portal TestMeHomeSource.test_01_registry_covers_every_tile`, caused by the new
-> "My review" home entry (`/my/review`, template `pb_review_forms.portal_my_home_review`)
-> not being in pb_me_portal's tile registry.
-> **Exact next step:** (1) remove the home entry template `portal_my_home_review` from
-> `pb_review_forms/views/portal_templates.xml` (keep the `/my/review` route and the
-> `pb_rf_has` key) so the tile is added ONLY by the merge agent together with its
-> `_TILE_ROWS` row, and drop the `/my` assertion in `TestPortal.test_12_shown_page_and_preview_render`
-> (keep the `/my/review` redirect check); update "Follow-up RV1 › My review tile" to say the
-> merge agent also adds the `portal.portal_docs_entry` (copy the removed template);
-> (2) rerun `bash scratchpad/s9a/run_tests.sh rv1 pb_review_forms,pb_goals,pb_me_portal
-> "/pb_review_forms,/pb_goals,/pb_me_portal,/pb_pay:TestQf4GoalScores"` on `wdgap_s9a_t`;
-> expect baseline 5 only; (3) fill RV1_A…RV1_E in the RV1 test table, commit, push, drop the
-> database, report to the coordinator.
-
 Branch `wdgap-s9a` (from `origin/19.1` @ abc2259b6). Built, tested and self-reviewed by the
 implementation agent. NOT merged, NOT deployed. Owner rulings applied: P1, P2, C-3, C-5.
 
@@ -218,11 +199,20 @@ their own review, which RV1 allows.
 
 | # | Case | Result |
 |---|---|---|
-| 21a | Every persona above, as that login: document, both PDF files, entry, answer, review-row comment, drawer form and own-page form — refused for the six outsiders; allowed exactly as the table says for the employee, the manager and HR | RV1_A |
-| 21b | Payroll officer and payroll manager still get the overall result (3.85) through `_pay_score` | RV1_B |
-| 21c | An ordinary document stays readable by payroll | RV1_C |
-| 21d | Nobody flips the flag: a write by HR is refused; a create with the flag by a payroll manager drops it | RV1_D |
-| 12+ | Home entry: a portal worker with a review on a form sees "My review" on `/my`; `/my/review` leads to this year's review; without a form there is no review to lead to | RV1_E |
+| 21a | Every persona above, as that login: document, both PDF files, entry, answer, review-row comment, drawer form and own-page form — refused for the six outsiders; allowed exactly as the table says for the employee, the manager and HR | PASS |
+| 21b | Payroll officer and payroll manager still get the overall result (3.85) through `_pay_score` | PASS |
+| 21c | An ordinary document stays readable by payroll | PASS |
+| 21d | Nobody flips the flag: a write by HR is refused; a create with the flag by a payroll manager drops it | PASS |
+| 12+ | The tile's door: `/my/review` leads a portal worker to this year's review; without a form there is no review to lead to | PASS |
+
+**Full suites after RV1** (database `wdgap_s9a_t`, fresh copy, `-u all -i pb_review_forms`, then
+`-u pb_review_forms,pb_goals,pb_me_portal` with `/pb_review_forms,/pb_goals,/pb_me_portal,/pb_pay:TestQf4GoalScores`):
+**341 tests, 3 failed, 2 errors — exactly the five baseline pb_me_portal failures** (failure
+lists identical). pb_review_forms 42/42, pb_goals 197/197, pb_pay QF4 9/9. The first RV1 run
+had also failed `pb_me_portal TestMeHomeSource.test_01_registry_covers_every_tile` because a
+"My review" home entry was shipped here before pb_me_portal's tile row; the entry was taken
+out (it arrives with the row at the merge, below) and that test passes again.
+Translations re-exported: 302 vi + 302 id, PO gate clean.
 
 ### The "My review" home tile — exact change for the Step 9 merge agent (pb_me_portal)
 
@@ -230,12 +220,28 @@ This module already ships everything except pb_me_portal's tile row:
 
 - **Door:** `GET /my/review` (pb_review_forms `controllers/portal.py`, `portal_rf_current`) —
   redirects to this year's review page, or to `/my/goals` when there is none.
-- **Home entry:** template `pb_review_forms.portal_my_home_review` adds a
-  `portal.portal_docs_entry` (title "My review", url `/my/review`) inside
-  `portal.portal_my_home`, drawn only when the eager key `pb_rf_has` is true (set by
-  `PbReviewFormsPortal._prepare_portal_layout_values`). Until the row below exists it shows
-  under "More" with a plain file icon (contract C-3).
-- **The merge change (pb_me_portal only, 4 lines + translations):**
+- **Eager key:** `pb_rf_has` (true when the person has a review on a form) is set on every
+  portal page by `PbReviewFormsPortal._prepare_portal_layout_values`.
+- **Why the entry is not shipped here:** pb_me_portal's own test
+  `TestMeHomeSource.test_01_registry_covers_every_tile` requires every home entry to be in its
+  tile registry, so the entry and the row must arrive together (first RV1 run caught it).
+- **The merge change (5 small pieces + translations):**
+  0. The home entry — a new template, best in pb_review_forms (or pb_me_portal):
+     ```xml
+     <template id="portal_my_home_review" name="Review home entry"
+               inherit_id="portal.portal_my_home" priority="47">
+       <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+         <t t-if="pb_rf_has" t-call="portal.portal_docs_entry">
+           <t t-set="title">My review</t>
+           <t t-set="text">Your end-of-year review, both sides</t>
+           <t t-set="url" t-value="'/my/review'"/>
+           <t t-set="config_card" t-value="True"/>
+         </t>
+       </xpath>
+     </template>
+     ```
+     (if placed in pb_review_forms: add it to `views/portal_templates.xml`, raise its version
+     and add the two msgids to its `.pot`/vi/id).
   1. `pb_me_portal/models/pb_me_home.py`, in `_TILE_ROWS` right after line 120
      (`('/my/goals', 'growth', 'target', 'indigo', {}),`) add
      `('/my/review', 'growth', 'clipboard-list', 'indigo', {}),`

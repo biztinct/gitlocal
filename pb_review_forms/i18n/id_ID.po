@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
-"POT-Creation-Date: 2026-11-16 09:04+0000\n"
-"PO-Revision-Date: 2026-11-16 09:04+0000\n"
+"POT-Creation-Date: 2026-11-16 12:46+0000\n"
+"PO-Revision-Date: 2026-11-16 12:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: id_ID\n"
@@ -768,11 +768,6 @@ msgstr "Wajib dijawab"
 #: model:ir.model,name:pb_review_forms.model_pb_my_goals
 msgid "My goals"
 msgstr "Sasaran saya"
-
-#. module: pb_review_forms
-#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
-msgid "My review"
-msgstr "Penilaian saya"
 
 #. module: pb_review_forms
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__name
@@ -1812,12 +1807,6 @@ msgstr "Anda sudah mulai mengisi pandangan. Kirim jika sudah siap."
 #: code:addons/pb_review_forms/models/facade.py:0
 msgid "Your HR team has been asked to talk with you."
 msgstr "Tim HR Anda sudah diminta untuk berbicara dengan Anda."
-
-#. module: pb_review_forms
-#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
-msgid "Your end-of-year review: your own view, your manager's and the result"
-msgstr ""
-"Penilaian akhir tahun Anda: pandangan Anda, pandangan atasan, dan hasilnya"
 
 #. module: pb_review_forms
 #: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form

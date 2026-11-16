@@ -643,10 +643,7 @@ class TestPortal(RFCase, HttpCase):
         goals = self.url_open('/my/goals')
         self.assertEqual(goals.status_code, 200)
         self.assertIn('Your review form', goals.text)
-        # the home entry and its stable door
-        home = self.url_open('/my')
-        self.assertEqual(home.status_code, 200)
-        self.assertIn('/my/review', home.text)
+        # the home tile's stable door (the tile itself comes at the merge)
         door = self.url_open('/my/review', allow_redirects=False)
         self.assertIn('/my/goals/review/%s' % review.id,
                       door.headers.get('Location', ''))
