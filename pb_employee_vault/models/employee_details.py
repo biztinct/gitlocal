@@ -64,7 +64,7 @@ _SPEC = [
     ('personal', 'family', _lt("Family and emergency"), 'heart', None, [
         ('spouse_complete_name', _lt("Spouse"), True),
         ('children', _lt("Dependent children"), True),
-        ('vietnam_dependents_count', _lt("Dependants for tax"), True),
+        ('vietnam_dependents_count', _lt("Dependents reported in employee record"), True),
         ('emergency_contact', _lt("Emergency contact"), False),
         ('emergency_phone', _lt("Emergency phone"), False),
         ('vietnam_emergency_contact_name', _lt("Emergency contact name"), True),
@@ -218,7 +218,7 @@ class PbPeople(models.AbstractModel):
         return country in codes
 
     @api.model
-    def _e360_details(self, emp, unmask):
+    def _e360_details(self, emp, unmask, vietnam=None):
         """{'personal': [group, …], 'job': […], 'pay': […]} for the drawer."""
         names = {f for *_x, rows in _SPEC for f, _l, _o in rows}
         names |= set(_HOME_ADDRESS)
@@ -258,4 +258,7 @@ class PbPeople(models.AbstractModel):
                           'empty': val is None} for n, lbl, val, _o, _f in shown],
                 'filled': sum(1 for v in shown if v[2] is not None),
             })
+        vietnam = vietnam if vietnam is not None else self._e360_vietnam(emp, unmask)
+        if vietnam:
+            tabs['pay'] = vietnam['groups'] + [g for g in tabs['pay'] if g['key'] != 'vn']
         return tabs

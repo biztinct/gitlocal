@@ -65,17 +65,26 @@
     .pev-head {
         padding: 20px 22px 16px; border-bottom: 1px solid var(--line);
         background: var(--t-s);
-        display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+        display: grid; grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center; gap: 10px 14px;
     }
     .pev-head-id { display: flex; gap: 14px; align-items: center; min-width: 0; }
     .pev-ava {
-        width: 58px; height: 58px; border-radius: 16px; flex: none;
+        width: 46px; height: 46px; border-radius: 13px; flex: none;
         background: var(--t) center/cover no-repeat; color: #fff;
         display: flex; align-items: center; justify-content: center;
         font-weight: 700; font-size: 20px; box-shadow: 0 4px 12px rgba(14, 124, 134, .25);
     }
     .pev-head-tx { min-width: 0; }
-    .pev-head-tx h2 { margin: 0 0 6px; font-size: 19px; font-weight: 700; }
+    .pev-head-tx h2 { margin: 0; font-size: 19px; font-weight: 700; overflow-wrap: anywhere; }
+    .pev-head-meta, .pev-head-extras { grid-column: 1 / -1; }
+    .pev-head-extras { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+    .pev-head-extras > .smp-paidby { flex: 1 1 100%; }
+    .pev-section-note { color: var(--mut); font-size: 12px; line-height: 1.5; margin: 0; padding: 10px 14px; }
+    @media (max-width: 560px) {
+        .pev-head { grid-template-columns: minmax(0, 1fr); }
+        .pev-head-side { justify-content: flex-end; flex-wrap: wrap; }
+    }
     .pev-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .pev-chip {
         display: inline-flex; align-items: center; gap: 5px;

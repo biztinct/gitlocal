@@ -524,13 +524,13 @@
   <span t-if="state.data.found" class="smp-paidby"
         t-att-data-smp-on="state.data.config_id ? '1' : '0'"
         t-att-title="tooltip">
-    <span class="smp-paidby__icon"><t t-out="ic('banknote', 14)"/></span>
-    <span class="smp-paidby__text">
-      <small>Paid by</small>
+    <span class="smp-paidby__row">
+      <small><t t-out="ic('banknote', 14)"/> Paid by</small>
       <b t-esc="state.data.label"/>
     </span>
-    <span t-if="state.data.advance" class="smp-badge">
-      Advance: <t t-esc="state.data.advance"/>
+    <span t-if="state.data.advance" class="smp-paidby__row">
+      <small>Advance</small>
+      <span t-esc="state.data.advance"/>
     </span>
   </span>
 </t>

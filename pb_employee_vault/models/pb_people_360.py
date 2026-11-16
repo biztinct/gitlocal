@@ -100,6 +100,10 @@ class PbPeople(models.AbstractModel):
             return {'error': _("Employee not found.")}
         unmask = self._vault_unmask_wage()
         profile = self.get_employee_detail(emp.id)
+        vietnam = self._e360_vietnam(emp, unmask)
+        if vietnam:
+            profile['statutory'].update({k: vietnam[k] for k in (
+                'tax', 'tax_label', 'insurance', 'insurance_label')})
         # safety rail 4: wage is manager-only — scrub the number from the payload
         # itself (two-tier serialization, NOT CSS hiding) so a non-manager's
         # browser never receives it.
@@ -109,7 +113,7 @@ class PbPeople(models.AbstractModel):
         timeline = self.env['pb.employee.timeline']._collect(emp, unmask)
         return {
             'profile': profile,
-            'details': self._e360_details(emp, unmask),
+            'details': self._e360_details(emp, unmask, vietnam=vietnam),
             'costcenter': self._costcenter(emp),
             'documents': self._documents_for(emp),
             'categories': self._categories(),
