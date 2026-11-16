@@ -415,24 +415,21 @@ class PbPeopleReports(models.AbstractModel):
     @api.model
     def _series_suppressor(self, m, force=(), hide_all=False):
         """The month-by-month figures of one scope and their totals."""
-        # WHY QUARTERS. The headcount is shown for every month, so the change
-        # from one month to the next is public: joiners minus leavers. With
-        # joiners and leavers ALSO shown month by month, a reader can piece
-        # almost every small month together (the audit proves it, and then
-        # hides nearly everything for a small company). So joiners and
-        # leavers are shown by QUARTER and for the year; the headcount stays
-        # monthly. Each quarter's difference is still public (quarter-end
-        # headcounts), which the pairs below say.
+        # NO MONTH-BY-MONTH HEADCOUNT (found in the S9-B walk). Two shown
+        # headcounts a month apart give their difference by subtraction —
+        # "49 then 50" names a one-person change — which owner ruling P6
+        # forbids, and the audit then had to hide the year's joiners, leavers
+        # and turnover to compensate. So the screen shows the headcount at the
+        # START and the END of the year only (their difference is joiners
+        # less leavers for the year: the pair below), and joiners and leavers
+        # by QUARTER, whose differences are not public (no quarter-end
+        # headcount is shown), so they need no pair.
         S = Suppressor()
-        n = len(m['heads'])
         S.cell('H0', m['h0'])
-        for i in range(n):
-            S.cell(('H', i), m['heads'][i])
         quarters = self._quarters(m)
         for q, (j, l) in enumerate(quarters):
             S.cell(('J', q), j)
             S.cell(('L', q), l)
-            S.add_pair(('J', q), ('L', q))
         S.cell('S:h_end', m['heads'][-1])
         S.cell('S:j', sum(m['joins']))
         S.cell('S:l', sum(m['leaves']))
@@ -442,7 +439,7 @@ class PbPeopleReports(models.AbstractModel):
         # average headcount = (start + end) / 2, and turnover = leavers / it
         S.add_derived('S:avg', ['H0', 'S:h_end'])
         S.add_derived('S:rate', ['S:l', 'H0', 'S:h_end'])
-        # widening hides a month's headcount before one of these
+        # widening hides a quarter before one of these
         S.protect = {'S:h_end', 'H0', 'S:j', 'S:l'}
         for key in force:
             S.force(key)
@@ -450,9 +447,6 @@ class PbPeopleReports(models.AbstractModel):
             for key in list(S.values):
                 S.force(key)
         S.solve()
-        # the headcount at the end IS the last month's headcount
-        if S.is_hidden('S:h_end') or S.is_hidden(('H', n - 1)):
-            S.hidden.update({'S:h_end', ('H', n - 1)})
         return S
 
     @api.model
@@ -565,7 +559,6 @@ class PbPeopleReports(models.AbstractModel):
         P = self._params(params)
         B = self._shared(P)
         S, m = B['S'], B['m']
-        n = len(P['ends'])
         avg = (m['h0'] + m['heads'][-1]) / 2.0
         out = {
             'view': view,
@@ -578,19 +571,13 @@ class PbPeopleReports(models.AbstractModel):
             'notes': self._data_notes(B['notes']),
             'tiles': self._tiles(S, m, avg),
         }
-        months = [format_date(self.env, d, date_format='MMM y') for d in P['ends']]
         if view in ('headcount', 'movement'):
-            out['series'] = [{'month': months[i], 'h': S.out(('H', i))} for i in range(n)]
             quarters = self._quarters(m)
-            last_i = {}
-            for i, day in enumerate(P['ends']):
-                last_i[(day.month - 1) // 3] = i
-            qkeys = sorted(last_i)
+            qkeys = sorted({(day.month - 1) // 3 for day in P['ends']})
             out['quarters'] = [{
                 'label': _('Q%(q)s %(year)s', q=qk + 1, year=P['year']),
                 'j': S.out(('J', q)), 'l': S.out(('L', q)),
-                'net': self._net(S, quarters, q, last_i[qk],
-                                 last_i[qkeys[q - 1]] if q else None, exact=m['exact']),
+                'net': self._net(S, quarters, q),
             } for q, qk in enumerate(qkeys)]
             if view == 'headcount':
                 out['table'] = self._group_table(P, B)
@@ -604,22 +591,19 @@ class PbPeopleReports(models.AbstractModel):
         return out
 
     @api.model
-    def _net(self, S, quarters, q, end_i, prev_i, exact=True):
-        """A quarter's joiners less its leavers: shown when both are shown,
-        or when the two headcounts around the quarter are (it is then simply
-        their difference, already on the screen)."""
-        prev = 'H0' if prev_i is None else ('H', prev_i)
+    def _net(self, S, quarters, q):
+        """A quarter's joiners less its leavers: shown only when both are."""
         j, l = quarters[q]
-        both_h = exact and not S.is_hidden(prev) and not S.is_hidden(('H', end_i))
-        if both_h or not (S.is_hidden(('J', q)) or S.is_hidden(('L', q))):
-            return {'v': j - l, 'h': False}
-        return {'v': None, 'h': True}
+        if S.is_hidden(('J', q)) or S.is_hidden(('L', q)):
+            return {'v': None, 'h': True}
+        return {'v': j - l, 'h': False}
 
     @api.model
     def _tiles(self, S, m, avg):
         rate_hidden = S.is_hidden('S:l') or S.is_hidden('S:avg')
         rate = round(sum(m['leaves']) * 100.0 / avg, 1) if avg and not rate_hidden else None
         return {
+            'h0': S.out('H0'),
             'h_end': S.out('S:h_end'),
             'avg': {'v': None if S.is_hidden('S:avg') else round(avg, 1),
                     'h': S.is_hidden('S:avg')},
@@ -895,7 +879,7 @@ class PbPeopleReports(models.AbstractModel):
                 r += 1
         r += 1
         t = data['tiles']
-        for label, c in ((_('Headcount at the end'), t['h_end']), (_('Average headcount'), t['avg']),
+        for label, c in ((_('Headcount at the start'), t['h0']), (_('Headcount at the end'), t['h_end']), (_('Average headcount'), t['avg']),
                          (_('Joiners'), t['j']), (_('Leavers'), t['l']), (_('Turnover %'), t['rate'])):
             sheet.write(r, 0, label)
             sheet.write(r, 1, val(c))
@@ -912,9 +896,6 @@ class PbPeopleReports(models.AbstractModel):
                     sheet.write(r, i, v)
                 r += 1
             r += 1
-        if data.get('series') and data['view'] == 'headcount':
-            table([_('Month'), _('Headcount')],
-                  [[s['month'], val(s['h'])] for s in data['series']])
         if data.get('quarters'):
             table([_('Quarter'), _('Joiners'), _('Leavers'), _('Change')],
                   [[s['label'], val(s['j']), val(s['l']), val(s['net'])] for s in data['quarters']])

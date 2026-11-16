@@ -165,13 +165,13 @@ class TestPeopleReports(TransactionCase):
     # ------------------------------------------------------------ 82: figures
     def test_82_headcount_reconciles_with_the_records(self):
         data = self.report(company_id=self.co_x.id)
-        for i, row in enumerate(data['series']):
-            day = date(self.year, i + 1, 1)
-            import calendar
-            day = day.replace(day=calendar.monthrange(self.year, i + 1)[1])
-            if not row['h']['h']:
-                self.assertEqual(row['h']['v'], self.head_at([self.co_x.id], day), day)
-        self.assertEqual(len(data['series']), 12)
+        start = self.head_at([self.co_x.id], date(self.year - 1, 12, 31))
+        end = self.head_at([self.co_x.id], date(self.year, 12, 31))
+        self.assertEqual(data['tiles']['h0']['v'], start)
+        self.assertEqual(data['tiles']['h_end']['v'], end)
+        # no month-by-month headcount: two months side by side would give a
+        # one-person change away by subtraction
+        self.assertNotIn('series', data)
         self.assertEqual(len(data['quarters']), 4)
         # a figure is either the truth or hidden (no value) — never anything else
         for tile, truth in (('l', 6), ('j', 9)):        # X: 5 in June + the mover; 6+1+2

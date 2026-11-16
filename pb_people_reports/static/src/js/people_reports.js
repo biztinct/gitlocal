@@ -98,10 +98,6 @@ export class PbPeopleReports extends Component {
     shown(c) { return c && !c.h && c.v !== null && c.v !== undefined; }
     num(c) { return this.shown(c) ? Number(c.v).toLocaleString() : ""; }
     pct(c) { return this.shown(c) ? `${Number(c.v).toLocaleString()}%` : ""; }
-    get maxHead() {
-        const s = (this.state.data && this.state.data.series) || [];
-        return Math.max(1, ...s.map((r) => (this.shown(r.h) ? r.h.v : 0)));
-    }
     get maxMove() {
         const s = (this.state.data && this.state.data.quarters) || [];
         return Math.max(1, ...s.map((r) => Math.max(this.shown(r.j) ? r.j.v : 0, this.shown(r.l) ? r.l.v : 0)));

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 08:48+0000\n"
-"PO-Revision-Date: 2026-11-16 08:48+0000\n"
+"POT-Creation-Date: 2026-11-16 13:05+0000\n"
+"PO-Revision-Date: 2026-11-16 13:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -230,10 +230,8 @@ msgid ""
 msgstr "Kelompok di bawah 5 orang disembunyikan, begitu pula angka yang bisa dipakai untuk menghitungnya. Unduhan menyembunyikan angka yang sama."
 
 #. module: pb_people_reports
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
 msgid "Headcount"
 msgstr "Jumlah karyawan"
 
@@ -245,17 +243,19 @@ msgstr "Jumlah karyawan dan turnover"
 
 #. module: pb_people_reports
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Headcount at each month-end"
-msgstr "Jumlah karyawan di setiap akhir bulan"
+msgid "Headcount at the end"
+msgstr "Jumlah karyawan di akhir"
 
 #. module: pb_people_reports
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Headcount at the end"
-msgstr "Jumlah karyawan di akhir"
+msgid "Headcount at the start"
+msgstr "Jumlah karyawan di awal"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -310,14 +310,6 @@ msgstr "Karyawan masuk dan keluar"
 #. module: pb_people_reports
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Joiners and leavers are shown by quarter, not by month: with the headcount "
-"shown for every month, monthly figures would give small groups away."
-msgstr "Masuk dan keluar ditampilkan per kuartal, bukan per bulan: karena jumlah karyawan ditampilkan setiap bulan, angka bulanan akan membuka kelompok kecil."
-
-#. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
 msgid "Joiners and leavers by quarter"
 msgstr "Masuk dan keluar per kuartal"
 
@@ -340,14 +332,6 @@ msgstr "Masa kerja"
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Men"
 msgstr "Laki-laki"
-
-#. module: pb_people_reports
-#. odoo-javascript
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Month"
-msgstr "Bulan"
 
 #. module: pb_people_reports
 #. odoo-python
@@ -441,6 +425,14 @@ msgstr "Mengundurkan diri dihitung sebagai keluar atas pilihan sendiri. Diberhen
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Retired"
 msgstr "Pensiun"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"Shown by quarter, and the headcount only at the start and the end: figures "
+"for every month would let small groups be worked out."
+msgstr "Ditampilkan per kuartal, dan jumlah karyawan hanya di awal dan akhir: angka setiap bulan bisa dipakai untuk menghitung kelompok kecil."
 
 #. module: pb_people_reports
 #. odoo-python

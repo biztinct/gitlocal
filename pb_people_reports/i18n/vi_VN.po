@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 08:48+0000\n"
-"PO-Revision-Date: 2026-11-16 08:48+0000\n"
+"POT-Creation-Date: 2026-11-16 13:05+0000\n"
+"PO-Revision-Date: 2026-11-16 13:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -230,10 +230,8 @@ msgid ""
 msgstr "Nhóm dưới 5 người được ẩn, cùng mọi con số có thể giúp suy ra nhóm đó. Tệp tải xuống cũng ẩn đúng các con số này."
 
 #. module: pb_people_reports
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
 msgid "Headcount"
 msgstr "Số nhân viên"
 
@@ -245,17 +243,19 @@ msgstr "Số nhân viên và tỷ lệ nghỉ việc"
 
 #. module: pb_people_reports
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Headcount at each month-end"
-msgstr "Số nhân viên cuối mỗi tháng"
+msgid "Headcount at the end"
+msgstr "Số nhân viên cuối kỳ"
 
 #. module: pb_people_reports
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Headcount at the end"
-msgstr "Số nhân viên cuối kỳ"
+msgid "Headcount at the start"
+msgstr "Số nhân viên đầu kỳ"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -310,14 +310,6 @@ msgstr "Người vào và người nghỉ"
 #. module: pb_people_reports
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Joiners and leavers are shown by quarter, not by month: with the headcount "
-"shown for every month, monthly figures would give small groups away."
-msgstr "Người vào và người nghỉ được hiển thị theo quý, không theo tháng: vì số nhân viên đã hiện cho từng tháng, số liệu theo tháng sẽ làm lộ các nhóm nhỏ."
-
-#. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
 msgid "Joiners and leavers by quarter"
 msgstr "Người vào và người nghỉ theo quý"
 
@@ -340,14 +332,6 @@ msgstr "Thâm niên"
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Men"
 msgstr "Nam"
-
-#. module: pb_people_reports
-#. odoo-javascript
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Month"
-msgstr "Tháng"
 
 #. module: pb_people_reports
 #. odoo-python
@@ -441,6 +425,14 @@ msgstr "Nghỉ việc tự nguyện được tính là tự chọn nghỉ. Bị 
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Retired"
 msgstr "Nghỉ hưu"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"Shown by quarter, and the headcount only at the start and the end: figures "
+"for every month would let small groups be worked out."
+msgstr "Hiển thị theo quý, và số nhân viên chỉ ở đầu kỳ và cuối kỳ: số liệu từng tháng có thể giúp suy ra các nhóm nhỏ."
 
 #. module: pb_people_reports
 #. odoo-python

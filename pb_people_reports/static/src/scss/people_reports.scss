@@ -67,6 +67,13 @@
         i { display: block; height: 100%; background: var(--pbim-primary, #5A4BB0); border-radius: 999px; } }
     .pbpr-dist-v { text-align: right; min-width: 90px; small { color: var(--pbim-muted, #64748B); } }
     .pbpr-empty { text-align: center; padding: 30px 20px; }
+    .pbim-input {
+        border: 1px solid var(--pbim-line, #E2E8F0); border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-surface, #fff); padding: 7px 10px; font-size: 13.5px;
+        color: var(--pbim-ink, #1D2433); min-height: 36px;
+        &:focus { outline: none; border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); }
+    }
     @media (max-width: 640px) {
         .pbpr-dist li { grid-template-columns: 1fr auto; }
         .pbpr-dist-bar { display: none; }

@@ -59,6 +59,7 @@
 
           <!-- the tiles -->
           <div class="pbpr-tiles" t-att-class="{ 'is-busy': state.busy }">
+            <div class="pbpr-tile"><span class="pbpr-k">Headcount at the start</span><b t-if="shown(D.tiles.h0)" t-esc="num(D.tiles.h0)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
             <div class="pbpr-tile"><span class="pbpr-k">Headcount at the end</span><b t-if="shown(D.tiles.h_end)" t-esc="num(D.tiles.h_end)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
             <div class="pbpr-tile"><span class="pbpr-k">Average headcount</span><b t-if="shown(D.tiles.avg)" t-esc="num(D.tiles.avg)"/><t t-else="" t-call="pb_people_reports.Hidden"/><small>start and end of the period</small></div>
             <div class="pbpr-tile"><span class="pbpr-k">Joiners</span><b t-if="shown(D.tiles.j)" t-esc="num(D.tiles.j)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
@@ -67,22 +68,6 @@
           </div>
 
           <!-- the months -->
-          <section t-if="D.series and D.view === 'headcount'" class="pbpr-card">
-            <h3>Headcount at each month-end</h3>
-            <table class="pbim-table pbpr-table">
-              <thead><tr><th>Month</th><th>Headcount</th></tr></thead>
-              <tbody>
-                <tr t-foreach="D.series" t-as="sr" t-key="sr_index">
-                  <td t-esc="sr.month"/>
-                  <td class="pbpr-barcell">
-                    <span t-if="shown(sr.h)" class="pbpr-hbar"><i t-att-style="barStyle(sr.h, maxHead)"/></span>
-                    <b t-if="shown(sr.h)" t-esc="num(sr.h)"/><t t-else="" t-call="pb_people_reports.Hidden"/>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
           <section t-if="D.quarters and D.quarters.length" class="pbpr-card">
             <h3>Joiners and leavers by quarter</h3>
             <table class="pbim-table pbpr-table">
@@ -96,7 +81,7 @@
                 </tr>
               </tbody>
             </table>
-            <p class="pbpr-note"><t t-out="icon('info', 13)"/> <span>Joiners and leavers are shown by quarter, not by month: with the headcount shown for every month, monthly figures would give small groups away.</span></p>
+            <p class="pbpr-note"><t t-out="icon('info', 13)"/> <span>Shown by quarter, and the headcount only at the start and the end: figures for every month would let small groups be worked out.</span></p>
           </section>
 
           <!-- by company / department -->
