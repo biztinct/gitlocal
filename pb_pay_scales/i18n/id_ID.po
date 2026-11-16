@@ -3135,3 +3135,15 @@ msgstr "Menunggu harinya"
 #: code:addons/pb_pay_scales/models/review_dated.py:0
 msgid "You can take it back until %(day)s, on one button."
 msgstr "Anda dapat membatalkannya sampai %(day)s, dengan satu tombol."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "One person was not written on the day:"
+msgstr "Satu orang tidak ditulis pada hari itu:"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "One person was paid for %(months)s before their new pay was written."
+msgstr "Satu orang sudah dibayar untuk %(months)s sebelum gaji barunya ditulis."

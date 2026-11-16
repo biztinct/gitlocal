@@ -3135,3 +3135,15 @@ msgstr "Chờ đến ngày"
 #: code:addons/pb_pay_scales/models/review_dated.py:0
 msgid "You can take it back until %(day)s, on one button."
 msgstr "Bạn có thể hoàn tác đến ngày %(day)s, chỉ bằng một nút."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "One person was not written on the day:"
+msgstr "Một người không được ghi vào ngày đó:"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "One person was paid for %(months)s before their new pay was written."
+msgstr "Một người đã được trả lương cho %(months)s trước khi lương mới của họ được ghi."

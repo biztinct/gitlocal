@@ -449,9 +449,11 @@ class PbPayReviewDated(models.Model):
             'sentence': _("This change starts in a month already paid."),
             'months': ', '.join(labels),
             'people': len(people),
-            'detail': _("%(people)s people were paid for %(months)s before "
-                        "their new pay was written.", people=len(people),
-                        months=', '.join(labels)),
+            'detail': _("One person was paid for %(months)s before their new "
+                        "pay was written.", months=', '.join(labels))
+            if len(people) == 1 else
+            _("%(people)s people were paid for %(months)s before their new "
+              "pay was written.", people=len(people), months=', '.join(labels)),
             'can_rework': bool(retro),
             'rework_made': bool(made),
             'note': '' if retro else _(
@@ -479,8 +481,10 @@ class PbPayReviewDated(models.Model):
         if skipped and self.state in ('applied', 'closed'):
             out['pbs_skipped'] = {
                 'count': len(skipped),
-                'sentence': _("%(count)s people were not written on the day:",
-                              count=len(skipped)),
+                'sentence': _("One person was not written on the day:")
+                if len(skipped) == 1 else
+                _("%(count)s people were not written on the day:",
+                  count=len(skipped)),
                 'rows': [{'id': r.id, 'name': r.employee_id.name or '',
                           'why': r.note or ''} for r in skipped[:30]],
             }
