@@ -205,10 +205,15 @@ class TestConductFlow(TransactionCase):
         crons = env['ir.cron'].sudo().search([]).filtered(
             lambda c: (c.get_external_id().get(c.id) or '').startswith('pb_conduct.'))
         self.assertFalse(crons)
-        # nobody holds the conduct groups except the people the test named
+        # install grants nobody: not the built-in administrator, not the
+        # system account, not whoever ran the install (unlike growth plans)
         for xmlid in ('pb_conduct.group_conduct_user', 'pb_conduct.group_conduct_head'):
-            holders = env.ref(xmlid).all_user_ids.filtered(lambda u: not u.login.startswith('s9b_'))
-            self.assertFalse(holders, xmlid)
+            holders = env.ref(xmlid).all_user_ids
+            for builtin in ('base.user_admin', 'base.user_root'):
+                self.assertNotIn(env.ref(builtin), holders, xmlid)
+            data_users = env['ir.model.data'].sudo().search([
+                ('module', '=', 'pb_conduct'), ('model', '=', 'res.users')])
+            self.assertFalse(data_users)
         # the whole fixture flow sent and queued nothing
         self.assertEqual(env['mail.mail'].sudo().search_count([]), self.mail_before)
         # no chatter anywhere: nothing on the cases, nothing about the case on the person

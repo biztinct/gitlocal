@@ -93,8 +93,16 @@ class PbConductLetter(models.Model):
 
     @api.model
     def _tz(self, emp):
-        return (emp.user_id.tz if emp.user_id else None) or emp.tz or \
-            emp.company_id.partner_id.tz or 'UTC'
+        """The clock the letter's hearing time is written in: the employee's
+        own login, then their company, then the HR person issuing it. The
+        working-hours zone (`emp.tz`) comes last: it defaults to UTC, which
+        printed a 14:00 hearing as 03:00 (found in the S9-B walk)."""
+        for tz in ((emp.user_id.tz if emp.user_id else None),
+                   emp.company_id.partner_id.tz, self.env.user.tz,
+                   emp.tz if emp.tz and emp.tz != 'UTC' else None):
+            if tz:
+                return tz
+        return 'UTC'
 
     @api.model
     def prepare(self, case, kind):

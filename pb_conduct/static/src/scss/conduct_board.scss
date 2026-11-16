@@ -49,7 +49,8 @@
         &.lg { width: 44px; height: 44px; font-size: 15px; }
     }
     .pbcd-dash, .pbcd-muted { color: var(--pbim-muted, #64748B); }
-    .pbcd-muted { font-size: 13px; margin: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .pbcd-muted { font-size: 13px; margin: 0; display: flex; align-items: flex-start; gap: 6px;
+        > svg { flex: 0 0 auto; margin-top: 3px; } }
     .pbcd-reply-dot { margin-left: 8px; color: var(--pbim-rose, #DC2668); display: inline-flex; vertical-align: middle; }
     .pbcd-badge {
         text-transform: none; white-space: nowrap;
@@ -155,6 +156,16 @@
         button { width: 100%; text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 8px;
             &:hover { background: var(--pbim-bg, #F5F6FA); } small { color: var(--pbim-muted, #64748B); } }
     }
+
+    // form fields (the kit has no input class of its own)
+    .pbim-input {
+        border: 1px solid var(--pbim-line, #E2E8F0); border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-surface, #fff); padding: 8px 10px; font-size: 13.5px;
+        color: var(--pbim-ink, #1D2433); line-height: 1.45; min-height: 36px;
+        &:focus { outline: none; border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); }
+    }
+    textarea.pbim-input { resize: vertical; }
 
     @media (max-width: 640px) {
         .pbcd-facts { grid-template-columns: minmax(0, 1fr); }
