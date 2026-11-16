@@ -17,7 +17,7 @@ offers "Make it permanent" beside it. Nothing is ever blocked.
 Contracts made before the system are counted from a number HR types once on
 the person (also in Updates).
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

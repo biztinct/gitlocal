@@ -24,7 +24,9 @@ export class ContractWizard extends Component {
             // dialog asks for one first (search as you type, pick one).
             pick: { term: "", rows: [], busy: false },
             form: { struct_id: "", structure_type_id: "", wage: "", date_start: "",
-                    date_end: "", resource_calendar_id: "", activate: true },
+                    date_end: "", resource_calendar_id: "", activate: true,
+                    // WDGAP S8-D (EX1): the pay lines a renewal carries over.
+                    lines: [] },
         });
         onWillStart(async () => {
             const d = await this.orm.call(MODEL, "get_defaults", [this.empId, this.renewFrom]);
@@ -38,9 +40,18 @@ export class ContractWizard extends Component {
                 if (d.prefill.struct_id) f.struct_id = String(d.prefill.struct_id);
                 if (d.prefill.structure_type_id) f.structure_type_id = String(d.prefill.structure_type_id);
                 if (d.prefill.resource_calendar_id) f.resource_calendar_id = String(d.prefill.resource_calendar_id);
+                f.lines = (d.prefill.lines || []).map((l) => ({ ...l, drop: false }));
             }
         });
     }
+
+    // WDGAP S8-D (EX1): HR can change or drop a carried pay line before saving.
+    onLine(line, ev) {
+        const value = Number(String(ev.target.value || "").replace(/[\s,]/g, ""));
+        if (Number.isFinite(value) && value >= 0) { line.amount = value; }
+    }
+    toggleLine(line) { line.drop = !line.drop; }
+    get carried() { return this.state.form.lines || []; }
 
     ic(n, s = 16) { return ic(n, s); }
     /** True while the dialog still needs a person. */
@@ -76,7 +87,9 @@ export class ContractWizard extends Component {
     async create() {
         this.state.loading = true; this.state.busyMsg = "Creating contract…";
         try {
-            const res = await this.orm.call(MODEL, "create_contract", [{ ...this.state.form, employee_id: this.empId }]);
+            const res = await this.orm.call(MODEL, "create_contract", [{
+                ...this.state.form, employee_id: this.empId, renew_from: this.renewFrom || false,
+            }]);
             if (res.error) { this.notif.add(res.error, { type: "danger" }); return; }
             this.state.result = res;
         } catch (e) {

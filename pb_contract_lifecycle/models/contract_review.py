@@ -648,6 +648,10 @@ class PbContractReview(models.Model):
             'structure_type_id': prefill.get('structure_type_id'),
             'resource_calendar_id': prefill.get('resource_calendar_id'),
             'activate': False,
+            # WDGAP S8-D (EX1): the wizard carries the old contract's pay lines
+            # onto the new one (each logged, dated the new start). The new
+            # contract is a draft, so HR still changes them before it runs.
+            'renew_from': old.id,
         }
         if date_end:
             vals['date_end'] = str(date_end)

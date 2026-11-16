@@ -62,9 +62,14 @@ class PbContractReviewRules(models.Model):
                     rule=check.get('rule') or '', why=text))
         return result
 
-    def _build_new_contract(self, start, new_end):
-        contract = super()._build_new_contract(start, new_end)
-        if contract and self.contract_id:
+    def _build_new_contract(self, start, new_end, contract_type=None):
+        # WDGAP S8-D: "Make it permanent" calls this with `contract_type`; the
+        # S8-B signature dropped it and the conversion raised a TypeError.
+        # Passed through unchanged; the fixed-term note is for an extension
+        # (a contract WITH an end date) only.
+        contract = super()._build_new_contract(start, new_end,
+                                               contract_type=contract_type)
+        if contract and self.contract_id and new_end:
             months = max(1, round((new_end - start).days / 30.4375)) \
                 if (new_end and start) else 12
             check = self.env['pb.contract.rule'].check_extension(
