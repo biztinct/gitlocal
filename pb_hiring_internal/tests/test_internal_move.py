@@ -47,14 +47,20 @@ class TestInternalMove(base.JoiningCase):
                 self.env['pb.journey.case'].sudo().search_count([])
                 if 'pb.journey.case' in self.env else 0)
 
-    # B30 — without the Change job flow (this database): no second person
+    def _without_job_change(self):
+        # Step 8's Change job is installed wherever Step 6 goes live (WDGAP S6
+        # merge); B30/B30b keep proving the system WITHOUT it by hiding it.
+        Offer = type(self.env['pb.hiring.offer'])
+        return patch.object(Offer, '_pbhi_job_change_target', lambda self: None)
+
+    # B30 — without the Change job flow: no second person
     def test_b30_move_without_job_change_flow(self):
         offer = self._signed()
         self.assertEqual(self.applicant.stage_id.pb_key, 'post_offer')
         self.assertTrue(self.applicant.pb_manager_told_on, 'told at the offer')
         before = self._counts()
-        self.assertNotIn('pb.job.change', self.env)
-        result = offer.action_confirm_joined()
+        with self._without_job_change():
+            result = offer.action_confirm_joined()
         self.assertIs(result, True)
         self.assertEqual(self._counts(), before,
                          'B30: no employee, contract, login or joining checklist made')
@@ -68,15 +74,16 @@ class TestInternalMove(base.JoiningCase):
 
     def test_b30b_board_reply_says_job_change_to_do(self):
         offer = self._signed()
-        res = self.facade.act('confirm_joined', {'offer_id': offer.id})
-        self.assertIn('Job change to do', res['note'])
-        self.assertNotIn('pb_open_action', res)
-        board = self.env['pb.hiring.internal'].with_user(self.recruiter).get_board()
-        row = [a for a in board['applications'] if a['id'] == self.applicant.id][0]
-        self.assertEqual(row['job_change'], 'to_do')
-        self.assertFalse(board['job_change_available'])
-        note = self.env['pb.hiring.internal'].with_user(self.recruiter).start_job_change(
-            self.applicant.id)
+        with self._without_job_change():
+            res = self.facade.act('confirm_joined', {'offer_id': offer.id})
+            self.assertIn('Job change to do', res['note'])
+            self.assertNotIn('pb_open_action', res)
+            board = self.env['pb.hiring.internal'].with_user(self.recruiter).get_board()
+            row = [a for a in board['applications'] if a['id'] == self.applicant.id][0]
+            self.assertEqual(row['job_change'], 'to_do')
+            self.assertFalse(board['job_change_available'])
+            note = self.env['pb.hiring.internal'].with_user(self.recruiter).start_job_change(
+                self.applicant.id)
         self.assertIn('employee record', note['note'])
 
     # B31 — with the Change job flow (simulated): it opens, prefilled
