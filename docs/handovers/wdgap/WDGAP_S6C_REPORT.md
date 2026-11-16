@@ -1,5 +1,34 @@
 # WDGAP S6-C — Claims paid in pay: report
 
+## PAUSED (owner pause, 2026-11-16) — Follow-up TA1
+
+**Done and pushed**: TA1 code (`98fdd7950`): settling a trip advance goes to the Head of
+pay; its own suite green (pb_trip_advance 21 tests, 0 failed); vi + id PO gate green;
+browser walk done (employee pages show "waiting for approval" in en and vi; the
+settlement sits in the Head of pay's Approvals with the right card; Approve → settled,
+taxi claim covered, 1,800,000 open to the pay run; console clean).
+Regression after TA1 (`after2`, 15 suites, 666 tests): every earlier baseline failure the
+same, plus 5 failures in the two APPROVAL suites, which had no baseline on this copy:
+`TestInboxFacade.test_u10…` (AccessError in the engine outbox via biz_access),
+`TestApprovalStaticContract.test_the_look…` (inbox.scss colour `#F8F9FC`),
+`TestP7Vietnamese.test_z06d / z06e` (other modules' Vietnamese), `TestVietnameseIsComplete
+.test_u13` (pb_approval_config's own untranslated terms). None names a trip advance.
+
+**Where I stopped**: proving those 5 are pre-existing. `scratchpad/s6c/base3.sh` (recreates
+`wdgap_s6c_t` WITHOUT any S6-C module, then runs `/pb_approval_config,/biz_approval_workflow`)
+was STARTED and STOPPED at the pause during its database set-up; `wdgap_s6c_t` is kept but
+is a half-upgraded copy — recreate it.
+
+**Exact next step on resume**:
+1. `bash scratchpad/s6c/base3.sh` (≈30 min; poll `base3.done`), then
+   `bash scratchpad/s6c/summ.sh base3`; compare its failure list with the 5 above
+   (`after2_failures.txt`). Expected: the same 5 (pre-existing) → write that into the
+   "REGRESSION_TA1" line of the Follow-up TA1 section below. If any of the 5 is NOT in
+   base3, investigate that one before anything else.
+2. Remove this PAUSED block, commit the report, push, drop `wdgap_s6c_t` and
+   `~/odoo19/data/filestore/wdgap_s6c_t` (`scratchpad/s6c/drop.sh`), plain summary to the
+   coordinator.
+
 Branch `wdgap-s6c` (from `origin/19.1` at `abc2259b6`). Three NEW modules, **no file of
 any existing module edited** (everything by inheritance). Not merged, not deployed, no
 live server touched. Owner ruling E6; FACTS §7, §8 (lane), §10 defaults.
@@ -7,7 +36,7 @@ live server touched. Owner ruling E6; FACTS §7, §8 (lane), §10 defaults.
 | Module | Version | What |
 |---|---|---|
 | `pb_expense_payroll` | 19.0.1.0.0 | company choice "by finance / in the next pay run"; a pay-run claim = a separate untaxed line on the next REGULAR payslip, paid once |
-| `pb_trip_advance` | 19.0.1.0.0 | trip cash advance given → claimed against → settled; unspent part taken back from the next regular pay, take-home never below zero |
+| `pb_trip_advance` | 19.0.1.1.0 (after TA1) | trip cash advance given → claimed against → settled; unspent part taken back from the next regular pay, take-home never below zero |
 | `pb_expense_allowance` | 19.0.1.0.0 | yearly limit per kind of expense, per-person figure wins, "limit, used, left" refusal or "may go over" with approval |
 
 ## 1. What was built
@@ -249,9 +278,7 @@ PDF file itself (the printed block is covered by C16).
 - **D2 — "Paid in <run>"** for the employee reads the pay MONTH ("Paid in your November
   2026 pay"); the staff screens name the run.
 - **D3 — only own-account receipts are paid back**; company-card receipts never are.
-- **D4 — no approval step for settling an advance**: finance / pay team press Settle and
-  see the figures first; the settlement is logged on the trip and the advance. Owner
-  question 3.
+- **D4 — (superseded by Follow-up TA1)**: settling now needs the Head of pay's approval.
 - **D5 — claims already paid before the settlement are not set against the advance**
   (their money reached the person already); only approved, not-yet-paid claims are.
 - **D6 — draft (never-sent) receipts drawn by the trip bridge** (`pb_trip_expense_bridge`
@@ -306,7 +333,10 @@ Run payroll wizard's file template to show the amounts. Owner question 1.
 - Line codes `PBEXPBACK` (claim, earning), `ADVPBTRIP` (unspent advance, deduction — starts
   with ADV so full-and-final reads it as an advance); `hr.payslip.line.pb_extra_kind`.
 
-## 11. Owner questions (plain words)
+## 11. Owner questions (plain words) — ANSWERED 2026-11-16 evening
+Rulings: 1 — no change (listed for typing + "paid in the file" is enough); 2 — no change;
+3 — CHANGE, built as ruling TA1 (below); 4 — no change. Original questions kept:
+
 1. **Pay schemes paid from a pay data file** (Rize has 15): approved claims are listed on
    the pay run for the pay team to type into the file, and the pay team then marks each
    claim "paid in the file". Is that enough for now, or should claims be added to those
@@ -349,3 +379,81 @@ Run payroll wizard's file template to show the amounts. Owner question 1.
   127.0.0.1; start the server with `--db-filter='^<db>$'`).
 - S6C-4: tests run only for modules being installed or updated: a baseline with
   `--test-tags` must also `-u` each module whose suite it means to record.
+
+
+## Follow-up TA1 — settling a trip advance needs the Head of pay (owner ruling 2026-11-16)
+
+**What changed** (`pb_trip_advance` 19.0.1.0.0 → **19.0.1.1.0**, commit `98fdd7950`; no
+other module touched):
+- New process **`tripadvance`** "Trip cash advance settlements" (area Pay, **money** → never
+  in an "approve selected" batch) in the one Approvals inbox, default route ONE step
+  **Head of pay** (`pay_head`, filled from the payroll manager group — the same seat as
+  `loan`, `fundpay`, `backpay`). Laid for every company by the install hook, for every new
+  company, and by migration `19.0.1.1.0` on a database that already has 19.0.1.0.0 (the
+  module is live nowhere; the migration does nothing on a fresh install or on a database
+  without the module). Installing sends nothing to anybody (TA1-8).
+- Wiring: the loans pattern — the chain shim drives `pb.trip.advance.state`
+  (`given → waiting → settled/closed`; sent back / turned down → `given`). Adapter reads
+  under sudo (W2B-2); inbox card: title, chips (advance, claimed, not spent, how it comes
+  back, spent above, settled by), one row per claim set against it; facts `amount`,
+  `unspent`, `claimed`, `from_pay` for routes that want a condition. Approval re-checks
+  what was signed for (`_chain_revision_values`: the claims and their amounts, the
+  advance, how it comes back) — a claim that changes underneath makes the engine ask for a
+  new look rather than settle on old figures.
+- **Settle** (finance) works the figures out, stores them, says so on the trip, and SENDS
+  the settlement in as the person who settled. **Until approved**: nothing is set against
+  a claim, no claim is covered or paid, the trip's claims keep waiting, **no pay run
+  reserves anything** (only a settled advance is taken back), the trips board still counts
+  the whole advance as out, and **My Payobook shows "₫X was not spent. It is waiting for
+  approval; nothing comes off your pay before that."** (home card: "₫X not spent ·
+  waiting for approval").
+- **Approved** (in Approvals, or "Approve the settlement" on the trip for the Head of
+  pay): exactly as built before — claims set against the advance, covered claims read
+  paid, the unspent part opened to the next regular pay run (or cash), closed when
+  nothing is left.
+- **Sent back** ("Send the settlement back" on the trip, reason required, or Return in
+  Approvals) and **turned down**: back to "Given", the figures cleared, the reason stored
+  and shown on the trip form ("Why the settlement was sent back") and in its history
+  ("Settlement sent back by X: …" / "turned down by X: …"); finance settles again.
+- **Who may not approve**: the engine's own independence rule as each database has it
+  set — no new rule. The person who settled is the request's submitter and a maker; the
+  employee is its subject. (Not a maker: the person who once recorded the cash as given —
+  a different act.) On databases where independence is switched off (rize, by owner
+  ruling) the engine allows what it allows for every other process.
+- **A settlement with nothing to take back** (spent all of it, or spent more) **follows
+  the same approval**: it still decides how much of each claim the advance covers, i.e.
+  how much the person is paid for those claims — money either way, so there is no reason
+  to treat it differently (TA1-6).
+- Rights: finance / pay team groups now have write on the advance record (the engine's
+  submit checks it); every money field is still written only by the module's own code
+  (server token) and the status only by the approval chain.
+
+**Tests** (`pb_trip_advance/tests/test_ta1_settlement.py`, real Head-of-pay route; the
+earlier A1–A13 now publish "No approval needed" for this process so they keep testing the
+money):
+
+| # | Case | Result |
+|---|---|---|
+| TA1-1 | settle → waiting, request with the Head of pay, figures shown, nothing set against the claim, run computes no deduction and no claim, employee sees "waiting for approval", board still counts it all, process is money | pass |
+| TA1-2 | Head of pay approves in Approvals → settled, claim covered, the next regular run takes the 3,800,000 back | pass |
+| TA1-3 | the Head of pay settles it himself → his own decision is refused by the engine; finance (no seat) cannot approve from the trip either; still waiting, nothing set | pass |
+| TA1-4 | sent back with a reason → given, figures cleared, reason on the advance, on the trip and in its history, no deduction; settled again → waiting; a send-back without a reason is refused | pass |
+| TA1-5 | turned down → given with the reason, history says "turned down" | pass |
+| TA1-6 | nothing to take back (spent more) → also waits for approval, claim waits too; approved → closed, the claim pays only the 500,000 above the advance | pass |
+| TA1-7 | "Approve the settlement" on the trip form as the Head of pay | pass |
+| TA1-8 | a new company gets the route; no request exists after install | pass |
+| — | A1–A13 (money behaviour) unchanged | pass |
+
+`pb_trip_advance`: 21 tests, 0 failed (runner count 25). PO gate: pb_trip_advance 171
+entries in vi and id, 0 empty, 0 placeholder mismatch, 0 vendor word.
+
+REGRESSION_TA1
+
+**Deploy note (unchanged tier)**: install `pb_trip_advance` at 19.0.1.1.0 with the other
+two; after install check each company's Head of pay holder (the seed takes the first
+payroll manager, as for loans — ledger W2BM-2: on payobook the Head of pay seat is asked
+by several routes).
+
+**Rehearsal addition**: settle a test trip on the copy → it appears in the Head of pay's
+Approvals; the pay run takes nothing until it is approved; approve → the next compute takes
+it back.
