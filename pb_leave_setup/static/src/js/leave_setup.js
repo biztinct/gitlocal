@@ -48,7 +48,7 @@ function blankKind(board) {
         waiting_months: 0, max_balance: 0, take_ahead: false, expire_months: 0,
         earn_from: "", steps: [], sources: {}, locks: { policy: false, used: false },
         state: "off", state_label: _t("New"), review: false, starter: false, recent: [],
-        holders: 0, can_write: true,
+        holders: 0, can_write: true, warning: "", home: true,
     };
 }
 
@@ -73,10 +73,14 @@ export class PbLeaveKinds extends Component {
             kind: null, draft: null, busy: false, dirty: false, preview: null,
             // ready-made kinds
             starter: null,
+            // LV1: kinds for countries the customer does not work in are
+            // hidden until the reader asks for them
+            showOther: false,
         });
         this.kit = useFilterKit({
             model: "pb.leave.setup",
             noun: _t("kinds of leave"),
+            ctx: { other: false },
             onChange: () => this.loadPage(),
         });
         this._previewSeq = 0;
@@ -96,7 +100,7 @@ export class PbLeaveKinds extends Component {
     // ------------------------------------------------------------ loading
     async load() {
         try {
-            const d = await this.orm.call("pb.leave.setup", "get_board", []);
+            const d = await this.orm.call("pb.leave.setup", "get_board", [], { other: this.state.showOther });
             Object.assign(this.state, {
                 allowed: d.allowed !== false,
                 why: d.why || "",
@@ -123,9 +127,9 @@ export class PbLeaveKinds extends Component {
         const offset = more ? this.state.rows.length : 0;
         if (more) { this.state.loadingMore = true; }
         try {
-            const d = await this.orm.call("pb.leave.setup", "get_kinds_page", [], {
+            const d = await this.orm.call("pb.leave.setup", "get_kinds_page", [], this.kit.kw({
                 filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
-            });
+            }));
             if (!this.kit.isCurrent(q.seq)) { return; }
             this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
             this.state.listTotal = d.total;
@@ -155,6 +159,29 @@ export class PbLeaveKinds extends Component {
     get nextPage() { return Math.min(PAGE, this.state.listTotal - this.state.rows.length); }
     fmtInt(n) { return Number(n || 0).toLocaleString(); }
     async refresh() { await Promise.all([this.load(), this.kit.refresh()]); }
+
+    // ------------------------------------------- kinds for other countries (LV1)
+    get otherCount() { return this.state.board.other_count || 0; }
+    get otherLabel() {
+        return this.state.showOther
+            ? _t("Hide kinds for other countries")
+            : _t("Show kinds for other countries (%s)", this.fmtInt(this.otherCount));
+    }
+    async setShowOther(on) {
+        on = !!on;
+        if (on === this.state.showOther) { return; }
+        this.state.showOther = on;
+        // the panel's base list changes, so its "of N" is read again (S5C-2)
+        this.kit.ctx = { other: on };
+        await Promise.all([this.load(), this.kit.load()]);
+    }
+    /** Ready-made kinds just added for a country the list hides: show the
+     * other countries, so they are not lost from sight. */
+    get starterIsOther() {
+        const st = this.state.starter;
+        const c = st && (this.options.countries || []).find((x) => x.code === st.country);
+        return !!(c && !c.home && (this.state.board.home_countries || []).length);
+    }
 
     // --------------------------------------------------------- the quiet board
     get stepDefs() {
@@ -365,7 +392,12 @@ export class PbLeaveKinds extends Component {
             this._setKind(k);
             this.notif.add(switchOn ? _t("Saved and switched on. People can ask for it now.") : _t("Saved."),
                            { type: "success" });
-            await this.refresh();
+            if (k.home === false && !this.state.showOther) {
+                // saved for a country the list hides: show it rather than lose it
+                await this.setShowOther(true);
+            } else {
+                await this.refresh();
+            }
         } catch (e) {
             this.notif.add(this._msg(e, _t("That could not be saved.")), { type: "danger" });
         } finally {
@@ -409,13 +441,27 @@ export class PbLeaveKinds extends Component {
     // ------------------------------------------------------------ ready-made kinds
     async openStarter(country = "") {
         const b = this.state.board;
+        const code = country || b.default_country || "VN";
         this.state.starter = {
-            country: country || b.default_country || "VN",
+            country: code,
             company_id: b.default_company_id || 0,
-            rows: [], picked: {}, loading: true, busy: false,
+            rows: [], picked: {}, loading: true, busy: false, warning: "",
+            // the customer's own countries first; the rest behind "Other countries"
+            others: !this.starterHome.some((c) => c.code === code),
         };
         await this.loadStarter();
     }
+    /** Ready-made countries the customer works in (all of them when none is). */
+    get starterHome() {
+        const all = this.options.countries || [];
+        const home = all.filter((c) => c.home);
+        return home.length ? home : all;
+    }
+    get starterOthers() {
+        const all = this.options.countries || [];
+        return all.some((c) => c.home) ? all.filter((c) => !c.home) : [];
+    }
+    toggleStarterOthers() { this.state.starter.others = !this.state.starter.others; }
     closeStarter() { this.state.starter = null; }
     async loadStarter() {
         const st = this.state.starter;
@@ -424,6 +470,7 @@ export class PbLeaveKinds extends Component {
         try {
             const d = await this.orm.call("pb.leave.setup", "starter_list", [st.country, st.company_id]);
             st.rows = d.rows || [];
+            st.warning = d.warning || "";
             st.picked = {};
             for (const r of st.rows) { if (!r.made) { st.picked[r.key] = true; } }
         } catch (e) {
@@ -455,11 +502,16 @@ export class PbLeaveKinds extends Component {
             return;
         }
         st.busy = true;
+        const reveal = this.starterIsOther && !this.state.showOther;
         try {
             const res = await this.orm.call("pb.leave.setup", "starter_apply", [st.country, st.company_id, keys]);
             this.notif.add(res.msg, { type: "success" });
             this.state.starter = null;
-            await this.refresh();
+            if (reveal) {
+                await this.setShowOther(true);
+            } else {
+                await this.refresh();
+            }
             this.kit.toggleFilters({ state: ["review"] });
         } catch (e) {
             this.notif.add(this._msg(e, _t("The kinds could not be added.")), { type: "danger" });
