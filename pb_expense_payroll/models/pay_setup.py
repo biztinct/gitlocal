@@ -56,19 +56,25 @@ class PbExpensePaySetup(models.TransientModel):
                     who=company.pb_claims_paid_by_changed_by.name or '',
                     when=format_datetime(self.env, company.pb_claims_paid_by_changed_on,
                                          dt_format='d MMM yyyy'))
-            else:
+            elif (company.pb_claims_paid_by or 'finance') == 'finance':
                 rec.changed_words = _("Not changed yet: finance pays claims back, as "
                                       "it always has.")
+            else:
+                rec.changed_words = ''
             waiting = Claim.search([('company_id', '=', company.id),
                                     ('state', '=', 'approved'),
                                     ('pb_pay_route', '=', 'payrun')])
-            if waiting:
-                total = sum(c._pb_payable_amount() for c in waiting)
+            total = formatLang(self.env, sum(c._pb_payable_amount() for c in waiting),
+                               currency_obj=company.currency_id) if waiting else ''
+            if len(waiting) == 1:
+                rec.waiting_words = _(
+                    "1 approved claim (%s) is already set to be paid in the pay run. "
+                    "It stays that way whatever you choose here.", total)
+            elif waiting:
                 rec.waiting_words = _(
                     "%(n)s approved claims (%(total)s) are already set to be paid in "
                     "the pay run. They stay that way whatever you choose here.",
-                    n=len(waiting),
-                    total=formatLang(self.env, total, currency_obj=company.currency_id))
+                    n=len(waiting), total=total)
             else:
                 rec.waiting_words = ''
 

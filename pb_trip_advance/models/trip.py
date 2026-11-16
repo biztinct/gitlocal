@@ -4,7 +4,7 @@ repayment), the small form they open, and the trips board's real
 "advance outstanding"."""
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
-from odoo.tools.misc import formatLang
+from odoo.tools.misc import format_date, formatLang
 
 from odoo.addons.pb_expense_payroll.models.common import TOKEN_KEY, WRITE_TOKEN
 
@@ -124,7 +124,7 @@ class PbTripAdvanceWizard(models.TransientModel):
                     'given_ref': (self.reference or '').strip()[:120] or False,
                     'given_by': self.env.uid})
             body = _("Cash advance of %(amount)s given on %(day)s.",
-                     amount=adv._money(adv.amount), day=adv.given_on)
+                     amount=adv._money(adv.amount), day=format_date(self.env, adv.given_on))
             adv.message_post(body=body)
             trip.message_post(body=body)
         elif self.mode == 'settle':

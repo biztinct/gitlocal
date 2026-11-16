@@ -21,7 +21,7 @@
           <div class="alert alert-secondary" role="status" invisible="paid_by != 'finance'">
             Finance pays approved claims back, as it does today. Nothing reaches a payslip.
           </div>
-          <p class="text-muted"><field name="changed_words" readonly="1" nolabel="1"/></p>
+          <p class="text-muted" invisible="not changed_words"><field name="changed_words" readonly="1" nolabel="1"/></p>
           <p class="text-muted" invisible="not waiting_words"><field name="waiting_words" readonly="1" nolabel="1"/></p>
         </sheet>
         <footer>
