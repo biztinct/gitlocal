@@ -159,6 +159,14 @@ msgid "Change"
 msgstr "Perubahan"
 
 #. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"Change is the headcount at the month end less the month before. It can "
+"differ from joiners less leavers when someone moves between departments."
+msgstr "Perubahan adalah jumlah karyawan di akhir bulan dikurangi bulan sebelumnya. Angkanya bisa berbeda dari karyawan masuk dikurangi keluar bila ada yang pindah departemen."
+
+#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid ""
@@ -214,24 +222,8 @@ msgid "Gender"
 msgstr "Jenis kelamin"
 
 #. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-msgid ""
-"Groups of fewer than 5 people are hidden, and so is any figure that would "
-"let someone work one out."
-msgstr "Kelompok di bawah 5 orang disembunyikan, begitu pula angka yang bisa dipakai untuk menghitungnya."
-
-#. module: pb_people_reports
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Groups of fewer than 5 people are hidden, and so is any figure that would "
-"let someone work one out. The download hides the same figures."
-msgstr "Kelompok di bawah 5 orang disembunyikan, begitu pula angka yang bisa dipakai untuk menghitungnya. Unduhan menyembunyikan angka yang sama."
-
-#. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Headcount"
 msgstr "Jumlah karyawan"
 
@@ -240,6 +232,12 @@ msgstr "Jumlah karyawan"
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Headcount and turnover"
 msgstr "Jumlah karyawan dan turnover"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Headcount at each month end"
+msgstr "Jumlah karyawan di setiap akhir bulan"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -254,27 +252,16 @@ msgstr "Jumlah karyawan di akhir"
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Headcount at the start"
-msgstr "Jumlah karyawan di awal"
+msgid "Headcount at the month end"
+msgstr "Jumlah karyawan di akhir bulan"
 
 #. module: pb_people_reports
 #. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Hidden"
-msgstr "Disembunyikan"
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
-msgid "Hidden (small group)"
-msgstr "Disembunyikan (kelompok kecil)"
-
-#. module: pb_people_reports
-#. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Hidden: fewer than 5 people, or it would let someone work out a small group"
-msgstr "Disembunyikan: kurang dari 5 orang, atau bisa dipakai menghitung kelompok kecil"
+msgid "Headcount at the start"
+msgstr "Jumlah karyawan di awal"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -308,10 +295,10 @@ msgid "Joiners and leavers"
 msgstr "Karyawan masuk dan keluar"
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Joiners and leavers by quarter"
-msgstr "Masuk dan keluar per kuartal"
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Last 12 months"
+msgstr "12 bulan terakhir"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -332,6 +319,20 @@ msgstr "Masa kerja"
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Men"
 msgstr "Laki-laki"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Month"
+msgstr "Bulan"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Month by month"
+msgstr "Per bulan"
 
 #. module: pb_people_reports
 #. odoo-python
@@ -383,18 +384,16 @@ msgid ""
 msgstr "Laporan karyawan untuk HR. Tanyakan administrator jika Anda merasa perlu melihatnya."
 
 #. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Period"
+msgstr "Periode"
+
+#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Q%(q)s %(year)s"
 msgstr "Kuartal %(q)s %(year)s"
-
-#. module: pb_people_reports
-#. odoo-javascript
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Quarter"
-msgstr "Kuartal"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -427,18 +426,16 @@ msgid "Retired"
 msgstr "Pensiun"
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Shown by quarter, and the headcount only at the start and the end: figures "
-"for every month would let small groups be worked out."
-msgstr "Ditampilkan per kuartal, dan jumlah karyawan hanya di awal dan akhir: angka setiap bulan bisa dipakai untuk menghitung kelompok kecil."
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Start date not recorded"
 msgstr "Tanggal mulai tidak dicatat"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "The line starts at the headcount the day before the period begins."
+msgstr "Garis dimulai dari jumlah karyawan sehari sebelum periode dimulai."
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -457,21 +454,6 @@ msgstr "Laporan tidak bisa dimuat"
 #: code:addons/pb_people_reports/static/src/js/people_reports.js:0
 msgid "The spreadsheet could not be made just now."
 msgstr "Spreadsheet tidak bisa dibuat saat ini."
-
-#. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"This breakdown is shown for a whole company, not for one department: most "
-"departments are too small to show it safely."
-msgstr "Rincian ini ditampilkan untuk seluruh perusahaan, bukan satu departemen: kebanyakan departemen terlalu kecil untuk ditampilkan dengan aman."
-
-#. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"This group is too small to show on its own. Look at its company instead."
-msgstr "Kelompok ini terlalu kecil untuk ditampilkan sendiri. Lihat perusahaannya saja."
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -538,22 +520,10 @@ msgid "Women"
 msgstr "Perempuan"
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Year"
-msgstr "Tahun"
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "You do not see any company here."
 msgstr "Anda tidak melihat perusahaan mana pun di sini."
-
-#. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-msgid "fewer than 5"
-msgstr "kurang dari 5"
 
 #. module: pb_people_reports
 #. odoo-javascript

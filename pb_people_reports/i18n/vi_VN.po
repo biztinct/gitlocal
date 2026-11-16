@@ -159,6 +159,14 @@ msgid "Change"
 msgstr "Thay đổi"
 
 #. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"Change is the headcount at the month end less the month before. It can "
+"differ from joiners less leavers when someone moves between departments."
+msgstr "Thay đổi là số nhân viên cuối tháng trừ tháng trước. Con số này có thể khác số người vào trừ người nghỉ khi có người chuyển phòng ban."
+
+#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid ""
@@ -214,24 +222,8 @@ msgid "Gender"
 msgstr "Giới tính"
 
 #. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-msgid ""
-"Groups of fewer than 5 people are hidden, and so is any figure that would "
-"let someone work one out."
-msgstr "Nhóm dưới 5 người được ẩn, cùng mọi con số có thể giúp suy ra nhóm đó."
-
-#. module: pb_people_reports
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Groups of fewer than 5 people are hidden, and so is any figure that would "
-"let someone work one out. The download hides the same figures."
-msgstr "Nhóm dưới 5 người được ẩn, cùng mọi con số có thể giúp suy ra nhóm đó. Tệp tải xuống cũng ẩn đúng các con số này."
-
-#. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Headcount"
 msgstr "Số nhân viên"
 
@@ -240,6 +232,12 @@ msgstr "Số nhân viên"
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Headcount and turnover"
 msgstr "Số nhân viên và tỷ lệ nghỉ việc"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Headcount at each month end"
+msgstr "Số nhân viên cuối mỗi tháng"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -254,27 +252,16 @@ msgstr "Số nhân viên cuối kỳ"
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Headcount at the start"
-msgstr "Số nhân viên đầu kỳ"
+msgid "Headcount at the month end"
+msgstr "Số nhân viên cuối tháng"
 
 #. module: pb_people_reports
 #. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Hidden"
-msgstr "Ẩn"
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
-msgid "Hidden (small group)"
-msgstr "Ẩn (nhóm nhỏ)"
-
-#. module: pb_people_reports
-#. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Hidden: fewer than 5 people, or it would let someone work out a small group"
-msgstr "Ẩn: dưới 5 người, hoặc có thể giúp suy ra một nhóm nhỏ"
+msgid "Headcount at the start"
+msgstr "Số nhân viên đầu kỳ"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -308,10 +295,10 @@ msgid "Joiners and leavers"
 msgstr "Người vào và người nghỉ"
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Joiners and leavers by quarter"
-msgstr "Người vào và người nghỉ theo quý"
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Last 12 months"
+msgstr "12 tháng gần nhất"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -332,6 +319,20 @@ msgstr "Thâm niên"
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Men"
 msgstr "Nam"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Month by month"
+msgstr "Theo từng tháng"
 
 #. module: pb_people_reports
 #. odoo-python
@@ -383,18 +384,16 @@ msgid ""
 msgstr "Báo cáo nhân sự dành cho bộ phận Nhân sự. Hãy hỏi quản trị viên nếu bạn nghĩ mình cần xem."
 
 #. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Period"
+msgstr "Kỳ"
+
+#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Q%(q)s %(year)s"
 msgstr "Quý %(q)s %(year)s"
-
-#. module: pb_people_reports
-#. odoo-javascript
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Quarter"
-msgstr "Quý"
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -427,18 +426,16 @@ msgid "Retired"
 msgstr "Nghỉ hưu"
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Shown by quarter, and the headcount only at the start and the end: figures "
-"for every month would let small groups be worked out."
-msgstr "Hiển thị theo quý, và số nhân viên chỉ ở đầu kỳ và cuối kỳ: số liệu từng tháng có thể giúp suy ra các nhóm nhỏ."
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Start date not recorded"
 msgstr "Chưa ghi ngày bắt đầu"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "The line starts at the headcount the day before the period begins."
+msgstr "Đường biểu đồ bắt đầu từ số nhân viên vào ngày trước khi kỳ bắt đầu."
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -457,21 +454,6 @@ msgstr "Không tải được báo cáo"
 #: code:addons/pb_people_reports/static/src/js/people_reports.js:0
 msgid "The spreadsheet could not be made just now."
 msgstr "Hiện chưa tạo được bảng tính."
-
-#. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"This breakdown is shown for a whole company, not for one department: most "
-"departments are too small to show it safely."
-msgstr "Phân tích này chỉ hiển thị cho cả công ty, không cho từng phòng ban: phần lớn phòng ban quá nhỏ để hiển thị an toàn."
-
-#. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"This group is too small to show on its own. Look at its company instead."
-msgstr "Nhóm này quá nhỏ để hiển thị riêng. Hãy xem theo công ty."
 
 #. module: pb_people_reports
 #. odoo-javascript
@@ -538,22 +520,10 @@ msgid "Women"
 msgstr "Nữ"
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Year"
-msgstr "Năm"
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "You do not see any company here."
 msgstr "Bạn không xem được công ty nào ở đây."
-
-#. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-msgid "fewer than 5"
-msgstr "dưới 5"
 
 #. module: pb_people_reports
 #. odoo-javascript

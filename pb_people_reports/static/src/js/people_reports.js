@@ -1,11 +1,11 @@
 /** @odoo-module **/
 /**
- * People › Insights › People reports (WDGAP S9-B, owner ruling P6).
+ * People › Insights › People reports (WDGAP S9-B; owner rulings P6, PR1, PR2).
  *
- * HR only, for the companies the reader already sees. Every figure arrives
- * from the server already hidden when it covers fewer than 5 people (or would
- * let one be worked out): a hidden cell is `{v: null, h: true}` and its value
- * never reaches the browser. The download is built from the same payload.
+ * HR only, for the companies the reader already sees. PR1: HR sees every
+ * figure (no small-group hiding on this screen). PR2: the headcount at each
+ * month end, joiners and leavers per month, grouped by quarter, drawn as a
+ * line and listed as a table. The download is built from the same payload.
  *
  * Registered under `insights` (a tab of People › Insights, ledger S9-F7): no
  * shared file is edited. R2 — icons are the filter kit's cached markup.
@@ -18,6 +18,9 @@ import { pbfIcon } from "@pb_filter_kit/js/filter_kit";
 
 export const PEOPLE_REPORTS_GATE = ["hr.group_hr_user"];
 
+// the headcount line's drawing box (SVG units; it scales to the card width)
+const CHART = { w: 1100, h: 240, left: 48, right: 16, top: 18, bottom: 32 };
+
 export class PbPeopleReports extends Component {
     static template = "pb_people_reports.PbPeopleReports";
     static props = ["*"];
@@ -27,8 +30,9 @@ export class PbPeopleReports extends Component {
         this.notif = useService("notification");
         this.state = useState({
             loaded: false, allowed: true, why: "", options: null,
-            view: "headcount", company_id: 0, department_id: 0, year: 0,
+            view: "headcount", company_id: 0, department_id: 0, period: "",
             data: null, busy: false, error: false, downloading: false,
+            hover: -1,
         });
         onWillStart(async () => { await this.init(); });
     }
@@ -41,7 +45,7 @@ export class PbPeopleReports extends Component {
             this.state.allowed = o.allowed !== false;
             this.state.why = o.why || "";
             this.state.options = o;
-            this.state.year = o.year || 0;
+            this.state.period = o.period || "";
             if (this.state.allowed) { await this.load(); }
         } catch (e) {
             console.warn("pb_people_reports: options could not be read", e);
@@ -53,12 +57,13 @@ export class PbPeopleReports extends Component {
     }
 
     get params() {
-        return { company_id: this.state.company_id, department_id: this.state.department_id, year: this.state.year };
+        return { company_id: this.state.company_id, department_id: this.state.department_id, period: this.state.period };
     }
 
     async load() {
         this.state.busy = true;
         this.state.error = false;
+        this.state.hover = -1;
         try {
             this.state.data = await this.orm.call("pb.people.reports", "get_report", [this.state.view, this.params]);
         } catch (e) {
@@ -83,7 +88,7 @@ export class PbPeopleReports extends Component {
         if (d && this.companies.length > 1) { this.state.company_id = d.company_id; }
         this.load();
     }
-    onYear(ev) { this.state.year = parseInt(ev.target.value || "0", 10); this.load(); }
+    onPeriod(ev) { this.state.period = ev.target.value || ""; this.load(); }
 
     get departments() {
         const o = this.state.options || {};
@@ -92,24 +97,82 @@ export class PbPeopleReports extends Component {
     }
     get companies() { return (this.state.options && this.state.options.companies) || []; }
     get views() { return (this.state.options && this.state.options.views) || []; }
-    get years() { return (this.state.options && this.state.options.years) || []; }
+    get periods() { return (this.state.options && this.state.options.periods) || []; }
 
-    // ---------------------------------------------------------------- cells
-    shown(c) { return c && !c.h && c.v !== null && c.v !== undefined; }
-    num(c) { return this.shown(c) ? Number(c.v).toLocaleString() : ""; }
-    pct(c) { return this.shown(c) ? `${Number(c.v).toLocaleString()}%` : ""; }
+    // ---------------------------------------------------------------- figures
+    num(v) { return v === null || v === undefined ? "—" : Number(v).toLocaleString(); }
+    pct(v) { return v === null || v === undefined ? "—" : `${Number(v).toLocaleString()}%`; }
+    netLabel(v) {
+        if (v === null || v === undefined) { return "—"; }
+        return v > 0 ? `+${v.toLocaleString()}` : v.toLocaleString();
+    }
+    netClass(v) { return v > 0 ? "is-up" : v < 0 ? "is-down" : ""; }
     get maxMove() {
-        const s = (this.state.data && this.state.data.quarters) || [];
-        return Math.max(1, ...s.map((r) => Math.max(this.shown(r.j) ? r.j.v : 0, this.shown(r.l) ? r.l.v : 0)));
+        const s = (this.state.data && this.state.data.months) || [];
+        return Math.max(1, ...s.map((r) => Math.max(r.j || 0, r.l || 0)));
     }
-    barStyle(c, max) {
-        const v = this.shown(c) ? c.v : 0;
-        return `width: ${Math.max(0, Math.min(100, (v * 100) / (max || 1)))}%`;
+    barStyle(v, max) {
+        return `width: ${Math.max(0, Math.min(100, ((v || 0) * 100) / (max || 1)))}%`;
     }
-    rowBarStyle(c) { return `width: ${this.shown(c) ? Math.max(0, Math.min(100, c.v)) : 0}%`; }
-    netLabel(c) {
-        if (!this.shown(c)) { return ""; }
-        return c.v > 0 ? `+${c.v}` : String(c.v);
+    rowBarStyle(v) { return `width: ${Math.max(0, Math.min(100, v || 0))}%`; }
+
+    /** Month rows with each quarter's total right after its last month. */
+    get monthRows() {
+        const D = this.state.data || {};
+        const out = [];
+        for (const q of D.quarters || []) {
+            for (const i of q.months) { out.push({ kind: "m", key: D.months[i].key, row: D.months[i], i }); }
+            out.push({ kind: "q", key: q.key, row: q });
+        }
+        return out;
+    }
+
+    // ------------------------------------------------------- the headcount line
+    get chart() {
+        const D = this.state.data || {};
+        const months = D.months || [];
+        if (!months.length) { return null; }
+        const values = [D.tiles.h0, ...months.map((m) => m.h)];
+        let lo = Math.min(...values);
+        let hi = Math.max(...values);
+        if (hi === lo) { hi += 1; lo = Math.max(0, lo - 1); }
+        const pad = Math.max(1, Math.round((hi - lo) * 0.15));
+        lo = Math.max(0, lo - pad);
+        hi += pad;
+        const { w, h, left, right, top, bottom } = CHART;
+        const plotW = w - left - right;
+        const plotH = h - top - bottom;
+        const n = months.length;
+        const x = (i) => left + (n === 1 ? plotW / 2 : (i * plotW) / n);
+        const y = (v) => top + plotH - ((v - lo) * plotH) / (hi - lo);
+        // point 0 is the start of the period (the day before its first month)
+        const pts = values.map((v, i) => ({ x: x(i), y: y(v), v }));
+        const ticks = [lo, Math.round((lo + hi) / 2), hi].map((v) => ({ v, y: y(v) }));
+        const slot = n > 1 ? plotW / n : plotW;
+        return {
+            w, h, left, right, base: top + plotH,
+            path: pts.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" "),
+            ticks,
+            points: months.map((m, i) => ({
+                i, key: m.key, x: pts[i + 1].x, y: pts[i + 1].y, label: m.short,
+                hitX: pts[i + 1].x - slot / 2, hitW: slot,
+                // label every month up to 12, every other one beyond
+                showLabel: n <= 12 || i % 2 === 0 || i === n - 1,
+            })),
+            start: pts[0],
+        };
+    }
+    onHover(i) { this.state.hover = i; }
+    get hovered() {
+        const D = this.state.data || {};
+        const i = this.state.hover;
+        if (i < 0 || !D.months || !D.months[i]) { return null; }
+        const c = this.chart;
+        const p = c.points[i];
+        return {
+            m: D.months[i],
+            style: `left: ${(p.x / c.w) * 100}%; top: ${(p.y / c.h) * 100}%;`,
+        };
     }
 
     async download() {
