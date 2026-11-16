@@ -2683,3 +2683,38 @@ msgstr "Trả trong"
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 msgid "Work finished payslips out again with today's figures, see exactly what would change, and pay the difference in the next pay run once it is approved."
 msgstr "Tính lại các phiếu lương đã hoàn tất với số liệu hôm nay, xem chính xác điều gì sẽ thay đổi, và trả phần chênh lệch trong đợt lương tới sau khi được duyệt."
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__final
+msgid "Has left — paid in the final payslip"
+msgstr "Đã nghỉ việc — trả trong phiếu lương cuối cùng"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Has left — paid in their final payslip"
+msgstr "Đã nghỉ việc — trả trong phiếu lương cuối cùng của họ"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Final payslip"
+msgstr "Phiếu lương cuối cùng"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Will be paid in their final payslip"
+msgstr "Sẽ được trả trong phiếu lương cuối cùng của họ"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "The final payslip does not take all of it — cancel the rest here and settle it by hand"
+msgstr "Phiếu lương cuối cùng không nhận hết khoản này — hãy hủy phần còn lại ở đây và thanh toán thủ công"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay for %s does not fit in this final payslip without take-home going below zero — settle it by hand"
+msgstr "Truy lĩnh %s không đủ chỗ trong phiếu lương cuối cùng này mà thực nhận không dưới 0 — hãy thanh toán thủ công"
