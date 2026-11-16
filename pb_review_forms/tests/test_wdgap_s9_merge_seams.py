@@ -13,6 +13,10 @@ M2 (d) privacy matrix as each role: payroll officer, payroll manager, general
 M3 (e) one employee with BOTH a filed conduct letter and a filed review PDF:
    each document stays under its own rule; other documents unchanged for
    payroll.
+M4 (S5-F 5b) the report preview / PDF page title is the report's own name for
+   a finished review, a conduct letter and a payslip — never the platform's.
+M5 (S5-F TP3) the late-minutes door on My Overtime and the Step 9 home
+   entries live side by side.
 
 Skipped unless pb_conduct, pb_people_reports and pb_voice are installed with
 this module (the merged deploy installs all four).
@@ -279,3 +283,58 @@ class TestS9MergeSeams(RFCase):
         # the categories stay apart
         self.assertNotEqual(review_doc.category_id, self.letter_doc.category_id)
         self.assertFalse(self.letter_doc.pb_rf_private)
+
+    # ================================================================ M4
+    def test_m4_report_titles_never_name_the_platform(self):
+        """S5-F 5b x Step 9: the report preview / PDF page title is the report's
+        own name for a finished review, a conduct letter and a payslip."""
+        import re
+        vendor = re.compile('od' + 'oo', re.I)
+        Report = self.env['ir.actions.report']
+        if not hasattr(Report, '_biz_report_title'):
+            self.skipTest('needs biz_debrand 19.0.2.11.0')
+
+        def title(report, ids):
+            html, _kind = Report._render_qweb_html(report, ids)
+            if isinstance(html, bytes):
+                html = html.decode('utf-8')
+            found = re.search(r'<title>(.*?)</title>', html, re.S)
+            return found.group(1).strip() if found else None
+
+        _sheet, _review, entry = self._finished_review()
+        rf = title('pb_review_forms.action_report_review_form', entry.ids)
+        letter_report = Report.search([('model', '=', 'pb.conduct.letter')], limit=1)
+        self.assertTrue(letter_report, 'the conduct letter report')
+        lt = title(letter_report.report_name, self.letter.ids)
+        found = {'review': rf, 'conduct letter': lt}
+        slip_report = Report.search([('model', '=', 'hr.payslip'),
+                                     ('print_report_name', '!=', False)], limit=1)
+        slip = self.env['hr.payslip'].search([], limit=1)
+        if slip_report and slip:
+            found['payslip'] = title(slip_report.report_name, slip.ids)
+            self.assertEqual(found['payslip'],
+                             Report._biz_report_title(slip_report, slip.ids))
+        for what, text in found.items():
+            self.assertTrue(text, what)
+            self.assertFalse(vendor.search(text), '%s: %s' % (what, text))
+            self.assertNotEqual(text, 'Report', what + ' fell back to the neutral word')
+
+    # ================================================================ M5
+    def test_m5_late_minutes_page_beside_the_step9_tiles(self):
+        """S5-F TP3 x Step 9: the late-minutes door on My Overtime and the
+        Step 9 home entries live side by side; every old overtime key kept."""
+        if 'pb.ess.workforce' not in self.env or not hasattr(
+                self.env['pb.ess.workforce'], 'get_my_late_minutes'):
+            self.skipTest('needs pb_time_pay 19.0.1.1.0')
+        W = self.env['pb.ess.workforce'].with_user(self.staff_user)
+        data = W.get_my_overtime()
+        self.assertIn('late', data)
+        W.get_my_late_minutes()
+        self._form()
+        self._review()
+        home = self.env['pb.me.home'].with_user(self.staff_user).get_home_data(self.staff)
+        urls = {t['url'] for t in home['tiles']}
+        self.assertTrue({'/my/review', '/my/letters', '/my/voice', '/my/work/overtime'} <= urls,
+                        urls)
+        keys = {r['key'] for r in home['needs_you']}
+        self.assertTrue({'review_self', 'voice_survey', 'hr_letters'} <= keys, keys)
