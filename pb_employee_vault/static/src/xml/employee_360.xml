@@ -25,28 +25,9 @@
               </div>
               <div class="pev-head-tx">
                 <h2 t-esc="profile.name"/>
-                <div class="pev-chips">
-                  <span class="pev-chip"><t t-out="ic('briefcase',13)"/> <t t-esc="profile.job"/></span>
-                  <span class="pev-chip" t-if="profile.manager"><t t-out="ic('user',13)"/> <t t-esc="profile.manager"/></span>
-                  <span t-attf-class="pev-chip tone-{{ stateCls(profile.contract and profile.contract.state) }}">
-                    <t t-out="ic('fileText',13)"/> <t t-esc="(profile.contract and profile.contract.state_label) || '—'"/>
-                  </span>
-
-                  <!-- The chip seam. Another module may add one line of its
-                       own about this person — GROUP P2's "Paid by" is the
-                       first — without forking a drawer that would then be two
-                       drawers to keep in step forever. Absent modules add
-                       nothing and this row reads exactly as it did. -->
-                  <t t-foreach="extraChips" t-as="chip" t-key="chip.key">
-                    <t t-component="chip.Component" t-props="chipPropsFor(chip)"/>
-                  </t>
-                </div>
               </div>
             </div>
             <div class="pev-head-side">
-              <div class="pev-tenure" t-if="profile.tenure_label and profile.tenure_label !== '—'">
-                <span class="l">Tenure</span><span class="v" t-esc="profile.tenure_label"/>
-              </div>
               <button class="pev-full" t-if="contractId" t-on-click="openContract" title="Open this person's current contract">
                 <t t-out="ic('fileText',14)"/> Contract
               </button>
@@ -54,6 +35,24 @@
                 <t t-out="ic('external',14)"/> Full details
               </button>
               <button class="pev-x" t-on-click="close"><t t-out="ic('x',18)"/></button>
+            </div>
+            <div class="pev-chips pev-head-meta">
+                  <span class="pev-chip"><t t-out="ic('briefcase',13)"/> <t t-esc="profile.job"/></span>
+                  <span class="pev-chip" t-if="profile.manager"><t t-out="ic('user',13)"/> <t t-esc="profile.manager"/></span>
+                  <span t-attf-class="pev-chip tone-{{ stateCls(profile.contract and profile.contract.state) }}">
+                    <t t-out="ic('fileText',13)"/> <t t-esc="(profile.contract and profile.contract.state_label) || '—'"/>
+                  </span>
+
+                  <span class="pev-chip" t-if="profile.tenure_label and profile.tenure_label !== '—'">
+                    <t t-out="ic('calendar',13)"/> Tenure: <t t-esc="profile.tenure_label"/>
+                  </span>
+            </div>
+            <!-- Extra information uses the full header width, rather than
+                 sharing a narrow column with the name and action buttons. -->
+            <div class="pev-head-extras" t-if="extraChips.length">
+                  <t t-foreach="extraChips" t-as="chip" t-key="chip.key">
+                    <t t-component="chip.Component" t-props="chipPropsFor(chip)"/>
+                  </t>
             </div>
           </div>
 
@@ -144,8 +143,8 @@
               <!-- statutory readiness chips -->
               <div class="pev-stats" t-if="profile.statutory">
                 <span t-attf-class="pev-stat {{ profile.statutory.bank ? 'ok' : 'off' }}"><t t-out="ic('creditCard',14)"/> Bank <t t-esc="profile.statutory.bank ? 'on file' : 'missing'"/></span>
-                <span t-attf-class="pev-stat {{ profile.statutory.tax ? 'ok' : 'off' }}"><t t-out="ic('stamp',14)"/> Tax</span>
-                <span t-attf-class="pev-stat {{ profile.statutory.insurance ? 'ok' : 'off' }}"><t t-out="ic('shield',14)"/> Insurance</span>
+                <span t-attf-class="pev-stat {{ profile.statutory.tax ? 'ok' : 'off' }}"><t t-out="ic('stamp',14)"/> <t t-esc="profile.statutory.tax_label || 'Tax'"/></span>
+                <span t-attf-class="pev-stat {{ profile.statutory.insurance ? 'ok' : 'off' }}"><t t-out="ic('shield',14)"/> <t t-esc="profile.statutory.insurance_label || 'Insurance'"/></span>
               </div>
             </t>
 
@@ -159,6 +158,7 @@
                     <span class="cn" t-esc="grp.title"/>
                     <span class="cc"><t t-esc="grp.filled"/> / <t t-esc="grp.rows.length"/></span>
                   </div>
+                  <p t-if="grp.note" class="pev-section-note" t-esc="grp.note"/>
                   <dl class="pev-kv">
                     <t t-foreach="grp.rows" t-as="row" t-key="row.key">
                       <div t-attf-class="pev-kv-row {{ row.empty ? 'is-empty' : '' }}">

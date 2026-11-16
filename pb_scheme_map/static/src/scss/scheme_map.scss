@@ -710,11 +710,12 @@
 
 // --------------------------------------------------- "Paid by" on a person
 .smp-paidby {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 10px;
-    border-radius: 999px;
+    display: flex;
+    flex-direction: column;
+    width: 100%; min-width: 0; box-sizing: border-box;
+    gap: 7px;
+    padding: 11px 14px;
+    border-radius: 12px;
     border: 1px solid var(--pbim-line);
     background: var(--pbim-surface);
     font-size: 12px;
@@ -726,17 +727,17 @@
     }
 }
 
-.smp-paidby__icon { color: var(--pbim-primary); display: inline-flex; }
-
-.smp-paidby__text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.15;
+.smp-paidby__row {
+    display: grid;
+    grid-template-columns: 85px minmax(0, 1fr);
+    gap: 12px;
+    align-items: baseline;
+    line-height: 1.45;
+    > b, > span { overflow-wrap: anywhere; min-width: 0; }
 
     small {
-        font-size: 10px;
-        letter-spacing: .04em;
-        text-transform: uppercase;
+        display: flex; align-items: center; gap: 6px;
+        font-size: 11px;
         color: var(--pbim-muted);
     }
 }
