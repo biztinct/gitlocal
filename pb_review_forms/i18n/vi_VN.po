@@ -1,0 +1,1848 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_review_forms
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"POT-Creation-Date: 2026-11-16 07:59+0000\n"
+"PO-Revision-Date: 2026-11-16 07:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "\"%(a)s\" is not one of the answers to pick from."
+msgstr "\"%(a)s\" không phải là một trong các câu trả lời để chọn."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "\"%(q)s\" needs at least two answers to pick from."
+msgstr "\"%(q)s\" cần ít nhất hai câu trả lời để chọn."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "%(n)s finished reviews are shared now."
+msgstr "Đã chia sẻ %(n)s bản đánh giá đã hoàn tất."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "%(year)s already has a review form."
+msgstr "%(year)s đã có mẫu đánh giá."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "%(year)s is closed, so its review form cannot change."
+msgstr "%(year)s đã đóng, nên mẫu đánh giá không thể thay đổi."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "%(year)s is closed."
+msgstr "%(year)s đã đóng."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "1 finished review is shared now."
+msgstr "Đã chia sẻ 1 bản đánh giá đã hoàn tất."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.rf_input
+msgid "<option value=\"\">Choose one</option>"
+msgstr "<option value=\"\">Chọn một</option>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-result-label\">Overall result</span>"
+msgstr "<span class=\"pbrf-result-label\">Kết quả chung</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-result-of\">out of 5</span>"
+msgstr "<span class=\"pbrf-result-of\">trên 5</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-step-n\">1</span><span>Your own view</span>"
+msgstr "<span class=\"pbrf-step-n\">1</span><span>Ý kiến của bạn</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-step-n\">2</span><span>Your manager</span>"
+msgstr "<span class=\"pbrf-step-n\">2</span><span>Quản lý của bạn</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-step-n\">3</span><span>Read and confirm</span>"
+msgstr "<span class=\"pbrf-step-n\">3</span><span>Đọc và xác nhận</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.rf_line
+msgid "<span class=\"pbrf-who pbrf-who--mgr\">Manager</span>"
+msgstr "<span class=\"pbrf-who pbrf-who--mgr\">Quản lý</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.rf_line
+msgid "<span class=\"pbrf-who\">You</span>"
+msgstr "<span class=\"pbrf-who\">Bạn</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "<span style=\"font-size: 12px; font-weight: 600;\">out of 5</span>"
+msgstr "<span style=\"font-size: 12px; font-weight: 600;\">trên 5</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "<span>Manager finished on</span>"
+msgstr "<span>Quản lý hoàn tất ngày</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "<span>Own view sent on</span>"
+msgstr "<span>Ý kiến riêng gửi ngày</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid ""
+"<span>Preview. This is what employees see. Nothing you choose here is "
+"saved.</span>"
+msgstr ""
+"<span>Xem trước. Đây là những gì nhân viên thấy. Không lựa chọn nào ở đây "
+"được lưu.</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span>Sent on</span>"
+msgstr "<span>Đã gửi ngày</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid ""
+"<span>They write their part next. You can read it once it is shared with "
+"you.</span>"
+msgstr ""
+"<span>Tiếp theo quản lý sẽ viết phần của họ. Bạn có thể đọc khi được chia "
+"sẻ.</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<strong>From your manager</strong>"
+msgstr "<strong>Từ quản lý của bạn</strong>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<strong>Have you read it?</strong>"
+msgstr "<strong>Bạn đã đọc chưa?</strong>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.gl_year_review_form
+msgid "<strong>Your review form</strong>"
+msgstr "<strong>Mẫu đánh giá của bạn</strong>"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid ""
+"A few things both the employee and the manager rate from Well below to Well "
+"above. At most 8."
+msgstr ""
+"Một vài điều cả nhân viên và quản lý cùng đánh giá từ Thấp hơn nhiều đến "
+"Vượt xa. Tối đa 8."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid ""
+"A form stays with the goal year it was written for. Copy it to another year."
+msgstr "Mẫu đánh giá gắn với năm mục tiêu đã tạo. Hãy sao chép sang năm khác."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "A rating is one of the five words from Well below to Well above."
+msgstr "Mức đánh giá là một trong năm mức từ Thấp hơn nhiều đến Vượt xa."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "A review form belongs to a goal year. Open a goal year in Goals first."
+msgstr ""
+"Mẫu đánh giá thuộc về một năm mục tiêu. Hãy mở năm mục tiêu trong Mục tiêu "
+"trước."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "A review is written up by the person's own manager or by the HR team."
+msgstr "Bản đánh giá do quản lý trực tiếp hoặc bộ phận nhân sự viết."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "A share is a number from 0 to 100."
+msgstr "Tỷ trọng là một số từ 0 đến 100."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__intro
+msgid "A word to the employee"
+msgstr "Lời nhắn cho nhân viên"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "A word to the employee, shown at the top of the form"
+msgstr "Lời nhắn cho nhân viên, hiện ở đầu mẫu"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "About my %(form)s for %(year)s."
+msgstr "Về %(form)s của tôi cho %(year)s."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__4
+msgid "Above"
+msgstr "Vượt"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Add a question"
+msgstr "Thêm câu hỏi"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Add a skill or value"
+msgstr "Thêm kỹ năng hoặc giá trị"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Add the company values"
+msgstr "Thêm các giá trị của công ty"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__text
+msgid "Answer"
+msgstr "Câu trả lời"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__answer_ids
+msgid "Answers"
+msgstr "Các câu trả lời"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__choices
+msgid "Answers to pick from"
+msgstr "Các câu trả lời để chọn"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form__reveal__manager_done
+msgid "As soon as the manager finishes"
+msgstr "Ngay khi quản lý hoàn tất"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__author
+msgid "Author"
+msgstr "Người trả lời"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Back to my goals"
+msgstr "Quay lại mục tiêu của tôi"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form__state__draft
+msgid "Being written"
+msgstr "Đang soạn"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Being written. Nothing changes for anybody until you put it in use."
+msgstr ""
+"Đang soạn. Không có gì thay đổi với ai cho đến khi bạn đưa vào sử dụng."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__2
+msgid "Below"
+msgstr "Thấp hơn"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Check and put it in use"
+msgstr "Kiểm tra và đưa vào sử dụng"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Check and use"
+msgstr "Kiểm tra và dùng"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Choose a different goal year."
+msgstr "Hãy chọn một năm mục tiêu khác."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Choose one"
+msgstr "Chọn một"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Choose the date the manager's part is shown from."
+msgstr "Chọn ngày bắt đầu hiển thị phần của quản lý."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Close the form"
+msgstr "Đóng mẫu"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__company_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__company_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Copied to %(year)s as a form being written."
+msgstr "Đã sao chép sang %(year)s dưới dạng mẫu đang soạn."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Copied."
+msgstr "Đã sao chép."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Copy"
+msgstr "Sao chép"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Copy to another goal year…"
+msgstr "Sao chép sang năm mục tiêu khác…"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__create_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__create_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__create_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__create_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__create_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__create_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__create_date
+msgid "Created on"
+msgstr "Tạo ngày"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_review__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_set__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goals__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_my_goals__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_forms__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Download the PDF"
+msgstr "Tải PDF"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Thông tin trang chủ nhân viên"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "End-of-year review"
+msgstr "Đánh giá cuối năm"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "End-of-year reviews"
+msgstr "Đánh giá cuối năm"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__entry_id
+msgid "Entry"
+msgstr "Bản đánh giá"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Every skill, value and question needs words."
+msgstr "Mỗi kỹ năng, giá trị và câu hỏi đều cần có nội dung."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Everything is in place."
+msgstr "Mọi thứ đã sẵn sàng."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__document_id
+msgid "Filed in their documents"
+msgstr "Đã lưu vào hồ sơ của họ"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_review_entry
+msgid "Filled-in review form"
+msgstr "Mẫu đánh giá đã điền"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Finish the review"
+msgstr "Hoàn tất đánh giá"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Finish without it"
+msgstr "Hoàn tất mà không cần"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Finish without their own view?"
+msgstr "Hoàn tất mà không có ý kiến của nhân viên?"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__mgr_state__done
+msgid "Finished"
+msgstr "Đã hoàn tất"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__mgr_done_by_id
+msgid "Finished by"
+msgstr "Hoàn tất bởi"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Finished on"
+msgstr "Hoàn tất ngày"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__mgr_without_self
+msgid "Finished without their own view"
+msgstr "Hoàn tất khi chưa có ý kiến của nhân viên"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Finished without their own view."
+msgstr "Hoàn tất khi chưa có ý kiến của nhân viên."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Finished, not shown yet"
+msgstr "Đã hoàn tất, chưa hiển thị"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Finished. %(when)s"
+msgstr "Đã hoàn tất. %(when)s"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Finished. They can read it now on their own page."
+msgstr "Đã hoàn tất. Nhân viên có thể đọc ngay trên trang của họ."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__form_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__form_id
+msgid "Form"
+msgstr "Mẫu"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form__reveal__date
+msgid "From a date HR chooses"
+msgstr "Từ ngày bộ phận nhân sự chọn"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid ""
+"Give your own view first. Your manager reads it before they write theirs."
+msgstr ""
+"Hãy đưa ý kiến của bạn trước. Quản lý sẽ đọc trước khi viết phần của họ."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Give your own view for your review"
+msgstr "Đưa ý kiến của bạn cho bản đánh giá"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_goal_review
+msgid "Goal review"
+msgstr "Đánh giá mục tiêu"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_goal_set
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__set_id
+msgid "Goal sheet"
+msgstr "Bảng mục tiêu"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__cycle_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__cycle_id
+msgid "Goal year"
+msgstr "Năm mục tiêu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Goals"
+msgstr "Mục tiêu"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_goals
+msgid "Goals board"
+msgstr "Bảng mục tiêu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Goals score"
+msgstr "Điểm mục tiêu"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__ack_state__read
+msgid "Has read it"
+msgstr "Đã đọc"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "How the overall result is worked out"
+msgstr "Cách tính kết quả chung"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "How you think the year went on each one."
+msgstr "Bạn thấy năm qua thế nào ở từng mục."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "I have read this"
+msgstr "Tôi đã đọc"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "I want to talk about it"
+msgstr "Tôi muốn trao đổi về việc này"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "I would like to talk about my review"
+msgstr "Tôi muốn trao đổi về bản đánh giá của mình"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_review__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_set__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goals__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_my_goals__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_forms__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form__state__published
+msgid "In use"
+msgstr "Đang dùng"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__published_at
+msgid "In use since"
+msgstr "Đang dùng từ"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "In use · locked"
+msgstr "Đang dùng · đã khóa"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Keep it to %(n)s questions at most."
+msgstr "Tối đa %(n)s câu hỏi."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Keep it to %(n)s skills or values at most."
+msgstr "Tối đa %(n)s kỹ năng hoặc giá trị."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__qtype
+msgid "Kind of answer"
+msgstr "Loại câu trả lời"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__write_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__write_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__write_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__write_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__write_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__write_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__line_id
+msgid "Line"
+msgstr "Dòng"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__locked_at
+msgid "Locked on"
+msgstr "Khóa ngày"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"Locked on %(day)s, when the first review was sent in. Only when the "
+"manager's part is shown can still change. For a new version, copy it to "
+"another year."
+msgstr ""
+"Đã khóa ngày %(day)s, khi bản đánh giá đầu tiên được gửi. Chỉ còn thời điểm "
+"hiển thị phần của quản lý là có thể thay đổi. Để có phiên bản mới, hãy sao "
+"chép sang năm khác."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__mgr_done_at
+msgid "Manager finished on"
+msgstr "Quản lý hoàn tất ngày"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__mgr_state
+msgid "Manager's part"
+msgstr "Phần của quản lý"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Manager: finished"
+msgstr "Quản lý: đã hoàn tất"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Manager: not started"
+msgstr "Quản lý: chưa bắt đầu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Manager: started"
+msgstr "Quản lý: đã bắt đầu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Managers finished"
+msgstr "Quản lý đã hoàn tất"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Move down"
+msgstr "Chuyển xuống"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Move up"
+msgstr "Chuyển lên"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__required
+msgid "Must be answered"
+msgstr "Bắt buộc trả lời"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_my_goals
+msgid "My goals"
+msgstr "Mục tiêu của tôi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Name of the form"
+msgstr "Tên mẫu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Next"
+msgstr "Tiếp"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "No company values are written yet."
+msgstr "Chưa có giá trị công ty nào."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "No form"
+msgstr "Chưa có mẫu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "No form yet. Fill in the five steps and put it in use."
+msgstr "Chưa có mẫu. Hãy điền năm bước và đưa vào sử dụng."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "No goal year yet"
+msgstr "Chưa có năm mục tiêu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "None yet."
+msgstr "Chưa có."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "None yet. Questions are optional."
+msgstr "Chưa có. Câu hỏi là không bắt buộc."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__mgr_state__todo
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__self_state__todo
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__ack_state__none
+msgid "Not yet"
+msgstr "Chưa"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__3
+msgid "On track"
+msgstr "Đạt"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Once the first review is sent in, the form is locked for this year."
+msgstr "Khi bản đánh giá đầu tiên được gửi, mẫu sẽ bị khóa cho năm này."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid ""
+"Once you send it, it cannot be changed. Your manager sees nothing before you"
+" send it."
+msgstr ""
+"Sau khi gửi sẽ không thể sửa. Quản lý không thấy gì trước khi bạn gửi."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "One answer per line"
+msgstr "Mỗi dòng một câu trả lời"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid ""
+"One form for each goal year. The employee gives their own view first, then "
+"the manager answers and writes the overall comment."
+msgstr ""
+"Mỗi năm mục tiêu một mẫu. Nhân viên đưa ý kiến trước, sau đó quản lý trả lời"
+" và viết nhận xét chung."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid ""
+"One form for each goal year: the goals score, a few skills or values, and "
+"your own questions."
+msgstr ""
+"Mỗi năm mục tiêu một mẫu: điểm mục tiêu, một vài kỹ năng hoặc giá trị, và "
+"câu hỏi của riêng bạn."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_review_form_line__choices
+msgid "One per line."
+msgstr "Mỗi dòng một mục."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Only the HR lead for goals can change a review form."
+msgstr "Chỉ trưởng nhóm nhân sự phụ trách mục tiêu mới được sửa mẫu đánh giá."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Open my own page"
+msgstr "Mở trang của tôi"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.gl_year_review_form
+msgid "Open my review"
+msgstr "Mở bản đánh giá của tôi"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Open the form"
+msgstr "Mở mẫu"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__sequence
+msgid "Order"
+msgstr "Thứ tự"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__overall_comment
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Overall comment"
+msgstr "Nhận xét chung"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Overall result"
+msgstr "Kết quả chung"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__self_sent_at
+msgid "Own view sent on"
+msgstr "Ý kiến riêng gửi ngày"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Own views sent"
+msgstr "Ý kiến đã gửi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__attachment_id
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__section
+msgid "Part"
+msgstr "Phần"
+
+#. module: pb_review_forms
+#: model:pb.employee.document.category,name:pb_review_forms.cat_performance_review
+msgid "Performance review"
+msgstr "Đánh giá hiệu suất"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__qtype__choice
+msgid "Pick one from a list"
+msgstr "Chọn một trong danh sách"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Preview as the employee"
+msgstr "Xem trước như nhân viên"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__published_by_id
+msgid "Put in use by"
+msgstr "Đưa vào sử dụng bởi"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Put it in use"
+msgstr "Đưa vào sử dụng"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__section__question
+msgid "Question"
+msgstr "Câu hỏi"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Questions"
+msgstr "Câu hỏi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__qtype__rating
+msgid "Rated from Well below to Well above"
+msgstr "Đánh giá từ Thấp hơn nhiều đến Vượt xa"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Rated questions"
+msgstr "Câu hỏi có đánh giá"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Rated questions have a share but no question is rated by the manager."
+msgstr ""
+"Câu hỏi có đánh giá có tỷ trọng nhưng không có câu nào do quản lý đánh giá."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__rating
+msgid "Rating"
+msgstr "Mức đánh giá"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__ack_state
+msgid "Read by them"
+msgstr "Nhân viên đã đọc"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__ack_at
+msgid "Read on"
+msgstr "Đọc ngày"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Reading the goal years…"
+msgstr "Đang đọc các năm mục tiêu…"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+#: model:ir.actions.report,name:pb_review_forms.action_report_review_form
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__review_id
+msgid "Review"
+msgstr "Đánh giá"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model:ir.model,name:pb_review_forms.model_pb_review_form
+msgid "Review form"
+msgstr "Mẫu đánh giá"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_review_answer
+msgid "Review form answer"
+msgstr "Câu trả lời mẫu đánh giá"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_review_form_line
+msgid "Review form line"
+msgstr "Dòng mẫu đánh giá"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.actions.client,name:pb_review_forms.action_review_forms
+msgid "Review forms"
+msgstr "Mẫu đánh giá"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_review_forms
+msgid "Review forms (screens)"
+msgstr "Mẫu đánh giá (màn hình)"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Review forms are set up by the HR team"
+msgstr "Mẫu đánh giá do bộ phận nhân sự thiết lập"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Review forms are set up by the HR team."
+msgstr "Mẫu đánh giá do bộ phận nhân sự thiết lập."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Review forms are set up by the HR team. Ask your HR administrator."
+msgstr ""
+"Mẫu đánh giá do bộ phận nhân sự thiết lập. Hãy hỏi quản trị viên nhân sự."
+
+#. module: pb_review_forms
+#: model:ir.actions.server,name:pb_review_forms.cron_review_release_due_ir_actions_server
+msgid "Review forms: share finished reviews on their day"
+msgstr "Mẫu đánh giá: chia sẻ bản đánh giá đã hoàn tất đúng ngày"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Save for later"
+msgstr "Lưu để làm sau"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Saved. Nothing is shown to them until you finish."
+msgstr "Đã lưu. Nhân viên chưa thấy gì cho đến khi bạn hoàn tất."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Saved. Your manager sees nothing until you send it."
+msgstr "Đã lưu. Quản lý chưa thấy gì cho đến khi bạn gửi."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid ""
+"Score every key result above before you finish: the goals score is part of "
+"the result."
+msgstr ""
+"Hãy chấm mọi kết quả then chốt ở trên trước khi hoàn tất: điểm mục tiêu là "
+"một phần của kết quả."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"Score every key result first: the goals score is part of the overall result."
+msgstr ""
+"Hãy chấm mọi kết quả then chốt trước: điểm mục tiêu là một phần của kết quả "
+"chung."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.gl_year_review_form
+msgid "See my review"
+msgstr "Xem bản đánh giá của tôi"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Send to my manager"
+msgstr "Gửi cho quản lý"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__self_state__sent
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Sent to your manager. They write their part next."
+msgstr "Đã gửi cho quản lý. Tiếp theo họ sẽ viết phần của mình."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__share_questions
+msgid "Share for rated questions"
+msgstr "Tỷ trọng câu hỏi có đánh giá"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__share_skills
+msgid "Share for skills and values"
+msgstr "Tỷ trọng kỹ năng và giá trị"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__share_goals
+msgid "Share for the goals score"
+msgstr "Tỷ trọng điểm mục tiêu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Shared."
+msgstr "Đã chia sẻ."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Show them now"
+msgstr "Hiển thị ngay"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Showing it"
+msgstr "Hiển thị"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_review_form__intro
+msgid "Shown at the top of the form, above the first question."
+msgstr "Hiện ở đầu mẫu, trên câu hỏi đầu tiên."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__reveal_date
+msgid "Shown from"
+msgstr "Hiển thị từ"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Shown to them"
+msgstr "Đã hiển thị cho nhân viên"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__released_at
+msgid "Shown to them on"
+msgstr "Hiển thị cho nhân viên ngày"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__section__skill
+msgid "Skill or value"
+msgstr "Kỹ năng hoặc giá trị"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Skills and values"
+msgstr "Kỹ năng và giá trị"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Skills and values have a share but there are none on the form."
+msgstr "Kỹ năng và giá trị có tỷ trọng nhưng trên mẫu chưa có mục nào."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Skills and values, and questions"
+msgstr "Kỹ năng, giá trị và câu hỏi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__line_ids
+msgid "Skills, values and questions"
+msgstr "Kỹ năng, giá trị và câu hỏi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__mgr_state__draft
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__self_state__draft
+msgid "Started"
+msgstr "Đã bắt đầu"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Still to answer: %(what)s."
+msgstr "Còn phải trả lời: %(what)s."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Stop using it"
+msgstr "Ngừng sử dụng"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Takes ownership"
+msgstr "Chủ động nhận trách nhiệm"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid ""
+"Tell us you have read your review. If something in it is not right, ask to "
+"talk about it."
+msgstr ""
+"Hãy xác nhận bạn đã đọc bản đánh giá. Nếu có điều chưa đúng, hãy đề nghị "
+"trao đổi."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Thank you. It is marked as read."
+msgstr "Cảm ơn bạn. Đã đánh dấu là đã đọc."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "That could not be opened."
+msgstr "Không thể mở mục này."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+msgid ""
+"That did not save. Try again, and tell your HR team if it keeps happening."
+msgstr "Chưa lưu được. Hãy thử lại và báo bộ phận nhân sự nếu vẫn lặp lại."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "That did not work."
+msgstr "Thao tác không thành công."
+
+#. module: pb_review_forms
+#: model:ir.model.constraint,message:pb_review_forms.constraint_pb_review_form_one_per_year
+msgid "That goal year already has a review form."
+msgstr "Năm mục tiêu này đã có mẫu đánh giá."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That goal year is not there any more."
+msgstr "Năm mục tiêu này không còn nữa."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That is not something to do with a review."
+msgstr "Đây không phải thao tác dành cho bản đánh giá."
+
+#. module: pb_review_forms
+#: model:ir.model.constraint,message:pb_review_forms.constraint_pb_review_answer_one_per_side
+msgid "That line already has an answer from that side."
+msgstr "Dòng này đã có câu trả lời từ phía đó."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That one is not yours. If you think it should be, tell your HR team."
+msgstr ""
+"Mục này không phải của bạn. Nếu bạn nghĩ là của mình, hãy báo bộ phận nhân "
+"sự."
+
+#. module: pb_review_forms
+#: model:ir.model.constraint,message:pb_review_forms.constraint_pb_review_entry_one_per_review
+msgid "That review already has a filled-in form."
+msgstr "Bản đánh giá này đã có mẫu được điền."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That review form is not there any more."
+msgstr "Mẫu đánh giá này không còn nữa."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That review is not one you can see."
+msgstr "Bạn không được xem bản đánh giá này."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That review is not there any more."
+msgstr "Bản đánh giá này không còn nữa."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That year has no form to copy."
+msgstr "Năm đó không có mẫu để sao chép."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_review_form__locked_at
+msgid ""
+"The day the first review was sent in. From then on the questions cannot "
+"change."
+msgstr ""
+"Ngày bản đánh giá đầu tiên được gửi. Từ đó các câu hỏi không thể thay đổi."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__author__employee
+msgid "The employee"
+msgstr "Nhân viên"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__who__both
+msgid "The employee and the manager"
+msgstr "Nhân viên và quản lý"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__who__employee
+msgid "The employee only"
+msgstr "Chỉ nhân viên"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "The form is back to being written."
+msgstr "Mẫu đã quay lại trạng thái đang soạn."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "The form is in use for this goal year."
+msgstr "Mẫu đang được dùng cho năm mục tiêu này."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__author__manager
+msgid "The manager"
+msgstr "Quản lý"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__who__manager
+msgid "The manager only"
+msgstr "Chỉ quản lý"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid ""
+"The manager's ratings are mixed by these shares into one result out of 5. "
+"Once the form is in use, the pay review starts from this result."
+msgstr ""
+"Các mức đánh giá của quản lý được kết hợp theo các tỷ trọng này thành một "
+"kết quả trên thang 5. Khi mẫu được sử dụng, việc xét lương sẽ bắt đầu từ kết"
+" quả này."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "The overall result cannot be worked out yet. Answer every rated line."
+msgstr "Chưa thể tính kết quả chung. Hãy trả lời mọi dòng có đánh giá."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "The result"
+msgstr "Kết quả"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "The shares add up to %(have)s, not 100."
+msgstr "Tổng tỷ trọng là %(have)s, không phải 100."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "The three shares must add up to 100."
+msgstr "Ba tỷ trọng phải cộng lại bằng 100."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"The written review is kept on the review form until it is shared with them."
+msgstr ""
+"Nội dung đánh giá được giữ trên mẫu đánh giá cho đến khi được chia sẻ với "
+"nhân viên."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__self_state
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Their own view"
+msgstr "Ý kiến của nhân viên"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Their own view: not started"
+msgstr "Ý kiến của nhân viên: chưa bắt đầu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Their own view: sent"
+msgstr "Ý kiến của nhân viên: đã gửi"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Their own view: started"
+msgstr "Ý kiến của nhân viên: đã bắt đầu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Their view"
+msgstr "Ý kiến của họ"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "They can read it as soon as you finish."
+msgstr "Nhân viên có thể đọc ngay khi bạn hoàn tất."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "They can read it from %(day)s."
+msgstr "Nhân viên có thể đọc từ %(day)s."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "They have not sent their own view yet. Finish the review without it?"
+msgstr "Nhân viên chưa gửi ý kiến. Hoàn tất đánh giá mà không có ý kiến đó?"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid ""
+"They have not sent their own view yet. Their answers appear here once they "
+"do."
+msgstr "Nhân viên chưa gửi ý kiến. Câu trả lời của họ sẽ hiện ở đây khi gửi."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"They have not sent their own view yet. Wait for it, or finish without it."
+msgstr "Nhân viên chưa gửi ý kiến. Hãy chờ, hoặc hoàn tất mà không cần."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid ""
+"This form is locked: the first review on it was sent in on %(day)s. Copy it "
+"to another year to change it."
+msgstr ""
+"Mẫu này đã khóa: bản đánh giá đầu tiên được gửi ngày %(day)s. Hãy sao chép "
+"sang năm khác để thay đổi."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "This goal year is closed."
+msgstr "Năm mục tiêu này đã đóng."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This is your own review. You fill in your part on your own page."
+msgstr "Đây là bản đánh giá của bạn. Bạn điền phần của mình trên trang riêng."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This review does not use a review form."
+msgstr "Bản đánh giá này không dùng mẫu đánh giá."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This review is finished already."
+msgstr "Bản đánh giá này đã hoàn tất."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This year has been closed, so the review cannot change."
+msgstr "Năm này đã đóng nên bản đánh giá không thể thay đổi."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This year has been closed."
+msgstr "Năm này đã đóng."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This year has no form in use."
+msgstr "Năm này không có mẫu nào đang dùng."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Together"
+msgstr "Tổng cộng"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid ""
+"Until then the employee sees only their own answers, and their goals score "
+"is not shown on their page. Closing the goal year shows every finished "
+"review."
+msgstr ""
+"Cho đến lúc đó nhân viên chỉ thấy câu trả lời của mình, và điểm mục tiêu "
+"không hiện trên trang của họ. Đóng năm mục tiêu sẽ hiển thị mọi bản đánh giá"
+" đã hoàn tất."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Up to 8 questions. Choose who answers each one."
+msgstr "Tối đa 8 câu hỏi. Chọn người trả lời cho từng câu."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Used at the end-of-year review. The half-way review stays as it is."
+msgstr "Dùng cho đánh giá cuối năm. Đánh giá giữa năm giữ nguyên."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Wait for it"
+msgstr "Chờ ý kiến"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Waiting to be shown"
+msgstr "Chờ hiển thị"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Want to talk"
+msgstr "Muốn trao đổi"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Wants to talk"
+msgstr "Muốn trao đổi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__ack_state__talk
+msgid "Wants to talk about it"
+msgstr "Muốn trao đổi về việc này"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__5
+msgid "Well above"
+msgstr "Vượt xa"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__1
+msgid "Well below"
+msgstr "Thấp hơn nhiều"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "What are you most proud of this year?"
+msgstr "Bạn tự hào nhất điều gì trong năm nay?"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__description
+msgid "What good looks like"
+msgstr "Thế nào là tốt"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "What good looks like, in a sentence"
+msgstr "Thế nào là tốt, trong một câu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid ""
+"What the end-of-year review asks, and how the overall result is worked out."
+msgstr "Đánh giá cuối năm hỏi những gì, và kết quả chung được tính thế nào."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid ""
+"What the year came to, and what happens next. This is the part people read "
+"first."
+msgstr ""
+"Năm qua đạt được gì, và tiếp theo là gì. Đây là phần mọi người đọc đầu tiên."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__reveal
+msgid "When the employee sees the manager's part"
+msgstr "Khi nào nhân viên thấy phần của quản lý"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__who
+msgid "Who answers"
+msgstr "Ai trả lời"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__employee_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__employee_id
+msgid "Whose"
+msgstr "Của ai"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__name
+msgid "Words"
+msgstr "Nội dung"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Write the form first."
+msgstr "Hãy soạn mẫu trước."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"Write the overall comment. It is the part of the review people read first."
+msgstr "Hãy viết nhận xét chung. Đây là phần mọi người đọc đầu tiên."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__qtype__text
+msgid "Written answer"
+msgstr "Trả lời bằng chữ"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "You asked to talk about it"
+msgstr "Bạn đã đề nghị trao đổi"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "You can read it from %(day)s."
+msgstr "Bạn có thể đọc từ %(day)s."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "You can read it once your manager has finished."
+msgstr "Bạn có thể đọc khi quản lý đã hoàn tất."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "You have read it"
+msgstr "Bạn đã đọc"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "You have sent your own view already."
+msgstr "Bạn đã gửi ý kiến rồi."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "You have started your own view. Send it when it is ready."
+msgstr "Bạn đã bắt đầu điền ý kiến. Hãy gửi khi sẵn sàng."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your HR team has been asked to talk with you."
+msgstr "Đã đề nghị bộ phận nhân sự trao đổi với bạn."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Your manager has finished"
+msgstr "Quản lý đã hoàn tất"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your manager has finished this review already."
+msgstr "Quản lý đã hoàn tất bản đánh giá này."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your manager has finished. %(when)s"
+msgstr "Quản lý đã hoàn tất. %(when)s"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your manager's marks are shared with you together with your review."
+msgstr "Điểm quản lý chấm sẽ được chia sẻ cùng bản đánh giá của bạn."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your own review is filled in on your own page."
+msgstr "Bản đánh giá của bạn được điền trên trang riêng của bạn."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Your own view is with your manager"
+msgstr "Ý kiến của bạn đang ở chỗ quản lý"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your own view is with your manager. They write their part next."
+msgstr ""
+"Ý kiến của bạn đang ở chỗ quản lý. Tiếp theo họ sẽ viết phần của mình."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Your questions"
+msgstr "Câu hỏi của bạn"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your review is finished and filed in your documents."
+msgstr "Bản đánh giá đã hoàn tất và được lưu vào hồ sơ của bạn."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your review is not ready to read yet."
+msgstr "Bản đánh giá của bạn chưa sẵn sàng để đọc."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your review is ready to read"
+msgstr "Bản đánh giá của bạn đã sẵn sàng để đọc"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your review is ready to read. Tell us when you have read it."
+msgstr "Bản đánh giá đã sẵn sàng. Hãy xác nhận khi bạn đã đọc."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "out of 5"
+msgstr "trên 5"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "review"
+msgstr "đánh giá"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "· <span>Manager:</span>"
+msgstr "· <span>Quản lý:</span>"

@@ -714,3 +714,48 @@ class TestQuiet(RFCase):
         with self.assertRaises(AccessError):
             self.F.with_user(self.staff_user).drawer_save(
                 review.id, self._mgr_answers(form), 'DEMO', True)
+
+
+# =========================================================================
+#  T17 static gates: translations and white-label
+# =========================================================================
+@tagged('post_install', '-at_install', 'wdgap_s9a')
+class TestStatic(RFCase):
+
+    def _module(self, *parts):
+        from odoo.modules.module import get_module_path
+        return '/'.join([get_module_path('pb_review_forms')] + list(parts))
+
+    def test_17_every_word_has_vi_and_id(self):
+        import re as _re
+        from odoo.tools.translate import PoFileReader
+        with open(self._module('i18n', 'pb_review_forms.pot'), 'rb') as fh:
+            wanted = {row['src'] for row in PoFileReader(fh)}
+        self.assertGreater(len(wanted), 150)
+        for lang in ('vi_VN', 'id_ID'):
+            with open(self._module('i18n', lang + '.po'), 'rb') as fh:
+                rows = list(PoFileReader(fh))
+            done = {row['src'] for row in rows if row['value']}
+            self.assertEqual(wanted - done, set(), lang)
+            for row in rows:
+                self.assertFalse(_re.search(r'\bodoo\b', row['value'], _re.I),
+                                 row['src'])
+
+    def test_17_no_vendor_name_in_what_people_see(self):
+        import glob
+        import re as _re
+        files = (glob.glob(self._module('views', '*.xml'))
+                 + glob.glob(self._module('report', '*.xml'))
+                 + glob.glob(self._module('static', 'src', 'xml', '*.xml')))
+        self.assertTrue(files)
+        for path in files:
+            with open(path, encoding='utf-8') as fh:
+                text = fh.read()
+            text = _re.sub(r'<!--.*?-->', '', text, flags=_re.S)
+            text = text.replace('<odoo>', '').replace('</odoo>', '')
+            self.assertFalse(_re.search(r'\bodoo\b', text, _re.I), path)
+        with open(self._module('static', 'src', 'js',
+                               'review_forms_studio.js'), encoding='utf-8') as fh:
+            js = fh.read()
+        for found in _re.findall(r'_t\("([^"]*)"', js):
+            self.assertNotIn('odoo', found.lower())

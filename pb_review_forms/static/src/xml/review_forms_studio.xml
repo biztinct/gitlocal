@@ -81,7 +81,7 @@
 
             <div t-if="state.form.locked" class="pbrf-st-note">
               <t t-out="ic('lock',16)"/>
-              <span>Locked since <t t-esc="state.form.locked_on"/>, when the first review was sent in. Only when the manager's part is shown can still change. For a new version, copy it to another year.</span>
+              <span t-esc="state.form.locked_words"/>
             </div>
             <div t-elif="state.form.cycle_closed" class="pbrf-st-note">
               <t t-out="ic('archive',16)"/>
@@ -157,7 +157,7 @@
                 </div>
                 <div t-attf-class="pbrf-st-total {{shareTotal === 100 ? 'is-ok' : 'is-off'}}">
                   <t t-out="ic(shareTotal === 100 ? 'checkCircle' : 'alert', 15)"/>
-                  <span>Together: <t t-esc="shareTotal"/>%.</span>
+                  <span>Together</span> <strong><t t-esc="shareTotal"/>%</strong>
                   <span t-if="shareTotal !== 100">The three shares must add up to 100.</span>
                 </div>
               </t>
@@ -165,7 +165,7 @@
               <!-- ================= 2. skills and values ================= -->
               <t t-if="state.step === 'skills'">
                 <h4>Skills and values</h4>
-                <p class="pbrf-st-help">A few things both the employee and the manager rate from Well below to Well above. At most <t t-esc="state.limits.skills"/>.</p>
+                <p class="pbrf-st-help">A few things both the employee and the manager rate from Well below to Well above. At most 8.</p>
                 <t t-foreach="state.draft.skills" t-as="ln" t-key="ln_index">
                   <div class="pbrf-st-line">
                     <span class="pbrf-st-line-n" t-esc="ln_index + 1"/>
@@ -199,7 +199,7 @@
               <!-- ======================= 3. HR's questions ======================= -->
               <t t-if="state.step === 'questions'">
                 <h4>Your questions</h4>
-                <p class="pbrf-st-help">Up to <t t-esc="state.limits.questions"/> questions. Choose who answers each one.</p>
+                <p class="pbrf-st-help">Up to 8 questions. Choose who answers each one.</p>
                 <t t-foreach="state.draft.questions" t-as="ln" t-key="ln_index">
                   <div class="pbrf-st-line">
                     <span class="pbrf-st-line-n" t-esc="ln_index + 1"/>
@@ -275,7 +275,8 @@
                 <div t-if="state.form.state === 'published' and state.form.progress.waiting_to_show and state.mayEdit"
                      class="pbrf-st-note pbrf-st-note--act">
                   <t t-out="ic('eye',16)"/>
-                  <span><t t-esc="state.form.progress.waiting_to_show"/> finished, not shown yet.</span>
+                  <strong t-esc="state.form.progress.waiting_to_show"/>
+                  <span>Finished, not shown yet</span>
                   <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="showNow">Show them now</button>
                 </div>
               </t>
@@ -292,8 +293,8 @@
                   <t t-out="ic('checkCircle',15)"/><span>Everything is in place.</span>
                 </div>
                 <ul class="pbrf-st-summary">
-                  <li><strong t-esc="state.draft.skills.length"/> skills or values, <strong t-esc="state.draft.questions.length"/> questions.</li>
-                  <li>Goals <t t-esc="state.draft.share_goals"/>% · skills and values <t t-esc="state.draft.share_skills"/>% · rated questions <t t-esc="state.draft.share_questions"/>%.</li>
+                  <li><span>Skills and values</span>: <strong t-esc="state.draft.skills.length"/> · <span>Questions</span>: <strong t-esc="state.draft.questions.length"/></li>
+                  <li><span>Goals score</span> <strong><t t-esc="state.draft.share_goals"/>%</strong> · <span>Skills and values</span> <strong><t t-esc="state.draft.share_skills"/>%</strong> · <span>Rated questions</span> <strong><t t-esc="state.draft.share_questions"/>%</strong></li>
                   <li>Used at the end-of-year review. The half-way review stays as it is.</li>
                   <li>Once the first review is sent in, the form is locked for this year.</li>
                 </ul>

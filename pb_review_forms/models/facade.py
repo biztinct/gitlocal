@@ -109,6 +109,7 @@ class PbReviewForms(models.AbstractModel):
                 'dates': '%s – %s' % (self._day(cycle.date_start),
                                       self._day(cycle.date_end)),
                 'closed': cycle.state == 'closed',
+                'open': cycle.state == 'open',
                 'has_form': bool(form),
                 'state': form.state if form else '',
                 'locked': bool(form and form.locked_at),
@@ -118,8 +119,10 @@ class PbReviewForms(models.AbstractModel):
         if cycle_id and any(y['id'] == int(cycle_id) for y in years):
             chosen = int(cycle_id)
         elif years:
-            open_years = [y for y in years if not y['closed']]
-            chosen = (open_years or years)[0]['id']
+            # The year that is running first, then any not closed yet.
+            running = [y for y in years if y['open']]
+            not_closed = [y for y in years if not y['closed']]
+            chosen = (running or not_closed or years)[0]['id']
         payload = {
             'ok': True,
             'may_edit': bool(self._hr_lead()),
@@ -187,6 +190,12 @@ class PbReviewForms(models.AbstractModel):
             state=form.state,
             locked=bool(form.locked_at),
             locked_on=self._day(form.locked_at and form.locked_at.date()),
+            locked_words=_(
+                "Locked on %(day)s, when the first review was sent in. Only "
+                "when the manager's part is shown can still change. For a "
+                "new version, copy it to another year.",
+                day=self._day(form.locked_at and form.locked_at.date()))
+            if form.locked_at else '',
             published_on=self._day(form.published_at
                                    and form.published_at.date()),
             name=form.name or '',
