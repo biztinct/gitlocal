@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Conduct tab. Comments ruled with `=`, never a doubled hyphen.
+       Loop names: row `cs`, notes `nt`, files `fl`, letters `lr`, history
+       `hx`, events `ev`, people `pp`, options `op`, country notes `cn`.
+       Every sentence on one line (PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_conduct.PbConductBoard">
+    <div class="pbim pbim-page pbcd" t-att-class="{ 'pbcd--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the cases…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pbcd-locked">
+          <div class="pbcd-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>Only for the people HR names</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pbcd-head">
+            <div class="pbcd-head-id">
+              <h1 class="pbim-h1" t-if="!props.embedded">Conduct cases</h1>
+              <p class="pbim-sub"><t t-out="icon('lock', 13)"/> <span>Seen only by the people HR names for conduct cases. Nothing here is emailed.</span></p>
+            </div>
+            <div class="pbcd-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again" aria-label="Read the board again">
+                <t t-out="icon('refresh', 15)"/>
+              </button>
+              <div class="pbcd-menu-wrap">
+                <button class="pbim-btn ghost" t-on-click="toggleSetup" t-att-aria-expanded="state.setupOpen ? 'true' : 'false'">
+                  <t t-out="icon('settings', 15)"/> <span>Set up</span>
+                </button>
+                <div t-if="state.setupOpen" class="pbcd-menu" role="menu">
+                  <t t-if="state.isHead">
+                    <button role="menuitem" t-on-click="() => this.openSetup('reasons')"><t t-out="icon('tag', 14)"/> <span>Reasons</span></button>
+                    <button role="menuitem" t-on-click="() => this.openSetup('letters')"><t t-out="icon('fileText', 14)"/> <span>Letter wording</span></button>
+                    <button role="menuitem" t-on-click="() => this.openSetup('countries')"><t t-out="icon('globe', 14)"/> <span>Country notes</span></button>
+                  </t>
+                  <p t-else="" class="pbcd-menu-note">The reasons, letter wording and country notes are changed by the head of HR for conduct cases.</p>
+                  <button role="menuitem" t-on-click="openAccess"><t t-out="icon('shieldCheck', 14)"/> <span>Who can see conduct cases</span></button>
+                </div>
+              </div>
+              <button class="pbim-btn" t-on-click="openCreate">
+                <t t-out="icon('plus', 15)"/> <span>New case</span>
+              </button>
+            </div>
+          </div>
+
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="stepsLabel"/>
+            <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+          </t>
+
+          <PbFilterLayout kit="kit" coach="'conduct-filters'" searchPlaceholder="searchLabel">
+
+          <div t-if="state.listError" class="pbim-empty pbcd-empty">
+            <div class="pbcd-empty-ic"><t t-out="icon('alert', 30)"/></div>
+            <h3>The cases could not load</h3>
+            <p>The connection may have dropped. Your filters are kept.</p>
+            <button class="pbim-btn" t-on-click="retry"><t t-out="icon('refresh', 14)"/> <span>Try again</span></button>
+          </div>
+
+          <div t-elif="state.rows.length" class="pbim-tablewrap pbcd-tablewrap">
+            <table class="pbim-table pbcd-table">
+              <thead>
+                <tr>
+                  <th>Who</th>
+                  <th>Reason</th>
+                  <th>Opened</th>
+                  <th>What comes next</th>
+                  <th>Step</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="state.rows" t-as="cs" t-key="cs.id" class="pbcd-row"
+                    t-att-class="{ 'is-open': state.item and state.item.id === cs.id }"
+                    tabindex="0" t-on-click="() => this.openCase(cs)"
+                    t-on-keydown="(ev) => ev.key === 'Enter' and this.openCase(cs)">
+                  <td>
+                    <span class="pbcd-who">
+                      <span class="pbcd-av" t-esc="cs.initials"/>
+                      <span class="pbcd-who-tx">
+                        <b t-esc="cs.employee"/>
+                        <small><t t-esc="cs.name"/><t t-if="cs.department"> · <t t-esc="cs.department"/></t></small>
+                      </span>
+                    </span>
+                  </td>
+                  <td><span class="pbim-chip" t-esc="cs.reason"/></td>
+                  <td t-esc="cs.opened_on"/>
+                  <td>
+                    <span t-if="cs.state !== 'closed'" t-esc="cs.next"/>
+                    <span t-elif="cs.outcome_label" class="pbcd-muted"><t t-esc="cs.outcome_label"/><t t-if="cs.live"> · <span>valid until</span> <t t-esc="cs.valid_until"/></t></span>
+                    <span t-else="" class="pbcd-dash">—</span>
+                    <span t-if="cs.replies" class="pbcd-reply-dot" title="The employee has replied"><t t-out="icon('messageSquare', 13)"/></span>
+                  </td>
+                  <td><span class="pbim-badge pbcd-badge" t-att-class="'is-' + cs.state" t-esc="cs.state_label"/></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div t-elif="!state.listLoaded" class="pbcd-skeleton" aria-label="Loading cases">
+            <div t-foreach="[1,2,3,4]" t-as="i" t-key="i" class="pbcd-skel-row"/>
+          </div>
+
+          <div t-elif="!state.total" class="pbim-empty pbcd-empty">
+            <div class="pbcd-empty-ic"><t t-out="icon('scale', 30)"/></div>
+            <h3>No conduct cases</h3>
+            <p>When a concern about someone's conduct reaches HR, open a case here. It goes from the concern to a hearing, a decision and a letter, and only the people named for conduct cases can see it.</p>
+            <button class="pbim-btn" t-on-click="openCreate"><t t-out="icon('plus', 14)"/> <span>New case</span></button>
+          </div>
+
+          <div t-else="" class="pbim-empty pbcd-empty">
+            <div class="pbcd-empty-ic"><t t-out="icon('search', 30)"/></div>
+            <h3>No cases match these filters</h3>
+            <p>Remove a filter above, or start again from every case.</p>
+            <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show all cases</button>
+          </div>
+
+          <div t-if="state.rows.length and !state.listError" class="pbcd-foot">
+            <span>Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/></span>
+            <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
+
+          <!-- ======================== the drawer ======================== -->
+          <div t-if="state.item" class="pbcd-scrim" t-on-click="closeCase"/>
+          <aside t-if="state.item" class="pbcd-drawer" role="dialog" aria-modal="true"
+                 aria-label="Conduct case" t-att-class="{ 'is-busy': state.itemBusy }">
+            <t t-set="C" t-value="state.item"/>
+            <header class="pbcd-dr-head">
+              <div class="pbcd-dr-id">
+                <span class="pbcd-av lg" t-esc="C.initials"/>
+                <div>
+                  <h2 t-esc="C.employee"/>
+                  <p><t t-esc="C.name"/> · <t t-esc="C.reason"/><t t-if="C.job"> · <t t-esc="C.job"/></t></p>
+                </div>
+              </div>
+              <div class="pbcd-dr-tools">
+                <span class="pbim-badge pbcd-badge" t-att-class="'is-' + C.state" t-esc="C.state_label"/>
+                <button class="pbim-btn-sm ghost" t-on-click="closeCase" aria-label="Close"><t t-out="icon('x', 15)"/></button>
+              </div>
+            </header>
+
+            <div t-if="C.loading" class="pbim-busy"><div class="pbim-spin"/></div>
+            <div t-else="" class="pbcd-dr-body">
+
+              <!-- the adviser line and this country's notes -->
+              <section class="pbcd-adviser" role="note">
+                <span class="pbcd-adviser-ic"><t t-out="icon('info', 16)"/></span>
+                <div>
+                  <b>Check each step with your adviser.</b>
+                  <span> The law on hearings, warnings and letters differs by country, and these steps are general.</span>
+                  <ul t-if="currentNotes.length" class="pbcd-cnotes">
+                    <li t-foreach="currentNotes" t-as="cn" t-key="cn.step"><b><t t-esc="C.country"/> · <t t-esc="cn.step_label"/>:</b> <span t-esc="cn.note"/></li>
+                  </ul>
+                  <p t-elif="C.country and !otherNotes.length" class="pbcd-cnote-empty">No notes for <t t-esc="C.country"/> yet. The head of HR can add what your adviser says under Set up › Country notes.</p>
+                  <details t-if="otherNotes.length" class="pbcd-cnote-more">
+                    <summary>Notes for the other steps (<t t-esc="otherNotes.length"/>)</summary>
+                    <ul class="pbcd-cnotes">
+                      <li t-foreach="otherNotes" t-as="cn" t-key="cn.step"><b t-esc="cn.step_label"/>: <span t-esc="cn.note"/></li>
+                    </ul>
+                  </details>
+                </div>
+              </section>
+
+              <!-- the next move -->
+              <section t-if="!state.act" class="pbcd-moves">
+                <button t-if="C.can.plan_hearing" class="pbim-btn" t-on-click="() => this.startAct('plan_hearing')"><t t-out="icon('calendar', 14)"/> <span t-if="C.state === 'hearing'">Move the hearing</span><span t-else="">Plan the hearing</span></button>
+                <button t-if="C.can.hearing_held" class="pbim-btn" t-on-click="() => this.startAct('hearing_held')"><t t-out="icon('check', 14)"/> <span>Record the hearing</span></button>
+                <button t-if="C.can.decide" class="pbim-btn" t-on-click="() => this.startAct('decide')"><t t-out="icon('scale', 14)"/> <span>Record the decision</span></button>
+                <button t-if="C.can.invite" class="pbim-btn ghost" t-on-click="() => this.move('invite')"><t t-out="icon('mail', 14)"/> <span>Prepare an invitation letter</span></button>
+                <button t-if="C.can.skip_hearing" class="pbim-btn ghost" t-on-click="() => this.startAct('skip_hearing')"><span>No hearing needed</span></button>
+                <button t-if="C.can.exit" class="pbim-btn ghost" t-on-click="() => this.move('exit')"><t t-out="icon('logOut', 14)"/> <span>Open the leaving checklist</span></button>
+                <button t-if="C.can.reopen" class="pbim-btn ghost" t-on-click="() => this.move('reopen')"><t t-out="icon('undo', 14)"/> <span>Open the case again</span></button>
+                <button t-if="C.can.close" class="pbim-btn ghost pbcd-btn-quiet" t-on-click="() => this.startAct('close')"><span>Close the case</span></button>
+              </section>
+
+              <section t-if="state.act" class="pbcd-act">
+                <h3 t-esc="actTitle"/>
+                <p class="pbcd-act-help" t-esc="actHelp"/>
+                <t t-if="state.act.verb === 'plan_hearing'">
+                  <label class="pbcd-f"><span>Date and time</span><input type="datetime-local" class="pbim-input" t-att-value="state.act.hearing_date" t-on-change="(ev) => this.onAct('hearing_date', ev)"/></label>
+                  <label class="pbcd-f"><span>Where</span><input type="text" class="pbim-input" t-att-value="state.act.place" t-on-input="(ev) => this.onAct('place', ev)"/></label>
+                  <label class="pbcd-f"><span>Who attends</span><input type="text" class="pbim-input" placeholder="The employee, a companion or representative, the HR lead" t-att-value="state.act.attendees" t-on-input="(ev) => this.onAct('attendees', ev)"/></label>
+                </t>
+                <t t-if="state.act.verb === 'hearing_held'">
+                  <label class="pbcd-f"><span>Held on</span><input type="date" class="pbim-input" t-att-value="state.act.held_on" t-on-change="(ev) => this.onAct('held_on', ev)"/></label>
+                  <label class="pbcd-f"><span>Minutes: who was there, what was said</span><textarea rows="6" class="pbim-input" t-on-input="(ev) => this.onAct('minutes', ev)"><t t-esc="state.act.minutes"/></textarea></label>
+                </t>
+                <t t-if="state.act.verb === 'decide'">
+                  <label class="pbcd-f"><span>Decision</span>
+                    <select class="pbim-input" t-on-change="(ev) => this.onAct('outcome', ev)">
+                      <option value="" t-att-selected="!state.act.outcome">Choose…</option>
+                      <option t-foreach="state.outcomes" t-as="op" t-key="op.key" t-att-value="op.key" t-att-selected="state.act.outcome === op.key" t-esc="op.label"/>
+                    </select>
+                  </label>
+                  <label t-if="isWarning" class="pbcd-f"><span>Warning valid until</span><input type="date" class="pbim-input" t-att-value="state.act.valid_until" t-on-change="(ev) => this.onAct('valid_until', ev)"/></label>
+                  <label class="pbcd-f"><span>The decision, in a few sentences (it goes in the letter)</span><textarea rows="5" class="pbim-input" t-on-input="(ev) => this.onAct('summary', ev)"><t t-esc="state.act.summary"/></textarea></label>
+                </t>
+                <t t-if="state.act.verb === 'skip_hearing' or state.act.verb === 'close'">
+                  <label class="pbcd-f"><span>Why</span><input type="text" class="pbim-input" t-att-value="state.act.why" t-on-input="(ev) => this.onAct('why', ev)"/></label>
+                </t>
+                <div class="pbcd-act-btns">
+                  <button class="pbim-btn" t-att-disabled="state.itemBusy" t-on-click="doAct">Save</button>
+                  <button class="pbim-btn ghost" t-on-click="cancelAct">Cancel</button>
+                </div>
+              </section>
+
+              <!-- what happened -->
+              <section class="pbcd-sec">
+                <h3><t t-out="icon('fileText', 15)"/> <span>What happened</span></h3>
+                <p class="pbcd-pre" t-esc="C.summary"/>
+                <dl class="pbcd-facts">
+                  <div t-if="C.incident_date"><dt>When it happened</dt><dd t-esc="C.incident_date"/></div>
+                  <div t-if="C.raised_by"><dt>Raised by</dt><dd t-esc="C.raised_by"/></div>
+                  <div><dt>Opened</dt><dd t-esc="C.opened_on"/></div>
+                  <div t-if="C.company"><dt>Company</dt><dd t-esc="C.company"/></div>
+                </dl>
+              </section>
+
+              <section t-if="C.hearing_date or C.hearing_held_on" class="pbcd-sec">
+                <h3><t t-out="icon('calendar', 15)"/> <span>Hearing</span></h3>
+                <dl class="pbcd-facts">
+                  <div t-if="C.hearing_date"><dt>On</dt><dd t-esc="C.hearing_date"/></div>
+                  <div t-if="C.hearing_place"><dt>Where</dt><dd t-esc="C.hearing_place"/></div>
+                  <div t-if="C.hearing_attendees"><dt>Who attends</dt><dd t-esc="C.hearing_attendees"/></div>
+                  <div t-if="C.hearing_held_on"><dt>Held on</dt><dd t-esc="C.hearing_held_on"/></div>
+                </dl>
+              </section>
+
+              <section t-if="C.outcome" class="pbcd-sec">
+                <h3><t t-out="icon('scale', 15)"/> <span>Decision</span></h3>
+                <p><b t-esc="C.outcome_label"/><t t-if="C.valid_until"> · <span>valid until</span> <t t-esc="C.valid_until"/></t></p>
+                <p class="pbcd-pre" t-esc="C.decision_summary"/>
+                <p class="pbcd-muted">Decided on <t t-esc="C.decided_on"/><t t-if="C.decided_by"> by <t t-esc="C.decided_by"/></t></p>
+              </section>
+
+              <!-- letters -->
+              <section t-if="C.letters.length" class="pbcd-sec">
+                <h3><t t-out="icon('mail', 15)"/> <span>Letters</span></h3>
+                <article t-foreach="C.letters" t-as="lr" t-key="lr.id" class="pbcd-letter" t-att-class="'is-' + lr.state">
+                  <header>
+                    <b t-esc="lr.title"/>
+                    <span t-if="lr.state === 'draft'" class="pbim-badge pbcd-badge is-letter">Draft, not seen by the employee</span>
+                    <span t-else="" class="pbim-badge pbcd-badge is-closed">Issued <t t-esc="lr.issued_on"/></span>
+                  </header>
+                  <t t-if="state.editLetter and state.editLetter.id === lr.id">
+                    <label class="pbcd-f"><span>Title</span><input type="text" class="pbim-input" t-att-value="state.editLetter.title" t-on-input="(ev) => this.onLetter('title', ev)"/></label>
+                    <label class="pbcd-f"><span>Letter text</span><textarea rows="12" class="pbim-input" t-on-input="(ev) => this.onLetter('body', ev)"><t t-esc="state.editLetter.body"/></textarea></label>
+                    <div class="pbcd-act-btns">
+                      <button class="pbim-btn" t-on-click="saveLetter">Save the letter</button>
+                      <button class="pbim-btn ghost" t-on-click="cancelEditLetter">Cancel</button>
+                    </div>
+                  </t>
+                  <t t-else="">
+                    <p class="pbcd-pre pbcd-letter-body" t-esc="lr.body"/>
+                    <div class="pbcd-act-btns">
+                      <t t-if="lr.state === 'draft'">
+                        <button class="pbim-btn" t-on-click="() => this.issueLetter(lr)"><t t-out="icon('send', 14)"/> <span>Issue the letter</span></button>
+                        <button class="pbim-btn ghost" t-on-click="() => this.startEditLetter(lr)"><t t-out="icon('pencil', 14)"/> <span>Change the wording</span></button>
+                        <button class="pbim-btn ghost pbcd-btn-quiet" t-on-click="() => this.deleteLetter(lr)"><span>Delete the draft</span></button>
+                      </t>
+                      <a t-if="lr.pdf_url" class="pbim-btn ghost" t-att-href="lr.pdf_url"><t t-out="icon('download', 14)"/> <span>Download</span></a>
+                    </div>
+                    <p t-if="lr.state === 'issued' and lr.read_on" class="pbcd-muted"><t t-out="icon('checkCircle', 13)"/> <span>The employee said they read it on</span> <t t-esc="lr.read_on"/></p>
+                    <p t-elif="lr.state === 'issued'" class="pbcd-muted"><t t-out="icon('clock', 13)"/> <span>Not read by the employee yet.</span></p>
+                    <div t-if="lr.reply" class="pbcd-reply" t-att-class="{ 'is-new': !lr.reply_seen }">
+                      <p class="pbcd-reply-k"><t t-out="icon('messageSquare', 13)"/> <span>The employee's reply,</span> <t t-esc="lr.reply_on"/></p>
+                      <p class="pbcd-pre" t-esc="lr.reply"/>
+                      <button t-if="!lr.reply_seen" class="pbim-btn-sm ghost" t-on-click="() => this.replySeen(lr)">Mark as read</button>
+                    </div>
+                  </t>
+                </article>
+              </section>
+
+              <!-- notes -->
+              <section class="pbcd-sec">
+                <h3><t t-out="icon('pencil', 15)"/> <span>Notes</span></h3>
+                <p class="pbcd-muted">Notes and minutes stay with the case. They are never put in the employee's documents and the employee does not see them.</p>
+                <div t-foreach="C.notes" t-as="nt" t-key="nt.id" class="pbcd-note">
+                  <p class="pbcd-note-k"><b t-esc="nt.kind_label"/> · <t t-esc="nt.date"/><t t-if="nt.author"> · <t t-esc="nt.author"/></t></p>
+                  <p class="pbcd-pre" t-esc="nt.body"/>
+                </div>
+                <div class="pbcd-note-add">
+                  <select class="pbim-input" t-on-change="(ev) => this.onNote('kind', ev)">
+                    <option t-foreach="state.noteKinds" t-as="op" t-key="op.key" t-att-value="op.key" t-att-selected="state.note.kind === op.key" t-esc="op.label"/>
+                  </select>
+                  <textarea rows="3" class="pbim-input" placeholder="Write a note…" t-on-input="(ev) => this.onNote('body', ev)"><t t-esc="state.note.body"/></textarea>
+                  <button class="pbim-btn ghost" t-on-click="addNote"><t t-out="icon('plus', 14)"/> <span>Add the note</span></button>
+                </div>
+              </section>
+
+              <!-- files -->
+              <section class="pbcd-sec">
+                <h3><t t-out="icon('paperclip', 15)"/> <span>Files</span></h3>
+                <ul t-if="C.files.length" class="pbcd-files">
+                  <li t-foreach="C.files" t-as="fl" t-key="fl.id"><a t-att-href="fl.url"><t t-out="icon('download', 13)"/> <t t-esc="fl.name"/></a> <small t-esc="fl.when"/></li>
+                </ul>
+                <label class="pbim-btn ghost pbcd-upload"><t t-out="icon('upload', 14)"/> <span>Add a file</span><input type="file" class="pbcd-file-input" t-on-change="onFile"/></label>
+              </section>
+
+              <!-- earlier cases -->
+              <section class="pbcd-sec">
+                <h3><t t-out="icon('history', 15)"/> <span>Earlier cases for this person</span></h3>
+                <p t-if="!C.history.length" class="pbcd-muted">None.</p>
+                <ul t-else="" class="pbcd-hist">
+                  <li t-foreach="C.history" t-as="hx" t-key="hx.id"><b t-esc="hx.name"/> · <t t-esc="hx.reason"/> · <t t-esc="hx.opened_on"/> · <t t-esc="hx.outcome"/><span t-if="hx.live" class="pbcd-live"> · <span>valid until</span> <t t-esc="hx.valid_until"/></span></li>
+                </ul>
+              </section>
+
+              <section class="pbcd-sec">
+                <h3><t t-out="icon('activity', 15)"/> <span>History</span></h3>
+                <ul class="pbcd-events">
+                  <li t-foreach="C.events" t-as="ev" t-key="ev_index"><small><t t-esc="ev.when"/> · <t t-esc="ev.who"/></small> <span t-esc="ev.text"/></li>
+                </ul>
+              </section>
+            </div>
+          </aside>
+
+          <!-- ======================== new case ======================== -->
+          <div t-if="state.creating" class="pbcd-scrim" t-on-click="closeCreate"/>
+          <aside t-if="state.creating" class="pbcd-drawer pbcd-new" role="dialog" aria-modal="true" aria-label="New case">
+            <header class="pbcd-dr-head">
+              <h2>New conduct case</h2>
+              <button class="pbim-btn-sm ghost" t-on-click="closeCreate" aria-label="Close"><t t-out="icon('x', 15)"/></button>
+            </header>
+            <div class="pbcd-dr-body">
+              <p class="pbcd-muted"><t t-out="icon('lock', 13)"/> <span>Only the people named for conduct cases will see it. The employee sees nothing until a letter is issued.</span></p>
+              <label class="pbcd-f pbcd-person"><span>Who it is about</span>
+                <input type="text" class="pbim-input" placeholder="Type a name or an employee code" t-att-value="state.draft.employee" t-on-input="onPersonSearch"/>
+                <ul t-if="state.people.length" class="pbcd-people">
+                  <li t-foreach="state.people" t-as="pp" t-key="pp.id"><button t-on-click="() => this.pickPerson(pp)"><b t-esc="pp.name"/> <small><t t-esc="pp.code"/><t t-if="pp.department"> · <t t-esc="pp.department"/></t></small></button></li>
+                </ul>
+              </label>
+              <label class="pbcd-f"><span>Reason</span>
+                <select class="pbim-input" t-on-change="(ev) => this.onDraft('reason_id', ev)">
+                  <option t-foreach="state.reasons" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="state.draft.reason_id === op.id" t-esc="op.name"/>
+                </select>
+              </label>
+              <label class="pbcd-f"><span>When it happened</span><input type="date" class="pbim-input" t-att-value="state.draft.incident_date" t-on-change="(ev) => this.onDraft('incident_date', ev)"/></label>
+              <label class="pbcd-f"><span>What happened</span><textarea rows="6" class="pbim-input" t-on-input="(ev) => this.onDraft('summary', ev)"><t t-esc="state.draft.summary"/></textarea></label>
+              <label class="pbcd-f"><span>Raised by (optional)</span><input type="text" class="pbim-input" t-att-value="state.draft.raised_by" t-on-input="(ev) => this.onDraft('raised_by', ev)"/></label>
+              <div class="pbcd-act-btns">
+                <button class="pbim-btn" t-att-disabled="state.busy" t-on-click="confirmCreate">Open the case</button>
+                <button class="pbim-btn ghost" t-on-click="closeCreate">Cancel</button>
+              </div>
+            </div>
+          </aside>
+
+        </t>
+      </div>
+    </div>
+  </t>
+</templates>
