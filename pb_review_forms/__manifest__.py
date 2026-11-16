@@ -25,7 +25,7 @@ The end-of-year review, written once by HR for the whole company.
 
 Installing it changes nothing: there is no form until HR writes one.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

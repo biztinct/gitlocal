@@ -37,11 +37,21 @@
     </xpath>
   </template>
 
-  <!-- The "My review" home tile is added at the Step 9 merge together with
-       pb_me_portal's tile row (pb_me_portal's own test requires every home
-       entry to be in its registry). This module provides its door,
-       `/my/review`, and the eager key `pb_rf_has`; the exact entry is in the
-       S9-A report, "Follow-up RV1". -->
+  <!-- The "My review" home tile (owner ruling RV4), added at the Step 9 merge
+       together with pb_me_portal's tile row (pb_me_portal's own test requires
+       every home entry to be in its registry). Door `/my/review`, eager key
+       `pb_rf_has` (true only while the person has a review on a form). -->
+  <template id="portal_my_home_review" name="Review home entry"
+            inherit_id="portal.portal_my_home" priority="47">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pb_rf_has" t-call="portal.portal_docs_entry">
+        <t t-set="title">My review</t>
+        <t t-set="text">Your end-of-year review, both sides</t>
+        <t t-set="url" t-value="'/my/review'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
 
   <!-- ===================== one answer, as an input ===================== -->
   <template id="rf_input" name="Review form: one answer">

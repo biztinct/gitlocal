@@ -1829,3 +1829,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
 msgid "· <span>Manager:</span>"
 msgstr ""
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "My review"
+msgstr ""
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "Your end-of-year review, both sides"
+msgstr ""

@@ -1873,3 +1873,13 @@ msgstr "đánh giá"
 #: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
 msgid "· <span>Manager:</span>"
 msgstr "· <span>Quản lý:</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "My review"
+msgstr "Đánh giá của tôi"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "Your end-of-year review, both sides"
+msgstr "Đánh giá cuối năm của bạn, cả hai phía"

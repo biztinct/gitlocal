@@ -1894,3 +1894,13 @@ msgstr "penilaian"
 #: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
 msgid "· <span>Manager:</span>"
 msgstr "· <span>Atasan:</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "My review"
+msgstr "Penilaian saya"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "Your end-of-year review, both sides"
+msgstr "Penilaian akhir tahun Anda, dari kedua pihak"
