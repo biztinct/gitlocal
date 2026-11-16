@@ -34,6 +34,14 @@
         font-variant-numeric: tabular-nums;
         &.is-zero { color: var(--pbim-muted, #64748B); font-weight: 600; }
     }
+    // every month's table lines up with the next one
+    .pbmlm-table {
+        table-layout: fixed; width: 100%;
+        th:nth-child(1) { width: 30%; }
+        th:nth-child(2) { width: 34%; }
+        th:nth-child(3) { width: 14%; }
+        th:nth-child(4) { width: 22%; }
+    }
     .pbmlm-table tr.is-excused td { color: var(--pbim-muted, #64748B); }
     .pbmlm-badge {
         display: inline-block; font-size: 11px; font-weight: 800; padding: 3px 9px;
