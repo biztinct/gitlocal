@@ -17,12 +17,12 @@ CERT_TILE = '/my/certificates'
 try:
     from odoo.addons.pb_me_portal.models import pb_me_home
     pb_me_home.TILES.setdefault(CERT_TILE, {
-        # "More", not "Me" (C-3): pb_me_portal's home test pins the "Me"
-        # list and this phase may not edit pb_me_portal (report §8).
-        'group': 'more',
+        # Under "Me" (owner ruling ME1, placed at the Step 6 merge together
+        # with pb_me_portal's home test that pins the "Me" list).
+        'group': 'me',
         'icon': 'file-text',
         'tone': 'blue',
-        'seq': pb_me_home.GROUPS.index('more') * 100 + 1,
+        'seq': pb_me_home.GROUPS.index('me') * 100 + 9,
     })
 except Exception:                           # noqa: BLE001 — a tile is not fatal
     _logger.warning('pb_me_letters: the certificates tile could not be placed',

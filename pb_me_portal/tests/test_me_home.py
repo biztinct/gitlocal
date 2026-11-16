@@ -62,13 +62,17 @@ class TestMeHome(TransactionCase):
         self.assertEqual(self.Home.tile_meta('/my/security')['title'],
                          'Sign-in & security')
         # registry order: Profile, Documents, Tax Sheet, My Things, Pay
-        # Package, My requests (TIERS T3a), Expenses (ETP E1)
+        # Package, My requests (TIERS T3a), Expenses (ETP E1), then the tiles
+        # other modules add to "Me" when they are loaded: My details and
+        # Certificates (WDGAP S6, owner ruling ME1)
         me = sorted((m['seq'], url) for url, m in pb_me_home.TILES.items()
                     if m['group'] == 'me' and not m.get('hidden'))
+        added = [u for u in ('/my/details', '/my/certificates')
+                 if u in pb_me_home.TILES]
         self.assertEqual([u for _s, u in me],
                          ['/my/profile', '/my/documents', '/my/taxsheet',
                           '/my/assets', '/my/compensation', '/my/requests',
-                          '/my/expenses'])
+                          '/my/expenses'] + added)
 
     # ------------------------------------------------------------ test 3
     def _render_tile(self, url, title, text='Some text'):
