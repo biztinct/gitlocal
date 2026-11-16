@@ -259,3 +259,43 @@ vi/id added; `/pb_pay_scales,/pb_contract_rules` re-run: see the result line in 
 | W3B-2 | A golden "same as the old code" test can call the base class function directly (`OldApply.apply_review(self.Apply, id)`) inside a savepoint that is rolled back by raising — it still dispatches `self.*` calls to overrides, so keep the comparison to final values. |
 | W3B-3 | `pb.pay.review.effective_date` is NOT NULL; a "no date" test must `ALTER TABLE … DROP NOT NULL` inside the test transaction (DDL rolls back in PostgreSQL). |
 | W3B-4 | A take-back deadline tied to "the start of the day" must be closed by the writer too (`undo_until = now − 1 s`): a job run on a simulated day (or a time-zone mismatch) otherwise leaves a take-back that undoes written pay. |
+
+## Follow-up RN3 (owner ruling, 2026-11-17) and PRV2
+
+**PRV2** — owner confirmed "leave them out and list them" (§8 question 2): no change.
+
+**RN3** — a renewal copies the Vietnam payroll treatment (`hr.contract.pb_payroll_contract_type`) **only
+when the old contract says Permanent**; Probation is never copied (the new contract stays empty, as before);
+an empty one stays empty. This answers §8 question 1.
+
+* Where: the same path as RN1 — `pb.people.contract.wizard.create_contract` with `renew_from`, so both the
+  Contracts **Renew** button and the decision board's extension (`_build_new_contract`, which the contract
+  rules module passes through) carry it. New helpers `_treat_field`, `_renewal_treatment`,
+  `_treatment_for_new` in `pb_people_advanced/models/people_wizards.py`; field probed (`pb_employee_vault`).
+* The Renew dialog shows **"Payroll treatment (Vietnam)"** ready-filled ("Permanent" or "Not set"; no trial on
+  offer) on a Vietnam company or whenever the old contract has a treatment; HR's choice wins (`pay_treatment`
+  in the form; a trial typed in is refused).
+* **"Make it permanent" unchanged**: `_build_new_contract` with no end date passes `pay_treatment=''`, so
+  nothing is carried there (as before).
+* Versions: `pb_people_advanced` 19.0.1.1.4 → **19.0.1.1.5**, `pb_contract_lifecycle` 19.0.1.3.4 →
+  **19.0.1.3.5**. vi/id: three new strings ("Payroll treatment (Vietnam)", "Permanent", "Not set").
+
+Tests (tag `wdgap_w3b`, `pb_contract_rules/tests/test_wdgap_w3b_renewals.py`), all PASS:
+
+| # | Case |
+|---|---|
+| T1 | old Permanent → form prefilled Permanent (options "Not set"/"Permanent", no trial) → new Permanent; board extension → Permanent |
+| T2 | old Probation → new empty (Renew and board); old empty → new empty |
+| T3 | HR override wins (Permanent → "Not set" = empty; empty → Permanent); "probation" typed → not written; Make it permanent → empty (unchanged) |
+| T4 | **payslip golden**: a scheme whose social-insurance line reads the treatment off the contract (`contract.pb_payroll_contract_type` source, `IF(PTYPE="Permanent", BASIC×10.5%, 0)`) computes the renewed Permanent contract exactly like the old one for the same inputs (identical lines, SIEMP 2,100,000); the same renewal with the treatment removed computes differently — the carry is what keeps pay the same |
+
+Suites re-run on a fresh copy with the branch tree (`-u pb_people_advanced,pb_contract_lifecycle,
+pb_contract_rules,pb_pay_scales`, tags `/pb_contract_rules,/pb_contract_lifecycle,/pb_pay_scales`): **70
+tests, 0 failed, 0 errors**. PO gate green. Browser: Contracts › DEMO Vietnam Permanent contract › Renew shows
+"Kind of contract (Vietnam) = Fixed-term" and "Payroll treatment (Vietnam) = Permanent"; console clean.
+
+**Deploy-note change.** This is pay-reading data (the Vietnam pay formula reads the treatment), but only on
+contracts made by a renewal AFTER the upgrade; no existing contract or payslip is written. `-u` adds
+`pb_people_advanced` and `pb_contract_lifecycle` (already in the list). The rize rehearsal's old-vs-new
+recompute of existing payslips **must still show 0 differences** — say so in the deploy report; on the clone,
+a DEMO renewal of a Permanent-treatment contract should show Permanent on the new contract.

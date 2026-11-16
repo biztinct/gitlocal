@@ -18,6 +18,16 @@ N5  the fixed-term count now sees a Renew-button renewal (even after a break
 N6  the READ-ONLY check lists an old unlinked renewal (not a linked one),
     says whether the dates already join it, how many people would show the
     red warning if linked — and writes nothing; the tool runs it read-only.
+
+Follow-up RN3 — the Vietnam payroll treatment (`pb_payroll_contract_type`):
+T1  old Permanent → the Renew form opens on Permanent and the new contract is
+    Permanent (Renew button AND the decision board's extension).
+T2  old Probation → new empty (never a trial); old empty → new empty.
+T3  HR's choice on the Renew form wins (Permanent → "Not set"; empty →
+    Permanent); "Make it permanent" is unchanged (left empty).
+T4  payslip golden: a scheme that reads the treatment off the contract
+    computes the renewed Permanent contract exactly as the old one for the same
+    inputs (and differently when the treatment is missing — the carry matters).
 """
 import os
 import re
@@ -241,3 +251,131 @@ class TestW3bRenewals(TransactionCase):
         self.assertIn('SET TRANSACTION READ ONLY', tool)
         self.assertIn('renew_link_report', tool)
         self.assertIn('rollback', tool)
+
+    # ======================================================= RN3 follow-up
+    def _need_treat(self):
+        if 'pb_payroll_contract_type' not in self.env['hr.contract']._fields:
+            self.skipTest('the Vietnam payroll treatment is not installed here')
+
+    def test_t1_permanent_is_carried_on_both_paths(self):
+        self._need_treat()
+        emp = self._emp()
+        old = self._contract(emp, date(2025, 1, 1), date(2025, 12, 31),
+                             pb_payroll_contract_type='permanent')
+        new, d = self._renew(old, date(2026, 1, 1), date(2026, 12, 31))
+        self.assertEqual(d['prefill']['pay_treatment'], 'permanent')
+        self.assertTrue(d['prefill']['pay_treatment_show'])
+        self.assertEqual([k['key'] for k in d['pay_treatments']], ['', 'permanent'],
+                         "never a trial on offer")
+        self.assertEqual(new.pb_payroll_contract_type, 'permanent')
+        emp2 = self._emp()
+        old2 = self._contract(emp2, date(2025, 1, 1), date(2025, 12, 31),
+                              pb_payroll_contract_type='permanent')
+        review = self.env['pb.contract.review'].create(
+            {'contract_id': old2.id, 'company_id': self.company.id})
+        ext = review._build_new_contract(date(2026, 1, 1), date(2026, 12, 31))
+        self.assertEqual(ext.pb_payroll_contract_type, 'permanent', "board extension too")
+
+    def test_t2_probation_and_empty_stay_empty(self):
+        self._need_treat()
+        emp = self._emp()
+        trial = self._contract(emp, date(2025, 1, 1), date(2025, 2, 28),
+                               pb_payroll_contract_type='probation')
+        new, d = self._renew(trial, date(2025, 3, 1), date(2026, 2, 28))
+        self.assertEqual(d['prefill']['pay_treatment'], '')
+        self.assertFalse(new.pb_payroll_contract_type)
+        emp2 = self._emp()
+        blank = self._contract(emp2, date(2025, 1, 1), date(2025, 12, 31))
+        new2, d2 = self._renew(blank, date(2026, 1, 1), date(2026, 12, 31))
+        self.assertEqual(d2['prefill']['pay_treatment'], '')
+        self.assertFalse(new2.pb_payroll_contract_type)
+        # the board extension of a trial: empty too
+        emp3 = self._emp()
+        trial3 = self._contract(emp3, date(2025, 1, 1), date(2025, 2, 28),
+                                pb_payroll_contract_type='probation')
+        review = self.env['pb.contract.review'].create(
+            {'contract_id': trial3.id, 'company_id': self.company.id})
+        ext = review._build_new_contract(date(2025, 3, 1), date(2026, 2, 28))
+        self.assertFalse(ext.pb_payroll_contract_type)
+
+    def test_t3_hr_choice_wins_and_make_permanent_unchanged(self):
+        self._need_treat()
+        emp = self._emp()
+        old = self._contract(emp, date(2025, 1, 1), date(2025, 12, 31),
+                             pb_payroll_contract_type='permanent')
+        new, _d = self._renew(old, date(2026, 1, 1), date(2026, 12, 31), pay_treatment='')
+        self.assertFalse(new.pb_payroll_contract_type, "HR took it off")
+        emp2 = self._emp()
+        blank = self._contract(emp2, date(2025, 1, 1), date(2025, 12, 31))
+        new2, _d = self._renew(blank, date(2026, 1, 1), date(2026, 12, 31),
+                               pay_treatment='permanent')
+        self.assertEqual(new2.pb_payroll_contract_type, 'permanent', "HR set it")
+        emp3 = self._emp()
+        other = self._contract(emp3, date(2025, 1, 1), date(2025, 12, 31))
+        new3, _d = self._renew(other, date(2026, 1, 1), date(2026, 12, 31),
+                               pay_treatment='probation')
+        self.assertFalse(new3.pb_payroll_contract_type, "a trial is never written")
+        emp4 = self._emp()
+        old4 = self._contract(emp4, date(2025, 1, 1), date(2025, 12, 31),
+                              pb_payroll_contract_type='permanent')
+        review = self.env['pb.contract.review'].create(
+            {'contract_id': old4.id, 'company_id': self.company.id})
+        perm = review._build_new_contract(date(2026, 1, 1), False)
+        self.assertFalse(perm.pb_payroll_contract_type,
+                         "Make it permanent is unchanged: nothing carried")
+
+    def test_t4_payslip_golden_for_a_renewed_permanent_contract(self):
+        self._need_treat()
+        if 'pb.retro.review' not in self.env:
+            self.skipTest('payslip fixtures come from the Past-month re-work tests')
+        import json
+        from odoo.addons.pb_retro.tests import test_retro as base
+        B = base.TestW2d1Retro
+        holder = type('H', (), {'_seq': 800})()
+        holder.env = self.env
+        holder.company = self.company
+        holder.calendar = self.company.resource_calendar_id or self.env['resource.calendar'].create(
+            {'name': 'W3B Hours', 'company_id': self.company.id})
+        holder.cat = {
+            'earning': self.env.ref('om_hr_payroll.BASIC'),
+            'deduction': self.env.ref('om_hr_payroll.DED'),
+            'net': self.env.ref('om_hr_payroll.NET'),
+            'employer_cost': self.env.ref('om_hr_payroll.COMP'),
+        }
+        for name in ('_scheme', '_rule', '_run', '_slip'):
+            setattr(holder, name, getattr(B, name).__get__(holder))
+        cfg = holder._scheme()
+        b = holder._rule(cfg, 'BASICPAY', 'Basic pay', 'input', role='earning', seq=10).column_letter
+        t = holder._rule(cfg, 'PTYPE', 'Payroll treatment', 'input', role=False, seq=12,
+                         on_slip=False, value_kind='text',
+                         application_source_key='contract.pb_payroll_contract_type').column_letter
+        ins = holder._rule(cfg, 'SIEMP', 'Social insurance', 'formula',
+                           '=IF(%s="Permanent",%s*0.105,0)' % (t, b),
+                           role='deduction', seq=20).column_letter
+        holder._rule(cfg, 'NETPAY', 'Take-home', 'formula', '=%s-%s' % (b, ins),
+                     role='net', seq=30)
+        emp = self._emp()
+        old = self._contract(emp, date(2025, 1, 1), date(2025, 12, 31),
+                             pb_payroll_contract_type='permanent')
+        new, _d = self._renew(old, date(2026, 1, 1), date(2026, 12, 31))
+        emp_b = self._emp()
+        old_b = self._contract(emp_b, date(2025, 1, 1), date(2025, 12, 31),
+                               pb_payroll_contract_type='permanent')
+        bare, _d = self._renew(old_b, date(2026, 1, 1), date(2026, 12, 31), pay_treatment='')
+
+        def lines(person, contract, period):
+            got = cfg._application_record_context_values(
+                person, contract, period[0], period[1])['contract.pb_payroll_contract_type']
+            slip = holder._slip(cfg, person, contract, period,
+                                {'BASICPAY': 20_000_000.0, 'PTYPE': got['value'] or ''})
+            return sorted((l.code, l.total) for l in slip.line_ids), json.loads(
+                slip.formula_input_values)['PTYPE']
+
+        before, seen_old = lines(emp, old, (date(2025, 12, 1), date(2025, 12, 31)))
+        after, seen_new = lines(emp, new, (date(2026, 1, 1), date(2026, 1, 31)))
+        self.assertEqual(seen_old, 'Permanent')
+        self.assertEqual(seen_old, seen_new)
+        self.assertEqual(before, after, "the renewed Permanent contract is paid the same")
+        self.assertIn(('SIEMP', 2_100_000.0), after)
+        missing, _seen = lines(emp_b, bare, (date(2026, 1, 1), date(2026, 1, 31)))
+        self.assertNotEqual(missing, after, "without the carry the payslip would differ")

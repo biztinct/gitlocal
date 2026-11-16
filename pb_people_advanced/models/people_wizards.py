@@ -166,14 +166,52 @@ class PbContractWizard(models.AbstractModel):
                     d['prefill']['vn_kind_show'] = bool(
                         (c.company_id.country_id.code or '') == 'VN'
                         or d['prefill']['vn_kind'] not in ('', 'indefinite'))
+                # WDGAP W3-B follow-up (RN3): the Vietnam payroll treatment
+                # "Permanent" is carried (never "Probation"), changeable too.
+                if self._treat_field():
+                    treat = self._renewal_treatment(c)
+                    d['pay_treatments'] = [{'key': '', 'label': _("Not set")},
+                                           {'key': 'permanent', 'label': _("Permanent")}]
+                    d['prefill']['pay_treatment'] = treat
+                    d['prefill']['pay_treatment_show'] = bool(
+                        (c.company_id.country_id.code or '') == 'VN'
+                        or c.sudo().pb_payroll_contract_type)
         return d
+
+    # ------------------------------------------------------------------
+    # WDGAP W3-B follow-up (owner ruling RN3) — a renewal copies the Vietnam
+    # payroll treatment `pb_payroll_contract_type` ONLY when the old contract
+    # says "permanent"; "probation" is never copied (the new contract stays
+    # empty, as before). It is read by the Vietnam pay formula, so carrying
+    # "permanent" keeps the renewed contract paid exactly like the old one.
+    # HR can change it on the Renew form; "Make it permanent" is unchanged.
+    # The field belongs to pb_employee_vault: probed.
+    # ------------------------------------------------------------------
+    @api.model
+    def _treat_field(self):
+        return self.env['hr.contract']._fields.get('pb_payroll_contract_type')
+
+    @api.model
+    def _renewal_treatment(self, contract):
+        if not contract or not self._treat_field():
+            return ''
+        return 'permanent' if contract.sudo().pb_payroll_contract_type == 'permanent' else ''
+
+    @api.model
+    def _treatment_for_new(self, vals, old):
+        if not self._treat_field():
+            return ''
+        if 'pay_treatment' in (vals or {}):
+            return 'permanent' if vals.get('pay_treatment') == 'permanent' else ''
+        return self._renewal_treatment(old) if old else ''
 
     # ------------------------------------------------------------------
     # WDGAP W3-B (owner ruling RN1) — a renewal copies the Vietnam contract
     # kind (`vietnam_contract_type`: fixed-term / open-ended / seasonal) from
     # the old contract; NEVER the trial: a "probation" kind is not copied, and
-    # the separate Vietnam payroll trial treatment (`pb_payroll_contract_type`)
-    # is never touched. HR can change the kind on the Renew form; "Make it
+    # the separate Vietnam payroll treatment (`pb_payroll_contract_type`) has
+    # its own rule (RN3, below: "permanent" only, never "probation"). HR can
+    # change the kind on the Renew form; "Make it
     # permanent" asks for open-ended. The field belongs to the Vietnam payroll
     # module, so everything here is probed.
     # ------------------------------------------------------------------
@@ -350,6 +388,10 @@ class PbContractWizard(models.AbstractModel):
         kind = self._kind_for_new(vals, old)
         if kind:
             cvals['vietnam_contract_type'] = kind
+        # WDGAP W3-B follow-up (RN3): "Permanent" payroll treatment carried.
+        treatment = self._treatment_for_new(vals, old)
+        if treatment:
+            cvals['pb_payroll_contract_type'] = treatment
         # WDGAP W3-B (RN2): from now on a renewal made here is LINKED to the
         # contract it renews — the link the fixed-term counting reads (the
         # decision board already wrote it). Past renewals are not backfilled.

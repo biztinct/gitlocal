@@ -108,3 +108,21 @@ msgstr "Tanpa batas waktu"
 #: code:addons/pb_people_advanced/models/people_wizards.py:0
 msgid "Seasonal"
 msgstr "Musiman"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Not set"
+msgstr "Belum diatur"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Payroll treatment (Vietnam)"
+msgstr "Perlakuan penggajian (Vietnam)"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Permanent"
+msgstr "Tetap"

@@ -84,6 +84,14 @@
                             t-att-selected="k.key === state.form.vn_kind" t-esc="k.label"/>
                   </select>
                 </t>
+                <t t-if="payTreatments.length">
+                  <!-- WDGAP W3-B follow-up (RN3): Permanent carried, never a trial. -->
+                  <label class="pplw-label">Payroll treatment (Vietnam)</label>
+                  <select class="pplw-in pplw-treat" t-on-change="(ev) => this.onField('pay_treatment', ev)">
+                    <option t-foreach="payTreatments" t-as="k" t-key="k.key" t-att-value="k.key"
+                            t-att-selected="k.key === state.form.pay_treatment" t-esc="k.label"/>
+                  </select>
+                </t>
                 <label class="pplw-toggle"><input type="checkbox" t-att-checked="state.form.activate" t-on-change="() => this.toggle('activate')"/> Activate (set running) on create</label>
                 <div t-if="renewFrom" class="pplw-note">Renewing — start date should be after the previous contract ends to avoid an overlap.</div>
               </div>
