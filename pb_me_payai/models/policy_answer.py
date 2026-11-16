@@ -33,6 +33,7 @@ import re
 from markupsafe import Markup, escape
 
 from odoo import _, api, fields, models
+from odoo.exceptions import AccessError
 from odoo.addons.pb_payroll_ai_insights.models.ai_redaction import (
     extend_mapping, generic_scrub, redact_text, restore_names,
 )
@@ -267,6 +268,12 @@ class PbPolicyAnswer(models.AbstractModel):
              'answer': Markup or '', 'sources': [{'title', 'section'}],
              'question': the question as typed}
         """
+        # Reachable over RPC by any internal login: only ever for the
+        # caller's own employee record (or a trusted server-side caller).
+        if not isinstance(employee, models.BaseModel) or employee._name != 'hr.employee' \
+                or len(employee) != 1 \
+                or (not self.env.su and employee.sudo().user_id != self.env.user):
+            raise AccessError(_("You can only ask for yourself."))
         question = (question or '').strip()[:MAX_QUESTION]
         out = {'state': 'empty', 'answer': '', 'sources': [], 'question': question}
         if not question:
@@ -316,7 +323,7 @@ class PbPolicyAnswer(models.AbstractModel):
 
     # ============================================================ for HR
     @api.model
-    def usage(self, company):
+    def _usage(self, company):
         """The counts HR sees: today and this month, per outcome."""
         today = fields.Date.context_today(self)
         first = today.replace(day=1)

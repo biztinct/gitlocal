@@ -206,6 +206,17 @@ class TestPolicyAnswer(TransactionCase):
         with self.assertRaises(UserError):
             Desk.with_user(self.hr).set_published(doc.id, True)
 
+    # P15 — the answer door, reached over RPC, only ever answers for yourself
+    def test_p15_never_for_somebody_else(self):
+        with self.assertRaises(AccessError):
+            self.Answer.with_user(self.plain).ask(self.emp, 'How many days of wedding leave?')
+        with self.assertRaises(AccessError):
+            self.Answer.with_user(self.plain).ask(self.emp.id, 'How many days?')
+        fake = FakeProvider()
+        with stub(self.env, fake):
+            res = self.Answer.with_user(self.share).ask(self.emp.sudo(), 'How many days of wedding leave?')
+        self.assertEqual(res['state'], 'answered', 'the session\'s own record is fine')
+
     # P14 — HR of another company never sees these files
     def test_p14_company_rule(self):
         other = self.env['res.company'].create({'name': 'DEMO S6B Rule Co'})

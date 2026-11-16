@@ -56,7 +56,7 @@ class PbPolicyDesk(models.AbstractModel):
             'can_switch': self._can_switch(),
             'person_day': company.pb_policy_ai_person_day,
             'company_day': company.pb_policy_ai_company_day,
-            'usage': Answer.usage(company),
+            'usage': Answer._usage(company),
             'published': len(docs.filtered(lambda d: d.published and d.section_ids)),
             'documents': [{
                 'id': d.id, 'name': d.name, 'filename': d.filename or '',
