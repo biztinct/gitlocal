@@ -1,0 +1,1062 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_hiring_internal
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 00:00+0000\n"
+"PO-Revision-Date: 2026-11-16 00:00+0000\n"
+"Last-Translator: Payobook Translation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s already works here, so no Before they join list was made. "
+"%(manager)s, their new manager, was told."
+msgstr ""
+"%(who)s đã làm việc ở đây, nên không tạo danh sách Trước khi nhận việc. "
+"%(manager)s, quản lý mới của họ, đã được báo."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid ""
+"%(who)s applied from inside the company. Their current manager is told only "
+"when an offer is near."
+msgstr ""
+"%(who)s đã ứng tuyển từ trong công ty. Quản lý hiện tại của họ chỉ được báo "
+"khi sắp có lời mời nhận việc."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid ""
+"%(who)s is close to an offer for %(role)s. HR will talk to you about the "
+"move and when it happens."
+msgstr ""
+"%(who)s sắp nhận lời mời cho vị trí %(role)s. Phòng nhân sự sẽ trao đổi với "
+"bạn về việc chuyển vị trí và thời điểm."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s is joining your team as %(job)s from %(when)s. They already work "
+"here, so HR changes their job on their record."
+msgstr ""
+"%(who)s sẽ gia nhập nhóm của bạn với vị trí %(job)s từ %(when)s. Họ đã làm "
+"việc ở đây, nên phòng nhân sự sẽ thay đổi công việc trên hồ sơ của họ."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s moves to this role from %(when)s. They already work here, so no new "
+"employee record, contract, login or joining checklist was made. Their job "
+"change comes next."
+msgstr ""
+"%(who)s chuyển sang vị trí này từ %(when)s. Họ đã làm việc ở đây, nên không "
+"tạo hồ sơ nhân viên, hợp đồng, tài khoản đăng nhập hay danh sách nhập môn "
+"mới. Bước tiếp theo là thay đổi công việc của họ."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid ""
+"%(who)s moves to this role. No new employee record was made. Job change to "
+"do: change their job on their employee record."
+msgstr ""
+"%(who)s chuyển sang vị trí này. Không tạo hồ sơ nhân viên mới. Việc cần "
+"làm: thay đổi công việc trên hồ sơ nhân viên của họ."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid ""
+"%(who)s moves to this role. No new employee record was made. The job change "
+"is open for you to check and send."
+msgstr ""
+"%(who)s chuyển sang vị trí này. Không tạo hồ sơ nhân viên mới. Thay đổi "
+"công việc đã mở để bạn kiểm tra và gửi."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "%(who)s withdrew their application."
+msgstr "%(who)s đã rút đơn ứng tuyển."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s is joining your team"
+msgstr "%s sẽ gia nhập nhóm của bạn"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s may move to another role"
+msgstr "%s có thể chuyển sang vị trí khác"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s people are joining your team"
+msgstr "%s người sẽ gia nhập nhóm của bạn"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s people in your team may move to another role"
+msgstr "%s người trong nhóm của bạn có thể chuyển sang vị trí khác"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s people in your team may move to another role."
+msgstr "%s người trong nhóm của bạn có thể chuyển sang vị trí khác."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "(no department)"
+msgstr "(chưa có phòng ban)"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "(no job title)"
+msgstr "(chưa có chức danh)"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"d-none\" data-pbhi-ask=\"\">Withdraw your application? The "
+"hiring team will see that you withdrew it.</span>"
+msgstr ""
+"<span class=\"d-none\" data-pbhi-ask=\"\">Rút đơn ứng tuyển? Nhóm tuyển "
+"dụng sẽ thấy bạn đã rút đơn.</span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "<span class=\"pbhi-hint\">PDF or Word, up to 5 MB.</span>"
+msgstr "<span class=\"pbhi-hint\">PDF hoặc Word, tối đa 5 MB.</span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-label\">Why this role? <span class=\"pbhi-"
+"opt\">optional</span></span>"
+msgstr ""
+"<span class=\"pbhi-label\">Vì sao bạn chọn vị trí này? <span "
+"class=\"pbhi-opt\">không bắt buộc</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-label\">Your CV <span class=\"pbhi-"
+"opt\">optional</span></span>"
+msgstr ""
+"<span class=\"pbhi-label\">CV của bạn <span class=\"pbhi-opt\">không bắt "
+"buộc</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-step-n\">1</span><span><b>The hiring team looks at "
+"it</b><span>The recruiter for this role gets your application straight "
+"away.</span></span>"
+msgstr ""
+"<span class=\"pbhi-step-n\">1</span><span><b>Nhóm tuyển dụng xem "
+"đơn</b><span>Chuyên viên tuyển dụng của vị trí này nhận đơn của bạn "
+"ngay.</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-step-n\">2</span><span><b>Conversations, if it "
+"fits</b><span>The recruiter arranges any interviews with you "
+"directly.</span></span>"
+msgstr ""
+"<span class=\"pbhi-step-n\">2</span><span><b>Trao đổi, nếu phù "
+"hợp</b><span>Chuyên viên tuyển dụng sẽ trực tiếp sắp xếp phỏng vấn với "
+"bạn.</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-step-n\">3</span><span><b>An offer, then a "
+"move</b><span>Your manager is told when an offer is near. Your job then "
+"changes on your record.</span></span>"
+msgstr ""
+"<span class=\"pbhi-step-n\">3</span><span><b>Lời mời, rồi chuyển vị "
+"trí</b><span>Quản lý của bạn được báo khi sắp có lời mời. Sau đó công việc "
+"của bạn được thay đổi trên hồ sơ.</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_promise
+msgid ""
+"<span>Only the hiring team for the role sees your application. Your manager "
+"is told only when an offer is near.</span>"
+msgstr ""
+"<span>Chỉ nhóm tuyển dụng của vị trí đó thấy đơn của bạn. Quản lý của bạn "
+"chỉ được báo khi sắp có lời mời nhận việc.</span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span>Your manager is on the hiring team for this role, so they will see "
+"your application.</span>"
+msgstr ""
+"<span>Quản lý của bạn nằm trong nhóm tuyển dụng của vị trí này, nên họ sẽ "
+"thấy đơn của bạn.</span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"A few lines for the hiring team: what you would bring, and what you want to "
+"learn."
+msgstr "Vài dòng cho nhóm tuyển dụng: bạn sẽ mang lại gì, và bạn muốn học gì."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"A move can be confirmed once the offer is signed. This one is “%s” — record "
+"the signed copy first."
+msgstr ""
+"Chỉ xác nhận chuyển vị trí khi lời mời đã được ký. Lời mời này đang “%s”: "
+"hãy lưu bản đã ký trước."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "A move in your team"
+msgstr "Một thay đổi vị trí trong nhóm của bạn"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid ""
+"A staff-only role never goes on the careers page. Choosing it for a role "
+"already there takes the role off."
+msgstr ""
+"Vị trí chỉ dành cho nhân viên không bao giờ lên trang tuyển dụng. Chọn mục "
+"này cho một vị trí đang đăng sẽ gỡ vị trí đó xuống."
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring_posting
+msgid "Advert"
+msgstr "Tin tuyển dụng"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"An offer is being prepared. Your manager has now been told, as promised."
+msgstr ""
+"Lời mời nhận việc đang được chuẩn bị. Quản lý của bạn giờ đã được báo, như "
+"đã hứa."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "An offer is near, so %(manager)s, their current manager, was told."
+msgstr ""
+"Sắp có lời mời nhận việc, nên %(manager)s, quản lý hiện tại của họ, đã được "
+"báo."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid ""
+"An offer is near. %(who)s has no manager on their record, so nobody else was"
+" told."
+msgstr ""
+"Sắp có lời mời nhận việc. %(who)s không có quản lý trên hồ sơ, nên không "
+"báo cho ai khác."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "An offer is near. HR will talk to you about the timing."
+msgstr ""
+"Sắp có lời mời nhận việc. Phòng nhân sự sẽ trao đổi với bạn về thời điểm."
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_hr_applicant
+msgid "Applicant"
+msgstr "Ứng viên"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Applications"
+msgstr "Đơn ứng tuyển"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Applied"
+msgstr "Đã ứng tuyển"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_internal
+msgid "Applied from inside the company"
+msgstr "Ứng tuyển từ trong công ty"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid ""
+"Applied from inside the company. Works here now as %(job)s in %(dept)s."
+msgstr "Ứng tuyển từ trong công ty. Hiện đang làm %(job)s tại %(dept)s."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_toast
+msgid "Applied. The hiring team for this role has it."
+msgstr "Đã ứng tuyển. Nhóm tuyển dụng của vị trí này đã nhận đơn."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Apply"
+msgstr "Ứng tuyển"
+
+#. module: pb_hiring_internal
+#: model:ir.model,website_form_label:pb_hiring_internal.model_hr_applicant
+msgid "Apply for a Job"
+msgstr "Ứng tuyển"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Apply for this role"
+msgstr "Ứng tuyển vị trí này"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "Attach a PDF or a Word document."
+msgstr "Đính kèm tệp PDF hoặc Word."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Being considered"
+msgstr "Đang được xem xét"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid ""
+"Change %(who)s's job on their employee record: new job, manager, pay and "
+"start date. This system has no guided job change yet."
+msgstr ""
+"Thay đổi công việc của %(who)s trên hồ sơ nhân viên: công việc mới, quản "
+"lý, lương và ngày bắt đầu. Hệ thống chưa có quy trình thay đổi công việc có "
+"hướng dẫn."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "Choose who can apply for this role."
+msgstr "Chọn ai có thể ứng tuyển vị trí này."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Close to an offer elsewhere"
+msgstr "Sắp nhận lời mời ở vị trí khác"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "Confidential roles are never shown to staff."
+msgstr "Vị trí bảo mật không bao giờ hiện cho nhân viên."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid ""
+"Confirm the move on their offer first. The job change starts from there."
+msgstr ""
+"Hãy xác nhận việc chuyển vị trí trên lời mời của họ trước. Thay đổi công "
+"việc bắt đầu từ đó."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_job__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_internal__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_posting__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_requisition__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_me_home__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Thông tin trang chủ nhân viên"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Hiring paused: hidden from staff"
+msgstr "Tạm dừng tuyển dụng: ẩn với nhân viên"
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring_requisition
+msgid "Hiring request"
+msgstr "Yêu cầu tuyển dụng"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_job__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_internal__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_posting__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_requisition__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_me_home__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "Internal role"
+msgstr "Vị trí nội bộ"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job_missing
+msgid ""
+"It may have been filled or closed. Other roles open to staff are on the "
+"list."
+msgstr ""
+"Vị trí có thể đã được tuyển hoặc đã đóng. Các vị trí khác dành cho nhân "
+"viên có trong danh sách."
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_hr_job
+msgid "Job Position"
+msgstr "Vị trí công việc"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__hr_applicant__pb_job_change_state__opened
+msgid "Job change opened"
+msgstr "Đã mở thay đổi công việc"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__hr_applicant__pb_job_change_state__to_do
+msgid "Job change to do"
+msgstr "Cần thay đổi công việc"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Job change to do: change their job on their employee record."
+msgstr ""
+"Cần thay đổi công việc: thay đổi công việc trên hồ sơ nhân viên của họ."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_breadcrumbs_pbhi
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_home_pbhi
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Jobs inside the company"
+msgstr "Việc làm trong công ty"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Joining your team"
+msgstr "Gia nhập nhóm của bạn"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/board_patch.xml:0
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Manager not told yet"
+msgstr "Chưa báo quản lý"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/board_patch.xml:0
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Manager told"
+msgstr "Đã báo quản lý"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_manager_told_id
+msgid "Manager who was told"
+msgstr "Quản lý đã được báo"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "Moved"
+msgstr "Đã chuyển"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid "Moved to %(role)s through an internal application."
+msgstr "Chuyển sang %(role)s qua ứng tuyển nội bộ."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_breadcrumbs_pbhi
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Moves in your team"
+msgstr "Thay đổi vị trí trong nhóm của bạn"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Moving to this role"
+msgstr "Đang chuyển sang vị trí này"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_new_manager_id
+msgid "New manager who was told"
+msgstr "Quản lý mới đã được báo"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/board_patch.xml:0
+msgid "No manager on their record"
+msgstr "Không có quản lý trên hồ sơ"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "No moves in your team"
+msgstr "Không có thay đổi vị trí trong nhóm"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "No open roles"
+msgstr "Không có vị trí đang mở"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "No roles open to staff right now"
+msgstr "Hiện chưa có vị trí nào dành cho nhân viên"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "No staff applications yet"
+msgstr "Chưa có đơn ứng tuyển của nhân viên"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Not this time"
+msgstr "Lần này chưa phù hợp"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Not this time. Thank you for applying. Other roles may suit you later."
+msgstr ""
+"Lần này chưa phù hợp. Cảm ơn bạn đã ứng tuyển. Các vị trí khác có thể phù "
+"hợp với bạn sau này."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/requisition.py:0
+msgid "Now open to staff only, so it came off the careers page."
+msgstr "Giờ chỉ dành cho nhân viên, nên đã gỡ khỏi trang tuyển dụng."
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring_offer
+msgid "Offer"
+msgstr "Lời mời"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Offer accepted"
+msgstr "Đã nhận lời mời"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Offer being prepared"
+msgstr "Đang chuẩn bị lời mời"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "On the careers page"
+msgstr "Trên trang tuyển dụng"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "Only the hiring team sees staff moves."
+msgstr "Chỉ nhóm tuyển dụng thấy thay đổi vị trí của nhân viên."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid ""
+"Open a role to staff under “Who can apply”. Staff then see it on their own "
+"pages and can apply in one press."
+msgstr ""
+"Mở vị trí cho nhân viên tại mục “Ai có thể ứng tuyển”. Nhân viên sẽ thấy vị "
+"trí trên trang của mình và ứng tuyển chỉ với một lần bấm."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_home_pbhi
+msgid "Open roles you can apply for"
+msgstr "Các vị trí bạn có thể ứng tuyển"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid ""
+"Open roles you can apply for. Your record is your application, so there is "
+"nothing to type again."
+msgstr ""
+"Các vị trí bạn có thể ứng tuyển. Hồ sơ của bạn chính là đơn ứng tuyển, nên "
+"không cần nhập lại gì."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Open the job change"
+msgstr "Mở thay đổi công việc"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Open to staff"
+msgstr "Dành cho nhân viên"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Opened"
+msgstr "Mở ngày"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__pb_hiring_requisition__pb_staff_posting__outside
+msgid "Outside candidates only"
+msgstr "Chỉ ứng viên bên ngoài"
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring
+msgid "Payobook Hiring cockpit data"
+msgstr "Dữ liệu bảng điều khiển tuyển dụng Payobook"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid ""
+"People moving into your team from another role, and people in your team "
+"close to an offer elsewhere. HR will talk to you about the timing."
+msgstr ""
+"Những người chuyển vào nhóm của bạn từ vị trí khác, và những người trong "
+"nhóm của bạn sắp nhận lời mời ở nơi khác. Phòng nhân sự sẽ trao đổi với bạn "
+"về thời điểm."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid ""
+"People who applied from inside the company, and which roles staff can see."
+msgstr ""
+"Những người ứng tuyển từ trong công ty, và các vị trí nhân viên có thể thấy."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "Quiet replacements are never shown to staff."
+msgstr "Vị trí thay thế kín không bao giờ hiện cho nhân viên."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Received"
+msgstr "Đã nhận"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Reload the page. If it keeps happening, tell your administrator."
+msgstr "Tải lại trang. Nếu vẫn xảy ra, hãy báo quản trị viên."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "Saved. %s"
+msgstr "Đã lưu. %s"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job_missing
+msgid "See the open roles"
+msgstr "Xem các vị trí đang mở"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "See the role"
+msgstr "Xem vị trí"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "Somebody in your team may move to another role."
+msgstr "Một người trong nhóm của bạn có thể chuyển sang vị trí khác."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__pb_hiring_requisition__pb_staff_posting__both
+msgid "Staff and outside candidates"
+msgstr "Nhân viên và ứng viên bên ngoài"
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring_internal
+msgid "Staff applications for open roles"
+msgstr "Đơn ứng tuyển của nhân viên cho các vị trí đang mở"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Staff moves"
+msgstr "Nhân viên chuyển vị trí"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Staff moves could not be read"
+msgstr "Không đọc được thông tin chuyển vị trí"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__pb_hiring_requisition__pb_staff_posting__staff
+msgid "Staff only"
+msgstr "Chỉ nhân viên"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,help:pb_hiring_internal.field_pb_hiring_requisition__pb_staff_posting
+msgid ""
+"Staff see a role on their own pages only when it is open to staff. A staff-"
+"only role is never put on the careers page."
+msgstr ""
+"Nhân viên chỉ thấy vị trí trên trang của mình khi vị trí đó dành cho nhân "
+"viên. Vị trí chỉ dành cho nhân viên không bao giờ lên trang tuyển dụng."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Start the job change"
+msgstr "Bắt đầu thay đổi công việc"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "That application is not there any more."
+msgstr "Đơn ứng tuyển này không còn nữa."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "That could not be opened."
+msgstr "Không mở được."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "That could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "That did not go through. Try again in a moment."
+msgstr "Chưa thực hiện được. Hãy thử lại sau ít phút."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "That file is bigger than 5 MB. Attach a smaller one, or leave it out."
+msgstr "Tệp lớn hơn 5 MB. Hãy đính kèm tệp nhỏ hơn, hoặc bỏ qua."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "That role is not open to staff any more."
+msgstr "Vị trí này không còn dành cho nhân viên."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "That role is not there any more."
+msgstr "Vị trí này không còn nữa."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"The hiring team has not written the advert yet. The recruiter for this role "
+"can tell you more."
+msgstr ""
+"Nhóm tuyển dụng chưa viết tin tuyển dụng. Chuyên viên tuyển dụng của vị trí "
+"này có thể cho bạn biết thêm."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "The hiring team has your application and will look at it soon."
+msgstr "Nhóm tuyển dụng đã nhận đơn của bạn và sẽ sớm xem xét."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"The hiring team is looking at your application. The recruiter will be in "
+"touch about next steps."
+msgstr ""
+"Nhóm tuyển dụng đang xem xét đơn của bạn. Chuyên viên tuyển dụng sẽ liên hệ "
+"về các bước tiếp theo."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,help:pb_hiring_internal.field_hr_applicant__pb_manager_told_on
+msgid "Their current manager is told only when an offer is near."
+msgstr "Quản lý hiện tại của họ chỉ được báo khi sắp có lời mời nhận việc."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_job_change_state
+msgid "Their job change"
+msgstr "Thay đổi công việc của họ"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_manager_told_on
+msgid "Their manager was told on"
+msgstr "Ngày báo quản lý"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_new_manager_told_on
+msgid "Their new manager was told on"
+msgstr "Ngày báo quản lý mới"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid ""
+"They already work here, so there is no new-joiner list. HR changes their job"
+" on their record."
+msgstr ""
+"Họ đã làm việc ở đây, nên không có danh sách cho người mới. Phòng nhân sự "
+"sẽ thay đổi công việc trên hồ sơ của họ."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "They already work here. HR changes their job on their record."
+msgstr ""
+"Họ đã làm việc ở đây. Phòng nhân sự sẽ thay đổi công việc trên hồ sơ của họ."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid ""
+"This application can no longer be withdrawn here. Talk to the recruiter for "
+"this role."
+msgstr ""
+"Không thể rút đơn này tại đây nữa. Hãy trao đổi với chuyên viên tuyển dụng "
+"của vị trí này."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,help:pb_hiring_internal.field_hr_applicant__pb_internal
+msgid ""
+"This candidate already works here and applied from their own pages. Hiring "
+"them changes their job; it never makes a second employee record."
+msgstr ""
+"Ứng viên này đang làm việc ở đây và ứng tuyển từ trang của mình. Tuyển họ "
+"là thay đổi công việc của họ, không bao giờ tạo hồ sơ nhân viên thứ hai."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job_missing
+msgid "This role is not open to staff"
+msgstr "Vị trí này không dành cho nhân viên"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "This role is not open to staff any more."
+msgstr "Vị trí này không còn dành cho nhân viên."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/requisition.py:0
+msgid ""
+"This role is open to staff only, so it is not put on the careers page. "
+"Change who can apply first."
+msgstr ""
+"Vị trí này chỉ dành cho nhân viên, nên không đăng lên trang tuyển dụng. Hãy "
+"đổi mục ai có thể ứng tuyển trước."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Told"
+msgstr "Đã báo"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "What happens next"
+msgstr "Điều gì diễn ra tiếp theo"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid ""
+"When a role is open for candidates, you choose here whether staff can apply."
+msgstr ""
+"Khi một vị trí mở cho ứng viên, bạn chọn tại đây liệu nhân viên có thể ứng "
+"tuyển không."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid ""
+"When somebody in your team is close to an offer for another role, you are "
+"told here."
+msgstr ""
+"Khi một người trong nhóm của bạn sắp nhận lời mời cho vị trí khác, bạn sẽ "
+"được báo tại đây."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "When the company opens a role to staff, it appears here."
+msgstr "Khi công ty mở một vị trí cho nhân viên, vị trí đó sẽ hiện ở đây."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_requisition__pb_staff_posting
+msgid "Who can apply"
+msgstr "Ai có thể ứng tuyển"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Withdraw my application"
+msgstr "Rút đơn ứng tuyển"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Withdrawn"
+msgstr "Đã rút đơn"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_internal_withdrawn_on
+msgid "Withdrawn by them on"
+msgstr "Ngày họ rút đơn"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_toast
+msgid "Withdrawn. Nobody else needs to be told."
+msgstr "Đã rút đơn. Không cần báo cho ai khác."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/board_patch.xml:0
+msgid "Works here"
+msgstr "Đang làm việc ở đây"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"You accepted the offer. HR will arrange the move with you and your manager."
+msgstr ""
+"Bạn đã nhận lời mời. Phòng nhân sự sẽ sắp xếp việc chuyển vị trí với bạn và "
+"quản lý của bạn."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "You are moving to this role. HR changes your job on your record."
+msgstr ""
+"Bạn đang chuyển sang vị trí này. Phòng nhân sự sẽ thay đổi công việc trên "
+"hồ sơ của bạn."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "You have already applied for this role."
+msgstr "Bạn đã ứng tuyển vị trí này rồi."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "You withdrew this application."
+msgstr "Bạn đã rút đơn ứng tuyển này."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Your application"
+msgstr "Đơn ứng tuyển của bạn"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Your applications"
+msgstr "Đơn ứng tuyển của bạn"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"Your record is your application: the hiring team sees your name, your "
+"current job and your department."
+msgstr ""
+"Hồ sơ của bạn chính là đơn ứng tuyển: nhóm tuyển dụng thấy tên, công việc "
+"hiện tại và phòng ban của bạn."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "from staff"
+msgstr "từ nhân viên"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "job changes to do"
+msgstr "thay đổi công việc cần làm"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "roles open to staff"
+msgstr "vị trí dành cho nhân viên"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "staff applications in play"
+msgstr "đơn của nhân viên đang xét"

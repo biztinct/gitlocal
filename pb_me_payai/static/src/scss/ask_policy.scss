@@ -1,0 +1,75 @@
+// =====================================================================
+//  Company policies on My Payobook — .pbpa-* (WDGAP S6-B, E5)
+//  A thin layer on pb_me_portal's .pbme kit. Tokens only, flat, no
+//  gradients. PayAI's answer reads like a reply in a conversation.
+// =====================================================================
+
+.pbme.pbpa {
+    max-width: 980px; margin-left: auto; margin-right: auto;
+
+    .pbpa-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; margin-top: 6px; }
+    .pbpa-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .pbpa-side { display: flex; flex-direction: column; gap: 14px; }
+    .pbpa-card {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh); padding: 20px 22px;
+    }
+    .pbpa-h2 { display: flex; align-items: center; gap: 7px; font-size: 14.5px; font-weight: 800; color: var(--pbim-ink); margin: 0 0 10px; }
+
+    // ---------- the question ----------
+    .pbpa-label { display: block; font-size: 13px; font-weight: 800; color: var(--pbim-ink); margin-bottom: 8px; }
+    .pbpa-box {
+        display: flex; align-items: flex-end; gap: 10px; padding: 8px 8px 8px 12px;
+        border: 1px solid var(--pbim-line); border-radius: 14px; background: var(--pbim-surface);
+        transition: border-color .15s, box-shadow .15s;
+        &:focus-within { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbpa-input {
+        flex: 1; min-width: 0; border: 0; resize: vertical; min-height: 64px; padding: 4px 0;
+        font: inherit; font-size: 15px; line-height: 1.5; color: var(--pbim-text); background: transparent;
+        &:focus { outline: none; }
+        &::placeholder { color: var(--pbim-slate); }
+    }
+    .pbpa-send { flex: none; gap: 6px; }
+    .pbpa-hint { margin: 10px 2px 0; font-size: 12.5px; color: var(--pbim-muted); }
+    .pbpa-thinking { display: none; margin: 10px 2px 0; font-size: 13px; font-weight: 700; color: var(--pbim-primary-strong); }
+    .pbpa-ask.is-asking {
+        .pbpa-thinking { display: inline-block; animation: pbpa-breathe 1.4s ease-in-out infinite; }
+        .pbpa-send { opacity: .7; cursor: progress; }
+    }
+
+    // ---------- the answer ----------
+    .pbpa-answer { animation: pbpa-in 320ms cubic-bezier(.2, .7, .3, 1) both; }
+    .pbpa-who { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; b { font-size: 13.5px; color: var(--pbim-ink); } }
+    .pbpa-av {
+        width: 30px; height: 30px; border-radius: 50%; display: inline-grid; place-items: center;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+    }
+    .pbpa-text { font-size: 15px; line-height: 1.6; color: var(--pbim-text); margin: 0 0 14px; }
+    .pbpa-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; }
+    .pbpa-sources-h { font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--pbim-muted); }
+    .pbpa-source {
+        display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong); font-size: 12.5px;
+        b { font-weight: 700; }
+    }
+    .pbpa-source-sec::before { content: "\00b7"; margin: 0 2px 0 0; }
+    .pbpa-check { font-size: 12.5px; color: var(--pbim-muted); margin: 0 0 12px; }
+    .pbpa-answer--none .pbpa-av { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+
+    // ---------- side ----------
+    .pbpa-pols {
+        list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;
+        li { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--pbim-text); }
+        li > :first-child { color: var(--pbim-primary); flex: none; }
+    }
+    .pbpa-private p { font-size: 13px; color: var(--pbim-muted); line-height: 1.5; margin: 0 0 8px; }
+    .pbpa-private .pbpa-h2 { color: var(--pbim-ink); }
+
+    @media (max-width: 860px) { .pbpa-grid { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 520px) { .pbpa-box { flex-direction: column; align-items: stretch; } .pbpa-send { width: 100%; } }
+    @media (prefers-reduced-motion: reduce) { .pbpa-answer, .pbpa-ask.is-asking .pbpa-thinking { animation: none; } }
+}
+
+@keyframes pbpa-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pbpa-breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
