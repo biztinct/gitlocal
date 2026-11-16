@@ -1,5 +1,24 @@
 # WDGAP S9-A — report: review forms
 
+> **PAUSED (owner pause, 2026-11-16) — Follow-up RV1 is built but its test run was stopped
+> part-way.** Kept: local database `wdgap_s9a_t` (fresh copy, `-u all -i pb_review_forms`
+> done with the RV1 code; translations re-exported, 304/304 vi + id, PO gate clean).
+> What the stopped run had already shown (59 of ~340 tests started): the five known
+> pb_me_portal baseline failures, plus ONE new one —
+> `pb_me_portal TestMeHomeSource.test_01_registry_covers_every_tile`, caused by the new
+> "My review" home entry (`/my/review`, template `pb_review_forms.portal_my_home_review`)
+> not being in pb_me_portal's tile registry.
+> **Exact next step:** (1) remove the home entry template `portal_my_home_review` from
+> `pb_review_forms/views/portal_templates.xml` (keep the `/my/review` route and the
+> `pb_rf_has` key) so the tile is added ONLY by the merge agent together with its
+> `_TILE_ROWS` row, and drop the `/my` assertion in `TestPortal.test_12_shown_page_and_preview_render`
+> (keep the `/my/review` redirect check); update "Follow-up RV1 › My review tile" to say the
+> merge agent also adds the `portal.portal_docs_entry` (copy the removed template);
+> (2) rerun `bash scratchpad/s9a/run_tests.sh rv1 pb_review_forms,pb_goals,pb_me_portal
+> "/pb_review_forms,/pb_goals,/pb_me_portal,/pb_pay:TestQf4GoalScores"` on `wdgap_s9a_t`;
+> expect baseline 5 only; (3) fill RV1_A…RV1_E in the RV1 test table, commit, push, drop the
+> database, report to the coordinator.
+
 Branch `wdgap-s9a` (from `origin/19.1` @ abc2259b6). Built, tested and self-reviewed by the
 implementation agent. NOT merged, NOT deployed. Owner rulings applied: P1, P2, C-3, C-5.
 
@@ -138,19 +157,98 @@ the mail queue, forms and filled-in reviews were all 0.
 - Asset purge + restart (new backend and frontend assets). PO gate on the box after rsync.
 - Rehearsal check: one finished review → the PDF in that person's documents opens.
 
-## 7. Owner questions (plain words)
+## 7. Owner questions (plain words) — ANSWERED 2026-11-16 evening
 
-1. The finished review is filed as a PDF in the person's documents. Payroll staff can open
-   every document there today, so they could read reviews too. Is that acceptable, or should
-   performance reviews be closed to payroll staff (a small follow-up)?
-2. In a year with a review form, somebody whose manager has not finished their review shows
-   as "no score" in the pay review, even if their goals are scored. Is that right, or should
-   the pay review fall back to the goals score for them?
-3. The form is used only at the end-of-year review; the half-way review stays a written note.
-   Do you also want the form at the half-way review?
-4. Should the review page get its own tile on the My Payobook home? Today it is reached from
-   "My goals" and from the "Needs you" list. (It needs a small change in the self-service
-   module.)
+1. Payroll staff reading finished reviews → **closed** (ruling RV1, built: see "Follow-up RV1").
+2. "No score" until the manager finishes → **keep as built**.
+3. End-of-year review only → **keep**.
+4. "My review" gets its own home tile → **yes, done at the Step 9 merge** (exact change below).
+
+## Follow-up RV1 — a finished review is for the employee, their manager and HR only
+
+Ruling RV1 (owner, 2026-11-16): the filed PDF and every review record, answer and comment are
+readable ONLY by the employee, their manager and HR. Payroll staff must not read them, although
+today they open every document in a person's file. Payroll keeps the overall result number
+that drives the pay review.
+
+### What was built (all inside `pb_review_forms`; no edit to the documents module or pb_lifecycle)
+
+| Piece | What | Where |
+|---|---|---|
+| The leak | `pb_employee_vault` rule `document_rule_hr_all` lets every payroll officer and every HR officer read every document, and a Payroll Officer **is** an HR officer here (`om_hr_payroll.group_hr_payroll_user` implies `hr.group_hr_user`). So "HR" for RV1 = the people who run reviews: **Goals administrator, HR lead for goals, Head of goals** (`pb_goals.group_goals_user` and up). | (read only) |
+| Flag on the document | `pb.employee.document.pb_rf_private` (stored, indexed, read-only), set to true by this module when it files a review PDF. Only the system may set or clear it: a create by a person drops it, a write by a person is refused (so nobody can hide another document or un-hide a review). | `models/vault_ext.py`, `review_entry._file_pdf` |
+| Global blocking rule | `rule_review_document_private` on `pb.employee.document`, GLOBAL (ANDed with every rule of the documents module): Goals HR → everything; anybody else → a document only if it is not a private review, or it is their own, or they are the person's direct manager. Other documents are untouched. | `security/review_forms_rules.xml` |
+| The PDF file itself | The vault copy's attachment belongs to the document (`res_model` = document) and the original belongs to the review entry: an attachment linked to a record is readable only by someone who may read that record, so both follow the rules above. | (core behaviour, tested) |
+| Review records | `pb.review.entry` / `pb.review.answer` (answers, overall comment, PDF link): no access right for anybody but Goals HR (and never their own review). The review row's `manager_note` (the overall comment once shared) is pb_goals' existing rule: the person, their manager, Goals HR. | unchanged from the build, now tested per persona |
+| Payroll keeps the number | `pb.goal.set._pay_score()` works under sudo and returns only the overall result; the pay review reads it exactly as before. | unchanged, tested as payroll officer and manager |
+
+### Who can read what (proved by `TestRV1Privacy`, run as each login through the ORM)
+
+| Persona | Filed review document | PDF file (both copies) | Answers / overall comment (entry) | Comment on the review row | Review form screens | Overall number via pay review |
+|---|---|---|---|---|---|---|
+| Payroll officer | no | no | no | no | refused | yes |
+| Payroll manager | no | no | no | no | refused | yes |
+| HR officer without Goals HR rights | no | no | no | no | refused | — |
+| General lifecycle user | no | no | no | no | refused | — |
+| Another employee | no | no | no | no | refused | — |
+| An unrelated manager | no | no | no | no | refused | — |
+| The employee | yes (own) | yes | not through the ORM — on their own page, once shared | yes (own) | own page | — |
+| Their manager | not in the documents list (the documents module shows a plain user only their own) | — | in the Goals drawer | yes | drawer | — |
+| HR (Goals HR + HR officer) | yes | yes | yes (never their own review) | yes | all | — |
+
+The manager's way in is the Goals drawer (as designed); the documents module itself never lists
+another person's documents to a plain user, so the manager's PDF access is not widened.
+
+**Tenant administrator.** The "Tenant administrator" role is the administrator tier of every
+part of the product, which includes **Head of goals** (role bundle `goals-head` →
+`pb_goals.group_goals_admin`, `pb_vendor_access/hooks.py:466`): they count as HR and can read
+every review (except their own before it is shared). The built-in `admin` account also holds
+Head of goals (pb_goals data). Anyone who can assign roles on the Access screen can give
+themselves Goals HR rights, so a tenant administrator cannot be kept out by a rule; what they
+cannot do is read a review WITHOUT holding a Goals HR right. The platform's own break-glass
+account (superuser) bypasses every rule by nature.
+
+**Not closed by this module (outside its lane, reported):** other modules that read documents
+under sudo do so for their own categories only (training certificates in `pb_training`; the
+hiring joining file in `pb_hiring`); none lists review documents. `/my/documents`
+(pb_me_portal) shows the employee their own documents under sudo — that is the employee seeing
+their own review, which RV1 allows.
+
+### Tests (RV1)
+
+| # | Case | Result |
+|---|---|---|
+| 21a | Every persona above, as that login: document, both PDF files, entry, answer, review-row comment, drawer form and own-page form — refused for the six outsiders; allowed exactly as the table says for the employee, the manager and HR | RV1_A |
+| 21b | Payroll officer and payroll manager still get the overall result (3.85) through `_pay_score` | RV1_B |
+| 21c | An ordinary document stays readable by payroll | RV1_C |
+| 21d | Nobody flips the flag: a write by HR is refused; a create with the flag by a payroll manager drops it | RV1_D |
+| 12+ | Home entry: a portal worker with a review on a form sees "My review" on `/my`; `/my/review` leads to this year's review; without a form there is no review to lead to | RV1_E |
+
+### The "My review" home tile — exact change for the Step 9 merge agent (pb_me_portal)
+
+This module already ships everything except pb_me_portal's tile row:
+
+- **Door:** `GET /my/review` (pb_review_forms `controllers/portal.py`, `portal_rf_current`) —
+  redirects to this year's review page, or to `/my/goals` when there is none.
+- **Home entry:** template `pb_review_forms.portal_my_home_review` adds a
+  `portal.portal_docs_entry` (title "My review", url `/my/review`) inside
+  `portal.portal_my_home`, drawn only when the eager key `pb_rf_has` is true (set by
+  `PbReviewFormsPortal._prepare_portal_layout_values`). Until the row below exists it shows
+  under "More" with a plain file icon (contract C-3).
+- **The merge change (pb_me_portal only, 4 lines + translations):**
+  1. `pb_me_portal/models/pb_me_home.py`, in `_TILE_ROWS` right after line 120
+     (`('/my/goals', 'growth', 'target', 'indigo', {}),`) add
+     `('/my/review', 'growth', 'clipboard-list', 'indigo', {}),`
+  2. same file, in `_TILE_WORDS` after line 162 (`'/my/goals': …`) add
+     `'/my/review': {'title': _lt('My review'), 'text': _lt('Your end-of-year review, both sides')},`
+  3. `pb_me_portal/i18n/vi_VN.po` / `id_ID.po`: two new code entries for those `_lt` strings
+     (markers `#. module: pb_me_portal`, `#. odoo-python`,
+     `#: code:addons/pb_me_portal/models/pb_me_home.py:0`) —
+     vi "Đánh giá của tôi" / "Đánh giá cuối năm của bạn, cả hai phía";
+     id "Penilaian saya" / "Penilaian akhir tahun Anda, dari kedua pihak".
+  4. Raise pb_me_portal's version; run `/pb_me_portal` (its tile/icon source tests) and the
+     PO gate. `clipboard-list` is already an icon `ess_icon` draws.
+- No hook is needed: `tile_meta()` matches the entry's url to the row.
 
 ## 8. Gotchas → ledger
 

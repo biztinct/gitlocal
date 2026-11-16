@@ -767,6 +767,25 @@ class PbReviewForms(models.AbstractModel):
 
     # ======================================================= My Payobook
     @api.model
+    def my_current_review(self):
+        """The caller's newest end-of-year review that uses a form, or 0.
+
+        Behind the stable `/my/review` door (the home tile's url): a tile
+        cannot carry a review id that changes every year.
+        """
+        employees = self.env['hr.employee'].sudo().search(
+            [('user_id', '=', self.env.uid)])
+        if not employees:
+            return 0
+        reviews = self.env['pb.goal.review'].sudo().search([
+            ('employee_id', 'in', employees.ids), ('kind', '=', FORM_KIND)],
+            order='due_date desc, id desc', limit=6)
+        for review in reviews:
+            if review._rf_applies():
+                return review.id
+        return 0
+
+    @api.model
     def needs_rows(self, emp):
         """The "Needs you" rows for one employee (home hook)."""
         if not emp:

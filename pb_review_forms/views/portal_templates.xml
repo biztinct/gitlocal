@@ -37,6 +37,23 @@
     </xpath>
   </template>
 
+  <!-- ============ the entry on the My Payobook home ============
+       Drawn only for somebody with a review on a form (eager key
+       `pb_rf_has`). Until pb_me_portal lists `/my/review` among its tiles
+       it shows under "More" (contract C-3; the row for the merge is in the
+       S9-A report, "Follow-up RV1"). -->
+  <template id="portal_my_home_review" name="Review home entry"
+            inherit_id="portal.portal_my_home" priority="47">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pb_rf_has" t-call="portal.portal_docs_entry">
+        <t t-set="title">My review</t>
+        <t t-set="text">Your end-of-year review: your own view, your manager's and the result</t>
+        <t t-set="url" t-value="'/my/review'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
   <!-- ===================== one answer, as an input ===================== -->
   <template id="rf_input" name="Review form: one answer">
     <t t-if="ln['kind'] == 'rating'">

@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
-"POT-Creation-Date: 2026-11-16 07:59+0000\n"
-"PO-Revision-Date: 2026-11-16 07:59+0000\n"
+"POT-Creation-Date: 2026-11-16 09:04+0000\n"
+"PO-Revision-Date: 2026-11-16 09:04+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: vi_VN\n"
@@ -160,6 +160,15 @@ msgid ""
 msgstr ""
 "Một vài điều cả nhân viên và quản lý cùng đánh giá từ Thấp hơn nhiều đến "
 "Vượt xa. Tối đa 8."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_employee_document__pb_rf_private
+msgid ""
+"A finished performance review. Only the person, their manager and the HR "
+"team who run reviews can open it."
+msgstr ""
+"Bản đánh giá hiệu suất đã hoàn tất. Chỉ người được đánh giá, quản lý của họ "
+"và bộ phận nhân sự phụ trách đánh giá mới mở được."
 
 #. module: pb_review_forms
 #. odoo-python
@@ -374,6 +383,7 @@ msgid "Created on"
 msgstr "Tạo ngày"
 
 #. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__display_name
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_review__display_name
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_set__display_name
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goals__display_name
@@ -391,6 +401,11 @@ msgstr "Tên hiển thị"
 #: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
 msgid "Download the PDF"
 msgstr "Tải PDF"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_employee_document
+msgid "Employee Document"
+msgstr "Tài liệu nhân viên"
 
 #. module: pb_review_forms
 #: model:ir.model,name:pb_review_forms.model_pb_me_home
@@ -593,6 +608,7 @@ msgid "I would like to talk about my review"
 msgstr "Tôi muốn trao đổi về bản đánh giá của mình"
 
 #. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__id
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_review__id
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_set__id
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goals__id
@@ -747,6 +763,11 @@ msgstr "Bắt buộc trả lời"
 #: model:ir.model,name:pb_review_forms.model_pb_my_goals
 msgid "My goals"
 msgstr "Mục tiêu của tôi"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "My review"
+msgstr "Đánh giá của tôi"
 
 #. module: pb_review_forms
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__name
@@ -941,6 +962,11 @@ msgstr "Chọn một trong danh sách"
 #: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
 msgid "Preview as the employee"
 msgstr "Xem trước như nhân viên"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__pb_rf_private
+msgid "Private review"
+msgstr "Đánh giá riêng tư"
 
 #. module: pb_review_forms
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__published_by_id
@@ -1685,6 +1711,12 @@ msgid "When the employee sees the manager's part"
 msgstr "Khi nào nhân viên thấy phần của quản lý"
 
 #. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/vault_ext.py:0
+msgid "Whether a document is a private review is set by the system."
+msgstr "Việc một tài liệu là đánh giá riêng tư do hệ thống thiết lập."
+
+#. module: pb_review_forms
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__who
 msgid "Who answers"
 msgstr "Ai trả lời"
@@ -1758,6 +1790,11 @@ msgstr "Bạn đã bắt đầu điền ý kiến. Hãy gửi khi sẵn sàng."
 #: code:addons/pb_review_forms/models/facade.py:0
 msgid "Your HR team has been asked to talk with you."
 msgstr "Đã đề nghị bộ phận nhân sự trao đổi với bạn."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "Your end-of-year review: your own view, your manager's and the result"
+msgstr "Đánh giá cuối năm của bạn: ý kiến của bạn, của quản lý và kết quả"
 
 #. module: pb_review_forms
 #: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form

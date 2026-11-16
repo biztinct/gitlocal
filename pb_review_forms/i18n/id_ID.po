@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
-"POT-Creation-Date: 2026-11-16 07:59+0000\n"
-"PO-Revision-Date: 2026-11-16 07:59+0000\n"
+"POT-Creation-Date: 2026-11-16 09:04+0000\n"
+"PO-Revision-Date: 2026-11-16 09:04+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: id_ID\n"
@@ -160,6 +160,15 @@ msgid ""
 msgstr ""
 "Beberapa hal yang dinilai karyawan dan atasan dari Jauh di bawah sampai Jauh"
 " di atas. Paling banyak 8."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_employee_document__pb_rf_private
+msgid ""
+"A finished performance review. Only the person, their manager and the HR "
+"team who run reviews can open it."
+msgstr ""
+"Penilaian kinerja yang sudah selesai. Hanya orang itu, atasannya, dan tim HR"
+" yang menjalankan penilaian yang dapat membukanya."
 
 #. module: pb_review_forms
 #. odoo-python
@@ -378,6 +387,7 @@ msgid "Created on"
 msgstr "Dibuat pada"
 
 #. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__display_name
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_review__display_name
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_set__display_name
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goals__display_name
@@ -395,6 +405,11 @@ msgstr "Nama tampilan"
 #: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
 msgid "Download the PDF"
 msgstr "Unduh PDF"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_employee_document
+msgid "Employee Document"
+msgstr "Dokumen karyawan"
 
 #. module: pb_review_forms
 #: model:ir.model,name:pb_review_forms.model_pb_me_home
@@ -598,6 +613,7 @@ msgid "I would like to talk about my review"
 msgstr "Saya ingin membicarakan penilaian saya"
 
 #. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__id
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_review__id
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_set__id
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_goals__id
@@ -752,6 +768,11 @@ msgstr "Wajib dijawab"
 #: model:ir.model,name:pb_review_forms.model_pb_my_goals
 msgid "My goals"
 msgstr "Sasaran saya"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "My review"
+msgstr "Penilaian saya"
 
 #. module: pb_review_forms
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__name
@@ -948,6 +969,11 @@ msgstr "Pilih satu dari daftar"
 #: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
 msgid "Preview as the employee"
 msgstr "Pratinjau sebagai karyawan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__pb_rf_private
+msgid "Private review"
+msgstr "Penilaian pribadi"
 
 #. module: pb_review_forms
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__published_by_id
@@ -1705,6 +1731,13 @@ msgid "When the employee sees the manager's part"
 msgstr "Kapan karyawan melihat bagian atasan"
 
 #. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/vault_ext.py:0
+msgid "Whether a document is a private review is set by the system."
+msgstr ""
+"Apakah sebuah dokumen merupakan penilaian pribadi ditentukan oleh sistem."
+
+#. module: pb_review_forms
 #: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__who
 msgid "Who answers"
 msgstr "Siapa yang menjawab"
@@ -1779,6 +1812,12 @@ msgstr "Anda sudah mulai mengisi pandangan. Kirim jika sudah siap."
 #: code:addons/pb_review_forms/models/facade.py:0
 msgid "Your HR team has been asked to talk with you."
 msgstr "Tim HR Anda sudah diminta untuk berbicara dengan Anda."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_my_home_review
+msgid "Your end-of-year review: your own view, your manager's and the result"
+msgstr ""
+"Penilaian akhir tahun Anda: pandangan Anda, pandangan atasan, dan hasilnya"
 
 #. module: pb_review_forms
 #: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form

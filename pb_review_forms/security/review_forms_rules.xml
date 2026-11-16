@@ -33,6 +33,20 @@
         <field name="groups" eval="[(4, ref('pb_goals.group_goals_user'))]"/>
     </record>
 
+    <!-- ==================================================================
+         RV1 (owner, 2026-11-16): a filed review PDF is for the person, their
+         direct manager and the Goals HR team ONLY. GLOBAL, so it is ANDed
+         with the documents module's own rules (which let every payroll and
+         HR officer read every document): a private review document passes
+         only for those three. Every other document is untouched.
+         ================================================================== -->
+    <record id="rule_review_document_private" model="ir.rule">
+        <field name="name">Employee Document: a private review only for the person, their manager and the Goals HR team</field>
+        <field name="model_id" ref="pb_employee_vault.model_pb_employee_document"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[(1, '=', 1)] if user.has_group('pb_goals.group_goals_user') else ['|', ('pb_rf_private', '=', False), '|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+    </record>
+
     <record id="rule_review_answer_company" model="ir.rule">
         <field name="name">Review answer: my companies</field>
         <field name="model_id" ref="model_pb_review_answer"/>

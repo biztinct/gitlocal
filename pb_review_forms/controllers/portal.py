@@ -51,7 +51,27 @@ class PbReviewFormsPortal(CustomerPortal):
                 out[key[2:]] = value
         return out
 
+    def _prepare_portal_layout_values(self):
+        """The eager key the home entry is drawn on (pb_goals R62): a counter
+        is fetched after the page renders, so a conditional entry needs a
+        value computed now. Never lets /my fail over this module."""
+        values = super()._prepare_portal_layout_values()
+        try:
+            values['pb_rf_has'] = bool(self._rf_facade().my_current_review())
+        except Exception:               # noqa: BLE001 — /my never 500s over us
+            values['pb_rf_has'] = False
+        return values
+
     # ================================================================ page
+    @http.route(['/my/review'], type='http', auth='user', website=True,
+                sitemap=False)
+    def portal_rf_current(self, **kw):
+        """The home tile's stable door: this year's review, or My goals."""
+        review_id = self._rf_facade().my_current_review()
+        if not review_id:
+            return request.redirect('/my/goals')
+        return request.redirect('/my/goals/review/%s' % review_id)
+
     @http.route(['/my/goals/review/<int:review_id>'], type='http',
                 auth='user', website=True, sitemap=False)
     def portal_rf_page(self, review_id, **kw):

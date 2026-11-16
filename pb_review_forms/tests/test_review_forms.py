@@ -643,6 +643,13 @@ class TestPortal(RFCase, HttpCase):
         goals = self.url_open('/my/goals')
         self.assertEqual(goals.status_code, 200)
         self.assertIn('Your review form', goals.text)
+        # the home entry and its stable door
+        home = self.url_open('/my')
+        self.assertEqual(home.status_code, 200)
+        self.assertIn('/my/review', home.text)
+        door = self.url_open('/my/review', allow_redirects=False)
+        self.assertIn('/my/goals/review/%s' % review.id,
+                      door.headers.get('Location', ''))
         # a portal login cannot open HR's preview
         prev = self.url_open('/my/goals/review-form/%s/preview' % form.id,
                              allow_redirects=False)
@@ -662,6 +669,7 @@ class TestQuiet(RFCase):
 
     def test_13_nothing_happens_without_a_form(self):
         sheet, review = self._review()
+        self.assertEqual(self.F.with_user(self.staff_user).my_current_review(), 0)
         self.assertFalse(self.Form.search_count([('cycle_id', '=', self.cycle.id)]))
         self.My.with_user(self.staff_user).home()
         self.Board.with_user(self.boss_user).get_set(sheet.id)
@@ -714,6 +722,143 @@ class TestQuiet(RFCase):
         with self.assertRaises(AccessError):
             self.F.with_user(self.staff_user).drawer_save(
                 review.id, self._mgr_answers(form), 'DEMO', True)
+
+
+# =========================================================================
+#  T21 RV1 — a finished review is for the person, the manager and HR only
+# =========================================================================
+@tagged('post_install', '-at_install', 'wdgap_s9a')
+class TestRV1Privacy(RFCase):
+    """Every persona the owner named, read through the ORM as that login."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        Users = cls.env['res.users'].with_context(no_reset_password=True)
+
+        def user(login, groups):
+            refs = [cls.env.ref(x, raise_if_not_found=False) for x in groups]
+            return Users.create({
+                'name': 'DEMO %s' % login, 'login': 'demo.rv1.%s@example.com' % login,
+                'company_id': cls.company.id,
+                'company_ids': [(6, 0, [cls.company.id])],
+                'group_ids': [(6, 0, [r.id for r in refs if r])],
+            })
+        cls.payroll_officer = user('po', ['om_hr_payroll.group_hr_payroll_user'])
+        cls.payroll_manager = user('pm', ['om_hr_payroll.group_hr_payroll_manager'])
+        cls.hr_officer = user('hro', ['hr.group_hr_user'])
+        cls.lifecycle_user = user('lc', ['pb_lifecycle.group_lifecycle_user',
+                                         'base.group_user'])
+        cls.other_manager = user('om', ['base.group_user'])
+        cls.env['hr.employee'].create({
+            'name': 'DEMO Other Manager', 'company_id': cls.company.id,
+            'user_id': cls.other_manager.id})
+        cls.env['hr.employee'].create({
+            'name': 'DEMO Other Report', 'company_id': cls.company.id,
+            'parent_id': cls.env['hr.employee'].search(
+                [('user_id', '=', cls.other_manager.id)], limit=1).id})
+        # HR who run reviews AND hold the HR officer right the documents need.
+        cls.hr_user.write({'group_ids': [(4, cls.env.ref('hr.group_hr_user').id)]})
+
+    def _finished(self):
+        form = self._form()
+        sheet, review = self._review()
+        self._send_self(review, form)
+        self._finish(review, form)
+        entry = self._entry(review)
+        self.assertTrue(entry.document_id, 'the review was not filed')
+        self.assertTrue(entry.document_id.pb_rf_private)
+        return sheet, review, entry
+
+    def _reads(self, user, record, fname):
+        self.env.flush_all()
+        self.env.invalidate_all()
+        try:
+            with self.env.cr.savepoint():
+                rec = record.with_user(user).with_context(
+                    allowed_company_ids=[self.company.id])
+                rec.check_access('read')
+                rec.read([fname])
+            return True
+        except AccessError:
+            return False
+
+    def test_21_who_reads_a_finished_review(self):
+        sheet, review, entry = self._finished()
+        doc = entry.document_id
+        doc_file = doc.attachment_id
+        entry_file = entry.attachment_id
+        answer = entry.answer_ids[:1]
+        nobody = {
+            'payroll officer': self.payroll_officer,
+            'payroll manager': self.payroll_manager,
+            'HR officer without Goals HR rights': self.hr_officer,
+            'general lifecycle user': self.lifecycle_user,
+            'another employee': self.stranger_user,
+            'an unrelated manager': self.other_manager,
+        }
+        for word, user in nobody.items():
+            self.assertFalse(self._reads(user, doc, 'name'), word + ': document')
+            self.assertFalse(self._reads(user, doc_file, 'datas'), word + ': PDF file')
+            self.assertFalse(self._reads(user, entry_file, 'datas'),
+                             word + ': PDF on the review')
+            self.assertFalse(self._reads(user, entry, 'overall_comment'),
+                             word + ': review')
+            self.assertFalse(self._reads(user, answer, 'text'), word + ': answers')
+            self.assertFalse(self._reads(user, review, 'manager_note'),
+                             word + ': comment on the review row')
+            with self.assertRaises(AccessError):
+                self.F.with_user(user).drawer_form(review.id)
+            with self.assertRaises(AccessError):
+                self.F.with_user(user).my_form(review.id)
+        # the person: their own document, file and review row, through the
+        # vault and their own page (never the answers model itself)
+        self.assertTrue(self._reads(self.staff_user, doc, 'name'))
+        self.assertTrue(self._reads(self.staff_user, doc_file, 'datas'))
+        self.assertTrue(self._reads(self.staff_user, review, 'manager_note'))
+        self.assertFalse(self._reads(self.staff_user, entry, 'overall_comment'))
+        self.assertTrue(self.F.with_user(self.staff_user).my_form(review.id)['shown'])
+        # the manager: the review row and the drawer form
+        self.assertTrue(self._reads(self.boss_user, review, 'manager_note'))
+        self.assertEqual(self.F.with_user(self.boss_user).drawer_form(
+            review.id)['comment'], 'DEMO a strong year overall.')
+        # HR who run reviews: everything
+        for record, fname in ((doc, 'name'), (doc_file, 'datas'),
+                              (entry, 'overall_comment'), (answer, 'text'),
+                              (review, 'manager_note')):
+            self.assertTrue(self._reads(self.hr_user, record, fname), record._name)
+
+    def test_21_payroll_keeps_the_number(self):
+        sheet, _review, _entry = self._finished()
+        for user in (self.payroll_officer, self.payroll_manager):
+            value = self.env['pb.goal.set'].with_user(user).browse(
+                sheet.id)._pay_score()
+            self.assertAlmostEqual(value, 3.85)
+
+    def test_21_other_documents_are_untouched(self):
+        self._finished()
+        Doc = self.env['pb.employee.document']
+        att = self.env['ir.attachment'].create({
+            'name': 'DEMO contract.pdf', 'raw': b'DEMO'})
+        plain = Doc.sudo().create({
+            'employee_id': self.staff.id, 'name': 'DEMO contract',
+            'category_id': self.env.ref('pb_employee_vault.cat_other').id,
+            'attachment_id': att.id, 'company_id': self.company.id})
+        att.write({'res_model': 'pb.employee.document', 'res_id': plain.id})
+        self.assertTrue(self._reads(self.payroll_officer, plain, 'name'))
+
+    def test_21_nobody_flips_the_flag(self):
+        _sheet, _review, entry = self._finished()
+        doc = entry.document_id
+        with self.assertRaises(AccessError):
+            doc.with_user(self.hr_user).write({'pb_rf_private': False})
+        att = self.env['ir.attachment'].create({'name': 'DEMO x', 'raw': b'x'})
+        other = self.env['pb.employee.document'].with_user(self.payroll_manager).create({
+            'employee_id': self.stranger.id, 'name': 'DEMO x',
+            'category_id': self.env.ref('pb_employee_vault.cat_other').id,
+            'attachment_id': att.id, 'company_id': self.company.id,
+            'pb_rf_private': True})
+        self.assertFalse(other.sudo().pb_rf_private)
 
 
 # =========================================================================

@@ -387,6 +387,9 @@ class PbReviewEntry(models.Model):
             'attachment_id': copy.id,
             'issue_date': fields.Date.context_today(self),
             'company_id': record.company_id.id or self.env.company.id,
+            # RV1: closed to everybody but the person, their manager and
+            # the Goals HR team (global rule in this module).
+            'pb_rf_private': True,
         })
         copy.write({'res_id': doc.id})
         record.write({'document_id': doc.id})
