@@ -22,6 +22,8 @@ class PbBusinessTripAdvance(models.Model):
                                         string='Cash advance status')
     pb_advance_left = fields.Monetary(related='pb_advance_ids.left',
                                       string='Still to take back')
+    pb_advance_return_reason = fields.Text(related='pb_advance_ids.return_reason',
+                                           string='Why the settlement was sent back')
 
     def _pb_wizard(self, mode):
         self.ensure_one()
@@ -31,7 +33,8 @@ class PbBusinessTripAdvance(models.Model):
             'type': 'ir.actions.act_window', 'res_model': 'pb.trip.advance.wizard',
             'view_mode': 'form', 'target': 'new',
             'name': {'given': _("Cash advance given"), 'settle': _("Settle the cash advance"),
-                     'cash': _("Paid back directly")}[mode],
+                     'cash': _("Paid back directly"),
+                     'sendback': _("Send the settlement back")}[mode],
             'context': {'default_trip_id': self.id, 'default_mode': mode},
         }
 
@@ -51,6 +54,24 @@ class PbBusinessTripAdvance(models.Model):
             raise UserError(_("Record the cash advance as given first."))
         return self._pb_wizard('settle')
 
+    def _pb_waiting_advance(self):
+        self.ensure_one()
+        adv = self.sudo().pb_advance_ids[:1]
+        if not adv or adv.state != 'waiting':
+            raise UserError(_("No settlement of this trip is waiting for approval."))
+        return self.env['pb.trip.advance'].browse(adv.id)
+
+    def action_pb_advance_approve(self):
+        """The Head of pay approves the settlement from the trip (the same
+        decision as in Approvals; the engine checks the seat and who may
+        not decide)."""
+        self._pb_waiting_advance()._advance_state('settled')
+        return True
+
+    def action_pb_advance_sendback(self):
+        self._pb_waiting_advance()
+        return self._pb_wizard('sendback')
+
     def action_pb_advance_cash(self):
         self.ensure_one()
         adv = self.sudo().pb_advance_ids[:1]
@@ -64,7 +85,8 @@ class PbTripAdvanceWizard(models.TransientModel):
     _description = 'Trip cash advance: given, settled, paid back'
 
     trip_id = fields.Many2one('pb.business.trip', required=True, readonly=True)
-    mode = fields.Selection([('given', 'Given'), ('settle', 'Settle'), ('cash', 'Cash')],
+    mode = fields.Selection([('given', 'Given'), ('settle', 'Settle'), ('cash', 'Cash'),
+                             ('sendback', 'Send back')],
                             required=True, readonly=True)
     currency_id = fields.Many2one(related='trip_id.currency_id')
     day = fields.Date(string='On', default=fields.Date.context_today)
@@ -73,6 +95,7 @@ class PbTripAdvanceWizard(models.TransientModel):
     recover_how = fields.Selection([('pay', 'Take it back from the next pay'),
                                     ('cash', 'The person pays it back directly')],
                                    string='The part not spent', default='pay')
+    reason = fields.Text(string='Why')
     preview = fields.Text(compute='_compute_preview')
 
     @api.depends('trip_id', 'mode')
@@ -107,6 +130,12 @@ class PbTripAdvanceWizard(models.TransientModel):
 
     def action_confirm(self):
         self.ensure_one()
+        if self.mode == 'sendback':
+            reason = (self.reason or '').strip()
+            if len(reason) < 4:
+                raise UserError(_("Say why it is sent back. Finance sees it on the trip."))
+            self.trip_id._pb_waiting_advance()._advance_state('given', note=reason)
+            return {'type': 'ir.actions.act_window_close'}
         if not can_manage(self.env):
             raise AccessError(_("Only finance or the pay team can do this."))
         trip = self.trip_id.sudo()
@@ -128,7 +157,9 @@ class PbTripAdvanceWizard(models.TransientModel):
             adv.message_post(body=body)
             trip.message_post(body=body)
         elif self.mode == 'settle':
-            trip.pb_advance_ids[:1]._settle(self.recover_how or 'pay')
+            # as the person who settles (the request's submitter), not sudo
+            self.env['pb.trip.advance'].browse(trip.pb_advance_ids[:1].id) \
+                ._settle_request(self.recover_how or 'pay')
         elif self.mode == 'cash':
             trip.pb_advance_ids[:1]._record_cash(self.amount, self.day,
                                                  (self.reference or '').strip()[:120])
@@ -155,7 +186,7 @@ class PbTripsAdvance(models.AbstractModel):
         was = sum(advs.mapped('trip_id.advance_amount'))
         real = 0.0
         for adv in advs.filtered(lambda a: a.currency_id == currency):
-            if adv.state == 'given':
+            if adv.state in ('given', 'waiting'):
                 real += adv.amount
             elif adv.state == 'settled':
                 real += adv.left

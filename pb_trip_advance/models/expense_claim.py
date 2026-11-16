@@ -26,7 +26,8 @@ class PbExpenseClaimAdvance(models.Model):
         reason = super()._pb_pay_hold_reason()
         if reason:
             return reason
-        given = self._pb_trip_advances().filtered(lambda a: a.state == 'given')
+        given = self._pb_trip_advances().filtered(
+            lambda a: a.state in ('given', 'waiting'))
         if given:
             return _("Waits until the cash advance of trip %s is settled; then only "
                      "what the advance did not cover is paid.", given[:1].trip_id.name)

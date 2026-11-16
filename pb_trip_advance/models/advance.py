@@ -32,6 +32,7 @@ _logger = logging.getLogger(__name__)
 
 ADVANCE_STATES = [
     ('given', 'Given'),
+    ('waiting', 'Settlement waiting for approval'),
     ('settled', 'Settled — being taken back'),
     ('closed', 'Closed'),
 ]
@@ -40,6 +41,10 @@ RECOVER_HOW = [
     ('cash', 'Paid back by the person'),
 ]
 #: Who may record an advance as given, settle it, or record a cash repayment.
+#: Fields nobody writes by hand (the status is guarded by the approval chain).
+_GUARDED = frozenset({'trip_id', 'employee_id', 'company_id', 'currency_id', 'amount',
+                      'given_on', 'given_ref', 'given_by', 'settled_on', 'settled_by',
+                      'claimed', 'unspent', 'extra_due', 'recover_how', 'return_reason'})
 ADVANCE_GROUPS = ('hr_expense.group_hr_expense_manager',
                   'om_hr_payroll.group_hr_payroll_manager',
                   'pb_hr_payroll_base.group_payroll_base_manager',
@@ -58,8 +63,18 @@ def can_manage(env):
 class PbTripAdvance(models.Model):
     _name = 'pb.trip.advance'
     _description = 'Trip cash advance'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'biz.approval.chain.mixin']
     _order = 'id desc'
+
+    #: The record's own small ladder, used only while no route is published
+    #: for its company (the chain shim is dormant then). Under a route the
+    #: engine decides who may approve (owner ruling TA1: the Head of pay).
+    _approval_transitions = {
+        ('given', 'waiting'): None,
+        ('waiting', 'settled'): 'pb_hr_payroll_base.group_payroll_base_manager',
+        ('waiting', 'given'): 'pb_hr_payroll_base.group_payroll_base_manager',
+    }
+    _approval_dead_states = ('closed',)
 
     trip_id = fields.Many2one('pb.business.trip', string='Trip', required=True,
                               index=True, ondelete='restrict', readonly=True)
@@ -84,11 +99,13 @@ class PbTripAdvance(models.Model):
     offset_ids = fields.One2many('pb.trip.advance.offset', 'advance_id',
                                  string='Claims set against it', readonly=True)
     recovery_ids = fields.One2many('pb.trip.advance.recovery', 'advance_id',
-                                   string='Taken back', readonly=True)
+                                   string='What was taken back', readonly=True)
     recovered = fields.Monetary(string='Taken back so far', compute='_compute_left',
                                 store=True)
     left = fields.Monetary(string='Still to take back', compute='_compute_left',
                            store=True)
+    return_reason = fields.Text(string='Why the settlement was sent back',
+                                readonly=True, copy=False)
 
     _one_per_trip = models.UniqueIndex('(trip_id)',
                                        'This trip already has its cash advance recorded.')
@@ -102,7 +119,11 @@ class PbTripAdvance(models.Model):
 
     # ------------------------------------------------------------ guards
     def write(self, vals):
-        if self.env.context.get(TOKEN_KEY) is not WRITE_TOKEN and not self.env.su:
+        # The money fields are written by this module only (server token);
+        # the status by the approval chain (its own guard); the engine's own
+        # bookkeeping fields are left to it.
+        if _GUARDED & set(vals) and not self.env.su \
+                and self.env.context.get(TOKEN_KEY) is not WRITE_TOKEN:
             raise AccessError(_("A trip's cash advance is recorded from the trip."))
         return super().write(vals)
 
@@ -148,12 +169,18 @@ class PbTripAdvance(models.Model):
         }
 
     # ------------------------------------------------------------ settle
-    def _settle(self, recover_how='pay'):
+    def _settle_request(self, recover_how='pay'):
+        """Finance settles: the figures are worked out and SENT FOR APPROVAL
+        (owner ruling TA1, process `tripadvance`, one step: Head of pay).
+        Nothing is set against a claim and nothing can be taken back from pay
+        until the route says yes (`_settle_apply`). With "No approval needed"
+        published the engine applies it at once."""
         self.ensure_one()
         if not can_manage(self.env):
             raise AccessError(_("Only finance or the pay team can settle a cash advance."))
         if self.state != 'given':
-            raise UserError(_("This cash advance is already settled."))
+            raise UserError(_("This cash advance is already settled or waiting for "
+                              "approval."))
         if recover_how not in ('pay', 'cash'):
             raise UserError(_("Choose how the unspent part comes back."))
         preview = self._settle_preview()
@@ -161,17 +188,53 @@ class PbTripAdvance(models.Model):
             raise UserError(_(
                 "Decide the claims for this trip that are still waiting approval "
                 "first: %s.", ', '.join(preview['waiting'].mapped('name'))))
+        self._w({'settled_on': fields.Date.context_today(self),
+                 'settled_by': self.env.uid,
+                 'claimed': preview['claimed'], 'unspent': preview['unspent'],
+                 'extra_due': preview['extra_due'],
+                 'recover_how': recover_how if preview['unspent'] > 0 else False,
+                 'return_reason': False})
+        body = _("Settlement sent for approval: %(claimed)s claimed against an "
+                 "advance of %(amount)s; %(unspent)s not spent.",
+                 claimed=self._money(preview['claimed']), amount=self._money(self.amount),
+                 unspent=self._money(preview['unspent']))
+        self.sudo().message_post(body=body)
+        self.trip_id.sudo().message_post(body=body)
+        self._ensure_route()
+        # as the person who settled (the engine's submitter): never sudo here
+        self._advance_state('waiting')
+        return True
+
+    def _ensure_route(self):
+        """A company made before the route was laid gets it now (idempotent).
+        Without any route the record's own small ladder applies."""
+        if self._engine_managed():
+            return True
+        try:
+            with self.env.cr.savepoint():
+                self.sudo()._approval_seed_default(self.company_id)
+        except Exception:       # noqa: BLE001 — never block a settlement here
+            _logger.warning('pb_trip_advance: no route laid for %s',
+                            self.company_id.name, exc_info=True)
+        return self._engine_managed()
+
+    def _settle_apply(self):
+        """The route said yes: set the claims against the advance and open the
+        unspent part to the pay run (or close it when nothing is left)."""
+        self.ensure_one()
+        adv = self.sudo()
+        preview = adv._settle_preview()
         Offset = self.env['pb.trip.advance.offset'].sudo()
         Payline = self.env['pb.expense.payline'].sudo()
-        room = self.amount or 0.0
+        room = adv.amount or 0.0
         today = fields.Date.context_today(self)
         for claim, own in preview['claims']:
             if room <= 0:
                 break
-            part = self.currency_id.round(min(own, room))
-            room = self.currency_id.round(room - part)
+            part = adv.currency_id.round(min(own, room))
+            room = adv.currency_id.round(room - part)
             Offset.with_context(**{TOKEN_KEY: WRITE_TOKEN}).create(
-                {'advance_id': self.id, 'claim_id': claim.id, 'amount': part})
+                {'advance_id': adv.id, 'claim_id': claim.id, 'amount': part})
             claim.invalidate_recordset()
             if claim.currency_id.compare_amounts(claim._pb_payable_amount(), 0.0) <= 0:
                 # nothing left to pay the person for this claim: it is covered
@@ -179,30 +242,44 @@ class PbTripAdvance(models.Model):
                                     'kind': 'advance', 'state': 'paid', 'paid_on': today,
                                     'pay_month': today.replace(day=1),
                                     'note': _("Covered by the cash advance of %s.",
-                                              self.trip_id.name)})
+                                              adv.trip_id.name)})
                 claim._pb_set_paid(today)
-        vals = {'state': 'settled' if preview['unspent'] > 0 else 'closed',
-                'settled_on': today, 'settled_by': self.env.uid,
-                'claimed': preview['claimed'], 'unspent': preview['unspent'],
-                'extra_due': preview['extra_due'],
-                'recover_how': recover_how if preview['unspent'] > 0 else False}
-        self._w(vals)
+        recover_how = adv.recover_how or 'pay'
+        adv._w({'claimed': preview['claimed'], 'unspent': preview['unspent'],
+                'extra_due': preview['extra_due'], 'settled_on': today,
+                'recover_how': recover_how if preview['unspent'] > 0 else False})
         if preview['unspent'] > 0:
-            how = (_("It is taken back from %s's next regular pay.", self.employee_id.name)
+            how = (_("It is taken back from %s's next regular pay.", adv.employee_id.name)
                    if recover_how == 'pay' else
-                   _("%s pays it back directly.", self.employee_id.name))
+                   _("%s pays it back directly.", adv.employee_id.name))
             body = _("Settled: %(claimed)s claimed against an advance of %(amount)s; "
                      "%(unspent)s was not spent. %(how)s",
-                     claimed=self._money(preview['claimed']),
-                     amount=self._money(self.amount), unspent=self._money(preview['unspent']),
+                     claimed=adv._money(preview['claimed']),
+                     amount=adv._money(adv.amount), unspent=adv._money(preview['unspent']),
                      how=how)
         else:
+            adv._w({'state': 'closed'})
             body = _("Settled: %(claimed)s claimed against an advance of %(amount)s. "
-                     "Nothing to take back.", claimed=self._money(preview['claimed']),
-                     amount=self._money(self.amount))
-        self.message_post(body=body)
-        self.trip_id.sudo().message_post(body=body)
+                     "Nothing to take back.", claimed=adv._money(preview['claimed']),
+                     amount=adv._money(adv.amount))
+        adv.message_post(body=body)
+        adv.trip_id.message_post(body=body)
         return True
+
+    def _settle_undo(self, reason, refused=False):
+        """Sent back or turned down: back to finance with the reason; nothing
+        was set against a claim and nothing was taken back."""
+        self.ensure_one()
+        adv = self.sudo()
+        adv._w({'return_reason': reason or False, 'settled_on': False,
+                'settled_by': False, 'claimed': 0.0, 'unspent': 0.0,
+                'extra_due': 0.0, 'recover_how': False})
+        who = self.env.user.name or ''
+        body = (_("Settlement turned down by %(who)s: %(why)s", who=who, why=reason or '-')
+                if refused else
+                _("Settlement sent back by %(who)s: %(why)s", who=who, why=reason or '-'))
+        adv.message_post(body=body)
+        adv.trip_id.message_post(body=body)
 
     def _record_cash(self, amount, day=None, ref=''):
         self.ensure_one()
@@ -244,12 +321,18 @@ class PbTripAdvance(models.Model):
         if not employee or employee.user_id.id != self.env.uid:
             return None
         advs = self.sudo().search([('employee_id', '=', employee.id),
-                                   ('state', 'in', ('given', 'settled'))], order='id desc')
+                                   ('state', 'in', ('given', 'waiting', 'settled'))],
+                                  order='id desc')
         rows = []
         for adv in advs:
             if adv.state == 'given':
                 words = _("Claim your receipts for this trip; they are set against the "
                           "advance when the trip is settled.")
+            elif adv.state == 'waiting':
+                words = (_("%s was not spent. It is waiting for approval; nothing comes "
+                           "off your pay before that.", adv._money(adv.unspent))
+                         if adv.unspent else
+                         _("The settlement of this trip is waiting for approval."))
             elif adv.recover_how == 'cash':
                 words = _("%s was not spent. Please pay it back to finance.",
                           adv._money(adv.left))
@@ -268,6 +351,8 @@ class PbTripAdvance(models.Model):
                          'state': adv.state, 'amount': adv._money(adv.amount),
                          'claimed': adv._money(adv.claimed) if adv.state != 'given' else '',
                          'left': adv._money(adv.left) if adv.state == 'settled' else '',
+                         'waiting': adv._money(adv.unspent)
+                         if adv.state == 'waiting' and adv.unspent else '',
                          'words': words})
         return {'rows': rows, 'count': len(rows)}
 

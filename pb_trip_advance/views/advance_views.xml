@@ -13,12 +13,19 @@
                 invisible="state != 'approved' or not advance_amount or pb_advance_state"/>
         <button name="action_pb_advance_settle" type="object" string="Settle the cash advance"
                 class="btn-primary" invisible="pb_advance_state != 'given'"/>
+        <button name="action_pb_advance_approve" type="object" string="Approve the settlement"
+                class="btn-primary" invisible="pb_advance_state != 'waiting'"
+                groups="pb_hr_payroll_base.group_payroll_base_manager"/>
+        <button name="action_pb_advance_sendback" type="object" string="Send the settlement back"
+                invisible="pb_advance_state != 'waiting'"
+                groups="pb_hr_payroll_base.group_payroll_base_manager"/>
         <button name="action_pb_advance_cash" type="object" string="Paid back directly"
                 invisible="pb_advance_state != 'settled'"/>
       </xpath>
       <xpath expr="//field[@name='advance_amount']" position="after">
         <field name="pb_advance_state" invisible="not pb_advance_state"/>
         <field name="pb_advance_left" invisible="pb_advance_state != 'settled'"/>
+        <field name="pb_advance_return_reason" invisible="not pb_advance_return_reason or pb_advance_state != 'given'"/>
       </xpath>
       <xpath expr="//notebook" position="inside">
         <page string="Cash advance" name="pb_cash_advance" invisible="not pb_advance_ids">
@@ -39,6 +46,7 @@
                   <field name="unspent"/>
                   <field name="extra_due"/>
                   <field name="recover_how"/>
+                  <field name="return_reason" invisible="not return_reason"/>
                   <field name="recovered"/>
                   <field name="left"/>
                 </group>
@@ -94,9 +102,11 @@
             <field name="reference" invisible="mode == 'settle'"/>
             <field name="amount" invisible="mode != 'cash'"/>
             <field name="recover_how" widget="radio" invisible="mode != 'settle'"/>
+            <field name="reason" invisible="mode != 'sendback'" required="mode == 'sendback'"
+                   placeholder="What finance should look at again"/>
           </group>
           <div class="alert alert-info" role="status" invisible="mode != 'settle'">
-            Claims for this trip are set against the advance, oldest first. The person sees what is not spent on their own page straight away; a pay run only takes back what fits, so their take-home never goes below zero.
+            The settlement goes to the Head of pay for approval. Once approved, the claims for this trip are set against the advance, oldest first, and what was not spent is taken back as chosen. The person sees the figure on their own page straight away, marked as waiting for approval; a pay run only takes back what fits, so their take-home never goes below zero.
           </div>
         </sheet>
         <footer>

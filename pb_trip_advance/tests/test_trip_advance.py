@@ -17,6 +17,10 @@ class TestTripAdvance(base.ClaimsPayFixture):
     def setUpClass(cls):
         super().setUpClass()
         cls.company.pb_claims_paid_by = 'payrun'
+        # these cases are about the money; the settlement's approval (TA1)
+        # is under test in test_ta1_settlement.py — here "No approval needed"
+        cls.env['biz.approval.seed'].sudo().set_no_approval_needed(cls.company,
+                                                                  'tripadvance')
 
     def trip(self, advance=5_000_000, employee=None):
         trip = self.env['pb.business.trip'].sudo().create({

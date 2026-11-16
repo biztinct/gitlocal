@@ -16,6 +16,7 @@
         <li t-foreach="adv['rows'][:3]" t-as="r" class="pbta-row">
           <span class="pbta-row-head"><b t-out="r['trip']"/><span t-if="r['where']" class="pbta-where" t-out="r['where']"/></span>
           <span class="pbta-row-big" t-if="r['left']"><b class="pbme-num" t-out="r['left']"/> <span>to pay back</span></span>
+          <span class="pbta-row-big" t-elif="r.get('waiting')"><b class="pbme-num" t-out="r['waiting']"/> <span>not spent · waiting for approval</span></span>
           <span class="pbta-row-big" t-else=""><b class="pbme-num" t-out="r['amount']"/> <span>given</span></span>
           <span class="pbta-row-words" t-out="r['words']"/>
         </li>
@@ -39,6 +40,7 @@
               <span>Given <b t-out="r['amount']"/></span>
               <span t-if="r['claimed']">Claimed against it <b t-out="r['claimed']"/></span>
               <span t-if="r['left']" class="is-act">To pay back <b t-out="r['left']"/></span>
+              <span t-if="r.get('waiting')">Not spent <b t-out="r['waiting']"/> · waiting for approval</span>
             </span>
             <span class="pbta-row-words" t-out="r['words']"/>
           </li>
