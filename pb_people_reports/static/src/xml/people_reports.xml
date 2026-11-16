@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       People reports. Loop names: views `vw`, companies `co`, departments
+       `dp`, years `yr`, series `sr`, rows `rw`, notes `nt`. Hidden cells
+       draw the `hid` block. Every sentence on one line (PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_people_reports.Hidden">
+    <span class="pbpr-hid" title="Hidden: fewer than 5 people, or it would let someone work out a small group"><t t-out="icon('eyeOff', 12)"/> <span>Hidden</span></span>
+  </t>
+
+  <t t-name="pb_people_reports.PbPeopleReports">
+    <div class="pbim pbpr">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the people reports…</span></div>
+
+      <div t-elif="!state.allowed" class="pbim-panel pbpr-locked">
+        <div class="pbpr-locked-ic"><t t-out="icon('lock', 28)"/></div>
+        <h2>This one is for HR</h2>
+        <p t-esc="state.why"/>
+      </div>
+
+      <t t-else="">
+        <div class="pbpr-bar">
+          <div class="pbpr-views" role="tablist">
+            <button t-foreach="views" t-as="vw" t-key="vw.key" role="tab" class="pbpr-view" t-att-class="{ 'is-on': state.view === vw.key }" t-att-aria-selected="state.view === vw.key ? 'true' : 'false'" t-on-click="() => this.pickView(vw.key)" t-esc="vw.label"/>
+          </div>
+          <div class="pbpr-pick">
+            <select t-if="companies.length > 1" class="pbim-input" aria-label="Company" t-on-change="onCompany">
+              <option value="0" t-att-selected="!state.company_id">All my companies</option>
+              <option t-foreach="companies" t-as="co" t-key="co.id" t-att-value="co.id" t-att-selected="state.company_id === co.id" t-esc="co.name"/>
+            </select>
+            <select class="pbim-input" aria-label="Department" t-on-change="onDept">
+              <option value="0" t-att-selected="!state.department_id">Every department</option>
+              <option t-foreach="departments" t-as="dp" t-key="dp.id" t-att-value="dp.id" t-att-selected="state.department_id === dp.id" t-esc="dp.name"/>
+            </select>
+            <select class="pbim-input" aria-label="Year" t-on-change="onYear">
+              <option t-foreach="years" t-as="yr" t-key="yr.year" t-att-value="yr.year" t-att-selected="state.year === yr.year" t-esc="yr.label"/>
+            </select>
+            <button class="pbim-btn ghost" t-att-disabled="state.downloading or !state.data" t-on-click="download"><t t-out="icon('download', 15)"/> <span>Download</span></button>
+          </div>
+        </div>
+
+        <p class="pbpr-rule"><t t-out="icon('shieldCheck', 14)"/> <span>Groups of fewer than 5 people are hidden, and so is any figure that would let someone work one out. The download hides the same figures.</span></p>
+
+        <div t-if="state.error" class="pbim-empty pbpr-empty">
+          <h3>The report could not load</h3>
+          <button class="pbim-btn" t-on-click="load"><t t-out="icon('refresh', 14)"/> <span>Try again</span></button>
+        </div>
+
+        <t t-elif="state.data">
+          <t t-set="D" t-value="state.data"/>
+          <div class="pbpr-head">
+            <h2 t-esc="D.title"/>
+            <span class="pbpr-period" t-esc="D.period"/>
+          </div>
+          <p t-if="D.scope_note" class="pbpr-note"><t t-out="icon('info', 13)"/> <span t-esc="D.scope_note"/></p>
+          <div t-if="D.too_small" class="pbpr-small" role="status"><t t-out="icon('eyeOff', 16)"/> <span>This group is too small to show on its own. Look at its company instead.</span></div>
+
+          <!-- the tiles -->
+          <div class="pbpr-tiles" t-att-class="{ 'is-busy': state.busy }">
+            <div class="pbpr-tile"><span class="pbpr-k">Headcount at the end</span><b t-if="shown(D.tiles.h_end)" t-esc="num(D.tiles.h_end)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Average headcount</span><b t-if="shown(D.tiles.avg)" t-esc="num(D.tiles.avg)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Joiners</span><b t-if="shown(D.tiles.j)" t-esc="num(D.tiles.j)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Leavers</span><b t-if="shown(D.tiles.l)" t-esc="num(D.tiles.l)"/><t t-else="" t-call="pb_people_reports.Hidden"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Turnover</span><b t-if="shown(D.tiles.rate)" t-esc="pct(D.tiles.rate)"/><t t-else="" t-call="pb_people_reports.Hidden"/><small>leavers ÷ average headcount</small></div>
+          </div>
+
+          <!-- the months -->
+          <section t-if="D.series" class="pbpr-card">
+            <h3 t-if="D.view === 'headcount'">Headcount at each month-end</h3>
+            <h3 t-else="">Joiners and leavers by month</h3>
+            <table class="pbim-table pbpr-table">
+              <thead><tr><th>Month</th><th t-if="D.view === 'headcount'">Headcount</th><th class="num">Joiners</th><th class="num">Leavers</th><th class="num">Change</th></tr></thead>
+              <tbody>
+                <tr t-foreach="D.series" t-as="sr" t-key="sr_index">
+                  <td t-esc="sr.month"/>
+                  <td t-if="D.view === 'headcount'" class="pbpr-barcell">
+                    <span t-if="shown(sr.h)" class="pbpr-hbar"><i t-att-style="barStyle(sr.h, maxHead)"/></span>
+                    <b t-if="shown(sr.h)" t-esc="num(sr.h)"/><t t-else="" t-call="pb_people_reports.Hidden"/>
+                  </td>
+                  <td class="num"><t t-if="shown(sr.j)"><span class="pbpr-mini is-in"><i t-att-style="barStyle(sr.j, maxMove)"/></span><t t-esc="num(sr.j)"/></t><t t-else="" t-call="pb_people_reports.Hidden"/></td>
+                  <td class="num"><t t-if="shown(sr.l)"><span class="pbpr-mini is-out"><i t-att-style="barStyle(sr.l, maxMove)"/></span><t t-esc="num(sr.l)"/></t><t t-else="" t-call="pb_people_reports.Hidden"/></td>
+                  <td class="num"><t t-if="shown(sr.net)" t-esc="netLabel(sr.net)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- by company / department -->
+          <section t-if="D.table and D.table.rows and D.table.rows.length" class="pbpr-card">
+            <h3 t-if="D.table.by === 'company'">By company</h3>
+            <h3 t-else="">By department</h3>
+            <table class="pbim-table pbpr-table">
+              <thead><tr><th t-if="D.table.by === 'company'">Company</th><th t-else="">Department</th><th class="num">Headcount at the end</th><th class="num">Joiners</th><th class="num">Leavers</th><th class="num">Turnover</th></tr></thead>
+              <tbody>
+                <tr t-foreach="D.table.rows" t-as="rw" t-key="rw_index">
+                  <td t-esc="rw.name"/>
+                  <td class="num"><t t-if="shown(rw.h)" t-esc="num(rw.h)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
+                  <td class="num"><t t-if="shown(rw.j)" t-esc="num(rw.j)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
+                  <td class="num"><t t-if="shown(rw.l)" t-esc="num(rw.l)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
+                  <td class="num"><t t-if="shown(rw.rate)" t-esc="pct(rw.rate)"/><t t-else="" t-call="pb_people_reports.Hidden"/></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Total</th>
+                  <th class="num"><t t-if="shown(D.table.total.h)" t-esc="num(D.table.total.h)"/><t t-else="" t-call="pb_people_reports.Hidden"/></th>
+                  <th class="num"><t t-if="shown(D.table.total.j)" t-esc="num(D.table.total.j)"/><t t-else="" t-call="pb_people_reports.Hidden"/></th>
+                  <th class="num"><t t-if="shown(D.table.total.l)" t-esc="num(D.table.total.l)"/><t t-else="" t-call="pb_people_reports.Hidden"/></th>
+                  <th/>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+
+          <div t-if="D.dept_not_offered" class="pbpr-small" role="status"><t t-out="icon('info', 16)"/> <span>This breakdown is shown for a whole company, not for one department: most departments are too small to show it safely.</span></div>
+
+          <t t-foreach="['reasons', 'service_rows', 'genders', 'ages']" t-as="blk" t-key="blk">
+            <section t-if="D[blk] and D[blk].length" class="pbpr-card">
+              <h3 t-if="blk === 'reasons'">Why they left</h3>
+              <h3 t-elif="blk === 'service_rows' and D.view === 'leaving'">How long they had worked here</h3>
+              <h3 t-elif="blk === 'service_rows'">How long people have worked here</h3>
+              <h3 t-elif="blk === 'genders'">Gender</h3>
+              <h3 t-else="">Age</h3>
+              <ul class="pbpr-dist">
+                <li t-foreach="D[blk]" t-as="rw" t-key="rw.key">
+                  <span class="pbpr-dist-l" t-esc="rw.label"/>
+                  <span class="pbpr-dist-bar"><i t-att-style="rowBarStyle(rw.pct)"/></span>
+                  <span class="pbpr-dist-v"><t t-if="shown(rw.n)"><b t-esc="num(rw.n)"/> <small t-if="shown(rw.pct)" t-esc="pct(rw.pct)"/></t><t t-else="" t-call="pb_people_reports.Hidden"/></span>
+                </li>
+              </ul>
+              <p t-if="blk === 'reasons' and D.voluntary_note" class="pbpr-note" t-esc="D.voluntary_note"/>
+            </section>
+          </t>
+
+          <p t-if="D.crosscheck" class="pbpr-check"><t t-out="icon('triangleAlert', 14)"/> <span t-esc="D.crosscheck"/></p>
+          <p t-foreach="D.notes" t-as="nt" t-key="nt_index" class="pbpr-note"><t t-out="icon('info', 13)"/> <span t-esc="nt"/></p>
+        </t>
+      </t>
+    </div>
+  </t>
+</templates>

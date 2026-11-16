@@ -1,0 +1,548 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_people_reports
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 08:24+0000\n"
+"PO-Revision-Date: 2026-11-16 08:24+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: \n"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s sampai %(end)s"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "%s archived records have no leaving date and are left out."
+msgstr "%s data yang diarsipkan tidak punya tanggal keluar dan tidak dihitung."
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid ""
+"%s people have no joining date or contract start: they count in every month "
+"and never as joiners."
+msgstr "%s orang tidak punya tanggal bergabung atau mulai kontrak: mereka dihitung di setiap bulan dan tidak pernah sebagai karyawan masuk."
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "%s so far"
+msgstr "%s sejauh ini"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "1 to 2 years"
+msgstr "1 sampai 2 tahun"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "10 years or more"
+msgstr "10 tahun atau lebih"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "2 to 5 years"
+msgstr "2 sampai 5 tahun"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "25 to 34"
+msgstr "25 sampai 34"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "35 to 44"
+msgstr "35 sampai 44"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "45 to 54"
+msgstr "45 sampai 54"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "5 to 10 years"
+msgstr "5 sampai 10 tahun"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "55 and over"
+msgstr "55 ke atas"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid ""
+"Across %s companies. A person who moves between two of them counts once: not"
+" as a leaver or a joiner."
+msgstr "Di %s perusahaan. Orang yang pindah antar perusahaan dihitung sekali: bukan sebagai keluar atau masuk."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Age"
+msgstr "Usia"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Age and gender"
+msgstr "Usia dan jenis kelamin"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "All my companies"
+msgstr "Semua perusahaan saya"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Another reason"
+msgstr "Alasan lain"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Average headcount"
+msgstr "Rata-rata jumlah karyawan"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Birthday not recorded"
+msgstr "Tanggal lahir tidak dicatat"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "By company"
+msgstr "Per perusahaan"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "By department"
+msgstr "Per departemen"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Change"
+msgstr "Perubahan"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid ""
+"Check: %(n)s people were paid in %(prev)s but not in %(this)s, and have no "
+"leaving date. If they left, add the leaving date so turnover counts them."
+msgstr "Periksa: %(n)s orang dibayar pada %(prev)s tetapi tidak pada %(this)s, dan tidak punya tanggal keluar. Jika mereka sudah keluar, tambahkan tanggal keluar agar dihitung dalam turnover."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Dismissed"
+msgstr "Diberhentikan"
+
+#. module: pb_people_reports
+#: model:ir.model.fields,field_description:pb_people_reports.field_pb_people_reports__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Download"
+msgstr "Unduh"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Every department"
+msgstr "Semua departemen"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Gender"
+msgstr "Jenis kelamin"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid ""
+"Groups of fewer than 5 people are hidden, and so is any figure that would "
+"let someone work one out."
+msgstr "Kelompok di bawah 5 orang disembunyikan, begitu pula angka yang bisa dipakai untuk menghitungnya."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"Groups of fewer than 5 people are hidden, and so is any figure that would "
+"let someone work one out. The download hides the same figures."
+msgstr "Kelompok di bawah 5 orang disembunyikan, begitu pula angka yang bisa dipakai untuk menghitungnya. Unduhan menyembunyikan angka yang sama."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Headcount"
+msgstr "Jumlah karyawan"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Headcount and turnover"
+msgstr "Jumlah karyawan dan turnover"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Headcount at each month-end"
+msgstr "Jumlah karyawan di setiap akhir bulan"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Headcount at the end"
+msgstr "Jumlah karyawan di akhir"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Hidden"
+msgstr "Disembunyikan"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Hidden (small group)"
+msgstr "Disembunyikan (kelompok kecil)"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"Hidden: fewer than 5 people, or it would let someone work out a small group"
+msgstr "Disembunyikan: kurang dari 5 orang, atau bisa dipakai menghitung kelompok kecil"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "How long people have worked here"
+msgstr "Berapa lama karyawan bekerja di sini"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "How long they had worked here"
+msgstr "Berapa lama mereka bekerja di sini"
+
+#. module: pb_people_reports
+#: model:ir.model.fields,field_description:pb_people_reports.field_pb_people_reports__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Joiners"
+msgstr "Masuk"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Joiners and leavers"
+msgstr "Karyawan masuk dan keluar"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Joiners and leavers by month"
+msgstr "Masuk dan keluar per bulan"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Leavers"
+msgstr "Keluar"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Length of service"
+msgstr "Masa kerja"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Men"
+msgstr "Laki-laki"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Month"
+msgstr "Bulan"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "No department"
+msgstr "Tanpa departemen"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Not recorded"
+msgstr "Tidak dicatat"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid ""
+"One company. A person who moves to another company of the group counts as a "
+"leaver here, and as a joiner there."
+msgstr "Satu perusahaan. Orang yang pindah ke perusahaan lain dalam grup dihitung keluar di sini, dan masuk di sana."
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/js/people_reports.js:0
+msgid "People"
+msgstr "Orang"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/js/people_reports.js:0
+#: model:ir.model,name:pb_people_reports.model_pb_people_reports
+msgid "People reports"
+msgstr "Laporan karyawan"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid ""
+"People reports are for HR. Ask your administrator if you believe you should "
+"see them."
+msgstr "Laporan karyawan untuk HR. Tanyakan administrator jika Anda merasa perlu melihatnya."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Reading the people reports…"
+msgstr "Membaca laporan karyawan…"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Reason not recorded"
+msgstr "Alasan tidak dicatat"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Resigned"
+msgstr "Mengundurkan diri"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Resigned counts as leaving by choice. Dismissed and retired do not."
+msgstr "Mengundurkan diri dihitung sebagai keluar atas pilihan sendiri. Diberhentikan dan pensiun tidak."
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Retired"
+msgstr "Pensiun"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Start date not recorded"
+msgstr "Tanggal mulai tidak dicatat"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/js/people_reports.js:0
+msgid "The people reports could not be read just now."
+msgstr "Laporan karyawan tidak bisa dibaca saat ini."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "The report could not load"
+msgstr "Laporan tidak bisa dimuat"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/js/people_reports.js:0
+msgid "The spreadsheet could not be made just now."
+msgstr "Spreadsheet tidak bisa dibuat saat ini."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"This breakdown is shown for a whole company, not for one department: most "
+"departments are too small to show it safely."
+msgstr "Rincian ini ditampilkan untuk seluruh perusahaan, bukan satu departemen: kebanyakan departemen terlalu kecil untuk ditampilkan dengan aman."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"This group is too small to show on its own. Look at its company instead."
+msgstr "Kelompok ini terlalu kecil untuk ditampilkan sendiri. Lihat perusahaannya saja."
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "This one is for HR"
+msgstr "Ini untuk HR"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Total"
+msgstr "Total"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Turnover"
+msgstr "Turnover"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Turnover %"
+msgstr "Turnover %"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Under 1 year"
+msgstr "Kurang dari 1 tahun"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Under 25"
+msgstr "Di bawah 25"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Why people leave"
+msgstr "Mengapa karyawan keluar"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Why they left"
+msgstr "Alasan keluar"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Women"
+msgstr "Perempuan"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Year"
+msgstr "Tahun"
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "You do not see any company here."
+msgstr "Anda tidak melihat perusahaan mana pun di sini."
+
+#. module: pb_people_reports
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "fewer than 5"
+msgstr "kurang dari 5"
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "leavers ÷ average headcount"
+msgstr "keluar ÷ rata-rata jumlah karyawan"

@@ -28,6 +28,11 @@ it always ends):
      there is none left, the total is hidden.
   4. A pair with one side hidden hides the other side, even a zero.
   5. Derived cells follow their sources.
+  6. THE AUDIT (`solve`): the equations a reader can write down are solved
+     exactly — first by elimination, then with what a reader knows about
+     bounds (a hidden cell holds at least one person), then, when small, by
+     trying every whole-number filling. Any hidden cell left with only one
+     possible value gets a neighbour hidden too, and the rules run again.
 
 The hidden VALUES never leave the server: the payload carries `None` for a
 hidden cell, in the screen, the totals and the export alike.
@@ -77,6 +82,247 @@ class Suppressor:
         return False
 
     def solve(self):
+        """The rules, then the AUDIT, until the audit finds nothing.
+
+        The rules alone are not enough (the classic case: a row total under 5
+        is hidden, but the grand total minus the other rows gives it back, and
+        its only non-zero cell with it). The audit writes down every equation
+        a reader could write — each set's total equals its parts, each pair's
+        difference is known — and, by exact elimination, finds any hidden cell
+        whose value those equations pin down. It then hides one more cell next
+        to it and runs again. Each round hides at least one more cell, so it
+        always ends.
+        """
+        self._rules()
+        for _round in range(len(self.values) + 1):
+            pinned = self._audit()
+            if not pinned:
+                break
+            if not self._widen(pinned):
+                break
+            self._rules()
+        return self
+
+    def _widen(self, pinned):
+        """Hide one more cell, as close to a pinned cell as possible.
+
+        Walks outwards from the pinned cell through the sets and pairs it
+        belongs to (and the sets their hidden cells belong to): the first
+        set met that still shows something non-zero loses its smallest shown
+        part, or its total when no part is left."""
+        seen = set()
+        queue = sorted(pinned, key=str)
+        while queue:
+            key = queue.pop(0)
+            if key in seen:
+                continue
+            seen.add(key)
+            for total, parts in self.sets:
+                if key != total and key not in parts:
+                    continue
+                shown = sorted((p for p in parts if p not in self.hidden and self.values[p] > 0),
+                               key=lambda p: (self.values[p], str(p)))
+                if shown:
+                    self.hidden.add(shown[0])
+                    return True
+                if total not in self.hidden and self.values[total] > 0:
+                    self.hidden.add(total)
+                    return True
+                queue.extend(c for c in [total] + parts if c in self.hidden and c not in seen)
+            for a, b in self.pairs:
+                if key in (a, b):
+                    other = b if key == a else a
+                    if other not in self.hidden:
+                        self.hidden.add(other)
+                        return True
+                    if other not in seen:
+                        queue.append(other)
+        return False
+
+    def _audit(self):
+        """Hidden cells the public equations determine exactly."""
+        from fractions import Fraction
+        hidden = sorted((k for k in self.hidden if k in self.values), key=str)
+        if not hidden:
+            return set()
+        col = {k: i for i, k in enumerate(hidden)}
+        rows = []
+        for total, parts in self.sets:
+            row = [Fraction(0)] * len(hidden)
+            any_hidden = False
+            for k, coef in [(total, 1)] + [(p, -1) for p in parts]:
+                if k in col:
+                    row[col[k]] += coef
+                    any_hidden = True
+            if any_hidden:
+                rows.append(row)
+        for a, b in self.pairs:
+            row = [Fraction(0)] * len(hidden)
+            if a in col:
+                row[col[a]] += 1
+            if b in col:
+                row[col[b]] -= 1
+            if any(row):
+                rows.append(row)
+        # reduced row echelon form
+        pivots = []
+        r = 0
+        ncol = len(hidden)
+        for c in range(ncol):
+            pr = next((i for i in range(r, len(rows)) if rows[i][c] != 0), None)
+            if pr is None:
+                continue
+            rows[r], rows[pr] = rows[pr], rows[r]
+            pv = rows[r][c]
+            rows[r] = [x / pv for x in rows[r]]
+            for i in range(len(rows)):
+                if i != r and rows[i][c] != 0:
+                    f = rows[i][c]
+                    rows[i] = [x - f * y for x, y in zip(rows[i], rows[r])]
+            pivots.append((r, c))
+            r += 1
+            if r == len(rows):
+                break
+        pinned = set()
+        for ri, c in pivots:
+            if all(v == 0 for j, v in enumerate(rows[ri]) if j != c):
+                key = hidden[c]
+                if self.values[key] != 0:
+                    pinned.add(key)
+        if pinned:
+            return pinned
+        pinned, lo, hi = self._bounds_pinned(hidden, rows[:r])
+        if pinned:
+            return pinned
+        return self._exact_pinned(hidden, rows[:r], pivots, lo, hi)
+
+    def _exact_pinned(self, hidden, reduced, pivots, lo, hi, budget=4000):
+        """Last check, for small cases: try every whole-number value of the
+        free cells inside their known bounds, work the others out, and see
+        whether some hidden cell can only ever take one value. Skipped when
+        the search would be too large (the bounds check above still ran)."""
+        import itertools
+        import math
+        pivot_cols = {c for _r, c in pivots}
+        free = [i for i in range(len(hidden)) if i not in pivot_cols]
+        ranges = []
+        size = 1
+        for i in free:
+            if hi[i] is None:
+                return set()
+            a, b = math.ceil(lo[i]), math.floor(hi[i])
+            if b < a:
+                return set()
+            ranges.append(range(a, b + 1))
+            size *= (b - a + 1)
+            if size > budget:
+                return set()
+        truth = [self.values[k] for k in hidden]
+        consts = [sum(row[j] * truth[j] for j in range(len(hidden))) for row in reduced]
+        seen = {i: set() for i in range(len(hidden))}
+        for combo in itertools.product(*ranges):
+            x = [None] * len(hidden)
+            for i, v in zip(free, combo):
+                x[i] = v
+            ok = True
+            for (ri, c) in pivots:
+                row = reduced[ri]
+                val = consts[ri] - sum(row[f] * x[f] for f in free)
+                if val.denominator != 1 or val < lo[c] or (hi[c] is not None and val > hi[c]):
+                    ok = False
+                    break
+                x[c] = int(val)
+            if ok:
+                for i, v in enumerate(x):
+                    seen[i].add(v)
+        return {hidden[i] for i, vals in seen.items()
+                if len(vals) == 1 and self.values[hidden[i]] != 0}
+
+    def _bounds_pinned(self, hidden, reduced):
+        """Hidden cells pinned by the equations TOGETHER WITH what a reader
+        knows about bounds: a hidden cell outside any pair holds at least one
+        person (zeros are shown), none is negative. Interval propagation over
+        the original equations and their reduced forms, to a fixed point."""
+        from fractions import Fraction
+        col = {k: i for i, k in enumerate(hidden)}
+        in_pair = {k for ab in self.pairs for k in ab}
+        lo = [Fraction(0 if k in in_pair else 1) for k in hidden]
+        hi = [None] * len(hidden)          # None = no upper bound known
+        eqs = []
+        for total, parts in self.sets:
+            coef, const = [Fraction(0)] * len(hidden), Fraction(0)
+            for k, a in [(total, 1)] + [(p, -1) for p in parts]:
+                if k in col:
+                    coef[col[k]] += a
+                else:
+                    const -= a * self.values[k]
+            if any(coef):
+                eqs.append((coef, const))
+        for a, b in self.pairs:
+            coef, const = [Fraction(0)] * len(hidden), Fraction(0)
+            for k, s in ((a, 1), (b, -1)):
+                if k in col:
+                    coef[col[k]] += s
+                else:
+                    const -= s * self.values[k]
+            const += self.values[a] - self.values[b]
+            if any(coef):
+                eqs.append((coef, const))
+        # the reduced rows are combinations of the same equations: recompute
+        # their constants from the true values (they are what a reader derives)
+        for row in reduced:
+            if any(row):
+                const = sum(row[i] * self.values[hidden[i]] for i in range(len(hidden)))
+                eqs.append((list(row), const))
+        for _it in range(50):
+            changed = False
+            for coef, const in eqs:
+                idx = [i for i, a in enumerate(coef) if a != 0]
+                for i in idx:
+                    # a_i x_i = const - sum_{j != i} a_j x_j
+                    mn, mx = const, const
+                    bounded_mn = bounded_mx = True
+                    for j in idx:
+                        if j == i:
+                            continue
+                        a = coef[j]
+                        # subtract a_j * x_j: its range is [a*lo, a*hi] (or flipped)
+                        if a > 0:
+                            mx -= a * lo[j]
+                            if hi[j] is None:
+                                bounded_mn = False
+                            else:
+                                mn -= a * hi[j]
+                        else:
+                            mn -= a * lo[j]
+                            if hi[j] is None:
+                                bounded_mx = False
+                            else:
+                                mx -= a * hi[j]
+                    a = coef[i]
+                    if a > 0:
+                        new_lo = mn / a if bounded_mn else None
+                        new_hi = mx / a if bounded_mx else None
+                    else:
+                        new_lo = mx / a if bounded_mx else None
+                        new_hi = mn / a if bounded_mn else None
+                    if new_lo is not None and new_lo > lo[i]:
+                        lo[i] = new_lo
+                        changed = True
+                    if new_hi is not None and (hi[i] is None or new_hi < hi[i]):
+                        hi[i] = new_hi
+                        changed = True
+            if not changed:
+                break
+        import math
+        pinned = set()
+        for i, k in enumerate(hidden):
+            if hi[i] is not None and self.values[k] != 0 and \
+                    math.floor(hi[i]) <= math.ceil(lo[i]):
+                pinned.add(k)
+        return pinned, lo, hi
+
+    def _rules(self):
         floor = self.floor
         for key, v in self.values.items():
             if 0 < v < floor:

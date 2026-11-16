@@ -1,0 +1,2233 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_conduct
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 08:24+0000\n"
+"PO-Revision-Date: 2026-11-16 08:24+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_setup.py:0
+msgid ""
+"\"${%(word)s}\" is not a word the letter can fill in. Use one of: %(words)s."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "%s added."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "%s letters from HR to read"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s letters to issue"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s waiting for a decision"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.actions.report,print_report_name:pb_conduct.action_report_conduct_letter
+msgid "(object.title or 'Letter')"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 case"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "1 letter from HR to read"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 letter to issue"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 waiting for a decision"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"A closed case stays here and in the person's history. You can open it again."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "A letter needs a title and some text."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__active
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Add a file"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Add the note"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__valid_until
+msgid ""
+"After this date the warning no longer counts. The usual period differs by "
+"country; check it with your adviser."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "All cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "An issued letter cannot be changed."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "An issued letter cannot be changed. Prepare a new letter instead."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "An issued letter is kept with the case. It cannot be deleted."
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Ask HR to link it, then letters they send you appear here."
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_attendance
+msgid "Attendance or lateness"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Back to my home"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_behaviour
+msgid "Behaviour towards others"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_rules
+msgid "Breaking a company rule"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__user_id
+msgid "By"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__case_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__case_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__case_id
+msgid "Case"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Case closed with the decision letter."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Case closed."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Case closed: %s"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Case opened again."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Case opened. Only the people named for conduct cases can see it."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Case opened: %s."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Change the wording"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Check each step with your adviser."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Choose the date and time of the hearing."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Choose the reason."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Choose what was decided."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Choose…"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Close the case"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__closed
+msgid "Closed"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Closed cases"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__closed_on
+msgid "Closed on"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__concern
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__concern
+msgid "Concern"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+msgid "Conduct"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model,name:pb_conduct.model_pb_conduct_case
+msgid "Conduct case"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_country_note
+msgid "Conduct case country note"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_event
+msgid "Conduct case history"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_letter
+msgid "Conduct case letter"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_note
+msgid "Conduct case note"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_reason
+msgid "Conduct case reason"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_reason
+msgid "Conduct case reasons"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.actions.client,name:pb_conduct.action_pb_conduct_board
+#: model:ir.module.category,name:pb_conduct.module_category_conduct
+#: model:res.groups.privilege,name:pb_conduct.res_groups_privilege_conduct
+msgid "Conduct cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Conduct cases are seen only by the people HR names for them on the Access "
+"screen. Being in HR, running payroll or managing a team does not include it."
+" Ask your head of HR if you believe you should have it."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct
+msgid "Conduct cases board data"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.role.profile,name:pb_conduct.role_conduct_hr
+msgid "Conduct cases — HR"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.role.profile,name:pb_conduct.role_conduct_head
+msgid "Conduct cases — head of HR"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_letter_template
+#: model:ir.model,name:pb_conduct.model_pb_conduct_letter_template
+msgid "Conduct letter wording"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_verbal
+msgid "Confirmation of a verbal warning"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__country_id
+msgid "Country"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_country_note_list
+msgid "Country notes"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_country_note
+msgid "Country notes for conduct cases"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__date
+msgid "Date"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Date and time"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_final
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we are giving you a final written warning.\n"
+"\n"
+"${decision}\n"
+"\n"
+"This warning stays on your HR file until ${valid_until}. If the problem happens again, your employment may end. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_written
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we are giving you a written warning.\n"
+"\n"
+"${decision}\n"
+"\n"
+"This warning stays on your HR file until ${valid_until}. If the problem happens again, further steps may be taken. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_dismissal
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we have decided to end your employment.\n"
+"\n"
+"${decision}\n"
+"\n"
+"HR will contact you about your last day, your final pay and returning company property. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_none
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Thank you for meeting us about ${reason}.\n"
+"\n"
+"${decision}\n"
+"\n"
+"We have decided to take no further action. This letter is kept on your HR file.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_verbal
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"This letter confirms the verbal warning you were given about ${reason}.\n"
+"\n"
+"${decision}\n"
+"\n"
+"The warning stays on your HR file until ${valid_until}. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_invite
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"We would like to meet you to talk about a concern: ${reason}.\n"
+"\n"
+"The meeting will take place on ${hearing_date} at ${hearing_place}.\n"
+"\n"
+"You may bring a colleague or an employee representative with you. You will be able to give your side of what happened before any decision is made.\n"
+"\n"
+"If you cannot attend at this time, please tell HR as soon as possible.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+msgid "Dear ${employee}, ..."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Decide the outcome"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decided_by
+msgid "Decided by"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decided_on
+msgid "Decided on"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decided: %s."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__outcome
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__decision
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__decision
+msgid "Decision"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Decision saved. The letter is ready to check and issue."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decision_summary
+msgid "Decision, in a few sentences"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Delete the draft"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__department_id
+msgid "Department"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__dismissal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__dismissal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__dismissal
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_dismissal
+msgid "Dismissal"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Done."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Download"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Download the letter"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__state__draft
+msgid "Draft"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Draft letter deleted."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Draft letter deleted: %s."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Draft, not seen by the employee"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Earlier cases for this person"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__employee_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__employee_id
+msgid "Employee"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_me_home
+msgid "Employee home page facts"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__read_on
+msgid "Employee read it on"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply
+msgid "Employee's reply"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_dismissal
+msgid "End of your employment"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.role.ability,description:pb_conduct.ability_conduct_head
+#: model:res.groups,comment:pb_conduct.group_conduct_head
+msgid ""
+"Everything above, plus the reasons, the letter wording and the country "
+"notes."
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.role.profile,description:pb_conduct.role_conduct_head
+msgid ""
+"Everything in Conduct cases — HR, plus the reasons, the letter wording and "
+"the country notes."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "File added to the case."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "File added: %s."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Files"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__final
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__final
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__final
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_final
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_final
+msgid "Final written warning"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Find a person, a reference or a word…"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__hearing_attendees
+msgid ""
+"For example: the employee, a companion or employee representative, the HR "
+"lead."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Go to a decision without a hearing"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "HR has sent you a letter."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.actions.report,name:pb_conduct.action_report_conduct_letter
+msgid "HR letter"
+msgstr ""
+
+#. module: pb_conduct
+#: model:res.groups,name:pb_conduct.group_conduct_user
+msgid "HR — conduct cases"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_harassment
+msgid "Harassment or bullying"
+msgstr ""
+
+#. module: pb_conduct
+#: model:res.groups,name:pb_conduct.group_conduct_head
+msgid "Head of HR — conduct cases"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_safety
+msgid "Health and safety"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__hearing
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__hearing
+msgid "Hearing"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing %s"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing date, soonest first"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_held_on
+msgid "Hearing held on"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing held on %s."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__minutes
+msgid "Hearing minutes"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing moved to %s."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_date
+msgid "Hearing on"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing planned for %s."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing recorded. Next: the decision."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing saved."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Held on"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__event_ids
+msgid "History"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "I have read this"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__document_id
+msgid "In documents"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__investigation
+msgid "Investigation note"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Invitation prepared. Check it, then issue it."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__invite
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__invite
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_invite
+msgid "Invitation to a hearing"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_invite
+msgid "Invitation to a meeting"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Issue the decision letter first, or say why the case closes without it."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Issue the letter"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__state__issued
+msgid "Issued"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__issued_by
+msgid "Issued by"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__issued_on
+msgid "Issued on"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__kind
+msgid "Kind"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_reason__company_id
+msgid "Leave empty to offer it in every company."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_letter_template__company_id
+msgid "Leave empty to use it in every company."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__exit_case_id
+msgid "Leaving checklist"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Leaving checklist opened."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__kind
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__kind
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__letter
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__letter
+msgid "Letter"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Letter issued. The employee can read it on their own page now."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Letter issued: %s. The employee can now read it on their own page."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Letter prepared: %s."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Letter saved."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__body
+msgid "Letter text"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__title
+msgid "Letter title"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_list
+msgid "Letter wording"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__letter_ids
+msgid "Letters"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_home_hr_letters
+msgid "Letters HR has sent you"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Letters HR has sent you. Only you and the people in HR who handle them can "
+"see these."
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_breadcrumbs_hr_letters
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_home_hr_letters
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Letters from HR"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Loading cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Loading…"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Look into it, then plan a hearing"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Mark as read"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__meeting
+msgid "Meeting note"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Minutes: who was there, what was said"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_property
+msgid "Misuse of company property or money"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Move the hearing"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Moved to the decision."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__name
+msgid "Name"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__pb_conduct_reader
+msgid "Named for conduct cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "New"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "New case"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "New conduct case"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__none
+msgid "No action"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No cases match these filters"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No conduct cases"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.actions.act_window,help:pb_conduct.action_pb_conduct_country_note
+msgid "No country notes yet"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "No department"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__none
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__none
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_none
+msgid "No further action"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No hearing needed"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "No letters from HR"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No notes for"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "None."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Not read by the employee yet."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__body
+msgid "Note"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Note added."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__note_ids
+msgid "Notes"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Notes and minutes stay with the case. They are never put in the employee's "
+"documents and the employee does not see them."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Notes for the other steps ("
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "On"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Only for the people HR names"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Only the head of HR for conduct cases can change this."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Only the people named for conduct cases will see it. The employee sees "
+"nothing until a letter is issued."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"Only when no hearing is needed, for example when you decide to take no "
+"action."
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.role.ability,description:pb_conduct.ability_conduct_hr
+msgid ""
+"Open and run conduct cases: the concern, the hearing notes, the decision and"
+" the letters. Highly confidential: give it only to the people who handle "
+"these cases."
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.role.profile,description:pb_conduct.role_conduct_hr
+msgid ""
+"Open and run somebody's conduct case: the concern, the hearing notes, the "
+"decision and the letters. Highly confidential."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Open cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the case"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the case again"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the leaving checklist"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__opened_on
+msgid "Opened"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Opened longest ago"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Opened most recently"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_other
+msgid "Other"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__other
+msgid "Other note"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_none
+msgid "Outcome of our meeting"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__attachment_id
+msgid "PDF"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Pick who the case is about."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Plan the hearing"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Prepare an invitation letter"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.employee.document.category,name:pb_conduct.vault_category_conduct
+msgid "Private HR letters"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__raised_by
+msgid "Raised by"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Raised by (optional)"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Read"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Read it and reply if you want to"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Read the board again"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Reading the cases…"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__reason_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__name
+msgid "Reason"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_reason_list
+msgid "Reasons"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Record the decision"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Record the hearing"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__name
+msgid "Reference"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Remove a filter above, or start again from every case."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply_on
+msgid "Replied on"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply_seen
+msgid "Reply read by HR"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Reply to HR"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.role.ability,name:pb_conduct.ability_conduct_hr
+msgid "Run conduct cases"
+msgstr ""
+
+#. module: pb_conduct
+#: model:pb.role.ability,name:pb_conduct.ability_conduct_head
+msgid "Run conduct cases and their set-up"
+msgstr ""
+
+#. module: pb_conduct
+#: model:res.groups,comment:pb_conduct.group_conduct_user
+msgid ""
+"Run conduct cases: record a concern, plan and record a hearing, record the "
+"decision and issue the letter. Not part of the general HR permissions — it "
+"is given by name."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Save the letter"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why the case is closed."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why there is no hearing."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Say why, in a few words."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Seen only by the people HR names for conduct cases. Nothing here is emailed."
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Send my reply"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Sent on"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__sequence
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Set up"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Show"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Show all cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Showing"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Something not clear? Ask HR. You can also find these letters in your "
+"documents."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__state
+msgid "State"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__state
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__step
+msgid "Step"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+msgid "Talent"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"Tell the employee in good time and in writing. Prepare an invitation letter "
+"from this case once the date is set."
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Thank you. HR can see that you have read it."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "That cannot be done here."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "That could not be done."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "That could not be opened."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "That letter is not one of yours."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The Access screen could not be opened."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The case could not be opened."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The cases could not be read just now."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The cases could not load"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"The decision letter is prepared from it. Check it, then issue it: only then "
+"can the employee read it."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The decision, in a few sentences (it goes in the letter)"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__department_id
+msgid "The department when the case was opened."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee has replied"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The employee replied to \"%s\"."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The employee said they have read \"%s\"."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee said they read it on"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee's reply,"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee, a companion or representative, the HR lead"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The file is empty."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The file is larger than 10 MB."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"The law on hearings, warnings and letters differs by country, and these "
+"steps are general."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The leaving checklist is not part of this system."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The leaving checklist is open on the employee's record."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The leaving checklist is opened only after a dismissal."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The letter has no text yet."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_letter_template__body
+msgid ""
+"The letter text. Words in ${...} are filled in from the case: ${employee}, "
+"${job}, ${department}, ${company}, ${date}, ${reason}, ${incident_date}, "
+"${hearing_date}, ${hearing_place}, ${decision}, ${valid_until}, "
+"${signed_by}."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"The minutes stay with the case. They are never put in the employee's "
+"documents and the employee does not see them."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"The reasons, letter wording and country notes are changed by the head of HR "
+"for conduct cases."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The steps above the table."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The warning must stay valid after the day it was decided."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.constraint,message:pb_conduct.constraint_pb_conduct_country_note_country_step_uniq
+msgid "There is already a note for this country and step. Edit that one."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "This case could not be opened."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "This case is at the \"%s\" step, so that cannot be done now."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "This case no longer exists, or it is not one you can see."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "This letter has already been issued."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "This letter no longer exists."
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+msgid ""
+"This wording is a starting point. Check it with your adviser before you use "
+"it: what a letter must say differs by country."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__title
+msgid "Title"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_res_users__pb_conduct_reader
+msgid ""
+"True for the people HR has named on the Access screen to see conduct cases. "
+"Read by the record rules."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Type a name or an employee code"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_res_users
+msgid "User"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__verbal
+msgid "Verbal warning"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__verbal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__verbal
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_verbal
+msgid "Verbal warning confirmed"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__valid_until
+msgid "Warning valid until"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Went to a decision without a hearing: %s"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "What comes next"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__summary
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__text
+msgid "What happened"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__note
+msgid "What to do in this country"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "When HR sends you a letter, you can read it here and reply."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"When a concern about someone's conduct reaches HR, open a case here. It goes"
+" from the concern to a hearing, a decision and a letter, and only the people"
+" named for conduct cases can see it."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__incident_date
+msgid "When it happened"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_place
+msgid "Where"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Where every case is"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_attendees
+msgid "Who attends"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__raised_by
+msgid ""
+"Who brought the concern to HR. Free text, not a login: the person who raised"
+" it does not get to see the case."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who can see conduct cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who it is about"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Why"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__close_reason
+msgid "Why it was closed"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__template_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__body
+msgid "Wording"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Write a note…"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.actions.act_window,help:pb_conduct.action_pb_conduct_country_note
+msgid ""
+"Write down what your adviser tells you for each step in each country: time "
+"limits, who must attend the hearing, how long a warning lasts. The note "
+"shows on every case at that step."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write the decision in a few sentences. It goes in the letter."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write the note first."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write what happened, in a few sentences."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_country_note__note
+msgid ""
+"Write what your adviser tells you for this step in this country (time "
+"limits, who must attend, what the letter must say). It shows on every case "
+"at this step."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Write your reply first."
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__author_id
+msgid "Written by"
+msgstr ""
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__written
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__written
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__written
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_written
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_written
+msgid "Written warning"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "You cannot open a case about yourself."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"You have already replied to this letter. Ask HR if you want to add "
+"something."
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your login is not linked to an employee record"
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Your reply could not be sent. Write something first, or ask HR if you have "
+"already replied."
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Your reply goes to the people in HR who handle this letter. You can reply "
+"once."
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your reply has been sent to HR."
+msgstr ""
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your reply, sent on"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "by"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "file"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "hearings in the next 7 days"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "letters to issue"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "more"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "of"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "open cases"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "replies from employees to read"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "valid until"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "waiting for a decision"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "warnings still valid"
+msgstr ""
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"yet. The head of HR can add what your adviser says under Set up › Country "
+"notes."
+msgstr ""
