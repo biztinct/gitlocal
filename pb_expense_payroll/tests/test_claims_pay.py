@@ -306,6 +306,30 @@ class TestClaimsPay(ClaimsPayFixture):
         self.assertIn('Expense claims paid back', flags[slip.id].get('note', ''))
         self.assertFalse(flags[slip.id].get('flag'), 'a note, never a flag')
 
+    # ================================================================ C19
+    def test_C19_silent_install(self):
+        """Installing changes nothing: every company pays claims by finance,
+        no scheduled job, no mail template, no salary rule made, no trip
+        advance or limit exists, the claims list's default views unchanged
+        at the front."""
+        Company = self.env['res.company'].sudo().with_context(active_test=False)
+        self.assertFalse(Company.search([('pb_claims_paid_by', '!=', 'finance'),
+                                         ('id', '!=', self.company.id)]))
+        mods = ('pb_expense_payroll', 'pb_trip_advance', 'pb_expense_allowance')
+        Data = self.env['ir.model.data'].sudo()
+        for model in ('ir.cron', 'mail.template', 'hr.salary.rule'):
+            self.assertFalse(Data.search([('module', 'in', mods), ('model', '=', model)]),
+                             model)
+        Rule = self.env['hr.salary.rule'].sudo().with_context(active_test=False)
+        self.assertFalse(Rule.search([('code', 'in', ('PBEXPBACK', 'ADVPBTRIP'))]),
+                         'made only the first time a payslip needs one')
+        if 'pb.trip.advance' in self.env:
+            self.assertFalse(self.env['pb.trip.advance'].sudo().search([]))
+        if 'pb.expense.allowance' in self.env:
+            self.assertFalse(self.env['pb.expense.allowance'].sudo().search([]))
+        views = [v['key'] for v in self.env['pb.expense.claims']._pbf_builtin_views()]
+        self.assertEqual(views[:2], ['waiting', 'approved'])
+
     # ================================================================ C17
     def test_C17_a_failure_never_breaks_the_run(self):
         self.set_route('payrun')

@@ -1,0 +1,761 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 20:47+0000\n"
+"PO-Revision-Date: 2026-11-15 20:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%(amount)s comes off your %(month)s pay."
+msgstr "%(amount)s dipotong dari gaji %(month)s Anda."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%(amount)s paid back directly (%(ref)s)."
+msgstr "%(amount)s dibayar kembali langsung (%(ref)s)."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "%s of an unspent trip advance waits for the next pay run so take-home is not below zero"
+msgstr "%s uang muka perjalanan yang tidak terpakai menunggu proses penggajian berikutnya agar gaji bersih tidak di bawah nol"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%s pays it back directly."
+msgstr "%s membayarnya kembali langsung."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%s was not spent. It comes off your next pay."
+msgstr "%s tidak terpakai. Akan dipotong dari gaji Anda berikutnya."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%s was not spent. Please pay it back to finance."
+msgstr "%s tidak terpakai. Silakan kembalikan ke bagian keuangan."
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pbme_card_advance
+msgid "<span>given</span>"
+msgstr "<span>diberikan</span>"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pbme_card_advance
+msgid "<span>to pay back</span>"
+msgstr "<span>harus dikembalikan</span>"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "A trip's cash advance is recorded from the trip."
+msgstr "Uang muka perjalanan dicatat dari perjalanannya."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_needaction
+msgid "Action Needed"
+msgstr "Perlu tindakan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__advance_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__advance_id
+msgid "Advance"
+msgstr "Uang muka"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__amount
+msgid "Advance given"
+msgstr "Uang muka diberikan"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Advance given: %s"
+msgstr "Uang muka diberikan: %s"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Advance on this trip: %s"
+msgstr "Uang muka perjalanan ini: %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__amount model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__amount model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__amount
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "An unspent trip advance is in another currency than this pay scheme, so it is not taken back here"
+msgstr "Uang muka yang tidak terpakai memakai mata uang lain dari skema gaji ini, jadi tidak ditarik di sini"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "An unspent trip advance of %s is not taken back here: this pay scheme is paid from a pay data file. Include it in the file."
+msgstr "Uang muka tidak terpakai sebesar %s tidak ditarik di sini: skema gaji ini dibayar dari file data gaji. Masukkan ke dalam file."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_attachment_count
+msgid "Attachment Count"
+msgstr "Jumlah lampiran"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_business_trip
+msgid "Business Trip"
+msgstr "Perjalanan dinas"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trips
+msgid "Business Trips Cockpit API"
+msgstr "Papan perjalanan dinas"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__mode__cash
+msgid "Cash"
+msgstr "Tunai"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__pb_advance_ids model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form model_terms:ir.ui.view,arch_db:pb_trip_advance.view_pb_business_trip_form_advance
+msgid "Cash advance"
+msgstr "Uang muka"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0 model_terms:ir.ui.view,arch_db:pb_trip_advance.view_pb_business_trip_form_advance
+msgid "Cash advance given"
+msgstr "Uang muka diberikan"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Cash advance of %(amount)s given on %(day)s."
+msgstr "Uang muka %(amount)s diberikan pada %(day)s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__pb_advance_state
+msgid "Cash advance status"
+msgstr "Status uang muka"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Choose how the unspent part comes back."
+msgstr "Pilih cara bagian yang tidak terpakai dikembalikan."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__claim_id
+msgid "Claim"
+msgstr "Klaim"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trip_advance_offset
+msgid "Claim set against a trip cash advance"
+msgstr "Klaim yang diperhitungkan dengan uang muka perjalanan"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Claim your receipts for this trip; they are set against the advance when the trip is settled."
+msgstr "Ajukan struk perjalanan ini; struk diperhitungkan dengan uang muka saat perjalanan diselesaikan."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__claimed model_terms:ir.ui.view,arch_db:pb_trip_advance.portal_my_expenses_advances
+msgid "Claimed against it"
+msgstr "Diklaim terhadapnya"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Claimed against it (approved, not paid yet): %s"
+msgstr "Diklaim terhadapnya (disetujui, belum dibayar): %s"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form
+msgid "Claims for this trip are set against the advance, oldest first. The person sees what is not spent on their own page straight away; a pay run only takes back what fits, so their take-home never goes below zero."
+msgstr "Klaim perjalanan ini diperhitungkan dengan uang muka, yang terlama dulu. Karyawan langsung melihat bagian yang tidak terpakai di halamannya; proses penggajian hanya menarik yang muat, jadi gaji bersih tidak pernah di bawah nol."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__offset_ids
+msgid "Claims set against it"
+msgstr "Klaim yang diperhitungkan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__state__closed
+msgid "Closed"
+msgstr "Selesai"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__company_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__company_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form
+msgid "Confirm"
+msgstr "Konfirmasi"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Covered by the cash advance of %s."
+msgstr "Ditutup oleh uang muka %s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__create_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__create_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__create_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__create_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__create_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__create_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__currency_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__currency_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__currency_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form
+msgid "Day"
+msgstr "Tanggal"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Decide the claims for this trip that are still waiting approval first: %s."
+msgstr "Putuskan dulu klaim perjalanan ini yang masih menunggu persetujuan: %s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip__display_name model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip_run__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_expense_claim__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trips__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__employee_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data beranda karyawan"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_expense_claim
+msgid "Expense claim"
+msgstr "Klaim pengeluaran"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_follower_ids
+msgid "Followers"
+msgstr "Pengikut"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Pengikut (mitra)"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__kind__payroll
+msgid "From pay"
+msgstr "Dari gaji"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__recover_how__pay
+msgid "From the next pay"
+msgstr "Dari gaji berikutnya"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__state__given model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__mode__given model_terms:ir.ui.view,arch_db:pb_trip_advance.portal_my_expenses_advances
+msgid "Given"
+msgstr "Diberikan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__state__released
+msgid "Given back"
+msgstr "Dikembalikan"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Given back: %s."
+msgstr "Dikembalikan: %s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__given_on
+msgid "Given on"
+msgstr "Diberikan pada"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__has_message
+msgid "Has Message"
+msgstr "Ada pesan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip__id model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip_run__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_expense_claim__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_me_home__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trips__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_has_error model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jika dicentang, beberapa pesan gagal terkirim."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__state__reserved
+msgid "In a pay run"
+msgstr "Dalam proses penggajian"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_is_follower
+msgid "Is Follower"
+msgstr "Pengikut"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "It is taken back from %s's next regular pay."
+msgstr "Ditarik dari gaji reguler berikutnya %s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__kind
+msgid "Kind"
+msgstr "Jenis"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__write_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__write_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__write_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__write_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__write_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__write_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_has_error
+msgid "Message Delivery error"
+msgstr "Kesalahan pengiriman pesan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_ids
+msgid "Messages"
+msgstr "Pesan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__mode
+msgid "Mode"
+msgstr "Mode"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Not counted (not sent, or refused): %s"
+msgstr "Tidak dihitung (belum dikirim atau ditolak): %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__unspent
+msgid "Not spent"
+msgstr "Tidak terpakai"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Not spent: %s"
+msgstr "Tidak terpakai: %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__note
+msgid "Note"
+msgstr "Catatan"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Nothing is waiting to be paid back on this advance."
+msgstr "Tidak ada yang menunggu dikembalikan pada uang muka ini."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Nothing is waiting to be paid back on this trip."
+msgstr "Tidak ada yang menunggu dikembalikan pada perjalanan ini."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Jumlah tindakan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_has_error_counter
+msgid "Number of errors"
+msgstr "Jumlah kesalahan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Jumlah pesan yang perlu tindakan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Jumlah pesan gagal terkirim"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__day
+msgid "On"
+msgstr "Pada"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Only an authorized trip with a cash advance can have it recorded as given."
+msgstr "Hanya perjalanan yang disahkan dengan uang muka yang bisa dicatat sudah diberikan."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Only finance or the pay team can do this."
+msgstr "Hanya keuangan atau tim penggajian yang dapat melakukan ini."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Only finance or the pay team can record a repayment."
+msgstr "Hanya keuangan atau tim penggajian yang dapat mencatat pengembalian."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Only finance or the pay team can settle a cash advance."
+msgstr "Hanya keuangan atau tim penggajian yang dapat menyelesaikan uang muka."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__paid_on
+msgid "Paid On"
+msgstr "Dibayar pada"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__recover_how__cash
+msgid "Paid back by the person"
+msgstr "Dikembalikan oleh karyawan"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0 code:addons/pb_trip_advance/models/trip.py:0 model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__kind__cash model_terms:ir.ui.view,arch_db:pb_trip_advance.view_pb_business_trip_form_advance
+msgid "Paid back directly"
+msgstr "Dikembalikan langsung"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__pay_month
+msgid "Pay Month"
+msgstr "Bulan gaji"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Slip gaji"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__payslip_id
+msgid "Payslip"
+msgstr "Slip gaji"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Proses penggajian"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__preview
+msgid "Preview"
+msgstr "Pratinjau"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__rating_ids
+msgid "Ratings"
+msgstr "Penilaian"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Record the cash advance as given first."
+msgstr "Catat dulu uang muka sudah diberikan."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__given_by
+msgid "Recorded by"
+msgstr "Dicatat oleh"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__given_ref model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__reference
+msgid "Reference"
+msgstr "Referensi"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__run_id
+msgid "Run"
+msgstr "Proses penggajian"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Kesalahan pengiriman SMS"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pbme_card_advance
+msgid "See my expenses"
+msgstr "Lihat pengeluaran saya"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__mode__settle
+msgid "Settle"
+msgstr "Selesaikan"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0 model_terms:ir.ui.view,arch_db:pb_trip_advance.view_pb_business_trip_form_advance
+msgid "Settle the cash advance"
+msgstr "Selesaikan uang muka"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__settled_by
+msgid "Settled by"
+msgstr "Diselesaikan oleh"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__settled_on
+msgid "Settled on"
+msgstr "Diselesaikan pada"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__state__settled
+msgid "Settled — being taken back"
+msgstr "Diselesaikan — sedang ditarik kembali"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Settled: %(claimed)s claimed against an advance of %(amount)s. Nothing to take back."
+msgstr "Diselesaikan: %(claimed)s diklaim terhadap uang muka %(amount)s. Tidak ada yang ditarik kembali."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Settled: %(claimed)s claimed against an advance of %(amount)s; %(unspent)s was not spent. %(how)s"
+msgstr "Diselesaikan: %(claimed)s diklaim terhadap uang muka %(amount)s; %(unspent)s tidak terpakai. %(how)s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__extra_due
+msgid "Spent above the advance"
+msgstr "Pengeluaran di atas uang muka"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Spent above the advance: %s — paid with the claims as usual"
+msgstr "Pengeluaran di atas uang muka: %s — dibayar bersama klaim seperti biasa"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__state
+msgid "State"
+msgstr "Status"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Still to be paid back: %s"
+msgstr "Masih harus dikembalikan: %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__pb_advance_left model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__left
+msgid "Still to take back"
+msgstr "Masih harus ditarik"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Still waiting approval (decide these first): %s"
+msgstr "Masih menunggu persetujuan (putuskan dulu): %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__recover_how__pay
+msgid "Take it back from the next pay"
+msgstr "Tarik dari gaji berikutnya"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__recover_how model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__recovery_ids model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__state__paid
+msgid "Taken back"
+msgstr "Ditarik kembali"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__recovered
+msgid "Taken back so far"
+msgstr "Sudah ditarik sejauh ini"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "The day it was given cannot be in the future."
+msgstr "Tanggal diberikan tidak boleh di masa depan."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__recover_how
+msgid "The part not spent"
+msgstr "Bagian yang tidak terpakai"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__recover_how__cash
+msgid "The person pays it back directly"
+msgstr "Karyawan mengembalikannya langsung"
+
+#. module: pb_trip_advance
+#: model:ir.model.constraint,message:pb_trip_advance.constraint_pb_trip_advance_recovery_one_per_month
+msgid "This advance is already taken back in that pay month."
+msgstr "Uang muka ini sudah ditarik di bulan gaji itu."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "This cash advance is already settled."
+msgstr "Uang muka ini sudah diselesaikan."
+
+#. module: pb_trip_advance
+#: model:ir.model.constraint,message:pb_trip_advance.constraint_pb_trip_advance_one_per_trip
+msgid "This trip already has its cash advance recorded."
+msgstr "Perjalanan ini sudah dicatat uang mukanya."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "This trip's cash advance cannot be recorded now."
+msgstr "Uang muka perjalanan ini belum dapat dicatat."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "This trip's cash advance is already recorded."
+msgstr "Uang muka perjalanan ini sudah dicatat."
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.portal_my_expenses_advances
+msgid "To pay back"
+msgstr "Harus dikembalikan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__trip_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__trip_id
+msgid "Trip"
+msgstr "Perjalanan"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip__pb_advance_line_ids
+msgid "Trip advances taken back"
+msgstr "Uang muka perjalanan yang ditarik"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trip_advance model_terms:ir.ui.view,arch_db:pb_trip_advance.pbme_card_advance
+msgid "Trip cash advance"
+msgstr "Uang muka perjalanan"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trip_advance_wizard
+msgid "Trip cash advance: given, settled, paid back"
+msgstr "Uang muka perjalanan: diberikan, diselesaikan, dikembalikan"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.portal_my_expenses_advances
+msgid "Trip cash advances"
+msgstr "Uang muka perjalanan"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Type an amount above zero and no more than %s (what is still to be paid back and not already in a pay run)."
+msgstr "Ketik jumlah di atas nol dan tidak lebih dari %s (yang masih harus dikembalikan dan belum ada di proses penggajian)."
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trip_advance_recovery
+msgid "Unspent trip advance taken back"
+msgstr "Uang muka perjalanan tidak terpakai ditarik"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "Unspent trip advance taken back · %s"
+msgstr "Uang muka tidak terpakai ditarik · %s"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "Unspent trip advance taken back: %s"
+msgstr "Uang muka perjalanan tidak terpakai ditarik: %s"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/expense_claim.py:0
+msgid "Waits until the cash advance of trip %s is settled; then only what the advance did not cover is paid."
+msgstr "Menunggu sampai uang muka perjalanan %s diselesaikan; lalu hanya bagian yang tidak tertutup uang muka yang dibayar."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__website_message_ids
+msgid "Website Messages"
+msgstr "Pesan situs"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__website_message_ids
+msgid "Website communication history"
+msgstr "Riwayat komunikasi situs"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "What is taken back from pay is recorded by the system."
+msgstr "Yang ditarik dari gaji dicatat oleh sistem."
+
+#. module: pb_trip_advance
+#: model:ir.model.constraint,message:pb_trip_advance.constraint_pb_trip_advance_recovery_amount_positive
+msgid "What is taken back must be above zero."
+msgstr "Yang ditarik harus di atas nol."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "payslip %s no longer takes it"
+msgstr "slip gaji %s tidak lagi memasukkannya"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "payslip cancelled"
+msgstr "slip gaji dibatalkan"

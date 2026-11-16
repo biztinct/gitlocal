@@ -1,0 +1,761 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 20:47+0000\n"
+"PO-Revision-Date: 2026-11-15 20:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%(amount)s comes off your %(month)s pay."
+msgstr "%(amount)s được trừ vào lương %(month)s của bạn."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%(amount)s paid back directly (%(ref)s)."
+msgstr "%(amount)s đã trả lại trực tiếp (%(ref)s)."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "%s of an unspent trip advance waits for the next pay run so take-home is not below zero"
+msgstr "%s tạm ứng công tác chưa dùng chờ kỳ lương tới để thực lĩnh không dưới 0"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%s pays it back directly."
+msgstr "%s trả lại trực tiếp."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%s was not spent. It comes off your next pay."
+msgstr "%s chưa dùng. Khoản này được trừ vào kỳ lương tới của bạn."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "%s was not spent. Please pay it back to finance."
+msgstr "%s chưa dùng. Vui lòng trả lại cho tài chính."
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pbme_card_advance
+msgid "<span>given</span>"
+msgstr "<span>đã nhận</span>"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pbme_card_advance
+msgid "<span>to pay back</span>"
+msgstr "<span>cần trả lại</span>"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "A trip's cash advance is recorded from the trip."
+msgstr "Tạm ứng công tác được ghi từ chuyến công tác."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__advance_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__advance_id
+msgid "Advance"
+msgstr "Tạm ứng"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__amount
+msgid "Advance given"
+msgstr "Tạm ứng đã đưa"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Advance given: %s"
+msgstr "Tạm ứng đã đưa: %s"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Advance on this trip: %s"
+msgstr "Tạm ứng của chuyến này: %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__amount model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__amount model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__amount
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "An unspent trip advance is in another currency than this pay scheme, so it is not taken back here"
+msgstr "Tạm ứng chưa dùng có loại tiền khác với chính sách lương này nên không thu hồi ở đây"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "An unspent trip advance of %s is not taken back here: this pay scheme is paid from a pay data file. Include it in the file."
+msgstr "Tạm ứng chưa dùng %s không được thu hồi ở đây: chính sách lương này trả theo tệp dữ liệu lương. Hãy đưa vào tệp."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_business_trip
+msgid "Business Trip"
+msgstr "Chuyến công tác"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trips
+msgid "Business Trips Cockpit API"
+msgstr "Bảng chuyến công tác"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__mode__cash
+msgid "Cash"
+msgstr "Tiền mặt"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__pb_advance_ids model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form model_terms:ir.ui.view,arch_db:pb_trip_advance.view_pb_business_trip_form_advance
+msgid "Cash advance"
+msgstr "Tạm ứng"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0 model_terms:ir.ui.view,arch_db:pb_trip_advance.view_pb_business_trip_form_advance
+msgid "Cash advance given"
+msgstr "Đã đưa tạm ứng"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Cash advance of %(amount)s given on %(day)s."
+msgstr "Đã đưa tạm ứng %(amount)s ngày %(day)s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__pb_advance_state
+msgid "Cash advance status"
+msgstr "Trạng thái tạm ứng"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Choose how the unspent part comes back."
+msgstr "Chọn cách thu lại phần chưa dùng."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__claim_id
+msgid "Claim"
+msgstr "Yêu cầu hoàn tiền"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trip_advance_offset
+msgid "Claim set against a trip cash advance"
+msgstr "Yêu cầu được trừ vào tạm ứng công tác"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Claim your receipts for this trip; they are set against the advance when the trip is settled."
+msgstr "Hãy gửi hóa đơn của chuyến này; chúng sẽ được trừ vào tạm ứng khi quyết toán chuyến."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__claimed model_terms:ir.ui.view,arch_db:pb_trip_advance.portal_my_expenses_advances
+msgid "Claimed against it"
+msgstr "Đã chi trừ vào tạm ứng"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Claimed against it (approved, not paid yet): %s"
+msgstr "Đã chi trừ vào tạm ứng (đã duyệt, chưa trả): %s"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form
+msgid "Claims for this trip are set against the advance, oldest first. The person sees what is not spent on their own page straight away; a pay run only takes back what fits, so their take-home never goes below zero."
+msgstr "Các yêu cầu của chuyến này được trừ vào tạm ứng, cũ nhất trước. Nhân viên thấy ngay phần chưa dùng trên trang của mình; kỳ lương chỉ thu phần vừa đủ, nên thực lĩnh không bao giờ dưới 0."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__offset_ids
+msgid "Claims set against it"
+msgstr "Yêu cầu đã trừ vào tạm ứng"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__state__closed
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__company_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__company_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Covered by the cash advance of %s."
+msgstr "Đã được bù bằng tạm ứng của %s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__create_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__create_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__create_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__create_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__create_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__create_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__currency_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__currency_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__currency_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pb_trip_advance_wizard_view_form
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Decide the claims for this trip that are still waiting approval first: %s."
+msgstr "Hãy quyết định trước các yêu cầu của chuyến này đang chờ duyệt: %s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip__display_name model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip_run__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_expense_claim__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__display_name model:ir.model.fields,field_description:pb_trip_advance.field_pb_trips__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__employee_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Thông tin trang chủ nhân viên"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_expense_claim
+msgid "Expense claim"
+msgstr "Yêu cầu hoàn tiền chi phí"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (đối tác)"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__kind__payroll
+msgid "From pay"
+msgstr "Từ lương"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__recover_how__pay
+msgid "From the next pay"
+msgstr "Từ kỳ lương tới"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__state__given model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__mode__given model_terms:ir.ui.view,arch_db:pb_trip_advance.portal_my_expenses_advances
+msgid "Given"
+msgstr "Đã đưa"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__state__released
+msgid "Given back"
+msgstr "Đã trả lại"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Given back: %s."
+msgstr "Đã trả lại: %s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__given_on
+msgid "Given on"
+msgstr "Ngày đưa"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip__id model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip_run__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_expense_claim__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_me_home__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trips__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_has_error model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__state__reserved
+msgid "In a pay run"
+msgstr "Trong một kỳ trả lương"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_is_follower
+msgid "Is Follower"
+msgstr "Đang theo dõi"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "It is taken back from %s's next regular pay."
+msgstr "Thu hồi từ kỳ lương thường kỳ tới của %s."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__write_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__write_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__write_uid model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__write_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_offset__write_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__write_date model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__mode
+msgid "Mode"
+msgstr "Chế độ"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Not counted (not sent, or refused): %s"
+msgstr "Không tính (chưa gửi hoặc bị từ chối): %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__unspent
+msgid "Not spent"
+msgstr "Chưa dùng"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Not spent: %s"
+msgstr "Chưa dùng: %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Nothing is waiting to be paid back on this advance."
+msgstr "Tạm ứng này không có gì chờ trả lại."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Nothing is waiting to be paid back on this trip."
+msgstr "Chuyến này không có gì chờ trả lại."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số việc cần làm"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn lỗi gửi"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__day
+msgid "On"
+msgstr "Ngày"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Only an authorized trip with a cash advance can have it recorded as given."
+msgstr "Chỉ chuyến đã được duyệt có tạm ứng mới ghi nhận đã đưa được."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Only finance or the pay team can do this."
+msgstr "Chỉ tài chính hoặc nhóm lương mới làm được việc này."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Only finance or the pay team can record a repayment."
+msgstr "Chỉ tài chính hoặc nhóm lương mới ghi nhận khoản trả lại được."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Only finance or the pay team can settle a cash advance."
+msgstr "Chỉ tài chính hoặc nhóm lương mới quyết toán tạm ứng được."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__paid_on
+msgid "Paid On"
+msgstr "Ngày trả"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__recover_how__cash
+msgid "Paid back by the person"
+msgstr "Nhân viên tự trả lại"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0 code:addons/pb_trip_advance/models/trip.py:0 model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__kind__cash model_terms:ir.ui.view,arch_db:pb_trip_advance.view_pb_business_trip_form_advance
+msgid "Paid back directly"
+msgstr "Trả lại trực tiếp"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__pay_month
+msgid "Pay Month"
+msgstr "Tháng lương"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Phiếu lương"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__payslip_id
+msgid "Payslip"
+msgstr "Phiếu lương"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Kỳ trả lương"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__preview
+msgid "Preview"
+msgstr "Xem trước"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Record the cash advance as given first."
+msgstr "Hãy ghi nhận đã đưa tạm ứng trước."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__given_by
+msgid "Recorded by"
+msgstr "Người ghi nhận"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__given_ref model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__reference
+msgid "Reference"
+msgstr "Số tham chiếu"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__run_id
+msgid "Run"
+msgstr "Kỳ trả lương"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.pbme_card_advance
+msgid "See my expenses"
+msgstr "Xem chi phí của tôi"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__mode__settle
+msgid "Settle"
+msgstr "Quyết toán"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0 model_terms:ir.ui.view,arch_db:pb_trip_advance.view_pb_business_trip_form_advance
+msgid "Settle the cash advance"
+msgstr "Quyết toán tạm ứng"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__settled_by
+msgid "Settled by"
+msgstr "Người quyết toán"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__settled_on
+msgid "Settled on"
+msgstr "Ngày quyết toán"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance__state__settled
+msgid "Settled — being taken back"
+msgstr "Đã quyết toán — đang thu hồi"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Settled: %(claimed)s claimed against an advance of %(amount)s. Nothing to take back."
+msgstr "Đã quyết toán: %(claimed)s đã chi so với tạm ứng %(amount)s. Không có gì cần thu hồi."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Settled: %(claimed)s claimed against an advance of %(amount)s; %(unspent)s was not spent. %(how)s"
+msgstr "Đã quyết toán: %(claimed)s đã chi so với tạm ứng %(amount)s; %(unspent)s chưa dùng. %(how)s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__extra_due
+msgid "Spent above the advance"
+msgstr "Chi vượt tạm ứng"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Spent above the advance: %s — paid with the claims as usual"
+msgstr "Chi vượt tạm ứng: %s — trả cùng các yêu cầu như thường lệ"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_recovery__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Still to be paid back: %s"
+msgstr "Còn phải trả lại: %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_business_trip__pb_advance_left model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__left
+msgid "Still to take back"
+msgstr "Còn phải thu hồi"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "Still waiting approval (decide these first): %s"
+msgstr "Đang chờ duyệt (hãy quyết định trước): %s"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__recover_how__pay
+msgid "Take it back from the next pay"
+msgstr "Thu hồi từ kỳ lương tới"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__recover_how model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__recovery_ids model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_recovery__state__paid
+msgid "Taken back"
+msgstr "Đã thu hồi"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__recovered
+msgid "Taken back so far"
+msgstr "Đã thu hồi đến nay"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "The day it was given cannot be in the future."
+msgstr "Ngày đưa không thể ở tương lai."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__recover_how
+msgid "The part not spent"
+msgstr "Phần chưa dùng"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields.selection,name:pb_trip_advance.selection__pb_trip_advance_wizard__recover_how__cash
+msgid "The person pays it back directly"
+msgstr "Nhân viên tự trả lại"
+
+#. module: pb_trip_advance
+#: model:ir.model.constraint,message:pb_trip_advance.constraint_pb_trip_advance_recovery_one_per_month
+msgid "This advance is already taken back in that pay month."
+msgstr "Tạm ứng này đã được thu hồi trong tháng lương đó."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "This cash advance is already settled."
+msgstr "Tạm ứng này đã được quyết toán."
+
+#. module: pb_trip_advance
+#: model:ir.model.constraint,message:pb_trip_advance.constraint_pb_trip_advance_one_per_trip
+msgid "This trip already has its cash advance recorded."
+msgstr "Chuyến này đã được ghi nhận tạm ứng."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "This trip's cash advance cannot be recorded now."
+msgstr "Chưa thể ghi nhận tạm ứng của chuyến này."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/trip.py:0
+msgid "This trip's cash advance is already recorded."
+msgstr "Tạm ứng của chuyến này đã được ghi nhận."
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.portal_my_expenses_advances
+msgid "To pay back"
+msgstr "Cần trả lại"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__trip_id model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance_wizard__trip_id
+msgid "Trip"
+msgstr "Chuyến công tác"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_hr_payslip__pb_advance_line_ids
+msgid "Trip advances taken back"
+msgstr "Tạm ứng công tác đã thu hồi"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trip_advance model_terms:ir.ui.view,arch_db:pb_trip_advance.pbme_card_advance
+msgid "Trip cash advance"
+msgstr "Tạm ứng công tác"
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trip_advance_wizard
+msgid "Trip cash advance: given, settled, paid back"
+msgstr "Tạm ứng công tác: đã đưa, quyết toán, trả lại"
+
+#. module: pb_trip_advance
+#: model_terms:ir.ui.view,arch_db:pb_trip_advance.portal_my_expenses_advances
+msgid "Trip cash advances"
+msgstr "Tạm ứng công tác"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "Type an amount above zero and no more than %s (what is still to be paid back and not already in a pay run)."
+msgstr "Nhập số tiền lớn hơn 0 và không quá %s (phần còn phải trả lại và chưa nằm trong kỳ lương nào)."
+
+#. module: pb_trip_advance
+#: model:ir.model,name:pb_trip_advance.model_pb_trip_advance_recovery
+msgid "Unspent trip advance taken back"
+msgstr "Thu hồi tạm ứng công tác chưa dùng"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "Unspent trip advance taken back · %s"
+msgstr "Thu hồi tạm ứng chưa dùng · %s"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "Unspent trip advance taken back: %s"
+msgstr "Thu hồi tạm ứng công tác chưa dùng: %s"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/expense_claim.py:0
+msgid "Waits until the cash advance of trip %s is settled; then only what the advance did not cover is paid."
+msgstr "Chờ đến khi tạm ứng của chuyến %s được quyết toán; sau đó chỉ trả phần tạm ứng chưa bù."
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,field_description:pb_trip_advance.field_pb_trip_advance__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trên trang"
+
+#. module: pb_trip_advance
+#: model:ir.model.fields,help:pb_trip_advance.field_pb_trip_advance__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "What is taken back from pay is recorded by the system."
+msgstr "Khoản thu hồi từ lương do hệ thống ghi nhận."
+
+#. module: pb_trip_advance
+#: model:ir.model.constraint,message:pb_trip_advance.constraint_pb_trip_advance_recovery_amount_positive
+msgid "What is taken back must be above zero."
+msgstr "Khoản thu hồi phải lớn hơn 0."
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/hr_payslip.py:0
+msgid "payslip %s no longer takes it"
+msgstr "phiếu lương %s không còn tính khoản này"
+
+#. module: pb_trip_advance
+#. odoo-python
+#: code:addons/pb_trip_advance/models/advance.py:0
+msgid "payslip cancelled"
+msgstr "phiếu lương đã hủy"

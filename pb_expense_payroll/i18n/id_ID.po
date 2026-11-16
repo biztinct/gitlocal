@@ -1,0 +1,580 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 20:46+0000\n"
+"PO-Revision-Date: 2026-11-15 20:46+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "%(n)s approved claims (%(total)s) are already set to be paid in the pay run. They stay that way whatever you choose here."
+msgstr "%(n)s klaim yang disetujui (%(total)s) sudah diatur untuk dibayar dalam proses penggajian. Klaim itu tetap begitu, apa pun pilihan Anda di sini."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_expense.py:0
+msgid "%(receipt)s is part of claim %(claim)s, which is paid back in the pay run. Finance does not pay it."
+msgstr "%(receipt)s bagian dari klaim %(claim)s, yang dibayar kembali dalam proses penggajian. Keuangan tidak membayarnya."
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.portal_expense_new_pay
+msgid "<span class=\"pbex-next-n\">3</span><span><b>It is paid back in your next pay</b><span>A separate line on your payslip, with no tax. The claim shows which pay it was in.</span></span>"
+msgstr "<span class=\"pbex-next-n\">3</span><span><b>Dibayar kembali bersama gaji Anda berikutnya</b><span>Baris terpisah di slip gaji Anda, tanpa pajak. Klaim menunjukkan di gaji mana dibayar.</span></span>"
+
+#. module: pb_expense_payroll
+#: model:ir.model.constraint,message:pb_expense_payroll.constraint_pb_expense_payline_amount_not_negative
+msgid "A claim paid back cannot be below zero."
+msgstr "Klaim yang dibayar kembali tidak boleh di bawah nol."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_line__pb_extra_kind model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_line_analytics__pb_extra_kind
+msgid "Added after the pay items"
+msgstr "Ditambahkan setelah komponen gaji"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__amount
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "An approved expense claim is in another currency than this pay scheme, so it is not paid here"
+msgstr "Klaim yang disetujui memakai mata uang lain dari skema gaji ini, jadi tidak dibayar di sini"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "An expense claim waits until its trip's cash advance is settled"
+msgstr "Klaim menunggu sampai uang muka perjalanannya diselesaikan"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__paid_by model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__pb_claims_paid_by
+msgid "Approved claims are paid"
+msgstr "Klaim yang disetujui dibayar"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Approved expense claims are not paid here: this payslip has no take-home line"
+msgstr "Klaim yang disetujui tidak dibayar di sini: slip gaji ini tidak punya baris gaji bersih"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Approved expense claims of %s are not in this payslip: this pay scheme is paid from a pay data file. Include them in the file."
+msgstr "Klaim yang disetujui sebesar %s tidak ada di slip gaji ini: skema gaji ini dibayar dari file data gaji. Masukkan ke dalam file."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0 code:addons/pb_expense_payroll/models/pay_setup.py:0 model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_claim__pb_pay_route__finance model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_pay_setup__paid_by__finance model:ir.model.fields.selection,name:pb_expense_payroll.selection__res_company__pb_claims_paid_by__finance
+msgid "By finance"
+msgstr "Oleh keuangan"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,help:pb_expense_payroll.field_res_company__pb_claims_paid_by
+msgid "By finance: finance pays approved claims back as today. In the next pay run: each approved claim is a separate line on the person's next regular payslip, with no tax."
+msgstr "Oleh keuangan: keuangan membayar kembali seperti sekarang. Dalam proses penggajian berikutnya: setiap klaim yang disetujui menjadi baris terpisah di slip gaji reguler berikutnya, tanpa pajak."
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__changed_words
+msgid "Changed Words"
+msgstr "Perubahan"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__pb_claims_paid_by_changed_by
+msgid "Changed by"
+msgstr "Diubah oleh"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__pb_claims_paid_by_changed_on
+msgid "Changed on"
+msgstr "Diubah pada"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__claim_id
+msgid "Claim"
+msgstr "Klaim"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Claim %s has nothing left to pay back."
+msgstr "Klaim %s tidak punya sisa untuk dibayar kembali."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Claim %s is already in a pay run, so it is paid there."
+msgstr "Klaim %s sudah ada dalam proses penggajian, jadi dibayar di sana."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__hr_payslip_line__pb_extra_kind__claim model:ir.model.fields.selection,name:pb_expense_payroll.selection__hr_payslip_line_analytics__pb_extra_kind__claim
+msgid "Claim paid back"
+msgstr "Klaim dibayar kembali"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip__pb_extras_note
+msgid "Claims and advances not taken"
+msgstr "Klaim dan uang muka yang tidak diambil"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip__pb_claim_payline_ids
+msgid "Claims paid back"
+msgstr "Klaim dibayar kembali"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/payline.py:0
+msgid "Claims paid back in pay are recorded by the system."
+msgstr "Klaim yang dibayar lewat gaji dicatat oleh sistem."
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__company_id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Covered by the trip's cash advance"
+msgstr "Ditutup oleh uang muka perjalanan"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Covered by your trip's cash advance. Nothing more comes in your pay for it."
+msgstr "Ditutup oleh uang muka perjalanan Anda. Tidak ada tambahan di gaji Anda untuk klaim ini."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__create_uid model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__create_date model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_expense__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_line__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_run__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claims__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_me_expense__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "Each approved claim becomes a separate line on the person's next regular payslip, added to take-home with no tax. Finance no longer pays those receipts. Top-up and extra runs never take a claim. For pay schemes paid from a pay data file, the claims are listed on the pay run for you to include in the file."
+msgstr "Setiap klaim yang disetujui menjadi baris terpisah di slip gaji reguler berikutnya, ditambahkan ke gaji bersih tanpa pajak. Keuangan tidak lagi membayar struk itu. Proses tambahan dan proses ekstra tidak pernah mengambil klaim. Untuk skema yang dibayar dari file data gaji, klaim dicantumkan di proses penggajian agar Anda masukkan ke file."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_hr_expense
+msgid "Expense"
+msgstr "Pengeluaran"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_expense_claim
+msgid "Expense claim"
+msgstr "Klaim pengeluaran"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_expense_payline
+msgid "Expense claim paid back in pay"
+msgstr "Klaim pengeluaran dibayar lewat gaji"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Expense claim paid back · %s"
+msgstr "Klaim pengeluaran dibayar kembali · %s"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Expense claims could not be added to this payslip; they wait for the next pay run"
+msgstr "Klaim tidak dapat ditambahkan ke slip gaji ini; klaim menunggu proses penggajian berikutnya"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_expense_claims
+msgid "Expense claims list (filter panel)"
+msgstr "Daftar klaim pengeluaran (panel filter)"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Expense claims paid back: %s (no tax)"
+msgstr "Klaim dibayar kembali: %s (tanpa pajak)"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Expenses and trip advances"
+msgstr "Pengeluaran dan uang muka perjalanan"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_me_expense
+msgid "Expenses on the employee pages"
+msgstr "Pengeluaran di halaman karyawan"
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "Finance pays approved claims back, as it does today. Nothing reaches a payslip."
+msgstr "Keuangan membayar kembali klaim yang disetujui seperti sekarang. Tidak ada yang masuk slip gaji."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__state__released
+msgid "Given back"
+msgstr "Dikembalikan"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/payline.py:0
+msgid "Given back: %s."
+msgstr "Dikembalikan: %s."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__kind
+msgid "How"
+msgstr "Cara"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "How a claim is paid back is set by the system when it is approved."
+msgstr "Cara klaim dibayar kembali diatur oleh sistem saat disetujui."
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "How approved claims are paid back"
+msgstr "Cara klaim yang disetujui dibayar kembali"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_expense_pay_setup
+msgid "How approved expense claims are paid back"
+msgstr "Cara klaim yang disetujui dibayar kembali"
+
+#. module: pb_expense_payroll
+#. odoo-javascript
+#: code:addons/pb_expense_payroll/static/src/xml/claims_lens_pay.xml:0 model:ir.actions.act_window,name:pb_expense_payroll.action_pb_expense_pay_setup model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "How claims are paid"
+msgstr "Cara klaim dibayar"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0
+msgid "How it is paid"
+msgstr "Cara dibayar"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_expense__id model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip__id model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_line__id model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_run__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claims__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_me_expense__id model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__state__reserved
+msgid "In a pay run"
+msgstr "Dalam proses penggajian"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "In pay run %s (not finished yet)"
+msgstr "Dalam proses penggajian %s (belum selesai)"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0 model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_claim__pb_pay_route__payrun model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_pay_setup__paid_by__payrun model:ir.model.fields.selection,name:pb_expense_payroll.selection__res_company__pb_claims_paid_by__payrun
+msgid "In the next pay run"
+msgstr "Dalam proses penggajian berikutnya"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0
+msgid "In the pay run"
+msgstr "Dalam proses penggajian"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "In your %s pay. It shows as a separate line on that payslip, with no tax."
+msgstr "Di gaji %s Anda. Tampil sebagai baris terpisah di slip gaji itu, tanpa pajak."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Included in the pay data file by %s."
+msgstr "Dimasukkan ke file data gaji oleh %s."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "It is paid back in your next pay, as a separate line with no tax."
+msgstr "Dibayar kembali bersama gaji Anda berikutnya, sebagai baris terpisah tanpa pajak."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__write_uid model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__write_date model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "Last changed by %(who)s on %(when)s."
+msgstr "Terakhir diubah oleh %(who)s pada %(when)s."
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_claim_view_form_pay
+msgid "Mark this claim as paid in this month's pay data file? Only do this once the amount is in the file."
+msgstr "Tandai klaim ini dibayar di file data gaji bulan ini? Lakukan hanya jika jumlahnya sudah ada di file."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "Not changed yet: finance pays claims back, as it always has."
+msgstr "Belum diubah: keuangan membayar kembali klaim seperti biasa."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__note
+msgid "Note"
+msgstr "Catatan"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Only an approved claim that is paid back in pay can be marked as paid in the pay data file."
+msgstr "Hanya klaim yang disetujui dan dibayar lewat gaji yang bisa ditandai dibayar di file data gaji."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "Only an expense manager or a payroll manager can choose how claims are paid."
+msgstr "Hanya manajer pengeluaran atau manajer penggajian yang dapat memilih cara klaim dibayar."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Only the pay team can say a claim was paid in the pay data file."
+msgstr "Hanya tim penggajian yang dapat menyatakan klaim dibayar di file data gaji."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__state__paid
+msgid "Paid"
+msgstr "Sudah dibayar"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__pb_pay_route
+msgid "Paid back"
+msgstr "Dibayar kembali"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__pb_payline_ids model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_claim_view_form_pay
+msgid "Paid back in pay"
+msgstr "Dibayar kembali lewat gaji"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid back in the pay data file (marked by %s)."
+msgstr "Dibayar kembali di file data gaji (ditandai oleh %s)."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0
+msgid "Paid in pay"
+msgstr "Dibayar lewat gaji"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid in pay run %s"
+msgstr "Dibayar dalam proses penggajian %s"
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_claim_view_form_pay
+msgid "Paid in the pay data file"
+msgstr "Dibayar di file data gaji"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid in the pay data file (%s)"
+msgstr "Dibayar di file data gaji (%s)"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid in your %s pay. It is a separate line on that payslip, with no tax."
+msgstr "Dibayar di gaji %s Anda. Baris terpisah di slip gaji itu, tanpa pajak."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__paid_on
+msgid "Paid on"
+msgstr "Dibayar pada"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid with your %s pay."
+msgstr "Dibayar bersama gaji %s Anda."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid with your pay."
+msgstr "Dibayar bersama gaji Anda."
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Slip gaji"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__kind__file
+msgid "Pay data file"
+msgstr "File data gaji"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__pay_month
+msgid "Pay month"
+msgstr "Bulan gaji"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__run_id model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__kind__payroll
+msgid "Pay run"
+msgstr "Proses penggajian"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__payslip_id
+msgid "Payslip"
+msgstr "Slip gaji"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Proses penggajian"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_hr_payslip_line
+msgid "Payslip Line"
+msgstr "Baris slip gaji"
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,help:pb_expense_payroll.field_pb_expense_claim__pb_pay_route
+msgid "Set when the claim is approved, from the company's setting at that moment. Empty: by finance."
+msgstr "Diatur saat klaim disetujui, dari pengaturan perusahaan saat itu. Kosong: oleh keuangan."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_expense_payroll
+#: model:ir.model.constraint,message:pb_expense_payroll.constraint_pb_expense_payline_one_live_per_claim
+msgid "This claim is already being paid back."
+msgstr "Klaim ini sudah sedang dibayar kembali."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "To pay in the next regular pay run"
+msgstr "Dibayar dalam proses penggajian reguler berikutnya"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0
+msgid "To pay in the pay run"
+msgstr "Untuk dibayar dalam proses penggajian"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__hr_payslip_line__pb_extra_kind__advance model:ir.model.fields.selection,name:pb_expense_payroll.selection__hr_payslip_line_analytics__pb_extra_kind__advance
+msgid "Trip advance taken back"
+msgstr "Uang muka perjalanan ditarik kembali"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__kind__advance
+msgid "Trip cash advance"
+msgstr "Uang muka perjalanan"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__waiting_words
+msgid "Waiting Words"
+msgstr "Menunggu"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__pb_pay_words
+msgid "Where the money is"
+msgstr "Posisi uangnya"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "You do not work for %s."
+msgstr "Anda tidak bekerja untuk %s."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "it could not be added to payslip %s"
+msgstr "tidak dapat ditambahkan ke slip gaji %s"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "pay run deleted"
+msgstr "proses penggajian dihapus"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "payslip %s no longer takes it"
+msgstr "slip gaji %s tidak lagi memasukkannya"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/payline.py:0
+msgid "payslip cancelled"
+msgstr "slip gaji dibatalkan"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "payslip deleted"
+msgstr "slip gaji dihapus"
