@@ -75,7 +75,8 @@ and two database backups. The post-upgrade pre-update backup is
 Source SHA-256:
 `c8e6f5ecca6214c4b6faa88b6d45ee0c13c110af6c520ea58c27e578331cf7b1`.
 
-Chrome screen verification was attempted, but the computer-use guard blocked
-interaction because another user/session was changing Chrome. No UI verification
-is claimed for this follow-up. Database verification and report validation
-completed successfully. No PNG or screenshot files were generated.
+Chrome verification completed after the owner made the browser available.
+The live employee form showed the corrected reporting manager and a second
+employee form showed the revised global employee number. The local report was
+refreshed in Chrome, showed the 16 November date and new outstanding questions,
+and passed visual inspection. No screenshot or PNG files were saved or retained.
