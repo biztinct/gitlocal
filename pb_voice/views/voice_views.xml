@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         Employee voice — the native screens behind the Talent › Voice board:
+         setting a round up, the question library, action plans. The board
+         itself (results, who can answer) is the OWL lens in static/.
+         There is NO screen, list or export of answers: none exists.
+         ================================================================== -->
+
+    <!-- ============================ the library ============================ -->
+    <record id="view_pb_voice_library_list" model="ir.ui.view">
+        <field name="name">pb.voice.library.list</field>
+        <field name="model">pb.voice.library</field>
+        <field name="arch" type="xml">
+            <list string="Question library" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="text"/>
+                <field name="kind"/>
+                <field name="theme"/>
+                <field name="options" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_voice_library_search" model="ir.ui.view">
+        <field name="name">pb.voice.library.search</field>
+        <field name="model">pb.voice.library</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="text"/>
+                <filter name="archived" string="Switched off" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="by_theme" string="Theme" context="{'group_by': 'theme'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_voice_library" model="ir.actions.act_window">
+        <field name="name">Survey question library</field>
+        <field name="res_model">pb.voice.library</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_by_theme': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No questions in the library</p>
+            <p>Ready-made questions HR can add to a survey. Every company can add its own.</p>
+        </field>
+    </record>
+
+    <record id="view_pb_voice_library_pick_form" model="ir.ui.view">
+        <field name="name">pb.voice.library.pick.form</field>
+        <field name="model">pb.voice.library.pick</field>
+        <field name="arch" type="xml">
+            <form string="Add from the library">
+                <field name="round_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <p class="text-muted">Tick the questions to add. Their words come in every language this system uses.</p>
+                <field name="library_ids" widget="many2many_checkboxes"/>
+                <footer>
+                    <button name="action_add" type="object" string="Add" class="btn-primary"/>
+                    <button name="action_add_values" type="object" string="Add our company values"
+                            invisible="not has_values"/>
+                    <field name="has_values" invisible="1"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_voice_library_pick" model="ir.actions.act_window">
+        <field name="name">Add from the library</field>
+        <field name="res_model">pb.voice.library.pick</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ============================== a round ============================== -->
+    <record id="view_pb_voice_round_form" model="ir.ui.view">
+        <field name="name">pb.voice.round.form</field>
+        <field name="model">pb.voice.round</field>
+        <field name="arch" type="xml">
+            <form string="Survey">
+                <header>
+                    <button name="action_open" type="object" string="Send out"
+                            class="btn-primary" invisible="state != 'draft'"
+                            confirm="Send this survey out now? Its questions and who is asked cannot change afterwards."/>
+                    <button name="%(pb_voice.action_pb_voice_library_pick)d" type="action"
+                            string="Add from the library" invisible="state != 'draft'"
+                            context="{'default_round_id': id}"/>
+                    <button name="action_close" type="object" string="Close now"
+                            invisible="state != 'open'"
+                            confirm="Close this survey now? Nobody can answer afterwards, and the results open."/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info mb-3" role="status">
+                        <span>Answers are anonymous: nobody, not even HR, can see who said what. Results and comments show only for groups with at least the number of answers below (never fewer than 5), and only after the survey closes.</span>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="How are we doing?"/></h1>
+                    </div>
+                    <group>
+                        <group string="Who is asked">
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                            <field name="company_ids" widget="many2many_tags" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                            <field name="department_ids" widget="many2many_tags" readonly="state != 'draft'"/>
+                            <field name="invited_count" invisible="state == 'draft'"/>
+                        </group>
+                        <group string="When">
+                            <field name="date_start" invisible="state == 'draft'"/>
+                            <field name="date_end" readonly="state == 'closed'"/>
+                            <field name="date_closed" invisible="state != 'closed'"/>
+                            <field name="floor" readonly="state != 'draft'"/>
+                            <field name="remind" readonly="state == 'closed'"/>
+                            <field name="remind_every" invisible="not remind" readonly="state == 'closed'"/>
+                        </group>
+                    </group>
+                    <field name="intro" placeholder="A word to everyone, shown at the top of the survey (optional)."/>
+                    <notebook>
+                        <page string="Questions" name="questions">
+                            <field name="question_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="text"/>
+                                    <field name="kind"/>
+                                    <field name="theme"/>
+                                    <field name="options" optional="show"
+                                           placeholder="One option per line"
+                                           invisible="kind != 'choice'" required="kind == 'choice'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_voice_round_list" model="ir.ui.view">
+        <field name="name">pb.voice.round.list</field>
+        <field name="model">pb.voice.round</field>
+        <field name="arch" type="xml">
+            <list string="Surveys">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="invited_count"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_voice_round" model="ir.actions.act_window">
+        <field name="name">Surveys</field>
+        <field name="res_model">pb.voice.round</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- =========================== action plans =========================== -->
+    <record id="view_pb_voice_action_form" model="ir.ui.view">
+        <field name="name">pb.voice.action.form</field>
+        <field name="model">pb.voice.action</field>
+        <field name="arch" type="xml">
+            <form string="Action plan">
+                <header>
+                    <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="What we will do"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="round_id" groups="hr.group_hr_user,base.group_system"/>
+                            <field name="round_name" groups="!hr.group_hr_user"/>
+                            <field name="theme"/>
+                        </group>
+                        <group>
+                            <field name="owner_id"/>
+                            <field name="date_due"/>
+                        </group>
+                    </group>
+                    <field name="progress" placeholder="Progress so far"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_voice_action_list" model="ir.ui.view">
+        <field name="name">pb.voice.action.list</field>
+        <field name="model">pb.voice.action</field>
+        <field name="arch" type="xml">
+            <list string="Action plans">
+                <field name="name"/>
+                <field name="round_name"/>
+                <field name="theme"/>
+                <field name="owner_id"/>
+                <field name="date_due"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_voice_action" model="ir.actions.act_window">
+        <field name="name">Survey action plans</field>
+        <field name="res_model">pb.voice.action</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- The board on its own page (the ⌘K rows open the Talent tab instead). -->
+    <record id="action_pb_voice_board" model="ir.actions.client">
+        <field name="name">Employee voice</field>
+        <field name="tag">pb_voice_board</field>
+    </record>
+
+</odoo>

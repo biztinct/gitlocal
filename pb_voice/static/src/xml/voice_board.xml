@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Talent › Voice. Comments ruled with `=`, never a doubled hyphen.
+       Loop names: rw (rounds), tb (tabs), qq (questions), gp (groups),
+       th (themes), ds (distribution), cm (comment blocks), ci (comment),
+       pl (plans), ow (owners), wn (names without a login).
+       ==================================================================== -->
+  <t t-name="pb_voice.PbVoiceBoard">
+    <div class="pbim pbim-page pbvo" t-att-class="{ 'pbvo--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the surveys…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+        <div t-if="!state.allowed" class="pbim-panel pbvo-locked">
+          <div class="pbvo-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for HR</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+          <!-- ===================== header ===================== -->
+          <div class="pbvo-head">
+            <div class="pbvo-head-id">
+              <h1 class="pbim-h1">Employee voice</h1>
+              <p class="pbim-sub">Short anonymous surveys. Nobody, not even HR, can see who said what; results show only for groups of 5 or more answers.</p>
+            </div>
+            <div class="pbvo-head-actions">
+              <button class="pbim-btn ghost" t-on-click="load" title="Read the board again" aria-label="Read the board again"><t t-out="icon('refresh', 15)"/></button>
+              <button class="pbim-btn ghost" t-on-click="openLibrary"><t t-out="icon('bookOpen', 15)"/> Question library</button>
+              <button class="pbim-btn" t-on-click="newRound"><t t-out="icon('plus', 15)"/> New survey</button>
+            </div>
+          </div>
+
+          <div t-if="!state.mailOn" class="pbvo-note" role="status">
+            <span class="pbvo-note-ic"><t t-out="icon('info', 16)"/></span>
+            <span>This system does not send email, so invitations and reminders show on people's My Payobook home, under "Needs you", until they answer.</span>
+          </div>
+
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+
+          <!-- ===================== the rounds ===================== -->
+          <div t-if="rounds.length" class="pbvo-rounds">
+            <article t-foreach="rounds" t-as="rw" t-key="rw.id" class="pbvo-round" tabindex="0"
+                     t-att-class="{ 'is-open': state.round and state.round.id === rw.id, ['is-' + rw.state]: true }"
+                     t-on-click="() => this.openRound(rw)" t-on-keydown="(ev) => ev.key === 'Enter' and this.openRound(rw)">
+              <header class="pbvo-round-head">
+                <span class="pbvo-round-ic"><t t-out="icon('messageSquare', 18)"/></span>
+                <div class="pbvo-round-id">
+                  <b t-esc="rw.name"/>
+                  <small><t t-esc="rw.companies"/><t t-if="rw.questions"> · <t t-esc="rw.questions"/> questions</t></small>
+                </div>
+                <span class="pbim-badge pbvo-badge" t-att-class="'is-' + rw.state" t-esc="rw.state_label"/>
+              </header>
+              <div t-if="rw.state !== 'draft'" class="pbvo-round-bar">
+                <span class="pbvo-bar"><i t-att-style="barStyle(rw.rate)"/></span>
+                <small><b t-esc="rw.answered"/> of <t t-esc="rw.invited"/> answered · <t t-esc="rw.rate"/>%</small>
+              </div>
+              <footer class="pbvo-round-foot">
+                <span t-if="rw.state === 'draft'">Not sent out yet</span>
+                <span t-elif="rw.state === 'open'">Closes <t t-esc="rw.date_end"/></span>
+                <span t-else=""><t t-esc="rw.result_label"/> · closed <t t-esc="rw.date_closed"/></span>
+                <span t-if="rw.actions" class="pbvo-chip"><t t-out="icon('listChecks', 13)"/> <t t-esc="rw.actions"/></span>
+              </footer>
+            </article>
+          </div>
+          <div t-elif="!state.rounds.length" class="pbim-empty pbvo-empty">
+            <div class="pbvo-empty-ic"><t t-out="icon('messageSquare', 30)"/></div>
+            <h3>No survey yet</h3>
+            <p>Ask how it is going: pick a few questions from the library, choose who is asked and when it closes. People answer on My Payobook, anonymously.</p>
+            <button class="pbim-btn" t-on-click="newRound"><t t-out="icon('plus', 14)"/> New survey</button>
+          </div>
+          <div t-else="" class="pbim-empty pbvo-empty">
+            <p>No survey matches. Press the number again to see every survey.</p>
+          </div>
+
+          <!-- ===================== the drawer ===================== -->
+          <div t-if="state.round" class="pbvo-scrim" t-on-click="closeRound"/>
+          <aside t-if="state.round" class="pbvo-drawer" role="dialog" aria-modal="true" aria-label="Survey"
+                 t-att-class="{ 'is-busy': state.roundBusy }">
+            <t t-set="R" t-value="state.round"/>
+            <header class="pbvo-dr-head">
+              <div class="pbvo-dr-id">
+                <span class="pbvo-round-ic lg"><t t-out="icon('messageSquare', 20)"/></span>
+                <div>
+                  <h2 t-esc="R.name"/>
+                  <p><t t-esc="R.companies"/><t t-if="R.date_start"> · sent out <t t-esc="R.date_start"/></t></p>
+                </div>
+              </div>
+              <div class="pbvo-dr-tools">
+                <span class="pbim-badge pbvo-badge" t-att-class="'is-' + R.state" t-esc="R.state_label"/>
+                <button class="pbim-btn-sm ghost" t-on-click="closeRound" aria-label="Close"><t t-out="icon('x', 15)"/></button>
+              </div>
+            </header>
+
+            <div t-if="R.loading" class="pbim-busy"><div class="pbim-spin"/></div>
+            <t t-else="">
+              <nav class="pbvo-tabs" role="tablist">
+                <button t-foreach="tabs" t-as="tb" t-key="tb.key" type="button" role="tab" class="pbvo-tab"
+                        t-att-class="{ on: state.tab === tb.key }" t-att-aria-selected="state.tab === tb.key ? 'true' : 'false'"
+                        t-on-click="() => this.pickTab(tb.key)" t-esc="tb.label"/>
+              </nav>
+
+              <div class="pbvo-dr-body">
+                <!-- ============ overview ============ -->
+                <t t-if="state.tab === 'overview'">
+                  <section class="pbvo-hero">
+                    <div class="pbvo-hero-cell"><span class="pbvo-k">Asked</span><b t-esc="R.state === 'draft' ? R.who.asked : R.invited"/></div>
+                    <div class="pbvo-hero-cell"><span class="pbvo-k">Answered</span><b t-esc="R.state === 'draft' ? '-' : R.answered"/></div>
+                    <div t-if="R.state === 'closed'" class="pbvo-hero-cell"><span class="pbvo-k">Closed</span><b class="sm" t-esc="R.date_closed"/></div>
+                    <div t-else="" class="pbvo-hero-cell"><span class="pbvo-k">Closes</span><b class="sm" t-esc="R.date_end"/></div>
+                    <div class="pbvo-hero-cell"><span class="pbvo-k">Smallest group shown</span><b t-esc="R.floor"/></div>
+                  </section>
+                  <p t-if="R.state === 'open'" class="pbvo-line"><t t-out="icon('lock', 14)"/> Answers wait sealed until the survey closes, then go in all at once. Results open then.</p>
+                  <p t-if="R.state === 'open' and R.remind" class="pbvo-line"><t t-out="icon('bell', 14)"/>
+                    <t t-if="R.who.mail_on">Reminders by email every <t t-esc="R.remind_every"/> days to people who have not answered.</t>
+                    <t t-else="">No email here: people see the survey under "Needs you" on their home page until they answer.</t>
+                  </p>
+                  <h3 class="pbvo-h3">Questions</h3>
+                  <ol class="pbvo-qs">
+                    <li t-foreach="R.questions_list" t-as="qq" t-key="qq.id">
+                      <span t-esc="qq.text"/>
+                      <small><t t-esc="qq.kind_label"/> · <t t-esc="qq.theme_label"/></small>
+                    </li>
+                  </ol>
+                  <p t-if="!R.questions_list.length" class="pbvo-muted">No questions yet. Press Edit, then "Add from the library".</p>
+                  <div class="pbvo-dr-actions">
+                    <button t-if="R.state !== 'closed'" class="pbim-btn ghost" t-on-click="editRound"><t t-out="icon('pencil', 14)"/> Edit</button>
+                    <button t-if="R.state === 'draft'" class="pbim-btn" t-on-click="() => this.ask('open')"><t t-out="icon('send', 14)"/> Send out</button>
+                    <button t-if="R.state === 'open'" class="pbim-btn" t-on-click="() => this.ask('close')"><t t-out="icon('lock', 14)"/> Close now</button>
+                    <button class="pbim-btn ghost" t-on-click="() => this.ask('copy')"><t t-out="icon('copy', 14)"/> Copy</button>
+                    <button t-if="R.state === 'draft'" class="pbim-btn ghost" t-on-click="() => this.ask('delete')"><t t-out="icon('trash', 14)"/> Delete</button>
+                  </div>
+                </t>
+
+                <!-- ============ who can answer ============ -->
+                <t t-if="state.tab === 'who'">
+                  <section class="pbvo-hero">
+                    <div class="pbvo-hero-cell"><span class="pbvo-k">Asked</span><b t-esc="R.who.asked"/></div>
+                    <div class="pbvo-hero-cell"><span class="pbvo-k">Can sign in</span><b t-esc="R.who.with_login"/></div>
+                    <div class="pbvo-hero-cell" t-att-class="{ 'is-amber': R.who.without_login }"><span class="pbvo-k">No login yet</span><b t-esc="R.who.without_login"/></div>
+                  </section>
+                  <p class="pbvo-line"><t t-out="icon('info', 14)"/> People answer on My Payobook only. Somebody with no login cannot answer until they get one.</p>
+                  <div t-if="R.who.without_login" class="pbvo-panel">
+                    <div class="pbvo-panel-head">
+                      <b>No login yet</b>
+                      <button class="pbim-btn pbim-btn-sm" t-on-click="openAccess"><t t-out="icon('printer', 14)"/> Make sign-in slips</button>
+                    </div>
+                    <p class="pbvo-muted">On the Access screen, open People and press "Logins for workers": each person signs in with their employee code and a first password printed on a slip.</p>
+                    <ul class="pbvo-names">
+                      <li t-foreach="R.who.without_names" t-as="wn" t-key="wn.id"><b t-esc="wn.name"/><small t-if="wn.department" t-esc="wn.department"/></li>
+                    </ul>
+                    <p t-if="R.who.without_more" class="pbvo-muted">and <t t-esc="R.who.without_more"/> more.</p>
+                  </div>
+                  <p t-if="R.who.no_email" class="pbvo-line"><t t-out="icon('mail', 14)"/> <t t-esc="R.who.no_email"/> people with a login have no email: they see the survey on their home page.</p>
+                  <p t-if="R.state === 'draft' and R.who.asked &lt; R.who.floor" class="pbvo-line is-rose"><t t-out="icon('alert', 14)"/> A survey needs at least <t t-esc="R.who.floor"/> people, so nobody's answers can be picked out.</p>
+                </t>
+
+                <!-- ============ results ============ -->
+                <t t-if="state.tab === 'results'">
+                  <div t-if="state.resultsBusy and !state.results" class="pbim-busy"><div class="pbim-spin"/></div>
+                  <t t-elif="state.results">
+                    <t t-set="RS" t-value="state.results"/>
+                    <div t-if="RS.state !== 'shown'" class="pbvo-panel pbvo-quiet"><t t-out="icon('eyeOff', 18)"/> <span t-esc="RS.why"/></div>
+                    <t t-else="">
+                      <div class="pbvo-res-bar">
+                        <label class="pbvo-pick">
+                          <span class="pbvo-k">Show results for</span>
+                          <select class="pbim-input" t-on-change="pickGroup">
+                            <option t-foreach="RS.groups" t-as="gp" t-key="gp.id" t-att-value="gp.id" t-att-selected="gp.id === state.group" t-esc="groupLabel(gp)"/>
+                          </select>
+                        </label>
+                        <a class="pbim-btn ghost pbim-btn-sm" t-att-href="downloadUrl()" target="_blank"><t t-out="icon('download', 14)"/> Excel</a>
+                      </div>
+                      <div t-if="!RS.figures" class="pbvo-panel pbvo-quiet"><t t-out="icon('eyeOff', 18)"/> <span t-esc="RS.hidden_why"/></div>
+                      <t t-else="">
+                        <t t-set="FG" t-value="RS.figures"/>
+                        <section class="pbvo-hero">
+                          <div class="pbvo-hero-cell"><span class="pbvo-k">Answered</span><b><t t-esc="RS.group.answered"/> of <t t-esc="RS.group.invited"/></b><small t-esc="pct(FG.rate)"/></div>
+                          <div t-if="FG.enps" class="pbvo-hero-cell"><span class="pbvo-k">Would recommend</span><b t-esc="signed(FG.enps.score)"/>
+                            <small><t t-esc="pct(FG.enps.promoters)"/> yes · <t t-esc="pct(FG.enps.passives)"/> maybe · <t t-esc="pct(FG.enps.detractors)"/> no</small></div>
+                        </section>
+                        <h3 class="pbvo-h3">By theme <small>share who agree</small></h3>
+                        <ul class="pbvo-themes">
+                          <li t-foreach="FG.themes" t-as="th" t-key="th.theme" t-att-class="{ 'is-low': th.favourable &lt; 50 }">
+                            <span class="pbvo-theme-n" t-esc="th.label"/>
+                            <span class="pbvo-bar"><i t-att-style="barStyle(th.favourable)"/></span>
+                            <b t-esc="pct(th.favourable)"/>
+                            <button class="pbim-btn-sm ghost" t-on-click="() => { this.state.tab = 'plans'; this.newPlan(th.theme); }" title="Plan an action on this theme"><t t-out="icon('plus', 13)"/></button>
+                          </li>
+                        </ul>
+                        <h3 class="pbvo-h3">Question by question</h3>
+                        <div t-foreach="FG.questions" t-as="qq" t-key="qq.id" class="pbvo-q">
+                          <div class="pbvo-q-t"><span t-esc="qq.text"/><small t-esc="qq.theme_label"/></div>
+                          <t t-if="qq.kind === 'scale'">
+                            <div class="pbvo-stack" role="img" t-att-aria-label="pct(qq.favourable)">
+                              <i t-foreach="qq.dist" t-as="ds" t-key="ds.v" t-att-class="'s' + ds.v" t-att-style="barStyle(ds.pct)" t-att-title="ds.label + ': ' + ds.pct + '%'"/>
+                            </div>
+                            <small class="pbvo-muted"><t t-esc="pct(qq.favourable)"/> agree · average <t t-esc="qq.avg"/> of 5</small>
+                          </t>
+                          <t t-elif="qq.kind === 'enps'">
+                            <small class="pbvo-muted">Score <t t-esc="signed(qq.score)"/>: <t t-esc="pct(qq.promoters)"/> would recommend (9-10), <t t-esc="pct(qq.detractors)"/> would not (0-6)</small>
+                          </t>
+                          <ul t-elif="qq.kind === 'choice'" class="pbvo-dist">
+                            <li t-foreach="qq.dist" t-as="ds" t-key="ds.v"><span t-esc="ds.label"/><span class="pbvo-bar"><i t-att-style="barStyle(ds.pct)"/></span><b t-esc="pct(ds.pct)"/></li>
+                          </ul>
+                        </div>
+                        <t t-if="FG.comments and FG.comments.length">
+                          <h3 class="pbvo-h3">Written comments <small>HR only</small></h3>
+                          <div t-foreach="FG.comments" t-as="cm" t-key="cm_index" class="pbvo-comments">
+                            <b t-esc="cm.question"/>
+                            <blockquote t-foreach="cm.items" t-as="ci" t-key="ci_index" t-esc="ci"/>
+                          </div>
+                        </t>
+                      </t>
+                    </t>
+                  </t>
+                </t>
+
+                <!-- ============ action plans ============ -->
+                <t t-if="state.tab === 'plans'">
+                  <div class="pbvo-panel-head">
+                    <b>What we will do</b>
+                    <button t-if="!state.plan" class="pbim-btn pbim-btn-sm" t-on-click="() => this.newPlan()"><t t-out="icon('plus', 14)"/> New action plan</button>
+                  </div>
+                  <div t-if="state.plan" class="pbvo-panel pbvo-plan-form">
+                    <label class="pbvo-field"><span class="pbvo-k">What we will do</span>
+                      <input class="pbim-input" t-att-value="state.plan.name" t-on-input="(ev) => this.onPlan('name', ev)" maxlength="200" placeholder="Monthly team catch-ups with every manager"/></label>
+                    <label class="pbvo-field"><span class="pbvo-k">Theme</span>
+                      <select class="pbim-input" t-on-change="(ev) => this.onPlan('theme', ev)">
+                        <option t-foreach="R.themes" t-as="th" t-key="th.key" t-att-value="th.key" t-att-selected="th.key === state.plan.theme" t-esc="th.label"/>
+                      </select></label>
+                    <label class="pbvo-field pbvo-owner"><span class="pbvo-k">Owner</span>
+                      <input class="pbim-input" t-att-value="state.plan.owner" t-on-input="onOwnerSearch" placeholder="Type a name"/>
+                      <ul t-if="state.owners.length" class="pbvo-owners">
+                        <li t-foreach="state.owners" t-as="ow" t-key="ow.id"><button type="button" t-on-click="() => this.pickOwner(ow)" t-esc="ow.name"/></li>
+                      </ul></label>
+                    <label class="pbvo-field"><span class="pbvo-k">Due</span>
+                      <input type="date" class="pbim-input" t-att-value="state.plan.date_due" t-on-change="(ev) => this.onPlan('date_due', ev)"/></label>
+                    <label t-if="state.plan.id" class="pbvo-field"><span class="pbvo-k">Status</span>
+                      <select class="pbim-input" t-on-change="(ev) => this.onPlan('state', ev)">
+                        <option value="open" t-att-selected="state.plan.state === 'open'">To do</option>
+                        <option value="doing" t-att-selected="state.plan.state === 'doing'">Under way</option>
+                        <option value="done" t-att-selected="state.plan.state === 'done'">Done</option>
+                      </select></label>
+                    <div class="pbvo-dr-actions">
+                      <button class="pbim-btn" t-att-disabled="state.planBusy" t-on-click="savePlan">Save</button>
+                      <button class="pbim-btn ghost" t-on-click="cancelPlan">Cancel</button>
+                    </div>
+                  </div>
+                  <t t-set="PL" t-value="(state.results and state.results.actions) || R.actions_list"/>
+                  <ul t-if="PL.length" class="pbvo-plans">
+                    <li t-foreach="PL" t-as="pl" t-key="pl.id" t-on-click="() => this.editPlan(pl)" tabindex="0">
+                      <span class="pbvo-plan-ic"><t t-out="icon('listChecks', 15)"/></span>
+                      <span class="pbvo-plan-tx"><b t-esc="pl.name"/><small><t t-esc="pl.theme_label"/> · <t t-esc="pl.owner"/><t t-if="pl.date_due"> · due <t t-esc="pl.date_due_label"/></t></small></span>
+                      <span class="pbim-badge pbvo-badge" t-att-class="pl.overdue ? 'is-late' : 'is-' + pl.state"><t t-if="pl.overdue">Late</t><t t-else="" t-esc="pl.state_label"/></span>
+                    </li>
+                  </ul>
+                  <p t-elif="!state.plan" class="pbvo-muted">No action plan yet. Pick a theme in the results and press +, or start one here.</p>
+                </t>
+              </div>
+            </t>
+
+            <!-- ============ confirm ============ -->
+            <div t-if="state.confirm" class="pbvo-confirm" role="alertdialog" aria-modal="true">
+              <h3 t-esc="state.confirm.title"/>
+              <p t-esc="state.confirm.body"/>
+              <div class="pbvo-dr-actions">
+                <button class="pbim-btn" t-att-disabled="state.roundBusy" t-on-click="doAsk" t-esc="state.confirm.button"/>
+                <button class="pbim-btn ghost" t-on-click="cancelAsk">Cancel</button>
+              </div>
+            </div>
+          </aside>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>
