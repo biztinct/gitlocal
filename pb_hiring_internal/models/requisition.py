@@ -51,6 +51,22 @@ def job_paused(job):
         return False
 
 
+def role_paused(req):
+    """C-2 for one role: its job's answer, or — for a role with no job record
+    yet — its team's answer (`hr.department.pb_hiring_paused`, S8-C), both
+    probed."""
+    req = req.sudo()
+    if req.job_id:
+        return job_paused(req.job_id)
+    dept = req.department_id
+    if not dept or PAUSED_FIELD not in dept._fields:
+        return False
+    try:
+        return bool(dept[PAUSED_FIELD])
+    except Exception:                   # noqa: BLE001 — a probe never fails a page
+        return False
+
+
 class HiringRequisitionStaff(models.Model):
     _inherit = 'pb.hiring.requisition'
 
@@ -95,7 +111,7 @@ class HiringRequisitionStaff(models.Model):
             and req.pb_staff_posting in OPEN_TO_STAFF
             and req.role_type not in NEVER_TO_STAFF
             and not req.is_confidential
-            and not job_paused(req.job_id))
+            and not role_paused(req))
 
     def _pbhi_title(self):
         self.ensure_one()

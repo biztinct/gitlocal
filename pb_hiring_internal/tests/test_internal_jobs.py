@@ -79,6 +79,15 @@ class TestInternalJobs(TransactionCase):
                 self._apply()
         self.assertIn(self.role_both, self.Req._pbhi_roles_for(self.mover))
 
+    # B3c — a role with no job record yet follows its TEAM's pause answer
+    # (S8-C's hr.department.pb_hiring_paused; simulated on a boolean the team has)
+    def test_b03c_pause_probe_team_without_job(self):
+        role = self.make_role('DEMO S6B No job yet')
+        role.sudo().write({'job_id': False})
+        self.assertIn(role, self.Req._pbhi_roles_for(self.mover))
+        with patch.object(req_mod, 'PAUSED_FIELD', 'active'):
+            self.assertNotIn(role, self.Req._pbhi_roles_for(self.mover))
+
     # B4 — applying uses the existing record, never a new employee
     def test_b04_apply_with_own_record(self):
         employees = self.env['hr.employee'].sudo().search_count([])

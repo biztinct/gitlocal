@@ -13,7 +13,7 @@ from odoo.tools.misc import format_date
 
 from odoo.addons.pb_hiring.models.hiring_common import as_id
 
-from .requisition import STAFF_POSTING, job_paused
+from .requisition import STAFF_POSTING, role_paused
 
 #: How many staff applications the board lists.
 BOARD_LIMIT = 200
@@ -64,7 +64,7 @@ class PbHiringInternal(models.AbstractModel):
             'posting': r.pb_staff_posting,
             'posting_label': labels.get(r.pb_staff_posting, ''),
             'published': bool(r.published),
-            'paused': job_paused(r.job_id),
+            'paused': role_paused(r),
             'confidential': bool(r.is_confidential),
             'quiet_replacement': r.role_type == 'sensitive_replacement',
             'staff_applications': staff_apps.get(r.id, 0),

@@ -95,6 +95,7 @@ class TestInternalMove(base.JoiningCase):
         self.assertEqual(vals['department_id'], self.dept.id)
         self.assertEqual(vals['parent_id'], self.boss.id)
         self.assertEqual(vals['source'], 'internal_hire')
+        self.assertEqual(vals['reason_kind'], 'transfer')
         self.assertEqual(vals['source_ref'], offer.name)
         self.assertIn('effective_date', vals)
         self.assertEqual(vals.get('wage'), 25000000.0)

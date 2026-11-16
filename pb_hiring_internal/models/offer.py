@@ -155,6 +155,7 @@ class HiringOfferInternal(models.Model):
             or offer.start_date or False,
             'reason': _('Moved to %(role)s through an internal application.',
                         role=req.title or job.name or ''),
+            'reason_kind': 'transfer',
             'source': 'internal_hire',
             'source_ref': offer.name or '',
         }
