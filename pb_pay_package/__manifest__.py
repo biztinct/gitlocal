@@ -15,8 +15,12 @@ Nothing is saved by this screen. "Use these figures" puts them into the open
 contract; the contract's own Save sends them for approval like any other pay
 change. Works for any pay scheme that has a basic pay item and an item that
 can take the rest, and says plainly when a scheme cannot.
+
+The same box is on a Hiring offer: the split becomes the offer's monthly pay
+lines, so the offer letter shows basic pay and allowances, and the contract
+starts with them when the person joins.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -24,13 +28,16 @@ can take the rest, and says plainly when a scheme cannot.
     'depends': [
         'pb_formula_studio',   # the W2-C engine and search, reused as-is
         'pb_contracts',        # the contract drawer that opens the card
+        'pb_hiring',           # WDGAP S8-D: the offer panel opens it too
     ],
     'data': [],
     'assets': {
         'web.assets_backend': [
             'pb_pay_package/static/src/scss/build_total.scss',
             'pb_pay_package/static/src/js/build_total.js',
+            'pb_pay_package/static/src/js/offer_total.js',
             'pb_pay_package/static/src/xml/build_total.xml',
+            'pb_pay_package/static/src/xml/offer_total.xml',
         ],
     },
     'installable': True,

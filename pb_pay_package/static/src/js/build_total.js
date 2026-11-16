@@ -28,7 +28,10 @@ function parseAmount(text) {
 export class BuildTotalCard extends Component {
     static template = "pb_pay_package.BuildTotalCard";
     static props = {
-        contractId: { type: Number },
+        // One of the two: a contract (S8-A, the contract drawer) or a hiring
+        // offer (WDGAP S8-D, SC3 — "Use these figures" writes the offer's lines).
+        contractId: { type: Number, optional: true },
+        offerId: { type: Number, optional: true },
         onUse: { type: Function, optional: true },
         onClose: { type: Function },
     };
@@ -52,10 +55,14 @@ export class BuildTotalCard extends Component {
 
     ic(n, s = 16) { return ic(n, s); }
 
+    get isOffer() { return Boolean(this.props.offerId); }
+    get subjectId() { return this.isOffer ? this.props.offerId : this.props.contractId; }
+
     async open() {
         this.state.loading = true;
         try {
-            const ctx = await this.orm.call(MODEL, "package_open", [this.props.contractId, this.state.schemeId || false]);
+            const ctx = await this.orm.call(MODEL, this.isOffer ? "offer_open" : "package_open",
+                                            [this.subjectId, this.state.schemeId || false]);
             if (!ctx.ok) {
                 this.state.error = ctx.msg;
             } else {
@@ -121,26 +128,50 @@ export class BuildTotalCard extends Component {
     }
     toggleOnly() { this.state.onlyChanged = !this.state.onlyChanged; }
 
+    _args() {
+        const basicValue = this.state.mode === "share"
+            ? parseAmount(this.state.share) : parseAmount(this.state.basicAmount);
+        return {
+            total: parseAmount(this.state.total), period: this.state.period,
+            basic_mode: this.state.mode, basic_value: basicValue || 0,
+            basic_code: this.state.basic, balance_code: this.state.balance,
+            config_id: this.state.schemeId || false,
+        };
+    }
+
     async solve() {
         if (!this.canSolve) { return; }
         this.state.busy = true;
         try {
-            const basicValue = this.state.mode === "share"
-                ? parseAmount(this.state.share) : parseAmount(this.state.basicAmount);
-            this.state.r = await this.orm.call(MODEL, "package_solve", [this.props.contractId], {
-                total: parseAmount(this.state.total), period: this.state.period,
-                basic_mode: this.state.mode, basic_value: basicValue || 0,
-                basic_code: this.state.basic, balance_code: this.state.balance,
-                config_id: this.state.schemeId || false,
-            });
+            this.state.r = await this.orm.call(MODEL, this.isOffer ? "offer_solve" : "package_solve",
+                                               [this.subjectId], this._args());
         } catch (e) {
             this.state.r = { ok: false, msg: this._err(e) };
         }
         this.state.busy = false;
     }
 
-    use() {
-        if (!this.r || !this.r.can_use || !this.props.onUse) { return; }
+    get canUse() {
+        return Boolean(this.r && this.r.can_use && (!this.isOffer || this.ctx.editable));
+    }
+
+    async use() {
+        if (!this.canUse) { return; }
+        if (this.isOffer) {
+            // The offer's lines are written by the server (worked out once
+            // more there), then the board re-reads the offer.
+            this.state.busy = true;
+            try {
+                const res = await this.orm.call(MODEL, "offer_use", [this.subjectId], this._args());
+                if (this.props.onUse) { this.props.onUse(res); }
+                this.close();
+            } catch (e) {
+                this.state.r = Object.assign({}, this.state.r, { can_use: false, note: this._err(e) });
+            }
+            this.state.busy = false;
+            return;
+        }
+        if (!this.props.onUse) { return; }
         this.props.onUse(this.r.use);
         this.close();
     }

@@ -146,11 +146,22 @@ class PbPayPackage(models.AbstractModel):
         """Find the balancing item so that the monthly total equals the
         target, with basic fixed. Read-only; the answer is evaluated once more
         on its own before it is reported."""
-        started = time.monotonic()
-        Studio = self._studio()
         subject, refusal = self._subject(contract_id, config_id)
         if refusal:
             return refusal
+        return self._solve_for(subject, total=total, period=period, basic_mode=basic_mode,
+                               basic_value=basic_value, basic_code=basic_code,
+                               balance_code=balance_code)
+
+    @api.model
+    def _solve_for(self, subject, total=0.0, period='year', basic_mode='share',
+                   basic_value=50.0, basic_code=False, balance_code=False):
+        """The search itself, for one subject: ``{config, inputs, wage_codes,
+        contract}`` (a contract's figures) or, for a hiring offer (WDGAP S8-D,
+        SC3), the scheme's own usual figures and ``offer`` instead of a
+        contract. Read-only."""
+        started = time.monotonic()
+        Studio = self._studio()
         config = subject['config']
         currency = config.scheme_currency()
         decimals = int(currency.get('decimals') or 0)
@@ -252,6 +263,10 @@ class PbPayPackage(models.AbstractModel):
             out['after'] = dict(after, year=after['total'] * 12)
             out['value'] = value
             out['lines'] = Studio._th_lines(engine, before_results, after_results, decimals)
+            if subject.get('offer'):
+                # S8-D: an offer keeps the payslip's own lines (by band) as its
+                # monthly pay lines, so the letter shows the split.
+                out['bands'] = {s['code']: s['band'] or '' for s in engine.specs}
             unit = 10.0 ** (-decimals)
             for code in sorted(set(engine.rules.filtered(
                     lambda r: r.column_type == 'input').mapped('code')) & set(items)):
@@ -312,7 +327,7 @@ class PbPayPackage(models.AbstractModel):
                     now=money(found['net']), month=target_text)
 
         if outcome in (solver.EXACT, solver.CLOSEST) and value is not None \
-                and subject['contract']:
+                and (subject.get('contract') or subject.get('offer')):
             wage = basic_amount if basic.code in subject['wage_codes'] else None
             use_items = [{'code': balance.code, 'name': xname, 'amount': value}]
             if basic.code not in subject['wage_codes']:

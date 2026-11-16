@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WDGAP S8-D (SC3) — "Build from a total" on the Hiring offer panel, by
+     template inheritance (no edit of pb_hiring). Every sentence on one line
+     (PRD-3). No double hyphen in a comment (W22). -->
+<templates xml:space="preserve">
+
+  <t t-inherit="pb_hiring.PbHiringBoard" t-inherit-mode="extension">
+    <xpath expr="//button[@t-on-click=&quot;() =&gt; this.startLine(false)&quot;]" position="after">
+      <button t-if="pbpkCanBuild(offer)" class="pbim-btn ghost" t-on-click="() =&gt; this.pbpkOpenTotal(offer)"
+              title="Type the total package and split it into basic pay and allowances with the pay scheme">
+        <t t-out="ic('package',14)"/> Build from a total
+      </button>
+    </xpath>
+    <xpath expr="//div[hasclass('pbhr-lines')]" position="after">
+      <div t-if="offer.total_note and !offer.money_locked" class="pbhr-p3-rule is-info pbpk-offer-note">
+        <t t-out="ic('package',15)"/>
+        <span t-esc="offer.total_note"/>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

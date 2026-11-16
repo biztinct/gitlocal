@@ -421,3 +421,141 @@ msgid ""
 "“%(names)s” already adds gross pay, so it is a total of its own and is not "
 "counted again."
 msgstr "“%(names)s” đã cộng cả tổng thu nhập, nên đó là một dòng tổng riêng và không tính lại."
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_hiring_offer__pb_total_note
+msgid "Built from a total"
+msgstr "Lập từ tổng thu nhập"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"Built from a total of %(year)s a year (%(month)s a month) with %(scheme)s."
+msgstr "Lập từ tổng %(year)s một năm (%(month)s một tháng) theo %(scheme)s."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "From offer %s"
+msgstr "Từ thư mời %s"
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_hiring_offer_line__pb_from_total
+msgid "From the total package"
+msgstr "Từ tổng thu nhập"
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_hiring_offer_line__pb_item_wage
+msgid "Is the monthly wage"
+msgstr "Là lương tháng"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "Paid by the company on top of pay"
+msgstr "Công ty trả thêm ngoài lương"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Reading the offer…"
+msgstr "Đang đọc thư mời…"
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_hiring_offer__pb_total_config_id
+msgid "Split with pay scheme"
+msgstr "Chia theo bảng lương"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "That offer is no longer there."
+msgstr "Thư mời đó không còn nữa."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"The contract was written without %(items)s: the pay scheme that pays them "
+"has no such pay item. Add it on the contract if it is still agreed."
+msgstr "Hợp đồng được lập không có %(items)s: bảng lương trả cho họ không có khoản này. Hãy thêm vào hợp đồng nếu vẫn đã thỏa thuận."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "The offer as it stands now, a month and a year."
+msgstr "Thư mời hiện tại, theo tháng và theo năm."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "The offer's figures are with the hiring team."
+msgstr "Số liệu của thư mời do nhóm tuyển dụng nắm."
+
+#. module: pb_pay_package
+#: model:ir.model.fields,help:pb_pay_package.field_pb_hiring_offer_line__pb_item_code
+msgid "The pay item this line fills on the contract when the person joins."
+msgstr "Khoản lương mà dòng này điền vào hợp đồng khi người đó vào làm."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"These become the offer's monthly pay lines; bonuses, benefits and one-off "
+"lines stay. The letter shows them, and the contract starts with them when "
+"the person joins."
+msgstr "Các con số này thành các dòng lương tháng của thư mời; thưởng, phúc lợi và khoản một lần được giữ nguyên. Thư mời hiển thị chúng, và hợp đồng bắt đầu với chúng khi người đó vào làm."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "These figures cannot be used on the offer."
+msgstr "Không dùng được các con số này cho thư mời."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"This company has no pay scheme yet, so there is nothing to split the total "
+"with."
+msgstr "Công ty này chưa có bảng lương, nên không có gì để chia tổng thu nhập."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "This offer belongs to a company you do not work in."
+msgstr "Thư mời này thuộc công ty bạn không làm việc."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"This offer has been sent for sign-off, and the numbers are what somebody is "
+"agreeing to. Ask whoever it is waiting on to send it back, then change it "
+"and send it again."
+msgstr "Thư mời này đã gửi duyệt, và các con số là điều người khác đang đồng ý. Hãy nhờ người đang duyệt trả lại, rồi sửa và gửi lại."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid ""
+"This offer has been sent for sign-off, so its figures cannot be changed "
+"here."
+msgstr "Thư mời này đã gửi duyệt, nên không sửa số liệu ở đây được."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"This offer is in %(offer)s but the pay scheme pays in %(scheme)s. Change the"
+" offer's money or pick another scheme."
+msgstr "Thư mời tính bằng %(offer)s nhưng bảng lương trả bằng %(scheme)s. Hãy đổi loại tiền của thư mời hoặc chọn bảng lương khác."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_total.xml:0
+msgid ""
+"Type the total package and split it into basic pay and allowances with the "
+"pay scheme"
+msgstr "Nhập tổng thu nhập và chia thành lương cơ bản và phụ cấp theo bảng lương"

@@ -22,7 +22,7 @@
           <button class="pbpk-x" t-on-click="() => this.close()" title="Close" aria-label="Close"><t t-out="ic('x', 18)"/></button>
         </div>
 
-        <div t-if="state.loading" class="pbpk-busy"><span class="pbpk-spin"/><span>Reading this person's pay…</span></div>
+        <div t-if="state.loading" class="pbpk-busy"><span class="pbpk-spin"/><span t-if="isOffer">Reading the offer…</span><span t-else="">Reading this person's pay…</span></div>
         <div t-elif="state.error" class="pbpk-empty"><t t-out="ic('alert', 26)"/><p t-esc="state.error"/></div>
 
         <div t-else="" class="pbpk-body">
@@ -72,10 +72,11 @@
               </select>
             </t>
 
-            <div class="pbpk-now">
+            <div class="pbpk-now" t-if="!isOffer or ctx.same_money">
               <span class="k">Now</span>
               <span class="v">Total <b t-esc="money(now.total)"/> a month · <b t-esc="money(now.year)"/> a year</span>
             </div>
+            <p class="pbpk-help" t-if="isOffer and ctx.note" t-esc="ctx.note"/>
             <div class="pbpk-src" t-if="ctx.source_label"><t t-out="ic('file', 13)"/> <span t-esc="ctx.source_label"/></div>
 
             <button class="pbpk-go" t-att-disabled="!canSolve" t-on-click="() => this.solve()">
@@ -140,12 +141,14 @@
                 </table>
               </t>
 
-              <div class="pbpk-use" t-if="r.can_use">
-                <button class="pbpk-go" t-on-click="() => this.use()">
+              <div class="pbpk-use" t-if="canUse">
+                <button class="pbpk-go" t-att-disabled="state.busy" t-on-click="() => this.use()">
                   <t t-out="ic('check', 15)"/> <span>Use these figures</span>
                 </button>
-                <p class="pbpk-safe">They go into the contract form. Nothing is saved until you press Save there, and the change then goes for approval like any other pay change.</p>
+                <p class="pbpk-safe" t-if="isOffer" t-esc="r.use_note"/>
+                <p class="pbpk-safe" t-else="">They go into the contract form. Nothing is saved until you press Save there, and the change then goes for approval like any other pay change.</p>
               </div>
+              <p class="pbpk-safe" t-if="isOffer and r.can_use and !ctx.editable">This offer has been sent for sign-off, so its figures cannot be changed here.</p>
             </t>
           </div>
         </div>
