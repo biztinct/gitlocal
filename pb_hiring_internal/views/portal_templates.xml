@@ -88,7 +88,7 @@
   <!-- ============================================================= -->
   <!--  /my/jobs                                                      -->
   <!-- ============================================================= -->
-  <template id="portal_my_jobs" name="Jobs inside the company (ESS)">
+  <template id="portal_my_jobs" name="Jobs inside the company">
     <t t-call="portal.portal_layout">
       <div class="pbme pbhi">
         <t t-call="pb_hiring_internal.pbhi_toast"/>
@@ -151,7 +151,7 @@
   <!-- ============================================================= -->
   <!--  /my/jobs/<id>                                                 -->
   <!-- ============================================================= -->
-  <template id="portal_my_job" name="A role inside the company (ESS)">
+  <template id="portal_my_job" name="A role inside the company">
     <t t-call="portal.portal_layout">
       <div class="pbme pbhi">
         <t t-call="pb_hiring_internal.pbhi_toast"/>
@@ -244,7 +244,7 @@
   <!-- ============================================================= -->
   <!--  /my/jobs/moves — a manager's page (E4)                        -->
   <!-- ============================================================= -->
-  <template id="portal_my_team_moves" name="Moves in your team (ESS)">
+  <template id="portal_my_team_moves" name="Moves in your team">
     <t t-call="portal.portal_layout">
       <div class="pbme pbhi">
         <t t-call="pb_me_portal.ess_hero">

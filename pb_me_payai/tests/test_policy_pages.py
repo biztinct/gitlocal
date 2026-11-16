@@ -68,17 +68,19 @@ class TestPolicyPages(HttpCase):
             res = self._post('/my/ask-policy', {'question': question})
         self.assertIn('could not find the answer', html.unescape(res.text))
         self.assertIn('Ask HR, with my question', res.text)
-        self.assertIn('/my/ask-hr/new?category=other&amp;question=Where+can+I+park', res.text)
+        self.assertIn('action="/my/ask-policy/ask-hr"', res.text)
+        self.assertNotIn('question=Where', res.text,
+                         'P22: the question never travels in a web address')
         tickets = self.env['pb.ask.hr.ticket'].sudo().search_count([('employee_id', '=', self.emp.id)])
-        form = self.url_open('/my/ask-hr/new?category=other&question=Where+can+I+park+my+bicycle%3F',
-                             timeout=60)
+        form = self._post('/my/ask-policy/ask-hr', {'question': question})
         self.assertEqual(form.status_code, 200)
+        self.assertNotIn('Where', form.url)
         self.assertIn('value="Where can I park my bicycle?"', html.unescape(form.text))
         self.assertEqual(self.env['pb.ask.hr.ticket'].sudo().search_count(
             [('employee_id', '=', self.emp.id)]), tickets,
             'P22: nothing is sent to HR until the person sends it')
 
-    # P23 — the plain Ask HR form is unchanged without a question
+    # P23 — the plain Ask HR form is unchanged (pb_ask_hr's route untouched)
     def test_p23_ask_hr_form_unchanged(self):
         self.authenticate(self.share.login, PASSWORD)
         form = self.url_open('/my/ask-hr/new?category=pay', timeout=60)

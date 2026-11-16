@@ -33,7 +33,7 @@
     <svg t-att-width="isz or 18" t-att-height="isz or 18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
   </template>
 
-  <template id="portal_ask_policy" name="Company policies (ESS)">
+  <template id="portal_ask_policy" name="Company policies">
     <t t-call="portal.portal_layout">
       <div class="pbme pbpa">
         <t t-call="pb_me_portal.ess_hero">
@@ -67,9 +67,13 @@
                 </span>
               </div>
               <p class="pbpa-check">Answers come from the policy text. If something matters, check with HR.</p>
-              <a class="pbme-btn pbme-btn--ghost" t-att-href="ask_hr_url">
-                <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>Ask HR instead
-              </a>
+              <form method="post" action="/my/ask-policy/ask-hr" class="pbpa-tohr">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="question" t-att-value="result['question']"/>
+                <button type="submit" class="pbme-btn pbme-btn--ghost">
+                  <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>Ask HR instead
+                </button>
+              </form>
             </section>
 
             <section t-elif="result and result['state'] in ('not_found', 'failed', 'limit_person', 'limit_company')" class="pbpa-card pbpa-answer pbpa-answer--none" aria-live="polite">
@@ -78,9 +82,13 @@
               <p t-elif="result['state'] == 'failed'" class="pbpa-text">I could not answer just now. Try again in a few minutes, or ask HR.</p>
               <p t-elif="result['state'] == 'limit_person'" class="pbpa-text">You have asked as many questions as one person can today. Ask HR, or try again tomorrow.</p>
               <p t-else="" class="pbpa-text">The company has used today's questions. Ask HR, or try again tomorrow.</p>
-              <a class="pbme-btn pbme-btn--primary" t-att-href="ask_hr_url">
-                <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>Ask HR, with my question
-              </a>
+              <form method="post" action="/my/ask-policy/ask-hr" class="pbpa-tohr">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="question" t-att-value="result['question']"/>
+                <button type="submit" class="pbme-btn pbme-btn--primary">
+                  <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>Ask HR, with my question
+                </button>
+              </form>
             </section>
           </div>
 
