@@ -1,0 +1,1896 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_review_forms
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"POT-Creation-Date: 2026-11-16 12:46+0000\n"
+"PO-Revision-Date: 2026-11-16 12:46+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "\"%(a)s\" is not one of the answers to pick from."
+msgstr "\"%(a)s\" bukan salah satu jawaban yang bisa dipilih."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "\"%(q)s\" needs at least two answers to pick from."
+msgstr "\"%(q)s\" memerlukan setidaknya dua jawaban untuk dipilih."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "%(n)s finished reviews are shared now."
+msgstr "%(n)s penilaian yang selesai kini dibagikan."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "%(year)s already has a review form."
+msgstr "%(year)s sudah memiliki formulir penilaian."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "%(year)s is closed, so its review form cannot change."
+msgstr "%(year)s sudah ditutup, jadi formulir penilaiannya tidak bisa diubah."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "%(year)s is closed."
+msgstr "%(year)s sudah ditutup."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "1 finished review is shared now."
+msgstr "1 penilaian yang selesai kini dibagikan."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.rf_input
+msgid "<option value=\"\">Choose one</option>"
+msgstr "<option value=\"\">Pilih satu</option>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-result-label\">Overall result</span>"
+msgstr "<span class=\"pbrf-result-label\">Hasil keseluruhan</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-result-of\">out of 5</span>"
+msgstr "<span class=\"pbrf-result-of\">dari 5</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-step-n\">1</span><span>Your own view</span>"
+msgstr "<span class=\"pbrf-step-n\">1</span><span>Pandangan Anda</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-step-n\">2</span><span>Your manager</span>"
+msgstr "<span class=\"pbrf-step-n\">2</span><span>Atasan Anda</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span class=\"pbrf-step-n\">3</span><span>Read and confirm</span>"
+msgstr "<span class=\"pbrf-step-n\">3</span><span>Baca dan konfirmasi</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.rf_line
+msgid "<span class=\"pbrf-who pbrf-who--mgr\">Manager</span>"
+msgstr "<span class=\"pbrf-who pbrf-who--mgr\">Atasan</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.rf_line
+msgid "<span class=\"pbrf-who\">You</span>"
+msgstr "<span class=\"pbrf-who\">Anda</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "<span style=\"font-size: 12px; font-weight: 600;\">out of 5</span>"
+msgstr "<span style=\"font-size: 12px; font-weight: 600;\">dari 5</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "<span>Manager finished on</span>"
+msgstr "<span>Atasan selesai pada</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "<span>Own view sent on</span>"
+msgstr "<span>Pandangan sendiri dikirim pada</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid ""
+"<span>Preview. This is what employees see. Nothing you choose here is "
+"saved.</span>"
+msgstr ""
+"<span>Pratinjau. Inilah yang dilihat karyawan. Tidak ada pilihan di sini "
+"yang disimpan.</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<span>Sent on</span>"
+msgstr "<span>Dikirim pada</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid ""
+"<span>They write their part next. You can read it once it is shared with "
+"you.</span>"
+msgstr ""
+"<span>Selanjutnya atasan menulis bagiannya. Anda bisa membacanya setelah "
+"dibagikan kepada Anda.</span>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<strong>From your manager</strong>"
+msgstr "<strong>Dari atasan Anda</strong>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "<strong>Have you read it?</strong>"
+msgstr "<strong>Sudahkah Anda membacanya?</strong>"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.gl_year_review_form
+msgid "<strong>Your review form</strong>"
+msgstr "<strong>Formulir penilaian Anda</strong>"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid ""
+"A few things both the employee and the manager rate from Well below to Well "
+"above. At most 8."
+msgstr ""
+"Beberapa hal yang dinilai karyawan dan atasan dari Jauh di bawah sampai Jauh"
+" di atas. Paling banyak 8."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_employee_document__pb_rf_private
+msgid ""
+"A finished performance review. Only the person, their manager and the HR "
+"team who run reviews can open it."
+msgstr ""
+"Penilaian kinerja yang sudah selesai. Hanya orang itu, atasannya, dan tim HR"
+" yang menjalankan penilaian yang dapat membukanya."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid ""
+"A form stays with the goal year it was written for. Copy it to another year."
+msgstr ""
+"Formulir tetap pada tahun sasaran tempat ia dibuat. Salin ke tahun lain."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "A rating is one of the five words from Well below to Well above."
+msgstr ""
+"Penilaian adalah salah satu dari lima kata dari Jauh di bawah sampai Jauh di"
+" atas."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "A review form belongs to a goal year. Open a goal year in Goals first."
+msgstr ""
+"Formulir penilaian milik satu tahun sasaran. Buka tahun sasaran di Sasaran "
+"terlebih dahulu."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "A review is written up by the person's own manager or by the HR team."
+msgstr "Penilaian ditulis oleh atasan langsung orang itu atau oleh tim HR."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "A share is a number from 0 to 100."
+msgstr "Bobot adalah angka dari 0 sampai 100."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__intro
+msgid "A word to the employee"
+msgstr "Pesan untuk karyawan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "A word to the employee, shown at the top of the form"
+msgstr "Pesan untuk karyawan, ditampilkan di bagian atas formulir"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "About my %(form)s for %(year)s."
+msgstr "Tentang %(form)s saya untuk %(year)s."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__4
+msgid "Above"
+msgstr "Di atas"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Add a question"
+msgstr "Tambah pertanyaan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Add a skill or value"
+msgstr "Tambah keterampilan atau nilai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Add the company values"
+msgstr "Tambahkan nilai-nilai perusahaan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__text
+msgid "Answer"
+msgstr "Jawaban"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__answer_ids
+msgid "Answers"
+msgstr "Jawaban"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__choices
+msgid "Answers to pick from"
+msgstr "Jawaban untuk dipilih"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form__reveal__manager_done
+msgid "As soon as the manager finishes"
+msgstr "Segera setelah atasan selesai"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__author
+msgid "Author"
+msgstr "Penjawab"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Back"
+msgstr "Kembali"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Back to my goals"
+msgstr "Kembali ke sasaran saya"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form__state__draft
+msgid "Being written"
+msgstr "Sedang ditulis"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Being written. Nothing changes for anybody until you put it in use."
+msgstr ""
+"Sedang ditulis. Tidak ada yang berubah bagi siapa pun sampai Anda "
+"menggunakannya."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__2
+msgid "Below"
+msgstr "Di bawah"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Check and put it in use"
+msgstr "Periksa dan gunakan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Check and use"
+msgstr "Periksa dan gunakan"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Choose a different goal year."
+msgstr "Pilih tahun sasaran yang lain."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Choose one"
+msgstr "Pilih satu"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Choose the date the manager's part is shown from."
+msgstr "Pilih tanggal mulai bagian atasan ditampilkan."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Close the form"
+msgstr "Tutup formulir"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__company_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__company_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Copied to %(year)s as a form being written."
+msgstr "Disalin ke %(year)s sebagai formulir yang sedang ditulis."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Copied."
+msgstr "Disalin."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Copy"
+msgstr "Salin"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Copy to another goal year…"
+msgstr "Salin ke tahun sasaran lain…"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__create_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__create_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__create_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__create_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__create_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__create_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_review__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_set__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goals__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_my_goals__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__display_name
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_forms__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Download the PDF"
+msgstr "Unduh PDF"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_employee_document
+msgid "Employee Document"
+msgstr "Dokumen karyawan"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data halaman beranda karyawan"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "End-of-year review"
+msgstr "Penilaian akhir tahun"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "End-of-year reviews"
+msgstr "Penilaian akhir tahun"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__entry_id
+msgid "Entry"
+msgstr "Isian"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Every skill, value and question needs words."
+msgstr "Setiap keterampilan, nilai, dan pertanyaan perlu diberi kata-kata."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Everything is in place."
+msgstr "Semuanya sudah siap."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__document_id
+msgid "Filed in their documents"
+msgstr "Disimpan di dokumen mereka"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_review_entry
+msgid "Filled-in review form"
+msgstr "Formulir penilaian yang diisi"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Finish the review"
+msgstr "Selesaikan penilaian"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Finish without it"
+msgstr "Selesaikan tanpanya"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Finish without their own view?"
+msgstr "Selesaikan tanpa pandangan karyawan?"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__mgr_state__done
+msgid "Finished"
+msgstr "Selesai"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__mgr_done_by_id
+msgid "Finished by"
+msgstr "Diselesaikan oleh"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Finished on"
+msgstr "Selesai pada"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__mgr_without_self
+msgid "Finished without their own view"
+msgstr "Diselesaikan tanpa pandangan karyawan"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Finished without their own view."
+msgstr "Diselesaikan tanpa pandangan karyawan."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Finished, not shown yet"
+msgstr "Selesai, belum ditampilkan"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Finished. %(when)s"
+msgstr "Selesai. %(when)s"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Finished. They can read it now on their own page."
+msgstr "Selesai. Karyawan bisa membacanya sekarang di halamannya."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__form_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__form_id
+msgid "Form"
+msgstr "Formulir"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form__reveal__date
+msgid "From a date HR chooses"
+msgstr "Mulai tanggal yang dipilih HR"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid ""
+"Give your own view first. Your manager reads it before they write theirs."
+msgstr ""
+"Berikan pandangan Anda terlebih dahulu. Atasan membacanya sebelum menulis "
+"bagiannya."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Give your own view for your review"
+msgstr "Berikan pandangan Anda untuk penilaian"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_goal_review
+msgid "Goal review"
+msgstr "Penilaian sasaran"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_goal_set
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__set_id
+msgid "Goal sheet"
+msgstr "Lembar sasaran"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__cycle_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__cycle_id
+msgid "Goal year"
+msgstr "Tahun sasaran"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Goals"
+msgstr "Sasaran"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_goals
+msgid "Goals board"
+msgstr "Papan sasaran"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Goals score"
+msgstr "Skor sasaran"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__ack_state__read
+msgid "Has read it"
+msgstr "Sudah membaca"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "How the overall result is worked out"
+msgstr "Cara hasil keseluruhan dihitung"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "How you think the year went on each one."
+msgstr "Menurut Anda bagaimana tahun ini berjalan untuk masing-masing."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "I have read this"
+msgstr "Saya sudah membaca ini"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "I want to talk about it"
+msgstr "Saya ingin membicarakannya"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "I would like to talk about my review"
+msgstr "Saya ingin membicarakan penilaian saya"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_review__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goal_set__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_goals__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_my_goals__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_forms__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form__state__published
+msgid "In use"
+msgstr "Digunakan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__published_at
+msgid "In use since"
+msgstr "Digunakan sejak"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "In use · locked"
+msgstr "Digunakan · terkunci"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Keep it to %(n)s questions at most."
+msgstr "Paling banyak %(n)s pertanyaan."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Keep it to %(n)s skills or values at most."
+msgstr "Paling banyak %(n)s keterampilan atau nilai."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__qtype
+msgid "Kind of answer"
+msgstr "Jenis jawaban"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__write_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__write_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__write_uid
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__write_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__write_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__write_date
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__line_id
+msgid "Line"
+msgstr "Baris"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__locked_at
+msgid "Locked on"
+msgstr "Dikunci pada"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"Locked on %(day)s, when the first review was sent in. Only when the "
+"manager's part is shown can still change. For a new version, copy it to "
+"another year."
+msgstr ""
+"Terkunci pada %(day)s, saat penilaian pertama dikirim. Hanya waktu bagian "
+"atasan ditampilkan yang masih bisa diubah. Untuk versi baru, salin ke tahun "
+"lain."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Manager"
+msgstr "Atasan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__mgr_done_at
+msgid "Manager finished on"
+msgstr "Atasan selesai pada"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__mgr_state
+msgid "Manager's part"
+msgstr "Bagian atasan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Manager: finished"
+msgstr "Atasan: selesai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Manager: not started"
+msgstr "Atasan: belum mulai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Manager: started"
+msgstr "Atasan: sudah mulai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Managers finished"
+msgstr "Atasan selesai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Move down"
+msgstr "Pindah ke bawah"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Move up"
+msgstr "Pindah ke atas"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__required
+msgid "Must be answered"
+msgstr "Wajib dijawab"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_my_goals
+msgid "My goals"
+msgstr "Sasaran saya"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Name of the form"
+msgstr "Nama formulir"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Next"
+msgstr "Berikutnya"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "No company values are written yet."
+msgstr "Belum ada nilai perusahaan yang ditulis."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "No form"
+msgstr "Belum ada formulir"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "No form yet. Fill in the five steps and put it in use."
+msgstr "Belum ada formulir. Isi lima langkah lalu gunakan."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "No goal year yet"
+msgstr "Belum ada tahun sasaran"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "None yet."
+msgstr "Belum ada."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "None yet. Questions are optional."
+msgstr "Belum ada. Pertanyaan bersifat pilihan."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__mgr_state__todo
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__self_state__todo
+msgid "Not started"
+msgstr "Belum mulai"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__ack_state__none
+msgid "Not yet"
+msgstr "Belum"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__3
+msgid "On track"
+msgstr "Sesuai rencana"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Once the first review is sent in, the form is locked for this year."
+msgstr "Setelah penilaian pertama dikirim, formulir terkunci untuk tahun ini."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid ""
+"Once you send it, it cannot be changed. Your manager sees nothing before you"
+" send it."
+msgstr ""
+"Setelah dikirim tidak bisa diubah. Atasan tidak melihat apa pun sebelum Anda"
+" mengirimnya."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "One answer per line"
+msgstr "Satu jawaban per baris"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid ""
+"One form for each goal year. The employee gives their own view first, then "
+"the manager answers and writes the overall comment."
+msgstr ""
+"Satu formulir untuk setiap tahun sasaran. Karyawan memberi pandangannya "
+"dulu, lalu atasan menjawab dan menulis komentar keseluruhan."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid ""
+"One form for each goal year: the goals score, a few skills or values, and "
+"your own questions."
+msgstr ""
+"Satu formulir untuk setiap tahun sasaran: skor sasaran, beberapa "
+"keterampilan atau nilai, dan pertanyaan Anda sendiri."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_review_form_line__choices
+msgid "One per line."
+msgstr "Satu per baris."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Only the HR lead for goals can change a review form."
+msgstr ""
+"Hanya pimpinan HR untuk sasaran yang dapat mengubah formulir penilaian."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Open my own page"
+msgstr "Buka halaman saya"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.gl_year_review_form
+msgid "Open my review"
+msgstr "Buka penilaian saya"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Open the form"
+msgstr "Buka formulir"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__sequence
+msgid "Order"
+msgstr "Urutan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__overall_comment
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Overall comment"
+msgstr "Komentar keseluruhan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Overall result"
+msgstr "Hasil keseluruhan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__self_sent_at
+msgid "Own view sent on"
+msgstr "Pandangan sendiri dikirim pada"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Own views sent"
+msgstr "Pandangan terkirim"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__attachment_id
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__section
+msgid "Part"
+msgstr "Bagian"
+
+#. module: pb_review_forms
+#: model:pb.employee.document.category,name:pb_review_forms.cat_performance_review
+msgid "Performance review"
+msgstr "Penilaian kinerja"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__qtype__choice
+msgid "Pick one from a list"
+msgstr "Pilih satu dari daftar"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Preview as the employee"
+msgstr "Pratinjau sebagai karyawan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_employee_document__pb_rf_private
+msgid "Private review"
+msgstr "Penilaian pribadi"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__published_by_id
+msgid "Put in use by"
+msgstr "Digunakan oleh"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Put it in use"
+msgstr "Gunakan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__section__question
+msgid "Question"
+msgstr "Pertanyaan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Questions"
+msgstr "Pertanyaan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__qtype__rating
+msgid "Rated from Well below to Well above"
+msgstr "Dinilai dari Jauh di bawah sampai Jauh di atas"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Rated questions"
+msgstr "Pertanyaan yang dinilai"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Rated questions have a share but no question is rated by the manager."
+msgstr ""
+"Pertanyaan yang dinilai memiliki bobot tetapi tidak ada pertanyaan yang "
+"dinilai atasan."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__rating
+msgid "Rating"
+msgstr "Penilaian"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__ack_state
+msgid "Read by them"
+msgstr "Sudah dibaca karyawan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__ack_at
+msgid "Read on"
+msgstr "Dibaca pada"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Reading the goal years…"
+msgstr "Membaca tahun sasaran…"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+#: model:ir.actions.report,name:pb_review_forms.action_report_review_form
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__review_id
+msgid "Review"
+msgstr "Penilaian"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model:ir.model,name:pb_review_forms.model_pb_review_form
+msgid "Review form"
+msgstr "Formulir penilaian"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_review_answer
+msgid "Review form answer"
+msgstr "Jawaban formulir penilaian"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_review_form_line
+msgid "Review form line"
+msgstr "Baris formulir penilaian"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.actions.client,name:pb_review_forms.action_review_forms
+msgid "Review forms"
+msgstr "Formulir penilaian"
+
+#. module: pb_review_forms
+#: model:ir.model,name:pb_review_forms.model_pb_review_forms
+msgid "Review forms (screens)"
+msgstr "Formulir penilaian (layar)"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Review forms are set up by the HR team"
+msgstr "Formulir penilaian disiapkan oleh tim HR"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Review forms are set up by the HR team."
+msgstr "Formulir penilaian disiapkan oleh tim HR."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Review forms are set up by the HR team. Ask your HR administrator."
+msgstr ""
+"Formulir penilaian disiapkan oleh tim HR. Tanyakan administrator HR Anda."
+
+#. module: pb_review_forms
+#: model:ir.actions.server,name:pb_review_forms.cron_review_release_due_ir_actions_server
+msgid "Review forms: share finished reviews on their day"
+msgstr "Formulir penilaian: bagikan penilaian yang selesai pada harinya"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Save for later"
+msgstr "Simpan untuk nanti"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Saved."
+msgstr "Tersimpan."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Saved. Nothing is shown to them until you finish."
+msgstr ""
+"Tersimpan. Tidak ada yang ditampilkan ke karyawan sampai Anda selesai."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Saved. Your manager sees nothing until you send it."
+msgstr "Tersimpan. Atasan tidak melihat apa pun sampai Anda mengirimnya."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid ""
+"Score every key result above before you finish: the goals score is part of "
+"the result."
+msgstr ""
+"Beri skor setiap hasil utama di atas sebelum selesai: skor sasaran adalah "
+"bagian dari hasil."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"Score every key result first: the goals score is part of the overall result."
+msgstr ""
+"Beri skor setiap hasil utama terlebih dahulu: skor sasaran adalah bagian "
+"dari hasil keseluruhan."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.gl_year_review_form
+msgid "See my review"
+msgstr "Lihat penilaian saya"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Send to my manager"
+msgstr "Kirim ke atasan saya"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__self_state__sent
+msgid "Sent"
+msgstr "Terkirim"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Sent to your manager. They write their part next."
+msgstr "Terkirim ke atasan Anda. Selanjutnya mereka menulis bagiannya."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__share_questions
+msgid "Share for rated questions"
+msgstr "Bobot pertanyaan yang dinilai"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__share_skills
+msgid "Share for skills and values"
+msgstr "Bobot keterampilan dan nilai"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__share_goals
+msgid "Share for the goals score"
+msgstr "Bobot skor sasaran"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Shared."
+msgstr "Dibagikan."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Show them now"
+msgstr "Tampilkan sekarang"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "Showing it"
+msgstr "Penayangan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_review_form__intro
+msgid "Shown at the top of the form, above the first question."
+msgstr "Ditampilkan di bagian atas formulir, di atas pertanyaan pertama."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__reveal_date
+msgid "Shown from"
+msgstr "Ditampilkan mulai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Shown to them"
+msgstr "Sudah ditampilkan ke karyawan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__released_at
+msgid "Shown to them on"
+msgstr "Ditampilkan ke karyawan pada"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__section__skill
+msgid "Skill or value"
+msgstr "Keterampilan atau nilai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Skills and values"
+msgstr "Keterampilan dan nilai"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "Skills and values have a share but there are none on the form."
+msgstr "Keterampilan dan nilai memiliki bobot tetapi tidak ada di formulir."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Skills and values, and questions"
+msgstr "Keterampilan, nilai, dan pertanyaan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__line_ids
+msgid "Skills, values and questions"
+msgstr "Keterampilan, nilai, dan pertanyaan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__mgr_state__draft
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__self_state__draft
+msgid "Started"
+msgstr "Sudah mulai"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Still to answer: %(what)s."
+msgstr "Masih harus dijawab: %(what)s."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Stop using it"
+msgstr "Berhenti menggunakan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Takes ownership"
+msgstr "Bertanggung jawab"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid ""
+"Tell us you have read your review. If something in it is not right, ask to "
+"talk about it."
+msgstr ""
+"Beri tahu kami bahwa Anda sudah membaca penilaian Anda. Jika ada yang tidak "
+"tepat, minta untuk membicarakannya."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Thank you. It is marked as read."
+msgstr "Terima kasih. Sudah ditandai dibaca."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "That could not be opened."
+msgstr "Itu tidak bisa dibuka."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+msgid ""
+"That did not save. Try again, and tell your HR team if it keeps happening."
+msgstr ""
+"Itu tidak tersimpan. Coba lagi, dan beri tahu tim HR jika terus terjadi."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "That did not work."
+msgstr "Itu tidak berhasil."
+
+#. module: pb_review_forms
+#: model:ir.model.constraint,message:pb_review_forms.constraint_pb_review_form_one_per_year
+msgid "That goal year already has a review form."
+msgstr "Tahun sasaran itu sudah memiliki formulir penilaian."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That goal year is not there any more."
+msgstr "Tahun sasaran itu sudah tidak ada."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That is not something to do with a review."
+msgstr "Itu bukan tindakan untuk penilaian."
+
+#. module: pb_review_forms
+#: model:ir.model.constraint,message:pb_review_forms.constraint_pb_review_answer_one_per_side
+msgid "That line already has an answer from that side."
+msgstr "Baris itu sudah memiliki jawaban dari pihak tersebut."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That one is not yours. If you think it should be, tell your HR team."
+msgstr ""
+"Itu bukan milik Anda. Jika menurut Anda seharusnya milik Anda, beri tahu tim"
+" HR."
+
+#. module: pb_review_forms
+#: model:ir.model.constraint,message:pb_review_forms.constraint_pb_review_entry_one_per_review
+msgid "That review already has a filled-in form."
+msgstr "Penilaian itu sudah memiliki formulir yang diisi."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That review form is not there any more."
+msgstr "Formulir penilaian itu sudah tidak ada."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That review is not one you can see."
+msgstr "Anda tidak dapat melihat penilaian itu."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That review is not there any more."
+msgstr "Penilaian itu sudah tidak ada."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "That year has no form to copy."
+msgstr "Tahun itu tidak memiliki formulir untuk disalin."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,help:pb_review_forms.field_pb_review_form__locked_at
+msgid ""
+"The day the first review was sent in. From then on the questions cannot "
+"change."
+msgstr ""
+"Hari penilaian pertama dikirim. Sejak itu pertanyaan tidak bisa diubah."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__author__employee
+msgid "The employee"
+msgstr "Karyawan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__who__both
+msgid "The employee and the manager"
+msgstr "Karyawan dan atasan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__who__employee
+msgid "The employee only"
+msgstr "Hanya karyawan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "The form is back to being written."
+msgstr "Formulir kembali ke tahap ditulis."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "The form is in use for this goal year."
+msgstr "Formulir digunakan untuk tahun sasaran ini."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__author__manager
+msgid "The manager"
+msgstr "Atasan"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__who__manager
+msgid "The manager only"
+msgstr "Hanya atasan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid ""
+"The manager's ratings are mixed by these shares into one result out of 5. "
+"Once the form is in use, the pay review starts from this result."
+msgstr ""
+"Penilaian atasan digabungkan dengan bobot ini menjadi satu hasil dari 5. "
+"Setelah formulir digunakan, tinjauan gaji dimulai dari hasil ini."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "The overall result cannot be worked out yet. Answer every rated line."
+msgstr ""
+"Hasil keseluruhan belum bisa dihitung. Jawab setiap baris yang dinilai."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid "The result"
+msgstr "Hasil"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid "The shares add up to %(have)s, not 100."
+msgstr "Total bobot %(have)s, bukan 100."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "The three shares must add up to 100."
+msgstr "Ketiga bobot harus berjumlah 100."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"The written review is kept on the review form until it is shared with them."
+msgstr ""
+"Penilaian tertulis disimpan di formulir penilaian sampai dibagikan kepada "
+"karyawan."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Their manager"
+msgstr "Atasan mereka"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__self_state
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "Their own view"
+msgstr "Pandangan karyawan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Their own view: not started"
+msgstr "Pandangan karyawan: belum mulai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Their own view: sent"
+msgstr "Pandangan karyawan: terkirim"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Their own view: started"
+msgstr "Pandangan karyawan: sudah mulai"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Their view"
+msgstr "Pandangan mereka"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "They can read it as soon as you finish."
+msgstr "Karyawan bisa membacanya segera setelah Anda selesai."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "They can read it from %(day)s."
+msgstr "Karyawan bisa membacanya mulai %(day)s."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "They have not sent their own view yet. Finish the review without it?"
+msgstr "Karyawan belum mengirim pandangannya. Selesaikan penilaian tanpanya?"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid ""
+"They have not sent their own view yet. Their answers appear here once they "
+"do."
+msgstr ""
+"Karyawan belum mengirim pandangannya. Jawaban mereka muncul di sini setelah "
+"dikirim."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"They have not sent their own view yet. Wait for it, or finish without it."
+msgstr ""
+"Karyawan belum mengirim pandangannya. Tunggu, atau selesaikan tanpanya."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_form.py:0
+msgid ""
+"This form is locked: the first review on it was sent in on %(day)s. Copy it "
+"to another year to change it."
+msgstr ""
+"Formulir ini terkunci: penilaian pertama dikirim pada %(day)s. Salin ke "
+"tahun lain untuk mengubahnya."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "This goal year is closed."
+msgstr "Tahun sasaran ini sudah ditutup."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This is your own review. You fill in your part on your own page."
+msgstr ""
+"Ini penilaian Anda sendiri. Anda mengisi bagian Anda di halaman Anda "
+"sendiri."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This review does not use a review form."
+msgstr "Penilaian ini tidak menggunakan formulir penilaian."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This review is finished already."
+msgstr "Penilaian ini sudah selesai."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This year has been closed, so the review cannot change."
+msgstr "Tahun ini sudah ditutup, jadi penilaian tidak bisa diubah."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This year has been closed."
+msgstr "Tahun ini sudah ditutup."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "This year has no form in use."
+msgstr "Tahun ini tidak memiliki formulir yang digunakan."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Together"
+msgstr "Total"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid ""
+"Until then the employee sees only their own answers, and their goals score "
+"is not shown on their page. Closing the goal year shows every finished "
+"review."
+msgstr ""
+"Sampai saat itu karyawan hanya melihat jawabannya sendiri, dan skor "
+"sasarannya tidak ditampilkan di halamannya. Menutup tahun sasaran "
+"menampilkan semua penilaian yang selesai."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Up to 8 questions. Choose who answers each one."
+msgstr "Paling banyak 8 pertanyaan. Pilih siapa yang menjawab masing-masing."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Used at the end-of-year review. The half-way review stays as it is."
+msgstr ""
+"Digunakan pada penilaian akhir tahun. Penilaian tengah tahun tetap seperti "
+"biasa."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/goals_drawer_patch.js:0
+msgid "Wait for it"
+msgstr "Tunggu"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Waiting to be shown"
+msgstr "Menunggu ditampilkan"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Want to talk"
+msgstr "Ingin bicara"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "Wants to talk"
+msgstr "Ingin bicara"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_entry__ack_state__talk
+msgid "Wants to talk about it"
+msgstr "Ingin membicarakannya"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__5
+msgid "Well above"
+msgstr "Jauh di atas"
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_answer__rating__1
+msgid "Well below"
+msgstr "Jauh di bawah"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "What are you most proud of this year?"
+msgstr "Apa yang paling Anda banggakan tahun ini?"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__description
+msgid "What good looks like"
+msgstr "Seperti apa yang baik"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "What good looks like, in a sentence"
+msgstr "Seperti apa yang baik, dalam satu kalimat"
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/js/review_forms_studio.js:0
+msgid ""
+"What the end-of-year review asks, and how the overall result is worked out."
+msgstr ""
+"Apa yang ditanyakan penilaian akhir tahun, dan bagaimana hasil keseluruhan "
+"dihitung."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid ""
+"What the year came to, and what happens next. This is the part people read "
+"first."
+msgstr ""
+"Apa hasil tahun ini, dan apa selanjutnya. Inilah bagian yang dibaca pertama "
+"kali."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form__reveal
+msgid "When the employee sees the manager's part"
+msgstr "Kapan karyawan melihat bagian atasan"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/vault_ext.py:0
+msgid "Whether a document is a private review is set by the system."
+msgstr ""
+"Apakah sebuah dokumen merupakan penilaian pribadi ditentukan oleh sistem."
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__who
+msgid "Who answers"
+msgstr "Siapa yang menjawab"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_answer__employee_id
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_entry__employee_id
+msgid "Whose"
+msgstr "Milik siapa"
+
+#. module: pb_review_forms
+#: model:ir.model.fields,field_description:pb_review_forms.field_pb_review_form_line__name
+msgid "Words"
+msgstr "Kata-kata"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Write the form first."
+msgstr "Tulis formulirnya terlebih dahulu."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid ""
+"Write the overall comment. It is the part of the review people read first."
+msgstr ""
+"Tulis komentar keseluruhan. Itu bagian penilaian yang dibaca pertama kali."
+
+#. module: pb_review_forms
+#: model:ir.model.fields.selection,name:pb_review_forms.selection__pb_review_form_line__qtype__text
+msgid "Written answer"
+msgstr "Jawaban tertulis"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "You asked to talk about it"
+msgstr "Anda meminta untuk membicarakannya"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "You can read it from %(day)s."
+msgstr "Anda bisa membacanya mulai %(day)s."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/review_entry.py:0
+msgid "You can read it once your manager has finished."
+msgstr "Anda bisa membacanya setelah atasan selesai."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "You have read it"
+msgstr "Anda sudah membacanya"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "You have sent your own view already."
+msgstr "Anda sudah mengirim pandangan Anda."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "You have started your own view. Send it when it is ready."
+msgstr "Anda sudah mulai mengisi pandangan. Kirim jika sudah siap."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/controllers/portal.py:0
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your HR team has been asked to talk with you."
+msgstr "Tim HR Anda sudah diminta untuk berbicara dengan Anda."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Your manager has finished"
+msgstr "Atasan Anda sudah selesai"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your manager has finished this review already."
+msgstr "Atasan Anda sudah menyelesaikan penilaian ini."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your manager has finished. %(when)s"
+msgstr "Atasan Anda sudah selesai. %(when)s"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your manager's marks are shared with you together with your review."
+msgstr "Skor dari atasan dibagikan kepada Anda bersama penilaian Anda."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your own review is filled in on your own page."
+msgstr "Penilaian Anda sendiri diisi di halaman Anda sendiri."
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.portal_review_form
+msgid "Your own view is with your manager"
+msgstr "Pandangan Anda ada di atasan"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your own view is with your manager. They write their part next."
+msgstr "Pandangan Anda ada di atasan. Selanjutnya mereka menulis bagiannya."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/review_forms_studio.xml:0
+msgid "Your questions"
+msgstr "Pertanyaan Anda"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your review is finished and filed in your documents."
+msgstr "Penilaian Anda selesai dan disimpan di dokumen Anda."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your review is not ready to read yet."
+msgstr "Penilaian Anda belum siap dibaca."
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "Your review is ready to read"
+msgstr "Penilaian Anda siap dibaca"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/goals_ext.py:0
+msgid "Your review is ready to read. Tell us when you have read it."
+msgstr "Penilaian Anda siap dibaca. Beri tahu kami setelah Anda membacanya."
+
+#. module: pb_review_forms
+#. odoo-javascript
+#: code:addons/pb_review_forms/static/src/xml/goals_drawer.xml:0
+msgid "out of 5"
+msgstr "dari 5"
+
+#. module: pb_review_forms
+#. odoo-python
+#: code:addons/pb_review_forms/models/facade.py:0
+msgid "review"
+msgstr "penilaian"
+
+#. module: pb_review_forms
+#: model_terms:ir.ui.view,arch_db:pb_review_forms.report_review_form_document
+msgid "· <span>Manager:</span>"
+msgstr "· <span>Atasan:</span>"
