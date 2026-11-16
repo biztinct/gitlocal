@@ -17,7 +17,7 @@ repeat. Nothing in the platform's own source is edited. The engineering README
 beside this file explains how it is put together and what it deliberately
 leaves alone.
 """,
-    "version": "19.0.2.10.0",
+    "version": "19.0.2.11.0",
     "category": "Debranding",
     "summary": "Portable white-label layer: replaces every user-visible vendor "
                "reference with a configurable brand. No project dependencies.",
@@ -39,6 +39,7 @@ leaves alone.
     "data": [
         "views/res_config_settings_views.xml",
         "views/brand_layout.xml",
+        "views/report_title.xml",
         "data/apply_brand.xml",
     ],
     "assets": {
