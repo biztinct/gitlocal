@@ -6,11 +6,18 @@ Bank details that a pay data file brings wait for one second person
 wizard's result screen did not. Now its answer carries `bank_waiting` (the
 same sentence) when something waits, and the template draws it. With nothing
 waiting (or without pb_bank_ocr) the answer is exactly what it was.
+
+Where pb_payroll_templates is installed (all five live databases) the wizard
+loads every file "this run only" (`one_time=True`): nothing is written to any
+bank record, so nothing waits and the line never shows. The tests therefore
+call pb_payrun_wizard's own method (the path that saves to records) directly.
 """
 import base64
 import io
 
 from odoo.tests import TransactionCase, tagged
+
+from odoo.addons.pb_payrun_wizard.models.pb_payrun_wizard import PbPayrunWizard
 
 
 @tagged('post_install', '-at_install', 'wdgap_s6m')
@@ -24,8 +31,12 @@ class TestS6BankWaitingOnTheResult(TransactionCase):
         self.has_bank = 'pb.bank.change.request' in self.env
         if 'biz.approval.seed' in self.env:
             # the LOAD itself is not what this is about: processed at once
-            self.env['biz.approval.seed'].sudo().set_no_approval_needed(
-                self.company, 'loads')
+            for process in ('loads', 'runonly', 'records'):
+                try:
+                    self.env['biz.approval.seed'].sudo().set_no_approval_needed(
+                        self.company, process)
+                except Exception:   # noqa: BLE001 — a process this build lacks
+                    pass
         self.Wizard = self.env['pb.payrun.wizard']
         self.config = self.env['hr.formula.config'].create({
             'name': 'S6M bank wait scheme', 'code': 'S6MBANKWAIT',
@@ -71,9 +82,10 @@ class TestS6BankWaitingOnTheResult(TransactionCase):
         prep = self.Wizard.prepare_run({
             'name': 'S6M June', 'date_start': '2026-06-01',
             'date_end': '2026-06-30', 'formula_config_id': self.config.id})
-        return self.Wizard.attach_spreadsheet(
-            prep['run_id'], self.config.id, file_b64, 'june.xlsx',
-            '2026-06-01', '2026-06-30')
+        # pb_payrun_wizard's own method: the load that saves to records
+        return PbPayrunWizard.attach_spreadsheet(
+            self.Wizard, prep['run_id'], self.config.id, file_b64, 'june.xlsx',
+            '2026-06-01', '2026-06-30', one_time=False)
 
     def test_bank_details_from_the_file_are_said_to_wait(self):
         res = self._load(self._xlsx(
