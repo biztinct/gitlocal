@@ -10,6 +10,8 @@ One commit per item. RISKY tier (wages and contract pay lines).
 | EX1 A renewal carries the old pay lines | `fb78ea063` | `pb_people_advanced` 19.0.1.1.2 → **19.0.1.1.3**, `pb_contract_lifecycle` 19.0.1.3.2 → **19.0.1.3.3**, `pb_contract_rules` 19.0.1.0.0 → **19.0.1.0.1** |
 | PC1 Pay › Changes → Change job | `6fc7f9df7` | `pb_job_change` 19.0.1.0.0 → **19.0.1.0.1** |
 
+Follow-up commits: `93cd4cc10` (S8-A chip test aligned with SC2), `0bd634b65` + `bc3d57a6d` (walk findings, §3.3), `10a540d65` (this report).
+
 No `pb_lifecycle`, `pb_me_portal`, `pb_explorer`, `pb_pack_*`, formula engine, `pb_pay` or
 `pb_hiring` file was edited; no vendored addon. No legal minimum wage, no automatic step-up.
 
