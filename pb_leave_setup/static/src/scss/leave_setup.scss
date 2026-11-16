@@ -143,6 +143,20 @@
         div { display: flex; flex-direction: column; gap: 2px; }
         span:not(.pblk-banner-ic) { color: var(--pbim-muted, #475569); }
         &.is-soft { background: var(--pbim-bg, #F5F6FA); border-color: var(--pbim-line, #E2E8F0); }
+        // LV2: a warning that must be read before switching a kind on
+        &.is-amber {
+            background: #FFFBEB; border-color: #FDE68A; color: #92400E;
+            .pblk-banner-ic { color: #B45309; }
+        }
+    }
+    // LV1: the quiet "Show kinds for other countries (N)" line
+    .pblk-others { display: flex; justify-content: flex-end; margin: 2px 0 8px; }
+    .pblk-others-btn {
+        display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px;
+        border: 0; background: transparent; border-radius: 8px; cursor: pointer;
+        color: var(--pbim-muted, #64748B); font-size: 12.5px; font-weight: 600;
+        &:hover, &:focus-visible { color: var(--pbim-primary, #5A4BB0); background: var(--pbim-soft, #EDEAF8); }
+        &[aria-pressed="true"] { color: var(--pbim-primary, #5A4BB0); }
     }
     .pblk-banner-ic { flex: 0 0 auto; display: inline-flex; color: var(--pbim-primary, #5A4BB0); }
     .pblk-sec {

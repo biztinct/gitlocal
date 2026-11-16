@@ -1959,3 +1959,39 @@ msgstr "pembayaran belum ditentukan"
 #: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
 msgid "years:"
 msgstr "tahun:"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Figures differ by state — check yours before switching on"
+msgstr "Angka berbeda di setiap negara bagian — periksa milik Anda sebelum mengaktifkan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Hide kinds for other countries"
+msgstr "Sembunyikan jenis cuti negara lain"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Show kinds for other countries (%s)"
+msgstr "Tampilkan jenis cuti negara lain (%s)"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Other countries"
+msgstr "Negara lain"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "No kinds of leave for your countries yet"
+msgstr "Belum ada jenis cuti untuk negara Anda"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The kinds there are belong to other countries. Show them, or start from the ready-made kinds for your country."
+msgstr "Jenis cuti yang ada milik negara lain. Tampilkan, atau mulai dari jenis siap pakai untuk negara Anda."

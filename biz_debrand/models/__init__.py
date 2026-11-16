@@ -10,3 +10,4 @@ from . import ir_module_module
 from . import ir_ui_view
 from . import scrub
 from . import res_config_settings
+from . import ir_actions_report

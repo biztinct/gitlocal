@@ -114,6 +114,8 @@ PERSON_WHY = [
     ('no_net', 'No take-home line'),
     ('zero', 'No difference'),
     ('already', 'Already paid by another re-work'),
+    # BP1: payable — a leaver paid in the final payslip still to come
+    ('final', 'Has left — paid in the final payslip'),
 ]
 #: Retro line band -> does its size count, not its sign?
 MAGNITUDE_BANDS = ('deduction', 'employer')
@@ -362,9 +364,8 @@ class PbRetroReviewPay(models.Model):
                 entry.update(status='nothing', why='zero')
             elif any(r.payslip_id.id in taken for r in rows if r.line_ids):
                 entry.update(status='not_payable', why='already')
-            elif not emp or not emp.active or (
-                    'departure_date' in emp._fields and emp.departure_date
-                    and emp.departure_date <= today):
+            elif self._pb_has_left(emp, today) and not self._pb_final_payslip_to_come(emp):
+                # BP1: a leaver is paid only by a payslip still to come
                 entry.update(status='not_payable', why='left')
             elif currency_now != self.currency_id:
                 entry.update(status='not_payable', why='currency')
@@ -388,9 +389,65 @@ class PbRetroReviewPay(models.Model):
                         order='date_to desc, id desc', limit=1)
                     if last and last.formula_config_id != self.config_id:
                         entry.update(status='not_payable', why='moved')
+            if entry['status'] == 'payable' and self._pb_has_left(emp, today):
+                entry['why'] = 'final'      # BP1: paid in their final payslip
             out.append(entry)
         out.sort(key=lambda e: ((e['name'] or '').lower(), e['employee'].id))
         return out
+
+    # ------------------------------------------------------------ leavers (BP1)
+    # Owner ruling BP1 (2026-11-16): a person who has left, or whose leaving
+    # date has passed, is paid their back pay in their FINAL payslip when one
+    # is still to come in this scheme — taken exactly like anyone else's (same
+    # reservation, paid once, whole months, never below zero: BP2). When no
+    # further payslip will come they stay "not paid automatically" (as before).
+    @api.model
+    def _pb_has_left(self, emp, today=None):
+        today = today or fields.Date.context_today(self)
+        return bool(not emp or not emp.active or (
+            'departure_date' in emp._fields and emp.departure_date
+            and emp.departure_date <= today))
+
+    def _pb_final_payslip_to_come(self, emp):
+        """Will a regular payslip of this scheme still pay this leaver, for a
+        period after the re-worked months? True when:
+
+        a. one is already made and not finished (a regular run of this scheme
+           and company, starting after the re-worked months); or
+        b. the person record is still active, the leaving date falls after the
+           re-worked months, none of their own finished regular payslips of
+           this scheme reaches the leaving date, and the scheme's regular run
+           covering that date is not finished without them (their final pay
+           was not made elsewhere).
+
+        Archived people with no unfinished payslip: no (pay runs pick the
+        people on the books)."""
+        self.ensure_one()
+        if not emp:
+            return False
+        rec = self.sudo()
+        Slip = self.env['hr.payslip'].sudo()
+        after = _month_end(rec.month_to)
+        base = [('employee_id', '=', emp.id), ('formula_config_id', '=', rec.config_id.id),
+                ('company_id', '=', rec.company_id.id), ('date_from', '>', after)]
+        for slip in Slip.search(base + [('state', 'not in', DONE_STATES + ('cancel',))]):
+            if not slip._pb_backpay_eligible():
+                return True
+        if not emp.active or 'departure_date' not in emp._fields:
+            return False
+        left_on = emp.departure_date
+        if not left_on or left_on <= after:
+            return False
+        done = [('state', 'in', DONE_STATES), ('formula_config_id', '=', rec.config_id.id),
+                ('company_id', '=', rec.company_id.id), ('date_to', '>=', left_on)]
+        own = Slip.search(done + [('employee_id', '=', emp.id)])
+        if any(s._pb_backpay_regular() for s in own):
+            return False        # their final payslip is already finished
+        covering = Slip.search(done + [('date_from', '<=', left_on),
+                                       ('employee_id', '!=', emp.id)], limit=20)
+        if any(s._pb_backpay_regular() for s in covering):
+            return False        # the run of their last month is finished without them
+        return True
 
     def _pb_write_people(self, checks):
         self.ensure_one()
@@ -645,7 +702,9 @@ class PbRetroReviewPay(models.Model):
         for p in self.person_ids:
             if p.status == 'payable':
                 rows.append({'head': p.employee_name or '', 'sub': p.months_label or '',
-                             'cells': [board._signed(p.net, cur), _('Next pay run')],
+                             'cells': [board._signed(p.net, cur),
+                                       _('Final payslip') if p.why == 'final'
+                                       else _('Next pay run')],
                              'tone': ''})
         for p in self.person_ids.filtered(lambda x: x.status == 'not_payable'):
             rows.append({'head': p.employee_name or '', 'sub': p.months_label or '',
@@ -681,6 +740,7 @@ class PbRetroReviewPay(models.Model):
             'zero': _("No difference"),
             'already': _("Already paid as back pay by another re-work — add a one-off in "
                          "Updates if more is owed"),
+            'final': _("Has left — paid in their final payslip"),
         }.get(why or '', '')
 
     def _approval_freeze(self, request):
@@ -865,6 +925,27 @@ class HrPayslipBackpay(models.Model):
         if kind != 'regular':
             return 'kind'
         return ''
+
+    def _pb_backpay_regular(self):
+        """Is this payslip part of a REGULAR pay run (not top-up, not Extra,
+        not outside any run)? Whatever its state."""
+        self.ensure_one()
+        run = self.sudo().payslip_run_id
+        if not run:
+            return False
+        return ((run.pb_run_kind if 'pb_run_kind' in run._fields else '') or 'regular') \
+            == 'regular'
+
+    def _pb_backpay_final(self):
+        """This payslip is its person's last: they have left by its end."""
+        self.ensure_one()
+        emp = self.sudo().employee_id.with_context(active_test=False)
+        if not emp:
+            return False
+        if not emp.active:
+            return True
+        left_on = emp.departure_date if 'departure_date' in emp._fields else False
+        return bool(left_on and self.date_to and left_on <= self.date_to)
 
     def _pb_backpay_strip(self):
         """Take the back pay out of this payslip's lines (rebuild path)."""
@@ -1275,6 +1356,11 @@ class HrPayslipRunBackpay(models.Model):
                 if note.get('issue') == 'no_net':
                     words.append(_("Back pay for %s waits: this payslip has no take-home "
                                    "line", waiting))
+                elif slip._pb_backpay_final():
+                    # BP1: a leaver has no next pay run to wait for
+                    words.append(_("Back pay for %s does not fit in this final payslip "
+                                   "without take-home going below zero — settle it by "
+                                   "hand", waiting))
                 else:
                     words.append(_("Back pay for %s waits for the next pay run so "
                                    "take-home is not below zero", waiting))

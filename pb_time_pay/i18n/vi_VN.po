@@ -301,6 +301,7 @@ msgstr "Tên hiển thị"
 #. odoo-python
 #: code:addons/pb_time_pay/models/time_pay.py:0
 #: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__kind__early
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
 msgid "Early leave"
 msgstr "Về sớm"
 
@@ -338,6 +339,8 @@ msgstr "Miễn số phút này"
 #. odoo-javascript
 #: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
 #: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__state__excused
+#. odoo-python
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
 msgid "Excused"
 msgstr "Đã miễn"
 
@@ -460,6 +463,7 @@ msgstr "Số phút đi muộn và về sớm đã lấy"
 #. odoo-python
 #: code:addons/pb_time_pay/models/time_pay.py:0
 #: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__kind__late
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
 msgid "Late arrival"
 msgstr "Đi muộn"
 
@@ -501,6 +505,7 @@ msgstr "Người đánh dấu"
 #. odoo-javascript
 #: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
 #: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__minutes
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
 msgid "Minutes"
 msgstr "Phút"
 
@@ -970,3 +975,84 @@ msgstr "làm %(worked)s giờ, dự kiến %(expected)s giờ"
 #: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
 msgid "worked %s h"
 msgstr "làm %s giờ"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "<b>Late and early minutes</b>"
+msgstr "<b>Số phút đi muộn và về sớm</b>"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "<span>My Overtime</span>"
+msgstr "<span>Tăng ca của tôi</span>"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Late and early minutes"
+msgstr "Số phút đi muộn và về sớm"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "My Work"
+msgstr "Công việc của tôi"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "No late or early minutes"
+msgstr "Không có phút đi muộn hay về sớm"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Nothing counted"
+msgstr "Không tính phút nào"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Something looks wrong? Talk to your manager — they can change a decision until it is paid."
+msgstr "Có gì không đúng? Hãy trao đổi với quản lý của bạn — họ có thể thay đổi quyết định cho đến khi được trả lương."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "What"
+msgstr "Loại"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "What your manager confirmed from your clock times"
+msgstr "Những gì quản lý của bạn đã xác nhận từ giờ chấm công"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "What your manager confirmed from your clock times. Only counted minutes reach your pay."
+msgstr "Những gì quản lý của bạn đã xác nhận từ giờ chấm công. Chỉ số phút được tính mới ảnh hưởng đến lương."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "When your manager confirms minutes from your clock times, they show up here."
+msgstr "Khi quản lý của bạn xác nhận số phút từ giờ chấm công, chúng sẽ hiện ở đây."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "min counted"
+msgstr "phút được tính"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "minutes counted this month"
+msgstr "phút được tính trong tháng này"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Counted"
+msgstr "Được tính"

@@ -2699,3 +2699,38 @@ msgstr "Dibayar di"
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 msgid "Work finished payslips out again with today's figures, see exactly what would change, and pay the difference in the next pay run once it is approved."
 msgstr "Hitung ulang slip gaji yang sudah selesai dengan angka hari ini, lihat persis apa yang berubah, dan bayar selisihnya di penggajian berikutnya setelah disetujui."
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__final
+msgid "Has left — paid in the final payslip"
+msgstr "Sudah keluar — dibayar di slip gaji terakhir"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Has left — paid in their final payslip"
+msgstr "Sudah keluar — dibayar di slip gaji terakhirnya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Final payslip"
+msgstr "Slip gaji terakhir"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Will be paid in their final payslip"
+msgstr "Akan dibayar di slip gaji terakhirnya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "The final payslip does not take all of it — cancel the rest here and settle it by hand"
+msgstr "Slip gaji terakhir tidak menampung semuanya — batalkan sisanya di sini dan selesaikan secara manual"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay for %s does not fit in this final payslip without take-home going below zero — settle it by hand"
+msgstr "Rapel %s tidak muat di slip gaji terakhir ini tanpa membuat gaji bersih di bawah nol — selesaikan secara manual"

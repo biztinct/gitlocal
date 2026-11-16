@@ -99,6 +99,72 @@ class PbLeaveSetup(models.AbstractModel):
     def _scope(self):
         return ['|', ('company_id', '=', False), ('company_id', 'in', self._co_ids())]
 
+    # ------------------------------------------------- the customer's countries
+    # Owner ruling LV1 (2026-11-16): the screen lists only the kinds for
+    # countries where the customer has a company (and kinds for every
+    # country). Kinds of other countries are HIDDEN — never archived, deleted
+    # or changed — behind a quiet "Show kinds for other countries (N)".
+    # The people's own working countries (payroll country, leave policy) are
+    # counted too, so a kind somebody actually works under is never hidden.
+    @api.model
+    def _home_countries(self):
+        """Country codes the customer works in ('' never included)."""
+        codes = set(self.env['res.company'].sudo().search([]).mapped('country_id.code'))
+        Emp = self.env['hr.employee'].sudo()
+        if 'payroll_country' in Emp._fields:
+            for (code,) in self._safe(lambda: Emp._read_group(
+                    [('payroll_country', '!=', False)], ['payroll_country']), default=[]):
+                codes.add((code or '').upper())
+        Edition = self.env.get('pb.leave.policy.edition')
+        if Edition is not None and 'country_id' in Edition._fields:
+            codes |= set(Edition.sudo().with_context(active_test=False).search([])
+                         .mapped('country_id.code'))
+        codes.discard(False)
+        codes.discard('')
+        return codes
+
+    @api.model
+    def _home_domain(self):
+        """Kinds for the customer's countries or for every country. Empty
+        (= everything) when no company says where it is."""
+        codes = self._home_countries()
+        if not codes:
+            return []
+        ids = self.env['res.country'].sudo().search([('code', 'in', sorted(codes))]).ids
+        # the kind's country is its policy country, else its stock country
+        # (pb.timeoff._type_country)
+        return ['|', ('pb_policy_country_id', 'in', ids),
+                '&', ('pb_policy_country_id', '=', False),
+                '|', ('country_id', '=', False), ('country_id', 'in', ids)]
+
+    @api.model
+    def _list_scope(self, other=False):
+        """What the list and its numbers count: the companies' kinds, and —
+        unless the reader asked for the others — only the home countries'."""
+        if other:
+            return self._scope()
+        return Domain.AND([self._scope(), self._home_domain()])
+
+    @api.model
+    def _is_home(self, kind):
+        """Is this kind shown without the "other countries" toggle?"""
+        home = self._home_domain()
+        return not home or bool(self._Kind().search_count(
+            Domain.AND([[('id', '=', kind.id)], home])))
+
+    @api.model
+    def _other_count(self):
+        home = self._home_domain()
+        if not home:
+            return 0
+        Kind = self._Kind()
+        return max(0, Kind.search_count(self._scope())
+                   - Kind.search_count(Domain.AND([self._scope(), home])))
+
+    @api.model
+    def _show_other(self):
+        return bool(self._pbf_ctx().get('other'))
+
     @api.model
     def _Kind(self):
         return self.env['hr.leave.type'].sudo().with_context(active_test=False)
@@ -158,12 +224,22 @@ class PbLeaveSetup(models.AbstractModel):
 
     @api.model
     def _countries(self):
+        """The ready-made countries; `home` = a country the customer works in
+        (offered first, the others behind "Other countries")."""
         Country = self.env['res.country'].sudo()
+        home = self._home_countries()
         out = []
         for code in COUNTRIES:
             c = Country.search([('code', '=', code)], limit=1)
-            out.append({'code': code, 'label': c.name or code})
+            out.append({'code': code, 'label': c.name or code, 'home': code in home})
         return out
+
+    @api.model
+    def _starter_warning(self, code):
+        """A line every kind of a country's ready-made set carries (LV2)."""
+        if (code or '').upper() == 'IN':
+            return _('Figures differ by state — check yours before switching on')
+        return ''
 
     @api.model
     def _unit_label(self, kind):
@@ -243,11 +319,13 @@ class PbLeaveSetup(models.AbstractModel):
 
     # ================================================================ board
     @api.model
-    def get_board(self):
+    def get_board(self, other=False):
+        """`other`: also count the kinds for countries the customer does not
+        work in (the "Show kinds for other countries" toggle)."""
         if not self._can_read():
             return {'allowed': False, 'why': self._refusal()}
         Kind = self._Kind()
-        scope = self._scope()
+        scope = self._list_scope(bool(other))
 
         def count(domain):
             return self._safe(lambda: Kind.search_count(Domain.AND([scope, domain])))
@@ -259,11 +337,18 @@ class PbLeaveSetup(models.AbstractModel):
         pay_open_kinds = self._safe(lambda: Kind.search(pay_open_domain, order='name', limit=8),
                                     default=Kind)
         no_start = self._safe(self._no_start_people, default={'count': 0, 'names': []})
+        home = self._home_countries()
+        default_country = self.env.company.country_id.code or ''
+        if default_country not in COUNTRIES:
+            default_country = next((c for c in COUNTRIES if c in home), 'VN')
         return {
             'allowed': True,
             'why': '',
             'can_write': self._can_write(),
             'total': count([]),
+            'other': bool(other),
+            'other_count': self._safe(self._other_count),
+            'home_countries': sorted(home),
             'kpis': {
                 'on': count(STATE_DOMAINS['on']),
                 'review': count(STATE_DOMAINS['review']),
@@ -281,8 +366,7 @@ class PbLeaveSetup(models.AbstractModel):
             'langs': [short for code, short in (('vi_VN', 'vi'), ('id_ID', 'id'))
                       if code in {c for c, _n in self.env['res.lang'].get_installed()}],
             'default_company_id': self.env.company.id,
-            'default_country': (self.env.company.country_id.code or '')
-            if (self.env.company.country_id.code or '') in COUNTRIES else 'VN',
+            'default_country': default_country,
         }
 
     @api.model
@@ -316,7 +400,8 @@ class PbLeaveSetup(models.AbstractModel):
         return self._Kind()
 
     def _pbf_base_domain(self):
-        return self._scope()
+        # the kit's calls carry the toggle as `pbf_ctx.other` (LV1)
+        return self._list_scope(self._show_other())
 
     def _pbf_search_fields(self):
         return ['name']
@@ -453,6 +538,8 @@ class PbLeaveSetup(models.AbstractModel):
             'state': state, 'state_label': state_label,
             'review': bool(kind.pb_ls_review),
             'starter': bool(kind.pb_ls_starter_key),
+            'warning': self._starter_warning((kind.pb_ls_starter_key or '').split('.')[0]),
+            'home': self._is_home(kind),
             'sources': self._sources(kind),
             'company_id': kind.company_id.id or 0,
             'company': kind.company_id.name or _('Every company'),
@@ -857,6 +944,7 @@ class PbLeaveSetup(models.AbstractModel):
         company = self._company(company_id)
         return {'country': (country or '').upper(), 'company_id': company.id,
                 'company': company.name,
+                'warning': self._starter_warning(country),
                 'rows': self.env['pb.leave.starters'].sudo()._review_rows(country, company)}
 
     @api.model

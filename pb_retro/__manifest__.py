@@ -50,7 +50,7 @@ WDGAP W2-D2 — pay the difference (owner ruling R1, 2026-11-15):
     Paid once (reserved / paid / released, like loan instalments); take-home
     never below zero (whole months wait for the next run).
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
