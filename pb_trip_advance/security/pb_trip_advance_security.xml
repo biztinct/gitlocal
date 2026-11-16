@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- WDGAP S6-C: a trip's cash advance is seen only inside the companies the
+       reader works in. Employees hold no right: their pages read it under
+       sudo after the ownership guard. -->
+  <record id="rule_pb_trip_advance_company" model="ir.rule">
+    <field name="name">Trip cash advances: own companies</field>
+    <field name="model_id" ref="model_pb_trip_advance"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+  <record id="rule_pb_trip_advance_offset_company" model="ir.rule">
+    <field name="name">Trip cash advance claims: own companies</field>
+    <field name="model_id" ref="model_pb_trip_advance_offset"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+  <record id="rule_pb_trip_advance_recovery_company" model="ir.rule">
+    <field name="name">Trip cash advance taken back: own companies</field>
+    <field name="model_id" ref="model_pb_trip_advance_recovery"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+</odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-C — My Payobook: where the money of a pay-run claim is.
+       By inheritance of pb_me_expense's pages (no file of it is edited).
+       `pb_pay` comes from `pb.me.expense.claim_page` (the claim is the
+       caller's own; sudo after the guard). Claims finance pays keep every
+       word they had. -->
+
+  <!-- one claim: the Approved and Paid panels -->
+  <template id="portal_expense_claim_pay" name="Expenses: paid in pay (ESS)"
+            inherit_id="pb_me_expense.portal_expense_claim">
+    <xpath expr="//section[contains(@t-elif, &quot;'approved'&quot;)]/div[hasclass('pbex-panel-t')]/span" position="attributes">
+      <attribute name="t-if">not pb_pay</attribute>
+    </xpath>
+    <xpath expr="//section[contains(@t-elif, &quot;'approved'&quot;)]/div[hasclass('pbex-panel-t')]/span" position="after">
+      <span t-if="pb_pay" class="pbexp-pay" t-att-data-pbexp-step="pb_pay['step']"><t t-out="pb_pay['me']"/> <b class="pbexp-pay-amt" t-if="pb_pay['step'] in ('waiting', 'run')" t-out="pb_pay['amount']"/></span>
+    </xpath>
+    <xpath expr="//section[contains(@t-elif, &quot;'paid'&quot;)]/div[hasclass('pbex-panel-t')]/span" position="attributes">
+      <attribute name="t-if">not pb_pay</attribute>
+    </xpath>
+    <xpath expr="//section[contains(@t-elif, &quot;'paid'&quot;)]/div[hasclass('pbex-panel-t')]/span" position="after">
+      <span t-if="pb_pay" class="pbexp-pay" t-att-data-pbexp-step="pb_pay['step']"><t t-out="pb_pay['me']"/></span>
+    </xpath>
+  </template>
+
+  <!-- the new-claim page: "What happens next", step 3 -->
+  <template id="portal_expense_new_pay" name="Expenses: new claim, paid in pay (ESS)"
+            inherit_id="pb_me_expense.portal_expense_new">
+    <xpath expr="//ol[hasclass('pbex-next-steps')]/li[3]" position="attributes">
+      <attribute name="t-if">(request.env.company.sudo().pb_claims_paid_by or 'finance') != 'payrun'</attribute>
+    </xpath>
+    <xpath expr="//ol[hasclass('pbex-next-steps')]/li[3]" position="after">
+      <li t-if="(request.env.company.sudo().pb_claims_paid_by or 'finance') == 'payrun'"><span class="pbex-next-n">3</span><span><b>It is paid back in your next pay</b><span>A separate line on your payslip, with no tax. The claim shows which pay it was in.</span></span></li>
+    </xpath>
+  </template>
+
+</odoo>

@@ -1,0 +1,9 @@
+// =====================================================================
+// pb_expense_payroll — My Payobook: the "paid in your pay" sentence on a
+// claim. Scoped under the expenses page root (.pbme.pbex).
+// =====================================================================
+.pbme.pbex .pbexp-pay {
+    display: block;
+    color: var(--pbim-text, #1B1733);
+    .pbexp-pay-amt { font-weight: 800; white-space: nowrap; }
+}
