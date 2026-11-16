@@ -14,7 +14,10 @@
             <xpath expr="//notebook" position="inside">
                 <!-- Insurance (BH) Tab -->
                 <page string="Insurance (BH)" name="vietnam_insurance">
-                    <group>
+                    <field name="vn_uses_payroll_profile" invisible="1"/>
+                    <field name="vn_payroll_insurance_summary" nolabel="1" readonly="1"
+                           invisible="not vn_uses_payroll_profile"/>
+                    <group invisible="vn_uses_payroll_profile">
                         <group string="Insurance Policy">
                             <field name="vn_insurance_policy_id"/>
                         </group>
@@ -25,7 +28,7 @@
                         </group>
                     </group>
                     
-                    <group string="Social Insurance (BHXH)">
+                    <group string="Social Insurance (BHXH)" invisible="vn_uses_payroll_profile">
                         <group>
                             <field name="vn_si_number"/>
                             <field name="vn_si_enrolled"/>
@@ -37,7 +40,7 @@
                         </group>
                     </group>
                     
-                    <group string="Health Insurance (BHYT)">
+                    <group string="Health Insurance (BHYT)" invisible="vn_uses_payroll_profile">
                         <group>
                             <field name="vn_hi_number"/>
                             <field name="vn_hi_enrolled"/>
@@ -48,7 +51,7 @@
                         </group>
                     </group>
                     
-                    <group string="Unemployment Insurance (BHTN)">
+                    <group string="Unemployment Insurance (BHTN)" invisible="vn_uses_payroll_profile">
                         <group>
                             <field name="vn_ui_number"/>
                             <field name="vn_ui_enrolled"/>
@@ -59,7 +62,7 @@
                         </group>
                     </group>
                     
-                    <group string="Contribution Summary" class="o_label_nowrap">
+                    <group string="Contribution Summary" class="o_label_nowrap" invisible="vn_uses_payroll_profile">
                         <group>
                             <field name="vn_employer_insurance_cost" widget="monetary"/>
                             <field name="vn_employee_insurance_cost" widget="monetary"/>
@@ -72,7 +75,9 @@
                 
                 <!-- Tax / Dependents Tab -->
                 <page string="Tax &amp; Dependents" name="vietnam_tax">
-                    <group string="Tax Configuration">
+                    <field name="vn_payroll_tax_summary" nolabel="1" readonly="1"
+                           invisible="not vn_uses_payroll_profile"/>
+                    <group string="Tax Configuration" invisible="vn_uses_payroll_profile">
                         <group>
                             <field name="vn_tax_table_id"/>
                             <field name="vn_tax_regime"/>
@@ -87,7 +92,11 @@
                     
                     <group string="Dependents (Người phụ thuộc)">
                         <div class="col-12">
-                            <div class="d-flex justify-content-between mb-2">
+                            <p class="text-muted" invisible="not vn_uses_payroll_profile">
+                                These are supporting dependent records. They do not automatically change the
+                                registered payroll count shown above. Confirm registration and dates for pending records.
+                            </p>
+                            <div class="d-flex justify-content-between mb-2" invisible="vn_uses_payroll_profile">
                                 <div>
                                     <strong>All Dependent Records:</strong>
                                     <field name="vn_dependent_record_count" class="oe_inline"/>
@@ -112,7 +121,7 @@
                                            decoration-success="status == 'eligible'"
                                            decoration-warning="status == 'pending'"
                                            decoration-danger="status == 'ineligible'"/>
-                                    <field name="tax_allowance"/>
+                                    <field name="tax_allowance" column_invisible="parent.vn_uses_payroll_profile"/>
                                 </list>
                             </field>
                         </div>
