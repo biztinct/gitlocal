@@ -224,5 +224,11 @@ class PbHiringInternalPortal(PbMePortal):
             'state': a._pbhi_state(),
             'told_on': a.pb_manager_told_on,
         } for a in moves]
+        joining = [{
+            'name': o.applicant_id.employee_id.name or '',
+            'job': o.job_title or '',
+            'when': o.expected_join_date or o.start_date,
+        } for o in request.env['pb.me.home']._pbhi_team_joiners(emp)]
         return request.render('pb_hiring_internal.portal_my_team_moves',
-                              {'page_name': 'pbhi_moves', 'rows': rows})
+                              {'page_name': 'pbhi_moves', 'rows': rows,
+                               'joining': joining})

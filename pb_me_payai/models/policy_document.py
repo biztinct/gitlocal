@@ -260,20 +260,31 @@ class PbPolicySection(models.Model):
 
 
 class PbPolicyQuestion(models.Model):
-    """One question asked — the count HR sees and the daily limits read.
+    """One question asked — WITHOUT the person (owner ruling PA1, 2026-11-16).
 
-    The QUESTION'S WORDS ARE NOT KEPT: only who asked (for the per-person
-    limit), when, what came of it, and which policy files answered."""
+    Kept: the question AFTER the name / phone / email / amount scrub (the
+    copy that may leave the system — never the typed original), the policy
+    and section used, the outcome, whether it used the AI account, and the
+    DAY. NOT kept, anywhere on the row: the employee, the login, a session,
+    an address, a time of day. `_log_access = False` removes the ORM's own
+    stamps (create_uid / write_uid / create_date / write_date) from the
+    table altogether, so nothing records who wrote the row or when.
+
+    The per-person daily limit is counted in `pb.policy.quota`, which shares
+    no id, no order and no timestamp with these rows (see there).
+
+    Nobody reads this table directly except an administrator: HR reads it
+    only through `pb.policy.desk`, which shows numbers only when the company
+    has fewer than five people who could ask."""
     _name = 'pb.policy.question'
     _description = 'Policy question asked by an employee'
-    _order = 'asked_on desc, id desc'
+    _order = 'day desc, id desc'
+    _log_access = False
 
     company_id = fields.Many2one('res.company', required=True, index=True)
-    employee_id = fields.Many2one('hr.employee', index=True,
-                                  ondelete='set null')
-    asked_on = fields.Datetime(default=fields.Datetime.now, required=True)
     day = fields.Date(required=True, index=True,
                       default=fields.Date.context_today)
+    question = fields.Text(string='Question (names taken out)')
     outcome = fields.Selection([
         ('answered', 'Answered from a policy'),
         ('not_found', 'Not in the policies'),
@@ -283,3 +294,24 @@ class PbPolicyQuestion(models.Model):
     called_ai = fields.Boolean(string='Used the AI account')
     document_ids = fields.Many2many('pb.policy.document',
                                     string='Policies used')
+    section_id = fields.Many2one('pb.policy.section', string='Section used',
+                                 ondelete='set null')
+
+
+class PbPolicyQuota(models.Model):
+    """The per-person daily limit counter, kept apart from the questions.
+
+    One row per person per DAY, keyed by a one-way code (HMAC of the
+    employee and the day with this database's own secret): no employee
+    field, no login, no ORM stamps (`_log_access = False`). Rows of earlier
+    days are deleted on the next question, so no history of who asked how
+    much is ever kept. Nothing on a question row points here, and nothing
+    here points at a question: a question cannot be joined to a person.
+    Readable by an administrator only."""
+    _name = 'pb.policy.quota'
+    _description = 'Policy questions: daily count per person'
+    _log_access = False
+
+    key = fields.Char(required=True, index=True)
+    day = fields.Date(required=True, index=True)
+    count = fields.Integer(default=0)

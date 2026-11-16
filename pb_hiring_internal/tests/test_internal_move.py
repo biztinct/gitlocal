@@ -122,6 +122,54 @@ class TestInternalMove(base.JoiningCase):
         self.assertEqual(offer.state, 'joined')
         self.assertEqual(self.applicant.pb_job_change_state, 'to_do')
 
+    # IM1-1 — internal: NO "Before they join" list, NO new-joiner email; the
+    # new manager gets ONE note and sees it on their home
+    def test_im1_internal_no_new_joiner_list(self):
+        boss_user = self.env['res.users'].sudo().with_context(no_reset_password=True).create({
+            'name': 'DEMO S6B New manager', 'login': 'wdgap_s6b_im1_boss',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        boss_user.write({'notification_type': 'inbox'})
+        self.boss.sudo().write({'user_id': boss_user.id})
+        Notif = self.env['mail.notification'].sudo()
+        before_notes = Notif.search_count([('res_partner_id', '=', boss_user.partner_id.id)])
+        before_mails = self.env['mail.mail'].sudo().search([]).ids
+        offer = self._signed()
+        self.assertFalse(offer.prejoin_ids, 'IM1: no Before they join list for an internal move')
+        new = self._mails(before_mails)
+        joiner_mails = new.filtered(lambda m: 'demo.s6b.internal@example.com' in (m.email_to or '')
+                                    and any(w in (m.subject or '').lower()
+                                            for w in ('laptop', 'buddy', 'chat', 'before')))
+        self.assertFalse(joiner_mails, 'IM1: no new-joiner email to them')
+        self.assertTrue(self.applicant.pb_new_manager_told_on)
+        self.assertEqual(self.applicant.pb_new_manager_id, self.boss)
+        self.assertEqual(Notif.search_count([('res_partner_id', '=', boss_user.partner_id.id)]),
+                         before_notes + 1, 'IM1: one note for the new manager')
+        note = Notif.search([('res_partner_id', '=', boss_user.partner_id.id)], order='id desc', limit=1)
+        self.assertIn('is joining your team', note.mail_message_id.body)
+        # telling again does nothing
+        offer._lay_out_prejoin()
+        self.assertEqual(Notif.search_count([('res_partner_id', '=', boss_user.partner_id.id)]),
+                         before_notes + 1)
+        rows = []
+        self.env['pb.me.home'].with_user(boss_user)._pbme_needs_extra(
+            self.boss, lambda key, n, url, **kw: rows.append((key, n)))
+        self.assertIn(('pbhi_team_join', 1), rows)
+
+    # IM1-2 — an OUTSIDE hire still gets the full list exactly as today
+    def test_im1_external_list_unchanged(self):
+        outside = self.env['hr.applicant'].create({
+            'partner_name': 'DEMO S6B Outsider IM1', 'email_from': 'demo.s6b.im1@example.com',
+            'job_id': self.job.id, 'company_id': self.company.id,
+            'pb_requisition_id': self.req.id})
+        self.req.sudo().write({'selected_applicant_id': outside.id})
+        offer = self._signed()
+        tpls = self.env['pb.hiring.prejoin.template'].sudo().search(
+            [('company_id', '=', self.company.id)])
+        self.assertTrue(offer.prejoin_ids, 'IM1: an outside hire still gets the list')
+        self.assertEqual(len(offer.prejoin_ids), len(tpls))
+        self.assertEqual(set(offer.prejoin_ids.mapped('kind')), set(tpls.mapped('kind')))
+        self.assertFalse(outside.pb_new_manager_told_on)
+
     # B33 — an OUTSIDE candidate still joins exactly as before
     def test_b33_outside_candidate_unchanged(self):
         outside = self.env['hr.applicant'].create({

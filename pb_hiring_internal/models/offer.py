@@ -22,8 +22,11 @@ can reach them for an internal candidate either.
 """
 import logging
 
+from markupsafe import Markup, escape
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.misc import format_date
 
 from odoo.addons.pb_hiring.models.hiring_common import leg
 
@@ -81,6 +84,59 @@ class HiringOfferInternal(models.Model):
         if self._pbhi_internal():
             return False
         return super()._ensure_case()
+
+    # ------------------------------------------- before they join (IM1)
+    def _lay_out_prejoin(self):
+        """Owner ruling IM1 (2026-11-16): somebody who already works here
+        gets NONE of the new-joiner "Before they join" list (laptop, buddy,
+        first chat — every email and reminder hangs off those items). Their
+        new manager gets ONE note that the person is joining the team."""
+        if len(self) == 1 and self._pbhi_internal():
+            leg(self.env, 'telling the new manager on offer %s' % self.name,
+                self._pbhi_tell_new_manager)
+            return self.env['pb.hiring.prejoin']
+        return super()._lay_out_prejoin()
+
+    def _pbhi_tell_new_manager(self):
+        """Once per application: stamp who and when, and put one note in
+        the new manager's inbox when they use it. A manager without a
+        backend login reads it on their own home ("Needs you")."""
+        self.ensure_one()
+        offer = self.sudo()
+        app = offer.applicant_id
+        if app.pb_new_manager_told_on:
+            return False
+        manager = offer._manager()
+        app.with_context(pbhi_no_tell=True).write({
+            'pb_new_manager_told_on': fields.Datetime.now(),
+            'pb_new_manager_id': manager.id or False,
+        })
+        if not manager:
+            return False
+        emp = app.employee_id
+        user = manager.user_id
+        if user and not user.share and user.notification_type == 'inbox':
+            lang = user.lang or self.env.lang
+            env_l = self.with_context(lang=lang).env
+            when = offer.expected_join_date or offer.start_date
+            body = Markup('<p>%s</p>') % escape(env_l._(
+                "%(who)s is joining your team as %(job)s from %(when)s. They "
+                "already work here, so HR changes their job on their record.",
+                who=emp.name or '', job=offer.job_title or '',
+                when=format_date(env_l, when) if when else ''))
+            try:
+                with self.env.cr.savepoint():
+                    emp.sudo().message_notify(
+                        partner_ids=user.partner_id.ids, body=body,
+                        subject=env_l._("Joining your team"))
+            except Exception:           # noqa: BLE001 — a courtesy
+                _logger.warning('pb_hiring_internal: could not note the new '
+                                'manager on offer %s', offer.id, exc_info=True)
+        offer.message_post(body=_(
+            "%(who)s already works here, so no Before they join list was made. "
+            "%(manager)s, their new manager, was told.",
+            who=emp.name or '', manager=manager.name or ''))
+        return True
 
     # ------------------------------------------------------- drafting
     @api.model

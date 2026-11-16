@@ -1,5 +1,19 @@
 # WDGAP S6-B — Apply and ask — report
 
+> **PAUSED** (owner pause, 2026-11-16, during the PA1 / IM1 follow-up).
+> Done and committed as WIP: IM1 (no "Before they join" list for internal moves, one note +
+> "Joining your team" for the new manager) and PA1 (question log without any person,
+> `_log_access = False`; separate coded daily counter `pb.policy.quota`; HR list "Could not
+> answer" first + Excel; numbers only under 5 people), tests IM1-1/2 and PA1-1…7, vi/id PO
+> files refilled (PO gate passes locally). Versions bumped to 19.0.1.1.0.
+> **Exact next step on resume:** test database `wdgap_s6b_t` is kept (both modules installed,
+> clean dump at `scratchpad/s6b/clean.dump`). Run
+> `bash scratchpad/s6b/go.sh f1 -u pb_hiring_internal,pb_me_payai --test-enable --test-tags /pb_hiring_internal,/pb_me_payai`
+> and fix any failure (the run was stopped at test 54 of ~70, no failure reported yet); then the
+> neighbour run `/pb_hiring,/pb_me_portal,/pb_ask_hr` (compare with §4.2), a short walk of
+> Home › Policies questions list and `/my/jobs/moves`, write report sections "Follow-up PA1"
+> and "Follow-up IM1", commit, push, drop `wdgap_s6b_t`.
+
 **Status: DONE** (2026-11-16). Branch `wdgap-s6b` (from `origin/19.1` @ `abc2259b6`). Two NEW
 modules, no existing file edited. Built, tested (64 new tests, 0 failed; neighbour suites equal
 to baseline), browser-walked and self-reviewed by the S6-B builder. Not deployed. Test database

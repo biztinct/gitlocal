@@ -22,10 +22,15 @@ PayAI on the employee's own pages, for company policies only.
   * **Private by design.** Only the question (with names, contact details
     and amounts taken out) and the matching policy words leave the system.
     Never the employee's name, record or figures.
+  * **HR reads the questions, never who asked.** The questions are kept with
+    names taken out, by day only, with nothing that points at a person; a
+    "Could not answer" list and an Excel file show HR where the policies
+    have gaps. In a company with fewer than five people who could ask, HR
+    sees numbers only.
 
 Built as WDGAP Step 6, phase S6-B.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

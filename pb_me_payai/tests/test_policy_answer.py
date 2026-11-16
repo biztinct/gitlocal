@@ -81,11 +81,12 @@ class TestPolicyAnswer(TransactionCase):
         self.assertEqual(res['sources'][0]['section'], '2. Wedding leave')
         self.assertEqual(len(fake.calls), 1)
         log = self.env['pb.policy.question'].sudo().search(
-            [('employee_id', '=', self.emp.id)], limit=1)
+            [('company_id', '=', self.company.id)], limit=1)
         self.assertEqual(log.outcome, 'answered')
         self.assertTrue(log.called_ai)
         self.assertEqual(log.document_ids, self.doc)
-        self.assertNotIn('question', log._fields, 'P6: the words of the question are not kept')
+        self.assertEqual(log.section_id.heading, '2. Wedding leave')
+        self.assertIn('wedding leave', log.question)
 
     # P7 — not in the files: said so, and the AI account is not even asked
     def test_p07_not_in_the_files(self):

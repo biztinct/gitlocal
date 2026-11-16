@@ -32,8 +32,33 @@ export class PbPolicyDesk extends Component {
             loading: true, failed: false, d: null, busy: false,
             upload: { name: "", language: "any", file: null },
             limits: { person: 0, company: 0 },
+            // PA1: the questions people asked, without names
+            q: { which: "not_answered", rows: [], loading: false },
         });
-        onWillStart(() => this.load());
+        onWillStart(async () => {
+            await this.load();
+            await this.loadQuestions();
+        });
+    }
+
+    async loadQuestions(which) {
+        const q = this.state.q;
+        if (which) { q.which = which; }
+        if (!this.state.d || !this.state.d.questions_shown) { q.rows = []; return; }
+        q.loading = true;
+        try {
+            q.rows = await this.orm.call(MODEL, "get_questions", [q.which]);
+        } catch (e) {
+            console.warn("pb_me_payai: could not read the questions", e);
+            q.rows = [];
+        } finally {
+            q.loading = false;
+        }
+    }
+
+    get downloadUrl() {
+        const d = this.state.d;
+        return `/pb_me_payai/questions.xlsx?company_id=${d.company_id}&which=${this.state.q.which}`;
     }
 
     take(d) {

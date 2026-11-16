@@ -59,9 +59,37 @@ class PbMeHomeInternalJobs(models.AbstractModel):
             or (a._pbhi_state() == 'moved' and a.pb_manager_told_on >= since))
 
     @api.model
+    def _pbhi_team_joiners(self, manager):
+        """IM1: people already working here who are joining `manager`'s team
+        (signed offer, the new manager was told), until a fortnight after
+        the joining date."""
+        if not manager:
+            return self.env['pb.hiring.offer'].sudo().browse()
+        today = fields.Date.context_today(self)
+        apps = self.env['hr.applicant'].sudo().with_context(
+            active_test=False).search([
+                ('pb_internal', '=', True),
+                ('pb_new_manager_id', '=', manager.id)], limit=50)
+        offers = self.env['pb.hiring.offer'].sudo().search(
+            [('applicant_id', 'in', apps.ids), ('state', 'in', ('signed', 'joined'))],
+            order='expected_join_date, id')
+        return offers.filtered(
+            lambda o: not (o.expected_join_date or o.start_date)
+            or (o.expected_join_date or o.start_date) >= today - timedelta(days=14))
+
+    @api.model
     def _pbme_needs_extra(self, emp, put):
         super()._pbme_needs_extra(emp, put)
         _ = self.env._
+        joiners = self._pbhi_team_joiners(emp)
+        if joiners:
+            n = len(joiners)
+            first = joiners[:1]
+            label = _('%s is joining your team', first.applicant_id.employee_id.name or '') \
+                if n == 1 else _('%s people are joining your team', n)
+            put('pbhi_team_join', n, MOVES_PAGE, label=label,
+                sub=_('They already work here. HR changes their job on their record.'),
+                icon='user-plus', tone='blue', sentence=label + '.')
         moves = self._pbhi_team_moves(emp)
         n = len(moves)
         if not n:

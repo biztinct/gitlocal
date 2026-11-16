@@ -60,6 +60,44 @@
                     <p t-if="!d.can_switch" class="pbpd-foot">Only an HR manager switches PayAI on for employees and sets the limits.</p>
                 </section>
 
+                <section class="pbpd-card pbpd-questions">
+                    <div class="pbpd-q-head">
+                        <h3 class="pbpd-h2">Questions people asked</h3>
+                        <a t-if="d.questions_shown" class="pbim-btn ghost pbim-btn-sm" t-att-href="downloadUrl" download="">
+                            <t t-out="ic('download', 14)"/><span>Excel</span>
+                        </a>
+                    </div>
+                    <p class="pbpd-foot pbpd-q-note">Names, phone numbers and amounts are taken out, and nothing says who asked. Use the questions PayAI could not answer to fill gaps in the policies.</p>
+                    <t t-if="!d.questions_shown">
+                        <div class="pbpd-empty pbpd-empty--in">
+                            <span class="pbpd-empty-ic" t-out="ic('eyeOff', 22)"/>
+                            <h3>Numbers only in a small company</h3>
+                            <p>In a company with fewer than five people who can ask, a question could point at the person who asked it, so only the numbers above are shown.</p>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <nav class="pbpd-chips" role="tablist">
+                            <button type="button" role="tab" t-att-class="state.q.which === 'not_answered' ? 'pbpd-chip is-on' : 'pbpd-chip'" t-on-click="() => this.loadQuestions('not_answered')">Could not answer</button>
+                            <button type="button" role="tab" t-att-class="state.q.which === 'answered' ? 'pbpd-chip is-on' : 'pbpd-chip'" t-on-click="() => this.loadQuestions('answered')">Answered</button>
+                            <button type="button" role="tab" t-att-class="state.q.which === 'all' ? 'pbpd-chip is-on' : 'pbpd-chip'" t-on-click="() => this.loadQuestions('all')">All</button>
+                        </nav>
+                        <div t-if="!state.q.loading and !state.q.rows.length" class="pbpd-q-none">
+                            <t t-if="state.q.which === 'not_answered'">Nothing PayAI could not answer. The policies cover what people asked.</t>
+                            <t t-else="">No questions here yet.</t>
+                        </div>
+                        <ol t-else="" class="pbpd-qlist">
+                            <li t-foreach="state.q.rows" t-as="r" t-key="r_index" class="pbpd-q">
+                                <span class="pbpd-q-day" t-out="r.day"/>
+                                <span class="pbpd-q-text" t-out="r.question"/>
+                                <span class="pbpd-q-src">
+                                    <t t-if="r.answered"><t t-out="r.policy"/><t t-if="r.section"> · <t t-out="r.section"/></t></t>
+                                    <span t-else="" class="pbpd-q-miss" t-out="r.outcome"/>
+                                </span>
+                            </li>
+                        </ol>
+                    </t>
+                </section>
+
                 <section class="pbpd-card">
                     <h3 class="pbpd-h2">Policy files<span class="pbpd-n" t-out="d.documents.length"/></h3>
                     <div class="pbpd-upload">

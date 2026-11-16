@@ -12,6 +12,7 @@ from odoo import _, api, models
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.misc import format_date
 
+from .policy_answer import MIN_PEOPLE_FOR_QUESTIONS
 from .policy_document import LANGS, MAX_BYTES
 
 #: File types HR may upload.
@@ -68,7 +69,51 @@ class PbPolicyDesk(models.AbstractModel):
                                            date_format='d MMM y') if d.create_date else '',
             } for d in docs],
             'languages': [{'key': k, 'label': labels.get(k, k)} for k, _v in LANGS],
+            'questions_shown': Answer._questions_shown(company),
+            'min_people': MIN_PEOPLE_FOR_QUESTIONS,
+            'company_id': company.id,
         }
+
+    @api.model
+    def get_questions(self, which='not_answered'):
+        """PA1: the questions people asked, without names — "Could not
+        answer" first. Empty in a company under the minimum size."""
+        self._gate()
+        if which not in ('not_answered', 'answered', 'all'):
+            which = 'not_answered'
+        rows = self.env['pb.policy.answer']._question_rows(self.env.company, which)
+        return [dict(r, day=format_date(self.env, r['day'], date_format='d MMM y'))
+                for r in rows]
+
+    @api.model
+    def _questions_xlsx(self, company, which='not_answered'):
+        """The same rows as an Excel file (bytes), for the download route.
+        The caller has checked the reader may see `company`."""
+        self._gate()
+        import io
+        import xlsxwriter
+        rows = self.env['pb.policy.answer']._question_rows(company, which, limit=5000)
+        buf = io.BytesIO()
+        book = xlsxwriter.Workbook(buf, {'in_memory': True})
+        sheet = book.add_worksheet(_("Questions")[:31])
+        bold = book.add_format({'bold': True})
+        heads = [_("Day"), _("Question (names taken out)"), _("Policy"),
+                 _("Section"), _("Answered")]
+        for col, head in enumerate(heads):
+            sheet.write(0, col, head, bold)
+        yes, no = _("Yes"), _("Could not answer")
+        for n, r in enumerate(rows, start=1):
+            sheet.write(n, 0, format_date(self.env, r['day'], date_format='yyyy-MM-dd'))
+            sheet.write(n, 1, r['question'])
+            sheet.write(n, 2, r['policy'])
+            sheet.write(n, 3, r['section'])
+            sheet.write(n, 4, yes if r['answered'] else no)
+        sheet.set_column(0, 0, 12)
+        sheet.set_column(1, 1, 70)
+        sheet.set_column(2, 3, 28)
+        sheet.set_column(4, 4, 18)
+        book.close()
+        return buf.getvalue()
 
     # ------------------------------------------------------------ write
     @api.model

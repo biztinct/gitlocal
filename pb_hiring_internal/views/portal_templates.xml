@@ -249,14 +249,30 @@
       <div class="pbme pbhi">
         <t t-call="pb_me_portal.ess_hero">
           <t t-set="hero_title">Moves in your team</t>
-          <t t-set="hero_sub">People in your team who are close to an offer for another role. HR will talk to you about the timing.</t>
+          <t t-set="hero_sub">People moving into your team from another role, and people in your team close to an offer elsewhere. HR will talk to you about the timing.</t>
         </t>
-        <div t-if="not rows" class="pbme-empty pbhi-empty">
+        <section t-if="joining" class="pbhi-sec" aria-labelledby="pbhi-join-h">
+          <h2 class="pbhi-h2" id="pbhi-join-h">Joining your team<span class="pbhi-n" t-out="len(joining)"/></h2>
+          <ol class="pbhi-roles">
+            <li t-foreach="joining" t-as="j" class="pbhi-role">
+              <div class="pbhi-role-in">
+                <span class="pbhi-role-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user-plus'"/><t t-set="isz" t-value="18"/></t></span>
+                <span class="pbhi-role-body">
+                  <b class="pbhi-role-title" t-out="j['name']"/>
+                  <span class="pbhi-role-meta"><span t-if="j['job']" t-out="j['job']"/><span t-if="j['when']">From <t t-out="j['when']" t-options="{'widget': 'date', 'format': 'd MMM y'}"/></span></span>
+                </span>
+              </div>
+            </li>
+          </ol>
+          <p class="pbhi-muted">They already work here, so there is no new-joiner list. HR changes their job on their record.</p>
+        </section>
+        <h2 t-if="joining and rows" class="pbhi-h2 pbhi-sec">Close to an offer elsewhere<span class="pbhi-n" t-out="len(rows)"/></h2>
+        <div t-if="not rows and not joining" class="pbme-empty pbhi-empty">
           <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'users'"/><t t-set="isz" t-value="26"/></t></div>
           <h3>No moves in your team</h3>
           <p>When somebody in your team is close to an offer for another role, you are told here.</p>
         </div>
-        <ol t-else="" class="pbhi-roles">
+        <ol t-if="rows" class="pbhi-roles">
           <li t-foreach="rows" t-as="m" class="pbhi-role">
             <div class="pbhi-role-in">
               <span class="pbhi-role-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user'"/><t t-set="isz" t-value="18"/></t></span>

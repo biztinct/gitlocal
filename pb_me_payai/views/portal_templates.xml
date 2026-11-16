@@ -102,7 +102,7 @@
             <div class="pbpa-card pbpa-private">
               <h2 class="pbpa-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="15"/></t>Your privacy</h2>
               <p>Your question goes to the company's AI service without your name, and with names, phone numbers and amounts taken out. Only the matching policy text goes with it.</p>
-              <p>Your question is not kept. HR sees only how many questions were asked.</p>
+              <p>The question is kept without your name, so HR can improve the policies. Nothing records who asked it.</p>
             </div>
           </aside>
         </div>

@@ -21,14 +21,25 @@ WHAT LEAVES THE SYSTEM (and the one function that sends it, `_send`):
 Never the employee's name, login, email, id, department, job, or any record.
 The egress test proves it on the exact messages handed to the provider.
 
+WHAT IS KEPT (owner ruling PA1, 2026-11-16): the SAME scrubbed copy of the
+question, the policy/section, the outcome and the DAY, on `pb.policy.question`
+— no person, no login, no session, no address, no time of day, no ORM stamps.
+The per-person limit lives on `pb.policy.quota` (a daily one-way code, rows of
+earlier days deleted), which no question row can be joined to. HR reads the
+questions through `pb.policy.desk` only, and only in a company where at least
+five people could ask.
+
 THE AI ACCOUNT is the one this company already has (`payroll.ai.config`):
 its own "Policy answers for employees" row first, else its own PayAI row.
 Never another company's, never a document-reading engine. No row, no key:
 HR sees "not set up yet" and employees see nothing.
 """
+import hashlib
+import hmac
 import json
 import logging
 import re
+import secrets
 
 from markupsafe import Markup, escape
 
@@ -70,6 +81,10 @@ INSTRUCTIONS = (
 )
 
 OUTCOMES = ('answered', 'not_found', 'limit', 'failed')
+#: The database's own secret for the per-person counter code (made once).
+QUOTA_SECRET_PARAM = 'pb_me_payai.quota_secret'
+#: Below this many people who could ask, HR sees numbers only (PA1).
+MIN_PEOPLE_FOR_QUESTIONS = 5
 
 
 class PbPolicyAnswer(models.AbstractModel):
@@ -152,32 +167,69 @@ class PbPolicyAnswer(models.AbstractModel):
 
     # ================================================================ limits
     @api.model
+    def _quota_key(self, employee, day):
+        """A one-way code for (person, day): this database's own secret, so
+        the code cannot be turned back into a person, and a new code every
+        day, so two days of one person's counts cannot be linked."""
+        ICP = self.env['ir.config_parameter'].sudo()
+        secret = ICP.get_param(QUOTA_SECRET_PARAM)
+        if not secret:
+            secret = secrets.token_hex(32)
+            ICP.set_param(QUOTA_SECRET_PARAM, secret)
+        msg = ('%s:%s' % (employee.id, fields.Date.to_string(day))).encode()
+        return hmac.new(secret.encode(), msg, hashlib.sha256).hexdigest()
+
+    @api.model
+    def _quota(self, employee):
+        """Today's counter row for `employee` (made empty when absent).
+        Rows of earlier days are deleted first: no history is kept."""
+        Quota = self.env['pb.policy.quota'].sudo()
+        today = fields.Date.context_today(self)
+        Quota.search([('day', '<', today)]).unlink()
+        key = self._quota_key(employee.sudo(), today)
+        return Quota.search([('key', '=', key), ('day', '=', today)], limit=1) \
+            or Quota.create({'key': key, 'day': today, 'count': 0})
+
+    @api.model
     def _limit_reached(self, employee):
         """'person' / 'company' when a daily limit is used up, else ''.
-        Only questions that reached the AI account count (they cost)."""
+        Only questions that reached the AI account count (they cost). The
+        person's count is the separate counter row; the company's is the
+        day's question rows (a company is not a person)."""
         employee = employee.sudo()
         company = employee.company_id
         today = fields.Date.context_today(self)
-        Log = self.env['pb.policy.question'].sudo()
-        mine = Log.search_count([('employee_id', '=', employee.id),
-                                 ('day', '=', today), ('called_ai', '=', True)])
-        if mine >= max(0, company.pb_policy_ai_person_day):
+        if self._quota(employee).count >= max(0, company.pb_policy_ai_person_day):
             return 'person'
-        ours = Log.search_count([('company_id', '=', company.id),
-                                 ('day', '=', today), ('called_ai', '=', True)])
+        ours = self.env['pb.policy.question'].sudo().search_count(
+            [('company_id', '=', company.id), ('day', '=', today),
+             ('called_ai', '=', True)])
         if ours >= max(0, company.pb_policy_ai_company_day):
             return 'company'
         return ''
 
     @api.model
-    def _log(self, employee, outcome, called_ai=False, documents=None):
-        employee = employee.sudo()
+    def _count_call(self, employee):
+        quota = self._quota(employee)
+        quota.write({'count': quota.count + 1})
+
+    @api.model
+    def _log(self, employee, outcome, question_out='', called_ai=False,
+             sections=None):
+        """One question row: the COMPANY, the day, the scrubbed question,
+        the policy/section, the outcome. `employee` is read for the company
+        only and is never written anywhere on the row."""
+        sections = sections or []
+        documents = self.env['pb.policy.document'].union(
+            *[s.document_id for s in sections]) if sections else \
+            self.env['pb.policy.document']
         self.env['pb.policy.question'].sudo().create({
-            'company_id': employee.company_id.id,
-            'employee_id': employee.id,
+            'company_id': employee.sudo().company_id.id,
+            'question': (question_out or '')[:MAX_QUESTION * 2],
             'outcome': outcome,
             'called_ai': bool(called_ai),
-            'document_ids': [(6, 0, (documents or self.env['pb.policy.document']).ids)],
+            'document_ids': [(6, 0, documents.ids)],
+            'section_id': sections[0].id if sections else False,
         })
 
     # ================================================================ privacy
@@ -281,37 +333,39 @@ class PbPolicyAnswer(models.AbstractModel):
         if not self._ready_for(employee):
             out['state'] = 'not_ready'
             return out
+        # The scrubbed copy is the only form the question is ever kept or
+        # sent in (PA1): names, phones, emails and amounts out.
+        question_out, mapping = self._scrub(employee, question)
         sections = self._search(employee, question)
         if not sections:
-            self._log(employee, 'not_found')
+            self._log(employee, 'not_found', question_out)
             out['state'] = 'not_found'
             return out
         limit = self._limit_reached(employee)
         if limit:
-            self._log(employee, 'limit')
+            self._log(employee, 'limit', question_out)
             out['state'] = 'limit_' + limit
             return out
         config = self._config(employee.sudo().company_id)
-        question_out, mapping = self._scrub(employee, question)
         messages = self._messages(sections, question_out)
+        self._count_call(employee)
         try:
             reply = self._send(config, messages)
         except Exception:               # noqa: BLE001 — never a 500 on /my
             _logger.warning('pb_me_payai: the AI account did not answer',
                             exc_info=True)
-            self._log(employee, 'failed', called_ai=True)
+            self._log(employee, 'failed', question_out, called_ai=True)
             out['state'] = 'failed'
             return out
         answer, used = self._parse(reply, len(sections))
         if answer is None:
-            self._log(employee, 'not_found', called_ai=True)
+            self._log(employee, 'not_found', question_out, called_ai=True)
             out['state'] = 'not_found'
             return out
         answer = restore_names(answer, mapping)
         picked = [sections[i] for i in used]
-        self._log(employee, 'answered', called_ai=True,
-                  documents=self.env['pb.policy.document'].union(
-                      *[s.document_id for s in picked]))
+        self._log(employee, 'answered', question_out, called_ai=True,
+                  sections=picked)
         out.update({
             'state': 'answered',
             'answer': Markup('<br/>').join(escape(line) for line in answer.splitlines() if line.strip()),
@@ -322,6 +376,47 @@ class PbPolicyAnswer(models.AbstractModel):
         return out
 
     # ============================================================ for HR
+    @api.model
+    def _people_who_could_ask(self, company):
+        """How many people could ask PayAI in `company`: active employees
+        with a login. Under MIN_PEOPLE_FOR_QUESTIONS, HR sees numbers only
+        (a question in a tiny company points at a person by itself)."""
+        return self.env['hr.employee'].sudo().search_count(
+            [('company_id', '=', company.id), ('user_id', '!=', False)])
+
+    @api.model
+    def _questions_shown(self, company):
+        return self._people_who_could_ask(company) >= MIN_PEOPLE_FOR_QUESTIONS
+
+    @api.model
+    def _question_rows(self, company, which='not_answered', limit=300):
+        """The rows HR may read, or [] in a small company. Each row holds
+        the day, the scrubbed question, the policy and section, the outcome
+        — no id, nothing about a person."""
+        if not self._questions_shown(company):
+            return []
+        domain = [('company_id', '=', company.id)]
+        if which == 'not_answered':
+            domain.append(('outcome', '!=', 'answered'))
+        elif which == 'answered':
+            domain.append(('outcome', '=', 'answered'))
+        Q = self.env['pb.policy.question'].sudo()
+        labels = dict(Q._fields['outcome']._description_selection(self.env))
+        rows = []
+        for q in Q.search(domain, limit=limit):
+            sec = q.section_id
+            rows.append({
+                'day': q.day,
+                'question': q.question or '',
+                'policy': (sec.document_id.name if sec else
+                           ', '.join(q.document_ids.mapped('name'))) or '',
+                'section': (sec.heading if sec and sec.heading != sec.document_id.name
+                            else '') or '',
+                'answered': q.outcome == 'answered',
+                'outcome': labels.get(q.outcome, ''),
+            })
+        return rows
+
     @api.model
     def _usage(self, company):
         """The counts HR sees: today and this month, per outcome."""

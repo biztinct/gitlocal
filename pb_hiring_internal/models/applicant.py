@@ -77,6 +77,11 @@ class HiringApplicantInternal(models.Model):
     pb_manager_told_id = fields.Many2one(
         'hr.employee', string='Manager who was told', readonly=True,
         copy=False, ondelete='set null', index='btree_not_null')
+    pb_new_manager_told_on = fields.Datetime(
+        string='Their new manager was told on', readonly=True, copy=False)
+    pb_new_manager_id = fields.Many2one(
+        'hr.employee', string='New manager who was told', readonly=True,
+        copy=False, ondelete='set null', index='btree_not_null')
     pb_job_change_state = fields.Selection(
         [('to_do', 'Job change to do'), ('opened', 'Job change opened')],
         string='Their job change', readonly=True, copy=False)

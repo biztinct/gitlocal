@@ -18,6 +18,16 @@ msgstr ""
 
 #. module: pb_hiring_internal
 #. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s already works here, so no Before they join list was made. "
+"%(manager)s, their new manager, was told."
+msgstr ""
+"%(who)s sudah bekerja di sini, jadi tidak dibuat daftar Sebelum bergabung. "
+"%(manager)s, atasan baru mereka, sudah diberi tahu."
+
+#. module: pb_hiring_internal
+#. odoo-python
 #: code:addons/pb_hiring_internal/models/applicant.py:0
 msgid ""
 "%(who)s applied from inside the company. Their current manager is told only "
@@ -35,6 +45,16 @@ msgid ""
 msgstr ""
 "%(who)s hampir menerima penawaran untuk posisi %(role)s. HR akan "
 "membicarakan perpindahan ini dan waktunya dengan Anda."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s is joining your team as %(job)s from %(when)s. They already work "
+"here, so HR changes their job on their record."
+msgstr ""
+"%(who)s bergabung dengan tim Anda sebagai %(job)s mulai %(when)s. Mereka "
+"sudah bekerja di sini, jadi HR mengubah jabatan di data mereka."
 
 #. module: pb_hiring_internal
 #. odoo-python
@@ -77,8 +97,20 @@ msgstr "%(who)s menarik lamarannya."
 #. module: pb_hiring_internal
 #. odoo-python
 #: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s is joining your team"
+msgstr "%s bergabung dengan tim Anda"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
 msgid "%s may move to another role"
 msgstr "%s mungkin pindah ke posisi lain"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s people are joining your team"
+msgstr "%s orang bergabung dengan tim Anda"
 
 #. module: pb_hiring_internal
 #. odoo-python
@@ -340,6 +372,11 @@ msgid "Choose who can apply for this role."
 msgstr "Pilih siapa yang dapat melamar posisi ini."
 
 #. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Close to an offer elsewhere"
+msgstr "Hampir menerima penawaran di posisi lain"
+
+#. module: pb_hiring_internal
 #. odoo-javascript
 #: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
 msgid "Confidential roles are never shown to staff."
@@ -370,6 +407,11 @@ msgstr "Nama tampilan"
 #: model:ir.model,name:pb_hiring_internal.model_pb_me_home
 msgid "Employee home page facts"
 msgstr "Data beranda karyawan"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "From"
+msgstr "Mulai"
 
 #. module: pb_hiring_internal
 #. odoo-javascript
@@ -439,6 +481,13 @@ msgid "Jobs inside the company"
 msgstr "Lowongan di dalam perusahaan"
 
 #. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Joining your team"
+msgstr "Bergabung dengan tim Anda"
+
+#. module: pb_hiring_internal
 #. odoo-javascript
 #: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
 msgid "Loading…"
@@ -487,6 +536,11 @@ msgstr "Perpindahan di tim Anda"
 #: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
 msgid "Moving to this role"
 msgstr "Pindah ke posisi ini"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_new_manager_id
+msgid "New manager who was told"
+msgstr "Atasan baru yang diberi tahu"
 
 #. module: pb_hiring_internal
 #. odoo-javascript
@@ -628,11 +682,12 @@ msgstr "Data kokpit perekrutan Payobook"
 #. module: pb_hiring_internal
 #: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
 msgid ""
-"People in your team who are close to an offer for another role. HR will talk"
-" to you about the timing."
+"People moving into your team from another role, and people in your team "
+"close to an offer elsewhere. HR will talk to you about the timing."
 msgstr ""
-"Orang di tim Anda yang hampir menerima penawaran untuk posisi lain. HR akan "
-"membicarakan waktunya dengan Anda."
+"Orang yang pindah ke tim Anda dari posisi lain, dan orang di tim Anda yang "
+"hampir menerima penawaran di tempat lain. HR akan membicarakan waktunya "
+"dengan Anda."
 
 #. module: pb_hiring_internal
 #. odoo-javascript
@@ -809,6 +864,26 @@ msgstr "Perubahan jabatan mereka"
 #: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_manager_told_on
 msgid "Their manager was told on"
 msgstr "Atasan diberi tahu pada"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_new_manager_told_on
+msgid "Their new manager was told on"
+msgstr "Atasan baru diberi tahu pada"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid ""
+"They already work here, so there is no new-joiner list. HR changes their job"
+" on their record."
+msgstr ""
+"Mereka sudah bekerja di sini, jadi tidak ada daftar karyawan baru. HR "
+"mengubah jabatan di data mereka."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "They already work here. HR changes their job on their record."
+msgstr "Mereka sudah bekerja di sini. HR mengubah jabatan di data mereka."
 
 #. module: pb_hiring_internal
 #. odoo-python

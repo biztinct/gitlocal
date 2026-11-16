@@ -18,6 +18,16 @@ msgstr ""
 
 #. module: pb_hiring_internal
 #. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s already works here, so no Before they join list was made. "
+"%(manager)s, their new manager, was told."
+msgstr ""
+"%(who)s đã làm việc ở đây, nên không tạo danh sách Trước khi nhận việc. "
+"%(manager)s, quản lý mới của họ, đã được báo."
+
+#. module: pb_hiring_internal
+#. odoo-python
 #: code:addons/pb_hiring_internal/models/applicant.py:0
 msgid ""
 "%(who)s applied from inside the company. Their current manager is told only "
@@ -35,6 +45,16 @@ msgid ""
 msgstr ""
 "%(who)s sắp nhận lời mời cho vị trí %(role)s. Phòng nhân sự sẽ trao đổi với "
 "bạn về việc chuyển vị trí và thời điểm."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s is joining your team as %(job)s from %(when)s. They already work "
+"here, so HR changes their job on their record."
+msgstr ""
+"%(who)s sẽ gia nhập nhóm của bạn với vị trí %(job)s từ %(when)s. Họ đã làm "
+"việc ở đây, nên phòng nhân sự sẽ thay đổi công việc trên hồ sơ của họ."
 
 #. module: pb_hiring_internal
 #. odoo-python
@@ -77,8 +97,20 @@ msgstr "%(who)s đã rút đơn ứng tuyển."
 #. module: pb_hiring_internal
 #. odoo-python
 #: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s is joining your team"
+msgstr "%s sẽ gia nhập nhóm của bạn"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
 msgid "%s may move to another role"
 msgstr "%s có thể chuyển sang vị trí khác"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s people are joining your team"
+msgstr "%s người sẽ gia nhập nhóm của bạn"
 
 #. module: pb_hiring_internal
 #. odoo-python
@@ -339,6 +371,11 @@ msgid "Choose who can apply for this role."
 msgstr "Chọn ai có thể ứng tuyển vị trí này."
 
 #. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Close to an offer elsewhere"
+msgstr "Sắp nhận lời mời ở vị trí khác"
+
+#. module: pb_hiring_internal
 #. odoo-javascript
 #: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
 msgid "Confidential roles are never shown to staff."
@@ -369,6 +406,11 @@ msgstr "Tên hiển thị"
 #: model:ir.model,name:pb_hiring_internal.model_pb_me_home
 msgid "Employee home page facts"
 msgstr "Thông tin trang chủ nhân viên"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "From"
+msgstr "Từ"
 
 #. module: pb_hiring_internal
 #. odoo-javascript
@@ -438,6 +480,13 @@ msgid "Jobs inside the company"
 msgstr "Việc làm trong công ty"
 
 #. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Joining your team"
+msgstr "Gia nhập nhóm của bạn"
+
+#. module: pb_hiring_internal
 #. odoo-javascript
 #: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
 msgid "Loading…"
@@ -486,6 +535,11 @@ msgstr "Thay đổi vị trí trong nhóm của bạn"
 #: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
 msgid "Moving to this role"
 msgstr "Đang chuyển sang vị trí này"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_new_manager_id
+msgid "New manager who was told"
+msgstr "Quản lý mới đã được báo"
 
 #. module: pb_hiring_internal
 #. odoo-javascript
@@ -627,11 +681,12 @@ msgstr "Dữ liệu bảng điều khiển tuyển dụng Payobook"
 #. module: pb_hiring_internal
 #: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
 msgid ""
-"People in your team who are close to an offer for another role. HR will talk"
-" to you about the timing."
+"People moving into your team from another role, and people in your team "
+"close to an offer elsewhere. HR will talk to you about the timing."
 msgstr ""
-"Những người trong nhóm của bạn sắp nhận lời mời cho vị trí khác. Phòng nhân "
-"sự sẽ trao đổi với bạn về thời điểm."
+"Những người chuyển vào nhóm của bạn từ vị trí khác, và những người trong "
+"nhóm của bạn sắp nhận lời mời ở nơi khác. Phòng nhân sự sẽ trao đổi với bạn "
+"về thời điểm."
 
 #. module: pb_hiring_internal
 #. odoo-javascript
@@ -804,6 +859,27 @@ msgstr "Thay đổi công việc của họ"
 #: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_manager_told_on
 msgid "Their manager was told on"
 msgstr "Ngày báo quản lý"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_new_manager_told_on
+msgid "Their new manager was told on"
+msgstr "Ngày báo quản lý mới"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid ""
+"They already work here, so there is no new-joiner list. HR changes their job"
+" on their record."
+msgstr ""
+"Họ đã làm việc ở đây, nên không có danh sách cho người mới. Phòng nhân sự "
+"sẽ thay đổi công việc trên hồ sơ của họ."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "They already work here. HR changes their job on their record."
+msgstr ""
+"Họ đã làm việc ở đây. Phòng nhân sự sẽ thay đổi công việc trên hồ sơ của họ."
 
 #. module: pb_hiring_internal
 #. odoo-python

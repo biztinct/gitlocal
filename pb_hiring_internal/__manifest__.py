@@ -25,7 +25,7 @@ Staff apply for open roles inside the company.
 
 Built as WDGAP Step 6, phase S6-B.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
