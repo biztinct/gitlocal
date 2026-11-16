@@ -421,3 +421,141 @@ msgid ""
 "“%(names)s” already adds gross pay, so it is a total of its own and is not "
 "counted again."
 msgstr "“%(names)s” sudah memuat gaji kotor, jadi itu total tersendiri dan tidak dihitung lagi."
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_hiring_offer__pb_total_note
+msgid "Built from a total"
+msgstr "Disusun dari total"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"Built from a total of %(year)s a year (%(month)s a month) with %(scheme)s."
+msgstr "Disusun dari total %(year)s per tahun (%(month)s per bulan) dengan %(scheme)s."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "From offer %s"
+msgstr "Dari penawaran %s"
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_hiring_offer_line__pb_from_total
+msgid "From the total package"
+msgstr "Dari total paket"
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_hiring_offer_line__pb_item_wage
+msgid "Is the monthly wage"
+msgstr "Adalah gaji bulanan"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "Paid by the company on top of pay"
+msgstr "Dibayar perusahaan di luar gaji"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid "Reading the offer…"
+msgstr "Membaca penawaran…"
+
+#. module: pb_pay_package
+#: model:ir.model.fields,field_description:pb_pay_package.field_pb_hiring_offer__pb_total_config_id
+msgid "Split with pay scheme"
+msgstr "Dibagi dengan skema gaji"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "That offer is no longer there."
+msgstr "Penawaran itu sudah tidak ada."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"The contract was written without %(items)s: the pay scheme that pays them "
+"has no such pay item. Add it on the contract if it is still agreed."
+msgstr "Kontrak dibuat tanpa %(items)s: skema gaji yang membayar mereka tidak punya pos itu. Tambahkan di kontrak bila masih disepakati."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "The offer as it stands now, a month and a year."
+msgstr "Penawaran saat ini, per bulan dan per tahun."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "The offer's figures are with the hiring team."
+msgstr "Angka penawaran ada pada tim rekrutmen."
+
+#. module: pb_pay_package
+#: model:ir.model.fields,help:pb_pay_package.field_pb_hiring_offer_line__pb_item_code
+msgid "The pay item this line fills on the contract when the person joins."
+msgstr "Pos gaji yang diisi baris ini di kontrak saat orangnya bergabung."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"These become the offer's monthly pay lines; bonuses, benefits and one-off "
+"lines stay. The letter shows them, and the contract starts with them when "
+"the person joins."
+msgstr "Angka ini menjadi baris gaji bulanan penawaran; bonus, tunjangan, dan baris sekali bayar tetap ada. Surat menampilkannya, dan kontrak dimulai dengan angka ini saat orangnya bergabung."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "These figures cannot be used on the offer."
+msgstr "Angka ini tidak bisa dipakai di penawaran."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"This company has no pay scheme yet, so there is nothing to split the total "
+"with."
+msgstr "Perusahaan ini belum punya skema gaji, jadi tidak ada yang bisa dipakai membagi total."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid "This offer belongs to a company you do not work in."
+msgstr "Penawaran ini milik perusahaan tempat Anda tidak bekerja."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"This offer has been sent for sign-off, and the numbers are what somebody is "
+"agreeing to. Ask whoever it is waiting on to send it back, then change it "
+"and send it again."
+msgstr "Penawaran ini sudah dikirim untuk persetujuan, dan angkanya sedang disetujui seseorang. Minta yang sedang memeriksa mengembalikannya, lalu ubah dan kirim lagi."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
+msgid ""
+"This offer has been sent for sign-off, so its figures cannot be changed "
+"here."
+msgstr "Penawaran ini sudah dikirim untuk persetujuan, jadi angkanya tidak bisa diubah di sini."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_total.py:0
+msgid ""
+"This offer is in %(offer)s but the pay scheme pays in %(scheme)s. Change the"
+" offer's money or pick another scheme."
+msgstr "Penawaran ini dalam %(offer)s tetapi skema gaji membayar dalam %(scheme)s. Ubah mata uang penawaran atau pilih skema lain."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_total.xml:0
+msgid ""
+"Type the total package and split it into basic pay and allowances with the "
+"pay scheme"
+msgstr "Ketik total paket dan bagi menjadi gaji pokok dan tunjangan dengan skema gaji"

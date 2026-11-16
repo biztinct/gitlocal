@@ -153,8 +153,94 @@ class PbContractWizard(models.AbstractModel):
                     'struct_id': c.struct_id.id if getattr(c, 'struct_id', False) else False,
                     'structure_type_id': c.structure_type_id.id if c.structure_type_id else False,
                     'resource_calendar_id': c.resource_calendar_id.id if c.resource_calendar_id else d['default_calendar'],
+                    # WDGAP S8-D (EX1): the pay lines the renewal carries,
+                    # shown on the form so HR can change them before saving.
+                    'lines': self._renewal_lines(c),
                 }
         return d
+
+    # ------------------------------------------------------------------
+    # WDGAP S8-D (EX1) — a renewal carries the old contract's pay lines.
+    # Before this, a renewed contract started with none of them (meal,
+    # phone…), so they read 0 on the next payslip unless HR typed them again.
+    # ------------------------------------------------------------------
+    @api.model
+    def _renewal_lines(self, contract):
+        """The old contract's pay lines, as the form shows them."""
+        out = []
+        lines = self.env['hr.contract.advantage'].sudo().search(
+            [('contract_id', '=', contract.id)], order='id')
+        for line in lines:
+            template = line.advantage_template_id
+            if not template:
+                continue
+            text = (line.text_value or '') if 'text_value' in line._fields else ''
+            out.append({'template_id': template.id, 'code': template.code or '',
+                        'name': template.name or template.code or '',
+                        'amount': line.amount or 0.0, 'text': text})
+        return out
+
+    @api.model
+    def _carry_renewal_lines(self, contract, old, typed=None):
+        """Put the old contract's pay lines on the NEW one (get-or-create per
+        pay item). ``typed`` — the amounts HR changed on the form, by pay
+        item — win over the old ones. Each line written is logged in the
+        pay-line trail, dated the new contract's start. Writes nothing on the
+        old contract. Returns how many lines were written."""
+        if not contract or not old:
+            return 0
+        overrides = {}
+        for row in typed or []:
+            try:
+                overrides[int(row.get('template_id') or 0)] = row
+            except (TypeError, ValueError, AttributeError):
+                continue
+        Line = self.env['hr.contract.advantage'].sudo()
+        Change = self.env['hr.contract.advantage.change'].sudo() \
+            if 'hr.contract.advantage.change' in self.env else None
+        has_text = 'text_value' in Line._fields
+        written = 0
+        for row in self._renewal_lines(old):
+            template_id = row['template_id']
+            amount, text = row['amount'], row['text']
+            if template_id in overrides:
+                given = overrides[template_id]
+                if given.get('drop'):
+                    continue
+                try:
+                    amount = float(given.get('amount') if given.get('amount') is not None
+                                   else amount)
+                except (TypeError, ValueError):
+                    pass
+            if not amount and not text:
+                continue
+            line = Line.search([('contract_id', '=', contract.id),
+                                ('advantage_template_id', '=', template_id)], limit=1)
+            old_amount = line.amount if line else 0.0
+            vals = {'amount': amount}
+            if has_text and text:
+                vals['text_value'] = text
+            if line:
+                if abs((line.amount or 0.0) - amount) < 1e-9 and \
+                        (not has_text or (line.text_value or '') == (text or '')):
+                    continue
+                line.write(vals)
+            else:
+                Line.create(dict(vals, contract_id=contract.id,
+                                 advantage_template_id=template_id))
+            written += 1
+            if Change is not None:
+                try:
+                    Change.log(contract,
+                               self.env['hr.contract.advantage.template'].sudo().browse(template_id),
+                               old_amount, amount, 'manual',
+                               notes=_("Carried from %s", old.name or ''),
+                               effective_date=contract.date_start,
+                               old_text=None, new_text=text or None)
+                except Exception:   # noqa: BLE001 — the trail never undoes a line
+                    _logger.warning('pb_people_advanced: no trail row for the renewal '
+                                    'line on contract %s', contract.id, exc_info=True)
+        return written
 
     @api.model
     def create_contract(self, vals):
@@ -206,6 +292,18 @@ class PbContractWizard(models.AbstractModel):
                 c.write({'state': 'open'})
         except Exception as e:
             return {'error': str(getattr(e, 'name', None) or e) or 'Could not create contract.'}
+        # WDGAP S8-D (EX1): a renewal carries the old contract's pay lines
+        # (with any amount HR changed on the form). Only from a contract of the
+        # SAME person; never fatal for the new contract.
+        if vals.get('renew_from'):
+            old = self.env['hr.contract'].sudo().browse(int(vals['renew_from'] or 0)).exists()
+            if old and old.employee_id == emp and old.id != c.id:
+                try:
+                    with self.env.cr.savepoint():
+                        self._carry_renewal_lines(c, old, vals.get('lines'))
+                except Exception:   # noqa: BLE001
+                    _logger.exception('pb_people_advanced: pay lines not carried from '
+                                      'contract %s to %s', old.id, c.id)
         # `applied` is what the dialog reads to say "Contract created" rather
         # than "No contract exists yet": a route that applies at once hands
         # this dict back through `_apply_contract`, so it must say so itself.

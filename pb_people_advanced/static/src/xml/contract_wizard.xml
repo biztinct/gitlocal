@@ -80,6 +80,20 @@
                 <div t-if="renewFrom" class="pplw-note">Renewing — start date should be after the previous contract ends to avoid an overlap.</div>
               </div>
             </div>
+            <!-- WDGAP S8-D (EX1): the pay lines the renewal carries over, changeable before saving. -->
+            <div t-if="renewFrom and carried.length" class="pplw-sec pplw-carry">
+              <h4>Pay lines carried over</h4>
+              <div class="pplw-note">The new contract starts with the same pay lines as the one it renews. Change an amount, or take a line off, before you create it.</div>
+              <div t-foreach="carried" t-as="ln" t-key="ln.template_id" class="pplw-carry-row" t-att-class="{ 'is-off': ln.drop }">
+                <span class="pplw-carry-n"><t t-esc="ln.name"/> <small t-esc="ln.code"/></span>
+                <span t-if="ln.text" class="pplw-carry-t" t-esc="ln.text"/>
+                <input t-else="" type="number" min="0" class="pplw-in pplw-carry-in" t-att-value="ln.amount" t-att-disabled="ln.drop" t-on-change="(ev) => this.onLine(ln, ev)"/>
+                <button type="button" class="pbim-btn ghost sm" t-on-click="() => this.toggleLine(ln)">
+                  <t t-if="ln.drop">Put back</t>
+                  <t t-else="">Take off</t>
+                </button>
+              </div>
+            </div>
           </t>
         </div>
 

@@ -408,8 +408,15 @@ class TestS8aScales(TransactionCase):
         self.env.invalidate_all()
         self.assertEqual(off_step.pb_scale_state, 'drifted')
         chip = self.Scales.contract_chip(off_step.id)
-        self.assertEqual(chip['stage_wage'], 5800000.0)
+        # WDGAP S8-D (ruling SC2): 6,000,000 on step 2 (5,800,000) is ABOVE the
+        # step — kept, never offered a way down.
+        self.assertNotIn('stage_wage', chip)
+        self.assertIn('Above step', chip['label'])
         self.assertEqual(chip['tone'], 'warn')
+        self.Scales.place(off_step.id, self.grade.id, 3)
+        self.env.invalidate_all()
+        chip = self.Scales.contract_chip(off_step.id)
+        self.assertEqual(chip['stage_wage'], 6100000.0, "below the step: Bring to step")
         self.Scales.pin(off_step.id, 'retention')
         self.env.invalidate_all()
         self.assertEqual(off_step.pb_scale_state, 'pinned')

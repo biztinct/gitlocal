@@ -92,7 +92,18 @@ class PbPayScalePlacement(models.Model):
             reason = dict(self._fields['pin_reason']._description_selection(self.env)).get(
                 self.pin_reason) if self.pin_reason else _("Other reason")
             return _("Pinned · %(reason)s", reason=reason)
+        if self.is_above_step():
+            # Ruling SC2: paid above their step, they keep their pay. Still
+            # counted with Drifted (nobody has decided), but never offered a
+            # way "back" to a lower figure.
+            return _("Above step · %(grade)s, step %(step)s", grade=grade, step=self.step_no)
         return _("Drifted · %(grade)s, step %(step)s", grade=grade, step=self.step_no)
+
+    def is_above_step(self):
+        """Drifted, and paid MORE than the step says (WDGAP S8-D, SC2)."""
+        self.ensure_one()
+        return bool(self.state == 'drifted' and self.scale_amount
+                    and (self.contract_id.sudo().wage or 0.0) > self.scale_amount)
 
 
 class PbPayBandJob(models.Model):

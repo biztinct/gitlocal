@@ -228,14 +228,6 @@ msgid "A suggestion could not be worked out just now."
 msgstr "Chưa đưa ra được gợi ý lúc này."
 
 #. module: pb_pay_scales
-#. odoo-javascript
-#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
-msgid ""
-"A table of grades and steps, one amount each, dated. A new joiner starts on "
-"step 1 of their job's grade. Nothing here changes anybody's pay."
-msgstr "Bảng ngạch và bậc, mỗi ô một số tiền, có ngày áp dụng. Người mới bắt đầu ở bậc 1 của ngạch theo vị trí. Không gì ở đây làm đổi lương của ai."
-
-#. module: pb_pay_scales
 #. odoo-python
 #: code:addons/pb_pay_scales/models/scale.py:0
 msgid "A version cannot end before it starts."
@@ -1811,3 +1803,1130 @@ msgstr "chưa có vị trí"
 #: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
 msgid "nobody"
 msgstr "không ai"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"%(grade)s, step %(step)s would go down, from %(old)s to %(new)s. A rise "
+"never lowers a step; make a new version of the scale for that."
+msgstr "%(grade)s, bậc %(step)s sẽ giảm, từ %(old)s xuống %(new)s. Đợt tăng không bao giờ hạ một bậc; hãy tạo phiên bản mới của thang cho việc đó."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "%(job)s · %(grade)s, step %(step)s"
+msgstr "%(job)s · %(grade)s, bậc %(step)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "%s a month"
+msgstr "%s mỗi tháng"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "%s for twelve months"
+msgstr "%s cho mười hai tháng"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "%s has no amounts to raise yet."
+msgstr "%s chưa có số tiền nào để tăng."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "%s has no amounts yet, so there is nothing to raise."
+msgstr "%s chưa có số tiền nào, nên không có gì để tăng."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "%s has no table before that date to raise."
+msgstr "%s không có bảng nào trước ngày đó để tăng."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"%s people on these jobs are not placed on the scale yet, so the rise does "
+"not reach them."
+msgstr "%s người ở các vị trí này chưa được xếp vào thang, nên đợt tăng không áp dụng cho họ."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "+%s a month"
+msgstr "+%s mỗi tháng"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"1 person on these jobs is not placed on the scale yet, so the rise does not "
+"reach them."
+msgstr "1 người ở các vị trí này chưa được xếp vào thang, nên đợt tăng không áp dụng cho họ."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A job change with new pay is waiting for them (%s)."
+msgstr "Một đợt đổi công việc có lương mới của họ đang chờ (%s)."
+
+#. module: pb_pay_scales
+#: model:biz.approval.process,description:pb_pay_scales.process_scaleraise
+msgid ""
+"A new version of a pay scale that moves everybody on it, signed off once for"
+" the whole rise: HR, then Finance."
+msgstr "Một phiên bản mới của thang lương nâng lương mọi người trên thang, duyệt một lần cho cả đợt: Nhân sự, rồi Tài chính."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A pay change for them is waiting (%s)."
+msgstr "Một thay đổi lương của họ đang chờ (%s)."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A reason was written down"
+msgstr "Đã ghi lý do"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A rise can start at most a year ahead."
+msgstr "Đợt tăng chỉ có thể bắt đầu tối đa một năm sau."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A rise can start at most a year back."
+msgstr "Đợt tăng chỉ có thể bắt đầu tối đa một năm trước."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid ""
+"A scale written as coefficients rises through its base rate; each amount is "
+"its coefficient times the new rate."
+msgstr "Thang viết theo hệ số tăng qua mức lương cơ sở; mỗi số tiền là hệ số nhân với mức mới."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid ""
+"A table of grades and steps, one amount each, dated. A new joiner starts on "
+"step 1 of their job's grade. Pay moves only through a contract, or a scale "
+"rise once it is signed off."
+msgstr "Bảng ngạch và bậc, mỗi ô một số tiền, có ngày hiệu lực. Người mới bắt đầu ở bậc 1 của ngạch thuộc vị trí của họ. Lương chỉ thay đổi qua hợp đồng, hoặc qua đợt tăng thang lương đã được duyệt."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__outcome__above
+msgid "Above step"
+msgstr "Trên bậc"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/placement.py:0
+msgid "Above step · %(grade)s, step %(step)s"
+msgstr "Trên bậc · %(grade)s, bậc %(step)s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Above step, pay kept"
+msgstr "Trên bậc, giữ nguyên lương"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Already paid the new step or more, so their pay stays as it is."
+msgstr "Đã được trả bằng hoặc hơn bậc mới, nên lương giữ nguyên."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Already paid the new step or more. Their pay stays as it is."
+msgstr "Đã được trả bằng hoặc hơn bậc mới. Lương giữ nguyên."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Another scale rise for them is waiting (%s)."
+msgstr "Một đợt tăng thang lương khác của họ đang chờ (%s)."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__scheduled
+msgid "Approved, starts later"
+msgstr "Đã duyệt, bắt đầu sau"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Approved. It starts on %s and is written that morning."
+msgstr "Đã duyệt. Bắt đầu từ %s và được ghi vào sáng hôm đó."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"Approved. The new pay is written on %s. Until then it can be taken back and "
+"nobody's pay changes."
+msgstr "Đã duyệt. Lương mới được ghi vào ngày %s. Trước ngày đó có thể rút lại và không ai bị đổi lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Average rise"
+msgstr "Mức tăng trung bình"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__draft
+msgid "Being prepared"
+msgstr "Đang soạn"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__method__flat
+msgid "By a flat amount"
+msgstr "Thêm một số tiền cố định"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__method__percent
+msgid "By a percentage"
+msgstr "Theo tỷ lệ phần trăm"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Cancel this rise? Nothing is changed."
+msgstr "Hủy đợt tăng này? Không có gì bị thay đổi."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Cancelled from the scale rise."
+msgstr "Đã hủy từ đợt tăng thang lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "Cancelled. Nothing was changed."
+msgstr "Đã hủy. Không có gì bị thay đổi."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Cannot be moved by this rise. The reason is beside each name."
+msgstr "Không thể nâng bằng đợt này. Lý do ghi cạnh từng tên."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__outcome__cannot
+msgid "Cannot move"
+msgstr "Không thể nâng"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Choose the day the rise starts."
+msgstr "Chọn ngày đợt tăng bắt đầu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__cost_month
+msgid "Cost a month"
+msgstr "Chi phí mỗi tháng"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Cost a month (%s)"
+msgstr "Chi phí mỗi tháng (%s)"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Could not be written on %s; it will be tried again."
+msgstr "Không ghi được vào %s; sẽ thử lại."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__applied
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Done. New pay written for %(n)s from %(day)s."
+msgstr "Xong. Đã ghi lương mới cho %(n)s từ %(day)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Done. The new pay is written for everybody who moves."
+msgstr "Xong. Lương mới đã được ghi cho mọi người được nâng."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Each currency is shown on its own line; they are never added together."
+msgstr "Mỗi loại tiền một dòng riêng; không bao giờ cộng chung."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Every amount goes up by"
+msgstr "Mọi số tiền tăng thêm"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Every amount goes up by (%)"
+msgstr "Mọi số tiền tăng thêm (%)"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__flat
+msgid "Flat amount"
+msgstr "Số tiền cố định"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "From scale rise %s"
+msgstr "Từ đợt tăng thang lương %s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "How many people move"
+msgstr "Số người được nâng"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "It could not be sent: %s"
+msgstr "Không gửi được: %s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "It could not be written: %s"
+msgstr "Không ghi được: %s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Leave out"
+msgstr "Bỏ ra"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__outcome__left_out
+msgid "Left out"
+msgstr "Đã bỏ ra"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__outcome__move
+msgid "Moves"
+msgstr "Được nâng"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__new_base_rate
+msgid "New base rate"
+msgstr "Mức lương cơ sở mới"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "No month already paid is affected."
+msgstr "Không có tháng đã trả nào bị ảnh hưởng."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Nobody's pay would change with this rise, so there is nothing to send."
+msgstr "Đợt tăng này không làm đổi lương của ai, nên không có gì để gửi."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__state__skipped
+msgid "Not written"
+msgstr "Chưa ghi"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Nothing on the table goes up. Type a percentage, an amount or new figures."
+msgstr "Không có ô nào tăng. Hãy nhập tỷ lệ, số tiền hoặc số liệu mới."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Nothing was written: the scale got a version from %(day)s after this rise "
+"was sent. Take this one back and prepare it again."
+msgstr "Chưa ghi gì: thang đã có phiên bản từ %(day)s sau khi gửi đợt tăng này. Hãy rút lại và soạn lại."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Now"
+msgstr "Hiện tại"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid ""
+"One request that moves everybody on this scale, with its real cost and one "
+"sign-off"
+msgstr "Một yêu cầu nâng lương mọi người trên thang này, kèm chi phí thực và một lần duyệt"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid ""
+"One sign-off for the whole rise. Nobody's pay changes until it is approved, "
+"and then only from its start date."
+msgstr "Một lần duyệt cho cả đợt. Không ai bị đổi lương cho đến khi được duyệt, và chỉ từ ngày bắt đầu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "Only a draft that was never sent can be removed."
+msgstr "Chỉ xóa được bản nháp chưa từng gửi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Only a rise that has not been approved yet can be cancelled."
+msgstr "Chỉ hủy được đợt tăng chưa được duyệt."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Only an approved rise that has not started yet can be taken back. Once it "
+"has started, prepare a new request instead."
+msgstr "Chỉ rút lại được đợt tăng đã duyệt mà chưa bắt đầu. Khi đã bắt đầu, hãy soạn một yêu cầu mới."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Only the people who set pay bands can raise a pay scale."
+msgstr "Chỉ người đặt khung lương mới tăng được thang lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Only the person who prepared it or the people who set pay bands can cancel a"
+" scale rise."
+msgstr "Chỉ người soạn hoặc người đặt khung lương mới hủy được đợt tăng."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid ""
+"Only the person who prepared it or the people who set pay bands can do this."
+msgstr "Chỉ người soạn hoặc người đặt khung lương mới làm được việc này."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Only the person who prepared it or the people who set pay bands can take a "
+"scale rise back."
+msgstr "Chỉ người soạn hoặc người đặt khung lương mới rút lại được đợt tăng."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Paid above their new step, so their pay stays as it is."
+msgstr "Đang được trả cao hơn bậc mới, nên lương giữ nguyên."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__new_wage
+msgid "Paid after"
+msgstr "Lương sau"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__drifted
+msgid "Paid differently from their step"
+msgstr "Lương khác bậc"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Paid differently on purpose. Left alone."
+msgstr "Trả khác có chủ ý. Giữ nguyên."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__cost_currency_id
+msgid "Paid in"
+msgstr "Trả bằng"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__old_wage
+msgid "Paid now"
+msgstr "Lương hiện tại"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Past-month re-work"
+msgstr "Tính lại tháng trước"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Past-month re-work is not part of this database. Tell the pay team: they can"
+" work out any difference by hand on the next pay run."
+msgstr "Hệ thống này chưa có tính lại tháng trước. Hãy báo nhóm tính lương: họ có thể tự tính chênh lệch ở kỳ lương tới."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"Past-month re-work is not part of this database. The pay team can work out "
+"any difference by hand on the next pay run."
+msgstr "Hệ thống này chưa có tính lại tháng trước. Nhóm tính lương có thể tự tính chênh lệch ở kỳ lương tới."
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_raise
+msgid "Pay scale rise"
+msgstr "Đợt tăng thang lương"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_letter_template__letter_type__pay_scale_raise
+msgid "Pay scale rise letter"
+msgstr "Thư tăng thang lương"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Pay scale rise · %s"
+msgstr "Tăng thang lương · %s"
+
+#. module: pb_pay_scales
+#: model:biz.approval.process,name:pb_pay_scales.process_scaleraise
+msgid "Pay scale rises"
+msgstr "Các đợt tăng thang lương"
+
+#. module: pb_pay_scales
+#: model:ir.actions.server,name:pb_pay_scales.ir_cron_scale_raise_apply_due_ir_actions_server
+msgid "Pay scales: write approved rises on their day"
+msgstr "Thang lương: ghi các đợt tăng đã duyệt vào đúng ngày"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__apply_id
+msgid "Pay written"
+msgstr "Lương đã ghi"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__line_ids
+msgid "People"
+msgstr "Nhân viên"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__pct
+msgid "Percentage"
+msgstr "Tỷ lệ phần trăm"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__employee_id
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_raise_line
+msgid "Person in a pay scale rise"
+msgstr "Người trong đợt tăng thang lương"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__user_id
+msgid "Prepared by"
+msgstr "Người soạn"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Put back"
+msgstr "Đưa lại"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Raise the scale"
+msgstr "Tăng thang lương"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Re-work those months"
+msgstr "Tính lại các tháng đó"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Reading the scale…"
+msgstr "Đang đọc thang lương…"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__name
+msgid "Reference"
+msgstr "Mã"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Say why, in a few words. The people who sign it off read this first."
+msgstr "Ghi lý do vài chữ. Người duyệt sẽ đọc phần này trước."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Scale"
+msgstr "Thang"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_apply__pb_scale_raise_id
+msgid "Scale rise"
+msgstr "Đợt tăng thang"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Scale rise %(ref)s on %(scale)s starts on %(day)s, in a month already paid."
+msgstr "Đợt tăng thang %(ref)s của %(scale)s bắt đầu từ %(day)s, trong một tháng đã trả lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Scale rise %(ref)s, from %(day)s"
+msgstr "Đợt tăng thang %(ref)s, từ %(day)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Scale rise %s"
+msgstr "Đợt tăng thang %s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Scale rises"
+msgstr "Các đợt tăng thang"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "See who moves"
+msgstr "Xem ai được nâng"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__returned
+msgid "Sent back"
+msgstr "Bị trả lại"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Sent for approval — %s"
+msgstr "Đã gửi duyệt — %s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Sent for approval."
+msgstr "Đã gửi duyệt."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Sign-off"
+msgstr "Phê duyệt"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__base_version_id
+msgid "Starts from version"
+msgstr "Bắt đầu từ phiên bản"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__effective_date
+msgid "Starts on"
+msgstr "Bắt đầu từ"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Starts on a date already gone"
+msgstr "Bắt đầu vào ngày đã qua"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Take it back"
+msgstr "Rút lại"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"Take this rise back? Nobody's pay has changed yet, and the new version of "
+"the scale goes with it."
+msgstr "Rút lại đợt tăng này? Chưa ai bị đổi lương, và phiên bản mới của thang cũng bị bỏ."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__taken_back
+msgid "Taken back"
+msgstr "Đã rút lại"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Taken back before it started. Nobody's pay changed."
+msgstr "Đã rút lại trước khi bắt đầu. Không ai bị đổi lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "Taken back. Nobody's pay changed."
+msgstr "Đã rút lại. Không ai bị đổi lương."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "That could not be done just now."
+msgstr "Lúc này chưa làm được việc đó."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "That is not something this screen can do."
+msgstr "Màn hình này không làm được việc đó."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "That pay scale is no longer in use."
+msgstr "Thang lương đó không còn được dùng."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "That scale rise is no longer there."
+msgstr "Đợt tăng thang đó không còn nữa."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "The base rate goes up by"
+msgstr "Mức lương cơ sở tăng thêm"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "The draft is removed."
+msgstr "Đã xóa bản nháp."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "The new table"
+msgstr "Bảng mới"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "The rise could not be worked out just now."
+msgstr "Lúc này chưa tính được đợt tăng."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"The scale already has a version from %(day)s. A rise must start after it."
+msgstr "Thang đã có phiên bản từ %(day)s. Đợt tăng phải bắt đầu sau ngày đó."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "The scale rise could not be opened just now."
+msgstr "Lúc này chưa mở được đợt tăng thang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Their contract ends before the rise starts."
+msgstr "Hợp đồng của họ kết thúc trước khi đợt tăng bắt đầu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Their contract is no longer running."
+msgstr "Hợp đồng của họ không còn hiệu lực."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Their contract is not running yet."
+msgstr "Hợp đồng của họ chưa có hiệu lực."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Their pay changed since the rise was sent (now %s), so nothing was written "
+"for them."
+msgstr "Lương của họ đã đổi kể từ khi gửi đợt tăng (hiện là %s), nên không ghi gì cho họ."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Their pay goes up to the new step."
+msgstr "Lương của họ tăng lên bậc mới."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Their step has no amount in the new table."
+msgstr "Bậc của họ không có số tiền trong bảng mới."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__step_old
+msgid "Their step now"
+msgstr "Bậc hiện tại"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "They are paid in %(pay)s and the scale is in %(scale)s."
+msgstr "Họ được trả bằng %(pay)s còn thang tính bằng %(scale)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This rise has not been written yet."
+msgstr "Đợt tăng này chưa được ghi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"This rise has started, so it can no longer be taken back. Prepare a new "
+"request instead."
+msgstr "Đợt tăng đã bắt đầu, nên không rút lại được. Hãy soạn một yêu cầu mới."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This rise is being written right now. Look again in a minute."
+msgstr "Đợt tăng đang được ghi. Xem lại sau một phút."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"This rise starts in a month already paid (%s). After it is written, the pay "
+"team can re-work those months; nothing is paid back by itself."
+msgstr "Đợt tăng bắt đầu trong tháng đã trả lương (%s). Sau khi ghi, nhóm tính lương có thể tính lại các tháng đó; không có khoản truy lĩnh nào tự trả."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"This rise starts on a date already gone. The pay team can re-work the months"
+" already paid."
+msgstr "Đợt tăng bắt đầu vào ngày đã qua. Nhóm tính lương có thể tính lại các tháng đã trả."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"This scale already has a rise waiting (%s). Finish or take back that one "
+"first."
+msgstr "Thang này đã có một đợt tăng đang chờ (%s). Hãy hoàn tất hoặc rút lại đợt đó trước."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This scale rise belongs to a company you do not work in."
+msgstr "Đợt tăng thang này thuộc công ty bạn không làm việc."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This scale rise has already been sent in."
+msgstr "Đợt tăng thang này đã được gửi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "This scale rise has been sent in; it can no longer be changed."
+msgstr "Đợt tăng thang này đã được gửi; không thể sửa nữa."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This scale rise was cancelled, so nothing was written."
+msgstr "Đợt tăng thang này đã bị hủy, nên không ghi gì."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__cost_how__engine
+msgid "Through the pay rules"
+msgstr "Theo quy tắc tính lương"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__rejected
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Type a percentage above zero."
+msgstr "Nhập tỷ lệ lớn hơn 0."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Type an amount above zero."
+msgstr "Nhập số tiền lớn hơn 0."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Type the new amount in each cell. A rise never lowers a step."
+msgstr "Nhập số tiền mới vào từng ô. Đợt tăng không bao giờ hạ một bậc."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Type the new base rate, and a new coefficient where one changes."
+msgstr "Nhập mức lương cơ sở mới, và hệ số mới ở ô nào thay đổi."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__method__table
+msgid "Type the new table"
+msgstr "Nhập bảng mới"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__cost_how__wage
+msgid "Wage difference only"
+msgstr "Chỉ chênh lệch lương"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__state__waiting
+msgid "Waiting"
+msgstr "Đang chờ"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Waiting for %s."
+msgstr "Đang chờ %s."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__pending
+msgid "Waiting for approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Was paid differently from their step."
+msgstr "Trước đây được trả khác bậc."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__outcome
+msgid "What happens"
+msgstr "Điều gì xảy ra"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "What it costs"
+msgstr "Chi phí"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Who moves"
+msgstr "Ai được nâng"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__reason
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__why
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__block_note
+msgid "Why it could not be done"
+msgstr "Lý do không làm được"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__skip_reason
+msgid "Why it was not written"
+msgstr "Lý do không ghi"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__cost_how
+msgid "Worked out"
+msgstr "Cách tính"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid ""
+"Worked out through each person's own pay rules: basic pay and everything "
+"that follows from it, with the employer's contributions."
+msgstr "Tính theo quy tắc lương của từng người: lương cơ bản và mọi khoản theo sau nó, cùng phần đóng góp của công ty."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid ""
+"Worked out through the pay rules where the person's scheme allows it; the "
+"rest by the wage difference alone."
+msgstr "Tính theo quy tắc lương khi bảng lương của người đó cho phép; phần còn lại chỉ theo chênh lệch lương."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Working it out changes nobody's pay."
+msgstr "Việc tính toán không đổi lương của ai."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__state__done
+msgid "Written"
+msgstr "Đã ghi"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__applied_by
+msgid "Written by"
+msgstr "Người ghi"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Written for %(done)s. Not written for %(skipped)s."
+msgstr "Đã ghi cho %(done)s. Chưa ghi cho %(skipped)s."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__applied_at
+msgid "Written on"
+msgstr "Ghi ngày"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Yearly cost-of-living rise agreed with the union"
+msgstr "Tăng lương theo trượt giá hằng năm đã thỏa thuận với công đoàn"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "You took them out of this rise."
+msgstr "Bạn đã bỏ họ ra khỏi đợt tăng này."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Remove this draft"
+msgstr "Xóa bản nháp này"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Remove this draft? Nothing else is changed."
+msgstr "Xóa bản nháp này? Không có gì khác thay đổi."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"Starts from the table now in force (%s). That table is kept exactly as it "
+"was."
+msgstr "Bắt đầu từ bảng đang áp dụng (%s). Bảng đó được giữ nguyên."

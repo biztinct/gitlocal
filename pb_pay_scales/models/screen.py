@@ -855,13 +855,30 @@ class PbPayScalesScreen(models.AbstractModel):
                 chip['title'] = _("The scale says %(scale)s; this contract pays %(paid)s.",
                                   scale=self._money(row.scale_amount, currency),
                                   paid=self._money(contract.wage, currency))
-                chip['stage_wage'] = row.scale_amount
-                chip['stage_label'] = _("Bring to step")
+                # S8-D (SC2): somebody paid ABOVE their step keeps their pay —
+                # the chip never offers to bring them down to it.
+                if not row.is_above_step():
+                    chip['stage_wage'] = row.scale_amount
+                    chip['stage_label'] = _("Bring to step")
             if row.state == 'pinned' and row.pin_note:
                 chip['title'] = row.pin_note
             if self._can_write() and row.state == 'drifted':
                 chip['action'] = {'model': 'pb.pay.scales', 'method': 'pin_from_drawer',
                                   'args': [contract.id], 'label': _("Keep this pay")}
+                # S8-D: paid exactly ANOTHER step of the grade now (a Change
+                # job raise to the next step, for one) — re-place them there.
+                # A placement only; the pay is already right.
+                version = row.scale_id.sudo().version_on()
+                if version:
+                    for step in range(1, row.scale_id.step_count + 1):
+                        if step != row.step_no and self._same(
+                                version.value_of(row.grade_id, step), contract.wage,
+                                row.scale_id.decimals()):
+                            chip['action'] = {
+                                'model': 'pb.pay.scales', 'method': 'place',
+                                'args': [contract.id, row.grade_id.id, step],
+                                'label': _("Mark on step %(step)s", step=step)}
+                            break
             return chip
         # Not placed: say so only when the job is on a grade of a scale.
         job = contract.job_id or contract.employee_id.job_id

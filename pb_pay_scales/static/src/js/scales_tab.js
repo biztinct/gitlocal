@@ -22,6 +22,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { ScaleRaiseDrawer } from "@pb_pay_scales/js/scale_raise";
 
 const MODEL = "pb.pay.scales";
 
@@ -53,6 +54,7 @@ function roundTo(value, unit, decimals) {
 export class PbPayScales extends Component {
     static template = "pb_pay_scales.PbPayScales";
     static props = ["*"];
+    static components = { ScaleRaiseDrawer };
 
     setup() {
         this.orm = useService("orm");
@@ -64,6 +66,8 @@ export class PbPayScales extends Component {
             staged: {}, baseRate: null,
             editing: "", grow: null, busy: false,
             drawer: null, newGrade: "",
+            // WDGAP S8-D: the scale's rises (strip) and the open rise drawer.
+            raises: [], raiseLive: false, raise: null,
         });
         onWillStart(() => this.load());
         useExternalListener(window, "keydown", (ev) => this.onKey(ev), { capture: true });
@@ -93,6 +97,7 @@ export class PbPayScales extends Component {
             if (d && d.scale) {
                 this.state.scaleId = d.scale.id;
                 this.state.versionId = d.scale.version ? d.scale.version.id : 0;
+                await this.loadRaises();
             }
         } catch (error) {
             this.state.failed = this._msg(error, _t("The pay scales could not be read just now. Try again in a moment."));
@@ -644,9 +649,34 @@ export class PbPayScales extends Component {
     }
     closeDrawer() { this.state.drawer = null; }
 
+    // ============================================ WDGAP S8-D: raise the scale
+    async loadRaises() {
+        if (!this.state.scaleId) { this.state.raises = []; return; }
+        try {
+            const res = await this.orm.call(MODEL, "raise_list", [this.state.scaleId]);
+            this.state.raises = res.rows || [];
+            this.state.raiseLive = Boolean(res.live);
+        } catch {
+            this.state.raises = [];
+        }
+    }
+    get canRaise() { return Boolean(this.canWrite && this.scale && this.scale.version_count); }
+    openRaise(id) {
+        if (this.state.raise) { return; }   // one drawer at a time (a slow first open)
+        if (this.stagedCount && !window.confirm(_t("Leave without saving the table?"))) { return; }
+        this.discard();
+        this.state.drawer = null;
+        this.state.raise = { id: id || 0, key: Date.now() };
+    }
+    closeRaise() { this.state.raise = null; }
+    async onRaiseChanged() { await this.load(); }
+    raiseChipClass(r) { return "pbrs-chip is-" + (r.tone || "muted"); }
+    raisePeople(r) { return r.people ? this.peopleLine(r.people) : ""; }
+
     onKey(ev) {
         if (ev.key !== "Escape") { return; }
         if (this.state.editing) { return; }
+        if (this.state.raise) { return; }   // the rise drawer closes itself
         if (this.state.grow) { this.state.grow = null; ev.stopPropagation(); return; }
         if (this.state.drawer) { this.state.drawer = null; ev.stopPropagation(); }
     }
@@ -656,7 +686,7 @@ registry.category("pb_pay_tabs").add("scales", {
     icon: "layers",
     label: _t("Scales"),
     title: _t("Pay scales"),
-    subtitle: _t("A table of grades and steps, one amount each, dated. A new joiner starts on step 1 of their job's grade. Nothing here changes anybody's pay."),
+    subtitle: _t("A table of grades and steps, one amount each, dated. A new joiner starts on step 1 of their job's grade. Pay moves only through a contract, or a scale rise once it is signed off."),
     before: "bands",
     Component: PbPayScales,
 });
