@@ -134,10 +134,14 @@ class PbContractRule(models.Model):
         return round(max(days, 0) / DAYS_PER_MONTH, 1)
 
     @api.model
-    def chain(self, contract, rule=None):
+    def chain(self, contract, rule=None, links=None):
         """`{contracts, count, months, before, months_before, rule}` — the
         fixed-term contracts in a row ending with `contract` (it included,
-        when it is fixed-term), plus the ones typed on the person."""
+        when it is fixed-term), plus the ones typed on the person.
+
+        ``links`` (WDGAP W3-B, read-only what-if): ``{contract id: the
+        contract it renews}`` read as if `pb_renewed_from_id` said so —
+        nothing is written."""
         contract = contract.sudo() if contract else contract
         emp = contract.employee_id if contract else False
         rule = rule if rule is not None else self.rule_for(emp)
@@ -151,8 +155,9 @@ class PbContractRule(models.Model):
             current = contract
             seen = {contract.id}
             while True:
-                prev = current.pb_renewed_from_id if 'pb_renewed_from_id' in \
-                    current._fields else False
+                prev = (links or {}).get(current.id) or (
+                    current.pb_renewed_from_id if 'pb_renewed_from_id' in
+                    current._fields else False)
                 linked = bool(prev)
                 if not prev:
                     earlier = [c for c in others if c.id not in seen and
@@ -186,7 +191,7 @@ class PbContractRule(models.Model):
         }
 
     @api.model
-    def check_extension(self, contract, months):
+    def check_extension(self, contract, months, links=None):
         """What extending `contract` by `months` would mean under the rule.
 
         `{'rule', 'rule_id', 'over', 'count_after', 'months_after',
@@ -199,7 +204,7 @@ class PbContractRule(models.Model):
         rule = self.rule_for(emp)
         if not rule:
             return {'over': False, 'rule_id': 0}
-        info = self.chain(contract, rule)
+        info = self.chain(contract, rule, links=links)
         span = max(1, int(months or 0))
         count_after = info['count'] + 1
         months_after = round(info['months'] + span, 1)
@@ -278,6 +283,96 @@ class PbContractRule(models.Model):
                 out['tone'] = 'amber'
                 out['next'] = nxt.get('sentence') or ''
         return out
+
+    # ==================================================================
+    # WDGAP W3-B (owner ruling RN2) — READ-ONLY check of past renewals
+    # ==================================================================
+    @api.model
+    def renew_link_report(self, window_days=31, months=None):
+        """Past renewals that carry NO link: the same person, a new contract
+        starting within `window_days` after the old one ended, nothing linked
+        to either side, no other contract between them. The Contracts "Renew"
+        button wrote no link before W3-B (only the decision board did); the
+        system cannot tell a button renewal from one made by hand or imported,
+        so every such pair is listed.
+
+        For the people concerned it also says how many would show the red
+        "past the rule" warning on their latest contract now, and how many if
+        the listed pairs WERE linked (`chain(..., links=...)`, a what-if read
+        only). WRITES NOTHING — `tools/renew_button_links_check.py` runs it in
+        a read-only transaction.
+        """
+        window = max(0, int(window_days or 0))
+        if months is None:
+            try:
+                from odoo.addons.pb_contract_lifecycle.models.contract_common import (
+                    P_EXTENSION_MONTHS, number)
+                months = int(number(self.env, P_EXTENSION_MONTHS, 12))
+            except Exception:   # noqa: BLE001 — the board's own default
+                months = 12
+        self.env.cr.execute("""
+            SELECT n.id, o.id, (n.date_start - o.date_end) - 1
+              FROM hr_contract n
+              JOIN hr_contract o ON o.employee_id = n.employee_id AND o.id <> n.id
+             WHERE n.pb_renewed_from_id IS NULL
+               AND COALESCE(n.state, '') <> 'cancel'
+               AND COALESCE(o.state, '') <> 'cancel'
+               AND o.date_end IS NOT NULL AND n.date_start IS NOT NULL
+               AND n.date_start > o.date_end
+               AND n.date_start <= o.date_end + %s
+               AND NOT EXISTS (SELECT 1 FROM hr_contract x
+                                WHERE x.pb_renewed_from_id = o.id)
+               AND NOT EXISTS (SELECT 1 FROM hr_contract y
+                                WHERE y.employee_id = n.employee_id
+                                  AND y.id NOT IN (n.id, o.id)
+                                  AND COALESCE(y.state, '') <> 'cancel'
+                                  AND y.date_start > o.date_end
+                                  AND y.date_start < n.date_start)
+             ORDER BY n.employee_id, n.date_start, n.id
+        """, [window + 1])
+        pairs = self.env.cr.fetchall()
+        Contract = self.env['hr.contract'].sudo().with_context(active_test=False)
+        links = {}
+        rows = []
+        for new_id, old_id, gap in pairs:
+            new, old = Contract.browse(new_id), Contract.browse(old_id)
+            links[new_id] = old
+            rule = self.rule_for(new.employee_id)
+            rows.append({
+                'company': new.company_id.name or '',
+                'employee_id': new.employee_id.id,
+                'person': new.employee_id.name or '',
+                'old_contract': old.name or '', 'old_end': str(old.date_end or ''),
+                'new_contract': new.name or '', 'new_start': str(new.date_start or ''),
+                'gap_days': int(gap or 0),
+                'rule': rule.name if rule else '',
+                # Within the rule's break the counting already joins them by
+                # dates; only a longer break makes the link change the count.
+                'counted_by_dates': bool(rule) and int(gap or 0) <= int(rule.gap_days),
+            })
+        people = sorted({r['employee_id'] for r in rows})
+        now_over, linked_over = [], []
+        for emp_id in people:
+            latest = Contract.search([('employee_id', '=', emp_id),
+                                      ('state', '!=', 'cancel')],
+                                     order='date_start desc, id desc', limit=1)
+            if not latest or not self._is_fixed(latest):
+                continue
+            name = latest.employee_id.name or ''
+            if self.check_extension(latest, months).get('over'):
+                now_over.append(name)
+            if self.check_extension(latest, months, links=links).get('over'):
+                linked_over.append(name)
+        return {
+            'pairs': rows,
+            'pair_count': len(rows),
+            'people': len(people),
+            'months': months,
+            'window_days': window,
+            'warning_now': len(now_over),
+            'warning_if_linked': len(linked_over),
+            'newly_warned': sorted(set(linked_over) - set(now_over)),
+        }
 
 
 class HrEmployeeFixedTerm(models.Model):

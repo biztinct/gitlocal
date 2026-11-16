@@ -350,6 +350,11 @@ class PbContractWizard(models.AbstractModel):
         kind = self._kind_for_new(vals, old)
         if kind:
             cvals['vietnam_contract_type'] = kind
+        # WDGAP W3-B (RN2): from now on a renewal made here is LINKED to the
+        # contract it renews — the link the fixed-term counting reads (the
+        # decision board already wrote it). Past renewals are not backfilled.
+        if old and 'pb_renewed_from_id' in self.env['hr.contract']._fields:
+            cvals['pb_renewed_from_id'] = old.id
         try:
             c = self.env['hr.contract'].create(cvals)
             if vals.get('activate'):
