@@ -294,6 +294,96 @@ demo login (rize: ash/debalina/thao/wildan).
 
 **Owner question (new):** the two import paths in the table above still write bank details
 without a second person. Should pay-data-file and employee imports also need one?
+**ANSWERED — ruling BK2 (2026-11-16 evening): yes. Built: see "Follow-up BK2".**
+
+## Follow-up BK2 (owner ruling 2026-11-16 evening) — imports wait for a second person too
+
+**Ruling:** bank changes arriving by the two older routes — a pay data file and the old
+Vietnam employee import — also wait for one second person. Lane widened minimally; everything
+was done BY INHERITANCE from `pb_bank_ocr` (new file `pb_bank_ocr/models/pb_bank_import_hold.py`);
+**no file of the import modules was edited** (`pb_hr_payroll_formula`, `pb_hr_payroll_vietnam`
+untouched). pb_bank_ocr 19.0.1.3.1 → 19.0.1.4.0.
+
+**How it works**
+- While an import runs, a "hold" is open for its database cursor (a module-level map keyed on
+  the cursor — not a context key, which would travel into payslip code and could be sent by a
+  browser). Hooks (inherited):
+  - `hr.payroll.import.batch.action_process` opens the hold (also what a connected system's
+    records refresh runs, `integration_cron._rd54_writeback_from_store`) and writes the
+    sentence to the load's log; the load form shows it (new `pb_bank_waiting_note`).
+  - `hr.payroll.import.batch._sync_employee_bank_account` (the bank-account columns): reads the
+    values exactly as the original does; if the number is already the person's (bank-file
+    store, or one of their accounts with the same bank and holder) it calls the original
+    unchanged; otherwise nothing is written and a waiting change is made.
+  - `hr.employee.write/create` (a column mapped straight onto the four bank-file fields, and the
+    Vietnam import's employee create/update): changed bank fields are taken out of the write and
+    held; every other field in the same write is written; unchanged bank values stay in the write
+    as sent (a no-op), so an import with no bank change writes exactly what it always wrote.
+  - `vietnam.employee.import.wizard.action_import_employees` opens the hold and appends the
+    sentence to the wizard's import summary.
+- A held change is a `pb.bank.change.request` "started from an import" (`pb_origin='import'`,
+  no document needed — `attachment_id` is no longer required at field level; a constraint still
+  requires it for every other origin), proposed by the person who ran the import (the load's
+  creator), sent at once on the same `records_bank` route as BK1 (same approvers, never the
+  importer or the account's owner, each database's independence setting). Identical details →
+  nothing; the same details already waiting → nothing (re-import never duplicates). A change
+  the route refuses at sending (the number is somebody else's) stays a draft with the reason and
+  is counted as "need HR to look at them first".
+- **Approve all in this file**: Compliance › Bank shows "Bank changes from imports, waiting for
+  you", one row per import with a two-press "Approve all in this file". It approves, as the
+  reader, every waiting change from that import where the reader holds an open seat; changes the
+  reader imported (or is not asked to decide) stay waiting and are counted in the answer.
+  Send-back stays per row (Approvals inbox).
+- Outside an import nothing is held: direct calls of the writeback seams (the existing unit
+  tests) behave as before.
+- Silent: nothing already on record is touched or asks for re-approval.
+
+**The standard employee form's "Bank accounts" field — closed.** By view inheritance (no
+standard file edited) every `bank_account_ids` on `hr.view_employee_form` is read-only, with the
+note "To change where this person is paid, use Compliance › Bank: a second person approves it."
+(test M10). The res.partner.bank records can still be edited from a contact's form; that store is
+not what the bank file pays (it pays the four fields), and the store check lists any difference.
+
+**What the person who ran the import sees.** The load's log and the load form say "N bank changes
+are waiting for approval. Nothing changes where these people are paid until a second person
+approves." The Vietnam import's summary says the same. **Not shown yet:** the Run-payroll
+wizard's own result screen (`pb_payrun_wizard` `attach_spreadsheet` return + its template). That
+is one key and one line in `pb_payrun_wizard`, a module other phases edit, so it is left for the
+step's merge (see §8).
+
+**Tests (BK2)** — all PASS:
+
+| # | Test |
+|---|---|
+| M1 | pay data file, new person with bank details: neither store written; one waiting change on `records_bank`, keyed to the load; the load's log and form say it |
+| M2 | pay data file, changed details: held; old details stay in both stores |
+| M3 | pay data file, identical details: nothing created, no history row, today's behaviour |
+| M4 | the same file loaded again: still one waiting change |
+| M5 | approver ≠ importer: the importer is never seated; "approve all" as the importer approves 0 ("2 left waiting: you ran this import"); as the second person approves 2; both stores written only then |
+| M6 | send back one row: draft, old details in both stores |
+| M7 | a column mapped onto a bank-file field: held, while the other field in the same write is written; outside an import nothing is held |
+| M8 | golden: a load with no bank column writes the same, makes no change request and no history row |
+| M9 | old Vietnam employee import: new person → held (not written), proposer = the importer, summary says it; re-import → still one; once on record, the same import makes nothing |
+| M10 | standard employee form: every "Bank accounts" field read-only, with the pointer |
+
+**Suites (baselines recorded BEFORE any BK2 edit, fresh `wdgap_s6a_t`)**
+
+| Suite | Before BK2 | After BK2 |
+|---|---|---|
+| pb_bank_ocr | 42 tests, 4 known errors (test_07, 07b, 09, 15) | 54 tests (+10 BK2, +2 count of classes), the same 4 errors |
+| pb_hr_payroll_formula (every import test incl. bank destinations, one-time loads, J10 writeback) | 835 tests, 4 known failures: TestRd49SyncCost ×2, TestRecordsR1OneTime.test_07b, TestSchemeCtxCurrency.test_04 | 835 tests, the same 4 |
+| pb_hr_payroll_vietnam | 15 / 0 | 15 / 0 |
+
+**Browser walk (BK2):** a pay data load run by an importer brought two bank changes → both
+held (neither store written), proposed by the importer; signed in as the second person (Vietnamese
+interface), Compliance › Bank showed "Bank changes from imports, waiting for you — Pay data file
+DEMO October file · 2 waiting"; "Approve all in this file" → confirm → both approved, both
+people's bank-file numbers then changed; console clean. (Not walked: the native employee form —
+the read-only field is proven by test M10.)
+
+**Owner note:** a connected system's records refresh runs the same load step, so bank changes
+it brings also wait (proposed by the account that runs the refresh).
+
 
 ## 8. Left for later
 
@@ -305,6 +395,9 @@ without a second person. Should pay-data-file and employee imports also need one
   field for it).
 - The candidate's application consent is not carried to the employee at hire (FACTS §4.2, optional).
 - New icons (id-card, landmark) would need a pb_me_portal prep commit; existing icons used.
+- **Run-payroll wizard result screen (BK2)**: show `_pb_import_sentence('hr.payroll.import.batch,<id>')`
+  in `pb_payrun_wizard.attach_spreadsheet`'s answer and one line in its template (a module other
+  phases edit — do it at the step merge).
 - **Tiles under "More" (C-3)**: the My details and Certificates tiles belong in "Me", but
   pb_me_portal's home test pins the "Me" list. One orchestrator prep commit: add
   `/my/details` and `/my/certificates` to that test's list, then change `group` to `'me'` in
