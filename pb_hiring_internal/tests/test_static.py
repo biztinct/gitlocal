@@ -17,7 +17,10 @@ def _no_comments(text):
     return text
 
 
-class StaticGates:
+@tagged('post_install', '-at_install', 'wdgap_s6b')
+class TestStaticHiringInternal(TransactionCase):
+    # The methods live on the TestCase itself: the loader does not collect
+    # test methods inherited from a plain mixin class.
     module = MODULE
 
     def _path(self):
@@ -86,7 +89,3 @@ class StaticGates:
                         missing.append(term[:60])
             self.assertFalse(missing, '%s: %s' % (lang, missing[:10]))
 
-
-@tagged('post_install', '-at_install', 'wdgap_s6b')
-class TestStaticHiringInternal(StaticGates, TransactionCase):
-    module = MODULE
