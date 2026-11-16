@@ -72,8 +72,10 @@ class PbBankChangeRequest(models.Model):
     employee_id = fields.Many2one(
         'hr.employee', string='Employee', required=True, tracking=True,
         default=lambda self: self.env.user.employee_id)
+    # WDGAP S6-A BK2: a change that arrived by an import has no document;
+    # every other kind still needs one (`_pb_check_document`).
     attachment_id = fields.Many2one(
-        'ir.attachment', string='Document', required=True)
+        'ir.attachment', string='Document')
     doc_kind = fields.Selection([
         ('confirmation_letter', 'Bank Confirmation Letter'),
         ('statement', 'Bank Statement'),
