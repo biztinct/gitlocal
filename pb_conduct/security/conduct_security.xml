@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         WDGAP S9-B, owner ruling P3: conduct cases are seen ONLY by the
+         people HR names on the Access screen.
+
+         ITS OWN LADDER. No implied_ids FROM any HR, lifecycle, payroll or
+         administrator group INTO these two, in either direction, and nobody
+         is put in them by install (not even the built-in administrator —
+         unlike growth plans). The access team names people on the Access
+         screen; that grant is recorded like every other.
+         ================================================================== -->
+
+    <record id="module_category_conduct" model="ir.module.category">
+        <field name="name">Conduct cases</field>
+        <field name="sequence">56</field>
+    </record>
+
+    <record id="res_groups_privilege_conduct" model="res.groups.privilege">
+        <field name="name">Conduct cases</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_conduct"/>
+    </record>
+
+    <record id="group_conduct_user" model="res.groups">
+        <field name="name">HR — conduct cases</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_conduct"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Run conduct cases: record a concern, plan and record a hearing, record the decision and issue the letter. Not part of the general HR permissions — it is given by name.</field>
+    </record>
+
+    <record id="group_conduct_head" model="res.groups">
+        <field name="name">Head of HR — conduct cases</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_conduct"/>
+        <field name="implied_ids" eval="[(4, ref('group_conduct_user'))]"/>
+        <field name="comment">Everything above, plus the reasons, the letter wording and the country notes.</field>
+    </record>
+
+    <!-- ==================================================================
+         THE CASE AND EVERYTHING HANGING OFF IT. Global rules (no groups),
+         so they are ANDed with the access list: only the two groups above
+         hold an access right at all (ir.model.access.csv).
+
+           1. company — the companies the reader is working in;
+           2. never about yourself — a named HR person who is the subject of
+              a case cannot read it (or its notes, history and letters).
+         ================================================================== -->
+
+    <record id="rule_case_company" model="ir.rule">
+        <field name="name">Conduct case: company</field>
+        <field name="model_id" ref="model_pb_conduct_case"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_case_not_mine" model="ir.rule">
+        <field name="name">Conduct case: never about yourself</field>
+        <field name="model_id" ref="model_pb_conduct_case"/>
+        <field name="domain_force">['!', ('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_note_company" model="ir.rule">
+        <field name="name">Conduct case note: company</field>
+        <field name="model_id" ref="model_pb_conduct_note"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_note_not_mine" model="ir.rule">
+        <field name="name">Conduct case note: never about yourself</field>
+        <field name="model_id" ref="model_pb_conduct_note"/>
+        <field name="domain_force">['!', ('case_id.employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_event_company" model="ir.rule">
+        <field name="name">Conduct case history: company</field>
+        <field name="model_id" ref="model_pb_conduct_event"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_event_not_mine" model="ir.rule">
+        <field name="name">Conduct case history: never about yourself</field>
+        <field name="model_id" ref="model_pb_conduct_event"/>
+        <field name="domain_force">['!', ('case_id.employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_letter_company" model="ir.rule">
+        <field name="name">Conduct letter: company</field>
+        <field name="model_id" ref="model_pb_conduct_letter"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_letter_not_mine" model="ir.rule">
+        <field name="name">Conduct letter: never about yourself</field>
+        <field name="model_id" ref="model_pb_conduct_letter"/>
+        <field name="domain_force">['!', ('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_reason_company" model="ir.rule">
+        <field name="name">Conduct reason: company</field>
+        <field name="model_id" ref="model_pb_conduct_reason"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_template_company" model="ir.rule">
+        <field name="name">Conduct letter wording: company</field>
+        <field name="model_id" ref="model_pb_conduct_letter_template"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         FACTS S9 §2.4 LEAK 2 — THE DOCUMENTS VAULT.
+
+         Every HR officer and payroll officer reads every document
+         (pb_employee_vault_security.xml, rule document_rule_hr_all). A
+         finished conduct letter is filed under this module's own category
+         (code "pb_conduct"). This GLOBAL rule is ANDed with every vault
+         rule: a document in that category is seen only by people named for
+         conduct cases, and by the person it is addressed to. It also stops
+         anybody who is not named from FILING a document in that category.
+         Hearing minutes and notes are never filed in the vault at all.
+         ================================================================== -->
+    <record id="rule_vault_conduct_private" model="ir.rule">
+        <field name="name">Employee Document: private HR letters (named people and the person only)</field>
+        <field name="model_id" ref="pb_employee_vault.model_pb_employee_document"/>
+        <field name="domain_force">['|', ('category_id.code', '!=', 'pb_conduct'), (1, '=', 1) if user.pb_conduct_reader else ('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+</odoo>

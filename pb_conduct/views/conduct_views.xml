@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- The board itself is a Talent tab (static/src/js/conduct_palette.js).
+       This client action is its own page, for ⌘K and deep links. -->
+  <record id="action_pb_conduct_board" model="ir.actions.client">
+    <field name="name">Conduct cases</field>
+    <field name="tag">pb_conduct_board</field>
+  </record>
+
+  <!-- ============ set-up lists (head of HR for conduct cases) ============ -->
+  <record id="view_pb_conduct_reason_list" model="ir.ui.view">
+    <field name="name">pb.conduct.reason.list</field>
+    <field name="model">pb.conduct.reason</field>
+    <field name="arch" type="xml">
+      <list string="Reasons" editable="bottom">
+        <field name="sequence" widget="handle"/>
+        <field name="name"/>
+        <field name="company_id" groups="base.group_multi_company" optional="show"/>
+        <field name="active" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+  <record id="action_pb_conduct_reason" model="ir.actions.act_window">
+    <field name="name">Conduct case reasons</field>
+    <field name="res_model">pb.conduct.reason</field>
+    <field name="view_mode">list</field>
+    <field name="context">{'active_test': False}</field>
+  </record>
+
+  <record id="view_pb_conduct_country_note_list" model="ir.ui.view">
+    <field name="name">pb.conduct.country.note.list</field>
+    <field name="model">pb.conduct.country.note</field>
+    <field name="arch" type="xml">
+      <list string="Country notes" editable="bottom">
+        <field name="country_id"/>
+        <field name="step"/>
+        <field name="note"/>
+      </list>
+    </field>
+  </record>
+  <record id="action_pb_conduct_country_note" model="ir.actions.act_window">
+    <field name="name">Country notes for conduct cases</field>
+    <field name="res_model">pb.conduct.country.note</field>
+    <field name="view_mode">list</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">No country notes yet</p>
+      <p>Write down what your adviser tells you for each step in each country: time limits, who must attend the hearing, how long a warning lasts. The note shows on every case at that step.</p>
+    </field>
+  </record>
+
+  <record id="view_pb_conduct_letter_template_list" model="ir.ui.view">
+    <field name="name">pb.conduct.letter.template.list</field>
+    <field name="model">pb.conduct.letter.template</field>
+    <field name="arch" type="xml">
+      <list string="Letter wording">
+        <field name="sequence" widget="handle"/>
+        <field name="kind"/>
+        <field name="name"/>
+        <field name="company_id" groups="base.group_multi_company" optional="show"/>
+        <field name="active" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+  <record id="view_pb_conduct_letter_template_form" model="ir.ui.view">
+    <field name="name">pb.conduct.letter.template.form</field>
+    <field name="model">pb.conduct.letter.template</field>
+    <field name="arch" type="xml">
+      <form string="Letter wording">
+        <sheet>
+          <div class="alert alert-info" role="status">This wording is a starting point. Check it with your adviser before you use it: what a letter must say differs by country.</div>
+          <group>
+            <group>
+              <field name="name"/>
+              <field name="kind"/>
+            </group>
+            <group>
+              <field name="company_id" groups="base.group_multi_company"/>
+              <field name="active"/>
+            </group>
+          </group>
+          <field name="title"/>
+          <field name="body" nolabel="1" placeholder="Dear ${employee}, ..."/>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <record id="action_pb_conduct_letter_template" model="ir.actions.act_window">
+    <field name="name">Conduct letter wording</field>
+    <field name="res_model">pb.conduct.letter.template</field>
+    <field name="view_mode">list,form</field>
+    <field name="context">{'active_test': False}</field>
+  </record>
+
+</odoo>
