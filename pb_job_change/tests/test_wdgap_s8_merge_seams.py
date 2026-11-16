@@ -155,7 +155,15 @@ class TestWdgapS8MergeSeams(TransactionCase):
         chip = self.env['pb.pay.scales'].contract_chip(contract.id) \
             if hasattr(self.env['pb.pay.scales'], 'contract_chip') else None
         if chip:
-            self.assertIn('Drifted', json.dumps(chip, default=str))
+            # S8-D (ruling SC2): paid ABOVE their step reads "Above step", is
+            # never offered "Bring to step" (a cut), and — paid exactly step 2
+            # now — gets "Mark on step 2" (a placement only).
+            text = json.dumps(chip, default=str)
+            self.assertTrue('Drifted' in text or 'Above step' in text, text)
+            self.assertNotIn('stage_wage', chip)
+            if 'Above step' in text:
+                self.assertEqual((chip.get('action') or {}).get('args'),
+                                 [contract.id, grade.id, 2])
 
     # ================================================================ M2
     def _retro_fixture(self):

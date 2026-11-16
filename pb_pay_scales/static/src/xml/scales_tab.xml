@@ -59,6 +59,10 @@
               </div>
             </div>
             <div class="pbs-head-act" t-if="canWrite">
+              <button class="pbim-btn primary sm" t-if="canRaise" t-att-disabled="state.raiseLive" t-on-click="() => this.openRaise(0)"
+                      title="One request that moves everybody on this scale, with its real cost and one sign-off">
+                <t t-out="ic('trendingUp', 14)"/> <span>Raise the scale</span>
+              </button>
               <button class="pbim-btn ghost sm" t-on-click="() => this.proposeFromWages()"
                       t-att-disabled="!editable or state.busy">
                 <t t-out="ic('wand', 14)"/> <span>Start from what you pay</span>
@@ -84,6 +88,17 @@
             <button class="pbs-link" type="button" t-if="canWrite and version and version.editable and !version.ended and scale.version_count > 1 and version.date_from > d.today"
                     t-on-click="() => this.removeVersion()">
               <t t-out="ic('trash', 13)"/> <span>Remove this version</span>
+            </button>
+          </div>
+
+          <!-- WDGAP S8-D: the rises of this scale, newest first -->
+          <div class="pbrs-strip" t-if="state.raises.length">
+            <span class="pbrs-strip-l"><t t-out="ic('trendingUp', 13)"/> <span>Scale rises</span></span>
+            <button type="button" t-foreach="state.raises" t-as="r" t-key="r.id" t-att-class="raiseChipClass(r)" t-on-click="() => this.openRaise(r.id)">
+              <b t-esc="r.name"/>
+              <span t-esc="r.state_label"/>
+              <span t-if="r.date">· <t t-esc="r.date"/></span>
+              <span t-if="r.people">· <t t-esc="raisePeople(r)"/></span>
             </button>
           </div>
 
@@ -225,6 +240,8 @@
       </t>
 
       <!-- ============================== drawers -->
+      <ScaleRaiseDrawer t-if="state.raise and scale" t-key="state.raise.key" scaleId="scale.id" raiseId="state.raise.id"
+                        onClose="() => this.closeRaise()" onChanged="() => this.onRaiseChanged()"/>
       <div class="pay-scrim" t-if="state.drawer" t-on-click="() => this.closeDrawer()"/>
 
       <div class="pay-drawer pbs-drawer" t-if="state.drawer and state.drawer.kind === 'people'">

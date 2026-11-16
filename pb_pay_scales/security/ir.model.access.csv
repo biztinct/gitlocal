@@ -17,3 +17,11 @@ access_pb_pay_scale_package_system,scale allowance system,model_pb_pay_scale_pac
 access_pb_pay_scale_placement_viewer,scale place read,model_pb_pay_scale_placement,pb_pay.group_pay_viewer,1,0,0,0
 access_pb_pay_scale_placement_manager,scale place manager,model_pb_pay_scale_placement,pb_pay.group_pay_manager,1,1,1,1
 access_pb_pay_scale_placement_system,scale place system,model_pb_pay_scale_placement,base.group_system,1,1,1,1
+access_pb_pay_scale_raise_viewer,scale rise read,model_pb_pay_scale_raise,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_raise_manager,scale rise manager,model_pb_pay_scale_raise,pb_pay.group_pay_manager,1,1,1,0
+access_pb_pay_scale_raise_system,scale rise system,model_pb_pay_scale_raise,base.group_system,1,1,1,1
+access_pb_pay_scale_raise_seat,scale rise anyone asked to decide,model_pb_pay_scale_raise,base.group_user,1,0,0,0
+access_pb_pay_scale_raise_line_viewer,scale rise person read,model_pb_pay_scale_raise_line,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_raise_line_manager,scale rise person manager,model_pb_pay_scale_raise_line,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_scale_raise_line_system,scale rise person system,model_pb_pay_scale_raise_line,base.group_system,1,1,1,1
+access_pb_pay_scale_raise_line_seat,scale rise person anyone asked to decide,model_pb_pay_scale_raise_line,base.group_user,1,0,0,0

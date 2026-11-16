@@ -13,9 +13,11 @@ Every contract on a scale reads On scale, Pinned (with a reason) or Drifted.
 
 Nothing here changes anybody's pay by itself: editing the scale changes what
 the scale says, and a wage only moves through the contract's own save and its
-normal approval.
+normal approval — or through "Raise the scale": one request that shows who
+moves, who keeps their pay and what it costs, signed off once by HR and
+Finance, and written on its start date with a letter for each person.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -32,21 +34,26 @@ normal approval.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/scale_raise_security.xml',
+        'data/scale_raise_data.xml',
         'views/actions.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_pay_scales/static/src/scss/scales.scss',
             'pb_pay_scales/static/src/js/scales_tab.js',
+            'pb_pay_scales/static/src/js/scale_raise.js',
             'pb_pay_scales/static/src/js/scale_chip.js',
             'pb_pay_scales/static/src/js/joiner_hint.js',
             'pb_pay_scales/static/src/js/scales_palette.js',
             'pb_pay_scales/static/src/xml/scales_tab.xml',
+            'pb_pay_scales/static/src/xml/scale_raise.xml',
             'pb_pay_scales/static/src/xml/scale_chip.xml',
             'pb_pay_scales/static/src/xml/joiner_hint.xml',
             'pb_pay_scales/static/src/xml/pay_screen.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

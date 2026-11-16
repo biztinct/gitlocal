@@ -228,14 +228,6 @@ msgid "A suggestion could not be worked out just now."
 msgstr "Saran belum bisa dihitung sekarang."
 
 #. module: pb_pay_scales
-#. odoo-javascript
-#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
-msgid ""
-"A table of grades and steps, one amount each, dated. A new joiner starts on "
-"step 1 of their job's grade. Nothing here changes anybody's pay."
-msgstr "Tabel golongan dan tingkat, satu jumlah tiap sel, bertanggal. Karyawan baru mulai di tingkat 1 golongan jabatannya. Tidak ada di sini yang mengubah gaji siapa pun."
-
-#. module: pb_pay_scales
 #. odoo-python
 #: code:addons/pb_pay_scales/models/scale.py:0
 msgid "A version cannot end before it starts."
@@ -1811,3 +1803,1116 @@ msgstr "belum ada jabatan"
 #: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
 msgid "nobody"
 msgstr "tidak ada"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"%(grade)s, step %(step)s would go down, from %(old)s to %(new)s. A rise "
+"never lowers a step; make a new version of the scale for that."
+msgstr "%(grade)s, tingkat %(step)s akan turun, dari %(old)s ke %(new)s. Kenaikan tidak pernah menurunkan tingkat; buat versi skala baru untuk itu."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "%(job)s · %(grade)s, step %(step)s"
+msgstr "%(job)s · %(grade)s, tingkat %(step)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "%s a month"
+msgstr "%s per bulan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "%s for twelve months"
+msgstr "%s untuk dua belas bulan"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "%s has no amounts to raise yet."
+msgstr "%s belum punya jumlah untuk dinaikkan."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "%s has no amounts yet, so there is nothing to raise."
+msgstr "%s belum punya jumlah, jadi tidak ada yang bisa dinaikkan."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "%s has no table before that date to raise."
+msgstr "%s tidak punya tabel sebelum tanggal itu untuk dinaikkan."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"%s people on these jobs are not placed on the scale yet, so the rise does "
+"not reach them."
+msgstr "%s orang di jabatan ini belum ditempatkan di skala, jadi kenaikan tidak sampai ke mereka."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "+%s a month"
+msgstr "+%s per bulan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"1 person on these jobs is not placed on the scale yet, so the rise does not "
+"reach them."
+msgstr "1 orang di jabatan ini belum ditempatkan di skala, jadi kenaikan tidak sampai ke mereka."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A job change with new pay is waiting for them (%s)."
+msgstr "Perubahan jabatan dengan gaji baru untuk mereka sedang menunggu (%s)."
+
+#. module: pb_pay_scales
+#: model:biz.approval.process,description:pb_pay_scales.process_scaleraise
+msgid ""
+"A new version of a pay scale that moves everybody on it, signed off once for"
+" the whole rise: HR, then Finance."
+msgstr "Versi baru skala gaji yang menaikkan semua orang di skala, disetujui sekali untuk seluruh kenaikan: HR, lalu Keuangan."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A pay change for them is waiting (%s)."
+msgstr "Perubahan gaji untuk mereka sedang menunggu (%s)."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A reason was written down"
+msgstr "Alasan sudah ditulis"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A rise can start at most a year ahead."
+msgstr "Kenaikan paling lambat dimulai satu tahun ke depan."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "A rise can start at most a year back."
+msgstr "Kenaikan paling awal dimulai satu tahun ke belakang."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid ""
+"A scale written as coefficients rises through its base rate; each amount is "
+"its coefficient times the new rate."
+msgstr "Skala yang ditulis sebagai koefisien naik melalui tarif dasarnya; tiap jumlah adalah koefisien dikali tarif baru."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid ""
+"A table of grades and steps, one amount each, dated. A new joiner starts on "
+"step 1 of their job's grade. Pay moves only through a contract, or a scale "
+"rise once it is signed off."
+msgstr "Tabel golongan dan tingkat, satu jumlah tiap sel, bertanggal. Karyawan baru mulai di tingkat 1 golongan jabatannya. Gaji hanya berubah lewat kontrak, atau kenaikan skala yang sudah disetujui."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__outcome__above
+msgid "Above step"
+msgstr "Di atas tingkat"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/placement.py:0
+msgid "Above step · %(grade)s, step %(step)s"
+msgstr "Di atas tingkat · %(grade)s, tingkat %(step)s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Above step, pay kept"
+msgstr "Di atas tingkat, gaji tetap"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Already paid the new step or more, so their pay stays as it is."
+msgstr "Sudah dibayar sebesar tingkat baru atau lebih, jadi gajinya tetap."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Already paid the new step or more. Their pay stays as it is."
+msgstr "Sudah dibayar sebesar tingkat baru atau lebih. Gajinya tetap."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Another scale rise for them is waiting (%s)."
+msgstr "Kenaikan skala lain untuk mereka sedang menunggu (%s)."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__scheduled
+msgid "Approved, starts later"
+msgstr "Disetujui, mulai nanti"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Approved. It starts on %s and is written that morning."
+msgstr "Disetujui. Mulai %s dan dicatat pagi itu."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"Approved. The new pay is written on %s. Until then it can be taken back and "
+"nobody's pay changes."
+msgstr "Disetujui. Gaji baru dicatat pada %s. Sebelum itu masih bisa ditarik kembali dan gaji siapa pun tidak berubah."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Average rise"
+msgstr "Rata-rata kenaikan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__draft
+msgid "Being prepared"
+msgstr "Sedang disiapkan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__method__flat
+msgid "By a flat amount"
+msgstr "Dengan jumlah tetap"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__method__percent
+msgid "By a percentage"
+msgstr "Dengan persentase"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Cancel"
+msgstr "Batalkan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Cancel this rise? Nothing is changed."
+msgstr "Batalkan kenaikan ini? Tidak ada yang berubah."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__cancelled
+msgid "Cancelled"
+msgstr "Dibatalkan"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Cancelled from the scale rise."
+msgstr "Dibatalkan dari kenaikan skala."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "Cancelled. Nothing was changed."
+msgstr "Dibatalkan. Tidak ada yang berubah."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Cannot be moved by this rise. The reason is beside each name."
+msgstr "Tidak bisa dinaikkan oleh kenaikan ini. Alasannya ada di samping tiap nama."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__outcome__cannot
+msgid "Cannot move"
+msgstr "Tidak bisa naik"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Choose the day the rise starts."
+msgstr "Pilih tanggal kenaikan dimulai."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__cost_month
+msgid "Cost a month"
+msgstr "Biaya per bulan"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Cost a month (%s)"
+msgstr "Biaya per bulan (%s)"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Could not be written on %s; it will be tried again."
+msgstr "Tidak bisa dicatat pada %s; akan dicoba lagi."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__applied
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Done. New pay written for %(n)s from %(day)s."
+msgstr "Selesai. Gaji baru dicatat untuk %(n)s mulai %(day)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Done. The new pay is written for everybody who moves."
+msgstr "Selesai. Gaji baru sudah dicatat untuk semua yang naik."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "Draft"
+msgstr "Draf"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Each currency is shown on its own line; they are never added together."
+msgstr "Tiap mata uang di barisnya sendiri; tidak pernah dijumlahkan."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Every amount goes up by"
+msgstr "Setiap jumlah naik sebesar"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Every amount goes up by (%)"
+msgstr "Setiap jumlah naik sebesar (%)"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Finance approver"
+msgstr "Penyetuju keuangan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__flat
+msgid "Flat amount"
+msgstr "Jumlah tetap"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "From scale rise %s"
+msgstr "Dari kenaikan skala %s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "HR lead"
+msgstr "Kepala HR"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "How many people move"
+msgstr "Berapa orang yang naik"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "It could not be sent: %s"
+msgstr "Tidak bisa dikirim: %s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "It could not be written: %s"
+msgstr "Tidak bisa dicatat: %s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Leave out"
+msgstr "Keluarkan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__outcome__left_out
+msgid "Left out"
+msgstr "Dikeluarkan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__outcome__move
+msgid "Moves"
+msgstr "Naik"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "New"
+msgstr "Baru"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__new_base_rate
+msgid "New base rate"
+msgstr "Tarif dasar baru"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "No month already paid is affected."
+msgstr "Tidak ada bulan yang sudah dibayar yang terpengaruh."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Nobody's pay would change with this rise, so there is nothing to send."
+msgstr "Kenaikan ini tidak mengubah gaji siapa pun, jadi tidak ada yang dikirim."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__state__skipped
+msgid "Not written"
+msgstr "Tidak dicatat"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Nothing on the table goes up. Type a percentage, an amount or new figures."
+msgstr "Tidak ada yang naik di tabel. Ketik persentase, jumlah, atau angka baru."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Nothing was written: the scale got a version from %(day)s after this rise "
+"was sent. Take this one back and prepare it again."
+msgstr "Tidak ada yang dicatat: skala mendapat versi sejak %(day)s setelah kenaikan ini dikirim. Tarik kembali dan siapkan lagi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Now"
+msgstr "Sekarang"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid ""
+"One request that moves everybody on this scale, with its real cost and one "
+"sign-off"
+msgstr "Satu permintaan yang menaikkan semua orang di skala ini, dengan biaya nyata dan satu persetujuan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid ""
+"One sign-off for the whole rise. Nobody's pay changes until it is approved, "
+"and then only from its start date."
+msgstr "Satu persetujuan untuk seluruh kenaikan. Gaji siapa pun tidak berubah sampai disetujui, dan hanya sejak tanggal mulainya."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "Only a draft that was never sent can be removed."
+msgstr "Hanya draf yang belum pernah dikirim yang bisa dihapus."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Only a rise that has not been approved yet can be cancelled."
+msgstr "Hanya kenaikan yang belum disetujui yang bisa dibatalkan."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Only an approved rise that has not started yet can be taken back. Once it "
+"has started, prepare a new request instead."
+msgstr "Hanya kenaikan yang disetujui dan belum mulai yang bisa ditarik kembali. Setelah mulai, siapkan permintaan baru."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Only the people who set pay bands can raise a pay scale."
+msgstr "Hanya orang yang mengatur pita gaji yang bisa menaikkan skala gaji."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Only the person who prepared it or the people who set pay bands can cancel a"
+" scale rise."
+msgstr "Hanya penyusunnya atau orang yang mengatur pita gaji yang bisa membatalkan kenaikan skala."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid ""
+"Only the person who prepared it or the people who set pay bands can do this."
+msgstr "Hanya penyusunnya atau orang yang mengatur pita gaji yang bisa melakukan ini."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Only the person who prepared it or the people who set pay bands can take a "
+"scale rise back."
+msgstr "Hanya penyusunnya atau orang yang mengatur pita gaji yang bisa menarik kembali kenaikan skala."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Paid above their new step, so their pay stays as it is."
+msgstr "Dibayar di atas tingkat barunya, jadi gajinya tetap."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__new_wage
+msgid "Paid after"
+msgstr "Gaji sesudah"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__drifted
+msgid "Paid differently from their step"
+msgstr "Dibayar berbeda dari tingkatnya"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Paid differently on purpose. Left alone."
+msgstr "Sengaja dibayar berbeda. Dibiarkan."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__cost_currency_id
+msgid "Paid in"
+msgstr "Dibayar dalam"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__old_wage
+msgid "Paid now"
+msgstr "Gaji sekarang"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Past-month re-work"
+msgstr "Hitung ulang bulan lalu"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Past-month re-work is not part of this database. Tell the pay team: they can"
+" work out any difference by hand on the next pay run."
+msgstr "Hitung ulang bulan lalu tidak ada di sistem ini. Beri tahu tim gaji: mereka bisa menghitung selisihnya secara manual di penggajian berikutnya."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"Past-month re-work is not part of this database. The pay team can work out "
+"any difference by hand on the next pay run."
+msgstr "Hitung ulang bulan lalu tidak ada di sistem ini. Tim gaji bisa menghitung selisihnya secara manual di penggajian berikutnya."
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_raise
+msgid "Pay scale rise"
+msgstr "Kenaikan skala gaji"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_letter_template__letter_type__pay_scale_raise
+msgid "Pay scale rise letter"
+msgstr "Surat kenaikan skala gaji"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Pay scale rise · %s"
+msgstr "Kenaikan skala gaji · %s"
+
+#. module: pb_pay_scales
+#: model:biz.approval.process,name:pb_pay_scales.process_scaleraise
+msgid "Pay scale rises"
+msgstr "Kenaikan skala gaji"
+
+#. module: pb_pay_scales
+#: model:ir.actions.server,name:pb_pay_scales.ir_cron_scale_raise_apply_due_ir_actions_server
+msgid "Pay scales: write approved rises on their day"
+msgstr "Skala gaji: catat kenaikan yang disetujui pada harinya"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__apply_id
+msgid "Pay written"
+msgstr "Gaji yang dicatat"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__line_ids
+msgid "People"
+msgstr "Orang"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__pct
+msgid "Percentage"
+msgstr "Persentase"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__employee_id
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_pay_scales
+#: model:ir.model,name:pb_pay_scales.model_pb_pay_scale_raise_line
+msgid "Person in a pay scale rise"
+msgstr "Orang dalam kenaikan skala gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__user_id
+msgid "Prepared by"
+msgstr "Disiapkan oleh"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Put back"
+msgstr "Kembalikan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Raise the scale"
+msgstr "Naikkan skala"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Re-work those months"
+msgstr "Hitung ulang bulan-bulan itu"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Reading the scale…"
+msgstr "Membaca skala…"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__name
+msgid "Reference"
+msgstr "Referensi"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Say why, in a few words. The people who sign it off read this first."
+msgstr "Tulis alasannya dalam beberapa kata. Penyetuju membaca ini lebih dulu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Scale"
+msgstr "Skala"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_apply__pb_scale_raise_id
+msgid "Scale rise"
+msgstr "Kenaikan skala"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Scale rise %(ref)s on %(scale)s starts on %(day)s, in a month already paid."
+msgstr "Kenaikan skala %(ref)s pada %(scale)s mulai %(day)s, di bulan yang sudah dibayar."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Scale rise %(ref)s, from %(day)s"
+msgstr "Kenaikan skala %(ref)s, mulai %(day)s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Scale rise %s"
+msgstr "Kenaikan skala %s"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
+msgid "Scale rises"
+msgstr "Kenaikan skala"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "See who moves"
+msgstr "Lihat siapa yang naik"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Send for approval"
+msgstr "Kirim untuk persetujuan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__returned
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Sent for approval — %s"
+msgstr "Dikirim untuk persetujuan — %s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Sent for approval."
+msgstr "Dikirim untuk persetujuan."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Sign-off"
+msgstr "Persetujuan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Starts from the table %s. That version is kept exactly as it was."
+msgstr "Dimulai dari tabel %s. Versi itu disimpan persis seperti adanya."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__base_version_id
+msgid "Starts from version"
+msgstr "Dimulai dari versi"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__effective_date
+msgid "Starts on"
+msgstr "Mulai"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Starts on a date already gone"
+msgstr "Mulai pada tanggal yang sudah lewat"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Take it back"
+msgstr "Tarik kembali"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"Take this rise back? Nobody's pay has changed yet, and the new version of "
+"the scale goes with it."
+msgstr "Tarik kembali kenaikan ini? Gaji siapa pun belum berubah, dan versi baru skala ikut dihapus."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__taken_back
+msgid "Taken back"
+msgstr "Ditarik kembali"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Taken back before it started. Nobody's pay changed."
+msgstr "Ditarik kembali sebelum mulai. Gaji siapa pun tidak berubah."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "Taken back. Nobody's pay changed."
+msgstr "Ditarik kembali. Gaji siapa pun tidak berubah."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "That could not be done just now."
+msgstr "Itu belum bisa dilakukan sekarang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "That is not something this screen can do."
+msgstr "Layar ini tidak bisa melakukan itu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "That pay scale is no longer in use."
+msgstr "Skala gaji itu tidak dipakai lagi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "That scale rise is no longer there."
+msgstr "Kenaikan skala itu sudah tidak ada."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "The base rate goes up by"
+msgstr "Tarif dasar naik sebesar"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "The draft is removed."
+msgstr "Draf sudah dihapus."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "The new table"
+msgstr "Tabel baru"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "The rise could not be worked out just now."
+msgstr "Kenaikan belum bisa dihitung sekarang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"The scale already has a version from %(day)s. A rise must start after it."
+msgstr "Skala sudah punya versi sejak %(day)s. Kenaikan harus mulai setelahnya."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "The scale rise could not be opened just now."
+msgstr "Kenaikan skala belum bisa dibuka sekarang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Their contract ends before the rise starts."
+msgstr "Kontrak mereka berakhir sebelum kenaikan dimulai."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Their contract is no longer running."
+msgstr "Kontrak mereka sudah tidak berjalan."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Their contract is not running yet."
+msgstr "Kontrak mereka belum berjalan."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"Their pay changed since the rise was sent (now %s), so nothing was written "
+"for them."
+msgstr "Gaji mereka berubah sejak kenaikan dikirim (sekarang %s), jadi tidak ada yang dicatat untuk mereka."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Their pay goes up to the new step."
+msgstr "Gaji mereka naik ke tingkat baru."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Their step has no amount in the new table."
+msgstr "Tingkat mereka tidak punya jumlah di tabel baru."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__step_old
+msgid "Their step now"
+msgstr "Tingkat sekarang"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "They are paid in %(pay)s and the scale is in %(scale)s."
+msgstr "Mereka dibayar dalam %(pay)s dan skalanya dalam %(scale)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This rise has not been written yet."
+msgstr "Kenaikan ini belum dicatat."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"This rise has started, so it can no longer be taken back. Prepare a new "
+"request instead."
+msgstr "Kenaikan ini sudah mulai, jadi tidak bisa ditarik kembali. Siapkan permintaan baru."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This rise is being written right now. Look again in a minute."
+msgstr "Kenaikan ini sedang dicatat. Lihat lagi sebentar lagi."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid ""
+"This rise starts in a month already paid (%s). After it is written, the pay "
+"team can re-work those months; nothing is paid back by itself."
+msgstr "Kenaikan ini mulai di bulan yang sudah dibayar (%s). Setelah dicatat, tim gaji bisa menghitung ulang bulan-bulan itu; tidak ada rapel yang dibayar sendiri."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"This rise starts on a date already gone. The pay team can re-work the months"
+" already paid."
+msgstr "Kenaikan ini mulai pada tanggal yang sudah lewat. Tim gaji bisa menghitung ulang bulan yang sudah dibayar."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid ""
+"This scale already has a rise waiting (%s). Finish or take back that one "
+"first."
+msgstr "Skala ini sudah punya kenaikan yang menunggu (%s). Selesaikan atau tarik kembali yang itu dulu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This scale rise belongs to a company you do not work in."
+msgstr "Kenaikan skala ini milik perusahaan tempat Anda tidak bekerja."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This scale rise has already been sent in."
+msgstr "Kenaikan skala ini sudah dikirim."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid "This scale rise has been sent in; it can no longer be changed."
+msgstr "Kenaikan skala ini sudah dikirim; tidak bisa diubah lagi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "This scale rise was cancelled, so nothing was written."
+msgstr "Kenaikan skala ini dibatalkan, jadi tidak ada yang dicatat."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__cost_how__engine
+msgid "Through the pay rules"
+msgstr "Lewat aturan gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__rejected
+msgid "Turned down"
+msgstr "Ditolak"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Type a percentage above zero."
+msgstr "Ketik persentase di atas nol."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Type an amount above zero."
+msgstr "Ketik jumlah di atas nol."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Type the new amount in each cell. A rise never lowers a step."
+msgstr "Ketik jumlah baru di tiap sel. Kenaikan tidak pernah menurunkan tingkat."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Type the new base rate, and a new coefficient where one changes."
+msgstr "Ketik tarif dasar baru, dan koefisien baru di tempat yang berubah."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__method__table
+msgid "Type the new table"
+msgstr "Ketik tabel baru"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__cost_how__wage
+msgid "Wage difference only"
+msgstr "Hanya selisih gaji"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__state__waiting
+msgid "Waiting"
+msgstr "Menunggu"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Waiting for %s."
+msgstr "Menunggu %s."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise__state__pending
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Was paid differently from their step."
+msgstr "Sebelumnya dibayar berbeda dari tingkatnya."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__outcome
+msgid "What happens"
+msgstr "Apa yang terjadi"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "What it costs"
+msgstr "Biayanya"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Who moves"
+msgstr "Siapa yang naik"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise.py:0
+msgid "Whole company"
+msgstr "Seluruh perusahaan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__reason
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__why
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__block_note
+msgid "Why it could not be done"
+msgstr "Mengapa tidak bisa dilakukan"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__skip_reason
+msgid "Why it was not written"
+msgstr "Mengapa tidak dicatat"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise_line__cost_how
+msgid "Worked out"
+msgstr "Dihitung"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid ""
+"Worked out through each person's own pay rules: basic pay and everything "
+"that follows from it, with the employer's contributions."
+msgstr "Dihitung lewat aturan gaji tiap orang: gaji pokok dan semua yang mengikutinya, dengan iuran pemberi kerja."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/scale_raise_screen.py:0
+msgid ""
+"Worked out through the pay rules where the person's scheme allows it; the "
+"rest by the wage difference alone."
+msgstr "Dihitung lewat aturan gaji bila skema orang itu memungkinkan; sisanya hanya dari selisih gaji."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Working it out changes nobody's pay."
+msgstr "Menghitungnya tidak mengubah gaji siapa pun."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_scale_raise_line__state__done
+msgid "Written"
+msgstr "Dicatat"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__applied_by
+msgid "Written by"
+msgstr "Dicatat oleh"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "Written for %(done)s. Not written for %(skipped)s."
+msgstr "Dicatat untuk %(done)s. Tidak dicatat untuk %(skipped)s."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_scale_raise__applied_at
+msgid "Written on"
+msgstr "Dicatat pada"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/scale_raise.xml:0
+msgid "Yearly cost-of-living rise agreed with the union"
+msgstr "Kenaikan biaya hidup tahunan yang disepakati dengan serikat"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scale_raise.js:0
+msgid "You took them out of this rise."
+msgstr "Anda mengeluarkan mereka dari kenaikan ini."

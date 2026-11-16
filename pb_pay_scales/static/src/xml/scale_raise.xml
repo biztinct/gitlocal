@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WDGAP S8-D (SC1) — "Raise the scale". The Pay screen's template rules: the
+     word for negation is never used in an expression, one class attribute per
+     element, no JavaScript global in an expression, no double hyphen in a
+     comment (W22), every sentence on one line (PRD-3). -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_pay_scales.ScaleRaiseDrawer">
+    <div class="pay-scrim" t-on-click="() => this.close()"/>
+    <div class="pay-drawer pay-drawer--wide pbs-drawer pbrs" role="dialog" aria-modal="true">
+      <div class="pay-drawer-h">
+        <div>
+          <h3 class="pay-drawer-t"><t t-out="ic('trendingUp', 17)"/> <span t-esc="title"/></h3>
+          <p class="pay-drawer-s" t-if="d.scale"><t t-esc="d.scale.name"/> · <t t-esc="cur.name"/></p>
+        </div>
+        <div class="pbrs-head-r">
+          <span t-if="d.state" t-att-class="stateClass" t-esc="d.state_label"/>
+          <button class="pay-x" t-on-click="() => this.close()" title="Close" t-out="ic('x', 18)"/>
+        </div>
+      </div>
+
+      <div class="pbim-busy" t-if="state.loading">Reading the scale…</div>
+      <div class="pbim-note" t-elif="state.failed" t-esc="state.failed"/>
+
+      <t t-else="">
+        <!-- ============================== 1. the new table -->
+        <div class="pbs-sec">
+          <h4 class="pbs-sec-h"><t t-out="ic('layers', 14)"/> <span>The new table</span></h4>
+          <p class="pbs-muted" t-if="d.base_label" t-esc="baseLine"/>
+          <div class="pbrs-form">
+            <label class="pbrs-f">
+              <span class="pbs-lbl">In force from</span>
+              <input class="pbs-in" type="date" t-att-value="state.form.effective_date" t-att-disabled="!editable" t-on-change="(ev) => this.setForm('effective_date', ev)"/>
+            </label>
+            <div class="pbrs-f">
+              <span class="pbs-lbl">How</span>
+              <div class="pbrs-seg">
+                <button type="button" t-att-class="{ 'is-on': state.form.method === 'percent' }" t-att-disabled="!editable" t-on-click="() => this.setMethod('percent')"><t t-out="ic('percent', 13)"/> <span>By a percentage</span></button>
+                <button type="button" t-att-class="{ 'is-on': state.form.method === 'flat' }" t-att-disabled="!editable" t-on-click="() => this.setMethod('flat')"><t t-out="ic('plus', 13)"/> <span>By a flat amount</span></button>
+                <button type="button" t-att-class="{ 'is-on': state.form.method === 'table' }" t-att-disabled="!editable" t-on-click="() => this.setMethod('table')"><t t-out="ic('table', 13)"/> <span>Type the new table</span></button>
+              </div>
+            </div>
+            <label class="pbrs-f" t-if="state.form.method === 'percent'">
+              <span class="pbs-lbl">Every amount goes up by (%)</span>
+              <input class="pbs-in num" type="text" inputmode="decimal" placeholder="5" t-att-value="state.form.pct" t-att-disabled="!editable" t-on-input="(ev) => this.setForm('pct', ev)"/>
+            </label>
+            <label class="pbrs-f" t-if="state.form.method === 'flat'">
+              <span class="pbs-lbl" t-if="isCoef">The base rate goes up by</span>
+              <span class="pbs-lbl" t-else="">Every amount goes up by</span>
+              <input class="pbs-in num" type="text" inputmode="decimal" placeholder="200000" t-att-value="state.form.flat" t-att-disabled="!editable" t-on-input="(ev) => this.setForm('flat', ev)"/>
+            </label>
+            <label class="pbrs-f" t-if="state.form.method === 'table' and isCoef">
+              <span class="pbs-lbl">New base rate</span>
+              <input class="pbs-in num" type="text" inputmode="decimal" t-att-value="state.form.new_base_rate" t-att-disabled="!editable" t-on-input="(ev) => this.setForm('new_base_rate', ev)"/>
+            </label>
+          </div>
+          <p class="pbs-muted" t-if="isCoef and state.form.method !== 'table'">A scale written as coefficients rises through its base rate; each amount is its coefficient times the new rate.</p>
+          <p class="pbs-muted" t-if="state.form.method === 'table' and !isCoef">Type the new amount in each cell. A rise never lowers a step.</p>
+          <p class="pbs-muted" t-if="state.form.method === 'table' and isCoef">Type the new base rate, and a new coefficient where one changes.</p>
+
+          <div class="pbs-scroll">
+            <table class="pbs-grid pbrs-grid">
+              <thead>
+                <tr>
+                  <th class="pbs-gh">Grade</th>
+                  <th t-foreach="steps" t-as="step" t-key="step" class="pbs-sh"><span>Step <t t-esc="step"/></span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="table" t-as="row" t-key="row.grade_id">
+                  <th class="pbs-gr"><span class="pbs-gr-n" t-esc="row.grade"/></th>
+                  <td t-foreach="row.steps" t-as="s" t-key="s.step" class="pbrs-cell">
+                    <t t-if="s.old">
+                      <input t-if="editable and state.form.method === 'table'" class="pbs-in num pbrs-cell-in" type="text" inputmode="decimal"
+                             t-att-value="typedOf(row.grade_id, s.step)" t-on-change="(ev) => this.setTyped(row.grade_id, s.step, ev)"/>
+                      <span class="pbrs-was" t-esc="s.old_label"/>
+                      <span class="pbrs-new" t-if="s.new !== s.old"><t t-out="ic('arrowUp', 11)"/> <t t-esc="s.new_label"/> <small t-esc="s.up"/></span>
+                    </t>
+                    <span class="pbrs-was" t-else="">·</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <label class="pbrs-f pbrs-f-wide">
+            <span class="pbs-lbl">Why</span>
+            <textarea class="pbs-in pbs-ta" rows="2" placeholder="Yearly cost-of-living rise agreed with the union" t-att-disabled="!editable" t-on-input="(ev) => this.setForm('reason', ev)" t-esc="state.form.reason"/>
+          </label>
+          <div class="pbs-inline" t-if="editable">
+            <button class="pbim-btn primary sm" t-att-disabled="state.busy" t-on-click="() => this.preview()">
+              <t t-out="ic('users', 14)"/> <span>See who moves</span>
+            </button>
+            <span class="pbs-muted">Working it out changes nobody's pay.</span>
+          </div>
+        </div>
+
+        <!-- ============================== problems -->
+        <div class="pbrs-problems" t-if="d.problems and d.problems.length">
+          <div class="pbrs-problem" t-foreach="d.problems" t-as="p" t-key="p_index"><t t-out="ic('alert', 14)"/> <span t-esc="p"/></div>
+        </div>
+
+        <!-- ============================== 2. who moves -->
+        <div class="pbs-sec">
+          <h4 class="pbs-sec-h"><t t-out="ic('users', 14)"/> <span>Who moves</span></h4>
+          <div class="pbrs-cards">
+            <button type="button" t-foreach="groups" t-as="g" t-key="g" t-att-class="groupClass(g)" t-on-click="() => this.pickGroup(g)">
+              <div class="pay-hc-n" t-esc="counts[g] or 0"/>
+              <div class="pay-hc-l" t-esc="groupLabel(g)"/>
+            </button>
+          </div>
+          <p class="pbs-muted" t-esc="groupSub(state.group)"/>
+          <p class="pbs-muted" t-if="d.unplaced"><t t-out="ic('info', 13)"/> <span t-esc="sentenceUnplaced"/></p>
+          <p class="pbs-muted" t-if="!rows.length">Nobody here.</p>
+          <div class="pbs-people pbrs-people" t-else="">
+            <div class="pbs-person" t-foreach="rows" t-as="row" t-key="row.contract_id">
+              <div class="pbs-person-id">
+                <span class="pbs-person-n" t-esc="row.name"/>
+                <span class="pbs-person-s" t-esc="rowSub(row)"/>
+                <span class="pbs-person-l" t-if="row.why" t-esc="row.why"/>
+                <span class="pbs-person-l pbrs-skip" t-if="row.skip" t-esc="row.skip"/>
+              </div>
+              <div class="pbrs-money">
+                <b t-esc="rowLine(row)"/>
+                <small t-if="row.cost_label" t-esc="costLine(row)"/>
+              </div>
+              <div class="pbs-person-a" t-if="editable">
+                <button t-if="row.outcome === 'move'" class="pbim-btn ghost sm" t-att-disabled="state.busy" t-on-click="() => this.toggle(row, true)"><span>Leave out</span></button>
+                <button t-if="row.outcome === 'left_out'" class="pbim-btn ghost sm" t-att-disabled="state.busy" t-on-click="() => this.toggle(row, false)"><span>Put back</span></button>
+              </div>
+              <span t-if="row.state === 'done'" class="pbrs-done"><t t-out="ic('checkCircle', 13)"/> <span>Written</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================== 3. what it costs -->
+        <div class="pbs-sec" t-if="d.costs and d.costs.length">
+          <h4 class="pbs-sec-h"><t t-out="ic('coins', 14)"/> <span>What it costs</span></h4>
+          <div class="pbrs-costs">
+            <div class="pbrs-cost" t-foreach="d.costs" t-as="c" t-key="c.currency_id">
+              <span class="pbrs-cost-k" t-esc="c.currency"/>
+              <span class="pbrs-cost-v" t-esc="costMonth(c)"/>
+              <span class="pbrs-cost-v" t-esc="costYear(c)"/>
+            </div>
+          </div>
+          <p class="pbs-muted" t-esc="d.cost_note"/>
+          <p class="pbs-muted" t-if="d.costs.length > 1">Each currency is shown on its own line; they are never added together.</p>
+        </div>
+
+        <div class="pbs-note pbrs-past" t-if="d.past and d.paid_months and d.paid_months.length">
+          <t t-out="ic('history', 14)"/> <span t-esc="pastLine"/>
+        </div>
+
+        <!-- ============================== 4. the sign-off and what happened -->
+        <div class="pbs-sec" t-if="d.steps and d.steps.length">
+          <h4 class="pbs-sec-h"><t t-out="ic('stamp', 14)"/> <span>Sign-off</span></h4>
+          <div class="pbrs-steps">
+            <div t-foreach="d.steps" t-as="st" t-key="st_index" t-attf-class="pbrs-step is-{{ stepTone(st.status) }}">
+              <span class="pbrs-step-dot"/>
+              <span class="pbrs-step-t" t-esc="st.title"/>
+              <span class="pbrs-step-p" t-esc="st.people"/>
+            </div>
+          </div>
+          <p class="pbs-muted" t-if="d.waiting" t-esc="waitingLine"/>
+          <p class="pbrs-problem" t-if="d.blocked"><t t-out="ic('alert', 14)"/> <span t-esc="d.block_reason"/></p>
+        </div>
+        <p class="pbs-muted" t-if="d.state === 'scheduled'" t-esc="scheduledLine"/>
+        <p class="pbs-muted" t-if="d.state === 'applied'" t-esc="resultLine"/>
+        <p class="pbrs-problem" t-if="d.block_note"><t t-out="ic('alert', 14)"/> <span t-esc="d.block_note"/></p>
+
+        <div class="pbrs-foot">
+          <button class="pbim-btn primary" t-if="d.can_send" t-att-disabled="state.busy" t-on-click="() => this.act('send')">
+            <t t-out="ic('send', 14)"/> <span>Send for approval</span>
+          </button>
+          <button class="pbim-btn ghost" t-if="d.can_take_back" t-att-disabled="state.busy" t-on-click="() => this.act('take_back')">
+            <t t-out="ic('undo', 14)"/> <span>Take it back</span>
+          </button>
+          <button class="pbim-btn ghost" t-if="d.can_rework and d.rework_ready" t-att-disabled="state.busy" t-on-click="() => this.act('rework')">
+            <t t-out="ic('history', 14)"/> <span>Re-work those months</span>
+          </button>
+          <button class="pbim-btn ghost" t-if="d.can_cancel and d.name" t-att-disabled="state.busy" t-on-click="() => this.act('cancel')">
+            <t t-out="ic('xCircle', 14)"/> <span>Cancel</span>
+          </button>
+          <span class="pbrs-foot-note" t-if="d.can_send">One sign-off for the whole rise. Nobody's pay changes until it is approved, and then only from its start date.</span>
+        </div>
+      </t>
+    </div>
+  </t>
+
+</templates>
