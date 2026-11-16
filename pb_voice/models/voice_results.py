@@ -11,14 +11,15 @@ NO WORKING IT OUT BY SUBTRACTION. Hiding small groups is not enough: a
 company of 40 answers shown next to its departments of 20 and 17 gives the
 third department's 3 answers by subtraction. ``_plan`` therefore applies two
 more rules to EVERY group anybody can be shown in a round — the companies
-and departments on HR's page AND the teams on managers' cards — until
+departments and teams on HR's page and on managers' cards — until
 nothing changes:
 
   * PAIRS: two groups that overlap may not differ by fewer than the floor
     (either way). If they do, the smaller one is hidden too.
-  * PARTS: a group minus all of its shown parts of one kind (a company minus
-    its shown departments) may not leave fewer than the floor. If it does,
-    the smallest shown part is hidden too.
+  * PARTS: a group minus its shown parts — of one kind or a mix of kinds (a
+    company minus its shown departments and teams; a department minus its
+    shown teams) — may not leave fewer than the floor. If it does, the
+    smallest shown part is hidden too.
 
 Results open only when the round is CLOSED: figures that move while a round
 is open would show one answer at a time to somebody watching.
@@ -234,19 +235,25 @@ class PbVoice(models.AbstractModel):
                     break
             if changed:
                 continue
-            # PARTS
+            # PARTS — a shown group minus the shown groups inside it, of any
+            # one kind OR any mix of kinds (HR sees companies, departments and
+            # teams side by side, VC1): what is left may not be 1..floor-1.
+            # The remainder is counted from the cells outside the parts'
+            # union, which is never less cautious than a plain subtraction.
             for p in sorted(visible, key=lambda g: (str(type(g)), g if g != 'all' else -1)):
                 cp = cells_of[p]
-                for k in ('company', 'department', 'team'):
-                    if _KIND_FINENESS[k] <= _KIND_FINENESS[kind[p]]:
-                        continue
-                    kids = [g for g in visible if g != p and kind[g] == k
+                finer = [k for k in ('company', 'department', 'team')
+                         if _KIND_FINENESS[k] > _KIND_FINENESS[kind[p]]]
+                for mask in range(1, 1 << len(finer)):
+                    kinds = {finer[i] for i in range(len(finer)) if mask >> i & 1}
+                    kids = [g for g in visible if g != p and kind[g] in kinds
                             and cells_of[g] <= cp]
                     if not kids:
                         continue
-                    rem = r[p] - sum(r[g] for g in kids)
+                    covered = frozenset().union(*(cells_of[g] for g in kids))
+                    rem = resp(cp - covered)
                     if 0 < rem < floor:
-                        visible.discard(min(kids, key=lambda g: (r[g], g)))
+                        visible.discard(min(kids, key=lambda g: (r[g], -_KIND_FINENESS[kind[g]], g)))
                         changed = True
                         break
                 if changed:
@@ -321,9 +328,21 @@ class PbVoice(models.AbstractModel):
         return out
 
     @api.model
+    def _group_parent_label(self, g):
+        """What a group is part of, in words: a team says its manager's
+        department (else the company); a department its company."""
+        if g == 'all':
+            return ''
+        g = g.sudo()
+        if g.kind == 'team' and g.manager_id.department_id:
+            return g.manager_id.department_id.name
+        return g.parent_id.display_name if g.parent_id else ''
+
+    @api.model
     def get_results(self, round_id, group=None):
         """HR's results page for one round and one group (``'all'``, or a
-        company/department group id). Hidden groups carry no figure."""
+        company, department or team group id). Hidden groups carry no
+        figure, no count and no comment."""
         rnd = self._round_for_hr(round_id)
         _ = self.env._
         base = {'round': self._round_row(rnd), 'floor': rnd.floor}
@@ -341,15 +360,14 @@ class PbVoice(models.AbstractModel):
         groups, cells_of, resp, visible = self._plan(rnd, sealed)
         choices = []
         for gid, g in groups.items():
-            if gid != 'all' and g.kind == 'team':
-                continue        # teams: managers' cards only (first build)
+            # VC1 (owner, 2026-11-16): HR sees teams too — the same team
+            # groups the manager card uses, under the same plan.
             shown = gid in visible
             choices.append({
                 'id': gid,
                 'kind': 'all' if gid == 'all' else g.kind,
                 'name': _('Everyone asked') if gid == 'all' else g.display_name,
-                'parent': '' if gid == 'all' or not g.parent_id
-                else g.parent_id.display_name,
+                'parent': self._group_parent_label(g),
                 'invited': rnd.invited_count if gid == 'all' else g.invited,
                 'shown': shown,
                 'answered': resp[gid] if shown else None,
@@ -357,7 +375,7 @@ class PbVoice(models.AbstractModel):
         choices.sort(key=lambda c: (_KIND_FINENESS[c['kind']], c['parent'],
                                     c['name']))
         pick = 'all' if group in (None, '', 'all') else int(group)
-        if pick not in groups or (pick != 'all' and groups[pick].kind == 'team'):
+        if pick not in groups:
             pick = 'all'
         chosen = next(c for c in choices if c['id'] == pick)
         res = dict(base, state='shown', groups=choices, group=chosen)

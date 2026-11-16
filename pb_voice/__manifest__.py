@@ -24,7 +24,7 @@ My Payobook (or their department's, when the team is too small).
 Simple action plans (owner, due date, theme) follow up the results.
 Installing changes nothing for anybody: no round, no email, no card.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',

@@ -1,3 +1,23 @@
+# PAUSED (owner pause, 2026-11-16) — follow-up VC1 in progress
+
+**Where I stopped:** VC1 code and tests are committed (WIP). HR's results screen and the
+Excel download now list TEAMS (same team groups as the manager card); the "parts" rule
+now also covers mixed kinds (company minus shown departments AND teams; department minus
+shown teams). `pb_voice` suite on the recreated `wdgap_s9c_t`: **47 tests, 0 failures**
+(41 earlier + V01–V06 new team tests). pb_voice version 19.0.1.1.0. The test database
+`wdgap_s9c_t` is KEPT (walk company "DEMO Voice Walk" seeded; no server running).
+
+**Exact next step:**
+1. Run `walk_vc1.py` (scratchpad s9c) in `odoo-bin shell` to make a closed team survey,
+   start the walk server (`serve.sh`), check Talent › Voice › Results picker shows teams
+   ("DEMO Walk Manager's team · DEMO Floor") and the Excel has team rows; console clean.
+2. Re-export the .pot (`odoo-bin i18n export`, after `-u pb_voice`) and rebuild vi/id with
+   `mkpo.py` (no new user strings are expected).
+3. Final combined run `-u pb_me_portal,pb_me_team,pb_voice` with the three test tags;
+   compare to the baseline (pb_me_portal: the same 5 known failures; pb_me_team: 0).
+4. Write the "Follow-up VC1" section below (what changed, V01–V06, the mixed-kinds rule,
+   tiny teams never recorded), commit, push, drop `wdgap_s9c_t` and its file store.
+
 # WDGAP S9-C report — Employee voice (anonymous surveys)
 
 Branch `wdgap-s9c` (from `origin/19.1` @ `abc2259b6`). Implementer + tester + self-review.

@@ -63,8 +63,15 @@ class TestVoiceResults(VoiceCase):
         overall = Voice.get_results(rnd.id)
         self.assertIn('OPS-SECRET', json.dumps(overall['figures']))
         self.assertEqual(overall['group']['answered'], 14)
-        # teams are never offered on HR's page (managers' cards only)
-        self.assertFalse([x for x in res['groups'] if x['kind'] == 'team'])
+        # VC1: teams are offered on HR's page too; Mai's team (6) is shown
+        team = g["DEMO Mai's team"]
+        self.assertEqual(team['kind'], 'team')
+        self.assertEqual(team['parent'], 'DEMO Sales')
+        self.assertTrue(team['shown'])
+        tres = Voice.get_results(rnd.id, group=team['id'])
+        self.assertEqual(tres['group']['answered'], 6)
+        self.assertIn('sales says hi', json.dumps(tres['figures']))
+        self.assertNotIn('OPS-SECRET', json.dumps(tres['figures']))
 
     # ------------------------------------------------------------------ R3
     def test_R03_pair_rule_no_subtraction_between_company_and_part(self):
@@ -106,25 +113,6 @@ class TestVoiceResults(VoiceCase):
         self.assertEqual(len(shown_depts), 1, 'one department hidden')
         # whatever is shown, no visible group differs from another by 1-4
         self._assert_no_small_differences(rnd)
-
-    def _assert_no_small_differences(self, rnd):
-        sealed = self.Voice._sealed(rnd)
-        n_of = {c: v['n'] for c, v in sealed['cells'].items()}
-        groups, cells_of, resp, visible = self.Voice._plan(rnd, sealed)
-        floor = rnd.floor
-        for a in visible:
-            for b in visible:
-                if a == b or not (cells_of[a] & cells_of[b]):
-                    continue
-                diff = sum(n_of[c] for c in cells_of[a] - cells_of[b])
-                self.assertFalse(0 < diff < floor, (a, b, diff))
-        for p in visible:
-            for kind in ('company', 'department', 'team'):
-                kids = [g for g in visible if g != 'all' and g != p
-                        and groups[g].kind == kind and cells_of[g] <= cells_of[p]]
-                if kids:
-                    rem = resp[p] - sum(resp[k] for k in kids)
-                    self.assertFalse(0 < rem < floor, (p, kind, rem))
 
     # ------------------------------------------------------------------ R5
     def test_R05_team_and_department_cannot_be_subtracted(self):

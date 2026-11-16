@@ -80,17 +80,20 @@ class VoiceCase(TransactionCase):
     # ------------------------------------------------------------ helpers
     def as_hr(self, model):
         return model.with_user(self.hr).with_context(
-            allowed_company_ids=[self.company.id])
+            allowed_company_ids=self.hr.company_ids.ids)
 
     def as_person(self, emp, model):
         return model.with_user(self.users[emp.id]).with_context(
-            allowed_company_ids=[self.company.id])
+            allowed_company_ids=[emp.company_id.id])
 
-    def make_round(self, comment=True, choice=False, name='DEMO pulse'):
-        rnd = self.as_hr(self.Round).create({
-            'name': name, 'company_id': self.company.id,
-            'company_ids': [(6, 0, [self.company.id])],
-        })
+    def make_round(self, comment=True, choice=False, name='DEMO pulse',
+                   company=None):
+        company = company or self.company
+        rnd = self.as_hr(self.Round).with_context(
+            allowed_company_ids=[company.id]).create({
+                'name': name, 'company_id': company.id,
+                'company_ids': [(6, 0, [company.id])],
+            })
         Q = self.as_hr(self.env['pb.voice.question'])
         self.q_scale = Q.create({'round_id': rnd.id, 'kind': 'scale',
                                  'theme': 'manager', 'sequence': 1,
@@ -130,3 +133,34 @@ class VoiceCase(TransactionCase):
         self.as_hr(self.Round).browse(rnd.id).action_close()
         # what the commit would do: destroy the key and the sealed files
         self.Box._voice_destroy(rnd.id)
+
+    def _assert_no_small_differences(self, rnd):
+        sealed = self.Voice._sealed(rnd)
+        n_of = {c: v['n'] for c, v in sealed['cells'].items()}
+        groups, cells_of, resp, visible = self.Voice._plan(rnd, sealed)
+        floor = rnd.floor
+        for a in visible:
+            for b in visible:
+                if a == b or not (cells_of[a] & cells_of[b]):
+                    continue
+                diff = sum(n_of[c] for c in cells_of[a] - cells_of[b])
+                self.assertFalse(0 < diff < floor, (a, b, diff))
+        # parts of one kind AND any mix of kinds (VC1: HR sees all three)
+        import itertools
+        all_kinds = ('company', 'department', 'team')
+        for p in visible:
+            for size in (1, 2, 3):
+                for kinds in itertools.combinations(all_kinds, size):
+                    kids = [g for g in visible if g != 'all' and g != p
+                            and groups[g].kind in kinds
+                            and cells_of[g] <= cells_of[p]]
+                    if not kids:
+                        continue
+                    left = cells_of[p] - frozenset().union(
+                        *(cells_of[k] for k in kids))
+                    rem = sum(n_of[c] for c in left)
+                    self.assertFalse(0 < rem < floor, (p, kinds, rem))
+                    if len(kinds) == 1 and kinds[0] != 'company':
+                        # disjoint siblings: plain subtraction too
+                        rem2 = resp[p] - sum(resp[k] for k in kids)
+                        self.assertFalse(0 < rem2 < floor, (p, kinds, rem2))
