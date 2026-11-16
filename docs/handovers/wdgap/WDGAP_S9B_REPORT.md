@@ -1,24 +1,5 @@
 # WDGAP S9-B — report: Conduct cases + People reports
 
-> **PAUSED (owner pause, 2026-11-16).** State: both modules built; last full runs —
-> `/pb_conduct` 36/36 pass (`both6`), `/pb_people_reports` facade tests 14/14 pass (`rep10`),
-> engine tests pass outside the server; PO files built (0 missing) and parse. Test database
-> `wdgap_s9b_t` KEPT, walk data seeded (logins `walk_named` head-named, `walk_hr` un-named HR,
-> `walk_emp` portal; passwords `walk-<login>`, local copy only). Local server stopped.
-> **Exact next step:** (1) re-run `export_pot.sh` + `build_po.sh` (scratch `s9b/`) in case strings
-> moved, then one full run `run_tests.sh final pb_conduct,pb_people_reports
-> /pb_conduct,/pb_people_reports`; (2) after-change run of the neighbour suites
-> `run_tests.sh after pb_employee_vault,pb_me_portal,pb_people_hub
-> /pb_employee_vault,/pb_me_portal,/pb_people_hub` and compare with the baseline set in §3;
-> (3) browser walk on `http://s9b.localhost:8597` (NOT 127.0.0.1 — other builders' cookies):
-> start with `walk_start.sh` minus the seed line (data already seeded), sign in with
-> `/web/session/authenticate`; walk Talent › Conduct as walk_named, as walk_hr (no tab / refusal),
-> People › Insights › People reports, and `/my/letters` as walk_emp; console clean. The first
-> screenshot attempt timed out (renderer busy while assets built) — wait for the bundle first.
-> Note: no wkhtmltopdf locally, so letters issue without a PDF/vault copy here (logged, graceful);
-> tests cover the PDF path in test mode. (4) Fill RESULTS/DEVIATIONS/OWNER placeholders below,
-> commit with a feature message, push, drop `wdgap_s9b_t` + its filestore.
-
 Branch `wdgap-s9b` (from `origin/19.1` @ `abc2259b6`). Two NEW modules, no file outside them
 edited. Not deployed. Local test database `wdgap_s9b_t` (copy of `upd_p6_t_tpl`), dropped at the end.
 
@@ -89,7 +70,8 @@ edited. Not deployed. Local test database `wdgap_s9b_t` (copy of `upd_p6_t_tpl`)
   "Paid last month, not this month, no leaving date" cross-check line (a count, payslips read under
   sudo after the HR gate; no money).
 - **Periods are fixed calendar years** ("2026 so far" up to the last COMPLETE month, and the four
-  years before). Joiners and leavers are shown **by quarter**, headcount by month (§4 explains why).
+  years before). Joiners and leavers are shown **by quarter**; the headcount **at the start and the
+  end of the year** (plus the average and turnover), not month by month (§4 explains why).
 - **Breakdowns** (why they left, age bands, gender, length of service) are offered for a company or
   the group, not for one department (most departments are too small; said on screen).
 - **No money**, so nothing can be added across currencies.
@@ -126,30 +108,109 @@ TestMeHomeCards.test_05_grid (E), TestPbMePortal.test_01_profile_change_flow_and
 TestMeHomeCards.test_06_font, TestMeHomeSource.test_12_vi_po_parses_and_covers_the_new_words,
 TestPeopleHubStatic ×2 (contracts action, lens order), TestPortalOnlyDoors.test_t1_7.
 
-RESULTS_PLACEHOLDER
+After (same database, same tags, plus the two new modules), `-u` all five:
+**195 tests, 7 failed, 2 errors** — the baseline seven, plus:
 
-## 4. People reports: the hiding rules, and why joiners/leavers are by quarter
+| Test | Why | Status |
+|---|---|---|
+| `pb_conduct` TestConductFlow.test_40 | it read "nobody else holds the conduct group" and my own WALK login (seeded on the same database) holds it | test rewritten to check the real risk (the built-in administrator and system account are not put in either group; the module ships no user data) — passes in the final module run below |
+| `pb_me_portal` TestMeHomeSource.test_01_registry_covers_every_tile | `pb_me_portal` requires every My Payobook page of our modules to be in ITS tile list; `/my/letters` is not (contract C-3: no `pb_me_portal` edit; the page sits under "More") | **left for the orchestrator's C-3 prep commit**: add `('/my/letters', 'me', 'file-text', 'indigo', {})` to `_TILE_ROWS` and `'/my/letters': {'text': _lt('Letters HR has sent you')}` to `_TILE_WORDS` in `pb_me_portal/models/pb_me_home.py`, plus its vi/id entries. Until then this one test fails at merge. |
+
+Final module run after the last code changes (`-u pb_conduct,pb_people_reports`, tags
+`/pb_conduct,/pb_people_reports`): **62 tests, 0 failed, 0 errors**. The suppression engine tests
+also run outside the server: T69–T78 pass; extra attacker sweeps (4 × ~2,850 random tables,
+outside the suite): 0 leaks.
+
+| # | What | Result |
+|---|---|---|
+| T01–T06 | HR officer, HR manager, lifecycle user/manager/admin, payroll officer/manager, line manager, system administrator, Tenant administrator: no right on 7 models, board refusal `{allowed, why}` only, every server call refused, case files / letter PDFs / vault copy refused, no `pb.hr.letter` row | pass |
+| T07, T08 | another employee (portal), the employee themselves (portal): no ORM access | pass |
+| T08b | employee with an internal login: sees only their OWN finished letter in their documents | pass |
+| T09 | named HR sees everything of the case | pass |
+| T10 | named HR never sees / opens a case about themselves; the head does | pass |
+| T11 | company scope | pass |
+| T12 | only the head changes reasons / wording / country notes | pass |
+| T13–T15 | vault: un-named HR cannot file into the private category (control passes); other categories unchanged; Employee 360 drawer hides it from HR/payroll/lifecycle, shows it to the named | pass |
+| T20–T26 | flow concern→hearing→decision→letter, refusals out of order, no-action and reopen, dismissal → neutral leaving checklist, issued letter frozen, template words checked, country notes on the case | pass |
+| T30–T33 | employee: own finished letters only (no draft, summary, notes, minutes, files, raised-by), read + one reply, cannot touch another's letter, neutral Needs-you row | pass |
+| T40, T41 | silent install (no job, no mail queued, no message/activity, nobody granted, role restricted, Talent gate) ; groups imply nothing upward | pass |
+| T50–T53 | HTTP as real portal logins: page, read, reply, PDF; another employee gets 404/refusal; draft PDF 404; un-named HR board call refused over RPC | pass |
+| T60, T61 / T95, T96 | no vendor name in any screen file; vi + id `.po` parse, 100% translated, markers present | pass |
+| T69–T78 | hiding engine incl. the brute-force attackers | pass |
+| T80, T81 | HR only (payroll team refused even though payroll implies HR; HR+payroll passes); only the companies the reader sees | pass |
+| T82, T82b | start/end headcount reconciles with the records; every figure is the truth or hidden; no quarter can be worked out from the year totals; the group keeps its totals | pass |
+| T83–T86 | small department hidden with its complement; a department / company on its own follows its parent row and vice versa | pass |
+| T87 | a move inside the group is no group turnover; a leaver + joiner per company | pass |
+| T88, T89 | breakdowns hide small groups, not per department; group − company cannot give another company's hidden figure | pass |
+| T90, T91 | the Excel download hides exactly what the screen hides; no money anywhere | pass |
+
+**Browser walk** (local copy, `http://s9b.localhost:8597`, own host name so other builders' sessions
+were untouched; console clean on every screen apart from the live-update reconnect logged during my
+own server restart):
+- as the NAMED head (walk_named): Talent › Conduct board, glance, steps, filters, drawer (adviser
+  line, hearing, decision, letters, notes, files, earlier cases, history); new case → plan hearing →
+  invitation letter; set-up menu; People › Insights › People reports (all five views; a 50-person
+  DEMO company keeps start/end headcount 48/50, joiners 8, leavers 6, turnover 12.2%, two small
+  quarters hidden; department table hides Legal (3) and its complement).
+- as UN-NAMED HR (walk_hr): no Conduct tab on Talent; the board address shows "Only for the people
+  HR names" with no data; RPC refused; People reports open.
+- as the EMPLOYEE (walk_emp, portal): home shows "2 letters from HR to read"; `/my/letters` shows
+  the two finished letters only; "I have read this" and a reply work; vi and id pages translated.
+- Found and fixed in the walk: the invitation printed the hearing time in UTC (03:00 for a 14:00
+  hearing) — letters now use the employee's, then the company's, then the issuer's time zone; form
+  fields were unstyled — styled; the month-by-month headcount line (§4).
+- Not walked: the PDF download (no PDF engine on this Mac — letters issue without a PDF here, logged,
+  graceful; the PDF path is covered by the tests and the server has the engine) and the Excel
+  download (covered by T90).
+
+## 4. People reports: the hiding rules, and why there is no month-by-month line
 
 Rules (`suppress.py`, all on the server; a hidden cell is `{v: null, h: true}` on screen, in totals
 and in the download): (1) 1–4 people hidden, zero shown; (2) a hidden total hides its parts;
 (3) a set with hidden parts keeps at least two hidden and they must add up to 5 or more;
-(4) a pair whose difference is public (joiners and leavers of one quarter: the headcount change)
+(4) a pair whose difference is public (the year's joiners and leavers: end minus start headcount)
 hides both sides together; (5) shares and rates follow their sources; (6) **the audit**: the
 equations a reader can write (totals = parts, known differences) are solved exactly — elimination,
 then bounds ("a hidden cell holds at least one person"), then a small exhaustive search — and any
-hidden cell left with a single possible value gets a neighbour hidden too (a part before a total).
-Cross-screen: a company or department looked at on its own takes the hiding of its row in the parent
-table (computed with the same calls), and a company-by-group breakdown is suppressed as one table so
-group − company can never give another company's hidden figure.
+hidden cell left with a single possible value gets a neighbour hidden too (a part before a total;
+never a figure already shown as a tile on another screen). Sets that do not add up exactly (a person
+in two companies is counted once in the group) are used for rules 2–3 but kept out of the exact audit.
 
-Found while testing (the attacker test): (a) rules alone leaked — a hidden row total rebuilt from
-the grand total gave away its only non-zero cell; the audit was added. (b) With headcount shown for
-EVERY month, joiners and leavers by month can almost always be pieced together (a −5 June headcount
-change plus "5 leavers this year" pins every other month); the audit then hid nearly everything for
-a small company. So joiners/leavers are by quarter, headcount by month, and periods are fixed
-calendar years (a sliding "last 12 months" would let two windows be subtracted).
+Cross-screen, both directions: a company or department looked at on its own takes the hiding of its
+row in the parent table, AND the parent table takes each row's own hiding (both computed with the
+same calls). A company-by-group breakdown (age, gender, reasons, length of service) is suppressed as
+ONE table so group − company can never give another company's hidden figure; its totals are the
+tiles. Age/gender/leaving breakdowns are offered per company, never per department.
 
-DEVIATIONS_PLACEHOLDER
+Found while testing and walking (each changed the design):
+- (a) Rules alone leaked: a hidden row total rebuilt from the grand total gave away its only
+  non-zero cell (found by the attacker test T70). The audit was added.
+- (b) Joiners and leavers by month next to a monthly headcount can almost always be pieced together
+  (a −5 June change plus "5 leavers this year" pins every other month). Moved to quarters.
+- (c) The walk then showed that a month-by-month headcount ON ITS OWN breaks the rule: "49 in
+  August, 50 in September" gives a one-person change by subtraction, and the audit hid the year's
+  joiners, leavers and turnover to compensate for a 50-person company. The monthly headcount line was
+  removed: the screen shows the headcount at the start and the end of the year, joiners and leavers
+  by quarter, and the year totals. For the 50-person walk company that keeps headcount, joiners,
+  leavers and turnover visible, with two small quarters hidden.
+- Periods are fixed calendar years: a sliding "last 12 months" would let two windows be subtracted.
+- Residual, said plainly: somebody who writes down this year's figures each month and compares
+  them can see month-to-month changes ("2026 so far" grows each month). HR can also read every
+  leaver on the employee records directly; the hiding protects the report, not those records.
+
+## 4b. Deviations from the handover / FACTS (on purpose)
+
+- Letters are NOT `pb.hr.letter` rows (FACTS offered this option): closes leak 1 by construction.
+- No approval route for the decision and no formal appeal step (FACTS §2.3 precedent, not a scope
+  bullet): the named HR person records the decision. Left for later (§7).
+- `_workflow_capabilities` NOT declared for the case model: a workflow on a conduct case could send
+  messages to people who are not named. Workflow Studio still only lists the model to designers who
+  can read it (the named people).
+- No settings card in Settings (a "Set up" menu on the board instead).
+- People reports: no stored month-end snapshot and no job (worked out live); calendar years only;
+  joiners/leavers by quarter; headcount at start and end only; breakdowns per company, not per
+  department; no turnover % per department row (it would need the row's start headcount).
+- Country notes ship EMPTY (legal wording is an owner item).
 
 ## 5. Files outside the new modules
 
@@ -171,4 +232,46 @@ roles, two Talent menu role links, a global rule on `pb.employee.document`.
 - Seam: `_pbme_needs_extra` calls `super()`; `PbMePortal.home` override calls `super()` (S9-C and
   Step 6 modules stack the same hooks).
 
-OWNER_PLACEHOLDER
+## 7. Questions for the owner (plain words)
+
+1. **Small companies will see "Hidden" a lot.** Under the "nobody under 5" rule, a company with
+   few joiners or leavers will often see those numbers hidden, sometimes the turnover too. A
+   50-person company keeps its yearly totals; a 15-person one usually will not. Is that the right
+   price, or do you want a softer rule for HR (for example "under 3")?
+2. **No month-by-month headcount line.** Showing the headcount for every month lets anyone work out
+   a one-person change by subtraction, which your rule forbids, so the report shows the headcount at
+   the start and end of the year and joiners/leavers by quarter. Keep it that way, or allow the
+   monthly line and accept that small monthly changes can be worked out?
+3. **Country notes for hearings and warnings start empty.** Should we have Vietnam and Indonesia
+   notes written after a legal check, or will each customer's HR write their own?
+4. **Sign-off and appeal.** Today the named HR person records the decision. Do you want a second
+   signature (for example Head of HR) before a warning or dismissal is final, and a formal "appeal"
+   step after the employee replies?
+5. **Administrators.** Unlike growth plans, a system or tenant administrator does not see conduct
+   cases until they are named (they can name themselves on the Access screen, which is recorded).
+   Keep that?
+
+## 8. Left for later
+
+- `/my/letters` proper tile on the employee home (C-3 prep commit — exact change in §3).
+- Decision sign-off route and appeal step (Q4).
+- Explorer cost-centre column (C-5, not this phase).
+- A "people moving between departments" view (moves) — the data is there (versions), not shown.
+
+## 9. Gotchas → ledger
+
+- S9B-1: a method called `_table` on a model silently replaces the model's database table name
+  ("expected string … got 'function'" at registry load). Never name a model method `_table`
+  (or `_name`, `_order`, `_rec_name` …).
+- S9B-2: on this build every payroll officer holds the HR officer group (the payroll groups imply it):
+  "HR only" by `has_group('hr.group_hr_user')` includes the whole payroll team. Check the group's
+  source (`pb_people_reports` `_can_read`).
+- S9B-3: small-group hiding needs an exact AUDIT, not just rules: a hidden row total rebuilt from
+  the grand total gave away its only non-zero cell; and two shown headcounts a month apart give a
+  one-person change by subtraction. Test hiding with a brute-force attacker (`test_suppress.py`).
+- S9B-4: hr.employee `tz` defaults to UTC; letters/time stamps for a person should use their login,
+  then the company, then the issuer's zone.
+- S9B-5: `pb_me_portal` TestMeHomeSource.test_01 fails for ANY new My Payobook page of a `pb_*`
+  module until it is in `_TILE_ROWS` — every phase that adds a page under C-3 trips it at merge.
+- S9B-6: an `HttpCase` run can finish its tests and then hang at shutdown; the result line is in the
+  log ("0 failed … of N tests") — read it there and stop the process.
