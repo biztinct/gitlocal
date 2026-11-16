@@ -34,6 +34,8 @@ def make_fixture(cls):
                                       'pb_conduct.group_conduct_user'),
                        cls.company | cls.company_b)
     cls.u_head = user('s9b_head', G(env, 'base.group_user', 'pb_conduct.group_conduct_head'))
+    # W3-A (ruling CD1): a SECOND named person, who gives the second sign-off
+    cls.u_named2 = user('s9b_named2', G(env, 'base.group_user', 'pb_conduct.group_conduct_user'))
     cls.u_hr = user('s9b_hr', G(env, 'base.group_user', 'hr.group_hr_user'))
     cls.u_hr_mgr = user('s9b_hrmgr', G(env, 'base.group_user', 'hr.group_hr_manager'))
     cls.u_life = user('s9b_life', G(env, 'base.group_user', 'pb_lifecycle.group_lifecycle_user',
@@ -68,14 +70,20 @@ def make_fixture(cls):
                                  'user_id': cls.u_subject2_internal.id})
     cls.e_named_self = Emp.create({'name': 'DEMO Nora Named', 'company_id': cls.company.id,
                                    'user_id': cls.u_named.id})
+    cls.e_named2 = Emp.create({'name': 'DEMO Nick Second', 'company_id': cls.company.id,
+                               'user_id': cls.u_named2.id})
     cls.e_b = Emp.create({'name': 'DEMO Bea CompanyB', 'company_id': cls.company_b.id})
 
     cls.reason = env.ref('pb_conduct.reason_attendance')
     F = env['pb.conduct'].with_user(cls.u_named).with_context(
         allowed_company_ids=cls.company.ids)
     cls.F = F
+    F2 = env['pb.conduct'].with_user(cls.u_named2).with_context(
+        allowed_company_ids=cls.company.ids)
+    cls.F2 = F2
 
-    # ---- the main case, all the way to an issued decision letter
+    # ---- the main case, all the way to an issued decision letter (the
+    #      written warning gets its second sign-off from the second person)
     cid = F.create_case({'employee_id': cls.e_subject.id, 'reason_id': cls.reason.id,
                          'summary': 'SECRET-SUMMARY late 9 times in May',
                          'incident_date': '2026-05-31', 'raised_by': 'Shift lead'})['id']
@@ -91,7 +99,8 @@ def make_fixture(cls):
                                  'minutes': 'SECRET-MINUTES Sam said the bus was late'})
     F.move(cid, 'decide', {'outcome': 'written', 'summary': 'A written warning for lateness.'})
     cls.decision = cls.case.letter_ids.filtered(lambda l: l.kind == 'written')
-    F.issue_letter(cls.decision.id)
+    F.move(cid, 'ask_signoff')
+    F2.move(cid, 'confirm_signoff')
 
     # ---- a second case with a DRAFT letter the employee must never see
     cid2 = F.create_case({'employee_id': cls.e_subject.id, 'reason_id': cls.reason.id,

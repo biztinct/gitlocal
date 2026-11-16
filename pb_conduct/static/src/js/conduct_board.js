@@ -25,10 +25,11 @@ import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const PAGE = 60;
 const GLANCE_FILTERS = {
-    open: { where: ["concern", "hearing", "decision", "letter"] },
+    open: { where: ["concern", "hearing", "decision", "letter", "signoff"] },
     hearing: { where: ["hearing"] },
     decision: { where: ["decision"] },
     letter: { where: ["letter"] },
+    to_sign: { mine: ["to_sign"] },
 };
 
 function blankDraft() {
@@ -140,6 +141,7 @@ export class PbConductBoard extends Component {
             { key: "hearing", title: _t("Hearing") },
             { key: "decision", title: _t("Decision") },
             { key: "letter", title: _t("Letter") },
+            { key: "signoff", title: _t("Second sign-off") },
             { key: "closed", title: _t("Closed") },
         ];
     }
@@ -152,7 +154,17 @@ export class PbConductBoard extends Component {
             if (st.key === "decision" && count) {
                 flag = count === 1 ? _t("1 waiting for a decision") : _t("%s waiting for a decision", count);
             } else if (st.key === "letter" && count) {
-                flag = count === 1 ? _t("1 letter to issue") : _t("%s letters to issue", count);
+                // CD1: a warning or dismissal is not "to issue" until signed off
+                const k = this.state.kpis || {};
+                const ask = k.to_ask || 0;
+                const issue = k.letters || 0;
+                if (issue) {
+                    flag = issue === 1 ? _t("1 letter to issue") : _t("%s letters to issue", issue);
+                } else if (ask) {
+                    flag = ask === 1 ? _t("1 to send for a second sign-off") : _t("%s to send for a second sign-off", ask);
+                }
+            } else if (st.key === "signoff" && count) {
+                flag = count === 1 ? _t("1 waiting for a second sign-off") : _t("%s waiting for a second sign-off", count);
             }
             return {
                 ...st, n: String(i + 1).padStart(2, "0"), count,
@@ -174,6 +186,7 @@ export class PbConductBoard extends Component {
         const tone = (v, t) => (v ? t : "");
         const pick = (id) => () => this.kit.toggleFilters(GLANCE_FILTERS[id]);
         return [
+            { key: "to_sign", n: k.to_sign || 0, label: _t("waiting for your sign-off"), tone: tone(k.to_sign, "rose"), run: pick("to_sign") },
             { key: "open", n: k.open || 0, label: _t("open cases"), tone: "", run: pick("open") },
             { key: "hearing", n: k.hearings_soon || 0, label: _t("hearings in the next 7 days"), tone: tone(k.hearings_soon, "blue"), run: pick("hearing") },
             { key: "decision", n: k.to_decide || 0, label: _t("waiting for a decision"), tone: tone(k.to_decide, "amber"), run: pick("decision") },
@@ -215,7 +228,9 @@ export class PbConductBoard extends Component {
     startAct(verb) {
         const it = this.state.item || {};
         const act = { verb, hearing_date: "", place: it.hearing_place || "", attendees: it.hearing_attendees || "",
-                      held_on: "", minutes: "", why: "", outcome: "", summary: "", valid_until: "" };
+                      held_on: "", minutes: "", why: "", outcome: "",
+                      // a decision taken back to change it starts from its words
+                      summary: verb === "decide" ? (it.decision_summary || "") : "", valid_until: "" };
         if (verb === "plan_hearing" && it.hearing_date_raw) {
             // stored in UTC; the input shows the reader's own clock
             const d = new Date(it.hearing_date_raw.replace(" ", "T") + "Z");
@@ -245,6 +260,7 @@ export class PbConductBoard extends Component {
             skip_hearing: _t("Go to a decision without a hearing"),
             decide: _t("Record the decision"),
             close: _t("Close the case"),
+            send_back: _t("Send it back"),
         }[verb] || "";
     }
     get actHelp() {
@@ -253,7 +269,8 @@ export class PbConductBoard extends Component {
             plan_hearing: _t("Tell the employee in good time and in writing. Prepare an invitation letter from this case once the date is set."),
             hearing_held: _t("The minutes stay with the case. They are never put in the employee's documents and the employee does not see them."),
             skip_hearing: _t("Only when no hearing is needed, for example when you decide to take no action."),
-            decide: _t("The decision letter is prepared from it. Check it, then issue it: only then can the employee read it."),
+            decide: _t("The decision letter is prepared from it. A warning or a dismissal then needs a second named person to sign it off before the letter is issued: only then can the employee read it."),
+            send_back: _t("It goes back to the person who recorded the decision, with your reason. The employee sees nothing."),
             close: _t("A closed case stays here and in the person's history. You can open it again."),
         }[verb] || "";
     }
@@ -267,7 +284,7 @@ export class PbConductBoard extends Component {
             Object.assign(args, { hearing_date: utc, place: a.place, attendees: a.attendees });
         } else if (a.verb === "hearing_held") {
             Object.assign(args, { held_on: a.held_on, minutes: a.minutes });
-        } else if (a.verb === "skip_hearing" || a.verb === "close") {
+        } else if (a.verb === "skip_hearing" || a.verb === "close" || a.verb === "send_back") {
             if (!a.why.trim()) { this.notif.add(_t("Say why, in a few words."), { type: "warning" }); return; }
             args.why = a.why;
         } else if (a.verb === "decide") {

@@ -74,6 +74,30 @@ class TestConductPortalHttp(HttpCase):
         self.authenticate('s9b_subject', 's9b_subject')
         self.assertEqual(self.url_open('/my/letters/%s/pdf' % self.draft.id).status_code, 404)
 
+    def test_54_a_decision_waiting_for_the_second_sign_off_is_never_served(self):
+        """W3-A (CD1), as the real portal employee: while the second sign-off
+        is outstanding the letter is not on the page and its PDF is 404; once
+        the second named person confirms, it is."""
+        cid = self.F.create_case({'employee_id': self.e_subject.id, 'reason_id': self.reason.id,
+                                  'summary': 'W3A-SECRET-SUMMARY'})['id']
+        self.F.move(cid, 'skip_hearing', {'why': 'x'})
+        self.F.move(cid, 'decide', {'outcome': 'final',
+                                    'summary': 'W3A-SECRET-DECISION final warning'})
+        self.F.move(cid, 'ask_signoff')
+        letter = self.env['pb.conduct.case'].browse(cid).letter_ids
+        self.authenticate('s9b_subject', 's9b_subject')
+        html = self._page('/my/letters')
+        for secret in ('W3A-SECRET', letter.title):
+            self.assertNotIn(secret, html)
+        self.assertEqual(self.url_open('/my/letters/%s/pdf' % letter.id).status_code, 404)
+        res = self._post('/my/letters/%s/reply' % letter.id, {'reply': 'early'})
+        self.assertIn('error=reply', res.headers.get('Location', ''))
+        # the second named person confirms: now it is there
+        self.F2.move(cid, 'confirm_signoff')
+        html = self._page('/my/letters')
+        self.assertIn('W3A-SECRET-DECISION', html)
+        self.assertNotIn('W3A-SECRET-SUMMARY', html)
+
     def test_53_unnamed_hr_board_call_is_refused_over_rpc(self):
         self.authenticate('s9b_hr', 's9b_hr')
         res = self.make_jsonrpc_request('/web/dataset/call_kw/pb.conduct/get_board', {

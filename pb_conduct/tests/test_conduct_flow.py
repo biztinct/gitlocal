@@ -100,6 +100,11 @@ class TestConductFlow(TransactionCase):
                              'summary': 'SECRET-DISMISSAL-SUMMARY'})['id']
         F.move(cid, 'skip_hearing', {'why': 'x'})
         F.move(cid, 'decide', {'outcome': 'dismissal', 'summary': 'Dismissed.'})
+        # W3-A (CD1): the leaving checklist waits for the second sign-off
+        self.assertFalse(F.get_case(cid)['can']['exit'])
+        self.assertTrue(self._raises(lambda: F.move(cid, 'exit')))
+        F.move(cid, 'ask_signoff')
+        self.F2.move(cid, 'confirm_signoff')
         self.assertTrue(F.get_case(cid)['can']['exit'])
         try:
             F.move(cid, 'exit')

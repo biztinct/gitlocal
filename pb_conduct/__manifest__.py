@@ -13,11 +13,13 @@ Conduct cases: from a concern to a hearing, a decision and the letter.
   * Only the people HR names on the Access screen see a case, its notes,
     its files and its letters. General HR, payroll, line managers and
     administrators see nothing unless they are named.
+  * A warning or a dismissal is confirmed by a second named person before
+    its letter is issued; until then the employee sees nothing.
   * The employee reads their own finished letters on My Payobook, says they
     have read them, and can reply.
   * Nothing is emailed and nothing is switched on by installing this.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

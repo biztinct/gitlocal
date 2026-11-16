@@ -23,9 +23,10 @@ STATES = [
     ('hearing', 'Hearing'),
     ('decision', 'Decision'),
     ('letter', 'Letter'),
+    ('signoff', 'Second sign-off'),
     ('closed', 'Closed'),
 ]
-OPEN_STATES = ('concern', 'hearing', 'decision', 'letter')
+OPEN_STATES = ('concern', 'hearing', 'decision', 'letter', 'signoff')
 
 #: What was decided. Country words (SP1-SP3, ...) go in the country notes.
 OUTCOMES = [
@@ -36,6 +37,20 @@ OUTCOMES = [
     ('dismissal', 'Dismissal'),
 ]
 WARNING_OUTCOMES = ('verbal', 'written', 'final')
+
+#: Owner ruling CD1 (2026-11-17): every decision whose letter tells the
+#: employee of a consequence — a warning of any kind, or a dismissal — is
+#: confirmed by a SECOND named person before the letter is finished and
+#: before the employee can see anything. "No action" has no consequence and
+#: needs no second sign-off. No formal appeal step (owner).
+SIGNOFF_OUTCOMES = ('verbal', 'written', 'final', 'dismissal')
+
+#: Where the second sign-off of one decision stands.
+SIGNOFF_STATES = [
+    ('waiting', 'Waiting for a second sign-off'),
+    ('sent_back', 'Sent back'),
+    ('confirmed', 'Confirmed'),
+]
 
 #: How long a warning stays live by default, in months. HR changes the date
 #: on each decision; these are only where the date starts.
@@ -84,3 +99,13 @@ def is_reader(env):
 
 def is_head(env):
     return bool(env.su or env.user.has_group(GROUP_HEAD))
+
+
+def named_users(env, company):
+    """The people named for conduct cases (either group — the head's group
+    implies the other) who work in `company`: active internal logins only."""
+    group = env.ref(GROUP_USER, raise_if_not_found=False)
+    if not group:
+        return env['res.users'].browse()
+    return group.sudo().all_user_ids.filtered(
+        lambda u: u.active and not u.share and company in u.company_ids)

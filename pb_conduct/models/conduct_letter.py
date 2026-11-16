@@ -132,19 +132,37 @@ class PbConductLetter(models.Model):
                 if letter.state != 'draft':
                     raise UserError(_('An issued letter cannot be changed. '
                                       'Prepare a new letter instead.'))
+                letter._check_not_waiting()
         return super().write(vals)
 
     def unlink(self):
         if any(l.state != 'draft' for l in self):
             raise UserError(_('An issued letter is kept with the case. It cannot be deleted.'))
+        for letter in self:
+            letter._check_not_waiting()
         return super().unlink()
+
+    def _check_not_waiting(self):
+        """While a decision waits for its second sign-off, its letter is the
+        one the second person is reading: nobody changes it under them."""
+        if self.case_id.state == 'signoff':
+            raise UserError(_('This letter is waiting for a second sign-off. Take it back '
+                              'to change it.'))
 
     # ============================================================== issue
     def action_issue(self):
-        """Finish the letter: PDF, file it, and the employee can read it."""
+        """Finish the letter: PDF, file it, and the employee can read it.
+
+        A decision letter of a decision that needs a second sign-off (ruling
+        CD1) is issued ONLY by that sign-off (`action_confirm_signoff`)."""
         self.ensure_one()
         if self.state != 'draft':
             raise UserError(_('This letter has already been issued.'))
+        case = self.case_id
+        if self.kind != 'invite' and case.signoff_required and case.signoff_state != 'confirmed':
+            raise UserError(_('This decision needs a second sign-off first. A second person '
+                              'named for conduct cases confirms it, and the letter is issued '
+                              'when they do.'))
         if not (self.body or '').strip():
             raise UserError(_('The letter has no text yet.'))
         self.write({'state': 'issued',
