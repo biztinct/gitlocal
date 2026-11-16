@@ -1,15 +1,15 @@
 # WDGAP Step 8 — deploy report (merge S8-A, S8-B, S8-C; go live ×5)
 
-**PAUSED (owner pause, 2026-11-16 09:13 UTC) — NOT LIVE. Nothing on the five live databases or the
-live module trees changed; the service was never stopped (0 s down).** The deploy-notes START of
-08:56 is closed by a NOTE "held, nothing changed (owner pause)"; the deploy lock is released.
+**Result: LIVE on all five databases** (payobook, payobook_template, p0clone, rize, sudima) from
+`c24630ccc` (module trees = `ee5ee069c`), START 13:05, **DONE 13:29 UTC**, **230 s down**
+(13:23:32–13:27:22). `pb_pay` 19.0.3.9.0 and `pb_contracts` 19.0.1.15.0 upgraded; `pb_pay_scales`,
+`pb_pay_package`, `pb_job_change`, `pb_contract_rules`, `pb_agency_staff`, `pb_org_structure`,
+`pb_plan_hiring` 19.0.1.0.0 installed ×5. ABM, pbf_preview and every other database untouched.
 
-**Exact next step on resume:** re-fetch `origin/19.1`; if it moved past `ee5ee069c`, merge it in and
-re-run the seam suites (§1.3 run C tags). Then, from `scratchpad/s8m/`: `stage.sh d12b8d26b
-<pushed commit>` → read-only `precheck.sh` → `s8_prep.sh <commit>` (new START + fresh dumps — the
-08:56 dumps are stale once anyone writes) → `s8_rehearse.sh rize wdgaps8_reh_rize 2110,2115,2116`
-(optional again: it already passed on this commit) → `s8_golive.sh` → `s8_verify.sh` → DONE line
-→ §5 look-only checks on payobook.com → the renewal count on a payobook copy (§2.2, not taken).
+History: a first attempt (START 08:56) was **paused by the owner at 09:13 before anything live
+changed** (closed by a NOTE "held, nothing changed"); §§1–3 below are from that first pass. The
+resume (§9) handled a deploy another agent made during the pause, the owner possibly using rize, and
+fresh backups.
 
 Merge-deploy-verify agent, 2026-11-16 (UTC). Handover `WDGAP_S8_DEPLOY_HANDOVER.md` (method of
 `WDGAP_S5_DEPLOY_HANDOVER.md` and the W2B chain).
@@ -97,9 +97,9 @@ with the staged code, recompute again (both rolled back), copy dropped.
 - Renewals made in the system: 18; **0 lost pay lines** on rize so far.
 - Contracts with a typed cost centre: 97, using 4 different texts. Running contracts whose job differs
   from the person's: 8.
-- **payobook copy: NOT measured** — its 4 GB restore had just finished when the owner paused; the copy
-  was stopped and dropped (FACTS SQL note: the person's job lives on `hr_employee.current_version_id`,
-  ledger S8M-2).
+- payobook: the copy started in the first pass was stopped at the pause and dropped; the count was
+  taken after go-live on the live database instead, read-only and rolled back (§9.4).
+  (FACTS SQL note: the person's job lives on `hr_employee.current_version_id`, ledger S8M-2.)
 
 ## 3. Read-only live checks (08:5x UTC, after the Step 5 DONE)
 
@@ -113,18 +113,16 @@ with the staged code, recompute again (both rolled back), copy dropped.
 | New tables already there | none | none | none | none | none |
 | Contracts / payslips / lines | 4,534 / 34,322 / 873,586 | 0 / 0 / 0 | 7 / 39 / 111 | 271 / 487 / 16,179 | 650 / 0 / 0 |
 
-## 4. Go live — NOT DONE (owner pause)
+## 4. Go live (risky tier) — see §9 for the resume that did it
 
-The service was never stopped; no `rsync` into the addons directory; no `-u`/`-i` on any live
-database. Live trees of `pb_pay` / `pb_contracts` are still `d12b8d26b`; the seven new modules are
-absent. **`origin/19.1` is therefore ahead of the live server** by the S8 code (`ee5ee069c`). Deploy
-notes: START 08:56, NOTE 09:13 "held, nothing changed (owner pause)". Lock unit stopped, lock free.
+First pass: paused at 09:13 before any live change (NOTE "held, nothing changed"). Second pass
+(resume): live ×5, 230 s down — §9.
 
-## 5. Checks on payobook.com — not done (nothing to check until live)
+## 5. Checks on payobook.com — see §9.4
 
 ## 6. Held / follow-ups
 
-- **Held: the whole go-live** (owner pause). Resume = §0 of this file's header.
+- Nothing held.
 - Step 5 follow-up (not S8): the ⌘K "Make drafts" row's test listing (S8M-5).
 - Minor wording seen in the walk (S8-B, not fixed): the People "More" fold and the breadcrumb show the
   Agency staff lens as "People an agency supplies — not on your payroll" (its description) instead of
@@ -137,13 +135,14 @@ notes: START 08:56, NOTE 09:13 "held, nothing changed (owner pause)". Lock unit 
 1. **Renewed contracts lose their allowances.** When a fixed-term contract is extended, the new
    contract starts without the old one's pay lines (meal, phone …), so they read 0 on the next payslip
    unless HR types them again. Should an extension copy them across automatically? (Recommended: yes.
-   On rize none of the 18 renewals so far has lost a line.)
+   Today: rize 0 of 18 renewals lost a line; payobook 1 of 5.)
 2. **Pay › Changes still writes a raise at once**, whatever start date it shows, and its Undo puts back
    the pay but not the job. Should Pay › Changes send people to the new "Change job" (one sign-off,
    honours the date), or learn to wait for the date itself?
 3. **Vietnam and Indonesia fixed-term rules** were filled from the law as read (Vietnam: 2 fixed-term
    contracts in a row, up to 36 months each; Indonesia: 5 years in total). Can your adviser confirm
-   them, and should other countries get a row? (On rize, 15 Vietnam staff are already at 2 in a row.)
+   them, and should other countries get a row? (rize: 15 of 58 Vietnam fixed-term staff are already
+   at 2 in a row, so their next renewal shows the red warning; payobook demo: 3 of 5.)
 4. **Pause switch on the org chart** — also wanted there, or is People › Jobs enough? (Recommended: later.)
 5. Already ruled, no question: scale rises keep people paid above their step (SC2); finished payslips
    keep their cost centre (CC1); a job's level does not fill people's "Job level" box (JL1); "raise the
@@ -155,3 +154,98 @@ S8M-1 (at-install suites need their module in `-u`), S8M-2 (`hr_employee.current
 S8M-3 (flush before a write spy), S8M-4 (a role paused on its own refuses the whole plan press),
 S8M-5 (Step 5's ⌘K row narrower than its tab). The three builders' rows S8A-1..5, S8B-1..7,
 S8C-1..8 are in the ledger too.
+
+## 9. Resume and go-live (2026-11-16 12:45–13:31 UTC)
+
+### 9.1 Another deploy during the pause (Codex "Employee profile and Country of Work")
+
+Deploy notes: START 11:08 / FAILED 11:09 (pre-check size limit, service restored) / START 11:12 /
+DONE 11:20 (502 s down) / VERIFIED 11:24 — `pb_people` 19.0.1.3.3, `pb_employee_vault` 19.0.1.6.0,
+`pb_scheme_map` 19.0.2.5.6, combined `683c341f6` ("owner-paused S8 excluded").
+
+- `683c341f6` is **not on `origin/19.1`** (only on the local branch `codex/rize-country-work`, based on
+  `d12b8d26b`); it changes `pb_people`, `pb_employee_vault`, `pb_scheme_map`, `pb_tenants` and docs.
+- **No overlap with the modules this deploy rsyncs** (`pb_pay`, `pb_contracts` + the seven new):
+  the Codex commit touches none of them. Live trees of their four modules = `683c341f6` before and
+  after this deploy (hashes `7fbc3fd8…`, `98303698…`, `aac18d08…`, `28c88dc0…`) — **nothing of theirs
+  rolled back.** Live `pb_pay` / `pb_contracts` were `d12b8d26b` (19.0.3.8.0 / 19.0.1.14.0); ours are
+  newer (19.0.3.9.0 / 19.0.1.15.0).
+- Not merged into `19.1` (their commit is theirs to push). **`origin/19.1` is behind live for those
+  four modules until Codex pushes** — tell the Codex deployer.
+- Combination test anyway (S8 modules depend on `pb_people` / `pb_employee_vault` / `pb_scheme_map`,
+  and Change job reads the scheme map): local tree = `c24630ccc` + the Codex versions of their four
+  modules, fresh copy, everything live has installed: suites `/pb_people,/pb_employee_vault,
+  /pb_scheme_map` + the seven new + seams + `/pb_pay,/pb_contracts,/pb_people_hub` → **373 tests,
+  5 failed, all in the recorded baselines** (contracts payload key, pay t4c catalogue, pay bands t02
+  timing, people hub ×2); M1–M7 pass; `pb_employee_vault` 25 and `pb_scheme_map` 43 all pass.
+- Rize rehearsal redone on the CURRENT live state (fresh dump, after the Codex deploy): upgrade EXIT 0
+  in 43 s, 0 ERROR; runs 2110/2115/2116, 114 payslips, **0 differences**, run totals identical;
+  contracts, wages, pay lines, payslips, lines and line cost centres identical after install; only
+  the 2 rule rows + the Job changes route created; 4 min 54 s; copy dropped.
+
+### 9.2 The owner possibly using rize — activity before the stop
+
+Request-log check (Odoo request lines for rize/payobook, the server's own address, login page,
+assets, health and tenancy pings left out):
+
+| Time (UTC) | Last 15 minutes |
+|---|---|
+| 12:47 | rize, one address in Vietnam (116.109.16.166): 6 requests, last 12:39 (431 in the hour — browsing People › Employees, the employee panel, avatars) |
+| 13:05 | rize, same address: 61 requests, last 13:00 |
+| 13:13 | same (last 13:00) → waited |
+| 13:23 | **none** → go-live started; the go-live script checked again itself at 13:23:32 just before the stop: none |
+
+payobook: no signed-in activity in any window. Downtime began 23 minutes after that person's last request.
+
+### 9.3 Go live
+
+Fresh backups `/odoo/backups/wdgap-s8-20261116T130549Z/` (payobook 80.1 MB, payobook_template 29.1,
+p0clone 29.5, rize 43.9, sudima 29.4; each read back) + previous `pb_pay`/`pb_contracts` trees;
+evidence `/tmp/wdgap-s8-20261116T130549Z/`. No open START by anyone (the earlier S8 START closed by its
+NOTE; Codex VERIFIED). Lock held by its own unit, released after DONE.
+
+- Stop 13:23:32 → port up 13:27:22: **230 s down.** Upgrades in order payobook_template, p0clone,
+  sudima, rize, payobook — all EXIT 0, **0 ERROR lines** (not even the 3 known payroll_analytics ones).
+- **Trees**: all 9 server trees = commit. **Versions**: manifest = `latest_version` for all 9 modules on
+  all five (0 mismatches).
+- **Jobs**: per database exactly 2 new, quiet ones — "Change job: start approved changes on their
+  day" (hourly) and "Organisation: make cost-centre changes on their date" (daily); none sends mail;
+  nothing re-activated by the upgrade; payobook job 156 still OFF.
+- **Data**: contracts (count + hash of wage/state/cost centre/job/team/end date), wage total, pay lines
+  + total, pay-line changes, pay applies, runs, payslips (hash), lines, line total, payslip-line cost
+  centres (hash), components, schemes, jobs, teams, hiring requests, mails, to-dos, active users,
+  audit rows: **identical before/after on all five**. New rows: only the 2 fixed-term rule rows and one
+  "Job changes" route per company; 0 scales, placements, job changes, agency staff, levels, cost
+  centres, moves, paused jobs/teams/companies, rehire marks, plan requests.
+- Server log since start: **0 ERROR/CRITICAL, 0 Traceback**; one service process; sites 200 ×5.
+
+### 9.4 Checks on the real system
+
+payobook, look-only, **as the QA test user through the same server methods the screens call**, in a
+shell on the server, rolled back (no password typed anywhere):
+
+| Screen | Result |
+|---|---|
+| People › Pay › Scales | opens, allowed + can write, 0 scales ("Write your first pay scale") |
+| Contract drawer › Build from a total (demo contract 13891, not applied) | opens (`ok`) |
+| Change job for a demo person | opens prefilled (Promotion / Transfer / Pay change / Something else); nothing created; Job changes board total 0 |
+| People › Jobs | 66 jobs, 0 levels, 0 cost centres on the list (4,502 contracts carry a typed cost centre not yet on the list — the amber "Contracts not on the list" flag), nothing paused; pause allowed for QA |
+| Agency staff | empty (0) |
+| Exits drawer | shows "Would rehire" for HR |
+| A demo payslip PDF (payslip 144281) | renders, 152 KB PDF |
+
+Other four sites (cheap checks): login 200 on all five; the served page script on payobook, p0clone,
+rize and sudima carries "Build from a total", "Write your first pay scale", "Change job", "Agency
+staff", "Hiring paused", "Would we hire them again", "Hiring requests".
+
+Fixed-term counts (read-only on live, after install; nothing changed):
+
+| | Vietnam fixed-term staff | At the limit (next should be permanent) | Already past | Renewals that lost pay lines |
+|---|---|---|---|---|
+| rize | 58 (+7 trial agreements) | **15** | 0 | 0 of 18 |
+| payobook (demo) | 5 | 3 | 0 | 1 of 5 |
+
+No Indonesian contract with an end date on either, so the Indonesia rule has nobody to count yet.
+
+Not done on purpose: a click-through in the browser as QA (it needs the QA password typed into the
+live site — the server-side read of the same screens was used instead); anything that saves.
