@@ -1777,3 +1777,17 @@ msgstr "jam kerja"
 #: code:addons/pb_job_change/models/job_change.py:0
 msgid "working hours on the contract"
 msgstr "jam kerja di kontrak"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_patches.js:0
+msgid "Change job could not be opened for this person."
+msgstr "Ubah jabatan tidak bisa dibuka untuk orang ini."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0
+msgid ""
+"Pick the person. Their new pay opens in Change job: one sign-off for the "
+"whole change, and the new pay starts on the date you choose."
+msgstr "Pilih orangnya. Gaji barunya dibuka di Ubah jabatan: satu persetujuan untuk seluruh perubahan, dan gaji baru mulai pada tanggal yang Anda pilih."

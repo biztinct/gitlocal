@@ -1777,3 +1777,17 @@ msgstr "giờ làm việc"
 #: code:addons/pb_job_change/models/job_change.py:0
 msgid "working hours on the contract"
 msgstr "giờ làm việc trên hợp đồng"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_patches.js:0
+msgid "Change job could not be opened for this person."
+msgstr "Không mở được Đổi công việc cho người này."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0
+msgid ""
+"Pick the person. Their new pay opens in Change job: one sign-off for the "
+"whole change, and the new pay starts on the date you choose."
+msgstr "Chọn người. Lương mới của họ được mở trong Đổi công việc: một lần duyệt cho cả thay đổi, và lương mới bắt đầu từ ngày bạn chọn."

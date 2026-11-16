@@ -11,6 +11,9 @@
  *      Past-month re-work straight on one re-work. `pb_retro` is optional, so
  *      it is looked up in the actions registry when pressed, never imported:
  *      a database without it never loads a line of its code from here.
+ *   4. Pay › Changes (WDGAP S8-D, PC1): "New pay change" opens Change job for
+ *      the person picked. The list and history of pay changes stay as they
+ *      are; a database without this module keeps the old form exactly.
  */
 import { Component, onWillStart, onMounted, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
@@ -21,6 +24,7 @@ import { _t } from "@web/core/l10n/translation";
 import { pbfIcon } from "@pb_filter_kit/js/filter_kit";
 import { Employee360Drawer } from "@pb_employee_vault/js/employee_360";
 import { PbOrgChart } from "@pb_orgchart/js/orgchart";
+import { PbPayChanges } from "@pb_pay/js/pay_review";
 
 /** Mirrors `job_change.GATE_GROUPS`; the server refuses everybody else too. */
 export const JOB_CHANGE_GATE = [
@@ -100,6 +104,40 @@ patch(PbOrgChart.prototype, {
     pbJcOpen(node) {
         if (!node || node.isRole || !node.empId) { return; }
         return openFlow(this.action, node.empId);
+    },
+});
+
+// ======================================================= 4. Pay › Changes
+// WDGAP S8-D (owner ruling PC1): Pay › Changes keeps its list and history, but
+// a NEW raise opens Change job for the person picked (one sign-off, and the
+// new pay starts on its date — a pay change written here used to move the
+// wage at once). Only where Change job is installed (this file only loads
+// then) and only for people who may change jobs; anybody else keeps the old
+// form exactly as it was.
+patch(PbPayChanges.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this.pbJcAction = useService("action");
+        this.pbJc = useState({ allowed: false });
+        onWillStart(async () => {
+            try { this.pbJc.allowed = await mayChangeJobs(); } catch { this.pbJc.allowed = false; }
+        });
+    },
+    pbJcIcon(name, size = 14) { return pbfIcon(name, size); },
+    async choosePerson(person) {
+        if (!this.pbJc.allowed) {
+            return super.choosePerson(person);
+        }
+        this.state.busy = true;
+        try {
+            const act = await this.orm.call("pb.job.change", "pb_start_for_employee", [
+                person.id, { reason_kind: "pay", source: "pay_changes" }]);
+            this.state.drafting = null;
+            await this.pbJcAction.doAction(act);
+        } catch (error) {
+            this.state.dialogError = this._msg(error, _t("Change job could not be opened for this person."));
+        }
+        this.state.busy = false;
     },
 });
 
