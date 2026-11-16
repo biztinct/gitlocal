@@ -1,0 +1,167 @@
+// =====================================================================
+// pb_voice — surveys on My Payobook (page, form, home card, team card).
+// pbim tokens with literal fallbacks; one accent, flat fills, no
+// gradients, mobile first. No inline styles (UPDATES G95).
+// =====================================================================
+
+.pbv-ic { flex: 0 0 auto; vertical-align: -2px; }
+
+// ------------------------------------------------------------ home card
+.pbme-b.pbv-card {
+    .pbme-lab .pbv-ic { margin-right: 6px; color: var(--pbim-primary, #5A4BB0); }
+    .pbv-card-body { margin: 6px 0 14px; }
+    .pbv-card-big { margin: 0 0 6px; font-size: 18px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    .pbv-card-sub {
+        display: flex; align-items: center; gap: 6px; margin: 4px 0 0;
+        font-size: 13.5px; color: var(--pbim-muted, #64748B);
+        .pbv-ic { color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbv-card-foot { display: flex; justify-content: flex-end; }
+}
+
+// ------------------------------------------------------------ shared bits
+%pbv-panel {
+    background: var(--pbim-surface, #fff); border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: var(--pbim-r, 14px);
+}
+.pbme.pbv, .pbmt .pbv-team {
+    .pbv-note { color: var(--pbim-muted, #64748B); font-size: 13px; margin: 0 0 10px; }
+    .pbv-pill {
+        display: inline-flex; align-items: center; white-space: nowrap;
+        padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 800;
+        background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #64748B);
+        &.is-doing { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+        &.is-done { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.is-late { background: var(--pbim-rose-soft, #FDE7EC); color: var(--pbim-rose, #BE123C); }
+    }
+    .pbv-bar {
+        appearance: none; -webkit-appearance: none; width: 100%; height: 8px; border: 0;
+        border-radius: 999px; overflow: hidden; background: var(--pbim-slate-soft, #EEF1F5);
+        &::-webkit-progress-bar { background: var(--pbim-slate-soft, #EEF1F5); border-radius: 999px; }
+        &::-webkit-progress-value { background: var(--pbim-primary, #5A4BB0); border-radius: 999px; }
+        &::-moz-progress-bar { background: var(--pbim-primary, #5A4BB0); border-radius: 999px; }
+    }
+}
+
+// ------------------------------------------------------------ the pages
+.pbme.pbv {
+    .pbv-flash, .pbv-problem {
+        display: flex; align-items: center; gap: 8px; padding: 12px 14px; margin: 0 0 14px;
+        border-radius: var(--pbim-r, 14px); font-weight: 600; font-size: 14px;
+    }
+    .pbv-flash { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+    .pbv-problem { background: var(--pbim-rose-soft, #FDE7EC); color: var(--pbim-rose, #BE123C); }
+
+    .pbv-sec { margin: 0 0 22px; }
+    .pbv-sec-h {
+        font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbim-muted, #64748B); margin: 0 0 10px;
+    }
+    .pbv-round {
+        @extend %pbv-panel;
+        display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin-bottom: 10px;
+        color: inherit; text-decoration: none;
+        &.is-open { box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07)); }
+        &.is-open:hover { border-color: var(--pbim-primary, #5A4BB0); }
+        &.is-done .pbv-round-ic { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.is-closed .pbv-round-ic { background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #64748B); }
+    }
+    .pbv-round-ic, .pbv-plan-ic, .pbv-promise-ic {
+        flex: 0 0 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+    }
+    .pbv-round-body, .pbv-plan-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbv-round-d { color: var(--pbim-muted, #64748B); font-size: 13px; }
+
+    .pbv-promise {
+        display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; margin: 0 0 18px;
+        background: var(--pbim-soft, #EDEAF8); border-radius: var(--pbim-r-lg, 18px);
+        color: var(--pbim-ink, #1B1733); font-size: 14px; line-height: 1.5;
+        b { display: block; margin-bottom: 2px; }
+        .pbv-promise-ic { background: var(--pbim-surface, #fff); }
+    }
+
+    .pbv-form { display: flex; flex-direction: column; gap: 14px; }
+    .pbv-q {
+        @extend %pbv-panel;
+        padding: 16px 18px; margin: 0; min-width: 0;
+    }
+    .pbv-q-t {
+        display: flex; gap: 10px; align-items: baseline; font-size: 15.5px; font-weight: 700;
+        color: var(--pbim-ink, #1B1733); margin: 0 0 12px; float: none; width: 100%;
+    }
+    .pbv-q-n {
+        flex: 0 0 auto; font-size: 12px; font-weight: 800; color: var(--pbim-primary, #5A4BB0);
+        background: var(--pbim-soft, #EDEAF8); border-radius: 999px; padding: 1px 8px;
+    }
+    .pbv-steps {
+        display: grid; gap: 8px; grid-template-columns: 1fr;
+        &.is-enps { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        @media (min-width: 720px) {
+            &.is-scale { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+            &.is-enps { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+            &.is-choice { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    }
+    .pbv-step {
+        position: relative; display: flex; align-items: center; justify-content: center; text-align: center;
+        min-height: 44px; padding: 8px 10px; border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 12px; cursor: pointer; font-size: 13.5px; font-weight: 600;
+        color: var(--pbim-text, #1B1733); background: var(--pbim-surface, #fff);
+        transition: border-color .15s, background .15s;
+        input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+        &:has(input:checked) {
+            background: var(--pbim-primary, #5A4BB0); border-color: var(--pbim-primary, #5A4BB0); color: #fff;
+        }
+        &:has(input:focus-visible) { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 2px; }
+    }
+    .pbv-ends {
+        display: flex; justify-content: space-between; margin-top: 6px;
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+    }
+    .pbv-input {
+        width: 100%; border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 12px;
+        padding: 10px 12px; font: inherit; background: var(--pbim-surface, #fff);
+        &:focus { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 1px; }
+    }
+    .pbv-form-foot {
+        display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+        .pbv-note { margin: 0; flex: 1 1 260px; }
+    }
+
+    .pbv-plan {
+        @extend %pbv-panel;
+        display: grid; grid-template-columns: 1fr; gap: 10px; padding: 14px 16px; margin-bottom: 10px;
+        @media (min-width: 720px) { grid-template-columns: 200px 1fr auto; align-items: end; }
+    }
+    .pbv-plan-head { display: flex; gap: 12px; align-items: center; grid-column: 1 / -1; }
+    .pbv-field { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+    .pbv-label { font-size: 12px; font-weight: 700; color: var(--pbim-muted, #64748B); }
+}
+
+// ------------------------------------------------------------ team card
+.pbmt .pbv-team {
+    .pbv-team-top {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;
+        margin: 0 0 14px;
+    }
+    .pbv-team-cell {
+        @extend %pbv-panel;
+        padding: 12px 14px; display: flex; flex-direction: column; gap: 2px;
+    }
+    .pbv-k { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pbim-muted, #64748B); }
+    .pbv-v { font-size: 22px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    .pbv-s { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    .pbv-themes { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-direction: column; gap: 8px; }
+    .pbv-theme {
+        display: grid; grid-template-columns: minmax(120px, 1fr) 2fr 48px; gap: 10px; align-items: center;
+        font-size: 13.5px;
+    }
+    .pbv-theme-v { text-align: right; }
+    .pbv-team-quiet {
+        display: flex; gap: 8px; align-items: center; color: var(--pbim-muted, #64748B);
+        background: var(--pbim-slate-soft, #EEF1F5); border-radius: 12px; padding: 12px 14px; margin: 0;
+    }
+    .pbv-team-plans { margin-top: 14px; > b { display: block; margin-bottom: 6px; } }
+}

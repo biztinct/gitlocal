@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S9-C — employee surveys on My Payobook. Reuses pb_me_portal's
+       .pbme kit (tokens, hero, empty state, buttons); `.pbv-*` is this
+       module's layer (static/src/scss/voice_portal.scss). No inline style
+       attribute anywhere (UPDATES G95); bars are native <progress>. String
+       building in t-att uses str() + '…', never '%' (ledger PRB-W5). -->
+
+  <!-- ============================================================= -->
+  <!--  Icons — Lucide paths                                          -->
+  <!-- ============================================================= -->
+  <template id="pbv_icon" name="Survey icon">
+    <t t-set="isz" t-value="isz or 16"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbv-ic" aria-hidden="true" focusable="false">
+      <t t-if="icon == 'arrow-right'"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></t>
+      <t t-elif="icon == 'lock'"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'list-checks'"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></t>
+      <t t-elif="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></t>
+      <t t-elif="icon == 'alert'"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></t>
+      <t t-else=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M14.5 8.5a1.6 1.6 0 0 0-2.5-.4 1.6 1.6 0 0 0-2.5.4c-.6 1 .2 2.1 2.5 3.6 2.3-1.5 3.1-2.6 2.5-3.6z"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_voice" name="Surveys breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="41">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'my_voice'" class="breadcrumb-item active">Surveys</li>
+      <li t-if="page_name == 'my_voice_form'" class="breadcrumb-item"><a href="/my/voice">Surveys</a></li>
+      <li t-if="page_name == 'my_voice_form'" class="breadcrumb-item active">Survey</li>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The tile — only for somebody who has been asked in a survey   -->
+  <!-- ============================================================= -->
+  <template id="portal_my_home_voice" name="Surveys home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="61">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home and request.env['pb.voice.invite'].sudo().search_count([('employee_id.user_id', '=', request.env.uid), ('round_id.state', '!=', 'draft')], limit=1)" t-call="portal.portal_docs_entry">
+        <t t-set="title">Surveys</t>
+        <t t-set="text">Say how it is going, anonymously</t>
+        <t t-set="url" t-value="'/my/voice'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The card on the employee home — only while a survey waits     -->
+  <!-- ============================================================= -->
+  <template id="pbme_card_voice" name="Employee home: survey card">
+    <t t-set="pvc" t-value="card['data']"/>
+    <section class="pbme-b pbme-b-extra pbv-card" data-pbme-slot="voice" aria-labelledby="pbv-card-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbv-card-h"><t t-call="pb_voice.pbv_icon"><t t-set="isz" t-value="15"/></t>Your voice</h2>
+      </div>
+      <div class="pbv-card-body">
+        <p class="pbv-card-big" t-out="pvc['first']['name']"/>
+        <p class="pbv-card-sub"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'lock'"/><t t-set="isz" t-value="14"/></t><span>Anonymous: nobody, not even HR, can see who said what.</span></p>
+        <p class="pbv-card-sub"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="14"/></t><span>Open until</span> <t t-out="pvc['first']['date_end']" t-options="{'widget': 'date'}"/></p>
+      </div>
+      <div class="pbv-card-foot">
+        <a class="pbme-btn pbme-btn--pri" t-att-href="'/my/voice/' + str(pvc['first']['id'])">Answer now<t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="15"/></t></a>
+      </div>
+    </section>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/voice                                                     -->
+  <!-- ============================================================= -->
+  <template id="portal_my_voice" name="My surveys">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbv">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Surveys</t>
+          <t t-set="hero_sub">Tell the company how it is going. Your answers are anonymous.</t>
+        </t>
+
+        <p t-if="pbv_done == 'thanks'" class="pbv-flash" role="status"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'check'"/></t><span>Thank you. Your answers are in, and nobody can see they are yours.</span></p>
+        <p t-if="pbv_done == 'plan'" class="pbv-flash" role="status"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'check'"/></t><span>Saved.</span></p>
+
+        <div t-if="not pbv_linked" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_voice.pbv_icon"><t t-set="isz" t-value="26"/></t></div>
+          <h3>Your login is not linked to an employee record</h3>
+          <p>Ask HR to link it, then the surveys you are asked in appear here.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+        </div>
+
+        <t t-else="">
+          <section t-if="pbv_waiting" class="pbv-sec" aria-labelledby="pbv-wait-h">
+            <h2 class="pbv-sec-h" id="pbv-wait-h">Waiting for your answers</h2>
+            <a t-foreach="pbv_waiting" t-as="rw" class="pbv-round is-open" t-att-href="'/my/voice/' + str(rw['id'])">
+              <span class="pbv-round-ic"><t t-call="pb_voice.pbv_icon"><t t-set="isz" t-value="20"/></t></span>
+              <span class="pbv-round-body">
+                <b t-out="rw['name']"/>
+                <span class="pbv-round-d"><t t-out="rw['questions']"/> questions · open until <t t-out="rw['date_end']" t-options="{'widget': 'date'}"/></span>
+              </span>
+              <span class="pbme-btn pbme-btn--pri">Answer<t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="15"/></t></span>
+            </a>
+          </section>
+
+          <section t-if="pbv_answered" class="pbv-sec" aria-labelledby="pbv-done-h">
+            <h2 class="pbv-sec-h" id="pbv-done-h">Answered, still open</h2>
+            <div t-foreach="pbv_answered" t-as="ra" class="pbv-round is-done">
+              <span class="pbv-round-ic"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="20"/></t></span>
+              <span class="pbv-round-body">
+                <b t-out="ra['name']"/>
+                <span class="pbv-round-d">You have answered. Thank you. It closes on <t t-out="ra['date_end']" t-options="{'widget': 'date'}"/>.</span>
+              </span>
+            </div>
+          </section>
+
+          <section t-if="pbv_closed" class="pbv-sec" aria-labelledby="pbv-closed-h">
+            <h2 class="pbv-sec-h" id="pbv-closed-h">Closed</h2>
+            <div t-foreach="pbv_closed" t-as="rc" class="pbv-round is-closed">
+              <span class="pbv-round-ic"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'lock'"/><t t-set="isz" t-value="20"/></t></span>
+              <span class="pbv-round-body">
+                <b t-out="rc['name']"/>
+                <span class="pbv-round-d">Closed. HR shares what was heard and what happens next.</span>
+              </span>
+            </div>
+          </section>
+
+          <div t-if="not (pbv_waiting or pbv_answered or pbv_closed or pbv_plans)" class="pbme-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_voice.pbv_icon"><t t-set="isz" t-value="26"/></t></div>
+            <h3>No survey right now</h3>
+            <p>When the company asks how it is going, the survey appears here and on your home page.</p>
+            <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+          </div>
+
+          <section t-if="pbv_plans" class="pbv-sec" id="plans" aria-labelledby="pbv-plans-h">
+            <h2 class="pbv-sec-h" id="pbv-plans-h">Action plans you own</h2>
+            <p class="pbv-note">What the company said it would do after a survey. Update the progress as you go.</p>
+            <form t-foreach="pbv_plans" t-as="pl" method="post" t-att-action="'/my/voice/plan/' + str(pl['id'])" t-att-class="'pbv-plan is-' + pl['state']">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <div class="pbv-plan-head">
+                <span class="pbv-plan-ic"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="18"/></t></span>
+                <span class="pbv-plan-body">
+                  <b t-out="pl['name']"/>
+                  <span class="pbv-round-d"><t t-out="pl['theme_label']"/><t t-if="pl['round']"> · <t t-out="pl['round']"/></t><t t-if="pl['date_due']"> · due <t t-out="pl['date_due']"/></t></span>
+                </span>
+                <span t-att-class="'pbv-pill is-' + ('late' if pl['overdue'] else pl['state'])"><t t-if="pl['overdue']">Late</t><t t-else="" t-out="pl['state_label']"/></span>
+              </div>
+              <label class="pbv-field"><span class="pbv-label">Status</span>
+                <select name="state" class="pbv-input">
+                  <option value="open" t-att-selected="'selected' if pl['state'] == 'open' else None">To do</option>
+                  <option value="doing" t-att-selected="'selected' if pl['state'] == 'doing' else None">Under way</option>
+                  <option value="done" t-att-selected="'selected' if pl['state'] == 'done' else None">Done</option>
+                </select>
+              </label>
+              <label class="pbv-field pbv-field--wide"><span class="pbv-label">Progress so far</span>
+                <textarea name="progress" class="pbv-input" rows="2" maxlength="2000" t-out="pl['progress']"/>
+              </label>
+              <button type="submit" class="pbme-btn pbme-btn--out">Save</button>
+            </form>
+          </section>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/voice/<id> — the form                                     -->
+  <!-- ============================================================= -->
+  <template id="portal_my_voice_form" name="Survey form">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbv">
+        <t t-if="not pbv['ok']">
+          <div class="pbme-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'check' if pbv.get('done') else 'lock' if pbv.get('closed') else ''"/><t t-set="isz" t-value="26"/></t></div>
+            <h3 t-out="pbv['why']"/>
+            <a href="/my/voice" class="pbme-btn pbme-btn--primary">Back to surveys</a>
+          </div>
+        </t>
+        <t t-else="">
+          <t t-call="pb_me_portal.ess_hero">
+            <t t-set="hero_title" t-value="pbv['name']"/>
+            <t t-set="hero_sub" t-value="pbv['intro'] or None"/>
+          </t>
+
+          <div class="pbv-promise" role="note">
+            <span class="pbv-promise-ic"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'lock'"/><t t-set="isz" t-value="20"/></t></span>
+            <div>
+              <b>Your answers are anonymous.</b>
+              <span>Nobody, not even HR, can see who said what. Your answers are not stored with your name, and results show only for groups of <t t-out="pbv['floor']"/> or more people, after the survey closes. Written comments are read by HR only. You can answer once.</span>
+            </div>
+          </div>
+
+          <p t-if="pbv_problem" class="pbv-problem" role="alert"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'alert'"/></t><span t-out="pbv_problem"/></p>
+
+          <form method="post" t-att-action="'/my/voice/' + str(pbv['id']) + '/answer'" class="pbv-form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <t t-foreach="pbv['questions']" t-as="q">
+              <fieldset t-if="q['kind'] != 'text'" t-att-class="'pbv-q is-' + q['kind']">
+                <legend class="pbv-q-t"><span class="pbv-q-n" t-out="q_index + 1"/><span t-out="q['text']"/></legend>
+                <div t-att-class="'pbv-steps is-' + q['kind']">
+                  <label t-foreach="q['steps']" t-as="st" class="pbv-step">
+                    <input type="radio" t-att-name="'q_' + str(q['id'])" t-att-value="st['v']" required="required"
+                           t-att-checked="'checked' if str(pbv_posted.get(str(q['id']), '')) == str(st['v']) else None"/>
+                    <span t-out="st['label']"/>
+                  </label>
+                </div>
+                <div t-if="q['kind'] == 'enps'" class="pbv-ends"><span t-out="q['low']"/><span t-out="q['high']"/></div>
+              </fieldset>
+              <div t-else="" class="pbv-q is-text">
+                <label class="pbv-q-t" t-att-for="'t_' + str(q['id'])"><span class="pbv-q-n" t-out="q_index + 1"/><span t-out="q['text']"/></label>
+                <textarea class="pbv-input" t-att-id="'t_' + str(q['id'])" t-att-name="'t_' + str(q['id'])" rows="4" maxlength="1000" placeholder="Optional. Please leave out names and details that could show who you are." t-out="pbv_posted.get('t' + str(q['id']), '')"/>
+              </div>
+            </t>
+            <div class="pbv-form-foot">
+              <span class="pbv-note">Open until <t t-out="pbv['date_end']" t-options="{'widget': 'date'}"/>. Once sent, answers cannot be changed — not even by you, because nothing links them to you.</span>
+              <button type="submit" class="pbme-btn pbme-btn--pri">Send my answers<t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="15"/></t></button>
+            </div>
+          </form>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The manager's card on /my/team (inherited, never edited)      -->
+  <!-- ============================================================= -->
+  <template id="portal_my_team_voice" name="My team: team voice"
+            inherit_id="pb_me_team.portal_my_team" priority="60">
+    <xpath expr="//div[hasclass('pbmt')]" position="inside">
+      <section t-if="pbv_team" class="pbmt-sec pbv-team" id="team-voice" aria-labelledby="pbv-team-h">
+        <div class="pbmt-sec-head">
+          <h2 class="pbmt-sec-h" id="pbv-team-h">Team voice</h2>
+          <p class="pbmt-sec-note"><t t-out="pbv_team['round']"/><t t-if="pbv_team.get('closed')"> · closed <t t-out="pbv_team['closed']" t-options="{'widget': 'date'}"/></t></p>
+        </div>
+        <t t-if="pbv_team['shown']">
+          <div class="pbv-team-top">
+            <div class="pbv-team-cell">
+              <span class="pbv-k" t-out="pbv_team['label']"/>
+              <b class="pbv-v"><t t-out="pbv_team['answered']"/> of <t t-out="pbv_team['invited']"/></b>
+              <span class="pbv-s">answered (<t t-out="pbv_team['rate']"/>%)</span>
+            </div>
+            <div t-if="pbv_team['enps']" class="pbv-team-cell">
+              <span class="pbv-k">Would recommend working here</span>
+              <b class="pbv-v" t-out="('+' if pbv_team['enps']['score'] &gt; 0 else '') + str(pbv_team['enps']['score'])"/>
+              <span class="pbv-s"><t t-out="pbv_team['enps']['promoters']"/>% yes, <t t-out="pbv_team['enps']['detractors']"/>% no</span>
+            </div>
+          </div>
+          <ul class="pbv-themes">
+            <li t-foreach="pbv_team['themes']" t-as="th" class="pbv-theme">
+              <span class="pbv-theme-n" t-out="th['label']"/>
+              <progress class="pbv-bar" max="100" t-att-value="th['favourable']" t-att-aria-label="th['label']"/>
+              <b class="pbv-theme-v"><t t-out="th['favourable']"/>%</b>
+            </li>
+          </ul>
+          <p class="pbmt-sec-note">Share of people who agree. Groups of fewer than <t t-out="pbv_team['floor']"/> answers are never shown, and written comments go to HR only.</p>
+        </t>
+        <p t-else="" class="pbv-team-quiet"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'lock'"/><t t-set="isz" t-value="16"/></t><span t-out="pbv_team['sentence']"/></p>
+        <div t-if="pbv_team['plans']" class="pbv-team-plans">
+          <b>Action plans you own</b>
+          <ul class="pbmt-list">
+            <li t-foreach="pbv_team['plans']" t-as="tp" class="pbmt-row">
+              <span class="pbme-badge pbme-badge--indigo" aria-hidden="true"><t t-call="pb_voice.pbv_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="16"/></t></span>
+              <span class="pbmt-row-body"><b t-out="tp['name']"/><span class="pbmt-row-d"><t t-out="tp['theme_label']"/><t t-if="tp['date_due']"> · due <t t-out="tp['date_due']"/></t></span></span>
+              <a class="pbme-btn pbme-btn--out" href="/my/voice#plans">Update</a>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </xpath>
+  </template>
+
+</odoo>

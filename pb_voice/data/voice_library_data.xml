@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- The question library: OFFERED, never started. Installing creates no
+         round and asks nobody anything. Words in English here; Vietnamese
+         and Indonesian in i18n/. A company can switch any off or add its
+         own (Settings › HR › Employee surveys). -->
+
+    <record id="lib_enps" model="pb.voice.library">
+        <field name="sequence">10</field>
+        <field name="kind">enps</field>
+        <field name="theme">engagement</field>
+        <field name="text">How likely are you to recommend working here to a friend?</field>
+    </record>
+    <record id="lib_proud" model="pb.voice.library">
+        <field name="sequence">20</field>
+        <field name="kind">scale</field>
+        <field name="theme">engagement</field>
+        <field name="text">I am proud to work here.</field>
+    </record>
+    <record id="lib_stay" model="pb.voice.library">
+        <field name="sequence">30</field>
+        <field name="kind">scale</field>
+        <field name="theme">engagement</field>
+        <field name="text">I see myself still working here in two years.</field>
+    </record>
+    <record id="lib_manager_feedback" model="pb.voice.library">
+        <field name="sequence">40</field>
+        <field name="kind">scale</field>
+        <field name="theme">manager</field>
+        <field name="text">My manager gives me useful feedback.</field>
+    </record>
+    <record id="lib_manager_cares" model="pb.voice.library">
+        <field name="sequence">50</field>
+        <field name="kind">scale</field>
+        <field name="theme">manager</field>
+        <field name="text">My manager cares about me as a person.</field>
+    </record>
+    <record id="lib_grow" model="pb.voice.library">
+        <field name="sequence">60</field>
+        <field name="kind">scale</field>
+        <field name="theme">growth</field>
+        <field name="text">I have chances to learn and grow here.</field>
+    </record>
+    <record id="lib_expected" model="pb.voice.library">
+        <field name="sequence">70</field>
+        <field name="kind">scale</field>
+        <field name="theme">growth</field>
+        <field name="text">I know what is expected of me at work.</field>
+    </record>
+    <record id="lib_workload" model="pb.voice.library">
+        <field name="sequence">80</field>
+        <field name="kind">scale</field>
+        <field name="theme">wellbeing</field>
+        <field name="text">My workload is manageable.</field>
+    </record>
+    <record id="lib_time_off" model="pb.voice.library">
+        <field name="sequence">90</field>
+        <field name="kind">scale</field>
+        <field name="theme">wellbeing</field>
+        <field name="text">I can take time off when I need it.</field>
+    </record>
+    <record id="lib_recognised" model="pb.voice.library">
+        <field name="sequence">100</field>
+        <field name="kind">scale</field>
+        <field name="theme">recognition</field>
+        <field name="text">I get recognised when I do good work.</field>
+    </record>
+    <record id="lib_informed" model="pb.voice.library">
+        <field name="sequence">110</field>
+        <field name="kind">scale</field>
+        <field name="theme">communication</field>
+        <field name="text">I know what is going on in the company.</field>
+    </record>
+    <record id="lib_team_help" model="pb.voice.library">
+        <field name="sequence">120</field>
+        <field name="kind">scale</field>
+        <field name="theme">teamwork</field>
+        <field name="text">People in my team help each other.</field>
+    </record>
+    <record id="lib_values" model="pb.voice.library">
+        <field name="sequence">130</field>
+        <field name="kind">scale</field>
+        <field name="theme">values</field>
+        <field name="text">People here live our company values.</field>
+    </record>
+    <record id="lib_start_stop" model="pb.voice.library">
+        <field name="sequence">140</field>
+        <field name="kind">text</field>
+        <field name="theme">other</field>
+        <field name="text">What is one thing we should start, stop or keep doing?</field>
+    </record>
+    <record id="lib_anything" model="pb.voice.library">
+        <field name="sequence">150</field>
+        <field name="kind">text</field>
+        <field name="theme">other</field>
+        <field name="text">Is there anything else you would like to tell us?</field>
+    </record>
+
+</odoo>
