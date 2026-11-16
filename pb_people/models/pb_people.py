@@ -302,7 +302,12 @@ class PbPeople(models.AbstractModel):
         not_ready = ['|', '|', ('contract_id', '=', False),
                      ('contract_id.state', '!=', 'open'), ('account_number', '=', False)]
         return [
-            # ---- pinned: the three questions asked before every pay run
+            # Work country belongs to the employee: one company may run
+            # payroll in several countries, independently of nationality.
+            {'key': 'country_of_work', 'label': _('Country of Work'), 'icon': 'globe',
+             'group': 'work', 'type': 'selection', 'path': 'payroll_country',
+             'pinned': True, 'none_label': _('Not recorded')},
+            # ---- pinned: the questions asked before every pay run
             {'key': 'status', 'label': _('Contract status'), 'icon': 'fileText',
              'group': 'contract', 'type': 'choice', 'pinned': True,
              'requires': ['contract_id.state'],
@@ -346,7 +351,7 @@ class PbPeople(models.AbstractModel):
              'none_label': _('Not recorded')},
             {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
              'group': 'work', 'type': 'many2one', 'path': 'company_id'},
-            {'key': 'work_country', 'label': _('Work country'), 'icon': 'mapPin',
+            {'key': 'work_country', 'label': _('Company country'), 'icon': 'mapPin',
              'group': 'work', 'type': 'many2one', 'path': 'company_id.partner_id.country_id',
              'none_label': _('Not recorded')},
             {'key': 'location', 'label': _('Work location'), 'icon': 'mapPin',
