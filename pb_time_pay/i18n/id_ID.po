@@ -304,6 +304,7 @@ msgstr "Nama Tampilan"
 #. odoo-python
 #: code:addons/pb_time_pay/models/time_pay.py:0
 #: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__kind__early
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
 msgid "Early leave"
 msgstr "Pulang awal"
 
@@ -341,6 +342,8 @@ msgstr "Maafkan menit ini"
 #. odoo-javascript
 #: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
 #: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__state__excused
+#. odoo-python
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
 msgid "Excused"
 msgstr "Dimaafkan"
 
@@ -463,6 +466,7 @@ msgstr "Menit terlambat dan pulang awal yang diambil"
 #. odoo-python
 #: code:addons/pb_time_pay/models/time_pay.py:0
 #: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__kind__late
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
 msgid "Late arrival"
 msgstr "Terlambat"
 
@@ -504,6 +508,7 @@ msgstr "Ditandai oleh"
 #. odoo-javascript
 #: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
 #: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__minutes
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
 msgid "Minutes"
 msgstr "Menit"
 
@@ -980,3 +985,84 @@ msgstr "bekerja %(worked)s jam, diharapkan %(expected)s jam"
 #: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
 msgid "worked %s h"
 msgstr "bekerja %s jam"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "<b>Late and early minutes</b>"
+msgstr "<b>Menit terlambat dan pulang awal</b>"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "<span>My Overtime</span>"
+msgstr "<span>Lembur saya</span>"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Late and early minutes"
+msgstr "Menit terlambat dan pulang awal"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "My Work"
+msgstr "Pekerjaan saya"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "No late or early minutes"
+msgstr "Tidak ada menit terlambat atau pulang awal"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Nothing counted"
+msgstr "Tidak ada yang dihitung"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Something looks wrong? Talk to your manager — they can change a decision until it is paid."
+msgstr "Ada yang tidak benar? Bicarakan dengan atasan Anda — mereka dapat mengubah keputusan sampai dibayarkan."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Date"
+msgstr "Tanggal"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "What"
+msgstr "Jenis"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "What your manager confirmed from your clock times"
+msgstr "Yang dikonfirmasi atasan Anda dari jam absensi Anda"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "What your manager confirmed from your clock times. Only counted minutes reach your pay."
+msgstr "Yang dikonfirmasi atasan Anda dari jam absensi Anda. Hanya menit yang dihitung yang memengaruhi gaji Anda."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "When your manager confirms minutes from your clock times, they show up here."
+msgstr "Saat atasan Anda mengonfirmasi menit dari jam absensi Anda, menit itu muncul di sini."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "min counted"
+msgstr "menit dihitung"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "minutes counted this month"
+msgstr "menit dihitung bulan ini"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Counted"
+msgstr "Dihitung"

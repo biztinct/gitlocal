@@ -15,5 +15,71 @@
         <xpath expr="//table[hasclass('pbew-wk')]/tbody/t/tr/td[last()]" position="inside">
             <span t-if="r.get('time_off')" class="pbme-badge">Time off in lieu</span>
         </xpath>
+        <!-- WDGAP S5-F (TP3): the door to the person's own decided late and
+             early minutes. Shown only to somebody who has some, so the page
+             looks exactly as before for everybody else. -->
+        <xpath expr="//t[@t-call='pb_ess_workforce.work_flash']" position="after">
+            <a t-if="(ot.get('late') or {}).get('count')" href="/my/work/late" class="pbme-card pbmlm-door">
+                <span class="pbmlm-door-ic"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="18"/></t></span>
+                <span class="pbmlm-door-tx">
+                    <b>Late and early minutes</b>
+                    <small t-if="ot['late'].get('month_minutes')"><t t-esc="ot['late']['month_minutes']"/> minutes counted this month</small>
+                    <small t-else="">What your manager confirmed from your clock times</small>
+                </span>
+                <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="16"/></t>
+            </a>
+        </xpath>
+    </template>
+
+    <!-- WDGAP S5-F (owner ruling TP3): the person's own late and early
+         minutes, as decided by their manager. Read-only. Only confirmed
+         minutes count; excused ones say so and never count. -->
+    <template id="portal_my_work_late" name="My late and early minutes">
+        <t t-call="portal.portal_layout">
+            <div class="pbme pbew pbmlm">
+                <t t-call="pb_me_portal.ess_hero">
+                    <t t-set="hero_eyebrow">My Work</t>
+                    <t t-set="hero_title">Late and early minutes</t>
+                    <t t-set="hero_sub">What your manager confirmed from your clock times. Only counted minutes reach your pay.</t>
+                </t>
+                <t t-call="pb_ess_workforce.work_nav"/>
+                <a href="/my/work/overtime" class="pbmlm-back">
+                    <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="14"/></t>
+                    <span>My Overtime</span>
+                </a>
+
+                <t t-if="not late['months']">
+                    <div class="pbme-empty">
+                        <div class="pbme-empty-ic"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="26"/></t></div>
+                        <h3>No late or early minutes</h3>
+                        <p>When your manager confirms minutes from your clock times, they show up here.</p>
+                    </div>
+                </t>
+
+                <t t-else="">
+                    <div t-foreach="late['months']" t-as="mo" class="pbme-card pbmlm-month">
+                        <div class="pbmlm-month-head">
+                            <b t-esc="mo['label']"/>
+                            <span t-if="mo['counted']" class="pbmlm-sum"><t t-esc="mo['counted']"/> min counted</span>
+                            <span t-else="" class="pbmlm-sum is-zero">Nothing counted</span>
+                        </div>
+                        <div class="pbme-tablewrap">
+                            <table class="pbew-wk pbmlm-table">
+                                <thead><tr><th>Date</th><th>What</th><th class="pbme-num">Minutes</th><th>Status</th></tr></thead>
+                                <tbody>
+                                    <tr t-foreach="mo['rows']" t-as="lr" t-att-class="lr['state'] == 'excused' and 'is-excused' or ''">
+                                        <td><b t-esc="lr['date']"/></td>
+                                        <td t-esc="lr['kind_label']"/>
+                                        <td class="pbme-num" t-esc="lr['minutes']"/>
+                                        <td><span t-attf-class="pbmlm-badge is-#{lr['state']}" t-esc="lr['state_label']"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <p class="pbmlm-foot">Something looks wrong? Talk to your manager — they can change a decision until it is paid.</p>
+                </t>
+            </div>
+        </t>
     </template>
 </odoo>
