@@ -4,8 +4,10 @@
      (PRD-3). No double hyphen in a comment (W22). -->
 <templates xml:space="preserve">
 
-  <t t-inherit="pb_hiring.PbHiringBoard" t-inherit-mode="extension">
-    <xpath expr="//button[@t-on-click=&quot;() =&gt; this.startLine(false)&quot;]" position="after">
+  <!-- The offer panel is the board's RoleDetails part (t-called by the board,
+       so the board's own methods, patched below, are in reach). -->
+  <t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
+    <xpath expr="//select[hasclass('pbhr-tpl')]" position="before">
       <button t-if="pbpkCanBuild(offer)" class="pbim-btn ghost" t-on-click="() =&gt; this.pbpkOpenTotal(offer)"
               title="Type the total package and split it into basic pay and allowances with the pay scheme">
         <t t-out="ic('package',14)"/> Build from a total

@@ -190,7 +190,18 @@ class PbPayPackageOffer(models.AbstractModel):
         """``(subject, refusal)`` — the scheme's own usual figures (nobody is
         paid yet), the wage items, the offer."""
         schemes = self._offer_schemes(offer)
-        config = schemes.filtered(lambda c: c.id == int(config_id or 0))[:1] or schemes[:1]
+        Studio = self._studio()
+        config = schemes.filtered(lambda c: c.id == int(config_id or 0))[:1]
+        if not config:
+            # The first scheme that can split this offer: the offer's money and
+            # at least a basic pay and one item that takes the rest (found on
+            # the walk: the company's first scheme had one item, and the card
+            # opened on a refusal with no way to pick another scheme).
+            money = offer.currency_id.name or ''
+            usable = schemes.filtered(
+                lambda c: (c.scheme_currency().get('name') or '') == money
+                and len(Studio._th_items(c)) >= 2)
+            config = usable[:1] or schemes[:1]
         if not config:
             return None, self._studio()._th_refusal('no_scheme', _(
                 "This company has no pay scheme yet, so there is nothing to split the "
