@@ -57,6 +57,8 @@ receipts, and independent verification. The database backup was validated with
 `pg_restore -l`; Rize backups have permanent retention. The before receipt
 retains the original employee and contract states for targeted recovery.
 
-Chrome verification is pending availability of the browser, which the user
-was actively switching during the first attempt. No test screenshots or PNG
-files have been created.
+Chrome verification completed after the owner made the browser available.
+The live employee directory at `rize.payobook.com/bizapp/action-779` showed
+229 headcount and 197 running contracts. Searching for `Demo` returned
+`0 of 229 employees` and `No employees match these filters`.
+No test screenshots or PNG files were created.
