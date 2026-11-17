@@ -77,6 +77,9 @@ for e in Emp.browse(inc_ids):
 check = Emp.pb_bank_store_check()
 left = {r['employee_id'] for r in check['rows']}
 after_file = bank_file_view()
+batch_requests = Req.search([('pb_import_key', '=', KEY)]).mapped('approval_request_id')
+open_todos = env['mail.activity'].sudo().search_count([  # noqa: F821
+    ('res_model', '=', 'biz.approval.request'), ('res_id', 'in', batch_requests.ids)])
 hist = env['pb.employee.bank.history'].sudo().search_count([  # noqa: F821
     ('employee_id', 'in', inc_ids)])
 summary = {
@@ -89,6 +92,7 @@ summary = {
     'b_rows_left': len(left), 'b_excluded': len(exc_ids),
     'b_extra_left': sorted(left - set(exc_ids))[:20],
     'history_rows_for_included': hist,
+    'open_todos_on_batch_after_approve_all': open_todos,
     'd_bank_file_before': before_file, 'd_bank_file_after': after_file,
 }
 print(json.dumps(summary, indent=1, ensure_ascii=False, default=str))

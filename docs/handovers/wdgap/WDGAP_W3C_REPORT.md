@@ -6,7 +6,7 @@ Branch `wdgap-w3c` (from `origin/19.1`). Builder = implementer + tester + self-r
 |---|---|
 | **IM2** (code, `pb_hiring_internal` 19.0.1.1.0 → 19.0.1.2.0) | **DONE** — built, tested, not deployed (rides the next go-live) |
 | **One notice per batch** (code, `pb_bank_ocr` 19.0.1.4.0 → 19.0.1.5.0) | **DONE** — built, tested, not deployed (rides the wave-3 go-live). See "Follow-up: one notice per batch" at the end. |
-| **BG1 under owner rulings BG2–BG4** | Script + lists updated (names must match; Rize leaves out banks the bank file does not know). **Live batches NOT created** — BG4: only after the wave-3 go-live's DONE line. |
+| **BG1 under owner rulings BG2–BG4** | **DONE on live 2026-11-17 21:48–21:57 UTC** (after the WDGAP W3 DONE line): ONE waiting batch on rize (59 people) and ONE on sudima (358). **Nothing approved.** See "BG1 live run" at the end. |
 | **BG1** (data task on live `rize` + `sudima`) | **HELD before live (gate 3: "only if the rehearsal is clean") — nothing changed on either live database; no batch exists on either site (re-checked 2026-11-17 12:59 UTC).** The coordinator's later "resume, create the batches" messages repeated the original brief and came before these findings were reported, so the hold stands until somebody who has read §2.5 says which option to run. Gate 1 met, gate 2 (rehearsal) run in full on both sites and the mechanics passed, but the rehearsal found two things that break the brief's own rules: (1) the product's own path is NOT silent at this size; (2) on sudima 230 of the 615 accounts are in somebody else's name. Both need a decision / a small code change first (§2.6). |
 
 ---
@@ -370,3 +370,52 @@ hr@sudima.local, ash.
 - Live: nothing created, nothing changed. Next (after the go-live DONE line): fresh copies →
   rehearse with the new defaults and the undo → dumps → START note → run rize, then sudima → DONE
   note. Approvers then press "Approve all in this file" on Compliance › Bank.
+
+## BG1 live run (2026-11-17 21:48–21:57 UTC, after the WDGAP W3 DONE line)
+
+**Gates.** `/opt/deploy-notes.md`: `21:39 UTC | WDGAP W3 | DONE`, no open START by anyone. Live
+`pb_bank_ocr` = 19.0.1.5.0 on rize and sudima; the server's `pb_bank_batch_notice.py` and
+`pb_bank_import_hold.py` are byte-identical to the branch. START note 21:48, DONE note 21:57
+(both in the deploy notes). Service up throughout: no deploy, no restart, no rsync.
+
+**Rehearsal with the live code** (`w3c_bg1/rehearse.sh`; hidden copies, jobs + mail servers
+off before the copy was visible, copies dropped with `dropdb --force`, dumps deleted):
+
+| Check | rize copy | sudima copy |
+|---|---|---|
+| In the batch | 59 | 358 |
+| Notices job run once → to-dos | ONE per approver (4) | ONE per approver (2) |
+| Batch changed nothing (checksums t0 = t1) | yes | yes |
+| Undo of one change (`bg1_undo.py LIMIT=1`) | — | withdrawn → draft, stores untouched, both to-dos then said 357 |
+| "Approve all in this file" | 59 approved | 357 approved |
+| Both bank records agree for every approved person | 59 / 59 | 357 / 357 (the withdrawn 1 unchanged, as expected) |
+| The read-only check afterwards lists only the left-out people | yes | yes (+ the withdrawn 1) |
+| Batch to-dos open after approve all | 0 | 0 |
+| Anything else changed (bank accounts, contracts, contract versions, payslips, lines, runs, banks; employees outside the 4 bank-file fields) | nothing | nothing |
+
+**Live result — waiting for one second person, nothing approved:**
+
+| | rize | sudima |
+|---|---|---|
+| **Waiting in the batch** | **59** | **358** |
+| Row on Compliance › Bank | "Bank details already on record — copy to the bank file (59 people) · 59 waiting" | "… (358 people) · 358 waiting" |
+| Who can press "Approve all in this file" | ash@biztinct.com, debalina@rize.farm, thao@rize.farm, wildan@rize.farm (Thao is in the batch herself: her own change is for one of the other three) | hr@sudima.local, ash@biztinct.com |
+| To-dos | ONE each: "59 bank changes waiting for your approval: …" | ONE each: "358 bank changes waiting for your approval: …" |
+| Emails | 4 queued (one per approver); the site has no mail server, so nothing leaves | 2 queued, same |
+| Left out | 139: 126 the bank file does not know the bank (Indonesian banks), 10 archived, 2 bank-file details already partly filled, 1 account in another person's name | 284: 230 account in another person's name, 27 name close but not the same, 16 account number shared with another person, 11 no bank name |
+| Bank records, contracts, payslips (checksums before/after) | identical | identical |
+| Backup (read back with `pg_restore -l`) | `/odoo/backups/wdgap-w3c-bg1-20261117T214850Z/rize.dump` | `…/sudima.dump` |
+
+Rize is 59, not the 61 counted from the older rehearsal: since then 2 people have part of the
+bank-file details filled in, so they are left out with that reason.
+
+**Undo** (removes the batch, writes nothing to any bank record): in an odoo shell on the site,
+`docs/handovers/wdgap/w3c_bg1/bg1_undo.py` — withdraws every waiting change of key
+`bank-gap-copy,<db>,2026-11-17` through the product's own withdraw
+(`biz.approval.engine.cancel`); the batch's to-dos close because nothing is waiting. Proven on
+the sudima copy. An approver can also send back single rows from Approvals.
+
+**Lists (never committed):** `outputs/wdgap-bank-gap-2026-11-17/rize-in-the-batch.csv`,
+`rize-left-out.csv`, `sudima-in-the-batch.csv`, `sudima-left-out.csv` — built by the live run
+itself, account numbers masked to the last 4, a plain reason per person left out; run evidence
+in `live/`.
