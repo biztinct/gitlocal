@@ -4,29 +4,29 @@
   <t t-name="pb_time_hub.PbTimeHub">
     <!-- position:relative — the WfDrawer scrim is absolute and belongs to THIS
          surface, not the viewport (it must not cover the rail or breadcrumb). -->
-    <div class="pbim pbth" t-att-class="{ 'pbth--embedded': props.embedded }">
+    <div class="pbim pbtimehub" t-att-class="{ 'pbtimehub--embedded': props.embedded }">
 
       <!-- ================= header: title + shared context bar ============= -->
-      <div class="pbth-head">
+      <div class="pbtimehub-head">
         <!-- W17: inside Mission Control the shell already carries the title and
              ONE WfContextBar; a second bar here would be a second opinion about
              the same context (W4). The lens tabs and the ribbon stay. -->
-        <div class="pbth-row" t-if="!props.embedded">
-          <h1 class="pbth-title">Time</h1>
-          <WfContextBar className="'pbth-ctx'"
+        <div class="pbtimehub-row" t-if="!props.embedded">
+          <h1 class="pbtimehub-title">Time</h1>
+          <WfContextBar className="'pbtimehub-ctx'"
                         features="{ department: true, week: true, person: true, search: true }"/>
         </div>
 
         <!-- lens tabs -->
-        <div class="pbth-lens" role="tablist" data-coach="wf-time">
+        <div class="pbtimehub-lens" role="tablist" data-coach="wf-time">
           <button t-foreach="lenses" t-as="l" t-key="l.key"
-                  class="pbth-lens__tab" role="tab"
+                  class="pbtimehub-lens__tab" role="tab"
                   t-att-class="{ 'is-on': state.lens === l.key }"
                   t-att-aria-selected="state.lens === l.key"
                   t-on-click="() => this.setLens(l.key)">
-            <span class="pbth-lens__ic" t-out="ic(l.icon, 14)"/>
+            <span class="pbtimehub-lens__ic" t-out="ic(l.icon, 14)"/>
             <span t-esc="l.label"/>
-            <span class="pbth-lens__n" t-if="lensCount(l.key)" t-esc="lensCount(l.key)"/>
+            <span class="pbtimehub-lens__n" t-if="lensCount(l.key)" t-esc="lensCount(l.key)"/>
           </button>
         </div>
 
@@ -38,24 +38,24 @@
       </div>
 
       <!-- ============================ lenses ============================= -->
-      <div class="pbth-body" t-att-class="{ 'pbth-body--fill': state.lens === 'grid' }">
+      <div class="pbtimehub-body" t-att-class="{ 'pbtimehub-body--fill': state.lens === 'grid' }">
 
         <!-- Timeline — the rebuilt Timecards read-model on pbim tones -->
-        <div class="pbth-lensbody" t-if="state.lens === 'timeline'">
+        <div class="pbtimehub-lensbody" t-if="state.lens === 'timeline'">
           <TimelineLens t-key="'lens-tl'"
                         departmentId="wf.departmentId" weekStart="wf.weekStart"
                         search="wf.search" onPerson="_h.onPerson"/>
         </div>
 
         <!-- Week Grid — the Weekly Entry cockpit, embedded (W17) -->
-        <div class="pbth-lensbody pbth-lensbody--grid" t-elif="state.lens === 'grid'">
+        <div class="pbtimehub-lensbody pbtimehub-lensbody--grid" t-elif="state.lens === 'grid'">
           <AttendanceWeekGrid t-key="'lens-grid'" embedded="true"
                               onPerson="_h.onPerson" onEscalate="_h.onEscalate"/>
         </div>
 
         <!-- Exceptions — the Attendance Control board + composer, embedded.
              The nonce remounts it when the drawer hands over a seed. -->
-        <div class="pbth-lensbody" t-elif="state.lens === 'exceptions'" data-coach="wf-exceptions">
+        <div class="pbtimehub-lensbody" t-elif="state.lens === 'exceptions'" data-coach="wf-exceptions">
           <PbAttendanceFlow t-key="'lens-exc-' + state.excNonce"
                             embedded="true" initialView="'board'"
                             seed="state.seed"
@@ -63,7 +63,7 @@
         </div>
 
         <!-- Import — the same component, opened on its import stepper -->
-        <div class="pbth-lensbody" t-elif="state.lens === 'import'">
+        <div class="pbtimehub-lensbody" t-elif="state.lens === 'import'">
           <PbAttendanceFlow t-key="'lens-imp-' + state.lensNonce" embedded="true" initialView="'import'"
                             seed="lensSeedFor('import')"
                             onPerson="_h.onPerson" onChanged="_h.onChanged"
@@ -71,7 +71,7 @@
         </div>
 
         <!-- a lens another module registered (CLOCK-1: Time clocks) -->
-        <div class="pbth-lensbody" t-elif="activeExtra">
+        <div class="pbtimehub-lensbody" t-elif="activeExtra">
           <t t-component="activeExtra.Component"
              t-key="'lens-x-' + activeExtra.key + '-' + state.lensNonce"
              t-props="activeExtraProps"
@@ -165,7 +165,7 @@
 
                 <td class="pbtl-n" t-esc="fmtH(r.total_regular)"/>
                 <td class="pbtl-n">
-                  <span t-attf-class="pbth-pill pbth-pill--{{ r.total_ot ? 'amber' : 'slate' }}"
+                  <span t-attf-class="pbtimehub-pill pbtimehub-pill--{{ r.total_ot ? 'amber' : 'slate' }}"
                         t-esc="fmtH(r.total_ot)"/>
                 </td>
                 <td class="pbtl-n pbtl-n--tot" t-esc="fmtH(r.total_hours)"/>
