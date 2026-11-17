@@ -35,7 +35,9 @@ PAY_GROUPS = ('om_hr_payroll.group_hr_payroll_manager',
 
 #: Every model in this module whose approvers need a read on the record.
 SEATED_MODELS = ('pb.bank.file', 'pb.payment.release', 'pb.payroll.journal',
-                 'pb.payslip.delivery.batch')
+                 'pb.payslip.delivery.batch',
+                 # WDGAP IDB2: the payment list, on the bank file's own gate
+                 'pb.payment.list.file')
 
 
 class PbMoneyApprovalMixin(models.AbstractModel):

@@ -298,7 +298,10 @@ class VietnamBankExportWizard(models.TransientModel):
             raise UserError(_(
                 "No valid rows to export — every payslip failed validation "
                 "(check the employee bank accounts). %s row(s) were excluded.",
-                len(excluded)))
+                len(excluded)) + ' ' + _(
+                # WDGAP IDB1: the people a bank this file does not know leaves
+                # out can be paid from the payment list instead
+                "People with an approved bank account at a bank this file does not know can be paid from the payment list (any bank) on Pay & deliver."))
 
         if layout.file_type == 'xlsx':
             data = self._build_xlsx(layout, rows, numeric_cols)

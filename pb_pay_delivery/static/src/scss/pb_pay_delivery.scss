@@ -553,4 +553,30 @@
     }
 }
 @keyframes pbpdIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+// WDGAP IDB1 — the payment list (any bank): quiet, grey until something needs
+// a look; the only colour is the "need a check" count when it is not zero.
+.pbpd.pbim {
+    .pbpd-paylist {
+        .card-h .ico { color: var(--pbim-slate, #64748B); }
+        .pl-sub { font-size: 12.5px; color: var(--pbim-muted, #64748B); margin-top: -4px; }
+        .pl-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px;
+                  font-size: 13px; color: var(--pbim-text, #1B1733);
+                  .dot { opacity: .45; }
+                  .pl-people { font-weight: 700; }
+                  .pl-total b { font-variant-numeric: tabular-nums; }
+                  .pl-check { display: inline-flex; align-items: center; gap: 4px;
+                              color: var(--pbim-muted, #64748B);
+                              &.hot { color: var(--pbim-amber, #B45309); font-weight: 700; } } }
+        .pl-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+                      .pl-wait { font-size: 12px; color: var(--pbim-muted, #64748B); } }
+    }
+    .pbpd-excl .pbpd-plhint {
+        display: flex; align-items: flex-start; gap: 8px; padding: 9px 14px;
+        font-size: 12.5px; color: var(--pbim-ink-2, #475569);
+        background: var(--pbim-slate-soft, #EEF1F5);
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        .ico { display: inline-flex; margin-top: 1px; color: var(--pbim-slate, #64748B); }
+    }
+}
 @media (prefers-reduced-motion: reduce) { .pbpd.pbim .pbpd-payother { animation: none; } }

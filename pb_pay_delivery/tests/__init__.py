@@ -5,3 +5,5 @@ from . import test_wdgap_prc_hold
 from . import test_wdgap_pr_merge_extra_hold
 from . import test_wdgap_pre_paid_other
 from . import test_wdgap_w2_merge_f1
+from . import test_wdgap_idb1_vn_golden
+from . import test_wdgap_idb1_payment_list
