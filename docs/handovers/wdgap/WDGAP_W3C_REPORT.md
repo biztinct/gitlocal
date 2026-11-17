@@ -5,6 +5,8 @@ Branch `wdgap-w3c` (from `origin/19.1`). Builder = implementer + tester + self-r
 | Task | Status |
 |---|---|
 | **IM2** (code, `pb_hiring_internal` 19.0.1.1.0 → 19.0.1.2.0) | **DONE** — built, tested, not deployed (rides the next go-live) |
+| **One notice per batch** (code, `pb_bank_ocr` 19.0.1.4.0 → 19.0.1.5.0) | **DONE** — built, tested, not deployed (rides the wave-3 go-live). See "Follow-up: one notice per batch" at the end. |
+| **BG1 under owner rulings BG2–BG4** | Script + lists updated (names must match; Rize leaves out banks the bank file does not know). **Live batches NOT created** — BG4: only after the wave-3 go-live's DONE line. |
 | **BG1** (data task on live `rize` + `sudima`) | **HELD before live (gate 3: "only if the rehearsal is clean") — nothing changed on either live database; no batch exists on either site (re-checked 2026-11-17 12:59 UTC).** The coordinator's later "resume, create the batches" messages repeated the original brief and came before these findings were reported, so the hold stands until somebody who has read §2.5 says which option to run. Gate 1 met, gate 2 (rehearsal) run in full on both sites and the mechanics passed, but the rehearsal found two things that break the brief's own rules: (1) the product's own path is NOT silent at this size; (2) on sudima 230 of the 615 accounts are in somebody else's name. Both need a decision / a small code change first (§2.6). |
 
 ---
@@ -278,3 +280,93 @@ UTC: held, nothing changed). No deploy, no restart, no rsync, no write to any li
 - The engine never closes the other approvers' to-dos after a decision (26 of 103 finished
   approvals on rize carry open to-dos today) — an engine fix, outside this lane.
 - Payobook demo's reverse gap (4,500 people) — not in scope (owner: not unless asked).
+
+---
+
+## Follow-up: one notice per batch (coordinator, 2026-11-18)
+
+**Asked:** when bank changes are held as a batch (a pay data file or the old Vietnam employee
+import — BK2 —, a connected system's records refresh, or the BG1 copy batch), each approver gets
+ONE to-do and at most ONE email per batch, naming the count and pointing to Compliance › Bank; the
+to-do is marked done when the batch is fully decided; single bank changes exactly as today.
+
+**Built** in `pb_bank_ocr` (the module that owns the bank hold path), by inheritance — new file
+`pb_bank_ocr/models/pb_bank_batch_notice.py`; no `biz_approval_workflow`, `pb_records`,
+`pb_lifecycle`, `pb_pack_*` or `pb_me_portal` file edited. `pb_bank_ocr` 19.0.1.4.0 → 19.0.1.5.0.
+- `biz.approval.outbox._queue` (inherited): for an approval whose record is a bank change with
+  `pb_origin == 'import'` and a `pb_import_key`, "Your approval is needed" / "Still waiting" /
+  "Overdue" get the dedupe key `bankbatch-<kind>-<batch key>-<user>` — the outbox's own
+  "already queued" check then keeps ONE row per approver per batch. The proposer's "approved"
+  is queued only when nothing in the batch is waiting any more (one "decided" message per batch).
+  Two new columns on the outbox: `pb_bank_batch_key`, `pb_bank_activity_id`.
+- `biz.approval.outbox._deliver` (inherited, batch rows only): ONE message to the approver (their
+  one email when they read by email) "N bank changes from "<batch>" are waiting for you. Open
+  Compliance › Bank and press "Approve all in this file"…" with a link to the bank screen, and ONE
+  to-do "N bank changes waiting for your approval: <batch>", created without the separate "you
+  have been assigned" email. A later reminder/escalation for somebody who already has the batch's
+  to-do only refreshes it (no second to-do, no second email). A notice still queued when the batch
+  is already decided is not delivered.
+- `pb.bank.change.request.write` (inherited): when a batch change's status moves (approved,
+  turned down, sent back, withdrawn), the batch's to-dos are refreshed — the count still waiting,
+  or marked done when nothing is waiting.
+- Single bank changes (My Payobook, HR's bank screen, the Updates sheet) have no batch key, so the
+  engine's notices are untouched; who may decide (second person, never the proposer) untouched.
+- 6 new sentences, vi + id.
+
+**Tests** (`pb_bank_ocr/tests/test_wdgap_w3c_batch_notice.py`) — all PASS:
+
+| # | Test |
+|---|---|
+| N1 | batch of 3 → one queued notice, ONE to-do (count "3", points to Compliance › Bank) and at most ONE email per approver; the proposer is never asked |
+| N2 | "Approve all in this file" → 3 approved, the to-do is marked done, none left open |
+| N3 | one of 3 approved → the to-do stays open and says 2 |
+| N4 | a single change from HR's bank screen → the engine's own per-change notice and to-do, exactly as before |
+| N5 | the proposer may not approve; "Approve all" as the proposer approves 0 ("3 left waiting: you ran this import") |
+| N6 | a reminder for an approver who has the batch's to-do → still one to-do, no second email |
+| N7 | batch decided before the delivery job ran → no to-do at all |
+| N8 | the proposer gets ONE "decided" notice for the whole batch, none per person |
+| N9 | the new sentences have vi + id translations, no vendor word |
+
+**Suites, baseline = the unedited `pb_bank_ocr` from `origin/19.1` on the same fresh database:**
+
+
+| Suite | Before (unedited `pb_bank_ocr`) | After |
+|---|---|---|
+| `pb_bank_ocr` + `pb_records` | 166 tests, 0 failed, 4 errors | 175 tests (+9), 0 failed, the same 4 errors |
+
+The 4 are the Step 6 recorded baseline (TestBankOcr test_07, 07b, 09, 15). Local database
+`wdgap_w3c_t` (fresh copy of `upd_p6_t_tpl`, every custom module behind the branch `-u`) dropped.
+
+**Deploy notes (wave-3 go-live):** `-u pb_bank_ocr` on all five (normal tier: adds two columns to
+the approvals' notice queue, no data rewritten, nothing re-sent; rows already queued keep their
+old shape). Nothing waits on any site today, so there is nothing to migrate. After the go-live,
+the BG1 batches (BG4) give each approver one to-do: rize ash, debalina, thao, wildan; sudima
+hr@sudima.local, ash.
+
+## Owner rulings BG2–BG4 (2026-11-18) — script and lists updated, live run waits for the go-live
+
+- **BG2** Sudima: only people whose account-holder name matches their own name. **BG3** Rize:
+  leave out accounts at banks the Vietnam bank file does not know; the matching-name rule too.
+  **BG4** create the live batches only after the wave-3 go-live's DONE line.
+- Script `docs/handovers/wdgap/w3c_bg1/bg1_batch.py`: defaults are now `NAME_RULE='match_only'`
+  (the bank check's own "matches" band) and `BANK_RULE='known_only'` (the bank file's own bank
+  list), each leaving the person out with a plain reason.
+- Counts (rehearsal state; the live run rebuilds them at that moment):
+
+| | rize | sudima |
+|---|---|---|
+| In the batch | **61** | **358** |
+| Left out: the bank file does not know this bank | 126 | 0 |
+| Left out: the account is in another person's name | 1 | 230 |
+| Left out: the account name is close to, not the same as, the person | 0 | 27 |
+| Left out: the same account number is on record for another person | 0 | 16 |
+| Left out: no bank name on the bank account | 0 | 11 |
+| Left out: archived (no longer working here) | 10 | 0 |
+| Total | 198 | 642 |
+
+- Lists (never committed): `outputs/wdgap-bank-gap-2026-11-17/rize-in-the-batch.csv`,
+  `rize-left-out.csv`, `sudima-in-the-batch.csv`, `sudima-left-out.csv` (account numbers masked to
+  the last 4, a plain reason per person).
+- Live: nothing created, nothing changed. Next (after the go-live DONE line): fresh copies →
+  rehearse with the new defaults and the undo → dumps → START note → run rize, then sudima → DONE
+  note. Approvers then press "Approve all in this file" on Compliance › Bank.

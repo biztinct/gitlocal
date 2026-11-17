@@ -27,7 +27,7 @@ from odoo.addons.pb_hr_payroll_formula.models.bank_account_util import (
     sanitize_acc_number, sanitize_bank_text)
 
 assert MODE in ('dry', 'run'), MODE  # noqa: F821 — set by the caller
-# NAME_RULE (set by the caller, default 'match_only'): which people whose
+# NAME_RULE (set by the caller, default 'match_only', owner rulings BG2/BG3): which people whose
 # account holder name differs from their own name are included —
 #   'match_only' : only a holder name that matches (the bank check's green band)
 #   'not_red'    : matches or is close (green + amber)
@@ -37,6 +37,14 @@ try:
 except NameError:
     NAME_RULE = 'match_only'
 assert NAME_RULE in ('match_only', 'not_red', 'any'), NAME_RULE
+# BANK_RULE (default 'known_only', owner ruling BG3): leave out an account at a
+# bank the (Vietnam) bank file does not know — it would still be left out of
+# the file as "unknown bank". 'any' copies them too.
+try:
+    BANK_RULE  # noqa: F821
+except NameError:
+    BANK_RULE = 'known_only'
+assert BANK_RULE in ('known_only', 'any'), BANK_RULE
 DB = env.cr.dbname  # noqa: F821
 KEY = 'bank-gap-copy,%s,2026-11-17' % DB
 LABEL = 'Bank details already on record — copy to the bank file (%d people)'
@@ -137,11 +145,13 @@ for r in rows:
             reason = 'no account holder name'
         elif holder != holder.strip():
             reason = 'account holder name has extra spaces'
+        elif BANK_RULE == 'known_only' and not Reg.match(a.bank_id.name or ''):
+            reason = 'the bank file does not know this bank'
         elif NAME_RULE != 'any' and name_similarity(holder, e.name) < (
                 85 if NAME_RULE == 'match_only' else 60):
             # the same score and bands the bank check shows the approver
             # (`action_validate`: >=85 matches, >=60 close, else mismatch)
-            reason = ('the account is in another name'
+            reason = ("the account is in another person's name"
                       if name_similarity(holder, e.name) < 60
                       else 'the account name is close to, not the same as, the person')
         else:
@@ -202,7 +212,7 @@ ok = (fp_before == fp_after
       and all(r['state'] == 'hr_review' for _e, _a, r in included))
 
 summary = {
-    'db': DB, 'mode': MODE, 'name_rule': NAME_RULE, 'key': KEY, 'label': label,
+    'db': DB, 'mode': MODE, 'name_rule': NAME_RULE, 'bank_rule': BANK_RULE, 'key': KEY, 'label': label,
     'store_check_counts': check['counts'],
     'accounts_only_rows': len(rows),
     'included_new': n_new, 'already_waiting_from_this_batch': len(skipped_waiting),
