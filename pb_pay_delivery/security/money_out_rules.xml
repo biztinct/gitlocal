@@ -107,4 +107,32 @@
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
+    <!-- WDGAP IDB2: the payment list (any bank) is read exactly like the
+         bank file whose approval gate it shares. -->
+    <record id="rule_payment_list_file_company" model="ir.rule">
+        <field name="name">Payment list: company</field>
+        <field name="model_id" ref="model_pb_payment_list_file"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_payment_list_file_seat" model="ir.rule">
+        <field name="name">Payment list: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_payment_list_file"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <!-- Narrower than the bank file on purpose: the list's stored files are
+         every account number of the run, so only the people who may
+         download the bank file (payroll manager) read them all; a payroll
+         officer reads only a list they were asked to decide. -->
+    <record id="rule_payment_list_file_payroll" model="ir.rule">
+        <field name="name">Payment list: payroll manager</field>
+        <field name="model_id" ref="model_pb_payment_list_file"/>
+        <field name="groups" eval="[
+            (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
 </odoo>

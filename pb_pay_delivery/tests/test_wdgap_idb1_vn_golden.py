@@ -127,7 +127,7 @@ class TestIdb1VnGolden(TransactionCase):
         if 'pb.payment.list' in self.env:
             List = self.env['pb.payment.list']
             for kind in ('xlsx', 'csv'):
-                List.pb_build(self.payrun, kind)
+                List._pb_build(self.payrun, kind)
             for fmt in GOLDEN:
                 self.assertEqual(self._generate(fmt)[0], digests[fmt],
                                  '%s file moved after the payment list' % fmt)

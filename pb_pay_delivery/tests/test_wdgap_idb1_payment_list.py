@@ -32,6 +32,7 @@ from datetime import date
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import HttpCase, TransactionCase, tagged
 
+from odoo.addons.pb_pay_delivery.models.approval_seed import seed_all
 from odoo.addons.pb_pay_delivery.models.payment_list import safe_text
 
 
@@ -65,6 +66,19 @@ class _Idb1Fixture(TransactionCase):
         cls.portal = Users.create({
             'name': 'IDB1 Portal', 'login': 'idb1_portal',
             'group_ids': [(6, 0, [cls.env.ref('base.group_portal').id])]})
+        # the bank file's own route (seeded: Payroll check, then Finance
+        # approval, approvers independent of the person who prepared it)
+        cls.checker = Users.create(dict(common, name='IDB1 Checker',
+                                        login='idb1_checker',
+                                        group_ids=[(6, 0, [g_mgr.id, g_hr.id])]))
+        cls.finance = Users.create(dict(common, name='IDB1 Finance',
+                                        login='idb1_finance',
+                                        group_ids=[(6, 0, [g_mgr.id, g_hr.id])]))
+        cls._fill_role('payroll_mgr', cls.checker)
+        cls._fill_role('finance', cls.finance)
+        seed_all(cls.env)
+        cls.Engine = cls.env['biz.approval.engine']
+        cls.File = cls.env['pb.payment.list.file']
 
         cls.calendar = (cls.home.resource_calendar_id
                         or cls.env['resource.calendar'].search([], limit=1))
@@ -159,6 +173,55 @@ class _Idb1Fixture(TransactionCase):
         return emp
 
     @classmethod
+    def _fill_role(cls, key, user):
+        role = cls.env['biz.approval.role'].sudo().search([('key', '=', key)], limit=1)
+        if not role:
+            return
+        held = cls.env['biz.approval.responsibility'].sudo().search([
+            ('company_id', '=', cls.home.id), ('role_id', '=', role.id),
+            ('scope_key', '=', '')], limit=1)
+        if held:
+            held.write({'user_id': user.id, 'active': True})
+            return
+        cls.env['biz.approval.responsibility'].sudo().create({
+            'company_id': cls.home.id, 'role_id': role.id, 'scope_key': '',
+            'scope_label': cls.home.name, 'user_id': user.id,
+            'date_from': date(2020, 1, 1)})
+
+    def _ctx(self, user):
+        return {'allowed_company_ids': [self.home.id, self.indo.id]}
+
+    def _approve_all(self, record):
+        for _guard in range(8):
+            record.invalidate_recordset()
+            request = record.approval_request_id
+            if not request or request.state not in ('pending', 'blocked'):
+                return request
+            step = request.step_ids.filtered(lambda s: s.status == 'active')[:1]
+            self.assertTrue(step, 'the request stalled: %s'
+                            % (request.block_reason or request.state))
+            seat = step.seat_ids.filtered(lambda s: s.status == 'open')[:1]
+            self.assertTrue(seat, 'a waiting step with nobody on it')
+            self.Engine.with_user(seat.acting_user_id).with_context(
+                self._ctx(seat.acting_user_id)).decide(request.id, step.key, 'approve', 'ok')
+        self.fail('the request never finished')
+
+    def prepared_list(self, user=None):
+        user = user or self.mgr
+        record = self.File.with_user(user).with_context(self._ctx(user)).prepare(self.payrun)
+        self.Engine.with_user(user).with_context(self._ctx(user)).submit(record)
+        record.invalidate_recordset()
+        return record
+
+    def approved_list(self):
+        record = self.prepared_list()
+        self.assertEqual(record.state, 'pending', 'the bank file gate asks a second person')
+        self._approve_all(record)
+        record.invalidate_recordset()
+        self.assertEqual(record.state, 'approved')
+        return record
+
+    @classmethod
     def slip_of(cls, emp):
         return cls.payrun.slip_ids.filtered(lambda s: s.employee_id == emp)
 
@@ -171,7 +234,7 @@ class _Idb1Fixture(TransactionCase):
         return data, {r['employee_id']: r for r in data['rows']}
 
     def csv_rows(self):
-        _name, _mime, payload, _data = self.List.pb_build(self.payrun, 'csv')
+        _name, _mime, payload, _data = self.List._pb_build(self.payrun, 'csv')
         self.assertTrue(payload.startswith(b'\xef\xbb\xbf'))
         return list(csv.reader(io.StringIO(payload.decode('utf-8-sig'))))
 
@@ -207,7 +270,7 @@ class TestIdb1PaymentList(_Idb1Fixture):
         self.assertEqual(sorted(r[7] for r in total_rows), sorted([home_cur.name, 'IDR']))
         self.assertIn(['Rows', '10'], rows)
         self.assertIn(['Rows with a check', str(data['check_count'])], rows)
-        summary = self.List.pb_summary(self.payrun)
+        summary = self.List._pb_summary(self.payrun)
         self.assertEqual(summary['count'], 10)
         self.assertEqual(len(summary['totals']), 2)
         self.assertNotIn('rows', summary)
@@ -321,7 +384,7 @@ class TestIdb1PaymentList(_Idb1Fixture):
             import openpyxl
         except ImportError:
             self.skipTest('openpyxl is not installed to read the Excel file back')
-        _name, _mime, payload, _data = self.List.pb_build(self.payrun, 'xlsx')
+        _name, _mime, payload, _data = self.List._pb_build(self.payrun, 'xlsx')
         sheet = openpyxl.load_workbook(io.BytesIO(payload)).active
         cells = {}
         for row in sheet.iter_rows(min_row=2):
@@ -343,36 +406,167 @@ class TestIdb1PaymentList(_Idb1Fixture):
 
     # ------------------------------------------------------------ test 8
     def test_idb1_8_only_the_bank_file_people(self):
-        # the pay manager (who may download the bank file) may
-        name, _mime, payload, = self.as_mgr().pb_download(self.payrun.id, 'csv')
+        # the pay manager (who may download the bank file) may, once approved
+        self.approved_list()
+        name, _mime, payload = self.as_mgr()._pb_download(self.payrun.id, 'csv')
         self.assertTrue(payload)
         self.env.flush_all()
         self.env.invalidate_all()
         for user in (self.officer, self.portal):
             List = self.List.with_user(user)
             with self.assertRaises(AccessError):
-                List.pb_download(self.payrun.id, 'csv')
+                List._pb_download(self.payrun.id, 'csv')
             with self.assertRaises(AccessError):
                 self.env['pb.pay.delivery'].with_user(user).payment_list_check(
                     self.payrun.id, 'xlsx')
             with self.assertRaises(AccessError):
                 self.env['pb.pay.delivery'].with_user(user).get_delivery_data(self.payrun.id)
+            with self.assertRaises(AccessError):
+                self.env['pb.pay.delivery'].with_user(user).prepare_payment_list(self.payrun.id)
 
     def test_idb1_8b_run_not_approved_is_refused(self):
         run = self.env['hr.payslip.run'].create({
             'name': 'IDB1 Draft run',
             'date_start': date(2026, 7, 1), 'date_end': date(2026, 7, 31)})
         with self.assertRaises(UserError):
-            self.as_mgr().pb_download(run.id, 'xlsx')
+            self.as_mgr()._pb_download(run.id, 'xlsx')
         with self.assertRaises(UserError):
-            self.as_mgr().pb_download(self.payrun.id, 'pdf')
+            self.File.with_user(self.mgr).with_context(self._ctx(self.mgr)).prepare(run)
+        with self.assertRaises(UserError):
+            self.as_mgr()._pb_download(self.payrun.id, 'pdf')
+
+    # ------------------------------------------------- IDB2: the bank file's gate
+    def test_idb2_1_not_approved_is_refused_then_approved_downloads(self):
+        Delivery = self.env['pb.pay.delivery'].with_user(self.mgr).with_context(
+            self._ctx(self.mgr))
+        # nothing prepared: refused, in plain words
+        with self.assertRaises(UserError) as caught:
+            self.as_mgr()._pb_download(self.payrun.id, 'xlsx')
+        self.assertIn('no approved payment list', str(caught.exception))
+        file_payload = Delivery.get_delivery_data(self.payrun.id)['payment_list']['file']
+        self.assertFalse(file_payload['exists'])
+        self.assertFalse(file_payload['downloadable'])
+        # prepared and sent in: waiting for a second person, still refused
+        record = self.prepared_list()
+        self.assertEqual(record.state, 'pending')
+        with self.assertRaises(UserError) as caught:
+            self.as_mgr()._pb_download(self.payrun.id, 'csv')
+        self.assertIn('IDB1 Checker', str(caught.exception), 'says who has it')
+        with self.assertRaises(UserError):
+            Delivery.payment_list_check(self.payrun.id, 'csv')
+        screen = Delivery.get_delivery_data(self.payrun.id)['payment_list']
+        self.assertEqual(screen['count'], 10, 'the summary shows before approval')
+        self.assertEqual(screen['file']['state'], 'pending')
+        self.assertFalse(screen['file']['downloadable'])
+        self.assertEqual(screen['file']['with_whom'], 'IDB1 Checker')
+        # the two approvals of the bank file's own route
+        self._approve_all(record)
+        record.invalidate_recordset()
+        self.assertEqual(record.state, 'approved')
+        self.assertTrue(Delivery.payment_list_check(self.payrun.id, 'xlsx')['ok'])
+        name, mime, payload = self.as_mgr()._pb_download(self.payrun.id, 'xlsx')
+        self.assertTrue(payload.startswith(b'PK'))
+        self.assertEqual(payload, record.xlsx_attachment_id.raw, 'the approved bytes')
+        screen = Delivery.get_delivery_data(self.payrun.id)['payment_list']
+        self.assertTrue(screen['file']['downloadable'])
+        self.assertFalse(screen['file']['changed'])
+        # bytes changed after approval: refused (the bank file's rail)
+        record.csv_attachment_id.sudo().write({'raw': b'tampered'})
+        with self.assertRaises(UserError):
+            self.as_mgr()._pb_download(self.payrun.id, 'xlsx')
+
+    def test_idb2_2_same_gate_as_the_bank_file(self):
+        """Same process, same published route version, same steps, same
+        approvers — the list asks exactly what the bank file asks."""
+        bank_file = self.env['pb.bank.file'].with_user(self.mgr).with_context(
+            self._ctx(self.mgr)).prepare(self.payrun, 'vietcombank')
+        self.Engine.with_user(self.mgr).with_context(self._ctx(self.mgr)).submit(bank_file)
+        record = self.prepared_list()
+        bank_file.invalidate_recordset()
+        a, b = bank_file.approval_request_id, record.approval_request_id
+        self.assertEqual(a.process_id, b.process_id)
+        self.assertEqual(a.process_id.key, 'bankfile')
+        self.assertEqual(a.version_id, b.version_id)
+        self.assertEqual(a.binding_id, b.binding_id)
+        self.assertEqual(a.company_id, b.company_id)
+        steps = lambda r: [(s.key, s.title, s.kind, sorted(s.seat_ids.mapped('acting_user_id').ids))
+                           for s in r.step_ids.sorted('sequence')]
+        self.assertEqual(steps(a), steps(b))
+        # no new catalogue row and no route of its own
+        self.assertFalse(self.env['biz.approval.process'].sudo().search(
+            [('model_name', '=', 'pb.payment.list.file')]))
+
+    def _decide_as_requester(self, record, requester):
+        """Prepared and sent in by `requester`, who also holds the first step:
+        what happens when they try to approve it themselves?"""
+        Engine = self.Engine.with_user(requester).with_context(self._ctx(requester))
+        Engine.submit(record)
+        record.invalidate_recordset()
+        request = record.approval_request_id
+        outcome = [request.state, bool(request.block_reason)]
+        step = request.step_ids.filtered(lambda s: s.status == 'active')[:1]
+        mine = step.seat_ids.filtered(lambda s: s.status == 'open'
+                                      and s.acting_user_id == requester)
+        outcome.append(bool(mine))
+        if step and mine:
+            try:
+                with self.env.cr.savepoint():
+                    Engine.decide(request.id, step.key, 'approve', 'my own')
+                outcome.append('decided')
+            except (UserError, AccessError):
+                outcome.append('refused')
+        return outcome
+
+    def test_idb2_3_approver_is_requester_follows_the_bank_file(self):
+        self._fill_role('payroll_mgr', self.mgr)        # the requester holds step 1
+        BankFile = self.env['pb.bank.file'].with_user(self.mgr).with_context(self._ctx(self.mgr))
+        bank = self._decide_as_requester(BankFile.prepare(self.payrun, 'vietcombank'), self.mgr)
+        listed = self._decide_as_requester(self.File.with_user(self.mgr).with_context(
+            self._ctx(self.mgr)).prepare(self.payrun), self.mgr)
+        self.assertEqual(listed, bank, 'independence on: the list behaves as the bank file')
+        self.assertNotIn('decided', listed, 'the seeded route keeps approvers independent')
+        # a company that switched independence off (rize, owner decision): the
+        # list follows the same published route, so it does what the file does
+        version = self.env['pb.bank.file'].search(
+            [('run_id', '=', self.payrun.id)], limit=1).approval_request_id.version_id
+        definition = dict(version.definition)
+        definition['safeguards'] = dict(definition.get('safeguards') or {}, independent=False)
+        self.env.flush_all()
+        self.env.cr.execute('UPDATE biz_approval_workflow_version SET definition = %s::jsonb '
+                            'WHERE id = %s', (json.dumps(definition), version.id))
+        self.env.invalidate_all()
+        bank = self._decide_as_requester(BankFile.prepare(self.payrun, 'vietcombank'), self.mgr)
+        listed = self._decide_as_requester(self.File.with_user(self.mgr).with_context(
+            self._ctx(self.mgr)).prepare(self.payrun), self.mgr)
+        self.assertEqual(listed, bank, 'independence off: the list behaves as the bank file')
+        self.assertIn('decided', listed, 'with independence off the requester may decide')
+
+    def test_idb2_4_nothing_in_the_approvals_inbox_after_install(self):
+        Request = self.env['biz.approval.request'].sudo()
+        self.assertFalse(Request.search_count([('res_model', '=', 'pb.payment.list.file')]))
+        self.assertFalse(self.File.sudo().search_count([]),
+                         'no payment list exists until somebody prepares one')
+
+    def test_idb2_5_preparing_again_replaces_and_withdraws(self):
+        first = self.prepared_list()
+        second = self.prepared_list()
+        first.invalidate_recordset()
+        self.assertEqual(first.state, 'superseded')
+        self.assertEqual(first.superseded_by_id, second)
+        self.assertNotIn(first.approval_request_id.state, ('pending', 'blocked'))
+        self.assertEqual(second.state, 'pending')
+        # the approver sees names and checks, never an account number
+        detail = second._approval_detail(second.approval_request_id)
+        self.assertNotIn('0012345678', json.dumps(detail))
+        self.assertTrue(detail['rows'])
 
     # ------------------------------------------------------------ test 9
     def test_idb1_9_download_logged_without_account_numbers(self):
+        self.approved_list()
         Entry = self.env['biz.audit.entry'].sudo()
         before = Entry.search_count([('model_name', '=', 'hr.payslip.run'),
                                      ('res_id', '=', self.payrun.id)])
-        self.as_mgr().pb_download(self.payrun.id, 'xlsx')
+        self.as_mgr()._pb_download(self.payrun.id, 'xlsx')
         entries = Entry.search([('model_name', '=', 'hr.payslip.run'),
                                 ('res_id', '=', self.payrun.id),
                                 ('field_name', '=', 'pb_payment_list')])
@@ -393,7 +587,7 @@ class TestIdb1PaymentList(_Idb1Fixture):
     def test_idb1_10_no_vendor_name_in_any_file(self):
         import zipfile
         for kind in ('xlsx', 'csv'):
-            name, _mime, payload, _data = self.List.pb_build(self.payrun, kind)
+            name, _mime, payload, _data = self.List._pb_build(self.payrun, kind)
             self.assertNotIn('odoo', name.lower())
             self.assertTrue(name.startswith('Payment list - IDB1 June - 2026-06-30'))
             if kind == 'csv':
@@ -439,7 +633,12 @@ class TestIdb1Translations(TransactionCase):
         found.add("People with an approved bank account at a bank this file does not know can be paid from the payment list (any bank) on Pay & deliver.")
         found |= {"Payment list (any bank)", "none need a check",
                   "Ready once the pay run is approved.",
-                  "%s people left out have an approved bank account and can be paid from the payment list (any bank) below."}
+                  "%s people left out have an approved bank account and can be paid from the payment list (any bank) below.",
+                  # WDGAP IDB2
+                  "The payment list needs the same approval as the bank file before it can be downloaded.",
+                  "It can be downloaded once it is approved. It is with %s.",
+                  "Prepare the payment list for approval", "its approver",
+                  "Something in this pay run changed since the payment list was prepared. Prepare it again before paying."}
         return found
 
     def test_idb1_10_vi_and_id_entries_load(self):
@@ -498,6 +697,15 @@ class TestIdb1PaymentListUrl(_Idb1Fixture, HttpCase):
 
     def test_idb1_8_url_works_for_the_pay_manager(self):
         self._login(self.mgr)
+        # IDB2: refused until a second person approved it — and while it waits
+        response = self._get('csv')
+        self.assertNotEqual(response.status_code, 200)
+        self.assertNotIn(b'0012345678', response.content)
+        record = self.prepared_list()
+        response = self._get('xlsx')
+        self.assertNotEqual(response.status_code, 200)
+        self.assertFalse(response.content.startswith(b'PK'))
+        self._approve_all(record)
         response = self._get('csv')
         self.assertEqual(response.status_code, 200)
         self.assertIn('attachment', response.headers.get('Content-Disposition', ''))

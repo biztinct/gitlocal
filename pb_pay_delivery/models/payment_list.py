@@ -26,20 +26,31 @@ WHAT IT READS, AND WHAT IT NEVER READS.
     `_pb_net_amount`) the row says so rather than choosing silently.
   * Money is never added across currencies: one total per currency.
 
-WHAT IT NEVER DOES. It writes nothing but one trail line per download (who,
-when, how many rows — never an account number). It does not change the bank
-file, the two bank stores, how they are approved, or any payment status.
+THE GATE (WDGAP IDB2, owner ruling). The list is downloaded only once a
+second person approved it, through the Vietnamese bank file's own approval
+gate — see `PbPaymentListFile` below for which gate and why it is a record of
+its own. Each download writes one trail line (who, when, how many rows — never
+an account number).
+
+WHAT IT NEVER DOES. It does not change the bank file, the two bank stores,
+how they are approved, or any payment status.
 """
 
 import csv
+import hashlib
 import io
 import json
+import logging
 import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.pb_bank_ocr.models.vn_bank_dictionary import name_similarity
+
+from .bank_file import BANKFILE_PROCESS_KEY, STATES
+
+_logger = logging.getLogger(__name__)
 
 #: The name bands of the bank-document check (`name_match_band`): 85 and up is
 #: the same person's name; under 60 is somebody else's.
@@ -52,6 +63,10 @@ FORMULA_START = ('=', '+', '-', '@', '\t', '\r')
 
 #: The kinds of file the list is offered as.
 FORMATS = ('xlsx', 'csv')
+MIMETYPES = {
+    'csv': 'text/csv; charset=utf-8',
+    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+}
 
 
 def _digits(text):
@@ -307,7 +322,7 @@ class PbPaymentList(models.AbstractModel):
 
     # ------------------------------------------------------- the screen
     @api.model
-    def pb_summary(self, run):
+    def _pb_summary(self, run):
         """What Pay & deliver shows beside the button. No account numbers."""
         data = self._pb_build_rows(run)
         return {
@@ -322,7 +337,14 @@ class PbPaymentList(models.AbstractModel):
             'formats': list(FORMATS),
             # for the bank file's left-out hint only; popped before the screen
             'payable_slip_ids': [r['slip_id'] for r in data['rows'] if r['account']],
+            # what the list says right now, to tell whether the approved one
+            # still says the same (WDGAP IDB2); popped before the screen
+            'content_hash': self._pb_content_hash(self._pb_csv(data)),
         }
+
+    @api.model
+    def _pb_content_hash(self, csv_bytes):
+        return hashlib.sha256(csv_bytes or b'').hexdigest()
 
     # --------------------------------------------------------- the files
     @api.model
@@ -440,74 +462,427 @@ class PbPaymentList(models.AbstractModel):
         return out.getvalue()
 
     @api.model
-    def pb_build(self, run, fmt):
-        """(filename, mimetype, bytes, data) — no access check: callers use
-        `pb_download`, which holds the door and writes the trail line."""
+    def _pb_build(self, run, fmt):
+        """(filename, mimetype, bytes, data). No door and no log, and NOT a
+        way out: nothing is ever downloaded from here (the approved record,
+        `pb.payment.list.file`, is the only door). Used by the tests."""
         if fmt not in FORMATS:
             raise UserError(_("Choose Excel or CSV."))
         data = self._pb_build_rows(run)
         if fmt == 'csv':
             payload = self._pb_csv(data)
-            mimetype = 'text/csv; charset=utf-8'
         else:
             payload = self._pb_xlsx(data, run)
-            mimetype = ('application/vnd.openxmlformats-officedocument.'
-                        'spreadsheetml.sheet')
-        return self._pb_filename(run, fmt), mimetype, payload, data
+        return self._pb_filename(run, fmt), MIMETYPES[fmt], payload, data
 
+    # ------------------------------------------------------------ the way out
     @api.model
-    def _pb_ready(self, run_id, fmt):
-        """The door, then the two plain refusals. Returns the run."""
+    def _pb_run(self, run_id):
         try:
             run = self.env['hr.payslip.run'].browse(int(run_id))
         except (TypeError, ValueError):
             raise UserError(_("That pay run no longer exists."))
-        self._pb_check_door(run)
-        if fmt not in FORMATS:
-            raise UserError(_("Choose Excel or CSV."))
-        if (run.state or '') != 'done':
-            raise UserError(_("“%s” has not been approved yet, so its payment list cannot be downloaded. Send the pay run in for approval first.", run.name or ''))
-        return run
+        return self._pb_check_door(run)
 
     @api.model
-    def pb_download(self, run_id, fmt):
-        """The one way out: the door, the file, one trail line."""
-        run = self._pb_ready(run_id, fmt)
-        filename, mimetype, payload, data = self.pb_build(run, fmt)
+    def _pb_approved_file(self, run_id, fmt):
+        """The door, then the approved list — refused in the bank file's own
+        words. Returns the `pb.payment.list.file`."""
+        run = self._pb_run(run_id)
+        if fmt not in FORMATS:
+            raise UserError(_("Choose Excel or CSV."))
+        File = self.env['pb.payment.list.file']
+        approved = File.search([('run_id', '=', run.id), ('state', '=', 'approved')],
+                               order='id desc', limit=1)
+        if not approved:
+            latest = File._pb_latest(run)
+            waiting = ''
+            if latest and latest.state == 'pending':
+                waiting = ' ' + _("The one that was prepared is with %s.",
+                                  latest._waiting_for() or _('its approver'))
+            raise UserError(_("There is no approved payment list for this pay run yet.") + waiting)
+        return approved
+
+    @api.model
+    def _pb_download(self, run_id, fmt):
+        """The one way out: the door, the APPROVED bytes, one trail line."""
+        return self._pb_approved_file(run_id, fmt)._pb_download_bytes(fmt)
+
+
+class PbPaymentListFile(models.Model):
+    """WDGAP IDB2 (owner ruling): the payment list needs the SAME second
+    approval as the Vietnamese bank file before it can be downloaded.
+
+    WHICH GATE, AND WHY ITS OWN RECORD. The bank file's gate approves ONE set
+    of bytes (`pb.bank.file`: the approval stamps `approved_hash`, a download
+    re-checks it) — it is keyed per FILE, not per pay run. An approval of the
+    Vietnamese file therefore cannot cover the list, whose bytes are
+    different. So the list is its own record, approved through the SAME
+    mechanism: the same catalogue process (`bankfile`), hence the same
+    published route, the same approvers, the same independence setting per
+    company, the same engine. Nothing is added to the catalogue and no route
+    is laid: this model has no `_approval_seed_default`, and its capabilities
+    and coverage are the bank file's own.
+
+    Like the bank file: preparing writes the bytes (Excel AND CSV, approved
+    together), a sha256 of them, and asks; a download is refused unless the
+    record is approved and the stored bytes still hash to what was approved;
+    preparing again replaces the previous list and withdraws its request.
+    """
+    _name = 'pb.payment.list.file'
+    _inherit = ['biz.approval.adapter.mixin', 'pb.money.approval.mixin']
+    _description = 'Payment list (any bank)'
+    _order = 'id desc'
+
+    #: the Vietnamese bank file's own catalogue process — its routes, its
+    #: approvers, its independence setting (`pb.bank.file`)
+    _approval_process_key = BANKFILE_PROCESS_KEY
+
+    name = fields.Char(compute='_compute_name', store=True)
+    run_id = fields.Many2one('hr.payslip.run', string='Pay run', required=True,
+                             index=True, ondelete='cascade')
+    company_id = fields.Many2one('res.company', required=True, index=True,
+                                 default=lambda s: s.env.company)
+    currency_id = fields.Many2one('res.currency', string='Currency')
+    xlsx_attachment_id = fields.Many2one('ir.attachment', readonly=True,
+                                         ondelete='restrict', copy=False)
+    csv_attachment_id = fields.Many2one('ir.attachment', readonly=True,
+                                        ondelete='restrict', copy=False)
+    file_hash = fields.Char(string='File stamp', readonly=True, copy=False)
+    approved_hash = fields.Char(string='Approved stamp', readonly=True,
+                                copy=False)
+    #: what the list said when it was prepared (its CSV), to tell the screen
+    #: when the pay run's people or bank details have moved on since
+    content_hash = fields.Char(readonly=True, copy=False)
+    row_count = fields.Integer(string='Rows', readonly=True)
+    check_count = fields.Integer(string='Rows with a check', readonly=True)
+    control_total = fields.Monetary(string='Control total', readonly=True,
+                                    currency_field='currency_id')
+    totals_json = fields.Text(readonly=True)
+    generated_by = fields.Many2one('res.users', string='Prepared by',
+                                   readonly=True, default=lambda s: s.env.user)
+    generated_at = fields.Datetime(readonly=True, default=fields.Datetime.now)
+    superseded_by_id = fields.Many2one('pb.payment.list.file',
+                                       string='Replaced by', readonly=True,
+                                       ondelete='set null')
+    downloaded_at = fields.Datetime(readonly=True)
+    downloaded_by = fields.Many2one('res.users', readonly=True)
+    state = fields.Selection(STATES, default='draft', required=True,
+                             index=True, readonly=True, copy=False)
+    #: A seat is also a read (ledger AM60), as on the bank file.
+    seat_user_ids = fields.Many2many(
+        'res.users', 'pb_payment_list_file_seat_rel', 'file_id', 'user_id',
+        string='Asked to decide', copy=False)
+
+    @api.depends('run_id')
+    def _compute_name(self):
+        for rec in self:
+            rec.name = _("Payment list (any bank) · %s", rec.run_id.name or '')
+
+    # ------------------------------------------------------------ reading
+    @api.model
+    def _pb_latest(self, run):
+        return self.search([('run_id', '=', run.id), ('state', '!=', 'superseded')],
+                           order='id desc', limit=1)
+
+    def _pb_totals(self):
+        self.ensure_one()
+        try:
+            rows = json.loads(self.totals_json or '[]')
+        except (TypeError, ValueError):
+            return []
+        return rows if isinstance(rows, list) else []
+
+    # ------------------------------------------------------------ preparing
+    @api.model
+    def prepare(self, run):
+        """Build both files, store them, replace the last try. The caller
+        sends the record in (`biz.approval.engine.submit`)."""
+        run = run if isinstance(run, models.BaseModel) \
+            else self.env['hr.payslip.run'].browse(int(run))
+        List = self.env['pb.payment.list']
+        List._pb_check_door(run)
+        self.require_pay()
+        if (run.state or '') != 'done':
+            raise UserError(_("“%s” has not been approved yet, so its payment list cannot be prepared. Send the pay run in for approval first.", run.name or ''))
+        data = List._pb_build_rows(run)
         if not data['count']:
             raise UserError(_("Nobody in this pay run is left to pay by bank transfer, so there is no payment list."))
-        # the trail: who, when (the entry's own time), what — never a number
-        self.env['pb.money.approval.mixin'].audit(
-            run, 'pb_payment_list', _("Payment list (any bank) downloaded"), '',
+        files = {'csv': List._pb_csv(data), 'xlsx': List._pb_xlsx(data, run)}
+        Attachment = self.env['ir.attachment'].sudo()
+        attachments = {}
+        for fmt, payload in files.items():
+            attachments[fmt] = Attachment.create({
+                'name': List._pb_filename(run, fmt),
+                'type': 'binary',
+                'raw': payload,
+                'res_model': self._name,
+                'res_id': 0,
+                'mimetype': MIMETYPES[fmt],
+            })
+        company = getattr(run, 'company_id', False) or self.env.company
+        primary = self.env['pb.pay.delivery']._primary_currency(run)
+        first = data['totals'][0] if data['totals'] else {}
+        record = self.create({
+            'run_id': run.id,
+            'company_id': company.id,
+            'currency_id': primary.id,
+            'xlsx_attachment_id': attachments['xlsx'].id,
+            'csv_attachment_id': attachments['csv'].id,
+            'file_hash': self._pb_hash(files['xlsx'], files['csv']),
+            'content_hash': List._pb_content_hash(files['csv']),
+            'row_count': data['count'],
+            'check_count': data['check_count'],
+            # the fact a route may test is the bank file's "control total":
+            # the total in the run's own money (never two currencies added)
+            'control_total': first.get('amount', 0.0)
+            if first.get('currency') == primary.name else 0.0,
+            'totals_json': json.dumps([{'currency': t['currency'],
+                                        'amount': t['amount'],
+                                        'count': t['count']}
+                                       for t in data['totals']]),
+            'generated_by': self.env.uid,
+            'generated_at': fields.Datetime.now(),
+        })
+        attachments['xlsx'].write({'res_id': record.id})
+        attachments['csv'].write({'res_id': record.id})
+        record._supersede_earlier()
+        return record
+
+    @staticmethod
+    def _pb_hash(xlsx_bytes, csv_bytes):
+        return hashlib.sha256(
+            hashlib.sha256(xlsx_bytes or b'').hexdigest().encode()
+            + hashlib.sha256(csv_bytes or b'').hexdigest().encode()).hexdigest()
+
+    def _live_hash(self):
+        """The stamp of BOTH files as they are right now, read from the
+        attachments every time (ledger AM46, as the bank file)."""
+        self.ensure_one()
+        xlsx = self.xlsx_attachment_id.sudo()
+        csv_file = self.csv_attachment_id.sudo()
+        if not xlsx or not csv_file:
+            return ''
+        return self._pb_hash(xlsx.raw or b'', csv_file.raw or b'')
+
+    def _supersede_earlier(self):
+        self.ensure_one()
+        earlier = self.sudo().search([
+            ('run_id', '=', self.run_id.id), ('id', '!=', self.id),
+            ('state', 'not in', ('superseded', 'rejected'))])
+        engine = self.env['biz.approval.engine']
+        for old in earlier:
+            request = old.approval_request_id
+            if request and request.state in ('pending', 'blocked'):
+                try:
+                    engine.sudo().cancel(
+                        request, _("A newer payment list replaced this one."))
+                except Exception:   # noqa: BLE001 — never stop the new list
+                    _logger.warning('pb_pay_delivery: could not withdraw the '
+                                    'request on payment list %s', old.id)
+            old.write({'state': 'superseded', 'superseded_by_id': self.id,
+                       'approved_hash': False})
+        return True
+
+    # ------------------------------------------------------------ adapter
+    def _approval_validate(self):
+        self.ensure_one()
+        if self.state in ('pending', 'approved'):
+            raise UserError(_("This payment list has already been sent in."))
+        if self.state == 'superseded':
+            raise UserError(_("A newer payment list has replaced this one. Send that one in instead."))
+        if not self.xlsx_attachment_id or not self.csv_attachment_id:
+            raise UserError(_("There is no file to approve."))
+        return True
+
+    def _approval_context(self):
+        self.ensure_one()
+        company = self.company_id or self.env.company
+        currency = self.currency_id or company.currency_id
+        run = self.run_id
+        scope_keys, scope_label = self.scope_of_run(run)
+        first = not bool(self.sudo().search_count([
+            ('run_id', '=', run.id), ('id', '!=', self.id),
+            ('state', '=', 'approved')]))
+        makers = set(self.run_makers(run))
+        if self.generated_by:
+            makers.add(self.generated_by.id)
+        totals = ' · '.join('{:,.0f} {}'.format(t.get('amount') or 0.0, t.get('currency') or '')
+                            for t in self._pb_totals())
+        return {
+            'company_id': company.id,
+            'title': self.name or _("Payment list (any bank)"),
+            'scope_keys': scope_keys,
+            'scope_label': scope_label,
+            # any bank: the route that covers every bank file
+            'kind_key': 'any',
+            # the bank file's own facts, so a route that tests them reads them
+            'facts': {
+                'control_total': {'value': float(self.control_total or 0.0),
+                                  'unit': currency.name or ''},
+                'row_count': {'value': self.row_count, 'unit': ''},
+                'excluded_count': {'value': 0, 'unit': ''},
+                'run_approved': {'value': self.run_is_approved(run), 'unit': ''},
+                'first_file_for_run': {'value': first, 'unit': ''},
+            },
+            'amount': float(self.control_total or 0.0),
+            'currency_id': currency.id,
+            'maker_uids': sorted(u for u in makers if u),
+            'submitter_uid': self.env.uid,
+            'subject_uids': [],
+            'source_revision': self._live_hash(),
+            'evidence': [
+                {'key': 'run_approved', 'name': _('The pay run is approved'),
+                 'ok': self.run_is_approved(run), 'note': run.name or ''},
+                {'key': 'payment_list_totals',
+                 'name': _("Totals per currency"), 'ok': True, 'note': totals},
+            ],
+        }
+
+    @api.model
+    def _approval_capabilities(self):
+        return self.env['pb.bank.file']._approval_capabilities()
+
+    @api.model
+    def _approval_scope_options(self, company):
+        return self.env['pb.bank.file']._approval_scope_options(company)
+
+    @api.model
+    def _approval_coverage_scopes(self, company):
+        return self.env['pb.bank.file']._approval_coverage_scopes(company)
+
+    def _approval_card_count(self, request):
+        self.ensure_one()
+        if self.row_count == 1:
+            return _("1 payment")
+        return _("%s payments", self.row_count)
+
+    def _approval_detail(self, request):
+        """What an approver asks: how much, in which money, and who needs a
+        look. Names and the Check words only — never an account number."""
+        self.ensure_one()
+        chips = [{'label': _("Kind of file"), 'value': _("Payment list (any bank)")}]
+        for total in self._pb_totals():
+            chips.append({'label': _("Total %s", total.get('currency') or ''),
+                          'value': '{:,.0f}'.format(total.get('amount') or 0.0)})
+        rows = []
+        data = self.env['pb.payment.list'].sudo()._pb_build_rows(self.run_id.sudo())
+        for row in [r for r in data['rows'] if r['checks']][:40]:
+            rows.append({'head': (row['employee_name'] or '')[:40], 'sub': '',
+                         'cells': ['; '.join(row['checks'])[:120]], 'tone': 'off'})
+        if not rows:
+            return {'title': _("Nobody in this list needs a check"),
+                    'columns': [], 'rows': [], 'chips': chips, 'note': ''}
+        return {'title': _("Rows that need a check"), 'columns': [_("Check")],
+                'rows': rows, 'chips': chips,
+                'note': _("Account numbers come from approved bank details only. Read the Check column before paying.")}
+
+    def _approval_freeze(self, request):
+        self.ensure_one()
+        self.sudo().write({'state': 'pending'})
+        return True
+
+    def _approval_return(self, request, reason):
+        self.ensure_one()
+        self.sudo().write({'state': 'returned', 'approved_hash': False})
+        return True
+
+    def _approval_reject(self, request, reason):
+        self.ensure_one()
+        self.sudo().write({'state': 'rejected', 'approved_hash': False})
+        return True
+
+    def _approval_apply(self, request):
+        """Approved: THESE bytes, and nothing else, may be downloaded."""
+        self.ensure_one()
+        if self.state == 'approved' and self.approved_hash:
+            return True
+        self.require_pay(_("the payment list"))
+        live = self._live_hash()
+        if not live:
+            raise UserError(_("The file is missing, so it cannot be approved."))
+        if self.file_hash and live != self.file_hash:
+            raise UserError(_("The payment list changed after it was sent in, so this approval no longer covers it. Prepare it again."))
+        self.sudo().write({'state': 'approved', 'approved_hash': live})
+        self.env['biz.approval.event']._log(
+            'applied',
+            _("%(who)s approved the payment list %(name)s (%(rows)s payments)",
+              who=self.env.user.name, name=self.name or '', rows=self.row_count),
+            company=self.company_id, request=request)
+        self.audit(self, 'state', _("Payment list (any bank)"),
+                   _('Waiting for approval'), _('Approved'))
+        return True
+
+    # ------------------------------------------------------------ the way out
+    def _pb_download_bytes(self, fmt):
+        """Refuses anything but the approved bytes; one trail line on the
+        pay run (who, how many rows — never an account number)."""
+        self.ensure_one()
+        self.require_pay(_("the payment list"))
+        if self.state == 'superseded':
+            raise UserError(_("A newer payment list has replaced this one. Download that one instead."))
+        if self.state != 'approved' or not self.approved_hash:
+            raise UserError(_("This payment list has not been approved yet, so it cannot be downloaded. It is with %s.", self._waiting_for() or _('its approver')))
+        if self._live_hash() != self.approved_hash:
+            raise UserError(_("This is not the approved payment list — what is stored no longer matches what was signed off. Prepare it again."))
+        attachment = (self.xlsx_attachment_id if fmt == 'xlsx'
+                      else self.csv_attachment_id).sudo()
+        self.sudo().write({'downloaded_at': fields.Datetime.now(),
+                           'downloaded_by': self.env.uid})
+        self.audit(
+            self.run_id, 'pb_payment_list', _("Payment list (any bank) downloaded"), '',
             _("%(who)s · %(kind)s · %(rows)s rows · %(checks)s need a check",
-              who=self.env.user.name, kind=fmt.upper(), rows=data['count'],
-              checks=data['check_count']))
-        return filename, mimetype, payload
+              who=self.env.user.name, kind=fmt.upper(), rows=self.row_count,
+              checks=self.check_count))
+        return attachment.name, MIMETYPES[fmt], attachment.raw or b''
 
 
 class PbPayDeliveryPaymentList(models.AbstractModel):
     _inherit = 'pb.pay.delivery'
 
+    def _payment_list_file_payload(self, run, current_hash):
+        latest = self.env['pb.payment.list.file']._pb_latest(run)
+        payload = self._route_payload(latest)
+        payload.update({
+            'downloadable': bool(latest and latest.state == 'approved'),
+            'fast_lane': self._fast_lane('pb.payment.list.file', run),
+            'row_count': latest.row_count if latest else 0,
+            # the run's people or bank details moved on since it was prepared
+            'changed': bool(latest and latest.content_hash
+                            and latest.content_hash != current_hash),
+        })
+        return payload
+
     @api.model
     def get_delivery_data(self, run_id):
         data = super().get_delivery_data(run_id)
         run = self._run(run_id)
-        summary = self.env['pb.payment.list'].pb_summary(run)
+        summary = self.env['pb.payment.list']._pb_summary(run)
         payable = set(summary.pop('payable_slip_ids', []))
+        current = summary.pop('content_hash', '')
         # the bank file's left-out list is no longer a dead end: how many of
         # the people it leaves out the payment list can pay (approved account)
         validation = data.get('validation') or {}
         validation['payment_list_can_pay'] = len(
             {x.get('slip_id') for x in validation.get('excluded') or []} & payable)
+        summary['file'] = self._payment_list_file_payload(run, current)
         data['payment_list'] = summary
         return data
 
     @api.model
+    def prepare_payment_list(self, run_id):
+        """Prepare the payment list and send it in — the bank file's gate."""
+        self._require_access()
+        run = self._run(run_id)
+        record = self.env['pb.payment.list.file'].prepare(run)
+        self.env['biz.approval.engine'].submit(record)
+        return {'state': record.state}
+
+    @api.model
     def payment_list_check(self, run_id, fmt):
         """Asked by the screen before it downloads, so a refusal is a plain
-        sentence on screen rather than a failed download."""
-        List = self.env['pb.payment.list']
-        run = List._pb_ready(run_id, fmt)
-        if not List._pb_slips(run)[0]:
-            raise UserError(_("Nobody in this pay run is left to pay by bank transfer, so there is no payment list."))
+        sentence on screen rather than a failed download. Writes nothing."""
+        record = self.env['pb.payment.list']._pb_approved_file(run_id, fmt)
+        if record._live_hash() != record.approved_hash:
+            raise UserError(_("This is not the approved payment list — what is stored no longer matches what was signed off. Prepare it again."))
         return {'ok': True}

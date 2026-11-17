@@ -417,17 +417,32 @@
                 </span>
               </div>
               <div t-if="payListLeftOut" class="pbpd-note" t-esc="payListLeftOutText"/>
+
+              <!-- WDGAP IDB2: the bank file's own approval — where it is,
+                   who has it, the door to the request -->
+              <t t-call="pb_pay_delivery.RouteStrip">
+                <t t-set="route" t-value="payListFile"/>
+              </t>
+              <div t-if="payListFile.changed" class="pbpd-block">
+                <span t-out="ic('alert',14)"/> <span>Something in this pay run changed since the payment list was prepared. Prepare it again before paying.</span>
+              </div>
+
               <div class="pl-actions">
-                <button class="pbpd-btn ghost sm" t-att-disabled="state.busy or !payList.approved or !payList.count"
+                <button class="pbpd-btn ghost sm" t-att-disabled="state.busy or !payListFile.downloadable"
                         t-on-click="() => this.downloadPayList('xlsx')" title="Download the payment list as an Excel file">
                   <span t-out="ic('download',13)"/><span>Excel</span>
                 </button>
-                <button class="pbpd-btn ghost sm" t-att-disabled="state.busy or !payList.approved or !payList.count"
+                <button class="pbpd-btn ghost sm" t-att-disabled="state.busy or !payListFile.downloadable"
                         t-on-click="() => this.downloadPayList('csv')" title="Download the payment list as a CSV file">
                   <span t-out="ic('download',13)"/><span>CSV</span>
                 </button>
-                <span t-if="!payList.approved" class="pl-wait">Ready once the pay run is approved.</span>
+                <span t-if="payListWhyNot" class="pl-wait" t-esc="payListWhyNot"/>
               </div>
+              <button t-if="payList.approved and payList.count and payListFile.state !== 'pending'"
+                      t-attf-class="pbpd-btn {{ payListFile.downloadable and !payListFile.changed ? 'ghost' : 'primary' }} sm"
+                      t-att-disabled="state.busy" t-on-click="preparePayList">
+                <span t-out="ic('upload',13)"/><span t-esc="payListPrepareLabel"/>
+              </button>
               <div class="pbpd-note">Account numbers come from approved bank details only. Read the Check column before paying.</div>
             </div>
 

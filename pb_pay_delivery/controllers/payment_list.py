@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """WDGAP IDB1 — the payment list download.
 
-Streamed, never stored: the list carries every account number of the run, so
-no attachment is left behind for anybody to find later. The door is the
-model's (`pb.payment.list.pb_download`): the people who may download the bank
-file, nobody else; a refusal is a plain 403 page, never the file.
+Serves ONLY the approved bytes of the run's payment list (WDGAP IDB2: the
+bank file's own approval gate, `pb.payment.list.file`). The door is the
+model's (`pb.payment.list._pb_download`): the people who may download the
+bank file, nobody else, and only once a second person approved the list; a
+refusal is a plain 403 / 404 page, never the file.
 """
 
 from werkzeug.exceptions import Forbidden, NotFound
@@ -20,7 +21,7 @@ class PbPaymentListController(http.Controller):
                 methods=['GET', 'POST'])
     def payment_list(self, run_id=None, fmt='xlsx', **kw):
         try:
-            filename, mimetype, payload = request.env['pb.payment.list'].pb_download(
+            filename, mimetype, payload = request.env['pb.payment.list']._pb_download(
                 run_id, (fmt or 'xlsx').lower())
         except AccessError as exc:
             raise Forbidden(exc.args[0] if exc.args else None)

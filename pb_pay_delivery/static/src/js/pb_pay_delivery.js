@@ -435,6 +435,54 @@ export class PbPayDelivery extends Component {
     }
     plainMoney(n) { return Math.round(n || 0).toLocaleString("en-US"); }
 
+    // WDGAP IDB2 — the payment list waits for the bank file's own approval
+    get payListFile() { return this.payList.file || { exists: false, route: [] }; }
+    /** Why the download buttons are off, in plain words ("" when they are on). */
+    get payListWhyNot() {
+        const f = this.payListFile;
+        if (!this.payList.approved) { return _t("Ready once the pay run is approved."); }
+        if (!this.payList.count) { return ""; }
+        if (f.downloadable) { return ""; }
+        if (!f.exists) {
+            return _t("The payment list needs the same approval as the bank file before it can be downloaded.");
+        }
+        if (f.state === "pending") {
+            return f.with_whom
+                ? _t("It can be downloaded once it is approved. It is with %s.", f.with_whom)
+                : _t("It can be downloaded once it is approved.");
+        }
+        if (f.state === "returned") { return _t("It was sent back. Prepare it again."); }
+        if (f.state === "rejected") { return _t("It was turned down. Prepare it again."); }
+        return _t("It can be downloaded once it is approved.");
+    }
+    get payListPrepareLabel() {
+        const again = this.payListFile.exists;
+        if (this.payListFile.fast_lane) {
+            return again ? _t("Prepare the payment list again — approved on the spot")
+                         : _t("Prepare the payment list (no approval needed)");
+        }
+        return again ? _t("Prepare the payment list again and send it in")
+                     : _t("Prepare the payment list for approval");
+    }
+    async preparePayList() {
+        if (this.state.busy) { return; }
+        this.state.busy = true;
+        try {
+            await this.orm.call(MODEL, "prepare_payment_list", [this.state.runId]);
+            await this.load();
+            const f = this.payListFile;
+            this.notif.add(
+                f.state === "approved"
+                    ? _t("The payment list is ready to download.")
+                    : _t("The payment list is with %s for approval.", f.with_whom || _t("its approver")),
+                { type: "success" });
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
     async downloadPayList(fmt) {
         if (this.state.busy) { return; }
         this.state.busy = true;

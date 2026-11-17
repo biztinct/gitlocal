@@ -139,7 +139,7 @@ password, no customer data; test logins get a random one-off password at run tim
   or numbers; rolls back. Expected on rize from W3-C: ~126 at Indonesian banks.
 - The PO parse gate (memory `po-translation-loading-rules`) covers the two `.po` files.
 
-## 7. Owner questions (plain words)
+## 7. Owner questions (plain words) — both ANSWERED 2026-11-18 (IDB2: yes, same sign-off; IDB3: keep everyone, as built). See "Follow-up IDB2".
 
 1. Today the Vietnamese bank file needs a second person to approve it before anyone can
    download it. The new payment list can be downloaded straight away by the same pay team
@@ -159,4 +159,93 @@ password, no customer data; test logins get a random one-off password at run tim
 
 ## 9. Gotchas → ledger
 
-Rows IDB1-1 … IDB1-5 added to `WDGAP_LEDGER.md`.
+Rows IDB1-1 … IDB1-6 added to `WDGAP_LEDGER.md`.
+
+## Follow-up IDB2 (owner rulings 2026-11-18, same branch)
+
+**IDB2 — the payment list needs the same second approval as the Vietnamese bank file.**
+**IDB3 — everyone listed, marked "In the bank file: Yes/No": as built, no change.** (§7
+questions 1 and 2 are therefore answered.)
+
+### Which gate, and why its own approval
+The bank file's gate is keyed per FILE, not per pay run: `pb.bank.file` is approved for one set
+of bytes (`_approval_apply` stamps `approved_hash`; `action_download` re-hashes the stored bytes,
+`bank_file.py:568-637`). An approval of the Vietnamese file cannot cover the list (different
+bytes), so **the list has its own approval through the same mechanism**: new record
+`pb.payment.list.file` with `_approval_process_key = 'bankfile'` — the bank file's own catalogue
+process. Same published route version, same steps (Payroll check → Finance approval as seeded),
+same approvers, same independence setting per company, same engine, same "no approval needed"
+fast lane where a company published one. Its route capabilities and coverage are delegated to
+`pb.bank.file`. No catalogue row, no route laid (no `_approval_seed_default`), nothing created at
+install. Test `test_idb2_2` proves both requests resolve to the same process, version, binding and
+seated people.
+
+### What changed
+- `models/payment_list.py`: `PbPaymentListFile` — `prepare(run)` (door, approved run, rows > 0;
+  stores the Excel AND the CSV as attachments, a sha256 of both, the totals per currency, the
+  "content" stamp); adapter methods cloned from the bank file (validate / context with the bank
+  file's facts / freeze / return / reject / apply with the hash rail / card count / detail with
+  names and Check words only — never an account number); preparing again supersedes the earlier
+  list and withdraws its request. Download (`_pb_download` → `_pb_download_bytes`) serves ONLY the
+  approved stored bytes after re-hashing them, and writes the trail line. The old build-and-stream
+  path is gone; the builders are private (`_pb_build`, `_pb_summary`) so no remote call reaches
+  them.
+- Refusals in the bank file's words: "There is no approved payment list for this pay run yet. The
+  one that was prepared is with …", "This payment list has not been approved yet, so it cannot be
+  downloaded. It is with …", "This is not the approved payment list — what is stored no longer
+  matches what was signed off. Prepare it again."
+- `pb.pay.delivery`: `prepare_payment_list(run_id)` (prepare + submit), `payment_list_check` now
+  requires an approved, untouched list; screen payload `payment_list.file` = the bank file's own
+  route payload (state, with whom, steps, door) + `downloadable`, `fast_lane`, `changed`.
+- Screen: the summary (people, totals per currency, "need a check") shows before approval; the
+  Excel/CSV buttons stay off with a plain reason ("The payment list needs the same approval as the
+  bank file before it can be downloaded." / "It can be downloaded once it is approved. It is with
+  …"); a "Prepare the payment list for approval" button (fast-lane wording where no approval is
+  needed); the approval strip (chip, with whom, steps, "See the request"); a warning when the pay
+  run changed since the list was prepared ("Prepare it again before paying" — the approved file
+  stays downloadable, exactly like the bank file's "held since" warning).
+- Security: ACL + record rules cloned from the bank file (company rule, seat rule, `SEATED_MODELS`
+  entry so approvers without a payroll role can read what they sign). **One deliberate narrowing**:
+  a payroll officer reads only a list they were asked to decide (the bank file lets every payroll
+  officer read every bank file record) — the stored list is every account number of the run, and
+  the IDB1 ruling was "who may download the bank file, nobody else".
+- Version 19.0.1.7.0 → **19.0.1.8.0**. 28 new vi entries, 37 new id entries (incl. reused
+  strings), the one msgid IDB2 no longer uses removed from both, "Payment list (any bank)" given its
+  Python occurrence, "its approver" its JavaScript occurrence.
+
+### Tests (local copy `wdgap_idb1_t`, fresh from `upd_p6_t_tpl`, 44 behind modules `-u`)
+
+| Run | Tests | Failed | Errors |
+|---|---|---|---|
+| Full `/pb_pay_delivery` on the IDB2 code | 73 | 0 | 0 |
+| IDB tests again after the last assertion was added | 21 | 0 | 0 |
+
+| Ruling test | Result |
+|---|---|
+| Not approved → refused: nothing prepared ("no approved payment list"), waiting ("It is with IDB1 Checker"), check call, direct address (non-200, no account number) | PASS (`test_idb2_1`, URL test) |
+| Approved (both steps of the bank file's route) → downloads the approved bytes (Excel, CSV, direct address 200) | PASS |
+| Bytes changed after approval → refused | PASS |
+| Same gate: same process `bankfile`, same route version, binding, steps and seated people as the Vietnamese file of the same run; no new catalogue row | PASS (`test_idb2_2`) |
+| Approver = requester follows the existing gate: with the seeded independence ON both the bank file and the list refuse the requester's own approval (identical outcome); with independence switched OFF on the published route (as rize) both let the requester decide (identical outcome) | PASS (`test_idb2_3`) |
+| Nothing in the Approvals inbox after install: no request and no list record exists until somebody prepares one | PASS (`test_idb2_4`) |
+| Preparing again replaces the list and withdraws its request; the approver's detail carries no account number | PASS (`test_idb2_5`) |
+| Officer and portal refused prepare / check / download / screen / address | PASS |
+| Vietnamese bank file byte-identical (golden from origin/19.1) | PASS |
+| vi/id entries load; no vendor name | PASS |
+| Browser (local, `idb2.localhost:8631`, phone 390 px): before approval the summary shows, both buttons off with the reason, "Prepare the payment list for approval"; pressing it → "Waiting for approval", with whom, "Payroll check" / "Finance approval" steps, "See the request", buttons still off with "It can be downloaded once it is approved. It is with …"; no sideways scroll; console clean | PASS |
+
+### Deploy notes (IDB2 replaces the IDB1 notes in §6 where they differ)
+- Tier: **normal-plus** — a new table (`pb_payment_list_file`) and new access rules; no change to
+  payslips, bank stores, routes or the catalogue. `-u pb_pay_delivery` on payobook,
+  payobook_template, p0clone, rize, sudima; asset purge + restart.
+- After the upgrade, per database (read-only): `SELECT count(*) FROM pb_payment_list_file` = 0 and
+  `SELECT count(*) FROM biz_approval_request WHERE res_model = 'pb.payment.list.file'` = 0 (nothing
+  in anybody's Approvals inbox); `biz_approval_process` row count unchanged.
+- The list follows each company's published "Bank file approval" route as it is today: on rize
+  that includes the owner's "approver independence off" decision.
+- The Vietnamese bank file rehearsal and the read-only count script (§6) are unchanged.
+
+### Gotcha → ledger
+IDB1-6: the engine does not require a record's model to be the catalogue row's model — a second
+model may share a process key, and so the same routes, approvers and independence; capabilities
+and coverage are read from the catalogue row's own model.

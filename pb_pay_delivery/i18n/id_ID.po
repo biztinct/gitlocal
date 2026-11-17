@@ -203,12 +203,6 @@ msgstr "Pilih Excel atau CSV."
 #. module: pb_pay_delivery
 #. odoo-python
 #: code:addons/pb_pay_delivery/models/payment_list.py:0
-msgid "“%s” has not been approved yet, so its payment list cannot be downloaded. Send the pay run in for approval first."
-msgstr "“%s” belum disetujui, jadi daftar pembayarannya belum dapat diunduh. Kirim penggajian untuk disetujui terlebih dahulu."
-
-#. module: pb_pay_delivery
-#. odoo-python
-#: code:addons/pb_pay_delivery/models/payment_list.py:0
 msgid "Nobody in this pay run is left to pay by bank transfer, so there is no payment list."
 msgstr "Tidak ada lagi orang di penggajian ini yang perlu dibayar lewat transfer bank, jadi tidak ada daftar pembayaran."
 
@@ -286,8 +280,10 @@ msgid "%s people left out have an approved bank account and can be paid from the
 msgstr "%s orang yang tidak masuk punya rekening yang sudah disetujui dan dapat dibayar dari daftar pembayaran (bank apa pun) di bawah."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
 msgid "Payment list (any bank)"
 msgstr "Daftar pembayaran (bank apa pun)"
 
@@ -332,3 +328,227 @@ msgstr "Unduh daftar pembayaran sebagai file Excel"
 #: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
 msgid "Download the payment list as a CSV file"
 msgstr "Unduh daftar pembayaran sebagai file CSV"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "There is no approved payment list for this pay run yet."
+msgstr "Belum ada daftar pembayaran yang disetujui untuk penggajian ini."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The one that was prepared is with %s."
+msgstr "Daftar yang sudah disiapkan ada di %s."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Payment list (any bank) · %s"
+msgstr "Daftar pembayaran (bank apa pun) · %s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "“%s” has not been approved yet, so its payment list cannot be prepared. Send the pay run in for approval first."
+msgstr "“%s” belum disetujui, jadi daftar pembayarannya belum dapat disiapkan. Kirim penggajian untuk disetujui terlebih dahulu."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "This payment list has already been sent in."
+msgstr "Daftar pembayaran ini sudah dikirim."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "A newer payment list has replaced this one. Send that one in instead."
+msgstr "Daftar pembayaran yang lebih baru sudah menggantikan yang ini. Kirim yang baru."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Totals per currency"
+msgstr "Total per mata uang"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Nobody in this list needs a check"
+msgstr "Tidak ada yang perlu diperiksa di daftar ini"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Rows that need a check"
+msgstr "Baris yang perlu diperiksa"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "the payment list"
+msgstr "daftar pembayaran"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The payment list changed after it was sent in, so this approval no longer covers it. Prepare it again."
+msgstr "Daftar pembayaran berubah setelah dikirim, jadi persetujuan ini tidak berlaku lagi. Siapkan lagi."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(who)s approved the payment list %(name)s (%(rows)s payments)"
+msgstr "%(who)s menyetujui daftar pembayaran %(name)s (%(rows)s pembayaran)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "A newer payment list has replaced this one. Download that one instead."
+msgstr "Daftar pembayaran yang lebih baru sudah menggantikan yang ini. Unduh yang baru."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "This payment list has not been approved yet, so it cannot be downloaded. It is with %s."
+msgstr "Daftar pembayaran ini belum disetujui, jadi belum dapat diunduh. Daftar ini ada di %s."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "This is not the approved payment list — what is stored no longer matches what was signed off. Prepare it again."
+msgstr "Ini bukan daftar pembayaran yang disetujui — isi yang tersimpan tidak lagi sama dengan yang disetujui. Siapkan lagi."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "A newer payment list replaced this one."
+msgstr "Daftar pembayaran yang lebih baru menggantikan yang ini."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "The payment list needs the same approval as the bank file before it can be downloaded."
+msgstr "Daftar pembayaran perlu persetujuan yang sama seperti file bank sebelum dapat diunduh."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "It can be downloaded once it is approved. It is with %s."
+msgstr "Dapat diunduh setelah disetujui. Daftar ini ada di %s."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "It can be downloaded once it is approved."
+msgstr "Dapat diunduh setelah disetujui."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "It was sent back. Prepare it again."
+msgstr "Daftar ini dikembalikan. Siapkan lagi."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "It was turned down. Prepare it again."
+msgstr "Daftar ini ditolak. Siapkan lagi."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare the payment list again — approved on the spot"
+msgstr "Siapkan lagi daftar pembayaran — langsung disetujui"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare the payment list (no approval needed)"
+msgstr "Siapkan daftar pembayaran (tidak perlu persetujuan)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare the payment list again and send it in"
+msgstr "Siapkan lagi daftar pembayaran dan kirim"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare the payment list for approval"
+msgstr "Siapkan daftar pembayaran untuk disetujui"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "The payment list is ready to download."
+msgstr "Daftar pembayaran siap diunduh."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "The payment list is with %s for approval."
+msgstr "Daftar pembayaran ada di %s untuk disetujui."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Something in this pay run changed since the payment list was prepared. Prepare it again before paying."
+msgstr "Ada yang berubah di penggajian ini sejak daftar pembayaran disiapkan. Siapkan lagi sebelum membayar."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "its approver"
+msgstr "pemberi persetujuan"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "There is no file to approve."
+msgstr "Tidak ada file untuk disetujui."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The pay run is approved"
+msgstr "Penggajian sudah disetujui"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "1 payment"
+msgstr "1 pembayaran"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%s payments"
+msgstr "%s pembayaran"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Kind of file"
+msgstr "Jenis file"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The file is missing, so it cannot be approved."
+msgstr "File tidak ada, jadi tidak dapat disetujui."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Approved"
+msgstr "Disetujui"

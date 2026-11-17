@@ -1230,7 +1230,9 @@ msgstr "Đã phê duyệt"
 
 #. module: pb_pay_delivery
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "its approver"
 msgstr "người phê duyệt"
 
@@ -2641,12 +2643,6 @@ msgstr "Hãy chọn Excel hoặc CSV."
 #. module: pb_pay_delivery
 #. odoo-python
 #: code:addons/pb_pay_delivery/models/payment_list.py:0
-msgid "“%s” has not been approved yet, so its payment list cannot be downloaded. Send the pay run in for approval first."
-msgstr "“%s” chưa được phê duyệt nên chưa thể tải danh sách chuyển khoản. Hãy gửi kỳ lương đi phê duyệt trước."
-
-#. module: pb_pay_delivery
-#. odoo-python
-#: code:addons/pb_pay_delivery/models/payment_list.py:0
 msgid "Nobody in this pay run is left to pay by bank transfer, so there is no payment list."
 msgstr "Không còn ai trong kỳ lương này cần trả bằng chuyển khoản, nên không có danh sách chuyển khoản."
 
@@ -2724,8 +2720,10 @@ msgid "%s people left out have an approved bank account and can be paid from the
 msgstr "%s người bị bỏ ra có tài khoản đã được duyệt và có thể được trả từ danh sách chuyển khoản (mọi ngân hàng) bên dưới."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
 msgid "Payment list (any bank)"
 msgstr "Danh sách chuyển khoản (mọi ngân hàng)"
 
@@ -2770,3 +2768,171 @@ msgstr "Tải danh sách chuyển khoản dạng tệp Excel"
 #: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
 msgid "Download the payment list as a CSV file"
 msgstr "Tải danh sách chuyển khoản dạng tệp CSV"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "There is no approved payment list for this pay run yet."
+msgstr "Chưa có danh sách chuyển khoản nào được phê duyệt cho kỳ lương này."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The one that was prepared is with %s."
+msgstr "Danh sách đã chuẩn bị đang ở chỗ %s."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Payment list (any bank) · %s"
+msgstr "Danh sách chuyển khoản (mọi ngân hàng) · %s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "“%s” has not been approved yet, so its payment list cannot be prepared. Send the pay run in for approval first."
+msgstr "“%s” chưa được phê duyệt nên chưa thể chuẩn bị danh sách chuyển khoản. Hãy gửi kỳ lương đi phê duyệt trước."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "This payment list has already been sent in."
+msgstr "Danh sách chuyển khoản này đã được gửi đi."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "A newer payment list has replaced this one. Send that one in instead."
+msgstr "Một danh sách mới hơn đã thay thế danh sách này. Hãy gửi danh sách mới."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Totals per currency"
+msgstr "Tổng theo từng loại tiền"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Nobody in this list needs a check"
+msgstr "Không ai trong danh sách cần xem lại"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Rows that need a check"
+msgstr "Các dòng cần xem lại"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "the payment list"
+msgstr "danh sách chuyển khoản"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The payment list changed after it was sent in, so this approval no longer covers it. Prepare it again."
+msgstr "Danh sách chuyển khoản đã thay đổi sau khi gửi đi nên lần phê duyệt này không còn áp dụng. Hãy chuẩn bị lại."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(who)s approved the payment list %(name)s (%(rows)s payments)"
+msgstr "%(who)s đã phê duyệt danh sách chuyển khoản %(name)s (%(rows)s khoản thanh toán)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "A newer payment list has replaced this one. Download that one instead."
+msgstr "Một danh sách mới hơn đã thay thế danh sách này. Hãy tải danh sách mới."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "This payment list has not been approved yet, so it cannot be downloaded. It is with %s."
+msgstr "Danh sách chuyển khoản này chưa được phê duyệt nên chưa thể tải. Danh sách đang ở chỗ %s."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "This is not the approved payment list — what is stored no longer matches what was signed off. Prepare it again."
+msgstr "Đây không phải danh sách đã được phê duyệt — nội dung lưu trữ không còn khớp với bản đã ký duyệt. Hãy chuẩn bị lại."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "A newer payment list replaced this one."
+msgstr "Một danh sách mới hơn đã thay thế danh sách này."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "The payment list needs the same approval as the bank file before it can be downloaded."
+msgstr "Danh sách chuyển khoản cần được phê duyệt giống như tệp ngân hàng trước khi tải."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "It can be downloaded once it is approved. It is with %s."
+msgstr "Có thể tải sau khi được phê duyệt. Danh sách đang ở chỗ %s."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "It can be downloaded once it is approved."
+msgstr "Có thể tải sau khi được phê duyệt."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "It was sent back. Prepare it again."
+msgstr "Danh sách đã bị trả lại. Hãy chuẩn bị lại."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "It was turned down. Prepare it again."
+msgstr "Danh sách đã bị từ chối. Hãy chuẩn bị lại."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare the payment list again — approved on the spot"
+msgstr "Chuẩn bị lại danh sách chuyển khoản — duyệt ngay"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare the payment list (no approval needed)"
+msgstr "Chuẩn bị danh sách chuyển khoản (không cần phê duyệt)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare the payment list again and send it in"
+msgstr "Chuẩn bị lại danh sách chuyển khoản và gửi đi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare the payment list for approval"
+msgstr "Chuẩn bị danh sách chuyển khoản để phê duyệt"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "The payment list is ready to download."
+msgstr "Danh sách chuyển khoản đã sẵn sàng để tải."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "The payment list is with %s for approval."
+msgstr "Danh sách chuyển khoản đang chờ %s phê duyệt."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Something in this pay run changed since the payment list was prepared. Prepare it again before paying."
+msgstr "Kỳ lương này đã có thay đổi kể từ khi chuẩn bị danh sách chuyển khoản. Hãy chuẩn bị lại trước khi trả."
