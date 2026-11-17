@@ -41,6 +41,14 @@ export class ContractWizard extends Component {
                 if (d.prefill.structure_type_id) f.structure_type_id = String(d.prefill.structure_type_id);
                 if (d.prefill.resource_calendar_id) f.resource_calendar_id = String(d.prefill.resource_calendar_id);
                 f.lines = (d.prefill.lines || []).map((l) => ({ ...l, drop: false }));
+                // WDGAP W3-B (RN1): the Vietnam contract kind the renewal
+                // carries (never a trial); HR can change it before saving.
+                // A trial (or a contract with none) renews as the field's own
+                // default, open-ended.
+                if (d.vn_kinds && d.vn_kinds.length) { f.vn_kind = d.prefill.vn_kind || "indefinite"; }
+                // WDGAP W3-B follow-up (RN3): "Permanent" payroll treatment
+                // carried (never a trial); HR can change it before saving.
+                if (d.pay_treatments && d.pay_treatments.length) { f.pay_treatment = d.prefill.pay_treatment || ""; }
             }
         });
     }
@@ -52,6 +60,18 @@ export class ContractWizard extends Component {
     }
     toggleLine(line) { line.drop = !line.drop; }
     get carried() { return this.state.form.lines || []; }
+    /** WDGAP W3-B (RN1): the kind box shows on a renewal of a Vietnam contract. */
+    get vnKinds() {
+        const d = this.state.defaults;
+        if (!this.renewFrom || !d || !d.prefill || !d.prefill.vn_kind_show) { return []; }
+        return d.vn_kinds || [];
+    }
+    /** WDGAP W3-B follow-up (RN3): the payroll treatment box, same rule. */
+    get payTreatments() {
+        const d = this.state.defaults;
+        if (!this.renewFrom || !d || !d.prefill || !d.prefill.pay_treatment_show) { return []; }
+        return d.pay_treatments || [];
+    }
 
     ic(n, s = 16) { return ic(n, s); }
     /** True while the dialog still needs a person. */

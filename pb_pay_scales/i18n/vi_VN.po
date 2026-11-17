@@ -2930,3 +2930,220 @@ msgid ""
 "Starts from the table now in force (%s). That table is kept exactly as it "
 "was."
 msgstr "Bắt đầu từ bảng đang áp dụng (%s). Bảng đó được giữ nguyên."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "%(count)s people were not written on the day:"
+msgstr "%(count)s người không được ghi vào ngày đó:"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "%(count)s were not written; the review lists why."
+msgstr "%(count)s người không được ghi; đợt xét lương liệt kê lý do."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"%(people)s people were paid for %(months)s before their new pay was written."
+msgstr "%(people)s người đã được trả lương cho %(months)s trước khi lương mới của họ được ghi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Applied for %(count)s contracts. The new pay starts on %(day)s; nothing "
+"changes on any contract or payslip until then."
+msgstr "Đã áp dụng cho %(count)s hợp đồng. Lương mới bắt đầu từ ngày %(day)s; đến lúc đó không có gì thay đổi trên hợp đồng hay phiếu lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Applies on %s"
+msgstr "Áp dụng từ %s"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_apply__pbs_change_id
+msgid "Dated change"
+msgstr "Thay đổi có ngày hiệu lực"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__hr_contract_advantage_change__change_source__pay_review
+msgid "From the pay review"
+msgstr "Từ đợt xét lương"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"New pay for %(count)s contracts is written on %(day)s. Until then nothing "
+"changes on any contract or payslip, and you can take it back."
+msgstr "Lương mới cho %(count)s hợp đồng được ghi vào ngày %(day)s. Đến lúc đó không có gì thay đổi trên hợp đồng hay phiếu lương, và bạn có thể hoàn tác."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "New pay written for %(count)s contracts from %(day)s."
+msgstr "Đã ghi lương mới cho %(count)s hợp đồng từ ngày %(day)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Nothing is written today. The new pay is written on %(day)s; until then "
+"contracts and payslips stay as they are."
+msgstr "Hôm nay chưa ghi gì. Lương mới được ghi vào ngày %(day)s; đến lúc đó hợp đồng và phiếu lương vẫn giữ nguyên."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Only an approved review can be applied. This one is %(state)s."
+msgstr "Chỉ đợt xét lương đã được duyệt mới áp dụng được. Đợt này đang ở trạng thái %(state)s."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/review_dated.xml:0
+msgid "Open the re-work"
+msgstr "Mở bản tính lại"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Pay review %(name)s starts on %(day)s, in a month already paid."
+msgstr "Đợt xét lương %(name)s bắt đầu từ ngày %(day)s, trong một tháng đã trả lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Pay review %(name)s, from %(day)s"
+msgstr "Đợt xét lương %(name)s, từ %(day)s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Recorded for %(count)s contracts. The new pay starts on %(day)s; nothing "
+"changes until then, and you can take it back until that day."
+msgstr "Đã ghi nhận cho %(count)s hợp đồng. Lương mới bắt đầu từ ngày %(day)s; đến lúc đó không có gì thay đổi, và bạn có thể hoàn tác đến ngày đó."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Taken back. Nobody's pay changed, and the review is approved again."
+msgstr "Đã hoàn tác. Lương của không ai thay đổi, và đợt xét lương trở lại trạng thái đã duyệt."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Taken back: pay review %s"
+msgstr "Đã hoàn tác: đợt xét lương %s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Tell the pay team: they can work out any difference by hand on the next pay "
+"run."
+msgstr "Hãy báo bộ phận lương: họ có thể tự tính phần chênh lệch trong kỳ lương tiếp theo."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_apply__pbs_change_id
+msgid ""
+"The dated amount-change record written with this pay, read by proration and "
+"the Past-month re-work."
+msgstr "Bản ghi thay đổi số tiền có ngày hiệu lực được ghi cùng mức lương này, dùng cho tính theo tỷ lệ và tính lại tháng trước."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"The new pay starts on %(day)s, so this can no longer be taken back. To move "
+"the pay again, make a pay change."
+msgstr "Lương mới bắt đầu từ ngày %(day)s, nên không thể hoàn tác được nữa. Để điều chỉnh lương lần nữa, hãy tạo một thay đổi lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"The paid months have no pay scheme on them, so they cannot be re-worked "
+"here."
+msgstr "Các tháng đã trả không có chương trình lương, nên không thể tính lại ở đây."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/review_dated.js:0
+msgid "The re-work could not be opened."
+msgstr "Không mở được bản tính lại."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Their contract ends before the new pay starts."
+msgstr "Hợp đồng của họ kết thúc trước khi lương mới bắt đầu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Their contract is no longer running, so nothing was written for them."
+msgstr "Hợp đồng của họ không còn hiệu lực, nên không ghi gì cho họ."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Their pay changed since the review was applied (now %s), so nothing was "
+"written for them."
+msgstr "Lương của họ đã thay đổi kể từ khi áp dụng đợt xét lương (hiện là %s), nên không ghi gì cho họ."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "This change starts in a month already paid."
+msgstr "Thay đổi này bắt đầu trong một tháng đã trả lương."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"This review has already been applied. Take it back first if you need to "
+"change it."
+msgstr "Đợt xét lương này đã được áp dụng. Hãy hoàn tác trước nếu bạn cần thay đổi."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "This review is being applied right now. Look again in a minute."
+msgstr "Đợt xét lương này đang được áp dụng. Vui lòng xem lại sau một phút."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"This review's new pay has not started yet. Close it after it starts, or take"
+" it back."
+msgstr "Lương mới của đợt xét lương này chưa bắt đầu. Hãy đóng sau khi bắt đầu, hoặc hoàn tác."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_apply__state__scheduled
+msgid "Waiting for its day"
+msgstr "Chờ đến ngày"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "You can take it back until %(day)s, on one button."
+msgstr "Bạn có thể hoàn tác đến ngày %(day)s, chỉ bằng một nút."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "One person was not written on the day:"
+msgstr "Một người không được ghi vào ngày đó:"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "One person was paid for %(months)s before their new pay was written."
+msgstr "Một người đã được trả lương cho %(months)s trước khi lương mới của họ được ghi."

@@ -350,3 +350,26 @@
     &.is-ok { color: #0F8A5F; border-color: #CDEBDD; }
     &.is-warn { color: #B45309; border-color: #F5D9A8; background: #FEF6E7; }
 }
+
+/* WDGAP W3-B (PRV1): the Pay Review's start date. Indigo while it waits
+ * (nothing to do), amber only for the paid-month banner (somebody acts). */
+.pbim.pbim-page.pay {
+    .pay-pbs-when, .pay-pbs-paid, .pay-pbs-skip {
+        display: flex; gap: 10px; align-items: flex-start;
+        margin-top: 12px; padding: 10px 12px; border-radius: 10px;
+        font-size: 13px; line-height: 1.5;
+    }
+    .pay-pbs-when { background: #EEEBFA; color: #3F3486; }
+    .pay-pbs-when--flat { margin: 8px 0 0; }
+    .pay-pbs-paid { background: #FEF6E7; color: #7C3F06; border: 1px solid #F5D9A8; }
+    .pay-pbs-paid .pbim-btn { margin-left: auto; flex: none; }
+    .pay-pbs-paid-b { min-width: 0; }
+    .pay-pbs-skip { display: block; background: #fff; border: 1px solid #E8E9F3; }
+    .pay-pbs-ic { flex: none; display: inline-flex; margin-top: 2px; }
+    .pay-pbs-h { margin: 0; font-weight: 700; }
+    .pay-pbs-s { margin: 2px 0 0; color: inherit; opacity: .85; }
+    @media (max-width: 640px) {
+        .pay-pbs-paid { flex-wrap: wrap; }
+        .pay-pbs-paid .pbim-btn { margin-left: 26px; }
+    }
+}

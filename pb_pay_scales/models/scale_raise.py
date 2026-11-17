@@ -1089,6 +1089,16 @@ class PbPayScaleRaise(models.Model):
                 self.env.cr.commit()
         if tally:
             _logger.info('pb_pay_scales: scale rises %s', tally)
+        # WDGAP W3-B (PRV1): the same quiet job writes approved Pay Reviews
+        # whose start date has come (`review_dated.py`) — one job, not two.
+        try:
+            reviews = self.env['pb.pay.apply']._pbs_start_due_reviews()
+        except Exception:   # noqa: BLE001 — a review never stops the rises
+            self.env.invalidate_all()
+            _logger.exception('pb_pay_scales: pay reviews could not be started')
+            reviews = {}
+        for key, count in (reviews or {}).items():
+            tally['review_' + key] = count
         return tally
 
     def _record_start_failure(self):

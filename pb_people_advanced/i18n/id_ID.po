@@ -84,3 +84,45 @@ msgstr "Kontrak baru dimulai dengan pos gaji yang sama seperti kontrak yang dipe
 #: model:ir.model.fields,field_description:pb_people_advanced.field_pb_newhire_proposal__note
 msgid "Why"
 msgstr "Alasan"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Fixed-term"
+msgstr "Waktu tertentu"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Kind of contract (Vietnam)"
+msgstr "Jenis kontrak (Vietnam)"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Open-ended"
+msgstr "Tanpa batas waktu"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Seasonal"
+msgstr "Musiman"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Not set"
+msgstr "Belum diatur"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Payroll treatment (Vietnam)"
+msgstr "Perlakuan penggajian (Vietnam)"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Permanent"
+msgstr "Tetap"

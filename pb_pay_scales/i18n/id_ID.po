@@ -2930,3 +2930,220 @@ msgid ""
 "Starts from the table now in force (%s). That table is kept exactly as it "
 "was."
 msgstr "Dimulai dari tabel yang berlaku sekarang (%s). Tabel itu disimpan persis seperti adanya."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "%(count)s people were not written on the day:"
+msgstr "%(count)s orang tidak ditulis pada hari itu:"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "%(count)s were not written; the review lists why."
+msgstr "%(count)s tidak ditulis; tinjauan mencantumkan alasannya."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"%(people)s people were paid for %(months)s before their new pay was written."
+msgstr "%(people)s orang sudah dibayar untuk %(months)s sebelum gaji baru mereka ditulis."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Applied for %(count)s contracts. The new pay starts on %(day)s; nothing "
+"changes on any contract or payslip until then."
+msgstr "Diterapkan untuk %(count)s kontrak. Gaji baru mulai %(day)s; sampai saat itu tidak ada yang berubah pada kontrak atau slip gaji."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Applies on %s"
+msgstr "Berlaku pada %s"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,field_description:pb_pay_scales.field_pb_pay_apply__pbs_change_id
+msgid "Dated change"
+msgstr "Perubahan bertanggal"
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__hr_contract_advantage_change__change_source__pay_review
+msgid "From the pay review"
+msgstr "Dari tinjauan gaji"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"New pay for %(count)s contracts is written on %(day)s. Until then nothing "
+"changes on any contract or payslip, and you can take it back."
+msgstr "Gaji baru untuk %(count)s kontrak ditulis pada %(day)s. Sampai saat itu tidak ada yang berubah pada kontrak atau slip gaji, dan Anda dapat membatalkannya."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "New pay written for %(count)s contracts from %(day)s."
+msgstr "Gaji baru ditulis untuk %(count)s kontrak mulai %(day)s."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Nothing is written today. The new pay is written on %(day)s; until then "
+"contracts and payslips stay as they are."
+msgstr "Hari ini belum ada yang ditulis. Gaji baru ditulis pada %(day)s; sampai saat itu kontrak dan slip gaji tetap seperti sekarang."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Only an approved review can be applied. This one is %(state)s."
+msgstr "Hanya tinjauan yang sudah disetujui yang dapat diterapkan. Tinjauan ini berstatus %(state)s."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/xml/review_dated.xml:0
+msgid "Open the re-work"
+msgstr "Buka perhitungan ulang"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Pay review %(name)s starts on %(day)s, in a month already paid."
+msgstr "Tinjauan gaji %(name)s dimulai %(day)s, pada bulan yang sudah dibayar."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Pay review %(name)s, from %(day)s"
+msgstr "Tinjauan gaji %(name)s, mulai %(day)s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Recorded for %(count)s contracts. The new pay starts on %(day)s; nothing "
+"changes until then, and you can take it back until that day."
+msgstr "Dicatat untuk %(count)s kontrak. Gaji baru mulai %(day)s; sampai saat itu tidak ada yang berubah, dan Anda dapat membatalkannya sampai hari itu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Taken back. Nobody's pay changed, and the review is approved again."
+msgstr "Dibatalkan. Gaji siapa pun tidak berubah, dan tinjauan kembali berstatus disetujui."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Taken back: pay review %s"
+msgstr "Dibatalkan: tinjauan gaji %s"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Tell the pay team: they can work out any difference by hand on the next pay "
+"run."
+msgstr "Beri tahu tim penggajian: mereka dapat menghitung selisihnya secara manual pada penggajian berikutnya."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields,help:pb_pay_scales.field_pb_pay_apply__pbs_change_id
+msgid ""
+"The dated amount-change record written with this pay, read by proration and "
+"the Past-month re-work."
+msgstr "Catatan perubahan jumlah bertanggal yang ditulis bersama gaji ini, dibaca oleh proporsi dan perhitungan ulang bulan lalu."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"The new pay starts on %(day)s, so this can no longer be taken back. To move "
+"the pay again, make a pay change."
+msgstr "Gaji baru mulai %(day)s, jadi ini tidak dapat dibatalkan lagi. Untuk mengubah gaji lagi, buat perubahan gaji."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"The paid months have no pay scheme on them, so they cannot be re-worked "
+"here."
+msgstr "Bulan yang sudah dibayar tidak memiliki skema gaji, jadi tidak dapat dihitung ulang di sini."
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/review_dated.js:0
+msgid "The re-work could not be opened."
+msgstr "Perhitungan ulang tidak dapat dibuka."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Their contract ends before the new pay starts."
+msgstr "Kontrak mereka berakhir sebelum gaji baru dimulai."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "Their contract is no longer running, so nothing was written for them."
+msgstr "Kontrak mereka sudah tidak berjalan, jadi tidak ada yang ditulis untuk mereka."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"Their pay changed since the review was applied (now %s), so nothing was "
+"written for them."
+msgstr "Gaji mereka berubah sejak tinjauan diterapkan (sekarang %s), jadi tidak ada yang ditulis untuk mereka."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "This change starts in a month already paid."
+msgstr "Perubahan ini dimulai pada bulan yang sudah dibayar."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"This review has already been applied. Take it back first if you need to "
+"change it."
+msgstr "Tinjauan ini sudah diterapkan. Batalkan dulu jika Anda perlu mengubahnya."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "This review is being applied right now. Look again in a minute."
+msgstr "Tinjauan ini sedang diterapkan. Lihat lagi dalam satu menit."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid ""
+"This review's new pay has not started yet. Close it after it starts, or take"
+" it back."
+msgstr "Gaji baru tinjauan ini belum dimulai. Tutup setelah dimulai, atau batalkan."
+
+#. module: pb_pay_scales
+#: model:ir.model.fields.selection,name:pb_pay_scales.selection__pb_pay_apply__state__scheduled
+msgid "Waiting for its day"
+msgstr "Menunggu harinya"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "You can take it back until %(day)s, on one button."
+msgstr "Anda dapat membatalkannya sampai %(day)s, dengan satu tombol."
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "One person was not written on the day:"
+msgstr "Satu orang tidak ditulis pada hari itu:"
+
+#. module: pb_pay_scales
+#. odoo-python
+#: code:addons/pb_pay_scales/models/review_dated.py:0
+msgid "One person was paid for %(months)s before their new pay was written."
+msgstr "Satu orang sudah dibayar untuk %(months)s sebelum gaji barunya ditulis."
