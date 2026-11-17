@@ -20,6 +20,30 @@
 //  put the cards a centimetre in from everything above them.
 // =====================================================================
 
+// The Home hub clips overflow and gives its embedded lens a fixed height.
+// Embedded inboxes omit pbim-page, so they must own their vertical scroll.
+// Keep a visible track in Chrome/Safari, including Macs with overlay bars.
+.pbhub-lens > .pbim.pbam-inbox {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+
+    &::-webkit-scrollbar { width: 12px; }
+    &::-webkit-scrollbar-track { background: var(--pbim-line, #E2E8F0); }
+    &::-webkit-scrollbar-thumb {
+        background: var(--pbim-muted, #64748B);
+        border: 2px solid var(--pbim-line, #E2E8F0);
+        border-radius: 8px;
+    }
+    &::-webkit-scrollbar-thumb:hover { background: var(--pbim-primary, #5A4BB0); }
+
+    @supports (-moz-appearance: none) {
+        scrollbar-color: var(--pbim-muted, #64748B) var(--pbim-line, #E2E8F0);
+        scrollbar-width: auto;
+    }
+}
+
 .pbim.pbam-inbox {
 
     // ------------------------------------------------------ whose queue
