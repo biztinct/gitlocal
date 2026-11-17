@@ -68,6 +68,8 @@ class TestS9MergeSeams(RFCase):
         # the people who run each thing
         cls.conduct_named = user('cn', ['base.group_user', 'hr.group_hr_user',
                                         'pb_conduct.group_conduct_user'])
+        # W3-A (ruling CD1): a second named person gives the second sign-off
+        cls.conduct_second = user('cn2', ['base.group_user', 'pb_conduct.group_conduct_user'])
         cls.voice_hr = user('vh', ['base.group_user', 'hr.group_hr_user'])
         # review HR also needs the HR officer right the documents ask for
         cls.hr_user.write({'group_ids': [(4, env.ref('hr.group_hr_user').id)]})
@@ -95,7 +97,9 @@ class TestS9MergeSeams(RFCase):
         F.move(cid, 'hearing_held', {'held_on': '2026-06-10', 'minutes': 'S9M-MINUTES'})
         F.move(cid, 'decide', {'outcome': 'written', 'summary': 'S9M decision.'})
         cls.letter = cls.case.letter_ids.filtered(lambda l: l.kind == 'written')
-        F.issue_letter(cls.letter.id)
+        F.move(cid, 'ask_signoff')
+        env['pb.conduct'].with_user(cls.conduct_second).with_context(
+            allowed_company_ids=cls.company.ids).move(cid, 'confirm_signoff')
         cls.letter_doc = cls.letter.document_id
         cls.case_note = env['pb.conduct.note'].sudo().search([('case_id', '=', cid)], limit=1)
         cls.case_file = env['ir.attachment'].sudo().search(
