@@ -197,6 +197,12 @@ export class PbInbox extends Component {
             model: "pb.approval.inbox",
             noun: _t("requests"),
             ctx: { scope: this.state.scope },
+            // A fresh visit starts with undecided requests, even if this tab
+            // previously viewed finished work. Back-navigation and explicit
+            // shared-filter links keep their selected view; request/area
+            // arrivals below may also choose their own queue.
+            initial: !savedNavigation && !new URLSearchParams(window.location.search).has("pbf")
+                ? { filters: TAB_FILTERS.all, viewKey: "all" } : undefined,
             onChange: () => this.loadPage(),
         }));
         useExternalListener(window, "resize", () => this.kit.onResize());
