@@ -306,3 +306,39 @@ msgstr "Ya, setujui semua"
 #: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
 msgid "waiting"
 msgstr "menunggu"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "All bank changes from \"%s\" that were waiting are decided. Compliance › Bank shows each one."
+msgstr "Semua perubahan bank dari \"%s\" yang menunggu sudah diputuskan. Kepatuhan › Bank menampilkan masing-masing."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "Bank changes decided: %s"
+msgstr "Perubahan bank sudah diputuskan: %s"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "%(n)s bank changes waiting for your approval: %(what)s"
+msgstr "%(n)s perubahan bank menunggu persetujuan Anda: %(what)s"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "%(n)s bank changes from \"%(what)s\" are waiting for you. Open Compliance › Bank and press \"Approve all in this file\". To send one back, open it in Approvals."
+msgstr "%(n)s perubahan bank dari \"%(what)s\" menunggu Anda. Buka Kepatuhan › Bank lalu tekan \"Setujui semua di file ini\". Untuk mengembalikan satu perubahan, buka di Persetujuan."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "Open Compliance › Bank"
+msgstr "Buka Kepatuhan › Bank"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "Every bank change in this batch is decided."
+msgstr "Semua perubahan bank dalam kelompok ini sudah diputuskan."

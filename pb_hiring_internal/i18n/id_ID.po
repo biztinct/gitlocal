@@ -1064,3 +1064,9 @@ msgstr "posisi terbuka untuk karyawan"
 #: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
 msgid "staff applications in play"
 msgstr "lamaran karyawan sedang berjalan"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "Already works here"
+msgstr "Sudah bekerja di sini"
