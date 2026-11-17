@@ -38,6 +38,12 @@ msgstr "%s hồ sơ"
 #. module: pb_conduct
 #. odoo-python
 #: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "%s items wait for your sign-off"
+msgstr "%s mục chờ bạn xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
 msgid "%s letters from HR to read"
 msgstr "%s thư từ Nhân sự cần đọc"
 
@@ -50,8 +56,20 @@ msgstr "%s thư cần gửi"
 #. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s to send for a second sign-off"
+msgstr "%s hồ sơ cần gửi để người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "%s waiting for a decision"
 msgstr "%s hồ sơ chờ quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s waiting for a second sign-off"
+msgstr "%s hồ sơ chờ người thứ hai xác nhận"
 
 #. module: pb_conduct
 #: model:ir.actions.report,print_report_name:pb_conduct.action_report_conduct_letter
@@ -63,6 +81,12 @@ msgstr "(object.title or 'Letter')"
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "1 case"
 msgstr "1 hồ sơ"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "1 item waits for your sign-off"
+msgstr "1 mục chờ bạn xác nhận"
 
 #. module: pb_conduct
 #. odoo-python
@@ -79,8 +103,20 @@ msgstr "1 thư cần gửi"
 #. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 to send for a second sign-off"
+msgstr "1 hồ sơ cần gửi để người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "1 waiting for a decision"
 msgstr "1 hồ sơ chờ quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 waiting for a second sign-off"
+msgstr "1 hồ sơ chờ người thứ hai xác nhận"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -94,6 +130,24 @@ msgstr "Hồ sơ đã đóng vẫn nằm ở đây và trong lịch sử của n
 #: code:addons/pb_conduct/models/pb_conduct.py:0
 msgid "A letter needs a title and some text."
 msgstr "Thư cần có tiêu đề và nội dung."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"A second person named for conduct cases is needed to confirm this decision. "
+"Only one person is named for this company now: name a second one on the "
+"Access screen."
+msgstr "Cần một người thứ hai được chỉ định cho hồ sơ kỷ luật để xác nhận quyết định này. Hiện công ty này chỉ có một người được chỉ định: hãy chỉ định thêm một người trên màn hình Quyền truy cập."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"A warning or a dismissal needs a second person named for conduct cases to "
+"confirm it. Check the letter, then ask for the second sign-off: the letter "
+"is issued when they confirm."
+msgstr "Cảnh cáo hoặc sa thải cần một người thứ hai được chỉ định cho hồ sơ kỷ luật xác nhận. Kiểm tra thư, rồi đề nghị người thứ hai xác nhận: thư được gửi khi họ xác nhận."
 
 #. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__active
@@ -148,6 +202,14 @@ msgstr "Thư đã gửi được lưu cùng hồ sơ và không thể xoá."
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
 msgid "Ask HR to link it, then letters they send you appear here."
 msgstr "Hãy nhờ Nhân sự liên kết, sau đó thư gửi cho bạn sẽ hiện ở đây."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Ask for the second sign-off"
+msgstr "Đề nghị người thứ hai xác nhận"
 
 #. module: pb_conduct
 #: model:pb.conduct.reason,name:pb_conduct.reason_attendance
@@ -226,6 +288,12 @@ msgstr "Đã mở hồ sơ. Chỉ những người được chỉ định cho h�
 #: code:addons/pb_conduct/models/conduct_case.py:0
 msgid "Case opened: %s."
 msgstr "Đã mở hồ sơ: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Change the decision"
+msgstr "Thay đổi quyết định"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -408,9 +476,34 @@ msgid "Conduct letter wording"
 msgstr "Mẫu thư kỷ luật"
 
 #. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Confirm and issue the letter"
+msgstr "Xác nhận và gửi thư"
+
+#. module: pb_conduct
 #: model:pb.conduct.letter.template,title:pb_conduct.tpl_verbal
 msgid "Confirmation of a verbal warning"
 msgstr "Xác nhận nhắc nhở bằng lời"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__confirmed
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Confirmed by %(who)s on %(when)s."
+msgstr "Đã được %(who)s xác nhận lúc %(when)s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Confirmed. The letter is issued and the employee can read it on their own "
+"page now."
+msgstr "Đã xác nhận. Thư đã được gửi và nhân viên giờ có thể đọc trên trang của mình."
 
 #. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__country_id
@@ -603,6 +696,26 @@ msgstr "Quyết định"
 
 #. module: pb_conduct
 #. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decision (%s) taken back to change it."
+msgstr "Đã rút lại quyết định (%s) để thay đổi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decision confirmed by a second named person."
+msgstr "Quyết định đã được người thứ hai được chỉ định xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Decision saved. Check the letter, then ask a second named person to sign it "
+"off."
+msgstr "Đã lưu quyết định. Kiểm tra thư, rồi đề nghị một người thứ hai được chỉ định xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
 #: code:addons/pb_conduct/models/pb_conduct.py:0
 msgid "Decision saved. The letter is ready to check and issue."
 msgstr "Đã lưu quyết định. Thư đã sẵn sàng để kiểm tra và gửi."
@@ -686,6 +799,12 @@ msgstr "Đã xoá thư nháp: %s."
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid "Draft, not seen by the employee"
 msgstr "Bản nháp, nhân viên chưa thấy"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Draft, waits for the second sign-off"
+msgstr "Bản nháp, chờ người thứ hai xác nhận"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -972,6 +1091,14 @@ msgid "Issued on"
 msgstr "Ngày gửi"
 
 #. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"It goes back to the person who recorded the decision, with your reason. The "
+"employee sees nothing."
+msgstr "Hồ sơ được trả lại cho người đã ghi nhận quyết định, kèm lý do của bạn. Nhân viên không thấy gì."
+
+#. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__kind
 msgid "Kind"
 msgstr "Loại"
@@ -1165,6 +1292,11 @@ msgid "Named for conduct cases"
 msgstr "Được chỉ định cho hồ sơ kỷ luật"
 
 #. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_required
+msgid "Needs a second sign-off"
+msgstr "Cần người thứ hai xác nhận"
+
+#. module: pb_conduct
 #. odoo-python
 #: code:addons/pb_conduct/models/conduct_case.py:0
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
@@ -1236,6 +1368,15 @@ msgid "No notes for"
 msgstr "Chưa có ghi chú cho"
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Nobody else named for conduct cases can confirm this decision: the person "
+"who recorded it, the person who asked and the employee themselves cannot. "
+"Name another person on the Access screen."
+msgstr "Không còn ai khác được chỉ định cho hồ sơ kỷ luật có thể xác nhận quyết định này: người ghi nhận, người đề nghị và chính nhân viên đều không được. Hãy chỉ định thêm người trên màn hình Quyền truy cập."
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid "None."
@@ -1286,6 +1427,15 @@ msgid "On"
 msgstr "Lúc"
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Only a second person named for conduct cases can do this: not the person who"
+" recorded the decision or asked for the sign-off, and never the employee "
+"themselves."
+msgstr "Chỉ người thứ hai được chỉ định cho hồ sơ kỷ luật mới làm được việc này: không phải người đã ghi nhận quyết định hay đề nghị xác nhận, và không bao giờ là chính nhân viên."
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid "Only for the people HR names"
@@ -1333,6 +1483,18 @@ msgstr "Mở và xử lý hồ sơ kỷ luật của một người: phản ánh
 #: code:addons/pb_conduct/models/pb_conduct.py:0
 msgid "Open cases"
 msgstr "Hồ sơ đang mở"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Open it in HR to confirm or send it back"
+msgstr "Mở trong mục Nhân sự để xác nhận hoặc trả lại"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the Access screen"
+msgstr "Mở màn hình Quyền truy cập"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -1545,6 +1707,12 @@ msgstr "Lưu thư"
 #. module: pb_conduct
 #. odoo-python
 #: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why it goes back."
+msgstr "Nêu ngắn gọn lý do trả lại."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
 msgid "Say in a few words why the case is closed."
 msgstr "Nêu ngắn gọn vì sao đóng hồ sơ."
 
@@ -1562,15 +1730,94 @@ msgstr "Nêu lý do ngắn gọn."
 
 #. module: pb_conduct
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_state
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__signoff
+msgid "Second sign-off"
+msgstr "Người thứ hai xác nhận"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_by
+msgid "Second sign-off by"
+msgstr "Người thứ hai xác nhận"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_on
+msgid "Second sign-off on"
+msgstr "Ngày người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid ""
 "Seen only by the people HR names for conduct cases. Nothing here is emailed."
 msgstr "Chỉ những người được Nhân sự chỉ định cho hồ sơ kỷ luật mới xem được. Không có gì ở đây được gửi qua email."
 
 #. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Send it back"
+msgstr "Trả lại"
+
+#. module: pb_conduct
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
 msgid "Send my reply"
 msgstr "Gửi phản hồi"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__sent_back
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back by %(who)s on %(when)s: \"%(why)s\""
+msgstr "Bị %(who)s trả lại lúc %(when)s: \"%(why)s\""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Sent back by the second sign-off: %s"
+msgstr "Người xác nhận thứ hai đã trả lại: %s"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back with your reason."
+msgstr "Đã trả lại kèm lý do của bạn."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back: check it and ask again"
+msgstr "Bị trả lại: kiểm tra và đề nghị lại"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Sent by %(who)s on %(when)s. A second person named for conduct cases "
+"confirms it; the employee sees nothing until then."
+msgstr "Do %(who)s gửi lúc %(when)s. Một người thứ hai được chỉ định cho hồ sơ kỷ luật sẽ xác nhận; đến lúc đó nhân viên không thấy gì."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Sent for a second sign-off."
+msgstr "Đã gửi để người thứ hai xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Sent for the second sign-off. The employee sees nothing until it is "
+"confirmed."
+msgstr "Đã gửi để người thứ hai xác nhận. Nhân viên không thấy gì cho đến khi được xác nhận."
 
 #. module: pb_conduct
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
@@ -1608,11 +1855,27 @@ msgid "Showing"
 msgstr "Đang hiện"
 
 #. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_asked_by
+msgid "Sign-off asked by"
+msgstr "Người đề nghị xác nhận"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_asked_on
+msgid "Sign-off asked on"
+msgstr "Ngày đề nghị xác nhận"
+
+#. module: pb_conduct
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
 msgid ""
 "Something not clear? Ask HR. You can also find these letters in your "
 "documents."
 msgstr "Có điều chưa rõ? Hãy hỏi Nhân sự. Bạn cũng có thể tìm các thư này trong tài liệu của mình."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Something waits for your sign-off."
+msgstr "Có việc đang chờ bạn xác nhận."
 
 #. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__state
@@ -1628,6 +1891,24 @@ msgstr "Trạng thái"
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__step
 msgid "Step"
 msgstr "Bước"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Take it back"
+msgstr "Rút lại"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Taken back before the second sign-off."
+msgstr "Đã rút lại trước khi người thứ hai xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Taken back. You can change the letter or the decision now."
+msgstr "Đã rút lại. Giờ bạn có thể sửa thư hoặc quyết định."
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -1703,12 +1984,31 @@ msgid "The connection may have dropped. Your filters are kept."
 msgstr "Có thể mất kết nối. Bộ lọc của bạn vẫn được giữ."
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The decision (%s) had no second sign-off and does not count."
+msgstr "Quyết định (%s) chưa có người thứ hai xác nhận nên không được tính."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The decision is open to change. The draft letter was removed."
+msgstr "Quyết định có thể thay đổi. Thư nháp đã được xoá."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The decision letter has been issued, so the decision cannot change."
+msgstr "Thư quyết định đã được gửi nên quyết định không thể thay đổi."
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid ""
-"The decision letter is prepared from it. Check it, then issue it: only then "
-"can the employee read it."
-msgstr "Thư quyết định được soạn từ đây. Hãy kiểm tra rồi gửi: chỉ khi đó nhân viên mới đọc được."
+"The decision letter is prepared from it. A warning or a dismissal then needs"
+" a second named person to sign it off before the letter is issued: only then"
+" can the employee read it."
+msgstr "Thư quyết định được soạn từ nội dung này. Cảnh cáo hoặc sa thải cần một người thứ hai được chỉ định xác nhận trước khi gửi thư: chỉ khi đó nhân viên mới đọc được."
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -1799,6 +2099,13 @@ msgstr "Danh sách nghỉ việc chỉ được mở sau quyết định chấm 
 
 #. module: pb_conduct
 #. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"The leaving checklist opens once the dismissal has its second sign-off."
+msgstr "Danh sách việc khi nghỉ việc chỉ mở sau khi quyết định sa thải được người thứ hai xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
 #: code:addons/pb_conduct/models/conduct_letter.py:0
 msgid "The letter has no text yet."
 msgstr "Thư chưa có nội dung."
@@ -1846,6 +2153,12 @@ msgid "There is already a note for this country and step. Edit that one."
 msgstr "Đã có ghi chú cho quốc gia và bước này. Hãy sửa ghi chú đó."
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "There is no decision letter to confirm. Record the decision again."
+msgstr "Không có thư quyết định để xác nhận. Hãy ghi nhận lại quyết định."
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "This case could not be opened."
@@ -1865,9 +2178,55 @@ msgstr "Hồ sơ không còn tồn tại, hoặc bạn không được xem."
 
 #. module: pb_conduct
 #. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "This decision does not need a second sign-off."
+msgstr "Quyết định này không cần người thứ hai xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"This decision has no second sign-off yet, so its letter cannot be issued. To"
+" close the case without it, say why."
+msgstr "Quyết định này chưa có người thứ hai xác nhận nên chưa gửi thư được. Để đóng hồ sơ mà không có thư, hãy nêu lý do."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"This decision is waiting for a second sign-off. Take it back first if the "
+"case should close without it."
+msgstr "Quyết định này đang chờ người thứ hai xác nhận. Hãy rút lại trước nếu muốn đóng hồ sơ mà không có xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"This decision needs a second sign-off first. A second person named for "
+"conduct cases confirms it, and the letter is issued when they do."
+msgstr "Quyết định này cần người thứ hai xác nhận trước. Một người thứ hai được chỉ định cho hồ sơ kỷ luật sẽ xác nhận, và thư được gửi khi họ xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"This decision waits for your sign-off. Read the decision and the letter "
+"below, then confirm it or send it back. The employee sees nothing until it "
+"is confirmed."
+msgstr "Quyết định này đang chờ bạn xác nhận. Đọc quyết định và thư bên dưới, rồi xác nhận hoặc trả lại. Nhân viên không thấy gì cho đến khi được xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
 #: code:addons/pb_conduct/models/conduct_letter.py:0
 msgid "This letter has already been issued."
 msgstr "Thư này đã được gửi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"This letter is waiting for a second sign-off. Take it back to change it."
+msgstr "Thư này đang chờ người thứ hai xác nhận. Hãy rút lại để sửa."
 
 #. module: pb_conduct
 #. odoo-python
@@ -1924,6 +2283,25 @@ msgstr "Nhắc nhở bằng lời"
 #: model:pb.conduct.letter.template,name:pb_conduct.tpl_verbal
 msgid "Verbal warning confirmed"
 msgstr "Xác nhận nhắc nhở bằng lời"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__waiting
+msgid "Waiting for a second sign-off"
+msgstr "Chờ người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Waiting for your sign-off"
+msgstr "Chờ bạn xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -2035,6 +2413,11 @@ msgstr "Lý do"
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__close_reason
 msgid "Why it was closed"
 msgstr "Lý do đóng"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_note
+msgid "Why it was sent back"
+msgstr "Lý do trả lại"
 
 #. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__template_id
@@ -2154,6 +2537,12 @@ msgid "Your reply, sent on"
 msgstr "Phản hồi của bạn, gửi ngày"
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Your sign-off is needed"
+msgstr "Cần bạn xác nhận"
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid "by"
@@ -2218,6 +2607,12 @@ msgstr "hiệu lực đến"
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "waiting for a decision"
 msgstr "chờ quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "waiting for your sign-off"
+msgstr "chờ bạn xác nhận"
 
 #. module: pb_conduct
 #. odoo-javascript

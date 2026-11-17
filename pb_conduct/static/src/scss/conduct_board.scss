@@ -51,12 +51,14 @@
     .pbcd-dash, .pbcd-muted { color: var(--pbim-muted, #64748B); }
     .pbcd-muted { font-size: 13px; margin: 0; display: flex; align-items: flex-start; gap: 6px;
         > svg { flex: 0 0 auto; margin-top: 3px; } }
+    .pbcd-next-me { display: inline-flex; align-items: center; gap: 5px; font-weight: 700;
+        color: var(--pbim-rose, #DC2668); }
     .pbcd-reply-dot { margin-left: 8px; color: var(--pbim-rose, #DC2668); display: inline-flex; vertical-align: middle; }
     .pbcd-badge {
         text-transform: none; white-space: nowrap;
         &.is-concern { background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #64748B); }
         &.is-hearing { background: var(--pbim-cyan-soft, #E5EDFD); color: #1E3A8A; }
-        &.is-decision, &.is-letter { background: var(--pbim-amber-soft, #FEF3C7); color: #8A4B02; }
+        &.is-decision, &.is-letter, &.is-signoff { background: var(--pbim-amber-soft, #FEF3C7); color: #8A4B02; }
         &.is-closed { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
     }
     .pbcd-foot {
@@ -100,6 +102,26 @@
     .pbcd-cnote-more { margin-top: 6px; summary { cursor: pointer; font-weight: 600; } }
 
     .pbcd-moves { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    // the second sign-off (ruling CD1): quiet when nothing is asked of the
+    // reader, colour only when it waits for them or was sent back
+    .pbcd-sign {
+        display: flex; gap: 10px; padding: 12px 14px; border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0); background: var(--pbim-bg, #F5F6FA);
+        font-size: 13px; line-height: 1.5; color: var(--pbim-ink-2, #475467);
+        b { color: var(--pbim-ink, #1D2433); }
+        p { margin: 2px 0 0; }
+        q { font-style: italic; }
+        &.is-waiting, &.is-none { background: var(--pbim-amber-soft, #FEF3C7); border-color: #F6DFA0; color: #6B3A02; }
+        &.is-sent_back { background: var(--pbim-rose-soft, #FDE7EF); border-color: #F6C3D5; color: #8A1A44; }
+        &.is-confirmed { background: var(--pbim-green-soft, #E3F2E9); border-color: #BFE3CD; color: #1F5A38; }
+    }
+    .pbcd-sign-ic { flex: 0 0 auto; display: inline-flex; padding-top: 2px; }
+    .pbcd-sign-tx { display: flex; flex-direction: column; min-width: 0; }
+    .pbcd-sign-block {
+        margin-top: 8px; padding-top: 8px; border-top: 1px dashed currentColor;
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600;
+    }
     .pbcd-btn-quiet { color: var(--pbim-muted, #64748B); }
     .pbcd-act {
         border: 1px solid var(--pbim-line, #E2E8F0); border-radius: var(--pbim-r, 14px);

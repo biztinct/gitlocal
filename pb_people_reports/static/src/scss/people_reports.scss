@@ -5,6 +5,9 @@
 // ===========================================================================
 .pbim.pbpr {
     display: flex; flex-direction: column; gap: 14px;
+    // cards never shrink to fit the lens height (a card with overflow-x
+    // would otherwise be squashed and clip the month-by-month table)
+    > * { flex-shrink: 0; }
     .pbpr-locked { text-align: center; padding: 40px 24px;
         p { max-width: 520px; margin: 8px auto 0; color: var(--pbim-muted, #64748B); } }
     .pbpr-locked-ic { color: var(--pbim-muted, #64748B); margin-bottom: 8px; }
@@ -20,7 +23,7 @@
     }
     .pbpr-pick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
         .pbim-input { width: auto; min-width: 140px; } }
-    .pbpr-rule, .pbpr-note, .pbpr-check {
+    .pbpr-note, .pbpr-check {
         display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12.5px;
         color: var(--pbim-muted, #64748B);
     }
@@ -59,8 +62,44 @@
         i { display: block; height: 100%; border-radius: 999px; }
         &.is-in i { background: var(--pbim-green, #2E7D4F); }
         &.is-out i { background: var(--pbim-amber, #D97706); } }
-    .pbpr-hid { display: inline-flex; align-items: center; gap: 4px; color: var(--pbim-muted, #94A3B8);
-        font-size: 12px; font-weight: 600; }
+    // the headcount line (PR2): one series, brand indigo, 2px line, 8px
+    // points, recessive grid, a hover tooltip; the table below is its table view
+    .pbpr-chart { position: relative; padding-left: 0;
+        svg { display: block; width: 100%; height: auto; overflow: visible; } }
+    .pbpr-grid line { stroke: var(--pbim-line-2, #F1F5F9); stroke-width: 1; }
+    .pbpr-line { fill: none; stroke: var(--pbim-primary, #5A4BB0); stroke-width: 2;
+        stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+    .pbpr-start { fill: var(--pbim-surface, #fff); stroke: var(--pbim-primary, #5A4BB0); stroke-width: 2;
+        vector-effect: non-scaling-stroke; }
+    .pbpr-dot { fill: var(--pbim-primary, #5A4BB0); stroke: var(--pbim-surface, #fff); stroke-width: 2;
+        vector-effect: non-scaling-stroke;
+        &.is-on { fill: var(--pbim-primary-dark, #241F52); } }
+    .pbpr-cross { stroke: var(--pbim-line, #E2E8F0); stroke-width: 1; stroke-dasharray: 3 3;
+        vector-effect: non-scaling-stroke; }
+    .pbpr-hit { fill: transparent; cursor: crosshair; }
+    .pbpr-axis-y span, .pbpr-axis-x span {
+        position: absolute; font-size: 11px; color: var(--pbim-muted, #64748B);
+        font-variant-numeric: tabular-nums; pointer-events: none; white-space: nowrap;
+    }
+    .pbpr-axis-y span { left: 0; transform: translateY(-50%); }
+    .pbpr-axis-x span { bottom: 2px; transform: translateX(-50%); }
+    .pbpr-tip {
+        position: absolute; transform: translate(-50%, calc(-100% - 12px)); pointer-events: none;
+        background: var(--pbim-surface, #fff); border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 10px; padding: 8px 10px; box-shadow: 0 8px 24px rgba(40, 50, 90, .14);
+        display: flex; flex-direction: column; gap: 2px; font-size: 12px; white-space: nowrap;
+        color: var(--pbim-ink-2, #475467);
+        b { color: var(--pbim-ink, #1D2433); font-variant-numeric: tabular-nums; }
+    }
+    // month by month, quarters as total rows
+    .pbpr-months {
+        tr.is-quarter td { font-weight: 800; background: var(--pbim-bg, #F5F6FA);
+            border-bottom: 2px solid var(--pbim-line, #E2E8F0); }
+        tr.is-on td { background: var(--pbim-soft, #EDEAF8); }
+    }
+    .pbpr-net { font-weight: 700;
+        &.is-up { color: var(--pbim-green, #2E7D4F); }
+        &.is-down { color: var(--pbim-amber-ink, #8A4B02); } }
     .pbpr-dist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;
         li { display: grid; grid-template-columns: minmax(120px, 220px) 1fr auto; gap: 10px; align-items: center; font-size: 13px; } }
     .pbpr-dist-bar { height: 8px; border-radius: 999px; background: var(--pbim-line-2, #F1F5F9); overflow: hidden;

@@ -102,7 +102,7 @@
                   <td><span class="pbim-chip" t-esc="cs.reason"/></td>
                   <td t-esc="cs.opened_on"/>
                   <td>
-                    <span t-if="cs.state !== 'closed'" t-esc="cs.next"/>
+                    <span t-if="cs.state !== 'closed'" t-att-class="{ 'pbcd-next-me': cs.to_sign }"><t t-if="cs.to_sign" t-out="icon('userCheck', 13)"/> <t t-esc="cs.next"/></span>
                     <span t-elif="cs.outcome_label" class="pbcd-muted"><t t-esc="cs.outcome_label"/><t t-if="cs.live"> · <span>valid until</span> <t t-esc="cs.valid_until"/></t></span>
                     <span t-else="" class="pbcd-dash">—</span>
                     <span t-if="cs.replies" class="pbcd-reply-dot" title="The employee has replied"><t t-out="icon('messageSquare', 13)"/></span>
@@ -185,10 +185,15 @@
               <section t-if="!state.act" class="pbcd-moves">
                 <button t-if="C.can.plan_hearing" class="pbim-btn" t-on-click="() => this.startAct('plan_hearing')"><t t-out="icon('calendar', 14)"/> <span t-if="C.state === 'hearing'">Move the hearing</span><span t-else="">Plan the hearing</span></button>
                 <button t-if="C.can.hearing_held" class="pbim-btn" t-on-click="() => this.startAct('hearing_held')"><t t-out="icon('check', 14)"/> <span>Record the hearing</span></button>
+                <button t-if="C.can.confirm_signoff" class="pbim-btn" t-on-click="() => this.move('confirm_signoff')"><t t-out="icon('checkCircle', 14)"/> <span>Confirm and issue the letter</span></button>
+                <button t-if="C.can.send_back" class="pbim-btn ghost" t-on-click="() => this.startAct('send_back')"><t t-out="icon('undo', 14)"/> <span>Send it back</span></button>
+                <button t-if="C.can.ask_signoff" class="pbim-btn" t-on-click="() => this.move('ask_signoff')"><t t-out="icon('userCheck', 14)"/> <span>Ask for the second sign-off</span></button>
                 <button t-if="C.can.decide" class="pbim-btn" t-on-click="() => this.startAct('decide')"><t t-out="icon('scale', 14)"/> <span>Record the decision</span></button>
                 <button t-if="C.can.invite" class="pbim-btn ghost" t-on-click="() => this.move('invite')"><t t-out="icon('mail', 14)"/> <span>Prepare an invitation letter</span></button>
                 <button t-if="C.can.skip_hearing" class="pbim-btn ghost" t-on-click="() => this.startAct('skip_hearing')"><span>No hearing needed</span></button>
                 <button t-if="C.can.exit" class="pbim-btn ghost" t-on-click="() => this.move('exit')"><t t-out="icon('logOut', 14)"/> <span>Open the leaving checklist</span></button>
+                <button t-if="C.can.withdraw_signoff" class="pbim-btn ghost" t-on-click="() => this.move('withdraw_signoff')"><t t-out="icon('undo', 14)"/> <span>Take it back</span></button>
+                <button t-if="C.can.change_decision" class="pbim-btn ghost" t-on-click="() => this.move('change_decision')"><t t-out="icon('pencil', 14)"/> <span>Change the decision</span></button>
                 <button t-if="C.can.reopen" class="pbim-btn ghost" t-on-click="() => this.move('reopen')"><t t-out="icon('undo', 14)"/> <span>Open the case again</span></button>
                 <button t-if="C.can.close" class="pbim-btn ghost pbcd-btn-quiet" t-on-click="() => this.startAct('close')"><span>Close the case</span></button>
               </section>
@@ -215,12 +220,26 @@
                   <label t-if="isWarning" class="pbcd-f"><span>Warning valid until</span><input type="date" class="pbim-input" t-att-value="state.act.valid_until" t-on-change="(ev) => this.onAct('valid_until', ev)"/></label>
                   <label class="pbcd-f"><span>The decision, in a few sentences (it goes in the letter)</span><textarea rows="5" class="pbim-input" t-on-input="(ev) => this.onAct('summary', ev)"><t t-esc="state.act.summary"/></textarea></label>
                 </t>
-                <t t-if="state.act.verb === 'skip_hearing' or state.act.verb === 'close'">
+                <t t-if="state.act.verb === 'skip_hearing' or state.act.verb === 'close' or state.act.verb === 'send_back'">
                   <label class="pbcd-f"><span>Why</span><input type="text" class="pbim-input" t-att-value="state.act.why" t-on-input="(ev) => this.onAct('why', ev)"/></label>
                 </t>
                 <div class="pbcd-act-btns">
                   <button class="pbim-btn" t-att-disabled="state.itemBusy" t-on-click="doAct">Save</button>
                   <button class="pbim-btn ghost" t-on-click="cancelAct">Cancel</button>
+                </div>
+              </section>
+
+              <!-- the second sign-off (ruling CD1) -->
+              <section t-if="C.signoff and C.signoff.required" class="pbcd-sign" t-att-class="'is-' + (C.signoff.state or 'none')" role="status">
+                <t t-set="SG" t-value="C.signoff"/>
+                <span class="pbcd-sign-ic"><t t-out="icon(SG.state === 'confirmed' ? 'checkCircle' : 'userCheck', 18)"/></span>
+                <div class="pbcd-sign-tx">
+                  <b>Second sign-off</b>
+                  <p t-esc="SG.text"/>
+                  <div t-if="SG.blocker" class="pbcd-sign-block">
+                    <span t-esc="SG.blocker"/>
+                    <button class="pbim-btn-sm ghost" t-on-click="openAccess"><t t-out="icon('shieldCheck', 13)"/> <span>Open the Access screen</span></button>
+                  </div>
                 </div>
               </section>
 
@@ -259,7 +278,8 @@
                 <article t-foreach="C.letters" t-as="lr" t-key="lr.id" class="pbcd-letter" t-att-class="'is-' + lr.state">
                   <header>
                     <b t-esc="lr.title"/>
-                    <span t-if="lr.state === 'draft'" class="pbim-badge pbcd-badge is-letter">Draft, not seen by the employee</span>
+                    <span t-if="lr.state === 'draft' and lr.held" class="pbim-badge pbcd-badge is-signoff">Draft, waits for the second sign-off</span>
+                    <span t-elif="lr.state === 'draft'" class="pbim-badge pbcd-badge is-letter">Draft, not seen by the employee</span>
                     <span t-else="" class="pbim-badge pbcd-badge is-closed">Issued <t t-esc="lr.issued_on"/></span>
                   </header>
                   <t t-if="state.editLetter and state.editLetter.id === lr.id">
@@ -274,9 +294,9 @@
                     <p class="pbcd-pre pbcd-letter-body" t-esc="lr.body"/>
                     <div class="pbcd-act-btns">
                       <t t-if="lr.state === 'draft'">
-                        <button class="pbim-btn" t-on-click="() => this.issueLetter(lr)"><t t-out="icon('send', 14)"/> <span>Issue the letter</span></button>
-                        <button class="pbim-btn ghost" t-on-click="() => this.startEditLetter(lr)"><t t-out="icon('pencil', 14)"/> <span>Change the wording</span></button>
-                        <button class="pbim-btn ghost pbcd-btn-quiet" t-on-click="() => this.deleteLetter(lr)"><span>Delete the draft</span></button>
+                        <button t-if="lr.can_issue" class="pbim-btn" t-on-click="() => this.issueLetter(lr)"><t t-out="icon('send', 14)"/> <span>Issue the letter</span></button>
+                        <button t-if="lr.can_edit" class="pbim-btn ghost" t-on-click="() => this.startEditLetter(lr)"><t t-out="icon('pencil', 14)"/> <span>Change the wording</span></button>
+                        <button t-if="lr.can_edit and !lr.held" class="pbim-btn ghost pbcd-btn-quiet" t-on-click="() => this.deleteLetter(lr)"><span>Delete the draft</span></button>
                       </t>
                       <a t-if="lr.pdf_url" class="pbim-btn ghost" t-att-href="lr.pdf_url"><t t-out="icon('download', 14)"/> <span>Download</span></a>
                     </div>

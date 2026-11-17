@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 13:05+0000\n"
-"PO-Revision-Date: 2026-11-16 13:05+0000\n"
+"POT-Creation-Date: 2026-11-16 20:35+0000\n"
+"PO-Revision-Date: 2026-11-16 20:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -158,6 +158,14 @@ msgid "Change"
 msgstr ""
 
 #. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid ""
+"Change is the headcount at the month end less the month before. It can "
+"differ from joiners less leavers when someone moves between departments."
+msgstr ""
+
+#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid ""
@@ -213,24 +221,8 @@ msgid "Gender"
 msgstr ""
 
 #. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-msgid ""
-"Groups of fewer than 5 people are hidden, and so is any figure that would "
-"let someone work one out."
-msgstr ""
-
-#. module: pb_people_reports
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Groups of fewer than 5 people are hidden, and so is any figure that would "
-"let someone work one out. The download hides the same figures."
-msgstr ""
-
-#. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Headcount"
 msgstr ""
 
@@ -238,6 +230,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Headcount and turnover"
+msgstr ""
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Headcount at each month end"
 msgstr ""
 
 #. module: pb_people_reports
@@ -253,26 +251,15 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Headcount at the start"
+msgid "Headcount at the month end"
 msgstr ""
 
 #. module: pb_people_reports
 #. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Hidden"
-msgstr ""
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
-msgid "Hidden (small group)"
-msgstr ""
-
-#. module: pb_people_reports
-#. odoo-javascript
 #: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Hidden: fewer than 5 people, or it would let someone work out a small group"
+msgid "Headcount at the start"
 msgstr ""
 
 #. module: pb_people_reports
@@ -307,9 +294,9 @@ msgid "Joiners and leavers"
 msgstr ""
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Joiners and leavers by quarter"
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+msgid "Last 12 months"
 msgstr ""
 
 #. module: pb_people_reports
@@ -330,6 +317,20 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Men"
+msgstr ""
+
+#. module: pb_people_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people_reports/models/people_reports.py:0
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Month"
+msgstr ""
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Month by month"
 msgstr ""
 
 #. module: pb_people_reports
@@ -382,17 +383,15 @@ msgid ""
 msgstr ""
 
 #. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-msgid "Q%(q)s %(year)s"
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "Period"
 msgstr ""
 
 #. module: pb_people_reports
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Quarter"
+msgid "Q%(q)s %(year)s"
 msgstr ""
 
 #. module: pb_people_reports
@@ -426,17 +425,15 @@ msgid "Retired"
 msgstr ""
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"Shown by quarter, and the headcount only at the start and the end: figures "
-"for every month would let small groups be worked out."
-msgstr ""
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "Start date not recorded"
+msgstr ""
+
+#. module: pb_people_reports
+#. odoo-javascript
+#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
+msgid "The line starts at the headcount the day before the period begins."
 msgstr ""
 
 #. module: pb_people_reports
@@ -455,21 +452,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_people_reports/static/src/js/people_reports.js:0
 msgid "The spreadsheet could not be made just now."
-msgstr ""
-
-#. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"This breakdown is shown for a whole company, not for one department: most "
-"departments are too small to show it safely."
-msgstr ""
-
-#. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid ""
-"This group is too small to show on its own. Look at its company instead."
 msgstr ""
 
 #. module: pb_people_reports
@@ -537,21 +519,9 @@ msgid "Women"
 msgstr ""
 
 #. module: pb_people_reports
-#. odoo-javascript
-#: code:addons/pb_people_reports/static/src/xml/people_reports.xml:0
-msgid "Year"
-msgstr ""
-
-#. module: pb_people_reports
 #. odoo-python
 #: code:addons/pb_people_reports/models/people_reports.py:0
 msgid "You do not see any company here."
-msgstr ""
-
-#. module: pb_people_reports
-#. odoo-python
-#: code:addons/pb_people_reports/models/people_reports.py:0
-msgid "fewer than 5"
 msgstr ""
 
 #. module: pb_people_reports

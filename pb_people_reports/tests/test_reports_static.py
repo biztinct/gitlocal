@@ -30,6 +30,22 @@ class TestPeopleReportsStatic(TransactionCase):
                     clean = TECH.sub('', line)
                     self.assertNotRegex(clean, r'(?i)\bodoo\b', '%s:%s' % (path, n))
 
+    def test_97_no_hiding_left_on_the_screen(self):
+        """Owner ruling PR1 (W3-A): HR sees every figure. No "Hidden" chip, no
+        "fewer than 5" wording and no hiding engine are left behind."""
+        self.assertFalse(os.path.exists(os.path.join(ROOT, 'models', 'suppress.py')))
+        for path in self._files(('.xml', '.js', '.py')):
+            with open(path, encoding='utf-8') as f:
+                text = f.read()
+            for word in ('Hidden', 'fewer than 5', 'Suppressor', 'too_small', 'eyeOff'):
+                self.assertNotIn(word, text, '%s: %s' % (path, word))
+        for lang in ('vi_VN', 'id_ID'):
+            with open(os.path.join(ROOT, 'i18n', '%s.po' % lang), 'rb') as f:
+                srcs = {r['src'] for r in PoFileReader(f)}
+            self.assertFalse([s for s in srcs if 'Hidden' in s or 'fewer than 5' in s], lang)
+            self.assertIn('Last 12 months', srcs, lang)
+            self.assertIn('Month by month', srcs, lang)
+
     def test_96_po_files_parse_and_carry_the_markers(self):
         for lang in ('vi_VN', 'id_ID'):
             path = os.path.join(ROOT, 'i18n', '%s.po' % lang)

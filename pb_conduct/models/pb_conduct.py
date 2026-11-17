@@ -24,6 +24,11 @@ from .conduct_common import (
     initials, is_head, is_reader,
 )
 
+# Owner ruling CD1: the second sign-off stays INSIDE this module. It is not
+# routed through the general Approvals inbox: that inbox is shown to every
+# approver, named for conduct cases or not, and a row's title and details
+# would tell them a case exists and whom it is about.
+
 _logger = logging.getLogger(__name__)
 
 PAGE_SIZE = 60
@@ -34,6 +39,7 @@ WHERE_DOMAINS = {
     'hearing': [('state', '=', 'hearing')],
     'decision': [('state', '=', 'decision')],
     'letter': [('state', '=', 'letter')],
+    'signoff': [('state', '=', 'signoff')],
     'closed': [('state', '=', 'closed')],
 }
 
@@ -121,7 +127,20 @@ class PbConduct(models.AbstractModel):
                                             ('hearing_date', '>=', now),
                                             ('hearing_date', '<=', now + timedelta(days=7))]),
             'to_decide': count(scope + [('state', '=', 'decision')]),
-            'letters': count(scope + [('state', '=', 'letter')]),
+            # letters HR can issue now; a decision still needing its second
+            # sign-off is counted as "to send for the second sign-off"
+            'letters': count(scope + [('state', '=', 'letter'), '|',
+                                      ('signoff_required', '=', False),
+                                      ('signoff_state', '=', 'confirmed')]),
+            'to_ask': count(scope + [('state', '=', 'letter'),
+                                     ('signoff_required', '=', True),
+                                     ('signoff_state', '!=', 'confirmed')]),
+            # CD1: the decisions waiting for a second sign-off, the ones THIS
+            # reader can sign (their "needs you"), and the ones sent back
+            'signoff': count(scope + [('state', '=', 'signoff')]),
+            'to_sign': count(scope + self._dom_to_sign()),
+            'sent_back': count(scope + [('state', '=', 'letter'),
+                                        ('signoff_state', '=', 'sent_back')]),
             'replies': count([('company_id', 'in', self.env.companies.ids),
                               ('reply', '!=', False), ('reply_seen', '=', False)],
                              model=Letter),
@@ -146,6 +165,16 @@ class PbConduct(models.AbstractModel):
             'valid_months': DEFAULT_VALID_MONTHS,
             'today': fields.Date.to_string(today),
         }
+
+    @api.model
+    def _dom_to_sign(self):
+        """Cases whose decision waits for a second sign-off that the current
+        reader may give: not decided or sent by them. (Cases about the reader
+        are already out of reach: the "never about yourself" rule.) Being in a
+        named group is checked by every caller first."""
+        uid = self.env.uid
+        return [('state', '=', 'signoff'), ('decided_by', '!=', uid),
+                ('signoff_asked_by', '!=', uid)]
 
     # ============================================================ filter panel
     def _pbf_model(self):
@@ -194,8 +223,16 @@ class PbConduct(models.AbstractModel):
                   'domain': WHERE_DOMAINS['decision']},
                  {'value': 'letter', 'label': _('Letter'), 'tone': 'amber',
                   'domain': WHERE_DOMAINS['letter']},
+                 {'value': 'signoff', 'label': _('Second sign-off'), 'tone': 'amber',
+                  'domain': WHERE_DOMAINS['signoff']},
                  {'value': 'closed', 'label': _('Closed'), 'tone': 'green',
                   'domain': WHERE_DOMAINS['closed']},
+             ]},
+            {'key': 'mine', 'label': _('Waiting on you'), 'icon': 'userCheck',
+             'group': 'other', 'type': 'choice', 'pinned': True, 'requires': ['state'],
+             'options': [
+                 {'value': 'to_sign', 'label': _('Waiting for your sign-off'),
+                  'tone': 'amber', 'domain_method': '_dom_to_sign'},
              ]},
             {'key': 'reason', 'label': _('Reason'), 'icon': 'tag', 'group': 'other',
              'type': 'many2one', 'path': 'reason_id', 'pinned': True},
@@ -215,7 +252,9 @@ class PbConduct(models.AbstractModel):
         return [
             {'key': 'all', 'label': _('All cases'), 'icon': 'scale', 'filters': {}},
             {'key': 'open', 'label': _('Open cases'),
-             'filters': {'where': ['concern', 'hearing', 'decision', 'letter']}},
+             'filters': {'where': ['concern', 'hearing', 'decision', 'letter', 'signoff']}},
+            {'key': 'to_sign', 'label': _('Waiting for your sign-off'),
+             'filters': {'mine': ['to_sign']}},
             {'key': 'closed', 'label': _('Closed cases'), 'filters': {'where': ['closed']}},
         ]
 
@@ -278,6 +317,12 @@ class PbConduct(models.AbstractModel):
             nxt = _('Hearing %s', self._when(case.hearing_date))
         elif case.state == 'decision':
             nxt = _('Decide the outcome')
+        elif case.state == 'signoff':
+            nxt = (_('Your sign-off is needed') if case._can_sign()
+                   else _('Waiting for a second sign-off'))
+        elif case.state == 'letter' and case._signoff_pending():
+            nxt = (_('Sent back: check it and ask again')
+                   if case.signoff_state == 'sent_back' else _('Ask for the second sign-off'))
         elif case.state == 'letter':
             nxt = _('Issue the letter')
         elif case.state == 'concern':
@@ -297,6 +342,7 @@ class PbConduct(models.AbstractModel):
             'live': bool(case.state == 'closed' and case.valid_until
                          and case.valid_until >= today),
             'next': nxt,
+            'to_sign': case.state == 'signoff' and case._can_sign(),
             'replies': len(case.letter_ids.filtered(lambda l: l.reply and not l.reply_seen)),
         }
 
@@ -329,8 +375,16 @@ class PbConduct(models.AbstractModel):
                  for a in Att.search([('res_model', '=', 'pb.conduct.case'),
                                       ('res_id', '=', case.id)], order='id desc')]
         letters = []
+        waiting = case.state == 'signoff'
         for l in case.letter_ids.sorted('id'):
+            draft = l.state == 'draft'
+            held = l.kind != 'invite' and case._signoff_pending()
             letters.append({
+                # CD1: a decision letter that needs the second sign-off is
+                # issued only by that sign-off, and frozen while it waits
+                'can_issue': draft and not held and not waiting,
+                'can_edit': draft and not waiting,
+                'held': draft and held,
                 'id': l.id, 'kind': l.kind,
                 'kind_label': dict(l._fields['kind']._description_selection(self.env)).get(l.kind, ''),
                 'title': l.title or '', 'body': l.body or '',
@@ -362,18 +416,64 @@ class PbConduct(models.AbstractModel):
             'history': case._history_rows(),
             'country': case.company_id.country_id.name or '',
             'country_notes': self._country_notes(case),
+            'signoff': self._signoff_info(case),
             'can': {
                 'plan_hearing': case.state in ('concern', 'hearing'),
                 'skip_hearing': case.state == 'concern',
                 'hearing_held': case.state == 'hearing',
                 'decide': case.state == 'decision',
                 'invite': case.state in ('concern', 'hearing'),
-                'close': case.state in OPEN_STATES,
+                'close': case.state in OPEN_STATES and case.state != 'signoff',
                 'reopen': case.state == 'closed',
-                'exit': case.outcome == 'dismissal' and has_exit and not case.exit_case_id,
+                # a dismissal opens the leaving checklist only once confirmed
+                'exit': (case.outcome == 'dismissal' and has_exit and not case.exit_case_id
+                         and not case._signoff_pending()),
+                'ask_signoff': case.state == 'letter' and case._signoff_pending(),
+                'change_decision': case.state == 'letter' and not case.letter_ids.filtered(
+                    lambda l: l.kind != 'invite' and l.state == 'issued'),
+                'confirm_signoff': case.state == 'signoff' and case._can_sign(),
+                'send_back': case.state == 'signoff' and case._can_sign(),
+                'withdraw_signoff': case.state == 'signoff' and not case._can_sign(),
             },
         })
         return row
+
+    @api.model
+    def _signoff_info(self, case):
+        """The second sign-off block of the drawer (ruling CD1)."""
+        if not case.signoff_required:
+            return {'required': False}
+        state, can_sign = case.signoff_state or '', case._can_sign()
+        who = case.signoff_by.sudo().name or ''
+        when = self._when(case.signoff_on)
+        # whole sentences, so each language can order its words (PRD-3)
+        if state == 'confirmed':
+            text = _('Confirmed by %(who)s on %(when)s.', who=who, when=when)
+        elif state == 'waiting' and can_sign:
+            text = _('This decision waits for your sign-off. Read the decision and the letter '
+                     'below, then confirm it or send it back. The employee sees nothing until '
+                     'it is confirmed.')
+        elif state == 'waiting':
+            text = _('Sent by %(who)s on %(when)s. A second person named for conduct cases '
+                     'confirms it; the employee sees nothing until then.',
+                     who=case.signoff_asked_by.sudo().name or '',
+                     when=self._when(case.signoff_asked_on))
+        elif state == 'sent_back':
+            text = _('Sent back by %(who)s on %(when)s: "%(why)s"', who=who, when=when,
+                     why=case.signoff_note or '')
+        else:
+            text = _('A warning or a dismissal needs a second person named for conduct cases '
+                     'to confirm it. Check the letter, then ask for the second sign-off: the '
+                     'letter is issued when they confirm.')
+        return {
+            'required': True,
+            'state': state,
+            'text': text,
+            'note': case.signoff_note or '',
+            'can_sign': can_sign,
+            # only while somebody still has to sign: why nobody can
+            'blocker': case._signoff_blocker() if case._signoff_pending() else '',
+        }
 
     # ============================================================ new case
     @api.model
@@ -432,7 +532,26 @@ class PbConduct(models.AbstractModel):
         elif verb == 'decide':
             case.action_decide(args.get('outcome'), args.get('summary'),
                                args.get('valid_until') or None, args.get('decided_on') or None)
-            msg = _("Decision saved. The letter is ready to check and issue.")
+            msg = (_("Decision saved. Check the letter, then ask a second named person to "
+                     "sign it off.") if case._signoff_pending()
+                   else _("Decision saved. The letter is ready to check and issue."))
+        elif verb == 'ask_signoff':
+            case.action_ask_signoff()
+            msg = _("Sent for the second sign-off. The employee sees nothing until it is "
+                    "confirmed.")
+        elif verb == 'confirm_signoff':
+            case.action_confirm_signoff()
+            msg = _("Confirmed. The letter is issued and the employee can read it on their "
+                    "own page now.")
+        elif verb == 'send_back':
+            case.action_send_back(args.get('why'))
+            msg = _("Sent back with your reason.")
+        elif verb == 'withdraw_signoff':
+            case.action_withdraw_signoff()
+            msg = _("Taken back. You can change the letter or the decision now.")
+        elif verb == 'change_decision':
+            case.action_change_decision()
+            msg = _("The decision is open to change. The draft letter was removed.")
         elif verb == 'invite':
             self.env['pb.conduct.letter'].prepare(case, 'invite')
             msg = _("Invitation prepared. Check it, then issue it.")

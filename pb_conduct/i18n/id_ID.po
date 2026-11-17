@@ -38,6 +38,12 @@ msgstr "%s kasus"
 #. module: pb_conduct
 #. odoo-python
 #: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "%s items wait for your sign-off"
+msgstr "%s hal menunggu persetujuan Anda"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
 msgid "%s letters from HR to read"
 msgstr "%s surat dari HR untuk dibaca"
 
@@ -50,8 +56,20 @@ msgstr "%s surat untuk diterbitkan"
 #. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s to send for a second sign-off"
+msgstr "%s perlu dikirim untuk persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "%s waiting for a decision"
 msgstr "%s menunggu keputusan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s waiting for a second sign-off"
+msgstr "%s menunggu persetujuan orang kedua"
 
 #. module: pb_conduct
 #: model:ir.actions.report,print_report_name:pb_conduct.action_report_conduct_letter
@@ -63,6 +81,12 @@ msgstr "(object.title or 'Letter')"
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "1 case"
 msgstr "1 kasus"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "1 item waits for your sign-off"
+msgstr "1 hal menunggu persetujuan Anda"
 
 #. module: pb_conduct
 #. odoo-python
@@ -79,8 +103,20 @@ msgstr "1 surat untuk diterbitkan"
 #. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 to send for a second sign-off"
+msgstr "1 perlu dikirim untuk persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "1 waiting for a decision"
 msgstr "1 menunggu keputusan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 waiting for a second sign-off"
+msgstr "1 menunggu persetujuan orang kedua"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -94,6 +130,24 @@ msgstr "Kasus yang ditutup tetap di sini dan di riwayat orang itu. Anda bisa mem
 #: code:addons/pb_conduct/models/pb_conduct.py:0
 msgid "A letter needs a title and some text."
 msgstr "Surat perlu judul dan isi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"A second person named for conduct cases is needed to confirm this decision. "
+"Only one person is named for this company now: name a second one on the "
+"Access screen."
+msgstr "Diperlukan orang kedua yang ditunjuk untuk kasus disiplin untuk mengonfirmasi keputusan ini. Saat ini hanya satu orang yang ditunjuk untuk perusahaan ini: tunjuk orang kedua di layar Akses."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"A warning or a dismissal needs a second person named for conduct cases to "
+"confirm it. Check the letter, then ask for the second sign-off: the letter "
+"is issued when they confirm."
+msgstr "Teguran atau pemutusan hubungan kerja perlu dikonfirmasi oleh orang kedua yang ditunjuk untuk kasus disiplin. Periksa suratnya, lalu minta persetujuan orang kedua: surat diterbitkan saat mereka mengonfirmasi."
 
 #. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__active
@@ -148,6 +202,14 @@ msgstr "Surat yang sudah diterbitkan disimpan bersama kasus dan tidak bisa dihap
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
 msgid "Ask HR to link it, then letters they send you appear here."
 msgstr "Minta HR menghubungkannya, lalu surat untuk Anda akan muncul di sini."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Ask for the second sign-off"
+msgstr "Minta persetujuan orang kedua"
 
 #. module: pb_conduct
 #: model:pb.conduct.reason,name:pb_conduct.reason_attendance
@@ -226,6 +288,12 @@ msgstr "Kasus dibuka. Hanya orang yang ditunjuk untuk kasus disiplin yang bisa m
 #: code:addons/pb_conduct/models/conduct_case.py:0
 msgid "Case opened: %s."
 msgstr "Kasus dibuka: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Change the decision"
+msgstr "Ubah keputusan"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -408,9 +476,34 @@ msgid "Conduct letter wording"
 msgstr "Kata-kata surat disiplin"
 
 #. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Confirm and issue the letter"
+msgstr "Konfirmasi dan terbitkan surat"
+
+#. module: pb_conduct
 #: model:pb.conduct.letter.template,title:pb_conduct.tpl_verbal
 msgid "Confirmation of a verbal warning"
 msgstr "Konfirmasi teguran lisan"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__confirmed
+msgid "Confirmed"
+msgstr "Dikonfirmasi"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Confirmed by %(who)s on %(when)s."
+msgstr "Dikonfirmasi oleh %(who)s pada %(when)s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Confirmed. The letter is issued and the employee can read it on their own "
+"page now."
+msgstr "Dikonfirmasi. Surat telah diterbitkan dan karyawan sekarang dapat membacanya di halamannya sendiri."
 
 #. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__country_id
@@ -603,6 +696,26 @@ msgstr "Keputusan"
 
 #. module: pb_conduct
 #. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decision (%s) taken back to change it."
+msgstr "Keputusan (%s) ditarik kembali untuk diubah."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decision confirmed by a second named person."
+msgstr "Keputusan dikonfirmasi oleh orang kedua yang ditunjuk."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Decision saved. Check the letter, then ask a second named person to sign it "
+"off."
+msgstr "Keputusan disimpan. Periksa suratnya, lalu minta orang kedua yang ditunjuk untuk menyetujuinya."
+
+#. module: pb_conduct
+#. odoo-python
 #: code:addons/pb_conduct/models/pb_conduct.py:0
 msgid "Decision saved. The letter is ready to check and issue."
 msgstr "Keputusan disimpan. Surat siap diperiksa dan diterbitkan."
@@ -686,6 +799,12 @@ msgstr "Draf surat dihapus: %s."
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid "Draft, not seen by the employee"
 msgstr "Draf, belum dilihat karyawan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Draft, waits for the second sign-off"
+msgstr "Draf, menunggu persetujuan orang kedua"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -972,6 +1091,14 @@ msgid "Issued on"
 msgstr "Diterbitkan pada"
 
 #. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"It goes back to the person who recorded the decision, with your reason. The "
+"employee sees nothing."
+msgstr "Kasus kembali ke orang yang mencatat keputusan, dengan alasan Anda. Karyawan tidak melihat apa pun."
+
+#. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__kind
 msgid "Kind"
 msgstr "Jenis"
@@ -1165,6 +1292,11 @@ msgid "Named for conduct cases"
 msgstr "Ditunjuk untuk kasus disiplin"
 
 #. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_required
+msgid "Needs a second sign-off"
+msgstr "Perlu persetujuan orang kedua"
+
+#. module: pb_conduct
 #. odoo-python
 #: code:addons/pb_conduct/models/conduct_case.py:0
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
@@ -1236,6 +1368,15 @@ msgid "No notes for"
 msgstr "Belum ada catatan untuk"
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Nobody else named for conduct cases can confirm this decision: the person "
+"who recorded it, the person who asked and the employee themselves cannot. "
+"Name another person on the Access screen."
+msgstr "Tidak ada orang lain yang ditunjuk untuk kasus disiplin yang dapat mengonfirmasi keputusan ini: orang yang mencatatnya, orang yang meminta, dan karyawan itu sendiri tidak boleh. Tunjuk orang lain di layar Akses."
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid "None."
@@ -1286,6 +1427,15 @@ msgid "On"
 msgstr "Pada"
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Only a second person named for conduct cases can do this: not the person who"
+" recorded the decision or asked for the sign-off, and never the employee "
+"themselves."
+msgstr "Hanya orang kedua yang ditunjuk untuk kasus disiplin yang dapat melakukan ini: bukan orang yang mencatat keputusan atau meminta persetujuan, dan tidak pernah karyawan itu sendiri."
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid "Only for the people HR names"
@@ -1333,6 +1483,18 @@ msgstr "Membuka dan menangani kasus disiplin seseorang: keluhan, catatan sidang,
 #: code:addons/pb_conduct/models/pb_conduct.py:0
 msgid "Open cases"
 msgstr "Kasus terbuka"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Open it in HR to confirm or send it back"
+msgstr "Buka di HR untuk mengonfirmasi atau mengembalikannya"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the Access screen"
+msgstr "Buka layar Akses"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -1545,6 +1707,12 @@ msgstr "Simpan surat"
 #. module: pb_conduct
 #. odoo-python
 #: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why it goes back."
+msgstr "Jelaskan singkat mengapa dikembalikan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
 msgid "Say in a few words why the case is closed."
 msgstr "Jelaskan singkat mengapa kasus ditutup."
 
@@ -1562,15 +1730,94 @@ msgstr "Jelaskan alasannya secara singkat."
 
 #. module: pb_conduct
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_state
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__signoff
+msgid "Second sign-off"
+msgstr "Persetujuan orang kedua"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_by
+msgid "Second sign-off by"
+msgstr "Disetujui orang kedua oleh"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_on
+msgid "Second sign-off on"
+msgstr "Disetujui orang kedua pada"
+
+#. module: pb_conduct
+#. odoo-javascript
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid ""
 "Seen only by the people HR names for conduct cases. Nothing here is emailed."
 msgstr "Hanya dilihat orang yang ditunjuk HR untuk kasus disiplin. Tidak ada yang dikirim lewat email."
 
 #. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Send it back"
+msgstr "Kembalikan"
+
+#. module: pb_conduct
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
 msgid "Send my reply"
 msgstr "Kirim balasan saya"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__sent_back
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back by %(who)s on %(when)s: \"%(why)s\""
+msgstr "Dikembalikan oleh %(who)s pada %(when)s: \"%(why)s\""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Sent back by the second sign-off: %s"
+msgstr "Dikembalikan oleh penyetuju kedua: %s"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back with your reason."
+msgstr "Dikembalikan dengan alasan Anda."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back: check it and ask again"
+msgstr "Dikembalikan: periksa lalu minta lagi"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Sent by %(who)s on %(when)s. A second person named for conduct cases "
+"confirms it; the employee sees nothing until then."
+msgstr "Dikirim oleh %(who)s pada %(when)s. Orang kedua yang ditunjuk untuk kasus disiplin akan mengonfirmasinya; sampai saat itu karyawan tidak melihat apa pun."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Sent for a second sign-off."
+msgstr "Dikirim untuk persetujuan orang kedua."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Sent for the second sign-off. The employee sees nothing until it is "
+"confirmed."
+msgstr "Dikirim untuk persetujuan orang kedua. Karyawan tidak melihat apa pun sampai dikonfirmasi."
 
 #. module: pb_conduct
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
@@ -1608,11 +1855,27 @@ msgid "Showing"
 msgstr "Menampilkan"
 
 #. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_asked_by
+msgid "Sign-off asked by"
+msgstr "Persetujuan diminta oleh"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_asked_on
+msgid "Sign-off asked on"
+msgstr "Persetujuan diminta pada"
+
+#. module: pb_conduct
 #: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
 msgid ""
 "Something not clear? Ask HR. You can also find these letters in your "
 "documents."
 msgstr "Ada yang kurang jelas? Tanyakan HR. Surat-surat ini juga ada di dokumen Anda."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Something waits for your sign-off."
+msgstr "Ada yang menunggu persetujuan Anda."
 
 #. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__state
@@ -1628,6 +1891,24 @@ msgstr "Status"
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__step
 msgid "Step"
 msgstr "Tahap"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Take it back"
+msgstr "Tarik kembali"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Taken back before the second sign-off."
+msgstr "Ditarik kembali sebelum persetujuan orang kedua."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Taken back. You can change the letter or the decision now."
+msgstr "Ditarik kembali. Sekarang Anda dapat mengubah surat atau keputusannya."
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -1703,12 +1984,31 @@ msgid "The connection may have dropped. Your filters are kept."
 msgstr "Koneksi mungkin terputus. Filter Anda tetap tersimpan."
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The decision (%s) had no second sign-off and does not count."
+msgstr "Keputusan (%s) belum disetujui orang kedua dan tidak dihitung."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The decision is open to change. The draft letter was removed."
+msgstr "Keputusan dapat diubah. Draf surat telah dihapus."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The decision letter has been issued, so the decision cannot change."
+msgstr "Surat keputusan sudah diterbitkan, jadi keputusan tidak dapat diubah."
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid ""
-"The decision letter is prepared from it. Check it, then issue it: only then "
-"can the employee read it."
-msgstr "Surat keputusan disiapkan dari sini. Periksa, lalu terbitkan: baru setelah itu karyawan bisa membacanya."
+"The decision letter is prepared from it. A warning or a dismissal then needs"
+" a second named person to sign it off before the letter is issued: only then"
+" can the employee read it."
+msgstr "Surat keputusan disiapkan dari sini. Teguran atau pemutusan hubungan kerja lalu perlu disetujui orang kedua yang ditunjuk sebelum surat diterbitkan: baru setelah itu karyawan dapat membacanya."
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -1799,6 +2099,13 @@ msgstr "Daftar keluar hanya dibuka setelah pemutusan hubungan kerja."
 
 #. module: pb_conduct
 #. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"The leaving checklist opens once the dismissal has its second sign-off."
+msgstr "Daftar periksa keluar dibuka setelah pemutusan hubungan kerja disetujui orang kedua."
+
+#. module: pb_conduct
+#. odoo-python
 #: code:addons/pb_conduct/models/conduct_letter.py:0
 msgid "The letter has no text yet."
 msgstr "Surat belum ada isinya."
@@ -1846,6 +2153,12 @@ msgid "There is already a note for this country and step. Edit that one."
 msgstr "Sudah ada catatan untuk negara dan tahap ini. Ubah catatan itu."
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "There is no decision letter to confirm. Record the decision again."
+msgstr "Tidak ada surat keputusan untuk dikonfirmasi. Catat keputusan lagi."
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "This case could not be opened."
@@ -1865,9 +2178,55 @@ msgstr "Kasus ini sudah tidak ada, atau tidak bisa Anda lihat."
 
 #. module: pb_conduct
 #. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "This decision does not need a second sign-off."
+msgstr "Keputusan ini tidak perlu persetujuan orang kedua."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"This decision has no second sign-off yet, so its letter cannot be issued. To"
+" close the case without it, say why."
+msgstr "Keputusan ini belum disetujui orang kedua, jadi suratnya belum dapat diterbitkan. Untuk menutup kasus tanpa surat itu, jelaskan alasannya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"This decision is waiting for a second sign-off. Take it back first if the "
+"case should close without it."
+msgstr "Keputusan ini menunggu persetujuan orang kedua. Tarik kembali dulu jika kasus harus ditutup tanpanya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"This decision needs a second sign-off first. A second person named for "
+"conduct cases confirms it, and the letter is issued when they do."
+msgstr "Keputusan ini perlu persetujuan orang kedua terlebih dahulu. Orang kedua yang ditunjuk untuk kasus disiplin mengonfirmasinya, dan surat diterbitkan saat itu."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"This decision waits for your sign-off. Read the decision and the letter "
+"below, then confirm it or send it back. The employee sees nothing until it "
+"is confirmed."
+msgstr "Keputusan ini menunggu persetujuan Anda. Baca keputusan dan surat di bawah, lalu konfirmasi atau kembalikan. Karyawan tidak melihat apa pun sampai dikonfirmasi."
+
+#. module: pb_conduct
+#. odoo-python
 #: code:addons/pb_conduct/models/conduct_letter.py:0
 msgid "This letter has already been issued."
 msgstr "Surat ini sudah diterbitkan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"This letter is waiting for a second sign-off. Take it back to change it."
+msgstr "Surat ini menunggu persetujuan orang kedua. Tarik kembali untuk mengubahnya."
 
 #. module: pb_conduct
 #. odoo-python
@@ -1924,6 +2283,25 @@ msgstr "Teguran lisan"
 #: model:pb.conduct.letter.template,name:pb_conduct.tpl_verbal
 msgid "Verbal warning confirmed"
 msgstr "Konfirmasi teguran lisan"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__waiting
+msgid "Waiting for a second sign-off"
+msgstr "Menunggu persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Waiting for your sign-off"
+msgstr "Menunggu persetujuan Anda"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Waiting on you"
+msgstr "Menunggu Anda"
 
 #. module: pb_conduct
 #. odoo-javascript
@@ -2035,6 +2413,11 @@ msgstr "Alasan"
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__close_reason
 msgid "Why it was closed"
 msgstr "Alasan ditutup"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_note
+msgid "Why it was sent back"
+msgstr "Alasan dikembalikan"
 
 #. module: pb_conduct
 #: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__template_id
@@ -2154,6 +2537,12 @@ msgid "Your reply, sent on"
 msgstr "Balasan Anda, dikirim pada"
 
 #. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Your sign-off is needed"
+msgstr "Persetujuan Anda diperlukan"
+
+#. module: pb_conduct
 #. odoo-javascript
 #: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
 msgid "by"
@@ -2218,6 +2607,12 @@ msgstr "berlaku sampai"
 #: code:addons/pb_conduct/static/src/js/conduct_board.js:0
 msgid "waiting for a decision"
 msgstr "menunggu keputusan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "waiting for your sign-off"
+msgstr "menunggu persetujuan Anda"
 
 #. module: pb_conduct
 #. odoo-javascript

@@ -131,7 +131,9 @@ class TestConductPrivacy(TransactionCase):
         self.F.move(self.case3.id, 'skip_hearing', {'why': 'Minor'})
         self.F.move(self.case3.id, 'decide', {'outcome': 'verbal', 'summary': 'Verbal warning.'})
         letter = self.case3.letter_ids
-        self.F.issue_letter(letter.id)
+        self.F.move(self.case3.id, 'ask_signoff')
+        self.F2.move(self.case3.id, 'confirm_signoff')       # W3-A: second sign-off
+        self.assertEqual(letter.state, 'issued')
         self._fresh()
         env = self._env(self.u_subject2_internal)
         for model in CONDUCT_MODELS:
