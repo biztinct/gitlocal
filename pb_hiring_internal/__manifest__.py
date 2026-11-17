@@ -22,10 +22,13 @@ Staff apply for open roles inside the company.
     no joining checklist: it opens the Change job flow when the system has
     it, and otherwise leaves HR a calm "job change to do".
   * **Paused roles stay hidden** when hiring is paused for them.
+  * **No papers asked of a mover.** When the company asks candidates for
+    their papers at offer time, somebody who already works here is not
+    asked; HR can still ask for a paper by hand from the offer.
 
 Built as WDGAP Step 6, phase S6-B.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

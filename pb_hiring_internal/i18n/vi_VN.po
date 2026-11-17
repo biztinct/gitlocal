@@ -1060,3 +1060,9 @@ msgstr "vị trí dành cho nhân viên"
 #: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
 msgid "staff applications in play"
 msgstr "đơn của nhân viên đang xét"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "Already works here"
+msgstr "Đã làm việc tại công ty"

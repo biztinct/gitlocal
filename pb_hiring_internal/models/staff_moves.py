@@ -174,6 +174,26 @@ class PbHiringFacadeInternal(models.AbstractModel):
             }
         return res
 
+    @api.model
+    def _journey(self, req):
+        """IM2: for somebody who already works here, nobody asks for papers
+        automatically, so the "Documents" chip says why instead of "Not asked
+        for yet". Once HR asks by hand the chip counts the papers as usual."""
+        res = super()._journey(req)
+        app = req.sudo().selected_applicant_id
+        if not (isinstance(res, dict) and res.get('ready') and app
+                and app.pb_internal and app.employee_id):
+            return res
+        offer = req.sudo().offer_ids.filtered(
+            lambda o: o.applicant_id == app).sorted(lambda o: -o.id)[:1]
+        if offer.docreq_id:
+            return res
+        for chip in res.get('chips') or []:
+            if chip.get('key') == 'documents':
+                chip.update({'tone': 'done', 'done': True,
+                             'note': _('Already works here')})
+        return res
+
     def _act_confirm_joined(self, payload):
         offer = self._signed_offer(payload)
         if not offer._pbhi_internal():

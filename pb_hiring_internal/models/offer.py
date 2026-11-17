@@ -97,6 +97,27 @@ class HiringOfferInternal(models.Model):
             return self.env['pb.hiring.prejoin']
         return super()._lay_out_prejoin()
 
+    # ------------------------------------------ papers at offer time (IM2)
+    def _docreq_fire(self, moment):
+        """Owner ruling IM2 (2026-11-17): somebody who already works here is
+        NOT asked for their papers (ID, certificates) automatically at the
+        moment the company chose (`pb_hiring.docreq_trigger`) — they gave
+        them when they joined. HR can still ask by hand from the offer
+        (`action_request_documents`, untouched). Outside candidates: as
+        before (super)."""
+        if len(self) == 1 and self._pbhi_internal():
+            return False
+        return super()._docreq_fire(moment)
+
+    def _documents_ready(self):
+        """Nobody was asked (IM2), so nothing is missing: the offer panel
+        and the "sent before every document was in" note stay quiet. Once
+        HR asks by hand, the usual answer applies."""
+        if len(self) == 1 and self._pbhi_internal() \
+                and not self.sudo().docreq_id:
+            return True, ''
+        return super()._documents_ready()
+
     def _pbhi_tell_new_manager(self):
         """Once per application: stamp who and when, and put one note in
         the new manager's inbox when they use it. A manager without a
