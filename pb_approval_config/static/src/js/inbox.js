@@ -174,8 +174,8 @@ export class PbInbox extends Component {
         });
 
         this.navigationRoot = useRef("navigationRoot");
-        // Going to a record and back: the scope and the open drawer come back
-        // from here; the filters, from the panel's own memory of this tab.
+        // Retain whose queue the reader was viewing. Each inbox entry starts
+        // with undecided requests; explicit arrivals can open a request below.
         const savedNavigation = useNavigationState(this, "approvals", () => ({
             scope: this.state.scope, openId: this.state.openId,
             scrollTop: this.navigationRoot.el?.scrollTop || 0,
@@ -184,7 +184,6 @@ export class PbInbox extends Component {
             if (FOCUS_SCOPES.includes(savedNavigation.scope)) {
                 this.state.scope = savedNavigation.scope;
             }
-            this.state.openId = savedNavigation.openId || 0;
         }
 
         // The shared filter panel (pb_filter_kit). Built by hand rather than
@@ -197,11 +196,11 @@ export class PbInbox extends Component {
             model: "pb.approval.inbox",
             noun: _t("requests"),
             ctx: { scope: this.state.scope },
-            // A fresh visit starts with undecided requests, even if this tab
-            // previously viewed finished work. Back-navigation and explicit
-            // shared-filter links keep their selected view; request/area
-            // arrivals below may also choose their own queue.
-            initial: !savedNavigation && !new URLSearchParams(window.location.search).has("pbf")
+            // Controller state can survive a reload via the action service.
+            // It must not let an earlier Finished view override this default.
+            // Explicit shared-filter and request/area links still choose
+            // their own queue; ordinary entry always starts with waiting work.
+            initial: !new URLSearchParams(window.location.search).has("pbf")
                 ? { filters: TAB_FILTERS.all, viewKey: "all" } : undefined,
             onChange: () => this.loadPage(),
         }));
