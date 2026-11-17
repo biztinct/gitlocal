@@ -2487,3 +2487,286 @@ msgstr "Chuyển khoản khác"
 #: model:ir.model.fields.selection,name:pb_pay_delivery.selection__hr_payslip__pb_paid_method__other
 msgid "Other"
 msgstr "Khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Employee number"
+msgstr "Mã nhân viên"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Employee name"
+msgstr "Tên nhân viên"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Account holder"
+msgstr "Chủ tài khoản"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Branch"
+msgstr "Chi nhánh"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Account number"
+msgstr "Số tài khoản"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Payment reference"
+msgstr "Nội dung thanh toán"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "In the bank file"
+msgstr "Có trong tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Check"
+msgstr "Cần xem lại"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "No bank account on record"
+msgstr "Chưa có tài khoản ngân hàng trong hồ sơ"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "No account holder name on record"
+msgstr "Chưa có tên chủ tài khoản trong hồ sơ"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The account is in another person's name"
+msgstr "Tài khoản đứng tên người khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The account holder name is close to, but not the same as, the employee's name"
+msgstr "Tên chủ tài khoản gần giống nhưng không trùng với tên nhân viên"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "A bank change is waiting for approval; this list uses the last approved account"
+msgstr "Có thay đổi ngân hàng đang chờ phê duyệt; danh sách này dùng tài khoản đã được duyệt gần nhất"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "A bank change is waiting for approval; until it is approved there is no account to pay"
+msgstr "Có thay đổi ngân hàng đang chờ phê duyệt; trước khi được duyệt thì chưa có tài khoản để trả"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Take-home is zero or below"
+msgstr "Thực nhận bằng 0 hoặc âm"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The payslip shows take-home two ways (%(a)s and %(b)s); check it before paying"
+msgstr "Phiếu lương ghi thực nhận theo hai cách (%(a)s và %(b)s); hãy kiểm tra trước khi trả"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Same account as %s in this list"
+msgstr "Trùng tài khoản với %s trong danh sách này"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Payment list"
+msgstr "Danh sách chuyển khoản"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Total %s"
+msgstr "Tổng %s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Rows"
+msgstr "Số dòng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Rows with a check"
+msgstr "Số dòng cần xem lại"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "The Excel file cannot be made on this server. Download the CSV file instead."
+msgstr "Không thể tạo tệp Excel trên máy chủ này. Hãy tải tệp CSV."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Choose Excel or CSV."
+msgstr "Hãy chọn Excel hoặc CSV."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "“%s” has not been approved yet, so its payment list cannot be downloaded. Send the pay run in for approval first."
+msgstr "“%s” chưa được phê duyệt nên chưa thể tải danh sách chuyển khoản. Hãy gửi kỳ lương đi phê duyệt trước."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Nobody in this pay run is left to pay by bank transfer, so there is no payment list."
+msgstr "Không còn ai trong kỳ lương này cần trả bằng chuyển khoản, nên không có danh sách chuyển khoản."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Payment list (any bank) downloaded"
+msgstr "Đã tải danh sách chuyển khoản (mọi ngân hàng)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(who)s · %(kind)s · %(rows)s rows · %(checks)s need a check"
+msgstr "%(who)s · %(kind)s · %(rows)s dòng · %(checks)s cần xem lại"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "People with an approved bank account at a bank this file does not know can be paid from the payment list (any bank) on Pay & deliver."
+msgstr "Người có tài khoản đã được duyệt ở ngân hàng mà tệp này không hỗ trợ có thể được trả từ danh sách chuyển khoản (mọi ngân hàng) trong Thanh toán và giao hàng."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "none need a check"
+msgstr "không có dòng nào cần xem lại"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 needs a check"
+msgstr "1 dòng cần xem lại"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s need a check"
+msgstr "%s dòng cần xem lại"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s on hold"
+msgstr "%s người đang giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s paid already"
+msgstr "%s người đã được trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s paid another way"
+msgstr "%s người đã trả bằng cách khác"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Not in the list: %s."
+msgstr "Không có trong danh sách: %s."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 person left out has an approved bank account and can be paid from the payment list (any bank) below."
+msgstr "1 người bị bỏ ra có tài khoản đã được duyệt và có thể được trả từ danh sách chuyển khoản (mọi ngân hàng) bên dưới."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s people left out have an approved bank account and can be paid from the payment list (any bank) below."
+msgstr "%s người bị bỏ ra có tài khoản đã được duyệt và có thể được trả từ danh sách chuyển khoản (mọi ngân hàng) bên dưới."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Payment list (any bank)"
+msgstr "Danh sách chuyển khoản (mọi ngân hàng)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Name, bank, account number and amount for everybody paid by bank transfer, to upload or type into any bank."
+msgstr "Tên, ngân hàng, số tài khoản và số tiền của mọi người được trả bằng chuyển khoản, để tải lên hoặc nhập vào bất kỳ ngân hàng nào."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "total"
+msgstr "tổng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Ready once the pay run is approved."
+msgstr "Sẵn sàng khi kỳ lương được phê duyệt."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Account numbers come from approved bank details only. Read the Check column before paying."
+msgstr "Số tài khoản chỉ lấy từ thông tin ngân hàng đã được duyệt. Hãy đọc cột Cần xem lại trước khi trả."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Download the payment list as an Excel file"
+msgstr "Tải danh sách chuyển khoản dạng tệp Excel"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Download the payment list as a CSV file"
+msgstr "Tải danh sách chuyển khoản dạng tệp CSV"

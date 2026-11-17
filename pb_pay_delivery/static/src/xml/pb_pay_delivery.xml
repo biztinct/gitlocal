@@ -195,6 +195,12 @@
               </div>
 
               <div t-if="state.showExcl and state.data.validation.excluded.length" class="pbpd-excl">
+                <!-- WDGAP IDB1: left out is not a dead end when the person has an
+                     approved bank account the payment list can pay -->
+                <div t-if="state.data.validation.payment_list_can_pay" class="pbpd-plhint">
+                  <span class="ico" t-out="ic('fileSpreadsheet',14)"/>
+                  <span t-esc="payListHint"/>
+                </div>
                 <!-- WDGAP PR-E: tick the people paid outside the bank file -->
                 <div t-if="markable.length" class="pbpd-excl-bar">
                   <label class="pbpd-tick">
@@ -377,6 +383,7 @@
                 <span class="i" t-out="ic('alert',22)"/>
                 <div class="t">No payable rows</div>
                 <div class="s">Every payslip failed validation — fix the bank accounts left out above, then prepare the file.</div>
+                <div t-if="state.data.validation.payment_list_can_pay" class="s" t-esc="payListHint"/>
               </div>
               <button t-else="" t-attf-class="pbpd-btn {{ bankFile.downloadable and !followUp.offer ? 'ghost' : 'primary' }}"
                       t-att-disabled="state.busy or !state.data.run.approved
@@ -388,6 +395,40 @@
               <div t-if="bankFile.state === 'approved' and !bankFile.released" class="pbpd-note">
                 Preparing it again replaces this file and asks for approval afresh.
               </div>
+            </div>
+
+            <!-- ======= card 1b · the payment list, any bank (WDGAP IDB1) ======= -->
+            <div t-if="payList.count or payListLeftOut" class="pbpd-card pbpd-paylist" data-coach="dl-paylist">
+              <div class="card-h">
+                <span class="ico" t-out="ic('fileSpreadsheet',18)"/>
+                <div class="ttl">Payment list (any bank)</div>
+              </div>
+              <div class="pl-sub">Name, bank, account number and amount for everybody paid by bank transfer, to upload or type into any bank.</div>
+              <div class="pl-sum">
+                <span class="pl-people" t-esc="payListPeople"/>
+                <t t-foreach="payList.totals" t-as="t" t-key="t.currency">
+                  <span class="dot">•</span>
+                  <span class="pl-total"><span>total</span> <b t-esc="plainMoney(t.amount)"/> <t t-esc="t.currency"/></span>
+                </t>
+                <span class="dot">•</span>
+                <span t-attf-class="pl-check {{ payList.check_count ? 'hot' : '' }}">
+                  <t t-if="payList.check_count" t-out="ic('alert',12)"/>
+                  <span t-esc="payListChecks"/>
+                </span>
+              </div>
+              <div t-if="payListLeftOut" class="pbpd-note" t-esc="payListLeftOutText"/>
+              <div class="pl-actions">
+                <button class="pbpd-btn ghost sm" t-att-disabled="state.busy or !payList.approved or !payList.count"
+                        t-on-click="() => this.downloadPayList('xlsx')" title="Download the payment list as an Excel file">
+                  <span t-out="ic('download',13)"/><span>Excel</span>
+                </button>
+                <button class="pbpd-btn ghost sm" t-att-disabled="state.busy or !payList.approved or !payList.count"
+                        t-on-click="() => this.downloadPayList('csv')" title="Download the payment list as a CSV file">
+                  <span t-out="ic('download',13)"/><span>CSV</span>
+                </button>
+                <span t-if="!payList.approved" class="pl-wait">Ready once the pay run is approved.</span>
+              </div>
+              <div class="pbpd-note">Account numbers come from approved bank details only. Read the Check column before paying.</div>
             </div>
 
             <!-- ================ card 2 · the release ================ -->

@@ -545,6 +545,8 @@ class PbBankFile(models.Model):
             notes.append(_("These people are not paid by this file. Fix their "
                            "bank details and prepare it again if they should "
                            "be."))
+            # WDGAP IDB1: a bank this file does not know is not a dead end
+            notes.append(_("People with an approved bank account at a bank this file does not know can be paid from the payment list (any bank) on Pay & deliver."))
         return {
             'title': _('Left out of the file'),
             'columns': [_('Why')],

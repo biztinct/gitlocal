@@ -18,6 +18,7 @@ import { Component, useState, onWillStart, onMounted, onWillUnmount } from "@odo
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { download } from "@web/core/network/download";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.pay.delivery";
@@ -395,6 +396,55 @@ export class PbPayDelivery extends Component {
             const act = await this.orm.call(MODEL, "download_bank_file", [this.state.runId]);
             await this.action.doAction(act);
             await this.load();
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // ------------------------------------- WDGAP IDB1: payment list (any bank)
+    get payList() {
+        return (this.state.data && this.state.data.payment_list)
+            || { count: 0, check_count: 0, totals: [], left_out: {}, approved: false };
+    }
+    /** People of the run the list leaves out (on hold, paid, paid another way). */
+    get payListLeftOut() {
+        const l = this.payList.left_out || {};
+        return (l.held || 0) + (l.paid || 0) + (l.paid_other || 0);
+    }
+    get payListPeople() { return this.peopleLabel(this.payList.count || 0); }
+    get payListChecks() {
+        const n = this.payList.check_count || 0;
+        if (!n) { return _t("none need a check"); }
+        return n === 1 ? _t("1 needs a check") : _t("%s need a check", n);
+    }
+    get payListLeftOutText() {
+        const l = this.payList.left_out || {};
+        const bits = [];
+        if (l.held) { bits.push(_t("%s on hold", l.held)); }
+        if (l.paid) { bits.push(_t("%s paid already", l.paid)); }
+        if (l.paid_other) { bits.push(_t("%s paid another way", l.paid_other)); }
+        return _t("Not in the list: %s.", bits.join(", "));
+    }
+    get payListHint() {
+        const n = (this.state.data && this.state.data.validation.payment_list_can_pay) || 0;
+        return n === 1
+            ? _t("1 person left out has an approved bank account and can be paid from the payment list (any bank) below.")
+            : _t("%s people left out have an approved bank account and can be paid from the payment list (any bank) below.", n);
+    }
+    plainMoney(n) { return Math.round(n || 0).toLocaleString("en-US"); }
+
+    async downloadPayList(fmt) {
+        if (this.state.busy) { return; }
+        this.state.busy = true;
+        try {
+            // a refusal is a plain sentence here, not a failed download
+            await this.orm.call(MODEL, "payment_list_check", [this.state.runId, fmt]);
+            await download({
+                url: "/pb_pay_delivery/payment_list",
+                data: { run_id: this.state.runId, fmt },
+            });
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
         } finally {

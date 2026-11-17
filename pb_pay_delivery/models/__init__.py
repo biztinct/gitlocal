@@ -12,3 +12,4 @@ from . import payslip_delivery
 from . import approval_seed
 from . import hr_payslip_run
 from . import pb_pay_delivery
+from . import payment_list
