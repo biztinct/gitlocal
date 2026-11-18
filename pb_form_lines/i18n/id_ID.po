@@ -211,8 +211,7 @@ msgid "Accepted by the authority — marked by %(who)s on %(when)s."
 msgstr "Diterima oleh instansi — ditandai oleh %(who)s pada %(when)s."
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_needaction model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_needaction
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_needaction
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_needaction model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_needaction model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_needaction
 msgid "Action Needed"
 msgstr "Perlu tindakan"
 
@@ -293,14 +292,12 @@ msgid "Asked to decide"
 msgstr "Diminta memutuskan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__attachment_id
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__attachment_id
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__attachment_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__attachment_id
 msgid "Attachment"
 msgstr "Lampiran"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_attachment_count model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_attachment_count
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_attachment_count
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_attachment_count model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_attachment_count model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_attachment_count
 msgid "Attachment Count"
 msgstr "Jumlah lampiran"
 
@@ -354,19 +351,19 @@ msgstr "Periksa angka"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/fund_form.py:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__adviser_wording__adviser
 msgid "Check with your adviser before first filing"
 msgstr "Periksa dengan konsultan Anda sebelum pelaporan pertama"
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
 msgid "Check with your adviser before first filing. Every file says so until a payroll manager marks this form accepted by the authority."
 msgstr "Periksa dengan konsultan Anda sebelum pelaporan pertama. Setiap berkas mencantumkannya sampai manajer penggajian menandai formulir ini diterima oleh instansi."
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
 msgid "Check with your adviser before first filing. The files say so too."
 msgstr "Periksa dengan konsultan Anda sebelum pelaporan pertama. Berkasnya juga mencantumkan hal ini."
 
@@ -404,9 +401,7 @@ msgstr "Dipisahkan koma: xml, xlsx, csv."
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__company_id
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__company_id
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__company_id
+#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__company_id code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Company"
 msgstr "Perusahaan"
 
@@ -424,8 +419,7 @@ msgstr "Dihitung dari orang dalam pelaporan"
 #. module: pb_form_lines
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__country_code
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__country_code
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__country_code model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__country_code
 msgid "Country"
 msgstr "Negara"
 
@@ -440,29 +434,23 @@ msgid "Counts or adds only the people for whom that line is not zero."
 msgstr "Hanya menghitung atau menjumlahkan orang yang baris itu tidak nol."
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__create_uid
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__create_uid
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__create_uid
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__create_uid
 msgid "Created by"
 msgstr "Dibuat oleh"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__create_date
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__create_date
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__create_date
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__create_date
 msgid "Created on"
 msgstr "Dibuat pada"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__currency_id
+#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__currency_id code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Currency"
 msgstr "Mata uang"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_biz_approval_request_seat__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_board__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_reader__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_rights__display_name
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__display_name
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__display_name
+#: model:ir.model.fields,field_description:pb_form_lines.field_biz_approval_request_seat__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_board__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_reader__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_rights__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__display_name
 msgid "Display Name"
 msgstr "Nama tampilan"
 
@@ -496,7 +484,7 @@ msgstr "Biaya pemberi kerja"
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__employer_tax_id
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__employer_tax_id code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
 msgid "Employer's tax number"
 msgstr "NPWP pemberi kerja"
 
@@ -574,8 +562,7 @@ msgid "Files made"
 msgstr "Berkas yang dibuat"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__filing_id
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__filing_id
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__filing_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__filing_id
 msgid "Filing"
 msgstr "Pelaporan"
 
@@ -597,14 +584,12 @@ msgid "First period this layout is for."
 msgstr "Periode pertama tata letak ini berlaku."
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_follower_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_follower_ids
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_follower_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_follower_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_follower_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_follower_ids
 msgid "Followers"
 msgstr "Pengikut"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_partner_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_partner_ids
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_partner_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_partner_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_partner_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Pengikut (mitra)"
 
@@ -628,8 +613,7 @@ msgstr "Untuk periode sampai %s"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__form_id
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__form_id
+#: code:addons/pb_form_lines/models/filing.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__form_id
 msgid "Form"
 msgstr "Formulir"
 
@@ -706,28 +690,22 @@ msgid "HR may put pay items on this line."
 msgstr "HR boleh menempatkan komponen gaji di baris ini."
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__has_message model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__has_message
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__has_message
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__has_message model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__has_message model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__has_message
 msgid "Has Message"
 msgstr "Ada pesan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_biz_approval_request_seat__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_board__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_reader__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_rights__id
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__id
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__id
+#: model:ir.model.fields,field_description:pb_form_lines.field_biz_approval_request_seat__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_board__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_reader__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_rights__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__id
 msgid "ID"
 msgstr "ID"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_needaction model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_needaction
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_needaction
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_needaction model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_needaction model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
 
 #. module: pb_form_lines
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_sms_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_sms_error
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_error
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_sms_error
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_sms_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_sms_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Jika dicentang, beberapa pesan gagal terkirim."
 
@@ -776,8 +754,7 @@ msgid "Information only"
 msgstr "Hanya informasi"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_is_follower model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_is_follower
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_is_follower
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_is_follower model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_is_follower model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_is_follower
 msgid "Is Follower"
 msgstr "Pengikut"
 
@@ -816,16 +793,12 @@ msgid "Label"
 msgstr "Label"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__write_uid
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__write_uid
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__write_uid
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__write_uid
 msgid "Last Updated by"
 msgstr "Terakhir diperbarui oleh"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__write_date
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__write_date
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__write_date
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__write_date
 msgid "Last Updated on"
 msgstr "Terakhir diperbarui pada"
 
@@ -843,7 +816,7 @@ msgstr "Periode terakhir tata letak ini berlaku."
 #. module: pb_form_lines
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Line"
 msgstr "Baris"
 
@@ -910,14 +883,12 @@ msgid "May also be filed for a quarter"
 msgstr "Boleh juga dilaporkan per kuartal"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_error
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_error
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_error
 msgid "Message Delivery error"
 msgstr "Kesalahan pengiriman pesan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_ids
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_ids
 msgid "Messages"
 msgstr "Pesan"
 
@@ -957,8 +928,7 @@ msgstr "NIK atau NPWP"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__name
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__name
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__name code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Name"
 msgstr "Nama"
 
@@ -986,13 +956,13 @@ msgstr "Tidak pernah di bawah nol"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "No"
 msgstr "Tidak"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/reader.py:0
+#: code:addons/pb_form_lines/models/reader.py:0 code:addons/pb_form_lines/models/fund_form.py:0
 msgid "No %s on the employee record"
 msgstr "Tidak ada %s di data karyawan"
 
@@ -1039,15 +1009,7 @@ msgid "Nobody is in this filing, so there is nothing to prepare."
 msgstr "Tidak ada orang dalam pelaporan ini, jadi tidak ada yang disiapkan."
 
 #. module: pb_form_lines
-#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__population__non_resident
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l20
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l25
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l30
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l33
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l19
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l24
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l32
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l35
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__population__non_resident model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l20 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l25 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l30 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l33 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l19 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l24 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l32 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l35
 msgid "Non-residents"
 msgstr "Bukan penduduk"
 
@@ -1116,26 +1078,22 @@ msgid "Nothing to suggest"
 msgstr "Tidak ada saran"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_needaction_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_needaction_counter
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_needaction_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_needaction_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Jumlah tindakan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_error_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_error_counter
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_error_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_error_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_error_counter
 msgid "Number of errors"
 msgstr "Jumlah kesalahan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_needaction_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_needaction_counter
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_needaction_counter
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_needaction_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_needaction_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "Jumlah pesan yang perlu tindakan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_error_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_error_counter
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_error_counter
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_error_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_error_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Jumlah pesan gagal terkirim"
 
@@ -1171,9 +1129,7 @@ msgid "Of whom: tax residents"
 msgstr "Di antaranya: penduduk pajak"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l17 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l16
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l17
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l16
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l17 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l16 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l17 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l16
 msgid "Of whom: tax residents with a labour contract"
 msgstr "Di antaranya: penduduk pajak dengan kontrak kerja"
 
@@ -1274,13 +1230,7 @@ msgstr "Baris slip gaji"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__row_count model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_people
-#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_people
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_lpeople
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_lpeople
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form138_lpeople
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_lpeople
-#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_lpeople
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__row_count model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_people model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_people model:pb.gov.form.line,label:pb_form_lines.form_in_24q_lpeople model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_lpeople model:pb.gov.form.line,label:pb_form_lines.form_in_form138_lpeople model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_lpeople model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_lpeople code:addons/pb_form_lines/models/fund_common.py:0 model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_people model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_people model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_people model:pb.gov.form.line,label:pb_form_lines.form_in_esi_people model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_people
 msgid "People"
 msgstr "Orang"
 
@@ -1324,7 +1274,7 @@ msgstr "Persentase dari satu baris"
 #. module: pb_form_lines
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Period"
 msgstr "Periode"
 
@@ -1339,8 +1289,7 @@ msgid "Period Kind"
 msgstr "Jenis periode"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__period_label
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__period_label
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__period_label model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__period_label
 msgid "Period Label"
 msgstr "Label periode"
 
@@ -1482,8 +1431,7 @@ msgid "Rate (%)"
 msgstr "Tarif (%)"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__rating_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__rating_ids
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__rating_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__rating_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__rating_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__rating_ids
 msgid "Ratings"
 msgstr "Penilaian"
 
@@ -1494,8 +1442,7 @@ msgid "Read from finished payslips"
 msgstr "Dibaca dari slip gaji final"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,note:pb_form_lines.form_id_bpmp_ptkp
-#: model:pb.gov.form.line,note:pb_form_lines.form_id_bpa1_ptkp
+#: model:pb.gov.form.line,note:pb_form_lines.form_id_bpmp_ptkp model:pb.gov.form.line,note:pb_form_lines.form_id_bpa1_ptkp
 msgid "Read from the pay item put here; when none, from the employee record."
 msgstr "Dibaca dari komponen gaji di sini; jika tidak ada, dari data karyawan."
 
@@ -1533,8 +1480,7 @@ msgid "Round Digits"
 msgstr "Digit pembulatan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_sms_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_sms_error
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_sms_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_sms_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "Kesalahan pengiriman SMS"
 
@@ -1600,8 +1546,7 @@ msgid "Sequence"
 msgstr "Urutan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__sha256
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__sha256
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__sha256 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__sha256
 msgid "Sha256"
 msgstr "Sha256"
 
@@ -1627,8 +1572,7 @@ msgid "Singapore"
 msgstr "Singapura"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__size
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__size
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__size model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__size
 msgid "Size"
 msgstr "Ukuran"
 
@@ -1677,7 +1621,7 @@ msgstr "Jumlah baris"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Summary"
 msgstr "Ringkasan"
 
@@ -1728,15 +1672,12 @@ msgid "Tax number"
 msgstr "NPWP/NIK"
 
 #. module: pb_form_lines
-#: model:pb.gov.form,authority:pb_form_lines.form_vn_05kk_tt80 model:pb.gov.form,authority:pb_form_lines.form_vn_05kk_tt89
-#: model:pb.gov.form,authority:pb_form_lines.form_vn_05qtt_tt80
-#: model:pb.gov.form,authority:pb_form_lines.form_vn_05qtt_tt89
+#: model:pb.gov.form,authority:pb_form_lines.form_vn_05kk_tt80 model:pb.gov.form,authority:pb_form_lines.form_vn_05kk_tt89 model:pb.gov.form,authority:pb_form_lines.form_vn_05qtt_tt80 model:pb.gov.form,authority:pb_form_lines.form_vn_05qtt_tt89
 msgid "Tax office"
 msgstr "Kantor pajak"
 
 #. module: pb_form_lines
-#: model:pb.gov.form,authority:pb_form_lines.form_id_bpmp
-#: model:pb.gov.form,authority:pb_form_lines.form_id_bpa1
+#: model:pb.gov.form,authority:pb_form_lines.form_id_bpmp model:pb.gov.form,authority:pb_form_lines.form_id_bpa1
 msgid "Tax office (DJP)"
 msgstr "Direktorat Jenderal Pajak (DJP)"
 
@@ -1747,15 +1688,7 @@ msgid "Tax resident"
 msgstr "Penduduk pajak"
 
 #. module: pb_form_lines
-#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__population__resident
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l19
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l24
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l29
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l32
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l18
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l23
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l31
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l34
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__population__resident model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l19 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l24 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l29 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l32 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l18 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l23 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l31 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l34
 msgid "Tax residents"
 msgstr "Penduduk pajak"
 
@@ -1766,8 +1699,7 @@ msgid "Tax status"
 msgstr "Status PTKP"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_ptkp
-#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_ptkp
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_ptkp model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_ptkp
 msgid "Tax status (TK / K / HB)"
 msgstr "Status PTKP (TK / K / HB)"
 
@@ -1880,7 +1812,7 @@ msgstr "Angka tidak dapat dibaca."
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/fund_sg.py:0
 msgid "The file could not be made."
 msgstr "Berkas tidak dapat dibuat."
 
@@ -1971,7 +1903,7 @@ msgstr "Tidak ada berkas untuk disetujui."
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
 msgid "These files say “Check with your adviser before first filing”."
 msgstr "Berkas ini bertuliskan “Periksa dengan konsultan Anda sebelum pelaporan pertama”."
 
@@ -2098,9 +2030,7 @@ msgid "Total assessable income for working out the tax"
 msgstr "Total penghasilan untuk menghitung pajak"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l16 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l15
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l16
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l15
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l16 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l15 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l16 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l15
 msgid "Total employees"
 msgstr "Total karyawan"
 
@@ -2125,9 +2055,7 @@ msgid "Total tax-exempt income in the period"
 msgstr "Total penghasilan bebas pajak dalam periode"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l21 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l20
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l23
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l22
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l21 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l20 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l23 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l22
 msgid "Total taxable income paid"
 msgstr "Total penghasilan kena pajak yang dibayar"
 
@@ -2202,14 +2130,12 @@ msgid "Warnings Json"
 msgstr "Peringatan (JSON)"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__website_message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__website_message_ids
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__website_message_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__website_message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__website_message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__website_message_ids
 msgid "Website Messages"
 msgstr "Pesan situs web"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__website_message_ids model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__website_message_ids
-#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__website_message_ids
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__website_message_ids model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__website_message_ids model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__website_message_ids
 msgid "Website communication history"
 msgstr "Riwayat komunikasi situs web"
 
@@ -2311,7 +2237,7 @@ msgstr "Tahun"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Yes"
 msgstr "Ya"
 
@@ -2487,13 +2413,12 @@ msgid "Address"
 msgstr "Alamat"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld1
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld1 model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_allow
 msgid "Allowances"
 msgstr "Tunjangan"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_lpaid
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form138_lpaid
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_lpaid model:pb.gov.form.line,label:pb_form_lines.form_in_form138_lpaid
 msgid "Amount paid or credited"
 msgstr "Jumlah yang dibayar atau dikreditkan"
 
@@ -2589,8 +2514,7 @@ msgid "Compulsory insurance deducted"
 msgstr "Asuransi wajib yang dipotong"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lins
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lins
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lins model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lins
 msgid "Compulsory insurance deducted (appendix 05-1)"
 msgstr "Asuransi wajib yang dipotong (lampiran 05-1)"
 
@@ -2600,8 +2524,7 @@ msgid "Contributions to the Mosque Building Fund"
 msgstr "Iuran Dana Pembangunan Masjid"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l17
-#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l16
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l17 model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l16
 msgid "Counts every tax resident; the length of the labour contract is not checked."
 msgstr "Menghitung setiap penduduk pajak; lama kontrak kerja tidak dicek."
 
@@ -2634,12 +2557,7 @@ msgstr "Jumlah unduhan"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
-#: code:addons/pb_form_lines/models/render_in.py:0
-#: code:addons/pb_form_lines/models/render_sg.py:0
-#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__employee_id
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__employee_id
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 code:addons/pb_form_lines/models/render_in.py:0 code:addons/pb_form_lines/models/render_sg.py:0 code:addons/pb_form_lines/models/render_vn_qtt.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__employee_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__employee_id
 msgid "Employee"
 msgstr "Karyawan"
 
@@ -2728,8 +2646,7 @@ msgid "Exempt: gratuity"
 msgstr "Bebas: uang penghargaan"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2b
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2e
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2b model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2e
 msgid "Exempt: house rent allowance"
 msgstr "Bebas: tunjangan sewa rumah"
 
@@ -2739,8 +2656,7 @@ msgid "Exempt: leave encashment"
 msgstr "Bebas: uang pengganti cuti"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2c
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2f
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2c model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2f
 msgid "Exempt: other special allowances"
 msgstr "Bebas: tunjangan khusus lainnya"
 
@@ -2755,14 +2671,12 @@ msgid "Exempt: start-up support experts"
 msgstr "Bebas: tenaga ahli pendukung usaha rintisan"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2a
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2a
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2a model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2a
 msgid "Exempt: travel concession"
 msgstr "Bebas: tunjangan perjalanan"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lfamded
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lfamded
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lfamded model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lfamded
 msgid "Family deduction: self and dependants (appendix 05-1)"
 msgstr "Pengurangan keluarga: diri sendiri dan tanggungan (lampiran 05-1)"
 
@@ -2780,11 +2694,7 @@ msgstr "Angka untuk penyusun SPT Anda. Bagian A bukti resmi berasal dari portal 
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_in.py:0
-#: model:pb.gov.form,screen_note:pb_form_lines.form_in_24q
-#: model:pb.gov.form,screen_note:pb_form_lines.form_in_form130c
-#: model:pb.gov.form,screen_note:pb_form_lines.form_in_form138
-#: model:pb.gov.form,screen_note:pb_form_lines.form_in_form16b
+#: code:addons/pb_form_lines/models/render_in.py:0 model:pb.gov.form,screen_note:pb_form_lines.form_in_24q model:pb.gov.form,screen_note:pb_form_lines.form_in_form130c model:pb.gov.form,screen_note:pb_form_lines.form_in_form138 model:pb.gov.form,screen_note:pb_form_lines.form_in_form16b
 msgid "Figures for your return preparer: the upload file itself is made with the tax department's own utility."
 msgstr "Angka untuk penyusun SPT Anda: berkas unggahnya dibuat dengan aplikasi milik departemen pajak."
 
@@ -2812,7 +2722,7 @@ msgid "For the summary and the person's certificate. The import file carries 0 h
 msgstr "Untuk ringkasan dan bukti orang tersebut. Berkas impor berisi 0 di sini: sistem kantor pajak menjumlahkan bukti potong bulanan sendiri."
 
 #. module: pb_form_lines
-#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__fund_file
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__fund_file model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__fund
 msgid "Fund files"
 msgstr "Berkas dana"
 
@@ -2833,8 +2743,7 @@ msgid "Gifts to charity, humanitarian and study funds"
 msgstr "Sumbangan amal, kemanusiaan dan pendidikan"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lcharity
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lcharity
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lcharity model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lcharity
 msgid "Gifts to charity, humanitarian and study funds (appendix 05-1)"
 msgstr "Sumbangan amal, kemanusiaan dan pendidikan (lampiran 05-1)"
 
@@ -2864,14 +2773,12 @@ msgid "Gross salary, fees, leave pay, wages and overtime pay"
 msgstr "Gaji bruto, honor, upah cuti, upah dan lembur"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l9
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l9
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l9 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l9
 msgid "Gross total income"
 msgstr "Jumlah penghasilan bruto"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l16
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l16
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l16 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l16
 msgid "Health and education cess"
 msgstr "Cess kesehatan dan pendidikan"
 
@@ -2921,10 +2828,7 @@ msgid "In the submission"
 msgstr "Ada di pengiriman"
 
 #. module: pb_form_lines
-#: model:pb.gov.form,authority:pb_form_lines.form_in_24q
-#: model:pb.gov.form,authority:pb_form_lines.form_in_form130c
-#: model:pb.gov.form,authority:pb_form_lines.form_in_form138
-#: model:pb.gov.form,authority:pb_form_lines.form_in_form16b
+#: model:pb.gov.form,authority:pb_form_lines.form_in_24q model:pb.gov.form,authority:pb_form_lines.form_in_form130c model:pb.gov.form,authority:pb_form_lines.form_in_form138 model:pb.gov.form,authority:pb_form_lines.form_in_form16b
 msgid "Income Tax Department"
 msgstr "Departemen Pajak Penghasilan"
 
@@ -2947,8 +2851,7 @@ msgid "Income and tax for the year"
 msgstr "Penghasilan dan pajak setahun"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l6
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l6
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l6 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l6
 msgid "Income chargeable under \"Salaries\""
 msgstr "Penghasilan kena pajak dari \"Gaji\""
 
@@ -2959,8 +2862,7 @@ msgid "Income tax is worked out on"
 msgstr "Penghasilan yang dikenai perhitungan pajak"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lassess
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lassess
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lassess model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lassess
 msgid "Income tax is worked out on (appendix 05-1)"
 msgstr "Penghasilan yang dikenai perhitungan pajak (lampiran 05-1)"
 
@@ -3031,8 +2933,7 @@ msgstr "Bulan"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
-#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 code:addons/pb_form_lines/models/render_vn_qtt.py:0
 msgid "Months paid"
 msgstr "Bulan dibayar"
 
@@ -3060,14 +2961,12 @@ msgid "Needs Appendix 8A, which Payobook does not make."
 msgstr "Memerlukan Appendix 8A, yang tidak dibuat oleh Payobook."
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,note:pb_form_lines.form_sg_ir8a_ld7a
-#: model:pb.gov.form.line,note:pb_form_lines.form_sg_ir8a_ld7b
+#: model:pb.gov.form.line,note:pb_form_lines.form_sg_ir8a_ld7a model:pb.gov.form.line,note:pb_form_lines.form_sg_ir8a_ld7b
 msgid "Needs Appendix 8B, which Payobook does not make."
 msgstr "Memerlukan Appendix 8B, yang tidak dibuat oleh Payobook."
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l21
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l21
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l21 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l21
 msgid "Net tax payable"
 msgstr "Pajak neto terutang"
 
@@ -3112,8 +3011,7 @@ msgid "Of which: surcharge"
 msgstr "Di antaranya: surcharge"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l34
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l36
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l34 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l36
 msgid "Of which: tax withheld on insurance premiums from insurers not set up in Vietnam"
 msgstr "Di antaranya: pajak dipotong atas premi dari perusahaan asuransi yang tidak didirikan di Vietnam"
 
@@ -3123,14 +3021,12 @@ msgid "Of which: taxable income exempt under a petroleum contract"
 msgstr "Di antaranya: penghasilan kena pajak yang dibebaskan menurut kontrak minyak bumi"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l26
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l25
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l26 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l25
 msgid "Of which: taxable premiums of life and other voluntary insurance from insurers not set up in Vietnam"
 msgstr "Di antaranya: premi asuransi jiwa dan sukarela lain yang kena pajak dari perusahaan asuransi yang tidak didirikan di Vietnam"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l37
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l39
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l37 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l39
 msgid "Of which: withheld by the former company before a transfer"
 msgstr "Di antaranya: dipotong oleh perusahaan lama sebelum mutasi"
 
@@ -3152,14 +3048,7 @@ msgid "Only a payroll manager can release certificates to employees."
 msgstr "Hanya manajer penggajian yang bisa merilis bukti kepada karyawan."
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l13
-#: model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l14
-#: model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l15
-#: model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l16
-#: model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l13
-#: model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l14
-#: model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l15
-#: model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l16
+#: model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l13 model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l14 model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l15 model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l16 model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l13 model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l14 model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l15 model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l16
 msgid "Only from a pay item that holds it: Payobook does not work tax out again."
 msgstr "Hanya dari komponen gaji yang memuatnya: Payobook tidak menghitung ulang pajak."
 
@@ -3169,8 +3058,7 @@ msgid "Only the part above zero"
 msgstr "Hanya bagian di atas nol"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l38
-#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l40
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l38 model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l40
 msgid "Only when the pay scheme itself works out the year's tax due; Payobook does not work tax out again."
 msgstr "Hanya bila skema gaji sendiri menghitung pajak terutang setahun; Payobook tidak menghitung ulang pajak."
 
@@ -3196,8 +3084,7 @@ msgid "Other deductions under Chapter VIII"
 msgstr "Pengurangan lain menurut Bab VIII"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l7a
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l7b
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l7a model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l7b
 msgid "Other income reported by the employee"
 msgstr "Penghasilan lain yang dilaporkan karyawan"
 
@@ -3225,8 +3112,7 @@ msgid "Pension and old-age contributions paid by the employee"
 msgstr "Iuran pensiun dan hari tua yang dibayar karyawan"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l22
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l21
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l22 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l21
 msgid "People given the family deduction"
 msgstr "Orang yang mendapat pengurangan keluarga"
 
@@ -3237,20 +3123,17 @@ msgid "People in the submission"
 msgstr "Orang dalam pengiriman"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l35
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l37
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l35 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l37
 msgid "People who asked the company to settle their tax"
 msgstr "Orang yang meminta perusahaan menyelesaikan pajaknya"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l21
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l20
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l21 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l20
 msgid "People with income exempt under a tax treaty"
 msgstr "Orang dengan penghasilan bebas menurut perjanjian pajak"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l18
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l17
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l18 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l17
 msgid "People with tax withheld"
 msgstr "Orang yang pajaknya dipotong"
 
@@ -3278,8 +3161,7 @@ msgid "Preparing this form also makes one PDF per person, which a payroll manage
 msgstr "Menyiapkan formulir ini juga membuat satu PDF per orang, yang bisa dirilis manajer penggajian kepada karyawan di My Payobook setelah pelaporan disetujui."
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1c
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1c
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1c model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1c
 msgid "Profits in lieu of salary"
 msgstr "Keuntungan pengganti gaji"
 
@@ -3358,8 +3240,7 @@ msgid "Row"
 msgstr "Baris"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1a
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1a
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1a model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1a
 msgid "Salary"
 msgstr "Gaji"
 
@@ -3392,8 +3273,7 @@ msgid "Salary certificate figures — Form 16 Part B (tax years up to 2025-26)"
 msgstr "Angka bukti gaji — Formulir 16 Bagian B (tahun pajak sampai 2025-26)"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l3
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l3
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l3 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l3
 msgid "Salary from this employer after exemptions"
 msgstr "Gaji dari pemberi kerja ini setelah pembebasan"
 
@@ -3403,8 +3283,7 @@ msgid "Salary or regular pension"
 msgstr "Gaji atau uang pensiun berkala"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1e
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1e
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1e model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1e
 msgid "Salary reported from other employers"
 msgstr "Gaji yang dilaporkan dari pemberi kerja lain"
 
@@ -3520,19 +3399,17 @@ msgid "Section 80TTA: savings account interest"
 msgstr "Pasal 80TTA: bunga rekening tabungan"
 
 #. module: pb_form_lines
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__tile_group
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__filing_section
 msgid "Shown under"
-msgstr "Ditampilkan di bawah"
+msgstr "Tampil di bagian"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4b
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l4a
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4b model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l4a
 msgid "Standard deduction"
 msgstr "Pengurangan standar"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l15
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l15
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l15 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l15
 msgid "Surcharge"
 msgstr "Surcharge"
 
@@ -3558,8 +3435,7 @@ msgid "Tax collected elsewhere, reported on Form 12BAA"
 msgstr "Pajak dipungut di tempat lain, dilaporkan di Formulir 12BAA"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_ltds
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form138_ltds
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_ltds model:pb.gov.form.line,label:pb_form_lines.form_in_form138_ltds
 msgid "Tax deducted (tax, surcharge and cess)"
 msgstr "Pajak dipotong (pajak, surcharge dan cess)"
 
@@ -3574,49 +3450,42 @@ msgid "Tax deducted elsewhere, reported on Form 12BAA"
 msgstr "Pajak dipotong di tempat lain, dilaporkan di Formulir 12BAA"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_ltds
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_ltds
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_ltds model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_ltds
 msgid "Tax deducted from pay in the year"
 msgstr "Pajak dipotong dari gaji dalam setahun"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l38
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l40
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l38 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l40
 msgid "Tax due for the year (settled for them)"
 msgstr "Pajak terutang setahun (diselesaikan untuk mereka)"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4a
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l4c
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4a model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l4c
 msgid "Tax on employment (professional tax)"
 msgstr "Pajak profesi"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l13
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l13
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l13 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l13
 msgid "Tax on total income"
 msgstr "Pajak atas total penghasilan"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l41
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l45
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l41 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l45
 msgid "Tax overpaid"
 msgstr "Pajak lebih bayar"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l17
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l17
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l17 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l17
 msgid "Tax payable"
 msgstr "Pajak terutang"
 
 #. module: pb_form_lines
-#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__tax_return
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__tax_return model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__tax
 msgid "Tax returns"
-msgstr "SPT pajak"
+msgstr "SPT dan bukti potong pajak"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l40
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l44
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l40 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l44
 msgid "Tax still to pay"
 msgstr "Pajak yang masih harus dibayar"
 
@@ -3631,33 +3500,28 @@ msgid "Tax waived: high-technology workers"
 msgstr "Pajak dibebaskan: tenaga teknologi tinggi"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l39
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l41
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l39 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l41
 msgid "Tax waived: still due of 50,000 dong or less"
 msgstr "Pajak dibebaskan: sisa terutang 50.000 dong atau kurang"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l36
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l38
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l36 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l38
 msgid "Tax withheld from them"
 msgstr "Pajak yang dipotong dari mereka"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
-#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 code:addons/pb_form_lines/models/render_vn_qtt.py:0
 msgid "Tax withheld in the year"
 msgstr "Pajak yang dipotong dalam setahun"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_ltreaty
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_ltreaty
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_ltreaty model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_ltreaty
 msgid "Taxable income exempt under a tax treaty (appendix 05-1)"
 msgstr "Penghasilan kena pajak yang bebas menurut perjanjian pajak (lampiran 05-1)"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l28
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l30
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l28 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l30
 msgid "Taxable income of people with tax withheld"
 msgstr "Penghasilan kena pajak orang yang pajaknya dipotong"
 
@@ -3702,8 +3566,7 @@ msgid "The submission payload for AIS software, the IR8A import workbook for the
 msgstr "Berkas pengiriman untuk perangkat lunak AIS, buku kerja impor IR8A untuk myTax Portal, ringkasan, dan satu IR8A untuk setiap orang."
 
 #. module: pb_form_lines
-#: model:pb.gov.form,screen_note:pb_form_lines.form_vn_05qtt_tt80
-#: model:pb.gov.form,screen_note:pb_form_lines.form_vn_05qtt_tt89
+#: model:pb.gov.form,screen_note:pb_form_lines.form_vn_05qtt_tt80 model:pb.gov.form,screen_note:pb_form_lines.form_vn_05qtt_tt89
 msgid "The year-end declaration in its own line order with appendices 05-1, 05-2 and 05-3 as sheets, and a tax-withheld statement for each person."
 msgstr "Deklarasi akhir tahun sesuai urutan barisnya dengan lampiran 05-1, 05-2 dan 05-3 sebagai lembar, dan rincian pajak dipotong untuk setiap orang."
 
@@ -3768,21 +3631,18 @@ msgid "Total exempt income in the year"
 msgstr "Total penghasilan bebas dalam periode"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2f
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2i
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2f model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2i
 msgid "Total exemption claimed"
 msgstr "Total pembebasan yang diklaim"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1d
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1d
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1d model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1d
 msgid "Total gross salary"
 msgstr "Total gaji bruto"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_sg.py:0
-#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ltotal
+#: code:addons/pb_form_lines/models/render_sg.py:0 model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ltotal
 msgid "Total income"
 msgstr "Total penghasilan"
 
@@ -3798,20 +3658,17 @@ msgid "Total of items d1 to d8"
 msgstr "Total butir d1 sampai d8"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l8
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l8
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l8 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l8
 msgid "Total other income reported"
 msgstr "Total penghasilan lain yang dilaporkan"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l31
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l33
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l31 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l33
 msgid "Total personal income tax withheld"
 msgstr "Total pajak penghasilan pribadi yang dipotong"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l12
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l12
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l12 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l12
 msgid "Total taxable income"
 msgstr "Total penghasilan kena pajak"
 
@@ -3826,14 +3683,12 @@ msgid "Value of benefits in kind"
 msgstr "Nilai imbalan natura"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1b
-#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1b
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1b model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1b
 msgid "Value of perquisites"
 msgstr "Nilai fasilitas"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lpension
-#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lpension
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lpension model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lpension
 msgid "Voluntary pension fund deducted (appendix 05-1)"
 msgstr "Dana pensiun sukarela yang dikurangkan (lampiran 05-1)"
 
@@ -3848,7 +3703,7 @@ msgid "Which group of tiles on Compliance › Filings shows this form."
 msgstr "Kelompok ubin mana di Kepatuhan › Pelaporan yang menampilkan formulir ini."
 
 #. module: pb_form_lines
-#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__year_end
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__year_end model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__year_end
 msgid "Year-end"
 msgstr "Akhir tahun"
 
@@ -3878,8 +3733,7 @@ msgstr "Bukti potong PPh 21 tahunan (BPA1)"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
-#: model:pb.gov.form,name:pb_form_lines.form_id_bpa1
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 model:pb.gov.form,name:pb_form_lines.form_id_bpa1
 msgid "Year-end income tax slips — permanent employees (BPA1)"
 msgstr "Bukti potong PPh 21 tahunan — pegawai tetap (BPA1)"
 
@@ -3896,8 +3750,7 @@ msgstr "Zakat atau sumbangan keagamaan wajib yang dibayar melalui pemberi kerja"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
-#: code:addons/pb_form_lines/models/render_sg.py:0
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 code:addons/pb_form_lines/models/render_sg.py:0
 msgid "an amount below zero"
 msgstr "ada jumlah di bawah nol"
 
@@ -3985,8 +3838,7 @@ msgstr "Meminta pemberi kerja menyelesaikan pajak akhir tahun"
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
-#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__asked
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__asked
 msgid "Asked us to settle year-end tax"
 msgstr "Meminta kami menyelesaikan pajak akhir tahun"
 
@@ -3997,8 +3849,7 @@ msgid "Asked us to settle year-end tax: no certificate for this year"
 msgstr "Meminta kami menyelesaikan pajak akhir tahun: tidak ada bukti untuk tahun ini"
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l35
-#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l37
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l35 model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l37
 msgid "Counts the people HR marked \"Asked us to settle year-end tax\" for the year."
 msgstr "Menghitung orang yang ditandai HR \"Meminta kami menyelesaikan pajak akhir tahun\" untuk tahun itu."
 
@@ -4079,3 +3930,558 @@ msgstr "Centang orang yang meminta perusahaan menyelesaikan pajak akhir tahunnya
 #: code:addons/pb_form_lines/models/settle.py:0
 msgid "That person belongs to another company."
 msgstr "Orang itu milik perusahaan lain."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "%(n)s people are left out of the file — the summary lists each with the reason. The file's total leaves out their %(amount)s: %(total)s."
+msgstr "%(n)s orang tidak dimasukkan ke berkas — ringkasan mencantumkan masing-masing beserta alasannya. Total berkas tidak memuat %(amount)s milik mereka: %(total)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "%s people are left out of the file. Their figures are not in the file's totals."
+msgstr "%s orang tidak dimasukkan ke berkas. Angka mereka tidak masuk total berkas."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "1 person is left out of the file (%(why)s). The file's total leaves out their %(amount)s: %(total)s."
+msgstr "1 orang tidak dimasukkan ke berkas (%(why)s). Total berkas tidak memuat %(amount)s miliknya: %(total)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "1 person is left out of the file. Their figures are not in the file's totals."
+msgstr "1 orang tidak dimasukkan ke berkas. Angkanya tidak masuk total berkas."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "A figure is below zero"
+msgstr "Ada angka di bawah nol"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "A figure is below zero or too large for the file"
+msgstr "Ada angka di bawah nol atau terlalu besar untuk berkas"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_aw
+msgid "Additional wages"
+msgstr "Upah tambahan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan"
+msgstr "BPJS Kesehatan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "BPJS Kesehatan card number"
+msgstr "Nomor kartu BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan company code"
+msgstr "Kode badan usaha BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan — monthly member and contribution sheet (e-Dabu)"
+msgstr "BPJS Kesehatan — lembar peserta dan iuran bulanan (e-Dabu)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan"
+msgstr "BPJS Ketenagakerjaan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan company number (NPP)"
+msgstr "Nomor pendaftaran perusahaan BPJS Ketenagakerjaan (NPP)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "BPJS Ketenagakerjaan number"
+msgstr "Nomor BPJS Ketenagakerjaan (KPJ)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan — monthly wage report (SIPP)"
+msgstr "BPJS Ketenagakerjaan — laporan upah bulanan (SIPP)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cdac
+msgid "CDAC"
+msgstr "CDAC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF Board"
+msgstr "Dewan CPF"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "CPF account number"
+msgstr "Nomor rekening CPF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF contributions, SDL and self-help funds — CPF EZPay file"
+msgstr "Iuran CPF, SDL dan dana kelompok swadaya — berkas CPF EZPay"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "CPF submission number (CSN)"
+msgstr "Nomor pengajuan CPF (CSN)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF submission number (CSN), for example 201912345APTE01"
+msgstr "Nomor pengajuan CPF (CSN), misalnya 201912345APTE01"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_total
+msgid "CPF — employee and employer"
+msgstr "CPF — pekerja dan pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_ee
+msgid "CPF — employee share"
+msgstr "CPF — bagian pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_er
+msgid "CPF — employer share"
+msgstr "CPF — bagian pemberi kerja"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Check first"
+msgstr "Periksa dulu"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_form.py:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__adviser_wording__fund
+msgid "Check with the fund before the first upload"
+msgstr "Periksa dengan badan dana sebelum unggahan pertama"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Check with the fund before the first upload. Every file says so until a payroll manager marks this form accepted."
+msgstr "Periksa dengan badan dana sebelum unggahan pertama. Setiap berkas mencantumkannya sampai manajer penggajian menandai formulir ini diterima."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Check with the fund before the first upload. The files say so too."
+msgstr "Periksa dengan badan dana sebelum unggahan pertama. Berkasnya juga mencantumkannya."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__compare_line_codes
+msgid "Compare Line Codes"
+msgstr "Baris yang dibandingkan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_ncp_days
+msgid "Days not paid (NCP days)"
+msgstr "Hari tidak dibayar (hari NCP)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "Days not paid rounded to a whole day"
+msgstr "Hari tidak dibayar dibulatkan ke hari penuh"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_days
+msgid "Days paid in the month"
+msgstr "Hari dibayar dalam bulan ini"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jkm_er
+msgid "Death cover (JKM) — employer"
+msgstr "Jaminan kematian (JKM) — pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ecf
+msgid "ECF"
+msgstr "ECF"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "EPF wages are more than gross wages"
+msgstr "Upah EPF lebih besar dari upah bruto"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_in_epf_ecr
+msgid "EPFO"
+msgstr "EPFO"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_in_epf_ecr
+msgid "EPFO establishment code"
+msgstr "Kode perusahaan EPFO"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "ESI insurance number"
+msgstr "Nomor asuransi ESI"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_esi
+msgid "ESI monthly contribution sheet (ESIC)"
+msgstr "Lembar iuran ESI bulanan (ESIC)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_esi_ee
+msgid "ESI — employee share"
+msgstr "ESI — bagian pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_esi_er
+msgid "ESI — employer share"
+msgstr "ESI — bagian pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_in_esi
+msgid "ESIC"
+msgstr "ESIC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_in_esi
+msgid "ESIC employer code"
+msgstr "Kode pemberi kerja ESIC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_ee_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_ee_total model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ee_total
+msgid "Employee share"
+msgstr "Bagian pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_er_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_er_total model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_er_total
+msgid "Employer share"
+msgstr "Bagian pemberi kerja"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Everyone read from payslips"
+msgstr "Semua orang, dari slip gaji"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "Fill in the CPF submission number (CSN) for this form on Form lines first: the company's UEN, the payment type and the serial number, for example 201912345APTE01."
+msgstr "Isi dulu nomor pengajuan CPF (CSN) untuk formulir ini di Baris formulir: UEN perusahaan, jenis pembayaran dan nomor urut, misalnya 201912345APTE01."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments for %(month)s: %(amount)s — the same as this file."
+msgstr "Pembayaran dana %(month)s: %(amount)s — sama dengan berkas ini."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments for %(month)s: %(amount)s. This file: %(file)s. They differ by %(diff)s."
+msgstr "Pembayaran dana %(month)s: %(amount)s. Berkas ini: %(file)s. Selisihnya %(diff)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments has not worked out this month yet: its figure is what it would work out today."
+msgstr "Pembayaran dana belum menghitung bulan ini: angkanya adalah hasil hitungannya hari ini."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_gross
+msgid "Gross wages"
+msgstr "Upah bruto"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_kes_ee
+msgid "Health insurance — employee"
+msgstr "Jaminan kesehatan — pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_kes_er
+msgid "Health insurance — employer"
+msgstr "Jaminan kesehatan — pemberi kerja"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0 code:addons/pb_form_lines/models/fund_in.py:0
+msgid "In the file"
+msgstr "Di dalam berkas"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_edli_wages
+msgid "Insurance wages (EDLI)"
+msgstr "Upah asuransi (EDLI)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_mbmf
+msgid "MBMF"
+msgstr "MBMF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_mat
+msgid "Maternity leave days"
+msgstr "Hari cuti melahirkan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "NIK"
+msgstr "NIK"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "NIK (16 digits)"
+msgstr "NIK (16 digit)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__employer_label
+msgid "Name of the company's number"
+msgstr "Nama nomor perusahaan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "Name written without the characters the file cannot carry"
+msgstr "Nama ditulis tanpa karakter yang tidak dapat dimuat berkas"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "No CPF account number (NRIC starting S or T) on the employee record"
+msgstr "Tidak ada nomor rekening CPF (NRIC berawalan S atau T) di data karyawan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "No days paid: type the reason code for zero working days on the portal"
+msgstr "Tidak ada hari dibayar: ketik kode alasan untuk nol hari kerja di portal"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "No wage for BPJS"
+msgstr "Tidak ada upah untuk BPJS"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Nobody in this filing can go into the upload file: %s."
+msgstr "Tidak ada orang dalam pelaporan ini yang dapat masuk ke berkas unggahan: %s."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__adviser_wording
+msgid "Note until accepted"
+msgstr "Catatan sampai diterima"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jht_ee
+msgid "Old-age savings (JHT) — employee"
+msgstr "Jaminan hari tua (JHT) — pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jht_er
+msgid "Old-age savings (JHT) — employer"
+msgstr "Jaminan hari tua (JHT) — pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ow
+msgid "Ordinary wages"
+msgstr "Upah biasa"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_extra
+msgid "Other additions"
+msgstr "Tambahan lainnya"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jp_ee
+msgid "Pension (JP) — employee"
+msgstr "Jaminan pensiun (JP) — pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jp_er
+msgid "Pension (JP) — employer"
+msgstr "Jaminan pensiun (JP) — pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_eps_er
+msgid "Pension fund (EPS) — employer share"
+msgstr "Dana pensiun (EPS) — bagian pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_eps_wages
+msgid "Pension fund wages (EPS)"
+msgstr "Upah dana pensiun (EPS)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_epf_ecr
+msgid "Provident fund monthly return — ECR file (EPFO)"
+msgstr "Laporan dana provident bulanan — berkas ECR (EPFO)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_epf_wages
+msgid "Provident fund wages (EPF)"
+msgstr "Upah dana provident (EPF)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_epf_ee
+msgid "Provident fund — employee share"
+msgstr "Dana provident — bagian pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_diff_er
+msgid "Provident fund — employer share (EPF less EPS)"
+msgstr "Dana provident — bagian pemberi kerja (EPF dikurangi EPS)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_refund
+msgid "Refund of advances"
+msgstr "Pengembalian uang muka"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_sinda
+msgid "SINDA"
+msgstr "SINDA"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_shg_total
+msgid "Self-help group funds"
+msgstr "Dana kelompok swadaya"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_sick
+msgid "Sick leave days"
+msgstr "Hari cuti sakit"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_sdl
+msgid "Skills Development Levy (SDL)"
+msgstr "Pungutan pengembangan keterampilan (SDL)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_vn_si_items
+msgid "Social-insurance reports — pay items they read"
+msgstr "Laporan jaminan sosial — komponen gaji yang dibaca"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "The ESI insurance number is not 10 digits"
+msgstr "Nomor asuransi ESI bukan 10 digit"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "The UAN is not 12 digits"
+msgstr "UAN bukan 12 digit"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0 code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "The name has letters the file cannot carry"
+msgstr "Nama memuat huruf yang tidak dapat dimuat berkas"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "These files say “Check with the fund before the first upload”."
+msgstr "Berkas ini mencantumkan “Periksa dengan badan dana sebelum unggahan pertama”."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/vn_si_items.py:0
+msgid "These pay items are read by the Vietnamese social-insurance reports on Compliance › Filings. There is no file of its own to prepare."
+msgstr "Komponen gaji ini dibaca oleh laporan jaminan sosial Vietnam di Kepatuhan › Pelaporan. Tidak ada berkas tersendiri untuk disiapkan."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "These pay items are read by the Vietnamese social-insurance reports on Compliance › Filings. Until a pay item is on a line, the reports read their usual codes."
+msgstr "Komponen gaji ini dibaca oleh laporan jaminan sosial Vietnam di Kepatuhan › Pelaporan. Selama sebuah baris belum berisi komponen gaji, laporan membaca kode biasanya."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_total
+msgid "Total for CPF Board"
+msgstr "Total untuk Dewan CPF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_total model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_total model:pb.gov.form.line,label:pb_form_lines.form_in_esi_total
+msgid "Total for the fund"
+msgstr "Total untuk badan dana"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "UAN"
+msgstr "UAN"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "UAN (provident fund number)"
+msgstr "UAN (nomor dana provident)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__reports
+msgid "Used by reports"
+msgstr "Dipakai oleh laporan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_vn_si_items
+msgid "Vietnam Social Security"
+msgstr "Jaminan Sosial Vietnam"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_wage
+msgid "Wage reported to BPJS"
+msgstr "Upah yang dilaporkan ke BPJS"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_wage
+msgid "Wage reported to BPJS Health"
+msgstr "Upah yang dilaporkan ke BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_wages
+msgid "Wages for ESI"
+msgstr "Upah untuk ESI"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "Whole rupees, rounded half up"
+msgstr "Rupee bulat, dibulatkan setengah ke atas"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Why not / to check"
+msgstr "Alasan / perlu dicek"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jkk_er
+msgid "Work accident cover (JKK) — employer"
+msgstr "Jaminan kecelakaan kerja (JKK) — pemberi kerja"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__tile_group
+msgid "Tile group"
+msgstr "Grup ubin"

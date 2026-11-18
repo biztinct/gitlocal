@@ -57,6 +57,11 @@ tables, no demo data, no scheduled job.
         'data/forms_year_end_vn.xml',
         'data/forms_year_end_in.xml',
         'data/forms_year_end_sg.xml',
+        # WDGAP S2-B2 — fund files + the VN social-insurance pay items
+        'data/forms_fund_id.xml',
+        'data/forms_fund_in.xml',
+        'data/forms_fund_sg.xml',
+        'data/forms_vn_si.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -67,6 +72,8 @@ tables, no demo data, no scheduled job.
             'pb_form_lines/static/src/xml/gov_filing_flow.xml',
             # WDGAP S2-B1 (appended)
             'pb_form_lines/static/src/scss/year_end.scss',
+            # WDGAP S2-B2 — fund wording on the two S2-A screens (t-inherit)
+            'pb_form_lines/static/src/xml/fund_files.xml',
         ],
     },
     'external_dependencies': {'python': ['xlsxwriter']},

@@ -73,6 +73,62 @@ class PbGovtReportBase(models.AbstractModel):
                 emp_map[line.code] = emp_map.get(line.code, 0.0) + line.total
         return res
 
+    # ------------------------------------------------------------------
+    # WDGAP S2-B2 — the pay items these reports read, from Form lines
+    # ------------------------------------------------------------------
+    # The reports used to look a person's sick-leave days, maternity-leave
+    # days, allowances and other additions up by the FIXED codes SICK, MAT,
+    # ALLOW and EXTRA — codes a customer's own pay scheme rarely uses
+    # (WDGAP S2F-3). The form `VN_SI_ITEMS` (pb_form_lines, read by probe:
+    # this module does not depend on it) lets HR say once on Form lines which
+    # of THEIR pay items each of the four is. Per item:
+    #   * nothing mapped for the company → the fixed code, exactly as before
+    #     (the golden test pins the bytes);
+    #   * mapped → the form reader's figure for the person (finished payslips
+    #     whose period ends in the report's period, the reader's rule), and
+    #     the report says under its rows which pay items it used.
+    SI_ITEM_CODES = ("SICK", "MAT", "ALLOW", "EXTRA")
+    SI_FORM_CODE = "VN_SI_ITEMS"
+
+    def _pb_si_items(self, company, date_from, date_to):
+        """None when no item is mapped (or Form lines is not installed);
+        else {'mapped': {code: [pay item names]}, 'values': {employee id:
+        {code: value}}}."""
+        if "pb.gov.form.reader" not in self.env or "pb.gov.form.map" not in self.env:
+            return None
+        form = self.env["pb.gov.form"].sudo().search([("code", "=", self.SI_FORM_CODE)], limit=1)
+        if not form:
+            return None
+        maps = self.env["pb.gov.form.map"].sudo().search(
+            [("form_id", "=", form.id), ("company_id", "=", company.id)])
+        if not maps:
+            return None
+        mapped = {}
+        for row in maps:
+            mapped.setdefault(row.line_id.code, []).append(row.rule_id.name or row.rule_id.code or "")
+        data = self.env["pb.gov.form.reader"].sudo()._pb_read(form, company, date_from, date_to)
+        values = {e["employee_id"]: dict(e.get("lines") or {}) for e in data.get("employees") or []}
+        return {"mapped": mapped, "values": values}
+
+    def _pb_si_amount(self, items, emp_id, emp_lines, code):
+        """The figure of `code` for one person: the mapped pay items when the
+        company put one on that line, else the fixed code as before."""
+        if items and code in items["mapped"]:
+            return float(items["values"].get(emp_id, {}).get(code) or 0.0)
+        return emp_lines.get(code, 0.0)
+
+    def _pb_si_note(self, items, codes):
+        """One sentence under the rows naming the pay items used, or ''."""
+        if not items:
+            return ""
+        words = {"SICK": "Ngày nghỉ ốm đau", "MAT": "Ngày nghỉ thai sản",
+                 "ALLOW": "Phụ cấp", "EXTRA": "Các khoản bổ sung"}
+        parts = ["%s = %s" % (words[c], ", ".join(items["mapped"][c]))
+                 for c in codes if c in items["mapped"]]
+        if not parts:
+            return ""
+        return "Lấy từ khoản lương đã chọn ở Dòng biểu mẫu: " + "; ".join(parts) + "."
+
     def _default_filename(self, report_code, company, date_from):
         suffix = ""
         if date_from:

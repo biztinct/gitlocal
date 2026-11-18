@@ -11,6 +11,7 @@
         <field name="country_code">IN</field>
         <field name="sequence">130</field>
         <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
         <field name="year_start_month">4</field>
         <field name="name">Salary certificate figures — Form 16 Part B (tax years up to 2025-26)</field>
         <field name="official_name">Form No. 16, Part B (Annexure-I) — Details of salary paid and any other income and tax deducted</field>
@@ -495,6 +496,7 @@
         <field name="country_code">IN</field>
         <field name="sequence">131</field>
         <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
         <field name="year_start_month">4</field>
         <field name="name">Salary certificate figures — Form 130 Part C (tax year 2026-27 onwards)</field>
         <field name="official_name">Form No. 130, Part C (Annexure-I) — Details of salary paid and tax deducted (Income-tax Rules, 2026)</field>
@@ -964,6 +966,7 @@
         <field name="country_code">IN</field>
         <field name="sequence">132</field>
         <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
         <field name="year_start_month">4</field>
         <field name="name">Quarterly salary tax statement figures — Form 24Q (quarters up to March 2026)</field>
         <field name="official_name">Form No. 24Q — Quarterly statement of deduction of tax under sub-section (3) of section 200 in respect of salary</field>
@@ -1037,6 +1040,7 @@
         <field name="country_code">IN</field>
         <field name="sequence">133</field>
         <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
         <field name="year_start_month">4</field>
         <field name="name">Quarterly salary tax statement figures — Form 138 (from April 2026)</field>
         <field name="official_name">Form No. 138 — Quarterly statement of deduction of tax under section 392 in respect of salary (Income-tax Rules, 2026)</field>

@@ -122,7 +122,9 @@ class PbGovForm(models.Model):
     line_ids = fields.One2many('pb.gov.form.line', 'form_id', string='Lines')
     # ---- WDGAP S2-B (year-end paperwork)
     tile_group = fields.Selection(
-        TILE_GROUPS, string='Shown under', required=True, default='tax_return',
+        # S2 merge: own label (filing_section, S2-B2, is "Shown under" and is
+        # the board's grouping; this one is kept in step with it in the data)
+        TILE_GROUPS, string='Tile group', required=True, default='tax_return',
         help="Which group of tiles on Compliance › Filings shows this form.")
     year_start_month = fields.Integer(
         string="Authority's tax year starts in", default=1,

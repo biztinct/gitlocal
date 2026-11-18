@@ -52,7 +52,31 @@ def _forms_for(env, company, country):
         return []
     Board = env['pb.gov.form.board']
     forms = env['pb.gov.form'].sudo().search([('country_code', '=', country)])
-    return [Board._form_card(form, company) for form in forms]
+    cards = [Board._form_card(form, company) for form in forms]
+    # WDGAP S2-B2: a form that is no filing of its own (the pay items the
+    # VN social-insurance reports read) gets no tile
+    return [c for c in cards if c.get('section', 'tax') != 'reports']
+
+
+#: WDGAP S2-B2 — the order of the tile groups; a section this list does not
+#: name comes after these, in the order its forms come.
+_SECTION_ORDER = ('tax', 'year_end', 'fund')
+_SECTION_ICON = {'tax': 'landmark', 'year_end': 'calendarClock', 'fund': 'wallet'}
+
+
+def _form_groups(forms):
+    """The form tiles grouped by where they sit (`section` of each card,
+    pb_form_lines): Tax returns, Fund files, … — each group with its label
+    from the card."""
+    groups = {}
+    for card in forms:
+        key = card.get('section') or 'tax'
+        group = groups.setdefault(key, {'key': key, 'label': card.get('section_label') or '',
+                                        'icon': _SECTION_ICON.get(key, 'fileCheck'),
+                                        'forms': []})
+        group['forms'].append(card)
+    order = {key: i for i, key in enumerate(_SECTION_ORDER)}
+    return sorted(groups.values(), key=lambda g: order.get(g['key'], len(order)))
 
 
 class PbGovtReports(models.AbstractModel):
@@ -81,24 +105,28 @@ class PbGovtReports(models.AbstractModel):
         if home_cc:
             present.add(home_cc)
         try:
-            cfgs = self.env['hr.formula.config'].with_context(active_test=False).search(
+            # sudo: only the country codes of this company's own schemes are read
+            # (a payroll officer without formula rights saw no country — S2-B2)
+            cfgs = self.env['hr.formula.config'].sudo().with_context(active_test=False).search(
                 [('company_id', '=', company.id)])
             present |= {(c.country_code or '').upper() for c in cfgs if c.country_code}
         except Exception:
             pass
         present.discard('')
 
-        sel = (country_code or home_cc or 'VN').upper()
+        # WDGAP S2-B2: a company with no country of its own opens on its pay
+        # schemes' country (it used to open on Vietnam whatever it paid)
+        sel = (country_code or home_cc or (sorted(present)[0] if present else 'VN')).upper()
         cat = _CATALOG.get(sel, {})
         wizard_model = cat.get('wizard_model')
         available = bool(wizard_model) and wizard_model in self.env
-        forms = _forms_for(self.env, company, sel)
-        # WDGAP S2-B1: tiles grouped by the form's `tile_group` — `forms`
-        # stays the monthly tax returns (S2-A's key), the year-end paperwork
-        # has its own list under "Year-end"
-        all_forms = forms
-        forms = [f for f in all_forms if f.get('tile_group', 'tax_return') == 'tax_return']
-        year_end_forms = [f for f in all_forms if f.get('tile_group') == 'year_end']
+        # WDGAP S2 merge: ONE grouping — the form's section (`filing_section`,
+        # S2-B2): tax / year_end / fund. `forms` stays the monthly tax returns
+        # (S2-A's key), `year_end_forms` the year-end paperwork (S2-B1's key);
+        # `form_groups` carries every group for the board.
+        all_forms = _forms_for(self.env, company, sel)
+        forms = [c for c in all_forms if (c.get('section') or 'tax') == 'tax']
+        year_end_forms = [c for c in all_forms if c.get('section') == 'year_end']
         return {
             'company': company.name,
             'country_code': sel,
@@ -107,7 +135,11 @@ class PbGovtReports(models.AbstractModel):
             'available': available or bool(all_forms),
             'wizards_available': available,
             # WDGAP S2-A: the tax returns of the form catalogue, as tiles
+            # (S2-B2: still the tax returns only — the S2-A meaning)
             'forms': forms,
+            # WDGAP S2-B2: every form tile, grouped (Tax returns, Year-end,
+            # Fund files)
+            'form_groups': _form_groups(all_forms),
             'form_lines': 'pb.gov.form' in self.env,
             'groups': cat.get('groups', []) if available else [],
             'year_end_forms': year_end_forms,

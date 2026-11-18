@@ -572,3 +572,9 @@ msgstr "Chứng từ cho từng người"
 #: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
 msgid "Year-end"
 msgstr "Cuối năm"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Check with the fund before the first upload"
+msgstr "Hãy kiểm tra với quỹ trước lần tải lên đầu tiên"

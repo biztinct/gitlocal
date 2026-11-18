@@ -56,6 +56,8 @@ class Bhxh630ReportXlsx(ReportXlsxAbstract):
         employees = base._select_employees(wizard)
         payslips = base._get_payslips_in_range(company, date_from, date_to)
         lines_map = base._payslip_lines_map(payslips)
+        # WDGAP S2-B2: the pay items chosen on Form lines, when there are any
+        items = base._pb_si_items(company, date_from, date_to)
 
         benefit_label = {
             "om_dau_thai_san": "Ốm đau/Thai sản",
@@ -67,7 +69,8 @@ class Bhxh630ReportXlsx(ReportXlsxAbstract):
         row = self.start_row_phatsinh
         for emp in employees:
             emp_lines = lines_map.get(emp.id, {})
-            total_days = emp_lines.get("SICK", 0.0) + emp_lines.get("MAT", 0.0)
+            total_days = (base._pb_si_amount(items, emp.id, emp_lines, "SICK")
+                          + base._pb_si_amount(items, emp.id, emp_lines, "MAT"))
             # Odoo 19 deleted hr.employee.bank_account_id. The account is
             # resolved exactly the way Pay & Deliver resolves it, so the
             # account BHXH is told about is the account payroll pays into.
@@ -101,6 +104,9 @@ class Bhxh630ReportXlsx(ReportXlsxAbstract):
             sheet.write(row, 21, wizard.bhxh630_route_code or "")  # Mã tuyến bệnh viện
             sheet.write(row, 22, wizard.bhxh630_long_illness_code or "")  # Mã bệnh dài ngày
             row += 1
+        note = base._pb_si_note(items, ("SICK", "MAT"))
+        if note:
+            sheet.write(row + 1, 0, note)
 
     def get_filename(self, wizard, record):
         base = self.env["pb.govt.report.base"]

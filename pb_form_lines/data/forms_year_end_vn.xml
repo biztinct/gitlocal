@@ -10,6 +10,7 @@
         <field name="country_code">VN</field>
         <field name="sequence">120</field>
         <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
         <field name="year_start_month">1</field>
         <field name="name">Annual personal income tax finalisation 05/QTT-TNCN (tax year 2026 onwards)</field>
         <field name="official_name">Tờ khai quyết toán thuế thu nhập cá nhân — Mẫu số 05/QTT-TNCN (Thông tư 89/2026/TT-BTC)</field>
@@ -401,6 +402,7 @@
         <field name="country_code">VN</field>
         <field name="sequence">121</field>
         <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
         <field name="year_start_month">1</field>
         <field name="name">Annual personal income tax finalisation 05/QTT-TNCN (tax years up to 2025)</field>
         <field name="official_name">Tờ khai quyết toán thuế thu nhập cá nhân — Mẫu số 05/QTT-TNCN (Thông tư 80/2021/TT-BTC)</field>

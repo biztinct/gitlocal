@@ -10,6 +10,7 @@
         <field name="country_code">SG</field>
         <field name="sequence">140</field>
         <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
         <field name="year_start_month">1</field>
         <field name="name">Employee income for the year — Form IR8A (Auto-Inclusion Scheme)</field>
         <field name="official_name">Form IR8A — Return of Employee's Remuneration (AIS)</field>
