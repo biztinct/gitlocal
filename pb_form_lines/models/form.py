@@ -25,7 +25,18 @@ Line kinds (`pb.gov.form.line.kind`):
   text      a per-person text read from a mapped item (e.g. a tax status);
   computed  worked out from other lines (`compute_op`: sum / ratio / percent
             of `operand_codes`). A computed line may still be mapped; a
-            mapping then wins over the computation.
+            mapping then wins over the computation. In a sum, an operand
+            written with a leading minus ("-2i") is taken away (WDGAP S2-B:
+            "3 = 1(d) - 2(i)").
+
+Sign rules: `never_negative` shows a figure below zero as zero and says so on
+the person; `positive_part` keeps only the part above zero quietly (a "still
+to pay" line beside an "overpaid" line).
+
+WDGAP S2-B adds per form: `tile_group` (the Filings tile group: tax returns,
+year-end, fund files), `year_start_month` (the authority's tax year, India =
+April), `employee_certificates` (one PDF per person, released to employees on
+My Payobook by a payroll manager) and `screen_note` (what the files are for).
 """
 import logging
 
@@ -51,7 +62,12 @@ POPULATIONS = [('all', 'Everyone'), ('resident', 'Tax residents'),
 COMPUTE_OPS = [('sum', 'Sum of lines'), ('ratio', 'One line divided by another'),
                ('percent', 'Percentage of a line')]
 SIGN_RULES = [('as_read', 'As read from the payslips'),
-              ('never_negative', 'Never below zero')]
+              ('never_negative', 'Never below zero'),
+              ('positive_part', 'Only the part above zero')]
+#: Where a form's tile sits on Compliance › Filings (WDGAP S2-B: year-end
+#: paperwork beside the monthly returns; fund files for wave 2's other half).
+TILE_GROUPS = [('tax_return', 'Tax returns'), ('year_end', 'Year-end'),
+               ('fund_file', 'Fund files')]
 
 
 def has_any(user, groups):
@@ -99,6 +115,23 @@ class PbGovForm(models.Model):
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
     line_ids = fields.One2many('pb.gov.form.line', 'form_id', string='Lines')
+    # ---- WDGAP S2-B (year-end paperwork)
+    tile_group = fields.Selection(
+        TILE_GROUPS, string='Shown under', required=True, default='tax_return',
+        help="Which group of tiles on Compliance › Filings shows this form.")
+    year_start_month = fields.Integer(
+        string="Authority's tax year starts in", default=1,
+        help="1-12. The month the authority's own tax year starts in (India: "
+             "April). Used for tax-year and quarter periods; each pay scheme "
+             "still says its own tax year and the reader warns when they differ.")
+    employee_certificates = fields.Boolean(
+        string='Makes a certificate for each person',
+        help="Preparing this form also makes one PDF per person, which a "
+             "payroll manager can release to employees on My Payobook once "
+             "the filing is approved.")
+    screen_note = fields.Text(
+        translate=True, help="A plain sentence shown on the screen beside the "
+                             "form (what the files are for).")
 
     _code_uniq = models.Constraint('unique(code)', 'A form code is used once.')
 

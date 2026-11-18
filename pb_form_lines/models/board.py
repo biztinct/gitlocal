@@ -13,7 +13,7 @@ from datetime import date
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools.misc import format_datetime
+from odoo.tools.misc import format_date, format_datetime
 
 from odoo.addons.pb_hr_payroll_formula.models import tax_year as TY
 
@@ -150,6 +150,11 @@ class PbGovFormBoard(models.AbstractModel):
             'latest_state': latest.state or '',
             'latest_state_label': latest._state_label() if latest else '',
             'latest_period': latest.period_label or '',
+            # WDGAP S2-B
+            'tile_group': form.tile_group or 'tax_return',
+            'screen_note': form.screen_note or '',
+            'employee_certificates': bool(form.employee_certificates),
+            'year_start_month': form.year_start_month or 1,
         }
 
     @api.model
@@ -295,21 +300,52 @@ class PbGovFormBoard(models.AbstractModel):
     # ========================================================= the filing flow
     @api.model
     def _bounds(self, form, key):
-        """'2026-03' (a month) or '2026-Q3' (a calendar quarter)."""
+        """'2026-03' (a month), '2026-Q3' (a quarter) or '2026' (a tax year).
+        Quarters and tax years follow the authority's tax year
+        (`form.year_start_month`): for India '2026-Q1' is April - June 2026
+        and '2026' is April 2026 - March 2027 (WDGAP S2-B)."""
         key = (key or '').strip().upper()
+        start_month = TY.month_of(form.year_start_month or 1)
         m = re.fullmatch(r'(\d{4})-(\d{2})', key)
         if m:
             start, end = month_bounds(date(int(m.group(1)), int(m.group(2)), 1))
             if form.period_kind == 'quarter':
                 raise UserError(_("This form is filed per quarter: pick a quarter."))
+            if form.period_kind == 'tax_year':
+                raise UserError(_("This form is filed per tax year: pick a year."))
             return start, end
         m = re.fullmatch(r'(\d{4})-Q([1-4])', key)
         if m:
             if form.period_kind == 'month' and not form.quarter_allowed:
                 raise UserError(_("This form is filed per month: pick a month."))
-            first = date(int(m.group(1)), (int(m.group(2)) - 1) * 3 + 1, 1)
-            return TY.tax_quarter_bounds(1, first)
+            if form.period_kind == 'tax_year':
+                raise UserError(_("This form is filed per tax year: pick a year."))
+            first_of_year, _last = TY.tax_year_bounds_for_key(start_month, int(m.group(1)))
+            first = TY._add_months(first_of_year, (int(m.group(2)) - 1) * 3)
+            return TY.tax_quarter_bounds(start_month, first)
+        m = re.fullmatch(r'(\d{4})', key)
+        if m:
+            if form.period_kind != 'tax_year':
+                raise UserError(_("Pick the period first."))
+            return TY.tax_year_bounds_for_key(start_month, int(m.group(1)))
         raise UserError(_("Pick the period first."))
+
+    @api.model
+    def _period_choices(self, form, ref):
+        """The years (tax-year forms) and the quarter names (quarterly
+        forms) the period step offers, in the authority's tax year."""
+        start_month = TY.month_of(form.year_start_month or 1)
+        key = TY.tax_year_key(start_month, ref)
+        years = [{'key': str(k), 'label': TY.tax_year_label_for_key(start_month, k)}
+                 for k in range(key - 3, key + 2)]
+        quarters = []
+        for q in range(4):
+            first, _l = TY.tax_year_bounds_for_key(start_month, 2001)
+            a = TY._add_months(first, q * 3)
+            b = TY._add_months(first, q * 3 + 2)
+            quarters.append(format_date(self.env, a, date_format='MMMM') + ' – '
+                            + format_date(self.env, b, date_format='MMMM'))
+        return years, quarters
 
     @api.model
     def flow_start(self, form_id):
@@ -332,17 +368,24 @@ class PbGovFormBoard(models.AbstractModel):
             ref = form.valid_to
         if form.valid_from and ref < form.valid_from:
             ref = form.valid_from
+        start_month = TY.month_of(form.year_start_month or 1)
         if form.period_kind == 'quarter':
-            default = '%d-Q%d' % (ref.year, (ref.month - 1) // 3 + 1)
+            first, _last = TY.tax_quarter_bounds(start_month, ref)
+            year_first, _y = TY.tax_year_bounds(start_month, ref)
+            n = ((first.year * 12 + first.month) - (year_first.year * 12 + year_first.month)) // 3 + 1
+            default = '%d-Q%d' % (year_first.year, n)
+        elif form.period_kind == 'tax_year':
+            default = str(TY.tax_year_key(start_month, ref))
         else:
             default = '%d-%02d' % (ref.year, ref.month)
+        years, quarters = self._period_choices(form, ref)
         history = []
         for f in self.env['pb.gov.filing'].sudo().search(
                 [('form_id', '=', form.id), ('company_id', '=', company.id)],
                 order='id desc', limit=12):
             history.append(self._filing_row(f))
         card.update({'default_period': default, 'schemes': self._schemes(company, form),
-                     'history': history})
+                     'history': history, 'year_options': years, 'quarter_labels': quarters})
         return card
 
     @api.model
@@ -466,4 +509,25 @@ class PbGovFormBoard(models.AbstractModel):
             'downloaded_on': self._when(rec.downloaded_at),
             'can_resend': rec.state in ('draft', 'returned'),
         })
+        # WDGAP S2-B: the per-person certificates and their release
+        certs = rec.certificate_ids if 'certificate_ids' in rec._fields else []
+        is_manager = self.env['pb.gov.form.rights']._pb_is_manager()
+        row.update({
+            'certificates': len(certs),
+            'released': bool(certs and rec.pb_released),
+            'released_by': rec.pb_released_by.name or '' if certs else '',
+            'released_on': self._when(rec.pb_released_at) if certs else '',
+            'can_release': bool(certs) and is_manager and row['downloadable'],
+            'is_manager': is_manager,
+        })
         return row
+
+    @api.model
+    def set_released(self, filing_id, value):
+        """"Release to employees" / "Take back" (payroll manager, approved
+        filings only — the model says why not)."""
+        self._door()
+        filing = self._filing(filing_id)
+        filing._pb_release(bool(value))
+        filing.invalidate_recordset()
+        return self.get_filing(filing.id)

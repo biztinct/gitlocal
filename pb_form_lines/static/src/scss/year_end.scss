@@ -1,0 +1,32 @@
+// WDGAP S2-B1 — year-end paperwork on "Prepare a filing": the note that says
+// what the files are for, and the "Release to employees" strip. Quiet board:
+// grey while nothing is shown to employees, the primary tint once released.
+$pbye-ink: #1f2937;
+$pbye-muted: #6b7280;
+$pbye-line: #e5e7eb;
+$pbye-primary: #5A4BB0;
+$pbye-primary-soft: #eeecf8;
+
+.pbgf {
+    .pbgf-note { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 8px; }
+    .pbgf-release {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        border: 1px solid $pbye-line; border-radius: 10px; padding: 10px 12px; margin: 4px 0 12px;
+        background: #fff;
+        &.is-on { border-color: $pbye-primary; background: $pbye-primary-soft; }
+    }
+    .pbgf-release-ic {
+        display: inline-flex; align-items: center; justify-content: center; flex: none;
+        width: 34px; height: 34px; border-radius: 8px; background: #f3f4f6; color: $pbye-muted;
+    }
+    .pbgf-release.is-on .pbgf-release-ic { background: #fff; color: $pbye-primary; }
+    .pbgf-release-tx { display: flex; flex-direction: column; gap: 2px; flex: 1 1 220px; min-width: 0;
+        b { color: $pbye-ink; font-size: 14px; }
+        small { font-size: 12px; }
+    }
+}
+
+@media (max-width: 760px) {
+    .pbgf .pbgf-release { align-items: flex-start; }
+    .pbgf .pbgf-release .pbim-btn { width: 100%; justify-content: center; }
+}

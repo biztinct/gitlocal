@@ -95,7 +95,9 @@ class PbGovFormReader(models.AbstractModel):
         no scheme is given)."""
         form = self._pb_form(form)
         day = fields.Date.to_date(day)
-        month = TY.month_of(config) if config else TY.DEFAULT_MONTH
+        # the scheme's tax year when one is given, else the authority's own
+        # (WDGAP S2-B: India's April year on a form, January otherwise)
+        month = TY.month_of(config) if config else TY.month_of(form.year_start_month or 1)
         if form.period_kind == 'month':
             return month_bounds(day)
         if form.period_kind == 'quarter':
@@ -163,7 +165,10 @@ class PbGovFormReader(models.AbstractModel):
         npwp = ''.join(ch for ch in (self._pb_field(emp, 'pb_npwp_number') or '') if ch.isdigit())
         passport = (emp.passport_id or '').strip()
         ptkp = ''
-        for name in ('pb_ptkp_status', 'pb_tax_ptkp_status', 'ptkp_status'):
+        # `pb_id_ptkp_status` is pb_me_tax's field (WDGAP S2-D, approved by
+        # HR); the others are older names kept for safety
+        for name in ('pb_id_ptkp_status', 'pb_ptkp_status', 'pb_tax_ptkp_status',
+                     'ptkp_status'):
             value = self._pb_field(emp, name)
             if value:
                 ptkp = str(value)
@@ -196,8 +201,88 @@ class PbGovFormReader(models.AbstractModel):
             resident = True
         missing = [] if tax_code else [_("personal tax code")]
         return {'values': {'name': emp.name or '', 'tax_code': tax_code,
-                           'national_id': emp.identification_id or ''},
+                           'national_id': emp.identification_id or '',
+                           'passport': (emp.passport_id or '').strip(),
+                           'nationality': emp.country_id.name or '',
+                           'address': self._pb_home_address(emp)},
                 'resident': resident, 'missing': missing}
+
+    @api.model
+    def _pb_home_address(self, emp):
+        """The person's private address on one line (empty when none)."""
+        parts = []
+        for name in ('private_street', 'private_street2', 'private_city'):
+            value = self._pb_field(emp, name)
+            if value:
+                parts.append(str(value).strip())
+        state = self._pb_field(emp, 'private_state_id')
+        if state:
+            parts.append(state.name or '')
+        return ', '.join(p for p in parts if p)
+
+    @api.model
+    def _pb_identity_in(self, form, employee):
+        """India: PAN and the tax regime the person chose. Both are kept by
+        pb_me_tax on the employee record (WDGAP S2-D: `pb_in_pan_number`,
+        `pb_in_tax_regime`) and read by probe; the older contract copy of the
+        PAN (`pan_number`, legacy India module) is read when the employee has
+        none. A missing PAN is a warning, never a crash."""
+        emp = employee.sudo()
+        pan = (self._pb_field(emp, 'pb_in_pan_number') or '').strip().upper()
+        if not pan:
+            Contract = self.env['hr.contract'].sudo()
+            if 'pan_number' in Contract._fields:
+                contract = Contract.search([('employee_id', '=', emp.id)],
+                                           order='date_start desc, id desc', limit=1)
+                pan = (contract.pan_number or '').strip().upper()
+        regime = self._pb_field(emp, 'pb_in_tax_regime') or ''
+        return {
+            'values': {'name': emp.name or '', 'pan': pan, 'regime': regime,
+                       'employee_number': self._pb_field(emp, 'registration_number') or '',
+                       'position': (emp.job_title or emp.job_id.name or '').strip(),
+                       'address': self._pb_home_address(emp)},
+            'resident': True,
+            'missing': [] if pan else [_("PAN")],
+        }
+
+    @api.model
+    def _pb_identity_sg(self, form, employee):
+        """Singapore: the tax reference (NRIC or FIN, kept in the national ID
+        box, as pb_me_tax shows it), its kind for IRAS (1 NRIC: S/T…, 2 FIN:
+        F/G/M…, 4 work permit, 12 passport), date of birth, sex, tax
+        residency (`pb_sg_tax_residency`, pb_me_tax, by probe). Never a
+        made-up number: a person with none of them is missing it."""
+        emp = employee.sudo()
+        ident = (emp.identification_id or '').strip().upper().replace(' ', '')
+        permit = (self._pb_field(emp, 'permit_no') or '').strip().upper()
+        passport = (emp.passport_id or '').strip().upper()
+        id_type, number = '', ''
+        if ident and ident[0] in 'ST':
+            id_type, number = '1', ident
+        elif ident and ident[0] in 'FGM':
+            id_type, number = '2', ident
+        elif permit:
+            id_type, number = '4', permit
+        elif passport:
+            id_type, number = '12', passport
+        residency = self._pb_field(emp, 'pb_sg_tax_residency') or ''
+        gender = self._pb_field(emp, 'sex') or self._pb_field(emp, 'gender') or ''
+        birthday = self._pb_field(emp, 'birthday')
+        missing = []
+        if not number:
+            missing.append(_("NRIC or FIN"))
+        return {
+            'values': {'name': emp.name or '', 'id_type': id_type, 'id_number': number,
+                       'birthday': fields.Date.to_string(birthday) if birthday else '',
+                       'sex': {'male': 'M', 'female': 'F'}.get(gender, ''),
+                       'position': (emp.job_title or emp.job_id.name or '').strip(),
+                       'residency': residency,
+                       'nationality': emp.country_id.name or '',
+                       'address': self._pb_home_address(emp),
+                       'postal_code': (self._pb_field(emp, 'private_zip') or '').strip()},
+            'resident': residency != 'non_resident',
+            'missing': missing,
+        }
 
     # ================================================================ reading
     @api.model
@@ -323,9 +408,18 @@ class PbGovFormReader(models.AbstractModel):
         texts = defaultdict(dict)
         slips_of = defaultdict(list)
         schemes_of = defaultdict(set)
+        # WDGAP S2-B: the first and last day each person was paid for in the
+        # period, and the pay months (year-end slips need a leaver's months)
+        span_of = {}
+        months_of = defaultdict(set)
         for slip in slips:
-            slips_of[slip.employee_id.id].append(slip.id)
-            schemes_of[slip.employee_id.id].add(slip.formula_config_id.id)
+            emp_id = slip.employee_id.id
+            slips_of[emp_id].append(slip.id)
+            schemes_of[emp_id].add(slip.formula_config_id.id)
+            first, last = span_of.get(emp_id, (slip.date_from, slip.date_to))
+            span_of[emp_id] = (min(first, slip.date_from or first),
+                               max(last, slip.date_to or last))
+            months_of[emp_id].add('%04d-%02d' % (slip.date_to.year, slip.date_to.month))
         line_maps = maps.filtered(lambda m: m.source == 'payslip_line')
         value_maps = maps - line_maps
         self._pb_read_lines(slips, line_maps, per_emp)
@@ -348,6 +442,9 @@ class PbGovFormReader(models.AbstractModel):
                 'payslip_ids': slips_of[emp.id],
                 'scheme_ids': sorted(schemes_of[emp.id]),
                 'lines': {}, 'checks': [],
+                'date_from': fields.Date.to_string(span_of[emp.id][0]),
+                'date_to': fields.Date.to_string(span_of[emp.id][1]),
+                'months': sorted(months_of[emp.id]),
             }
         for label, emp_ids in missing_by_label.items():
             if len(emp_ids) == 1:
@@ -369,6 +466,11 @@ class PbGovFormReader(models.AbstractModel):
                 self._pb_warn(out, 'line_not_mapped', _(
                     "Line %(code)s “%(label)s” has no pay item from %(schemes)s.",
                     code=line.code, label=line.label, schemes=', '.join(bare.mapped('name'))))
+        # WDGAP S2-B: a form's own points to check (`_pb_checks_<code>`),
+        # e.g. Vietnam's dependants "to check" rows — they warn, never block
+        hook = getattr(self, '_pb_checks_%s' % (form.code or '').lower(), None)
+        if hook is not None:
+            hook(form, company, out)
         return out
 
     # ------------------------------------------------------------ the SQL
@@ -513,6 +615,8 @@ class PbGovFormReader(models.AbstractModel):
                 if line.sign_rule == 'never_negative' and value < 0:
                     emp['checks'].append(_("Line %s was below zero and is shown as zero", line.code))
                     value = 0.0
+                elif line.sign_rule == 'positive_part' and value < 0:
+                    value = 0.0
                 value = self._pb_round(line, currency, value)
                 if line.scope == 'employee':
                     emp['lines'][line.code] = value
@@ -536,7 +640,7 @@ class PbGovFormReader(models.AbstractModel):
         done, seen, out = set(), set(), []
 
         def deps(line):
-            codes = list(line._pb_operands()) if line.kind == 'computed' else []
+            codes = [c.lstrip('-') for c in line._pb_operands()] if line.kind == 'computed' else []
             for rel in (line.base_line_id, line.only_if_line_id):
                 if rel:
                     codes.append(rel.code)
@@ -560,9 +664,16 @@ class PbGovFormReader(models.AbstractModel):
     @api.model
     def _pb_compute_op(self, line, values):
         ops = line._pb_operands()
-        nums = [values.get(c) or 0.0 for c in ops]
         if line.compute_op == 'sum':
-            return sum(nums) * (line.factor or 1.0)
+            # "-2i" takes line 2i away (WDGAP S2-B)
+            total = 0.0
+            for code in ops:
+                if code.startswith('-'):
+                    total -= values.get(code[1:]) or 0.0
+                else:
+                    total += values.get(code) or 0.0
+            return total * (line.factor or 1.0)
+        nums = [values.get(c) or 0.0 for c in ops]
         if line.compute_op == 'ratio':
             if len(nums) < 2 or not nums[1]:
                 return 0.0

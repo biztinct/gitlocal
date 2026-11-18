@@ -52,6 +52,11 @@ tables, no demo data, no scheduled job.
         'data/forms_id.xml',
         'data/forms_vn.xml',
         'views/actions.xml',
+        # WDGAP S2-B1 — year-end paperwork (appended; S2-B2 appends its own)
+        'data/forms_year_end_id.xml',
+        'data/forms_year_end_vn.xml',
+        'data/forms_year_end_in.xml',
+        'data/forms_year_end_sg.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -60,6 +65,8 @@ tables, no demo data, no scheduled job.
             'pb_form_lines/static/src/js/gov_filing_flow.js',
             'pb_form_lines/static/src/xml/form_lines_board.xml',
             'pb_form_lines/static/src/xml/gov_filing_flow.xml',
+            # WDGAP S2-B1 (appended)
+            'pb_form_lines/static/src/scss/year_end.scss',
         ],
     },
     'external_dependencies': {'python': ['xlsxwriter']},
