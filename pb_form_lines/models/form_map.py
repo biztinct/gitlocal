@@ -154,7 +154,7 @@ class PbGovFormMap(models.Model):
                         continue
                 elif (rule.value_kind or 'money') not in NUMBER_KINDS:
                     continue
-                if rule.net_role_detail:
+                if rule.net_role_detail and not line.suggest_parts:
                     # a part already counted inside another total
                     continue
                 name = _norm(rule.name)
@@ -162,9 +162,15 @@ class PbGovFormMap(models.Model):
                 hit = next((w for w in words if w and (w == code or w in name)), None)
                 if not hit:
                     continue
-                # one proposal per scheme per line: the closest name wins
+                # one proposal per scheme per line: the closest name wins.
+                # WDGAP S2-F — on a line that accepts parts, a whole item beats
+                # a part and the first role listed beats the next; on every
+                # other line both ranks are 0, so its order is unchanged.
                 best = per_scheme.get(rule.config_id.id)
-                score = (0 if name == hit or code == hit else 1, len(name))
+                parts = line.suggest_parts
+                score = (1 if parts and rule.net_role_detail else 0,
+                         roles.index(rule.net_role) if parts and rule.net_role in roles else 0,
+                         0 if name == hit or code == hit else 1, len(name))
                 if best and best[0] <= score:
                     continue
                 per_scheme[rule.config_id.id] = (score, rule, hit)

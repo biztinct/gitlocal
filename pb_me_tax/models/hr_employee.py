@@ -101,10 +101,37 @@ class HrEmployeeTax(models.Model):
             '|', ('date_end', '=', False), ('date_end', '>=', today)],
             order='date_start desc, id desc', limit=1)
 
+    def _pbtx_vn_written(self, lines):
+        """The component lines whose figure was ever written (WDGAP S2-F, TD4).
+
+        `amount` is a Float: the ORM reads a NULL column as 0.0, but it only
+        ever WRITES a number (0.0 included) — a line created without an
+        amount (a seed, an import that left the column out) keeps NULL. NULL
+        is "not set", so it is read from the column itself, never from the
+        record."""
+        if not lines:
+            return lines
+        lines.flush_recordset(['amount'])
+        self.env.cr.execute(
+            'SELECT id FROM hr_contract_advantage '
+            'WHERE id = ANY(%s) AND amount IS NOT NULL', [list(lines.ids)])
+        written = {row[0] for row in self.env.cr.fetchall()}
+        return lines.filtered(lambda line: line.id in written)
+
     def _pbtx_vn_counts(self):
-        """`(confirmed, registered)` for one employee, or None when either
-        number is not kept here (no dependants table, no running contract,
-        no registered-dependants component on it)."""
+        """`(confirmed, registered)` for one employee, or None when there is
+        nothing to compare (no dependants table, no running contract, no
+        registered-dependants figure on it).
+
+        TD4 (owner ruling 2026-11-15, WDGAP S2-F). An EMPTY figure is "nothing
+        to compare": a component line never written (NULL) is skipped, and
+        the next code in the setting is tried. A stored 0 cannot be told
+        apart from "never filled in" — the contract screen writes the
+        template's default (0) the moment a line is added — so a 0 with
+        confirmed dependants counts as not set (no note), and a 0 with none
+        confirmed is equal (no note either). A note therefore needs a real,
+        non-zero figure on the contract that differs from the confirmed
+        dependants."""
         self.ensure_one()
         emp = self.sudo()
         if 'vn_eligible_dependent_count' not in emp._fields \
@@ -114,11 +141,14 @@ class HrEmployeeTax(models.Model):
         if not contract:
             return None
         for code in self._pbtx_vn_codes():
-            lines = contract.advantages_ids.filtered(
-                lambda a, c=code: (a.advantage_template_id.code or '').upper() == c)
+            lines = emp._pbtx_vn_written(contract.advantages_ids.filtered(
+                lambda a, c=code: (a.advantage_template_id.code or '').upper() == c))
             if lines:
                 registered = int(round(sum(lines.mapped('amount'))))
-                return emp.vn_eligible_dependent_count, registered
+                confirmed = emp.vn_eligible_dependent_count
+                if not registered and confirmed:
+                    return None
+                return confirmed, registered
         return None
 
     @api.depends_context('uid')

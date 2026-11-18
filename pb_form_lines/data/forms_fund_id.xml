@@ -32,7 +32,7 @@
         <field name="label">Wage reported to BPJS</field>
         <field name="official_label">Upah</field>
         <field name="required" eval="True"/>
-        <field name="suggest_words">upah bpjs,dasar upah bpjs,dasar bpjs,gaji bpjs,upah tk,bpjs wage,bpjs base</field>
+        <field name="suggest_words">upah bpjs,dasar upah bpjs,dasar bpjs,gaji bpjs,upah tk,bpjs wage,bpjs base,bpjs tk wage</field>
         <field name="suggest_roles">earning,info</field>
         <field name="inferred" eval="True"/>
     </record>
@@ -45,8 +45,9 @@
         <field name="label">Old-age savings (JHT) — employee</field>
         <field name="official_label">Iuran JHT tenaga kerja (2%)</field>
         <field name="required" eval="True"/>
-        <field name="suggest_words">jht,jaminan hari tua</field>
+        <field name="suggest_words">jht,jaminan hari tua,old age</field>
         <field name="suggest_roles">deduction</field>
+        <field name="suggest_parts" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
     <record id="form_id_bpjs_tk_jht_er" model="pb.gov.form.line">
@@ -58,8 +59,9 @@
         <field name="label">Old-age savings (JHT) — employer</field>
         <field name="official_label">Iuran JHT pemberi kerja (3,7%)</field>
         <field name="required" eval="True"/>
-        <field name="suggest_words">jht,jaminan hari tua</field>
+        <field name="suggest_words">jht,jaminan hari tua,old age</field>
         <field name="suggest_roles">employer_cost</field>
+        <field name="suggest_parts" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
     <record id="form_id_bpjs_tk_jkk_er" model="pb.gov.form.line">
@@ -71,8 +73,9 @@
         <field name="label">Work accident cover (JKK) — employer</field>
         <field name="official_label">Iuran JKK</field>
         <field name="required" eval="True"/>
-        <field name="suggest_words">jkk,kecelakaan kerja</field>
-        <field name="suggest_roles">employer_cost</field>
+        <field name="suggest_words">jkk,kecelakaan kerja,work accident,accident insurance</field>
+        <field name="suggest_roles">employer_cost,earning</field>
+        <field name="suggest_parts" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
     <record id="form_id_bpjs_tk_jkm_er" model="pb.gov.form.line">
@@ -84,8 +87,9 @@
         <field name="label">Death cover (JKM) — employer</field>
         <field name="official_label">Iuran JKM</field>
         <field name="required" eval="True"/>
-        <field name="suggest_words">jkm,jaminan kematian,kematian</field>
-        <field name="suggest_roles">employer_cost</field>
+        <field name="suggest_words">jkm,jaminan kematian,kematian,death cover,life insurance</field>
+        <field name="suggest_roles">employer_cost,earning</field>
+        <field name="suggest_parts" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
     <record id="form_id_bpjs_tk_jp_ee" model="pb.gov.form.line">
@@ -96,8 +100,9 @@
         <field name="scope">employee</field>
         <field name="label">Pension (JP) — employee</field>
         <field name="official_label">Iuran JP tenaga kerja (1%)</field>
-        <field name="suggest_words">jp,jaminan pensiun</field>
+        <field name="suggest_words">jp,jaminan pensiun,pension</field>
         <field name="suggest_roles">deduction</field>
+        <field name="suggest_parts" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
     <record id="form_id_bpjs_tk_jp_er" model="pb.gov.form.line">
@@ -108,8 +113,9 @@
         <field name="scope">employee</field>
         <field name="label">Pension (JP) — employer</field>
         <field name="official_label">Iuran JP pemberi kerja (2%)</field>
-        <field name="suggest_words">jp,jaminan pensiun</field>
+        <field name="suggest_words">jp,jaminan pensiun,pension</field>
         <field name="suggest_roles">employer_cost</field>
+        <field name="suggest_parts" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
     <record id="form_id_bpjs_tk_ee_total" model="pb.gov.form.line">
@@ -189,7 +195,7 @@
         <field name="label">Wage reported to BPJS Health</field>
         <field name="official_label">Gaji / upah</field>
         <field name="required" eval="True"/>
-        <field name="suggest_words">upah bpjs kesehatan,dasar bpjs kesehatan,gaji bpjs kesehatan,bpjs kes base,upah bpjs,dasar bpjs</field>
+        <field name="suggest_words">upah bpjs kesehatan,dasar bpjs kesehatan,gaji bpjs kesehatan,bpjs kes base,upah bpjs,dasar bpjs,bpjs health wage</field>
         <field name="suggest_roles">earning,info</field>
         <field name="inferred" eval="True"/>
     </record>
@@ -202,8 +208,9 @@
         <field name="label">Health insurance — employee</field>
         <field name="official_label">Iuran pekerja (1%)</field>
         <field name="required" eval="True"/>
-        <field name="suggest_words">bpjs kesehatan,bpjs kes,jkn,health insurance</field>
+        <field name="suggest_words">bpjs kesehatan,bpjs kes,jkn,health insurance,bpjs health employee,bpjs health</field>
         <field name="suggest_roles">deduction</field>
+        <field name="suggest_parts" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
     <record id="form_id_bpjs_kes_kes_er" model="pb.gov.form.line">
@@ -215,8 +222,9 @@
         <field name="label">Health insurance — employer</field>
         <field name="official_label">Iuran pemberi kerja (4%)</field>
         <field name="required" eval="True"/>
-        <field name="suggest_words">bpjs kesehatan,bpjs kes,jkn,health insurance</field>
-        <field name="suggest_roles">employer_cost</field>
+        <field name="suggest_words">bpjs kesehatan,bpjs kes,jkn,health insurance,bpjs health company,bpjs health</field>
+        <field name="suggest_roles">employer_cost,earning</field>
+        <field name="suggest_parts" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
     <record id="form_id_bpjs_kes_total" model="pb.gov.form.line">

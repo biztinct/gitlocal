@@ -28,7 +28,7 @@ WDGAP S2-A — form lines and the filing engine.
 No electronic submission, no change to how pay is worked out, no country rate
 tables, no demo data, no scheduled job.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Human Resources/Payroll',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',

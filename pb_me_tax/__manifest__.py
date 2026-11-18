@@ -26,7 +26,7 @@ Vietnam, HR sees a read-only "does not match" note when the dependants HR
 confirmed differ from the contract's registered-dependants component, which
 is never changed here.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

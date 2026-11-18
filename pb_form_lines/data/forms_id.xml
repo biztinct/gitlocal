@@ -40,8 +40,9 @@
         <field name="official_label">PPh Pasal 21 dipotong</field>
         <field name="required" eval="True"/>
         <field name="note">Not a column of the import file: it gives the rate and the control total.</field>
-        <field name="suggest_words">pph 21,pph21,pph pasal 21,pajak penghasilan,income tax,tax</field>
+        <field name="suggest_words">pph 21,pph21,pph pasal 21,pajak penghasilan,income tax,payable tax,tax</field>
         <field name="suggest_roles">deduction</field>
+        <field name="suggest_parts" eval="True"/>
     </record>
     <record id="form_id_bpmp_rate" model="pb.gov.form.line">
         <field name="form_id" ref="form_id_bpmp"/>

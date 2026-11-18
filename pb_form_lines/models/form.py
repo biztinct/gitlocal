@@ -201,6 +201,13 @@ class PbGovFormLine(models.Model):
              "for in pay item names.")
     suggest_roles = fields.Char(
         help="Comma-separated pay roles the Suggest pass accepts.")
+    # WDGAP S2-F: a contribution line wants the PART (e.g. "Pension employee"),
+    # which a scheme often also adds into its own total deduction.
+    suggest_parts = fields.Boolean(
+        string='Suggest offers parts of a total',
+        help="Suggest may also offer pay items already counted inside another "
+             "total of the scheme. An item that is not such a part still wins, "
+             "and so does the first pay role listed.")
     note = fields.Text(translate=True)
     inferred = fields.Boolean(string='Not confirmed from an official source')
     map_ids = fields.One2many('pb.gov.form.map', 'line_id', string='Pay items')

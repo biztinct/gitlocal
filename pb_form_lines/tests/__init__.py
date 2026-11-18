@@ -8,3 +8,5 @@ from . import test_s2b2_fund_files
 from . import test_s2b2_access_http
 # WDGAP S2 merge seams (deploy agent)
 from . import test_s2_merge_seams
+# WDGAP S2-F
+from . import test_s2f_suggest
