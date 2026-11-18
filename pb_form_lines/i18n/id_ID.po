@@ -351,19 +351,19 @@ msgstr "Periksa angka"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/fund_form.py:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__adviser_wording__adviser
 msgid "Check with your adviser before first filing"
 msgstr "Periksa dengan konsultan Anda sebelum pelaporan pertama"
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
 msgid "Check with your adviser before first filing. Every file says so until a payroll manager marks this form accepted by the authority."
 msgstr "Periksa dengan konsultan Anda sebelum pelaporan pertama. Setiap berkas mencantumkannya sampai manajer penggajian menandai formulir ini diterima oleh instansi."
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
 msgid "Check with your adviser before first filing. The files say so too."
 msgstr "Periksa dengan konsultan Anda sebelum pelaporan pertama. Berkasnya juga mencantumkan hal ini."
 
@@ -401,7 +401,7 @@ msgstr "Dipisahkan koma: xml, xlsx, csv."
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__company_id
+#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__company_id code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Company"
 msgstr "Perusahaan"
 
@@ -445,7 +445,7 @@ msgstr "Dibuat pada"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__currency_id
+#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__currency_id code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Currency"
 msgstr "Mata uang"
 
@@ -484,7 +484,7 @@ msgstr "Biaya pemberi kerja"
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__employer_tax_id
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__employer_tax_id code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
 msgid "Employer's tax number"
 msgstr "NPWP pemberi kerja"
 
@@ -816,7 +816,7 @@ msgstr "Periode terakhir tata letak ini berlaku."
 #. module: pb_form_lines
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Line"
 msgstr "Baris"
 
@@ -928,7 +928,7 @@ msgstr "NIK atau NPWP"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__name
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__name code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Name"
 msgstr "Nama"
 
@@ -956,13 +956,13 @@ msgstr "Tidak pernah di bawah nol"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "No"
 msgstr "Tidak"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/reader.py:0
+#: code:addons/pb_form_lines/models/reader.py:0 code:addons/pb_form_lines/models/fund_form.py:0
 msgid "No %s on the employee record"
 msgstr "Tidak ada %s di data karyawan"
 
@@ -1230,7 +1230,7 @@ msgstr "Baris slip gaji"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__row_count model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_people
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__row_count model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_people code:addons/pb_form_lines/models/fund_common.py:0 model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_people model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_people model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_people model:pb.gov.form.line,label:pb_form_lines.form_in_esi_people model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_people
 msgid "People"
 msgstr "Orang"
 
@@ -1274,7 +1274,7 @@ msgstr "Persentase dari satu baris"
 #. module: pb_form_lines
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Period"
 msgstr "Periode"
 
@@ -1621,7 +1621,7 @@ msgstr "Jumlah baris"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Summary"
 msgstr "Ringkasan"
 
@@ -1812,7 +1812,7 @@ msgstr "Angka tidak dapat dibaca."
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/filing.py:0
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/fund_sg.py:0
 msgid "The file could not be made."
 msgstr "Berkas tidak dapat dibuat."
 
@@ -1903,7 +1903,7 @@ msgstr "Tidak ada berkas untuk disetujui."
 
 #. module: pb_form_lines
 #. odoo-javascript
-#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
 msgid "These files say “Check with your adviser before first filing”."
 msgstr "Berkas ini bertuliskan “Periksa dengan konsultan Anda sebelum pelaporan pertama”."
 
@@ -2237,7 +2237,7 @@ msgstr "Tahun"
 
 #. module: pb_form_lines
 #. odoo-python
-#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 code:addons/pb_form_lines/models/fund_common.py:0
 msgid "Yes"
 msgstr "Ya"
 
@@ -2312,3 +2312,573 @@ msgstr "“%s” tidak milik perusahaan mana pun."
 #: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/form_map.py:0
 msgid "“%s” is worked out from other lines, so no pay item can be put on it."
 msgstr "“%s” dihitung dari baris lain, jadi tidak bisa diisi komponen gaji."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "%(n)s people are left out of the file — the summary lists each with the reason. The file's total leaves out their %(amount)s: %(total)s."
+msgstr "%(n)s orang tidak dimasukkan ke berkas — ringkasan mencantumkan masing-masing beserta alasannya. Total berkas tidak memuat %(amount)s milik mereka: %(total)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "%s people are left out of the file. Their figures are not in the file's totals."
+msgstr "%s orang tidak dimasukkan ke berkas. Angka mereka tidak masuk total berkas."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "1 person is left out of the file (%(why)s). The file's total leaves out their %(amount)s: %(total)s."
+msgstr "1 orang tidak dimasukkan ke berkas (%(why)s). Total berkas tidak memuat %(amount)s miliknya: %(total)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "1 person is left out of the file. Their figures are not in the file's totals."
+msgstr "1 orang tidak dimasukkan ke berkas. Angkanya tidak masuk total berkas."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "A figure is below zero"
+msgstr "Ada angka di bawah nol"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "A figure is below zero or too large for the file"
+msgstr "Ada angka di bawah nol atau terlalu besar untuk berkas"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_aw
+msgid "Additional wages"
+msgstr "Upah tambahan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_allow
+msgid "Allowances"
+msgstr "Tunjangan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan"
+msgstr "BPJS Kesehatan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "BPJS Kesehatan card number"
+msgstr "Nomor kartu BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan company code"
+msgstr "Kode badan usaha BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan — monthly member and contribution sheet (e-Dabu)"
+msgstr "BPJS Kesehatan — lembar peserta dan iuran bulanan (e-Dabu)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan"
+msgstr "BPJS Ketenagakerjaan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan company number (NPP)"
+msgstr "Nomor pendaftaran perusahaan BPJS Ketenagakerjaan (NPP)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "BPJS Ketenagakerjaan number"
+msgstr "Nomor BPJS Ketenagakerjaan (KPJ)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan — monthly wage report (SIPP)"
+msgstr "BPJS Ketenagakerjaan — laporan upah bulanan (SIPP)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cdac
+msgid "CDAC"
+msgstr "CDAC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF Board"
+msgstr "Dewan CPF"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "CPF account number"
+msgstr "Nomor rekening CPF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF contributions, SDL and self-help funds — CPF EZPay file"
+msgstr "Iuran CPF, SDL dan dana kelompok swadaya — berkas CPF EZPay"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "CPF submission number (CSN)"
+msgstr "Nomor pengajuan CPF (CSN)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF submission number (CSN), for example 201912345APTE01"
+msgstr "Nomor pengajuan CPF (CSN), misalnya 201912345APTE01"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_total
+msgid "CPF — employee and employer"
+msgstr "CPF — pekerja dan pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_ee
+msgid "CPF — employee share"
+msgstr "CPF — bagian pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_er
+msgid "CPF — employer share"
+msgstr "CPF — bagian pemberi kerja"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Check first"
+msgstr "Periksa dulu"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_form.py:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__adviser_wording__fund
+msgid "Check with the fund before the first upload"
+msgstr "Periksa dengan badan dana sebelum unggahan pertama"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Check with the fund before the first upload. Every file says so until a payroll manager marks this form accepted."
+msgstr "Periksa dengan badan dana sebelum unggahan pertama. Setiap berkas mencantumkannya sampai manajer penggajian menandai formulir ini diterima."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Check with the fund before the first upload. The files say so too."
+msgstr "Periksa dengan badan dana sebelum unggahan pertama. Berkasnya juga mencantumkannya."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__compare_line_codes
+msgid "Compare Line Codes"
+msgstr "Baris yang dibandingkan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_ncp_days
+msgid "Days not paid (NCP days)"
+msgstr "Hari tidak dibayar (hari NCP)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "Days not paid rounded to a whole day"
+msgstr "Hari tidak dibayar dibulatkan ke hari penuh"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_days
+msgid "Days paid in the month"
+msgstr "Hari dibayar dalam bulan ini"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jkm_er
+msgid "Death cover (JKM) — employer"
+msgstr "Jaminan kematian (JKM) — pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ecf
+msgid "ECF"
+msgstr "ECF"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "EPF wages are more than gross wages"
+msgstr "Upah EPF lebih besar dari upah bruto"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_in_epf_ecr
+msgid "EPFO"
+msgstr "EPFO"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_in_epf_ecr
+msgid "EPFO establishment code"
+msgstr "Kode perusahaan EPFO"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "ESI insurance number"
+msgstr "Nomor asuransi ESI"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_esi
+msgid "ESI monthly contribution sheet (ESIC)"
+msgstr "Lembar iuran ESI bulanan (ESIC)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_esi_ee
+msgid "ESI — employee share"
+msgstr "ESI — bagian pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_esi_er
+msgid "ESI — employer share"
+msgstr "ESI — bagian pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_in_esi
+msgid "ESIC"
+msgstr "ESIC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_in_esi
+msgid "ESIC employer code"
+msgstr "Kode pemberi kerja ESIC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_ee_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_ee_total model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ee_total
+msgid "Employee share"
+msgstr "Bagian pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_er_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_er_total model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_er_total
+msgid "Employer share"
+msgstr "Bagian pemberi kerja"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Everyone read from payslips"
+msgstr "Semua orang, dari slip gaji"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "Fill in the CPF submission number (CSN) for this form on Form lines first: the company's UEN, the payment type and the serial number, for example 201912345APTE01."
+msgstr "Isi dulu nomor pengajuan CPF (CSN) untuk formulir ini di Baris formulir: UEN perusahaan, jenis pembayaran dan nomor urut, misalnya 201912345APTE01."
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__fund
+msgid "Fund files"
+msgstr "Berkas dana"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments for %(month)s: %(amount)s — the same as this file."
+msgstr "Pembayaran dana %(month)s: %(amount)s — sama dengan berkas ini."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments for %(month)s: %(amount)s. This file: %(file)s. They differ by %(diff)s."
+msgstr "Pembayaran dana %(month)s: %(amount)s. Berkas ini: %(file)s. Selisihnya %(diff)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments has not worked out this month yet: its figure is what it would work out today."
+msgstr "Pembayaran dana belum menghitung bulan ini: angkanya adalah hasil hitungannya hari ini."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_gross
+msgid "Gross wages"
+msgstr "Upah bruto"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_kes_ee
+msgid "Health insurance — employee"
+msgstr "Jaminan kesehatan — pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_kes_er
+msgid "Health insurance — employer"
+msgstr "Jaminan kesehatan — pemberi kerja"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0 code:addons/pb_form_lines/models/fund_in.py:0
+msgid "In the file"
+msgstr "Di dalam berkas"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_edli_wages
+msgid "Insurance wages (EDLI)"
+msgstr "Upah asuransi (EDLI)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_mbmf
+msgid "MBMF"
+msgstr "MBMF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_mat
+msgid "Maternity leave days"
+msgstr "Hari cuti melahirkan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "NIK"
+msgstr "NIK"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "NIK (16 digits)"
+msgstr "NIK (16 digit)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__employer_label
+msgid "Name of the company's number"
+msgstr "Nama nomor perusahaan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "Name written without the characters the file cannot carry"
+msgstr "Nama ditulis tanpa karakter yang tidak dapat dimuat berkas"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "No CPF account number (NRIC starting S or T) on the employee record"
+msgstr "Tidak ada nomor rekening CPF (NRIC berawalan S atau T) di data karyawan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "No days paid: type the reason code for zero working days on the portal"
+msgstr "Tidak ada hari dibayar: ketik kode alasan untuk nol hari kerja di portal"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "No wage for BPJS"
+msgstr "Tidak ada upah untuk BPJS"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Nobody in this filing can go into the upload file: %s."
+msgstr "Tidak ada orang dalam pelaporan ini yang dapat masuk ke berkas unggahan: %s."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__adviser_wording
+msgid "Note until accepted"
+msgstr "Catatan sampai diterima"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jht_ee
+msgid "Old-age savings (JHT) — employee"
+msgstr "Jaminan hari tua (JHT) — pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jht_er
+msgid "Old-age savings (JHT) — employer"
+msgstr "Jaminan hari tua (JHT) — pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ow
+msgid "Ordinary wages"
+msgstr "Upah biasa"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_extra
+msgid "Other additions"
+msgstr "Tambahan lainnya"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jp_ee
+msgid "Pension (JP) — employee"
+msgstr "Jaminan pensiun (JP) — pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jp_er
+msgid "Pension (JP) — employer"
+msgstr "Jaminan pensiun (JP) — pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_eps_er
+msgid "Pension fund (EPS) — employer share"
+msgstr "Dana pensiun (EPS) — bagian pemberi kerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_eps_wages
+msgid "Pension fund wages (EPS)"
+msgstr "Upah dana pensiun (EPS)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_epf_ecr
+msgid "Provident fund monthly return — ECR file (EPFO)"
+msgstr "Laporan dana provident bulanan — berkas ECR (EPFO)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_epf_wages
+msgid "Provident fund wages (EPF)"
+msgstr "Upah dana provident (EPF)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_epf_ee
+msgid "Provident fund — employee share"
+msgstr "Dana provident — bagian pekerja"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_diff_er
+msgid "Provident fund — employer share (EPF less EPS)"
+msgstr "Dana provident — bagian pemberi kerja (EPF dikurangi EPS)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_refund
+msgid "Refund of advances"
+msgstr "Pengembalian uang muka"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_sinda
+msgid "SINDA"
+msgstr "SINDA"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_shg_total
+msgid "Self-help group funds"
+msgstr "Dana kelompok swadaya"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__filing_section
+msgid "Shown under"
+msgstr "Tampil di bagian"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_sick
+msgid "Sick leave days"
+msgstr "Hari cuti sakit"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_sdl
+msgid "Skills Development Levy (SDL)"
+msgstr "Pungutan pengembangan keterampilan (SDL)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_vn_si_items
+msgid "Social-insurance reports — pay items they read"
+msgstr "Laporan jaminan sosial — komponen gaji yang dibaca"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__tax
+msgid "Tax returns"
+msgstr "SPT dan bukti potong pajak"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "The ESI insurance number is not 10 digits"
+msgstr "Nomor asuransi ESI bukan 10 digit"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "The UAN is not 12 digits"
+msgstr "UAN bukan 12 digit"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0 code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "The name has letters the file cannot carry"
+msgstr "Nama memuat huruf yang tidak dapat dimuat berkas"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "These files say “Check with the fund before the first upload”."
+msgstr "Berkas ini mencantumkan “Periksa dengan badan dana sebelum unggahan pertama”."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/vn_si_items.py:0
+msgid "These pay items are read by the Vietnamese social-insurance reports on Compliance › Filings. There is no file of its own to prepare."
+msgstr "Komponen gaji ini dibaca oleh laporan jaminan sosial Vietnam di Kepatuhan › Pelaporan. Tidak ada berkas tersendiri untuk disiapkan."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "These pay items are read by the Vietnamese social-insurance reports on Compliance › Filings. Until a pay item is on a line, the reports read their usual codes."
+msgstr "Komponen gaji ini dibaca oleh laporan jaminan sosial Vietnam di Kepatuhan › Pelaporan. Selama sebuah baris belum berisi komponen gaji, laporan membaca kode biasanya."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_total
+msgid "Total for CPF Board"
+msgstr "Total untuk Dewan CPF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_total model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_total model:pb.gov.form.line,label:pb_form_lines.form_in_esi_total
+msgid "Total for the fund"
+msgstr "Total untuk badan dana"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "UAN"
+msgstr "UAN"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "UAN (provident fund number)"
+msgstr "UAN (nomor dana provident)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__reports
+msgid "Used by reports"
+msgstr "Dipakai oleh laporan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_vn_si_items
+msgid "Vietnam Social Security"
+msgstr "Jaminan Sosial Vietnam"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_wage
+msgid "Wage reported to BPJS"
+msgstr "Upah yang dilaporkan ke BPJS"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_wage
+msgid "Wage reported to BPJS Health"
+msgstr "Upah yang dilaporkan ke BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_wages
+msgid "Wages for ESI"
+msgstr "Upah untuk ESI"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "Whole rupees, rounded half up"
+msgstr "Rupee bulat, dibulatkan setengah ke atas"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Why not / to check"
+msgstr "Alasan / perlu dicek"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jkk_er
+msgid "Work accident cover (JKK) — employer"
+msgstr "Jaminan kecelakaan kerja (JKK) — pemberi kerja"

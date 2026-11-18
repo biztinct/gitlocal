@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-B2 — Vietnam: the pay items the social-insurance reports read. See pb_form_lines/models/vn_si_items.py and pb_hr_govt/models/report_base.py. -->
+
+    <record id="form_vn_si_items" model="pb.gov.form">
+        <field name="code">VN_SI_ITEMS</field>
+        <field name="country_code">VN</field>
+        <field name="sequence">90</field>
+        <field name="name">Social-insurance reports — pay items they read</field>
+        <field name="official_name">Báo cáo BHXH — BHXH630, Tăng / Giảm lao động</field>
+        <field name="authority">Vietnam Social Security</field>
+        <field name="period_kind">month</field>
+        <field name="quarter_allowed" eval="False"/>
+        <field name="filing_section">reports</field>
+        <field name="adviser_wording">adviser</field>
+        <field name="source_url">https://baohiemxahoi.gov.vn/</field>
+        <field name="source_note">Not a filing of its own. Says which pay items the Vietnamese social-insurance reports on Compliance › Filings read: BHXH630 (sick and maternity leave days) and the headcount increase and decrease reports (allowances, other additions). The reports keep their own layouts (the templates shipped with them, unchanged). Until a pay item is put on a line, the report reads the fixed codes SICK, MAT, ALLOW and EXTRA as before.</field>
+        <field name="inferred" eval="True"/>
+        <field name="inferred_note">Where the reports' templates were first taken from is not recorded. This entry only chooses the pay items; it does not change a layout.</field>
+    </record>
+    <record id="form_vn_si_items_sick" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_si_items"/>
+        <field name="code">SICK</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="round_digits">2</field>
+        <field name="label">Sick leave days</field>
+        <field name="official_label">Số ngày nghỉ ốm đau</field>
+        <field name="suggest_words">ốm đau,nghỉ ốm,om dau,nghi om,sick leave,sick</field>
+        <field name="suggest_roles">info,deduction,earning</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_si_items_mat" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_si_items"/>
+        <field name="code">MAT</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="round_digits">2</field>
+        <field name="label">Maternity leave days</field>
+        <field name="official_label">Số ngày nghỉ thai sản</field>
+        <field name="suggest_words">thai sản,thai san,maternity</field>
+        <field name="suggest_roles">info,deduction,earning</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_si_items_allow" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_si_items"/>
+        <field name="code">ALLOW</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Allowances</field>
+        <field name="official_label">Phụ cấp</field>
+        <field name="suggest_words">phụ cấp,phu cap,allowance</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_si_items_extra" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_si_items"/>
+        <field name="code">EXTRA</field>
+        <field name="sequence">40</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Other additions</field>
+        <field name="official_label">Các khoản bổ sung</field>
+        <field name="suggest_words">bổ sung,khoản bổ sung,bo sung,other additions</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+</odoo>

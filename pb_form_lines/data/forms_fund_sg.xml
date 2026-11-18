@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-B2 — Singapore: CPF EZPay file. See pb_form_lines/models/fund_sg.py. -->
+
+    <record id="form_sg_cpf_ezpay" model="pb.gov.form">
+        <field name="code">SG_CPF_EZPAY</field>
+        <field name="country_code">SG</field>
+        <field name="sequence">30</field>
+        <field name="name">CPF contributions, SDL and self-help funds — CPF EZPay file</field>
+        <field name="official_name">CPF EZPay (FTP) — payment advice</field>
+        <field name="authority">CPF Board</field>
+        <field name="period_kind">month</field>
+        <field name="quarter_allowed" eval="False"/>
+        <field name="output_kinds">dtl,xlsx</field>
+        <field name="total_line_code">TOTAL</field>
+        <field name="filing_section">fund</field>
+        <field name="adviser_wording">fund</field>
+        <field name="employer_label">CPF submission number (CSN), for example 201912345APTE01</field>
+        <field name="compare_line_codes">CPF_EE,CPF_ER,SDL,MBMF,SINDA,CDAC,ECF</field>
+        <field name="source_url">https://www.cpf.gov.sg/content/dam/web/employer/making-cpf-contributions/documents/CPFEZPayFTPSpecifications.pdf</field>
+        <field name="source_note">CPF Board, "CPF EZPay (FTP) File Specifications (effective from 16 January 2025)", FTPSPEC/FILESPEC, last updated January 2025: fixed length 150-byte records — employer header, contribution summary (payment codes 01 CPF, 02 MBMF, 03 SINDA, 04 CDAC, 05 ECF, 10 Community Chest, 11 SDL), contribution detail per person, employer trailer; file name &lt;CSN&gt;&lt;Month Paid&gt;&lt;Advice Code&gt;.DTL. Read on 18 November 2026.</field>
+        <field name="inferred" eval="True"/>
+        <field name="inferred_note">The record layout is the published one. Not stated by the specification and chosen here: records end with CR LF; "Month Paid" in the file name is the contribution month; advice code 01; employment status (existing, joiner, leaver) from the person's contracts; the CPF amount is the employee and employer CPF as the payslips carry it (the scheme keeps the rounding rules). The adviser note is on the summary workbook, not in the file.</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_ow" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">OW</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Ordinary wages</field>
+        <field name="official_label">Ordinary wages</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">ordinary wage,ordinary wages,cpf ow</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_aw" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">AW</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Additional wages</field>
+        <field name="official_label">Additional wages</field>
+        <field name="suggest_words">additional wage,additional wages,cpf aw</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_cpf_ee" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">CPF_EE</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">CPF — employee share</field>
+        <field name="official_label">CPF contribution (employee)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">cpf</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_cpf_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">CPF_ER</field>
+        <field name="sequence">40</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">CPF — employer share</field>
+        <field name="official_label">CPF contribution (employer)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">cpf</field>
+        <field name="suggest_roles">employer_cost</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_cpf_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">CPF_TOTAL</field>
+        <field name="sequence">50</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">CPF_EE,CPF_ER</field>
+        <field name="label">CPF — employee and employer</field>
+        <field name="official_label">Contribution detail amount (CPF)</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_sg_cpf_ezpay_sdl" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">SDL</field>
+        <field name="sequence">60</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Skills Development Levy (SDL)</field>
+        <field name="official_label">Skills Development Levy (SDL)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">sdl,skills development</field>
+        <field name="suggest_roles">employer_cost</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_mbmf" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">MBMF</field>
+        <field name="sequence">70</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">MBMF</field>
+        <field name="official_label">Mosque Building and Mendaki Fund (MBMF)</field>
+        <field name="suggest_words">mbmf,mendaki</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_sinda" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">SINDA</field>
+        <field name="sequence">80</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">SINDA</field>
+        <field name="official_label">Singapore Indian Development Association (SINDA)</field>
+        <field name="suggest_words">sinda</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_cdac" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">CDAC</field>
+        <field name="sequence">90</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">CDAC</field>
+        <field name="official_label">Chinese Development Assistance Council (CDAC)</field>
+        <field name="suggest_words">cdac</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_ecf" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">ECF</field>
+        <field name="sequence">100</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">ECF</field>
+        <field name="official_label">Eurasian Community Fund (ECF)</field>
+        <field name="suggest_words">ecf,eurasian</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_cpf_ezpay_shg_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">SHG_TOTAL</field>
+        <field name="sequence">110</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">MBMF,SINDA,CDAC,ECF</field>
+        <field name="label">Self-help group funds</field>
+        <field name="official_label">MBMF, SINDA, CDAC, ECF</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_sg_cpf_ezpay_ee_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">EE_TOTAL</field>
+        <field name="sequence">120</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">CPF_EE,SHG_TOTAL</field>
+        <field name="label">Employee share</field>
+        <field name="official_label">Employee share</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_sg_cpf_ezpay_er_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">ER_TOTAL</field>
+        <field name="sequence">130</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">CPF_ER,SDL</field>
+        <field name="label">Employer share</field>
+        <field name="official_label">Employer share</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_sg_cpf_ezpay_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">TOTAL</field>
+        <field name="sequence">140</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">CPF_TOTAL,SDL,SHG_TOTAL</field>
+        <field name="label">Total for CPF Board</field>
+        <field name="official_label">Employer contribution amount</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_sg_cpf_ezpay_people" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_cpf_ezpay"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">150</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Employees</field>
+        <field name="mappable" eval="False"/>
+    </record>
+</odoo>
