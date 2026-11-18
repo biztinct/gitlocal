@@ -200,7 +200,62 @@ the portal page title.
 
 S2B1-1 … S2B1-8 added to `WDGAP_LEDGER.md`; phase row S2-B1 added.
 
-## 7. Owner questions
+## 7. Follow-up YE1–YE3 (owner rulings 2026-11-18 ~17:10)
+
+| Ruling | What was built | Where |
+|---|---|---|
+| **YE1** Vietnam "Asked us to settle year-end tax" per person per tax year | New model `pb.gov.year.settlement` (employee, company, country, tax year, asked, marked by/on, history) in `pb_form_lines` — no `pb_me_tax` needed. Ticked on "Prepare a filing" › Check for the 05/QTT-TNCN forms (panel "Asked us to settle year-end tax", one tick per person; payroll officer/manager through the Filings door `_pb_require_officer`; HR without payroll and employees refused; no portal route reads it). Effect: the person stays in every declaration figure; 05-1 column [10] = X; Part II [37] counts them and [38] (TT80 [35]/[36]) holds their tax withheld; balance lines [44]/[45] (TT80 [40]/[41]) are worked out only when a pay item gives the year's tax due on [40] ([38]), else 0 with a warning; summary ("To check" sheet + the check screen) says "asked us to settle"; NO certificate is made for them. A certificate already released is hidden as soon as the person is ticked, and stays hidden after an untick (any change after the filing was prepared) until HR prepares and releases the year again — never silently. | `models/settle.py`, `models/render_vn_qtt.py` (`_pb_vn_settled`, `_pb_cert_withheld`), `models/certificate.py` (hook `_pb_cert_withheld`), `models/board.py` (`flow_check['settle']`, RPC `set_settle`), flow JS/XML/SCSS, security (ACL officer rwc / system, company rule) |
+| **YE2** Vietnam certificate = information copy | PDF banner "Information copy · Bản sao thông tin · Salinan informasi" (all three languages on every copy); no series/number field; "Information copy" beside the download on My Payobook | `render_vn_qtt.py`, `cert_pdf.py` (`banner`), `certificate.list_note`, `pb_me_tax_cert` page |
+| **YE3** India: employees keep Payobook's copy | PDF banner and the line beside the download: "Information copy — your official certificate comes from the tax department" | `render_in.py`, `pb_me_tax_cert` page |
+
+Data: the Part II count line note now says it counts the people HR marked (and is no longer
+INFERRED); the stale translation of the old note was removed. Not done (left for later, owner):
+IRAS approved-software application (direct sending of Singapore files) — needs an outside account.
+
+Tests (numbered, `TestS2B1FollowUpYE` + web):
+
+| # | Case | Result |
+|---|---|---|
+| YE1-1 | Officer ticks per tax year, who/when kept; 2025 is its own answer; HR without payroll and an employee login refused (screen RPC + records); a form without the choice refuses it | pass |
+| YE1-2 | Ticked person: declaration figures unchanged ([15]–[34]); [37]=1, [38]= their tax withheld, [44]/[45]=0 + warning without the tax due; with the tax due mapped, [45] = withheld − due; no certificate made; 05-1 [10]=X; "To check" lists them | pass |
+| YE1-3 | After release: tick hides at once, others unchanged; untick does NOT bring it back; prepare + release again shows the new one | pass |
+| YE2 | VN PDF says the three-language "Information copy", no "Ký hiệu"/"Số chứng từ"; note beside download; no "Odoo" in text/metadata | pass |
+| YE3 | IN PDF says "Information copy — your official certificate comes from the tax department"; same line beside the download (web, real employee login) | pass |
+
+Suites (fresh copy of `upd_p6_t_tpl`, same tags as §3.1 + `/pb_me_tax_cert`): **234 tests,
+7 failed, 2 errors — exactly the §3.1 baseline set**; the 25 S2-B1 tests (19 + 6 follow-up)
+pass, S2-A's PO gate included. vi/id: 25 new entries per language appended text-level (plus
+the new model's field occurrences on existing entries); the old Part II note's entry removed.
+
+Browser walk (local, isolated contexts): Vietnam company › Year-end › 05/QTT-TNCN (2026) › Check:
+the "Asked us to settle year-end tax" panel lists the people; ticking one shows "Marked by … on
+…", the count and [37]=1 update at once; Prepare and send → Approved → "1 personal certificate"
+(the ticked person has none) → Release. India employee login (phone width, no sideways scroll):
+Tax certificates row "Salary and tax deducted — Form 130 Part C (figures) · Tax year 2026–27"
+with "Information copy — your official certificate comes from the tax department" beside the
+PDF button. Console: clean apart from the template's missing website logo (pre-existing, S6A-7).
+
+### FG1 (Filings open to payroll officers/managers AND "Government reports") — merge note
+
+* Every S2-B1 door asks S2-A's shared helpers, never a restated group list: board RPCs
+  (`flow_check`, `set_settle`, `get_filing`, `set_released`) → `pb.gov.form.board._door()` →
+  `pb.gov.form.rights._pb_require_officer()`; Year-end tiles → `pb_govt_reports._forms_for()` →
+  `Rights._pb_is_officer()`; the settle model's own check → `_pb_require_officer()`. When S2-A
+  widens `OFFICER_GROUPS` / those helpers, Year-end follows with no change here.
+* "Release to employees" stays payroll manager only: `certificate.py` `_pb_release` uses S2-A's
+  `MANAGER_GROUPS` constant (not widened by FG1).
+* Merge-time task: the ACL rows name the officer group directly, like S2-A's own rows —
+  `pb_form_lines/security/ir.model.access.csv` rows
+  `access_pb_gov_filing_certificate_officer` (read) and `access_pb_gov_year_settlement_officer`
+  (read/write/create). If S2-A adds ACL rows for `pb_hr_govt.group_pb_hr_govt_user` on its
+  filing models, add the same two rows for that group (certificate: 1,0,0,0; settlement:
+  1,1,1,0). The screens read both models under sudo after the door, so the screens work either
+  way; the rows matter only for direct record reads.
+
+## 8. Owner questions
+
+Answered 2026-11-18: 1 → YE1, 2 → YE2, 3 → YE3 (built, §7); 4 → deferred (outside account).
+Still open: 5.
 
 1. Vietnam: a company must NOT give a withholding certificate to people who asked it to settle
    their year-end tax for them. Payobook does not yet record who asked. Should HR tick that on the
