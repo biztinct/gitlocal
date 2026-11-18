@@ -217,3 +217,42 @@ New gotchas: **S2D-8** the tax code on `hr.contract` and `hr.employee` are plain
 tracking; a future `tracking=True` would print the full number in chatter — write the copy with
 `mail_notrack` and post a masked line. **S2D-9** `setup.sh`-style conf regeneration silently put
 the port back to a clashing one; keep the phase port in the generator itself.
+
+## Follow-up ESI (India ESI number)
+
+- New `hr.employee.pb_in_esi_number` ("India ESI number", `groups='hr.group_hr_user'`), same
+  treatment as the provident-fund number (TD2): HR edits it on the employee form (Tax details →
+  India); the employee sees it read-only and masked on Tax details ("ESI number", "Kept by HR",
+  India only); no request kind exists for it, so it cannot be proposed; Full details → India tax
+  shows it (`pb_employee_vault` 19.0.1.6.1 → 19.0.1.6.2, groups only; vi/id appended).
+- **Name matches the fund-file builder**: `origin/wdgap-s2b2` `pb_form_lines/models/fund_in.py:63`
+  probes `('pb_in_esi_number', 'esi_ip_number', 'esi_number')` on the employee — our field is its
+  FIRST name, so no merge-time rename is needed.
+- Tests `tests/test_followup_esi.py`: ESI.1 HR writes/reads it, a line manager and a payroll
+  officer without HR cannot read it; ESI.2 the employee's row is masked (`•••• 3456`), not
+  proposable, "Kept by HR", India only; ESI.3 forged kinds (`tax_esi`, the field name) refused and
+  a forged ESI value on a PAN request never written; ESI.4 Full details India group carries it,
+  "ESI number" translated in both modules' vi/id files.
+- Run `t8` (fresh copy): pb_me_tax 45/45 pass; pb_me_details 26/0, pb_employee_vault 21/0;
+  pb_me_portal = baseline six + `test_02` (M1) — 185 tests, 5 failed + 2 errors = baseline + M1.
+  pb_me_tax vi/id regenerated from a fresh export (152 entries, none missing).
+
+### Field names pb_me_tax adds (for the merger — the year-end and monthly readers probe by name)
+
+All on `hr.employee`, HR-only (`groups='hr.group_hr_user'`). Selection values are stored CODES.
+
+| Country | Field | Type / stored values | Who changes it | Probed by (verified on origin) |
+|---|---|---|---|---|
+| Indonesia | `pb_id_ptkp_status` | selection `TK/0`…`TK/3`, `K/0`…`K/3`, `K/I/0`…`K/I/3` | employee proposes (proof), HR approves; HR edits | `origin/wdgap-s2b1` `pb_form_lines/models/reader.py:170` (first name in its list) |
+| Indonesia | (existing) `pb_npwp_number`, `pb_bpjs_employment_number`, `pb_bpjs_health_number` | char — `pb_employee_vault`, not added here | NPWP: employee proposes / HR; BPJS: HR only | s2b1 `reader.py:165` (`pb_npwp_number`) |
+| India | `pb_in_pan_number` | char, upper case `AAAAA9999A` | employee proposes (proof), HR approves; HR edits | s2b1 `reader.py:231` |
+| India | `pb_in_tax_regime` | selection `new` / `old` | employee proposes (proof), HR approves; HR edits | s2b1 `reader.py:238` |
+| India | `pb_in_uan_number` | char | HR only (TD2) | s2b2 `fund_in.py:56` (first name) |
+| India | `pb_in_esi_number` | char | HR only | s2b2 `fund_in.py:63` (first name) |
+| Singapore | `pb_sg_tax_residency` | selection `resident` / `non_resident` | HR only (TD2) | s2b1 `reader.py:268` (tests `!= 'non_resident'`) |
+| Singapore | `pb_sg_shg_fund` | selection `cdac`, `ecf`, `mbmf`, `sinda`, `none` | employee proposes (proof optional), HR approves; HR edits | not probed yet |
+| Vietnam | (existing) `vietnam_tax_code` on the employee AND the running contract (TD3) | char, digits | employee proposes (proof), HR approves | — |
+| Vietnam | `pb_vn_dependants_check` | computed char, not stored (HR note) | nobody (read-only) | — |
+| any | `pb_tax_request_ids` | one2many to the tax changes (HR form list) | — | — |
+
+Every name above matches what the S2-B1 / S2-B2 readers look for first; no merge-time rename.
