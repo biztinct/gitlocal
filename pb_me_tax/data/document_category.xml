@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Where an approved tax detail's proof is filed (verified by the
+         approver). No expiry: a tax card or declaration does not lapse. -->
+    <record id="cat_tax_paper" model="pb.employee.document.category">
+        <field name="name">Tax paper</field>
+        <field name="code">TAX</field>
+        <field name="requires_expiry" eval="False"/>
+        <field name="sequence">65</field>
+    </record>
+</odoo>

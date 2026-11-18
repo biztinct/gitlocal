@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP S2-D — HR's side: the tax details on the employee form (HR
+         edits them directly, as with the NPWP today), the changes employees
+         asked for with their proof, and the plain sentence of what approving
+         does NOT do. -->
+    <record id="view_employee_form_tax" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb_me_tax</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Tax details" name="pb_tax_details" groups="hr.group_hr_user">
+                    <div class="alert alert-info" role="status">Approving a tax detail an employee asked for writes it to this record only. A payslip changes only where a pay scheme is set up to read that detail; none reads it when this is first switched on.</div>
+                    <div class="alert alert-warning" role="status" invisible="not pb_vn_dependants_check"><b>Tax dependants:</b> <field name="pb_vn_dependants_check" readonly="1" nolabel="1" class="d-inline"/></div>
+                    <group>
+                        <group string="Indonesia"><field name="pb_id_ptkp_status"/></group>
+                        <group string="India"><field name="pb_in_pan_number"/><field name="pb_in_tax_regime"/><field name="pb_in_uan_number"/></group>
+                        <group string="Singapore"><field name="pb_sg_tax_residency"/><field name="pb_sg_shg_fund"/></group>
+                    </group>
+                    <separator string="Changes asked for on My Payobook"/>
+                    <field name="pb_tax_request_ids" readonly="1" nolabel="1">
+                        <list create="false" edit="false" delete="false">
+                            <field name="name"/>
+                            <field name="kind"/>
+                            <field name="state" widget="badge" decoration-warning="state == 'hr_review'" decoration-success="state == 'approved'" decoration-danger="state == 'refused'"/>
+                            <field name="submitted_on"/>
+                            <field name="decided_on"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pb_me_detail_request_form_tax" model="ir.ui.view">
+        <field name="name">pb.me.detail.request.form.pb_me_tax</field>
+        <field name="model">pb.me.detail.request</field>
+        <field name="inherit_id" ref="pb_me_details.view_pb_me_detail_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[field[@name='marital']]" position="after">
+                <group string="Tax detail" invisible="kind not in ('tax_number', 'tax_status', 'tax_regime', 'tax_fund')">
+                    <field name="t_country"/>
+                    <field name="t_number" invisible="kind != 'tax_number'"/>
+                    <field name="t_use_nik" invisible="not t_use_nik"/>
+                    <field name="t_ptkp" invisible="kind != 'tax_status'"/>
+                    <field name="t_regime" invisible="kind != 'tax_regime'"/>
+                    <field name="t_fund" invisible="kind != 'tax_fund'"/>
+                    <field name="t_proof_name" invisible="1"/>
+                    <field name="t_proof_file" filename="t_proof_name" invisible="not attachment_id" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
