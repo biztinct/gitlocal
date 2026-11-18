@@ -615,14 +615,216 @@ class TestS2cLayouts(_S2cFixture):
 
 
 @tagged('post_install', '-at_install', 'wdgap_s2c')
+class TestS2cBl4OtherName(_S2cFixture):
+    """Follow-up BL4 (owner ruling 2026-11-18 ~18:30): the company setting
+    for accounts in another person's name, and the HR flag on the employee.
+    Dewi's approved account is in "Joko Widodo"'s name (another name);
+    Fitri's is a close name; Budi's is his own."""
+
+    def studio(self, company, user=None):
+        user = user or self.mgr
+        return self.env['pb.bank.layout.studio'].with_user(user).with_context(
+            allowed_company_ids=[company.id, self.home.id if company != self.home else self.indo.id])
+
+    def set_policy(self, value, company=None):
+        return self.studio(company or self.indo).set_other_name_policy(value)
+
+    def emp_as(self, user):
+        return self.env['hr.employee'].with_user(user).with_context(
+            allowed_company_ids=[self.home.id, self.indo.id])
+
+    # 1 — default: left out (= BL1)
+    def test_bl4_1_default_leaves_out(self):
+        self.assertEqual(self.indo.pb_other_name_policy, 'leave_out')
+        self.assertEqual(self.studio(self.indo).get_board()['other_name']['value'], 'leave_out')
+        result = self.build(self.id_layout)
+        left = {x['employee']: x['reasons'] for x in result['excluded']}
+        self.assertEqual(left['IDB1 Dewi Lestari'], ['Account is in another name'])
+        self.assertEqual(result['other_name_totals'], [])
+
+    # 2 — "Pay by file": in, flagged, counted apart per money
+    def test_bl4_2_pay_by_file(self):
+        self.set_policy('pay')
+        result = self.build(self.id_layout)
+        names = [r['employee'] for r in result['included']]
+        self.assertIn('IDB1 Dewi Lestari', names)
+        self.assertIn('IDB1 Fitri Handayani', names, 'close names unchanged (BL3)')
+        self.assertEqual(result['count'], 6)
+        self.assertIn(b'Joko Widodo', result['payload'])
+        other = result['other_name_totals']
+        self.assertEqual([(t['currency'], t['count'], t['amount']) for t in other],
+                         [('IDR', 1, 2000000.0)])
+        # still flagged on the general list
+        _data, by_emp = self.rows()
+        self.assertIn("The account is in another person's name", by_emp[self.dewi.id]['checks'])
+        # the summary and the approver count them
+        preview = self.env['pb.pay.delivery'].with_user(self.mgr).with_context(
+            self._ctx(self.mgr)).payment_list_layout_preview(self.payrun.id, 'id_general')
+        self.assertEqual(preview['other_name_totals'],
+                         [{'currency': 'IDR', 'count': 1, 'amount': 2000000.0}])
+        self.assertNotIn('5550001111', json.dumps(preview))
+        record = self.File.with_user(self.mgr).with_context(self._ctx(self.mgr)).prepare(
+            self.payrun, layout=self.id_layout)
+        detail = json.dumps(record.sudo()._approval_detail(record.approval_request_id))
+        self.assertIn("Paid into another person", detail)
+        self.assertNotIn('5550001111', detail)
+        # only the payment-list layouts follow the setting: a home-company
+        # person paid into another name would still be left out there
+        self.assertEqual(self.home.pb_other_name_policy, 'leave_out')
+
+    # 3 — the Vietnamese file and the general list: golden under both settings
+    def test_bl4_3_goldens_under_both_settings(self):
+        def vn_bytes():
+            out = {}
+            for fmt in ('vietcombank', 'generic', 'vietinbank'):
+                res = self.env['vietnam.bank.export.wizard'].create({
+                    'payslip_run_id': self.payrun.id, 'bank_format': fmt,
+                    'pb_unpaid_only': True})._generate()
+                out[fmt] = res['file_b64']
+            return out
+        before = vn_bytes()
+        for value in ('leave_out', 'pay', 'leave_out'):
+            for company in (self.indo, self.home):
+                self.set_policy(value, company)
+            for kind in ('csv', 'xlsx'):
+                self.assertEqual(golden.stable_digest(self.List._pb_build(self.payrun, kind)[2], kind),
+                                 golden.GOLDEN[kind], '%s / %s' % (value, kind))
+            self.assertEqual(vn_bytes(), before, value)
+
+    # 4 — manager only, logged; a prepared file never changes
+    def test_bl4_4_manager_only_logged_and_files_kept(self):
+        self.env.flush_all()
+        self.env.invalidate_all()
+        for user in (self.officer, self.portal):
+            with self.assertRaises(AccessError):
+                self.studio(self.indo, user).set_other_name_policy('pay')
+        record = self.File.with_user(self.mgr).with_context(self._ctx(self.mgr)).prepare(
+            self.payrun, layout=self.id_layout)
+        self.Engine.with_user(self.mgr).with_context(self._ctx(self.mgr)).submit(record)
+        self._approve_all(record)
+        _n, _m, before = self.as_mgr()._pb_download(self.payrun.id, 'bank')
+        self.assertNotIn(b'Joko Widodo', before)
+        Entry = self.env['biz.audit.entry'].sudo()
+        self.set_policy('pay')
+        entry = Entry.search([('model_name', '=', 'res.company'), ('res_id', '=', self.indo.id),
+                              ('field_name', '=', 'pb_other_name_policy')])
+        self.assertEqual(len(entry), 1)
+        self.assertEqual((entry.old_value, entry.new_value), ('Leave out of the bank file', 'Pay by file'))
+        self.assertEqual(entry.create_uid, self.mgr)
+        self.set_policy('pay')     # the same value again: no second line
+        self.assertEqual(Entry.search_count([('model_name', '=', 'res.company'),
+                                             ('res_id', '=', self.indo.id),
+                                             ('field_name', '=', 'pb_other_name_policy')]), 1)
+        self.env.invalidate_all()
+        _n, _m, after = self.as_mgr()._pb_download(self.payrun.id, 'bank')
+        self.assertEqual(after, before, 'an approved file is never changed by the setting')
+        # the next prepare follows the new setting
+        record = self.File.with_user(self.mgr).with_context(self._ctx(self.mgr)).prepare(
+            self.payrun, layout=self.id_layout)
+        self.assertIn(b'Joko Widodo', record.layout_attachment_id.raw)
+
+    # 5 — the HR flag on the employee
+    def test_bl4_5_employee_notice(self):
+        Emp = self.emp_as(self.mgr)
+        state = Emp.pb_other_name_state(self.dewi.id)
+        self.assertTrue(state['show'])
+        self.assertEqual(state['holder'], 'Joko Widodo')
+        self.assertNotIn('5550001111', json.dumps(state))
+        for other in (self.budi, self.fitri, self.citra):
+            self.assertFalse(Emp.pb_other_name_state(other.id)['show'], other.name)
+        # the same test as the payment list, for everybody of the run
+        _data, by_emp = self.rows()
+        for emp_id, row in by_emp.items():
+            self.assertEqual(Emp.pb_other_name_state(emp_id)['show'], row['name_band'] == 'other',
+                             row['employee_name'])
+        # mark seen: hidden, who and when kept, one trail line without the number
+        state = Emp.pb_other_name_mark_seen(self.dewi.id)
+        self.assertFalse(state['show'])
+        dewi = self.dewi.sudo()
+        self.assertEqual(dewi.pb_other_name_seen_by, self.mgr)
+        self.assertTrue(dewi.pb_other_name_seen_on)
+        entry = self.env['biz.audit.entry'].sudo().search([
+            ('model_name', '=', 'hr.employee'), ('res_id', '=', self.dewi.id),
+            ('field_name', '=', 'pb_other_name_seen')])
+        self.assertEqual(len(entry), 1)
+        self.assertFalse(re.search(r'\d{6,}', (entry.new_value or '') + (entry.old_value or '')))
+        self.assertNotIn('5550001111', dewi.pb_other_name_seen_key or '')
+        # payment is not changed by marking it seen: still left out by default
+        self.assertIn('IDB1 Dewi Lestari', [x['employee'] for x in self.build(self.id_layout)['excluded']])
+        # it comes back when the holder name changes …
+        account = dewi.bank_account_ids[:1]
+        account.acc_holder_name = 'Joko Widodo Senior'
+        self.env.invalidate_all()
+        self.assertTrue(Emp.pb_other_name_state(self.dewi.id)['show'])
+        Emp.pb_other_name_mark_seen(self.dewi.id)
+        # … when the number changes …
+        account.acc_number = '5550002222'
+        self.env.invalidate_all()
+        self.assertTrue(Emp.pb_other_name_state(self.dewi.id)['show'])
+        Emp.pb_other_name_mark_seen(self.dewi.id)
+        # … and when another account becomes the approved one
+        account.sequence = 50
+        new = self.env['res.partner.bank'].sudo().create({
+            'acc_number': '5550003333', 'partner_id': dewi.work_contact_id.id,
+            'bank_id': self.bca.id, 'acc_holder_name': 'Joko Widodo Senior',
+            'sequence': 1})
+        dewi.bank_account_ids = [(6, 0, [new.id, account.id])]
+        self.env.invalidate_all()
+        self.assertEqual(dewi.bank_account_ids[:1], new, 'the new account is the approved one')
+        self.env.invalidate_all()
+        self.assertTrue(Emp.pb_other_name_state(self.dewi.id)['show'])
+        # the field itself, read the way the employee form reads it
+        self.assertTrue(self.emp_as(self.mgr).browse(self.dewi.id).pb_other_name_show)
+
+    def test_bl4_5b_not_for_anybody_else(self):
+        Users = self.env['res.users'].with_context(no_reset_password=True)
+        plain = Users.create({'name': 'S2C Line Manager', 'login': 's2c_line_mgr',
+                              'company_id': self.home.id,
+                              'company_ids': [(6, 0, (self.home | self.indo).ids)],
+                              'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        self.env.flush_all()
+        self.env.invalidate_all()
+        for user in (plain, self.portal):
+            Emp = self.emp_as(user)
+            with self.assertRaises(AccessError):
+                Emp.pb_other_name_state(self.dewi.id)
+            with self.assertRaises(AccessError):
+                Emp.pb_other_name_mark_seen(self.dewi.id)
+            with self.assertRaises(AccessError):
+                Emp.browse(self.dewi.id).read(['pb_other_name_show', 'pb_other_name_holder'])
+        # the employee form shows the notice to HR only
+        arch = self.env['hr.employee'].with_user(self.mgr).get_view(
+            self.env.ref('hr.view_employee_form').id, 'form')['arch']
+        self.assertIn('pb_other_name_show', arch)
+        self.assertIn('Mark as seen', arch)
+        self.assertNotIn('odoo', arch.lower().split('pbon-form-note')[1][:800]
+                         if 'pbon-form-note' in arch else '')
+
+    # 6 — a silent install
+    def test_bl4_6_silent_install(self):
+        self.env.flush_all()
+        self.env.cr.execute("SELECT count(*) FROM hr_employee WHERE pb_other_name_seen_key IS NOT NULL "
+                            "OR pb_other_name_seen_by IS NOT NULL OR pb_other_name_seen_on IS NOT NULL")
+        self.assertEqual(self.env.cr.fetchone()[0], 0, 'nobody marked at install')
+        self.env.cr.execute("SELECT count(*) FROM res_company WHERE pb_other_name_policy IS DISTINCT FROM 'leave_out'")
+        self.assertEqual(self.env.cr.fetchone()[0], 0, 'every company starts on "Leave out"')
+        self.assertEqual(self.env['biz.audit.entry'].sudo().search_count([
+            ('field_name', 'in', ('pb_other_name_policy', 'pb_other_name_seen'))]), 0)
+        # nothing about it is stored on the employee rows to read the flag
+        self.assertFalse(self.env['hr.employee']._fields['pb_other_name_show'].store)
+
+
+@tagged('post_install', '-at_install', 'wdgap_s2c')
 class TestS2cTranslations(TransactionCase):
     """Test 11: every new string has a Vietnamese and an Indonesian entry that
     loads, and no vendor name in any of them."""
 
     FILES_PY = (('models', 'payment_list_layout.py'), ('models', 'bank_layout_studio.py'),
+                ('models', 'other_name.py'),
                 ('models', 'bank_file_layout.py'))
     FILES_JS = (('static', 'src', 'js', 'bank_layouts.js'),
-                ('static', 'src', 'js', 'bank_layouts_doors.js'))
+                ('static', 'src', 'js', 'bank_layouts_doors.js'),
+                ('static', 'src', 'js', 'other_name_chip.js'))
 
     def _path(self, *parts):
         from odoo.modules.module import get_module_path
@@ -643,7 +845,10 @@ class TestS2cTranslations(TransactionCase):
                   "Not confirmed by the bank. Check with your bank before the first upload.",
                   "Account is in another name", "Left out of the bank file",
                   "Confirmed with our bank",
-                  "Tick this only after your bank has checked a test file made with this copy."}
+                  "Tick this only after your bank has checked a test file made with this copy.",
+                  "Accounts in another person's name", "Leave out of the bank file", "Pay by file",
+                  "Paid into another person's account", "Mark as seen",
+                  "<span>This bank account is in another person's name:</span>"}
         return found
 
     def test_s2c_11_vi_and_id_entries_load(self):

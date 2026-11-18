@@ -703,6 +703,7 @@ class PbPaymentListFile(models.Model):
                 'layout_currency': bank['currency'],
                 'layout_excluded_json': json.dumps(bank['excluded']),
                 'layout_excluded_count': len(bank['excluded']),
+                'layout_other_name_json': json.dumps(bank['other_name_totals']),
                 'payment_date': payment_date,
                 'company_account': company_account or False,
                 # the stamp covers all three files
@@ -851,6 +852,12 @@ class PbPaymentListFile(models.Model):
                               'value': _("%(n)s people · %(total)s %(currency)s",
                                          n=count, total='{:,.2f}'.format(amount),
                                          currency=money)})
+            for other in self._pb_layout_other_name():
+                chips.append({'label': _("Paid into another person's account"),
+                              'value': _("%(n)s people · %(total)s %(currency)s",
+                                         n=other.get('count') or 0,
+                                         total='{:,.2f}'.format(other.get('amount') or 0.0),
+                                         currency=other.get('currency') or '')})
         for total in self._pb_totals():
             chips.append({'label': _("Total %s", total.get('currency') or ''),
                           'value': '{:,.0f}'.format(total.get('amount') or 0.0)})
@@ -1025,6 +1032,9 @@ class PbPayDeliveryPaymentList(models.AbstractModel):
             # WDGAP S2-C ruling BL1: the people left out are counted apart,
             # with what they are owed per money, never silently
             'left_totals': result['left_totals'],
+            # ruling BL4: paid by the file into another person's account
+            'other_name_totals': [{k: t[k] for k in ('currency', 'count', 'amount')}
+                                  for t in result['other_name_totals']],
         }
 
     @api.model

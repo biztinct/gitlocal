@@ -206,6 +206,20 @@ export class PbBankLayouts extends Component {
             who: l.bank_confirmed_by || "", when: (l.bank_confirmed_on || "").slice(0, 10),
         });
     }
+    get otherName() { return (this.state.board && this.state.board.other_name) || null; }
+    async setOtherName(key) {
+        if (this.state.busy || !this.otherName || this.otherName.value === key) { return; }
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(MODEL, "set_other_name_policy", [key]);
+            this.state.board.other_name = res;
+            this.notif.add(_t("Saved. The next bank file you prepare follows this; files already prepared do not change."), { type: "success" });
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
     async archive() {
         if (this.state.busy || !this.editable) { return; }
         if (!window.confirm(_t("Stop offering this copy on Pay & deliver? You can bring it back later."))) { return; }

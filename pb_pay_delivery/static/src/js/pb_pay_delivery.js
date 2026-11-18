@@ -531,6 +531,16 @@ export class PbPayDelivery extends Component {
             currency: t.currency || "",
         })).join(" • ");
     }
+    /** Ruling BL4 "Pay by file": in the file, paid into another person's account. */
+    get plOtherNameLine() {
+        const rows = (this.state.plPreview && this.state.plPreview.other_name_totals) || [];
+        return rows.map((t) => _t("%(people)s paid into another person's account · %(total)s %(currency)s", {
+            people: this.peopleLabel(t.count || 0),
+            total: (t.amount || 0).toLocaleString("en-US",
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            currency: t.currency || "",
+        })).join(" • ");
+    }
     get plLeftOutRows() {
         return ((this.state.plPreview && this.state.plPreview.excluded) || []).slice(0, 12);
     }

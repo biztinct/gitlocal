@@ -3937,3 +3937,112 @@ msgstr "Chỉ đánh dấu sau khi ngân hàng đã kiểm tra một tệp thử
 #: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
 msgid "Tick “Confirmed with our bank” before this copy stops saying it is not confirmed."
 msgstr "Hãy đánh dấu “Đã xác nhận với ngân hàng của chúng tôi” trước khi bản sao này thôi ghi là chưa xác nhận."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(people)s paid into another person's account · %(total)s %(currency)s"
+msgstr "%(people)s được trả vào tài khoản của người khác · %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0 code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_res_company__pb_other_name_policy
+msgid "Accounts in another person's name"
+msgstr "Tài khoản đứng tên người khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Bank account in another person's name"
+msgstr "Tài khoản ngân hàng đứng tên người khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Choose how accounts in another person's name are paid."
+msgstr "Hãy chọn cách trả cho tài khoản đứng tên người khác."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "For the bank layouts of the payment list (not the Vietnamese bank file). The payment list flags these people either way."
+msgstr "Cho các mẫu ngân hàng của danh sách chuyển khoản (không phải tệp ngân hàng Việt Nam). Dù chọn cách nào, danh sách chuyển khoản vẫn đánh dấu những người này."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_res_company__pb_other_name_policy
+msgid "For the bank layouts of the payment list (not the Vietnamese bank file): leave such accounts out of the bank file, or pay them by file. Either way the payment list flags them."
+msgstr "Cho các mẫu ngân hàng của danh sách chuyển khoản (không phải tệp ngân hàng Việt Nam): loại các tài khoản này khỏi tệp ngân hàng, hoặc trả qua tệp. Dù chọn cách nào, danh sách chuyển khoản vẫn đánh dấu họ."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__res_company__pb_other_name_policy__leave_out
+msgid "Leave out of the bank file"
+msgstr "Loại khỏi tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/other_name_chip.xml:0 model_terms:ir.ui.view,arch_db:pb_pay_delivery.view_employee_form_pb_other_name
+msgid "Mark as seen"
+msgstr "Đánh dấu đã xem"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_employee__pb_other_name_seen_by
+msgid "Marked as seen by"
+msgstr "Đánh dấu đã xem bởi"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Marked as seen by %s. Payment is not changed by this."
+msgstr "Đã đánh dấu đã xem bởi %s. Việc này không thay đổi việc chi trả."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_employee__pb_other_name_seen_on
+msgid "Marked as seen on"
+msgstr "Đánh dấu đã xem ngày"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/other_name_chip.js:0
+msgid "Marking it as seen only hides this notice. Whether this person is paid by bank file is decided by the company setting on Settings › Payroll › Bank layouts."
+msgstr "Đánh dấu đã xem chỉ ẩn thông báo này. Việc người này có được trả qua tệp ngân hàng hay không do cài đặt của công ty tại Cài đặt › Tiền lương › Mẫu tệp ngân hàng quyết định."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Only HR and the payroll team see this."
+msgstr "Chỉ nhân sự và nhóm tiền lương xem được mục này."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Paid into another person's account"
+msgstr "Trả vào tài khoản của người khác"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__res_company__pb_other_name_policy__pay
+msgid "Pay by file"
+msgstr "Trả qua tệp"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Saved. The next bank file you prepare follows this; files already prepared do not change."
+msgstr "Đã lưu. Tệp ngân hàng bạn chuẩn bị tiếp theo sẽ theo cài đặt này; các tệp đã chuẩn bị không thay đổi."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "That employee no longer exists."
+msgstr "Nhân viên đó không còn tồn tại."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/other_name_chip.js:0
+msgid "This bank account is in another person's name: %s"
+msgstr "Tài khoản ngân hàng này đứng tên người khác: %s"
+
+#. module: pb_pay_delivery
+#: model_terms:ir.ui.view,arch_db:pb_pay_delivery.view_employee_form_pb_other_name
+msgid "<span>This bank account is in another person's name:</span>"
+msgstr "<span>Tài khoản ngân hàng này đứng tên người khác:</span>"

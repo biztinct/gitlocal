@@ -459,6 +459,9 @@
                   </div>
                   <div t-if="state.plPreview" class="pl-preview">
                     <div class="pl-preview-sum" t-esc="plPreviewLine"/>
+                    <div t-if="plOtherNameLine" class="pl-other-name">
+                      <span t-out="ic('alert',13)"/> <span t-esc="plOtherNameLine"/>
+                    </div>
                     <div t-if="state.plPreview.excluded.length" class="pl-left">
                       <div class="pl-left-h"><span t-out="ic('alert',13)"/> <span t-esc="plLeftOutTitle"/></div>
                       <div t-if="plLeftOutTotals" class="pl-left-sum" t-esc="plLeftOutTotals"/>

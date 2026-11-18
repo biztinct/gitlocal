@@ -139,6 +139,10 @@ class PbPaymentListLayout(models.AbstractModel):
             row['email'] = (emp.work_email or '').strip()
             currency = slip._pb_slip_currency()
             row['take_home'] = currency.round(slip._pb_net_amount() or 0.0)
+            # WDGAP S2-C ruling BL4: the paying company's own setting, read
+            # when the file is made (a file already made keeps its bytes)
+            row['other_name_policy'] = slip.company_id.sudo().pb_other_name_policy \
+                or 'leave_out'
         return data
 
     # ------------------------------------------------------------ formatting
@@ -282,9 +286,11 @@ class PbPaymentListLayout(models.AbstractModel):
                 reasons.append(_("No bank account on record"))
             if row.get('account') and not row.get('holder'):
                 reasons.append(_("No account holder name on record"))
-            if row.get('account') and row.get('name_band') == 'other':
-                # WDGAP S2-C ruling BL1: never sent to a bank in a file;
-                # finance pays it by hand (the general list still lists it)
+            if row.get('account') and row.get('name_band') == 'other' \
+                    and row.get('other_name_policy') != 'pay':
+                # WDGAP S2-C ruling BL1 (the default of BL4's company setting):
+                # not sent to a bank in a file; finance pays it by hand (the
+                # general list still lists it)
                 reasons.append(_("Account is in another name"))
             if amount <= 0:
                 reasons.append(_("Take-home is zero or below"))
@@ -353,6 +359,18 @@ class PbPaymentListLayout(models.AbstractModel):
             entry['count'] += 1
             entry['amount'] += max(left['amount'], 0.0)
         left_totals = sorted(left_totals.values(), key=lambda t: t['currency'])
+        # ruling BL4 "Pay by file": in the file, but counted apart, per money
+        other_totals = {}
+        for row in included:
+            if row.get('name_band') != 'other':
+                continue
+            entry = other_totals.setdefault(row.get('currency') or '', {
+                'currency': row.get('currency') or '', 'count': 0, 'amount': 0.0,
+                'people': []})
+            entry['count'] += 1
+            entry['amount'] += float(row.get('amount') or 0.0)
+            entry['people'].append(row.get('employee_name') or '')
+        other_totals = sorted(other_totals.values(), key=lambda t: t['currency'])
         decimals = currency.decimal_places if currency else 2
         total = round(total, decimals)
 
@@ -444,6 +462,7 @@ class PbPaymentListLayout(models.AbstractModel):
             'currency': currency.name or '',
             'decimals': decimals,
             'left_totals': left_totals,
+            'other_name_totals': other_totals,
         }
 
     @api.model
@@ -619,6 +638,16 @@ class PbPaymentListFileLayout(models.Model):
                                            readonly=True)
     payment_date = fields.Date(readonly=True)
     company_account = fields.Char(string='Company debit account', readonly=True)
+    #: ruling BL4: people paid into another person's account by this file
+    layout_other_name_json = fields.Text(readonly=True)
+
+    def _pb_layout_other_name(self):
+        self.ensure_one()
+        try:
+            rows = json.loads(self.layout_other_name_json or '[]')
+        except (TypeError, ValueError):
+            return []
+        return rows if isinstance(rows, list) else []
 
     def _pb_layout_excluded(self):
         self.ensure_one()

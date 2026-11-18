@@ -16,6 +16,19 @@
         </div>
       </div>
 
+      <div t-if="otherName" class="pbbl-setting">
+        <div class="txt">
+          <div class="h"><span t-out="icon('userX',15)"/> <span>Accounts in another person's name</span></div>
+          <div class="s">For the bank layouts of the payment list (not the Vietnamese bank file). The payment list flags these people either way.</div>
+        </div>
+        <div class="pbbl-seg" role="radiogroup">
+          <button t-foreach="otherName.choices" t-as="c" t-key="c.key"
+                  t-attf-class="seg {{ otherName.value === c.key ? 'on' : '' }}"
+                  role="radio" t-att-aria-checked="otherName.value === c.key ? 'true' : 'false'"
+                  t-att-disabled="state.busy"
+                  t-on-click="() => this.setOtherName(c.key)" t-esc="c.label"/>
+        </div>
+      </div>
       <div t-if="!state.loaded" class="pbbl-empty">Loading…</div>
       <div t-elif="state.denied" class="pbbl-empty">
         <span t-out="icon('lock',22)"/>

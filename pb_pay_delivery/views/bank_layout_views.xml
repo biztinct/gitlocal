@@ -8,6 +8,30 @@
         <field name="tag">pb_bank_layouts</field>
     </record>
 
+    <!-- Ruling BL4: on the employee's bank details (HR only), the account in
+         another person's name, with "Mark as seen". After the bank-document
+         note pb_bank_ocr puts there (its view is priority 90). -->
+    <record id="view_employee_form_pb_other_name" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb.other.name</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('pb-bank-ro-note')]/.." position="after">
+                <field name="pb_other_name_show" invisible="1"
+                       groups="hr.group_hr_user,om_hr_payroll.group_hr_payroll_user"/>
+                <div class="pbon-form-note" colspan="2" invisible="not pb_other_name_show"
+                     groups="hr.group_hr_user,om_hr_payroll.group_hr_payroll_user">
+                    <span>This bank account is in another person's name:</span>
+                    <field name="pb_other_name_holder" readonly="1" nolabel="1"/>
+                    <button name="action_pb_other_name_seen" type="object"
+                            string="Mark as seen" class="btn btn-sm btn-secondary"/>
+                    <span class="help">Marking it as seen only hides this notice. Whether this person is paid by bank file is decided by the company setting on Settings › Payroll › Bank layouts.</span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
     <!-- The bank's national code, beside its SWIFT/BIC code. -->
     <record id="view_res_bank_form_pb_code" model="ir.ui.view">
         <field name="name">res.bank.form.pb.code</field>

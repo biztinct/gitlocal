@@ -1580,3 +1580,112 @@ msgstr "Centang ini hanya setelah bank Anda memeriksa file uji yang dibuat denga
 #: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
 msgid "Tick “Confirmed with our bank” before this copy stops saying it is not confirmed."
 msgstr "Centang “Sudah dikonfirmasi dengan bank kami” sebelum salinan ini berhenti menyatakan belum dikonfirmasi."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(people)s paid into another person's account · %(total)s %(currency)s"
+msgstr "%(people)s dibayar ke rekening orang lain · %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0 code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_res_company__pb_other_name_policy
+msgid "Accounts in another person's name"
+msgstr "Rekening atas nama orang lain"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Bank account in another person's name"
+msgstr "Rekening bank atas nama orang lain"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Choose how accounts in another person's name are paid."
+msgstr "Pilih cara membayar rekening atas nama orang lain."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "For the bank layouts of the payment list (not the Vietnamese bank file). The payment list flags these people either way."
+msgstr "Untuk tata letak bank daftar pembayaran (bukan file bank Vietnam). Apa pun pilihannya, daftar pembayaran tetap menandai orang-orang ini."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_res_company__pb_other_name_policy
+msgid "For the bank layouts of the payment list (not the Vietnamese bank file): leave such accounts out of the bank file, or pay them by file. Either way the payment list flags them."
+msgstr "Untuk tata letak bank daftar pembayaran (bukan file bank Vietnam): jangan masukkan rekening seperti ini ke file bank, atau bayar lewat file. Apa pun pilihannya, daftar pembayaran tetap menandainya."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__res_company__pb_other_name_policy__leave_out
+msgid "Leave out of the bank file"
+msgstr "Tidak dimasukkan ke file bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/other_name_chip.xml:0 model_terms:ir.ui.view,arch_db:pb_pay_delivery.view_employee_form_pb_other_name
+msgid "Mark as seen"
+msgstr "Tandai sudah dilihat"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_employee__pb_other_name_seen_by
+msgid "Marked as seen by"
+msgstr "Ditandai sudah dilihat oleh"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Marked as seen by %s. Payment is not changed by this."
+msgstr "Ditandai sudah dilihat oleh %s. Ini tidak mengubah pembayaran."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_employee__pb_other_name_seen_on
+msgid "Marked as seen on"
+msgstr "Ditandai sudah dilihat pada"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/other_name_chip.js:0
+msgid "Marking it as seen only hides this notice. Whether this person is paid by bank file is decided by the company setting on Settings › Payroll › Bank layouts."
+msgstr "Menandai sudah dilihat hanya menyembunyikan pemberitahuan ini. Apakah orang ini dibayar lewat file bank ditentukan oleh pengaturan perusahaan di Pengaturan › Penggajian › Tata letak bank."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Only HR and the payroll team see this."
+msgstr "Hanya HR dan tim penggajian yang melihat ini."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Paid into another person's account"
+msgstr "Dibayar ke rekening orang lain"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__res_company__pb_other_name_policy__pay
+msgid "Pay by file"
+msgstr "Bayar lewat file"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Saved. The next bank file you prepare follows this; files already prepared do not change."
+msgstr "Tersimpan. File bank berikutnya yang Anda siapkan mengikuti ini; file yang sudah disiapkan tidak berubah."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "That employee no longer exists."
+msgstr "Karyawan itu sudah tidak ada."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/other_name_chip.js:0
+msgid "This bank account is in another person's name: %s"
+msgstr "Rekening bank ini atas nama orang lain: %s"
+
+#. module: pb_pay_delivery
+#: model_terms:ir.ui.view,arch_db:pb_pay_delivery.view_employee_form_pb_other_name
+msgid "<span>This bank account is in another person's name:</span>"
+msgstr "<span>Rekening bank ini atas nama orang lain:</span>"

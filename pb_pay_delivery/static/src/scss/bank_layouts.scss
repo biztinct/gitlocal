@@ -23,6 +23,14 @@
             &.on { background: #F3F1FB; b { color: #5A4BB0; } }
             &.warn { background: #FFF5E5; color: #8A5A00; b { color: #8A5A00; } } }
     }
+    .pbbl-setting { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+        margin-top: 12px; background: #fff; border: 1px solid #E6E4F2; border-radius: 14px; padding: 12px 16px;
+        .txt { flex: 1 1 260px; min-width: 0; }
+        .h { display: flex; gap: 6px; align-items: center; font-weight: 700; font-size: 13.5px; }
+        .s { color: #7A7694; font-size: 12px; margin-top: 2px; } }
+    .pbbl-seg { display: inline-flex; border: 1px solid #E6E4F2; border-radius: 10px; overflow: hidden; flex-wrap: wrap;
+        .seg { border: 0; background: #fff; padding: 7px 12px; font-size: 12.5px; color: #4B4766; cursor: pointer;
+            &.on { background: #5A4BB0; color: #fff; font-weight: 600; } } }
     .pbbl-empty { display: flex; gap: 10px; align-items: center; justify-content: center;
         padding: 48px 16px; color: #7A7694; }
 

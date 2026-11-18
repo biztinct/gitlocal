@@ -321,3 +321,87 @@ Owner question (plain words): a bank account whose holder name is CLOSE to the p
 (for example a shortened name, "Fitri Handaya" for "Fitri Handayani") is still put in the
 bank's file and flagged on the list. Should those be left out too, like accounts in another
 person's name?
+
+## Follow-up BL4 (owner ruling 2026-11-18 ~18:30) — same branch
+
+**1. Company setting — Settings › Payroll › Bank layouts › "Accounts in another person's
+name":** "Leave out of the bank file" (default = BL1) or "Pay by file".
+- `res.company.pb_other_name_policy` (selection, default `leave_out`); changed only through
+  `pb.bank.layout.studio.set_other_name_policy` (payroll manager or administrator — the
+  screen's own gate), for the company the person is working in; each change writes ONE trail
+  line on the company (`biz.audit.entry`, field `pb_other_name_policy`, old → new label, who,
+  when); the same value again writes nothing.
+- Read when a file is PREPARED, per payslip's company (`_pb_layout_rows` →
+  `other_name_policy`): "Pay by file" puts the person in the bank-layout file; the payment
+  list still says "The account is in another person's name"; Pay & deliver shows "1 person
+  paid into another person's account · 2,000,000.00 IDR" per money (never added across
+  moneys); the approver's detail gets a chip "Paid into another person's account" per money
+  (stored with the file, `layout_other_name_json`, names and amounts only). A file already
+  prepared or approved keeps its bytes — flipping the setting changes the NEXT prepare only.
+- Only the payment-list layouts read it. The Vietnamese bank file and the general payment
+  list are byte-identical under both settings (test 3). Close names unchanged (BL3: in,
+  flagged).
+
+**2. Flag on the employee** (`models/other_name.py`, `hr.employee`):
+- Non-stored `pb_other_name_show` / `pb_other_name_holder` computed when read; the test is
+  the payment list's own (`pb.payment.list._pb_name_band` → `'other'`) on the APPROVED
+  account (`bank_account_ids[:1]`) — a change waiting for approval is not judged.
+- "Mark as seen" (`action_pb_other_name_seen`, RPC `pb_other_name_mark_seen`) keeps
+  `pb_other_name_seen_by` / `_on` and a stamp `pb_other_name_seen_key` = sha256 of (account
+  id, account number, holder name) — never the number itself — plus one trail line "Marked as
+  seen by …. Payment is not changed by this." The notice returns when the account number,
+  the holder name or the approved account changes (the stamp no longer matches).
+- Who: HR and the payroll team (`hr.group_hr_user`, `om_hr_payroll.group_hr_payroll_user`,
+  administrators): every field carries those groups and both methods refuse anybody else
+  (employee, line manager, portal) — screen and RPC.
+- Where: the employee FORM, under the bank details (view inheritance after pb_bank_ocr's
+  "To change where this person is paid…" note): "This bank account is in another person's
+  name: <holder>", a "Mark as seen" button, and the help line "Marking it as seen only hides
+  this notice. Whether this person is paid by bank file is decided by the company setting on
+  Settings › Payroll › Bank layouts." The form button is a native button (text only — the
+  native form has no Lucide icon slot).
+- Side panel: registered into the panel's existing chip seam `pb_employee_360_chips` (BY
+  NAME — no dependency, no edit of `pb_employee_vault` or `pb_people`): an amber chip with
+  Lucide `user-x`, the same sentence, and a "Mark as seen" button with Lucide `eye`; shown
+  only when the server says so (HR/payroll), nothing rendered otherwise. It sits in the
+  panel's HEADER chip row (the seam that exists); the panel has no hook inside its bank
+  section — merge-time note if the bank section should carry it instead.
+- Install is silent: three nullable columns on `hr_employee` (no default, nothing written),
+  one column with default `leave_out` on `res_company`; nobody marked; no trail line.
+
+Not touched: `pb_people`, `pb_employee_vault`, `pb_me_portal`, `pb_me_tax`, `pb_lifecycle/`.
+
+Tests (class `TestS2cBl4OtherName`, tag `wdgap_s2c`):
+
+| # | Test | Result |
+|---|---|---|
+| 1 | `test_bl4_1_default_leaves_out` — default "Leave out": Dewi out with "Account is in another name", nobody counted as paid into another account | PASS |
+| 2 | `test_bl4_2_pay_by_file` — "Pay by file": Dewi IN the file (6 people), close name Fitri still in (BL3), still flagged on the payment list, preview and approver count "1 · IDR 2,000,000" apart, no account number in either | PASS |
+| 3 | `test_bl4_3_goldens_under_both_settings` — general list CSV + Excel = golden and Vietnamese bank file bytes (3 layouts) unchanged under leave out → pay → leave out, both companies | PASS |
+| 4 | `test_bl4_4_manager_only_logged_and_files_kept` — payroll officer / portal refused; one trail line old → new by the manager (none for the same value); an approved file downloads the same bytes after the flip; the next prepare follows the new setting | PASS |
+| 5 | `test_bl4_5_employee_notice` — shown for Dewi (holder "Joko Widodo"), not for own / close names / no account; equals the list's own test for every person; Mark as seen hides it, keeps who/when, one trail line with no number, stamp is not the number; payment unchanged; returns on holder change, number change and a new approved account | PASS |
+| 5b | `test_bl4_5b_not_for_anybody_else` — plain internal user (line manager) and portal: state / mark seen / reading the fields refused; the employee form shows the notice to HR/payroll | PASS |
+| 6 | `test_bl4_6_silent_install` — no employee row marked, every company on "Leave out", no trail line, the flag not stored | PASS |
+| 11 | `test_s2c_11_vi_and_id_entries_load` / `…_no_vendor_name…` — 19 new vi + 19 id entries (incl. the form's `<span>` text) | PASS |
+
+| Run | Tests | Failed | Errors |
+|---|---|---|---|
+| fresh `wdgap_s2c_t`, `-u pb_bank_ocr,pb_pay_delivery,pb_approval_config`, their three suites | 314 | 5 | 5 — the 9 recorded baselines + the translation test missing the form's `<span>` text (fixed) |
+| after the fix, tags `wdgap_s2c,wdgap_idb1` (all S2-C + IDB1 incl. both goldens) | 59 | 0 | 0 |
+| after moving the form notice under the bank row (view only), same tags, on a CLEAN rebuilt copy | 59 | 0 | 0 |
+
+(A first rerun on the walk copy failed 11 tests: the walk seed had COMMITTED a "no approval
+needed" route, a policy flip and a "seen" mark into that copy — ledger S8D-6 again; the clean
+copy is the result that counts. New gotcha S2C-8: never run suites on a copy a browser walk
+seeded; rebuild or restore first.)
+
+Browser (local, DEMO run, walk login given the payroll-base + HR officer groups on the copy):
+Settings › Bank layouts shows "Accounts in another person's name" with "Leave out of the bank
+file" / "Pay by file"; pressing "Pay by file" saved and wrote the trail line; Pay & deliver ›
+Indonesia: "5 people in the … file • total 16,000,000.00 IDR" + "1 person paid into another
+person's account · 2,000,000.00 IDR" and 3 left out with reasons; the employee form (Personal
+tab, under the bank accounts) shows "This bank account is in another person's name: Joko
+Widodo", "Mark as seen" and the help line; pressing it hid the notice and kept who/when + the
+trail line; phone 390 px: no sideways scroll; console clean. The side panel chip could not be
+walked here (the local copy opens the native form, not the side panel) — covered by the RPC
+tests; worth one look on the go-live walk.

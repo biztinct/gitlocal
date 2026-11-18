@@ -16,3 +16,4 @@ from . import payment_list
 from . import payment_list_layout
 from . import bank_identity
 from . import bank_layout_studio
+from . import other_name
