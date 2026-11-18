@@ -18,6 +18,16 @@ class CollectorTest(unittest.TestCase):
                        'remote': {'history_from': '2026-09-01', 'interval_minutes': 15}}
     def tearDown(self):
         self.temp.cleanup()
+    def test_windowless_worker_persists_diagnostics_without_standard_streams(self):
+        args = ['connector.py', 'sync', '--home', str(self.home)]
+        with patch.object(c.sys, 'argv', args), patch.object(c.sys, 'stdout', None), patch.object(c.sys, 'stderr', None), patch.object(c, 'load_config', return_value=self.config), patch.object(c, 'sync', return_value={'sent': 3, 'pending': 0}):
+            self.assertEqual(c.main(), 0)
+        self.assertEqual(json.loads((self.home / 'status.json').read_text())['sent'], 3)
+        (self.home / 'last_attempt').unlink()
+        with patch.object(c.sys, 'argv', args), patch.object(c.sys, 'stdout', None), patch.object(c.sys, 'stderr', None), patch.object(c, 'load_config', side_effect=RuntimeError('test failure')):
+            self.assertEqual(c.main(), 1)
+        self.assertEqual(json.loads((self.home / 'status.json').read_text())['error'], 'test failure')
+
     def test_replay_queue_and_exact_dedup(self):
         q = c.Queue(self.home); q.add([{'x': 1}, {'x': 1}, {'x': 2}])
         self.assertEqual(q.count(), 2)

@@ -13,20 +13,31 @@ import zipfile
 ROOT=Path(__file__).resolve().parent
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('inputs',type=Path);p.add_argument('output',type=Path);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('inputs',type=Path);p.add_argument('output',type=Path);p.add_argument('--base-package',type=Path);a=p.parse_args()
     locks=json.loads((ROOT/'build-inputs.json').read_text())
-    for name, expected in locks.items():
-        assert hashlib.sha256((a.inputs/name).read_bytes()).hexdigest()==expected, 'Input hash mismatch: '+name
+    if a.base_package:
+        base_lock=json.loads((ROOT/'base-package.json').read_text())
+        assert hashlib.sha256(a.base_package.read_bytes()).hexdigest()==base_lock['sha256'], 'Base package hash mismatch'
+    else:
+        for name, expected in locks.items():
+            assert hashlib.sha256((a.inputs/name).read_bytes()).hexdigest()==expected, 'Input hash mismatch: '+name
     with tempfile.TemporaryDirectory() as temp:
         stage=Path(temp)
         runtime=stage/'runtime';runtime.mkdir()
-        for name in locks:
-            dest=runtime if name.endswith('.zip') else runtime/'Lib'/'site-packages'
-            with zipfile.ZipFile(a.inputs/name) as z:z.extractall(dest)
+        if a.base_package:
+            with zipfile.ZipFile(a.base_package) as z:
+                for entry in z.infolist():
+                    if entry.filename.startswith('runtime/'):
+                        assert '..' not in Path(entry.filename).parts
+                        z.extract(entry,stage)
+        else:
+            for name in locks:
+                dest=runtime if name.endswith('.zip') else runtime/'Lib'/'site-packages'
+                with zipfile.ZipFile(a.inputs/name) as z:z.extractall(dest)
         (runtime/'python313._pth').write_text('python313.zip\n.\nLib/site-packages\n..\nimport site\n')
-        for name in ['connector.py','Setup.ps1','Install.cmd','README.txt','build-inputs.json']:
+        for name in ['connector.py','Setup.ps1','Schedule.ps1','Install.cmd','README.txt','build-inputs.json']:
             # Windows PowerShell 5.1 otherwise interprets UTF-8 as the ANSI codepage.
-            if name == 'Setup.ps1':
+            if name.endswith('.ps1'):
                 (stage/name).write_text((ROOT/name).read_text(encoding='utf-8-sig'), encoding='utf-8-sig')
             else:
                 (stage/name).write_bytes((ROOT/name).read_bytes())

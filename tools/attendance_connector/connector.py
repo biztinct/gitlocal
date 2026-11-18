@@ -23,7 +23,7 @@ import urllib.parse
 import urllib.request
 import uuid
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 COLUMNS = ('UserFullCode', 'UserEnrollNumber', 'TimeDate', 'TimeStr', 'TimeType', 'TimeSource', 'MachineNo', 'CardNo')
 BATCH_SIZE = 500
 
@@ -276,12 +276,14 @@ def main():
                     marker.touch()
                     output = sync(home, config)
             (home / 'status.json').write_text(json.dumps(output, indent=2), encoding='utf-8')
-            print(json.dumps(output))
+            if sys.stdout is not None:
+                print(json.dumps(output))
     except Exception as exc:
         # No token, row content, or employee details in diagnostics.
         output = {'error': str(exc)[:500], 'time': time.strftime('%Y-%m-%d %H:%M:%S')}
         (home / 'status.json').write_text(json.dumps(output, indent=2), encoding='utf-8')
-        print(json.dumps(output))
+        if sys.stdout is not None:
+            print(json.dumps(output))
         return 1
     return 0
 

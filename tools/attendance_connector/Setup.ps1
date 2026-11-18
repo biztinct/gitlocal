@@ -14,6 +14,7 @@ if ($bundle -ne $install) {
 }
 $python = Join-Path $install 'runtime\python.exe'
 $worker = Join-Path $install 'connector.py'
+. (Join-Path $install 'Schedule.ps1')
 $data = Join-Path $install 'data'
 New-Item -ItemType Directory -Force -Path $data | Out-Null
 [xml]$layout = @'
@@ -30,7 +31,7 @@ New-Item -ItemType Directory -Force -Path $data | Out-Null
   <Border Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,12">
    <StackPanel><TextBlock Name="RunState" Text="Ready" FontWeight="SemiBold" Foreground="#5342A5"/>
     <ProgressBar Name="Progress" Height="6" Margin="0,10,0,8" IsIndeterminate="True" Visibility="Collapsed"/>
-    <TextBlock Name="Elapsed" Text="Connector 1.0.1" Foreground="#646B7C" TextWrapping="Wrap"/>
+    <TextBlock Name="Elapsed" Text="Connector 1.0.2" Foreground="#646B7C" TextWrapping="Wrap"/>
    </StackPanel>
   </Border>
   <TextBox Name="Output" IsReadOnly="True" TextWrapping="Wrap" Height="155" VerticalScrollBarVisibility="Auto"/>
@@ -112,7 +113,7 @@ $timer.Add_Tick({
         }
     } catch { $window.FindName('RunState').Text = 'Needs attention'; $output.Text = $_.Exception.Message }
     finally {
-        $window.FindName('Elapsed').Text = "Finished after $seconds seconds. Connector 1.0.1"
+        $window.FindName('Elapsed').Text = "Finished after $seconds seconds. Connector 1.0.2"
         $run.Process.Dispose(); $script:activeRun = $null; Set-Working $false
     }
 })
@@ -129,17 +130,12 @@ $window.FindName('Pair').Add_Click({ try {
     Run-Worker 'pair' $details
 } catch { $output.Text = $_.Exception.Message } })
 $window.FindName('Install').Add_Click({ try {
-    if (-not (Test-Path (Join-Path $data 'settings.bin'))) { throw 'Pair this PC before enabling its schedule.' }
-    $who = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-    $action = New-ScheduledTaskAction -Execute $python -Argument ('"' + $worker + '" sync --home "' + $data + '"') -WorkingDirectory $install
-    $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 5)
-    $principal = New-ScheduledTaskPrincipal -UserId $who -LogonType Interactive -RunLevel Limited
-    $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Hours 2) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
-    Register-ScheduledTask -TaskName 'Payobook Attendance Connector' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
+    $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+    $scheduleResult = Enable-PayobookSchedule $install $identity.Name $identity.User.Value
     $shell = New-Object -ComObject WScript.Shell
     $shortcut = $shell.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Desktop')) 'Payobook Attendance Connector.lnk'))
     $shortcut.TargetPath = 'powershell.exe'; $shortcut.Arguments = '-NoProfile -File "' + (Join-Path $install 'Setup.ps1') + '"'; $shortcut.Save()
-    $output.Text = 'Scheduled sync enabled. Keep this user signed in and the PC awake, or ask IT to configure the task for logged-off operation under this same account. Test again after logging off if IT changes the task.'
+    $output.Text = $scheduleResult
 } catch { $output.Text = $_.Exception.Message } })
 $window.FindName('Sync').Add_Click({ try { Remove-Item (Join-Path $data 'last_attempt') -ErrorAction SilentlyContinue; Run-Worker 'sync' | Out-Null } catch { $output.Text = $_.Exception.Message } })
 $window.FindName('Replay').Add_Click({ try { Run-Worker 'replay' | Out-Null } catch { $output.Text = $_.Exception.Message } })
