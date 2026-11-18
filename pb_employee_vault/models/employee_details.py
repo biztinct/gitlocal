@@ -153,9 +153,29 @@ _SPEC = [
     ]),
     ('pay', 'id', _lt("Indonesia tax and insurance"), 'shield', 'ID', [
         ('pb_npwp_number', _lt("NPWP tax number"), False),
+        # WDGAP S2-D (pb_me_tax): skipped where that module is not installed
+        ('pb_id_ptkp_status', _lt("PTKP status"), False),
         ('pb_bpjs_employment_number', _lt("BPJS employment number"), False),
         ('pb_bpjs_health_number', _lt("BPJS health number"), False),
         ('pb_family_card_number', _lt("Family card number"), False),
+    ]),
+    # WDGAP S2-D — India and Singapore tax groups. The fields come from
+    # pb_me_tax; on a database without it the rows (and so the groups) are
+    # skipped like any missing field.
+    ('pay', 'in', _lt("India tax"), 'shield', 'IN', [
+        ('pb_in_pan_number', _lt("PAN"), False),
+        ('pb_in_tax_regime', _lt("Tax regime"), False),
+        ('pb_in_uan_number', _lt("UAN (provident fund)"), False),
+    ]),
+    ('pay', 'sg', _lt("Singapore tax"), 'shield', 'SG', [
+        ('pb_sg_tax_residency', _lt("Tax residency"), False),
+        ('pb_sg_shg_fund', _lt("Self-help group fund"), False),
+    ]),
+    # Vietnam: HR's read-only note when the tax dependants HR confirmed
+    # differ from the contract's registered-dependants component. Not
+    # country-gated and optional: the group is dropped while there is no note.
+    ('pay', 'vn_deps', _lt("Vietnam tax dependants"), 'alert', None, [
+        ('pb_vn_dependants_check', _lt("Check"), True),
     ]),
 ]
 

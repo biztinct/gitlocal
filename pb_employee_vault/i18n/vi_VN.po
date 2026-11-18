@@ -1355,3 +1355,57 @@ msgid ""
 "%s days before a document expires, HR gets a to-do on the employee to renew it."
 msgstr ""
 "%s ngày trước khi giấy tờ hết hạn, nhân sự nhận được một việc cần làm trên hồ sơ nhân viên để gia hạn."
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "PTKP status"
+msgstr "Tình trạng PTKP"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "India tax"
+msgstr "Thuế Ấn Độ"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "PAN"
+msgstr "PAN"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "UAN (provident fund)"
+msgstr "UAN (quỹ dự phòng)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Singapore tax"
+msgstr "Thuế Singapore"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Tax residency"
+msgstr "Cư trú thuế"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Self-help group fund"
+msgstr "Quỹ tự lực cộng đồng"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Vietnam tax dependants"
+msgstr "Người phụ thuộc thuế (Việt Nam)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Check"
+msgstr "Kiểm tra"
