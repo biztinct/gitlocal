@@ -1,0 +1,29 @@
+// WDGAP S2-B1 — My Payobook › Tax certificates. A thin layer on the .pbme
+// kit: one card, a row per certificate, quiet (grey) until one is new.
+.pbme.pbtc {
+    .pbtc-list { padding: 8px 0; }
+    .pbtc-empty { display: flex; align-items: center; gap: 12px; padding: 20px; color: #6b7280;
+        p { margin: 0; }
+    }
+    .pbtc-empty-ic { display: inline-flex; width: 44px; height: 44px; border-radius: 12px;
+        align-items: center; justify-content: center; background: #f3f4f6; color: #6b7280; flex: none; }
+    .pbtc-rows { list-style: none; margin: 0; padding: 0; }
+    .pbtc-row { display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+        border-top: 1px solid #eef0f4;
+        &:first-child { border-top: 0; }
+    }
+    .pbtc-row-ic { display: inline-flex; width: 38px; height: 38px; border-radius: 10px; flex: none;
+        align-items: center; justify-content: center; background: #eeecf8; color: #5A4BB0; }
+    .pbtc-row-main { flex: 1 1 auto; min-width: 0; }
+    .pbtc-row-t { font-weight: 600; color: #1f2937; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pbtc-row-s { font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .pbtc-dot { width: 3px; height: 3px; border-radius: 50%; background: #9ca3af; display: inline-block; }
+    .pbtc-pill { font-size: 11px; font-weight: 600; border-radius: 999px; padding: 1px 8px;
+        background: #ecfdf5; color: #047857; }
+    .pbtc-dl { flex: none; }
+}
+
+@media (max-width: 560px) {
+    .pbme.pbtc .pbtc-row { flex-wrap: wrap; padding: 12px 14px; }
+    .pbme.pbtc .pbtc-dl { width: 100%; justify-content: center; }
+}
