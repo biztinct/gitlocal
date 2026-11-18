@@ -603,8 +603,11 @@ class TestS2B2FundFiles(S2B2Fixture):
         mine = forms | self.forms['VN_SI_ITEMS']
         self.assertFalse(self.Map.sudo().search([('form_id', 'in', mine.ids),
                                                  ('company_id', '=', main.id)]))
-        self.assertFalse(self.env['pb.gov.filing'].sudo().search([('form_id', 'in', mine.ids)]))
-        self.assertFalse(self.env['pb.gov.form.company'].sudo().search([('form_id', 'in', mine.ids)]))
+        # company-scoped: a local walk may have committed its own DEMO companies (ledger S8D-6)
+        self.assertFalse(self.env['pb.gov.filing'].sudo().search([('form_id', 'in', mine.ids),
+                                                                  ('company_id', '=', main.id)]))
+        self.assertFalse(self.env['pb.gov.form.company'].sudo().search([('form_id', 'in', mine.ids),
+                                                                        ('company_id', '=', main.id)]))
         data = self.env['ir.model.data'].sudo().search([
             ('module', '=', 'pb_form_lines'), ('model', 'in', ('pb.gov.form', 'pb.gov.form.line')),
             ('res_id', 'in', mine.ids + mine.line_ids.ids)])
@@ -636,6 +639,36 @@ class TestS2B2FundFiles(S2B2Fixture):
                 text = xlsx_text(raw) if name.endswith('.xlsx') else raw.decode('ascii')
                 self.assertNotIn('odoo', text.lower(), name)
             self.assertFalse(re.search(r'\bodoo\b', json.dumps(filing.sudo()._pb_warnings()), re.I))
+
+    # ================================================================ T11 (static)
+    def test_t11_screen_extensions_find_their_targets(self):
+        """Every xpath of the fund wording extension resolves in the S2-A
+        template it extends (the browser walk caught one that did not: the
+        screen then fails to open)."""
+        import os
+        from lxml import etree
+        from odoo.modules.module import get_module_path
+        root = os.path.join(get_module_path('pb_form_lines'), 'static', 'src', 'xml')
+        templates = {}
+        for name in ('form_lines_board.xml', 'gov_filing_flow.xml'):
+            for t in etree.parse(os.path.join(root, name)).getroot().iter('t'):
+                if t.get('t-name'):
+                    templates[t.get('t-name')] = t
+        ext = etree.parse(os.path.join(root, 'fund_files.xml')).getroot()
+        checked = 0
+        for inherit in ext.iter('t'):
+            target = inherit.get('t-inherit')
+            if not target:
+                continue
+            self.assertIn(target, templates)
+            for xp in inherit.iter('xpath'):
+                expr = re.sub(r"hasclass\('([^']+)'\)",
+                              r"contains(concat(' ', normalize-space(@class), ' '), ' \1 ')",
+                              xp.get('expr'))
+                found = templates[target].xpath('.' + expr if expr.startswith('//') else expr)
+                self.assertTrue(found, '%s: %s finds nothing' % (target, xp.get('expr')))
+                checked += 1
+        self.assertGreaterEqual(checked, 8)
 
     # ================================================================ probe
     def test_the_member_number_probe_reads_by_name(self):

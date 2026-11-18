@@ -20,10 +20,10 @@
     <xpath expr="//div[hasclass('pbgf-detail-head')]" position="after">
       <p t-if="form.section === 'reports'" class="pbgf-mark is-ok pbgf-reports-note"><t t-out="icon('info', 15)"/><span>These pay items are read by the Vietnamese social-insurance reports on Compliance › Filings. Until a pay item is on a line, the reports read their usual codes.</span></p>
     </xpath>
-    <xpath expr="//div[hasclass('pbgf-detail')]/div[hasclass('pbgf-mark')]" position="attributes">
+    <xpath expr="//section[hasclass('pbgf-detail')]/div[hasclass('pbgf-mark')]" position="attributes">
       <attribute name="t-if">form.section !== 'reports'</attribute>
     </xpath>
-    <xpath expr="//div[hasclass('pbgf-detail')]/div[hasclass('pbgf-mark')]/t[@t-else='']/span" position="replace">
+    <xpath expr="//section[hasclass('pbgf-detail')]/div[hasclass('pbgf-mark')]/t[@t-else='']/span" position="replace">
       <span t-if="form.adviser_wording === 'fund'">Check with the fund before the first upload. Every file says so until a payroll manager marks this form accepted.</span>
       <span t-else="">Check with your adviser before first filing. Every file says so until a payroll manager marks this form accepted by the authority.</span>
     </xpath>

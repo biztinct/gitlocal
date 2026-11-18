@@ -105,14 +105,18 @@ class PbGovtReports(models.AbstractModel):
         if home_cc:
             present.add(home_cc)
         try:
-            cfgs = self.env['hr.formula.config'].with_context(active_test=False).search(
+            # sudo: only the country codes of this company's own schemes are read
+            # (a payroll officer without formula rights saw no country — S2-B2)
+            cfgs = self.env['hr.formula.config'].sudo().with_context(active_test=False).search(
                 [('company_id', '=', company.id)])
             present |= {(c.country_code or '').upper() for c in cfgs if c.country_code}
         except Exception:
             pass
         present.discard('')
 
-        sel = (country_code or home_cc or 'VN').upper()
+        # WDGAP S2-B2: a company with no country of its own opens on its pay
+        # schemes' country (it used to open on Vietnam whatever it paid)
+        sel = (country_code or home_cc or (sorted(present)[0] if present else 'VN')).upper()
         cat = _CATALOG.get(sel, {})
         wizard_model = cat.get('wizard_model')
         available = bool(wizard_model) and wizard_model in self.env
