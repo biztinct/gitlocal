@@ -93,17 +93,24 @@ class PbGovtReports(models.AbstractModel):
         wizard_model = cat.get('wizard_model')
         available = bool(wizard_model) and wizard_model in self.env
         forms = _forms_for(self.env, company, sel)
+        # WDGAP S2-B1: tiles grouped by the form's `tile_group` — `forms`
+        # stays the monthly tax returns (S2-A's key), the year-end paperwork
+        # has its own list under "Year-end"
+        all_forms = forms
+        forms = [f for f in all_forms if f.get('tile_group', 'tax_return') == 'tax_return']
+        year_end_forms = [f for f in all_forms if f.get('tile_group') == 'year_end']
         return {
             'company': company.name,
             'country_code': sel,
             'country_label': _COUNTRY_NAMES.get(sel, sel),
             'wizard_model': wizard_model or '',
-            'available': available or bool(forms),
+            'available': available or bool(all_forms),
             'wizards_available': available,
             # WDGAP S2-A: the tax returns of the form catalogue, as tiles
             'forms': forms,
             'form_lines': 'pb.gov.form' in self.env,
             'groups': cat.get('groups', []) if available else [],
+            'year_end_forms': year_end_forms,
             'period': self._default_period(company),
             'countries': sorted(
                 ({'code': c, 'label': _COUNTRY_NAMES.get(c, c)} for c in present),

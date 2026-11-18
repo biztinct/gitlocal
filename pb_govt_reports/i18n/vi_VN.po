@@ -560,3 +560,15 @@ msgstr "Được cơ quan chấp nhận"
 #: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
 msgid "Prepare"
 msgstr "Lập"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "A certificate for each person"
+msgstr "Chứng từ cho từng người"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Year-end"
+msgstr "Cuối năm"
