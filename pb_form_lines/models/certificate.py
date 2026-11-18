@@ -52,6 +52,8 @@ class PbGovFilingCertificate(models.Model):
     employee_name = fields.Char()
     name = fields.Char(required=True)
     title = fields.Char(help="The certificate's title, as printed on it.")
+    list_note = fields.Char(help="A short line shown beside the download on My Payobook "
+                                 "(e.g. that this is an information copy).")
     period_label = fields.Char()
     attachment_id = fields.Many2one('ir.attachment', required=True, ondelete='restrict')
     sha256 = fields.Char(readonly=True)
@@ -73,6 +75,7 @@ class PbGovFilingCertificate(models.Model):
         filing = self.sudo().filing_id
         return bool(filing.state == 'approved' and filing.approved_hash
                     and filing.pb_released
+                    and not filing._pb_cert_withheld(self.employee_id)
                     and filing._live_hash() == filing.approved_hash)
 
     @api.model
@@ -157,6 +160,7 @@ class PbGovFilingRelease(models.Model):
                     'filing_id': rec.id, 'employee_id': person['employee_id'],
                     'employee_name': person.get('name') or '', 'name': filename,
                     'title': spec.get('title') or '',
+                    'list_note': spec.get('list_note') or '',
                     'period_label': data.get('period_label') or '',
                     'attachment_id': attachment.id,
                     'sha256': hashlib.sha256(payload).hexdigest(), 'size': len(payload)})
@@ -173,6 +177,12 @@ class PbGovFilingRelease(models.Model):
                 'mimetype': 'application/zip', 'attachment_id': attachment.id,
                 'sha256': hashlib.sha256(payload).hexdigest(), 'size': len(payload)})
         return res
+
+    def _pb_cert_withheld(self, employee):
+        """Hook: True when this filing's certificate must not be shown to
+        `employee` any more (Vietnam: "Asked us to settle year-end tax",
+        owner ruling YE1). Checked every time an employee asks."""
+        return False
 
     def _pb_hash_parts(self):
         parts = super()._pb_hash_parts()

@@ -328,6 +328,9 @@ class PbGovFilingIN(models.Model):
         self.ensure_one()
         out = self._pb_cert_base(data, person, title, official)
         out['file_stem'] = 'Form16' if 'Form 16' in title else 'Form130'
+        # owner ruling YE3: employees keep Payobook's copy, said plainly
+        out['banner'] = _("Information copy — your official certificate comes from the tax department")
+        out['list_note'] = out['banner']
         ident = person.get('identity') or {}
         out['blocks'].append({'title': _("Employee"), 'rows': [
             (_("Name"), person.get('name') or ''),

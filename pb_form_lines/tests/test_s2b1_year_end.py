@@ -602,3 +602,130 @@ class TestS2B1YearEnd(S2B1Fixture):
         hr = Gov.with_user(self.hr_only).with_context(
             allowed_company_ids=[self.co_id.id]).get_govt_reports_data('ID')
         self.assertFalse(hr['year_end_forms'])
+
+
+@tagged('post_install', '-at_install', 'wdgap_s2b1')
+class TestS2B1FollowUpYE(S2B1Fixture):
+    """Owner rulings YE1-YE3 (2026-11-18): Vietnam "Asked us to settle
+    year-end tax" per person per tax year; Vietnam and India certificates are
+    information copies."""
+
+    def _vn_filing(self):
+        return self.Filing(self.officer, self.co_vn).prepare(self.form_qtt, self.co_vn, *Y26)
+
+    # ================================================================ YE1-1
+    def test_ye1_1_officer_ticks_per_year_who_and_when_kept_others_refused(self):
+        self.map_qtt()
+        board = self.board(self.officer, self.co_vn)
+        check = board.flow_check(self.form_qtt.id, '2026')
+        self.assertEqual(check['settle']['year'], 2026)
+        self.assertFalse([p for p in check['settle']['people'] if p['asked']])
+        check = board.set_settle(self.form_qtt.id, '2026', self.vy.id, True)
+        vy = [p for p in check['settle']['people'] if p['employee_id'] == self.vy.id][0]
+        self.assertTrue(vy['asked'])
+        self.assertEqual(vy['by'], self.officer.name)
+        row = self.env['pb.gov.year.settlement'].sudo().search([('employee_id', '=', self.vy.id)])
+        self.assertEqual((row.tax_year, row.country_code, row.marked_by), (2026, 'VN', self.officer))
+        self.assertTrue(row.marked_on)
+        # another tax year is its own answer
+        self.assertFalse(self.env['pb.gov.year.settlement']._pb_asked([self.vy.id], 'VN', 2025))
+        # nobody else may tick or read it: HR without payroll, an employee login
+        for user in (self.hr_only, self.portal):
+            with self.assertRaises(AccessError):
+                self.board(user, self.co_vn).set_settle(self.form_qtt.id, '2026', self.vy.id, False)
+            self.env.flush_all()
+            self.env.invalidate_all()
+            with self.assertRaises(AccessError):
+                self.env['pb.gov.year.settlement'].with_user(user).with_context(
+                    allowed_company_ids=[self.co_vn.id]).search([]).read(['asked'])
+        # a form without the choice refuses it
+        with self.assertRaises(UserError):
+            self.board(self.officer).set_settle(self.form_bpa1.id, '2026', self.ani.id, True)
+
+    # ================================================================ YE1-2
+    def test_ye1_2_ticked_person_no_certificate_figures_stay_part_two_counts(self):
+        self.map_qtt()
+        before = self.Reader._pb_read(self.form_qtt, self.co_vn, *Y26)['lines']
+        self.board(self.officer, self.co_vn).set_settle(self.form_qtt.id, '2026', self.vy.id, True)
+        data = self.Reader._pb_read(self.form_qtt, self.co_vn, *Y26)
+        t = data['lines']
+        for code in ('15', '16', '17', '22', '23', '30', '33', '34'):
+            self.assertEqual(t[code], before[code], "the declaration figures stay: [%s]" % code)
+        self.assertEqual(t['37'], 1)
+        self.assertEqual(t['38'], 3 * 2_000_000, "Part II: tax withheld from those who asked")
+        self.assertEqual((t['44'], t['45']), (0, 0), "no tax due from the scheme: no balance made up")
+        codes = {w['code'] for w in data['warnings']}
+        self.assertIn('asked_to_settle', codes)
+        self.assertIn('settle_without_tax_due', codes)
+        filing = self._vn_filing()
+        certs = filing.sudo().certificate_ids
+        self.assertNotIn(self.vy, certs.mapped('employee_id'), "no certificate made for that year")
+        self.assertIn(self.nam, certs.mapped('employee_id'))
+        import openpyxl
+        book = openpyxl.load_workbook(io.BytesIO(filing.sudo().file_ids.filtered(
+            lambda f: f.name.endswith('.xlsx')).attachment_id.raw))
+        vy_row = [r for r in book['05-1'].iter_rows(values_only=True) if r[1] == 'DEMO S2A Vy'][0]
+        self.assertEqual(vy_row[4], 'X', "05-1 column [10]: asked us to settle")
+        lan_row = [r for r in book['05-1'].iter_rows(values_only=True) if r[1] == 'DEMO S2A Lan'][0]
+        self.assertFalse(lan_row[4])
+        listed = ' '.join(str(r[0]) for r in book['To check'].iter_rows(values_only=True))
+        self.assertIn('asked us to settle', listed.lower())
+        # with the year's tax due from the scheme, the balance follows
+        tax_due = self._rule(self.cfg_vn, 'Thuế phải nộp cả năm', 'TAXDUE', 'info',
+                             appears_on_payslip=False)
+        self.put(self.form_qtt, '40', tax_due, source='computed_value')
+        slip = self.env['hr.payslip'].sudo().search(
+            [('employee_id', '=', self.vy.id)], order='date_to desc', limit=1)
+        slip.write({'formula_computed_values': json.dumps({'TAXDUE': 5_000_000})})
+        t = self.Reader._pb_read(self.form_qtt, self.co_vn, *Y26)['lines']
+        self.assertEqual((t['44'], t['45']), (0, 1_000_000), "withheld 6,000,000 against 5,000,000 due")
+
+    # ================================================================ YE1-3
+    def test_ye1_3_after_release_tick_hides_untick_never_brings_it_back_silently(self):
+        from odoo import fields as F
+        self.map_qtt()
+        Cert = self.env['pb.gov.filing.certificate']
+        filing = self._vn_filing()
+        self.env['biz.approval.engine'].with_user(self.officer).with_context(
+            allowed_company_ids=[self.co_vn.id]).submit(filing)
+        self.board(self.manager, self.co_vn).set_released(filing.id, True)
+        self.assertTrue(Cert._pb_employee_certificates(self.vy))
+        filing.sudo().generated_at = F.Datetime.to_datetime('2026-11-01 08:00:00')
+        board = self.board(self.officer, self.co_vn)
+        board.set_settle(self.form_qtt.id, '2026', self.vy.id, True)
+        self.assertFalse(Cert._pb_employee_certificates(self.vy), "ticked: hidden at once")
+        self.assertTrue(Cert._pb_employee_certificates(self.nam), "nobody else changes")
+        board.set_settle(self.form_qtt.id, '2026', self.vy.id, False)
+        self.assertFalse(Cert._pb_employee_certificates(self.vy), "unticked: not back by itself")
+        # HR prepares and releases again: the certificate is made and shown
+        again = self._vn_filing()
+        self.env['biz.approval.engine'].with_user(self.officer).with_context(
+            allowed_company_ids=[self.co_vn.id]).submit(again)
+        self.board(self.manager, self.co_vn).set_released(again.id, True)
+        self.assertEqual(Cert._pb_employee_certificates(self.vy).filing_id, again)
+
+    # ================================================================ YE2
+    def test_ye2_vietnam_certificate_is_an_information_copy_without_a_series(self):
+        self.map_qtt()
+        filing = self._vn_filing()
+        cert = filing.sudo().certificate_ids.filtered(lambda c: c.employee_id == self.vy)
+        text, meta = pdf_text_and_meta(cert.attachment_id.raw)
+        for words in ('Information copy', 'Bản sao thông tin', 'Salinan informasi'):
+            self.assertIn(words, text)
+        for words in ('Ký hiệu', 'Số chứng từ'):
+            self.assertNotIn(words, text, "no official series or number field")
+        self.assertEqual(cert.list_note, 'Information copy')
+        self.assertNotIn('odoo', (text + ' '.join(meta.values())).lower())
+
+    # ================================================================ YE3
+    def test_ye3_india_certificate_says_the_official_one_comes_from_the_tax_department(self):
+        self.map_in()
+        filing = self.Filing(self.officer, self.co_in).prepare(
+            self.form_130, self.co_in, date(2026, 4, 1), date(2027, 3, 31))
+        cert = filing.sudo().certificate_ids.filtered(lambda c: c.employee_id == self.arjun)
+        text, meta = pdf_text_and_meta(cert.attachment_id.raw)
+        self.assertIn('Information copy', text)
+        self.assertIn('your official certificate comes from the tax department', text)
+        self.assertEqual(cert.list_note,
+                         'Information copy — your official certificate comes from the tax department')
+        self.assertNotIn('odoo', (text + ' '.join(meta.values())).lower())

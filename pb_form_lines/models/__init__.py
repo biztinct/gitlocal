@@ -13,3 +13,4 @@ from . import render_id_bpa1
 from . import render_vn_qtt
 from . import render_in
 from . import render_sg
+from . import settle

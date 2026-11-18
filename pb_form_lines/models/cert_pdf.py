@@ -14,6 +14,7 @@ says WHAT goes on the certificate:
     {
       'title': str, 'subtitle': str, 'official': str, 'author': str,
       'mark': str,                         # adviser sentence or ''
+      'banner': str,                       # e.g. "Information copy" or ''
       'blocks': [{'title': str, 'rows': [(label, value), ...]}],
       'tables': [{'title': str, 'head': [str, str, str],
                   'rows': [(code, label, amount_text, kind)]}],
@@ -80,6 +81,8 @@ def build(spec):
                                textColor=ink, alignment=TA_RIGHT),
         'mark': ParagraphStyle('mark', fontName=FONT_BOLD, fontSize=9, leading=12,
                                textColor=colors.HexColor(AMBER)),
+        'banner': ParagraphStyle('banner', fontName=FONT_BOLD, fontSize=9.5, leading=13,
+                                 textColor=colors.HexColor(PRIMARY)),
         'note': ParagraphStyle('note', fontName=FONT, fontSize=7.5, leading=10,
                                textColor=muted),
     }
@@ -104,6 +107,15 @@ def build(spec):
         box.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor(AMBER_BG)),
             ('BOX', (0, 0), (-1, -1), 0.6, colors.HexColor(AMBER)),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8), ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 6), ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        story += [box, Spacer(1, 3 * mm)]
+    if spec.get('banner'):
+        box = Table([[Paragraph(_esc(spec['banner']), st['banner'])]], colWidths=[width])
+        box.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor(TINT)),
+            ('BOX', (0, 0), (-1, -1), 0.6, colors.HexColor(PRIMARY)),
             ('LEFTPADDING', (0, 0), (-1, -1), 8), ('RIGHTPADDING', (0, 0), (-1, -1), 8),
             ('TOPPADDING', (0, 0), (-1, -1), 6), ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
         ]))

@@ -212,6 +212,7 @@ msgstr "Được cơ quan chấp nhận — %(who)s đánh dấu ngày %(when)s.
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_needaction model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_needaction
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_needaction
 msgid "Action Needed"
 msgstr "Cần xử lý"
 
@@ -299,6 +300,7 @@ msgstr "Tệp đính kèm"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_attachment_count model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_attachment_count
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_attachment_count
 msgid "Attachment Count"
 msgstr "Số tệp đính kèm"
 
@@ -404,6 +406,7 @@ msgstr "Cách nhau bằng dấu phẩy: xml, xlsx, csv."
 #. odoo-python
 #: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__company_id
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__company_id
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__company_id
 msgid "Company"
 msgstr "Công ty"
 
@@ -422,6 +425,7 @@ msgstr "Đếm từ những người trong tờ khai"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__country_code
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__country_code
 msgid "Country"
 msgstr "Quốc gia"
 
@@ -438,12 +442,14 @@ msgstr "Chỉ đếm hoặc cộng những người có dòng đó khác 0."
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__create_uid
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__create_uid
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__create_uid
 msgid "Created by"
 msgstr "Người tạo"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__create_date
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__create_date
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__create_date
 msgid "Created on"
 msgstr "Ngày tạo"
 
@@ -456,6 +462,7 @@ msgstr "Loại tiền"
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_biz_approval_request_seat__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_board__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_reader__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_rights__display_name
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__display_name
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
@@ -591,11 +598,13 @@ msgstr "Kỳ đầu tiên áp dụng mẫu này."
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_follower_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_follower_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_follower_ids
 msgid "Followers"
 msgstr "Người theo dõi"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_partner_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_partner_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Người theo dõi (đối tác)"
 
@@ -698,22 +707,27 @@ msgstr "Nhân sự có thể đặt khoản lương vào dòng này."
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__has_message model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__has_message
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__has_message
 msgid "Has Message"
 msgstr "Có tin nhắn"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_biz_approval_request_seat__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_board__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_reader__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_rights__id
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__id
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__id
 msgid "ID"
 msgstr "ID"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_needaction model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_needaction
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Nếu chọn, tin nhắn mới cần bạn chú ý."
 
 #. module: pb_form_lines
 #: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_sms_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_sms_error
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_error
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Nếu chọn, một số tin nhắn bị lỗi gửi."
 
@@ -763,6 +777,7 @@ msgstr "Chỉ để tham khảo"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_is_follower model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_is_follower
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_is_follower
 msgid "Is Follower"
 msgstr "Đang theo dõi"
 
@@ -803,12 +818,14 @@ msgstr "Nhãn"
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__write_uid
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__write_uid
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__write_uid
 msgid "Last Updated by"
 msgstr "Người cập nhật cuối"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__write_date
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__write_date
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__write_date
 msgid "Last Updated on"
 msgstr "Ngày cập nhật cuối"
 
@@ -894,11 +911,13 @@ msgstr "Cũng có thể khai theo quý"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_error
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_error
 msgid "Message Delivery error"
 msgstr "Lỗi gửi tin nhắn"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_ids
 msgid "Messages"
 msgstr "Tin nhắn"
 
@@ -1098,21 +1117,25 @@ msgstr "Không có gì để gợi ý"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_needaction_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Số việc cần làm"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_error_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_error_counter
 msgid "Number of errors"
 msgstr "Số lỗi"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_needaction_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_needaction_counter
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "Số tin nhắn cần xử lý"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_error_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_error_counter
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Số tin nhắn bị lỗi gửi"
 
@@ -1460,6 +1483,7 @@ msgstr "Tỷ lệ (%)"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__rating_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__rating_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__rating_ids
 msgid "Ratings"
 msgstr "Đánh giá"
 
@@ -1510,6 +1534,7 @@ msgstr "Số chữ số làm tròn"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_sms_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "Lỗi gửi SMS"
 
@@ -2178,11 +2203,13 @@ msgstr "Cảnh báo (JSON)"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__website_message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__website_message_ids
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__website_message_ids
 msgid "Website Messages"
 msgstr "Tin nhắn website"
 
 #. module: pb_form_lines
 #: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__website_message_ids model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__website_message_ids
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__website_message_ids
 msgid "Website communication history"
 msgstr "Lịch sử trao đổi trên website"
 
@@ -2579,12 +2606,6 @@ msgid "Counts every tax resident; the length of the labour contract is not check
 msgstr "Đếm mọi cá nhân cư trú; không kiểm tra thời hạn hợp đồng lao động."
 
 #. module: pb_form_lines
-#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l35
-#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l37
-msgid "Counts the people with an amount on the \"tax due for the year\" line."
-msgstr "Đếm những người có số tiền trên dòng \"thuế phải nộp cả năm\"."
-
-#. module: pb_form_lines
 #. odoo-python
 #: code:addons/pb_form_lines/models/render_sg.py:0
 msgid "Date of birth"
@@ -2618,6 +2639,7 @@ msgstr "Số lần tải"
 #: code:addons/pb_form_lines/models/render_sg.py:0
 #: code:addons/pb_form_lines/models/render_vn_qtt.py:0
 #: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__employee_id
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__employee_id
 msgid "Employee"
 msgstr "Nhân viên"
 
@@ -3914,3 +3936,146 @@ msgstr "hồ sơ nhân viên không có giới tính"
 #: code:addons/pb_form_lines/models/render_id_bpa1.py:0
 msgid "tax status %s cannot go in the import file"
 msgstr "tình trạng thuế %s không thể đưa vào tệp nhập"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/settle.py:0
+msgid "%(who)s marked that %(name)s asked us to settle year-end tax for %(year)s."
+msgstr "%(who)s đã ghi nhận %(name)s ủy quyền cho công ty quyết toán thuế năm %(year)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/settle.py:0
+msgid "%(who)s took back “asked us to settle year-end tax” for %(name)s, %(year)s. A certificate appears only when the year is prepared and released again."
+msgstr "%(who)s đã bỏ đánh dấu “ủy quyền cho công ty quyết toán thuế” của %(name)s, năm %(year)s. Chứng từ chỉ xuất hiện khi năm đó được lập và phát hành lại."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "%s people asked us to settle"
+msgstr "%s người ủy quyền quyết toán thay"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "%s people asked us to settle their year-end tax: no certificate is made for them."
+msgstr "%s người ủy quyền cho công ty quyết toán thuế năm: không lập chứng từ cho họ."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "1 person asked us to settle"
+msgstr "1 người ủy quyền quyết toán thay"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "1 person asked us to settle their year-end tax: no certificate is made for them."
+msgstr "1 người ủy quyền cho công ty quyết toán thuế năm: không lập chứng từ cho họ."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing_certificate__list_note
+msgid "A short line shown beside the download on My Payobook (e.g. that this is an information copy)."
+msgstr "Một dòng ngắn hiển thị cạnh nút tải trên My Payobook (ví dụ: đây là bản sao thông tin)."
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_year_settlement
+msgid "Asked the employer to settle year-end tax"
+msgstr "Ủy quyền cho người sử dụng lao động quyết toán thuế"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__asked
+msgid "Asked us to settle year-end tax"
+msgstr "Ủy quyền cho công ty quyết toán thuế năm"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Asked us to settle year-end tax: no certificate for this year"
+msgstr "Ủy quyền cho công ty quyết toán thuế: không có chứng từ cho năm này"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l35
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l37
+msgid "Counts the people HR marked \"Asked us to settle year-end tax\" for the year."
+msgstr "Đếm những người được HR đánh dấu \"Ủy quyền cho công ty quyết toán thuế năm\" trong năm."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Information copy"
+msgstr "Bản sao thông tin"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Information copy — your official certificate comes from the tax department"
+msgstr "Bản sao thông tin — chứng từ chính thức của bạn do cơ quan thuế cấp"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__list_note
+msgid "List Note"
+msgstr "Ghi chú danh sách"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__marked_by
+msgid "Marked By"
+msgstr "Đánh dấu bởi"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__marked_on
+msgid "Marked On"
+msgstr "Đánh dấu lúc"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Marked by %(who)s on %(when)s"
+msgstr "Đánh dấu bởi %(who)s lúc %(when)s"
+
+#. module: pb_form_lines
+#: model:ir.model.constraint,message:pb_form_lines.constraint_pb_gov_year_settlement_employee_year_uniq
+msgid "One answer per person, country and tax year."
+msgstr "Mỗi người, quốc gia và năm tính thuế chỉ có một câu trả lời."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Part II needs the tax due for the year from your pay scheme: put that pay item on its line on Form lines. Until then the balance lines stay at 0."
+msgstr "Phần II cần số thuế phải nộp cả năm từ chương trình lương của bạn: hãy đặt khoản lương đó vào dòng của nó trong Dòng biểu mẫu. Đến lúc đó các dòng chênh lệch giữ ở 0."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__tax_year
+msgid "Tax Year"
+msgstr "Năm tính thuế"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "That person is not available here."
+msgstr "Người này không có ở đây."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__tax_year
+msgid "The calendar year the tax year starts in."
+msgstr "Năm dương lịch mà năm tính thuế bắt đầu."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "This form has no “asked us to settle” choice."
+msgstr "Biểu mẫu này không có lựa chọn “ủy quyền quyết toán thay”."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Tick the people who asked the company to settle their year-end tax for this year. They stay in the figures and are counted in Part II; they get no certificate."
+msgstr "Đánh dấu những người đã ủy quyền cho công ty quyết toán thuế năm nay. Họ vẫn nằm trong số liệu và được tính ở Phần II; họ không nhận chứng từ."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/settle.py:0
+msgid "That person belongs to another company."
+msgstr "Người này thuộc công ty khác."

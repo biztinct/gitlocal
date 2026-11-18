@@ -30,9 +30,14 @@ import io
 
 from odoo import _, api, fields, models
 
+from odoo.addons.pb_hr_payroll_formula.models import tax_year as TY
+
 from . import cert_pdf
 from .render_vn import XLSX
 
+#: Owner ruling YE2 — on every Vietnamese certificate, in English,
+#: Vietnamese and Indonesian at once (not translated: all three are printed).
+INFO_COPY_3 = 'Information copy · Bản sao thông tin · Salinan informasi'
 REGISTER_PARAM = 'pb_me_tax.vn_registered_dependants_codes'
 REGISTER_DEFAULT = 'VNREGISTER'
 RELATION_VI = {'spouse': 'Vợ/Chồng', 'child': 'Con', 'parent': 'Bố/Mẹ',
@@ -47,7 +52,7 @@ COLS = {
         '05-1': [
             ('06', 'STT', 'n'), ('07', 'Họ và tên', 'name'), ('08', 'Mã số thuế', 'tax_code'),
             ('09', 'Số ĐDCN/Hộ chiếu (trường hợp chưa có MST)', 'id_no'),
-            ('10', 'Cá nhân uỷ quyền quyết toán thay', 'blank'),
+            ('10', 'Cá nhân uỷ quyền quyết toán thay', 'settle'),
             ('11', 'CN nước ngoài ủy quyền quyết toán dưới 12 tháng', 'blank'),
             ('12', 'Tổng số thu nhập chịu thuế phát sinh trong kỳ', '22'),
             ('13', 'Trong đó: TNCT được miễn theo Hiệp định', 'TREATY'),
@@ -88,7 +93,7 @@ COLS = {
         '05-1': [
             ('06', 'STT', 'n'), ('07', 'Họ và tên', 'name'), ('08', 'Mã số thuế', 'tax_code'),
             ('09', 'Số CMND/CCCD/SĐDCN/Hộ chiếu (trường hợp chưa có MST)', 'id_no'),
-            ('10', 'Cá nhân uỷ quyền quyết toán thay', 'blank'),
+            ('10', 'Cá nhân uỷ quyền quyết toán thay', 'settle'),
             ('11', 'CN nước ngoài ủy quyền quyết toán dưới 12 tháng', 'blank'),
             ('12', 'Tổng số TNCT', '23'),
             ('13', 'Trong đó: TNCT tại tổ chức trước khi điều chuyển', 'blank'),
@@ -214,6 +219,58 @@ class PbGovFormReaderVNQTT(models.AbstractModel):
                 if len(differ) == 1 else _(
                     "%s people have a different number of dependants on record and on the contract: to check.", len(differ))
             self._pb_warn(out, 'dependants_to_check', text, employee_ids=differ)
+        self._pb_vn_settled(form, out, start)
+        return out
+
+    @api.model
+    def _pb_vn_settled(self, form, out, start):
+        """Owner ruling YE1: the people HR marked "Asked us to settle year-end
+        tax" for this tax year. They stay in every figure; Part II counts
+        them ([37] / TT80 [35]) and their tax withheld ([38] / [36]); the
+        balance lines ([44]/[45], TT80 [40]/[41]) are worked out only when
+        the scheme gives the tax due for the year ([40] / [38]) — Payobook
+        does not work tax out again."""
+        version = _version(form.code)
+        if version == 'TT89':
+            c_n, c_w, c_from, c_pay, c_due, c_over, waived = '37', '38', '33', '40', '44', '45', ('41', '42', '43')
+        else:
+            c_n, c_w, c_from, c_pay, c_due, c_over, waived = '35', '36', '31', '38', '40', '41', ('39',)
+        year = TY.tax_year_key(TY.month_of(form.year_start_month or 1), start)
+        asked = self.env['pb.gov.year.settlement']._pb_asked(
+            [p['employee_id'] for p in out['employees']], (form.country_code or 'VN').upper(), year)
+        payable_known = any(float((p.get('lines') or {}).get(c_pay) or 0.0) for p in out['employees'])
+        totals = {c_n: 0, c_w: 0.0, c_due: 0.0, c_over: 0.0}
+        currency = self.env['res.currency'].browse(out.get('currency_id') or False)
+        rnd = (lambda v: currency.round(v)) if currency else (lambda v: v)
+        for person in out['employees']:
+            lines = person.setdefault('lines', {})
+            settle = person['employee_id'] in asked
+            person['settle'] = settle
+            withheld = float(lines.get(c_from) or 0.0) if settle else 0.0
+            due = over = 0.0
+            if settle and payable_known:
+                balance = float(lines.get(c_pay) or 0.0) - withheld - sum(
+                    float(lines.get(c) or 0.0) for c in waived)
+                due, over = max(balance, 0.0), max(-balance, 0.0)
+            for code, value in ((c_w, withheld), (c_due, due), (c_over, over)):
+                if code in lines:
+                    lines[code] = rnd(value)
+                totals[code] += value
+            if settle:
+                totals[c_n] += 1
+                person['checks'].append(_("Asked us to settle year-end tax: no certificate for this year"))
+        for code, value in totals.items():
+            if code in out['lines']:
+                out['lines'][code] = int(value) if code == c_n else rnd(value)
+        if asked:
+            n = len([p for p in out['employees'] if p.get('settle')])
+            text = _("1 person asked us to settle their year-end tax: no certificate is made for them.") if n == 1 \
+                else _("%s people asked us to settle their year-end tax: no certificate is made for them.", n)
+            self._pb_warn(out, 'asked_to_settle', text, level='info',
+                          employee_ids=[p['employee_id'] for p in out['employees'] if p.get('settle')])
+            if not payable_known:
+                self._pb_warn(out, 'settle_without_tax_due', _(
+                    "Part II needs the tax due for the year from your pay scheme: put that pay item on its line on Form lines. Until then the balance lines stay at 0."))
         return out
 
 
@@ -246,6 +303,8 @@ class PbGovFilingVNQTT(models.Model):
             return 'X' if not person.get('resident') else ''
         if source == 'blank':
             return ''
+        if source == 'settle':
+            return 'X' if person.get('settle') else ''
         if source == 'deps':
             return int(person.get('dependant_count') or 0)
         return float(lines.get(source) or 0.0)
@@ -425,6 +484,10 @@ class PbGovFilingVNQTT(models.Model):
             data, person, _("Tax withheld in the year"),
             'Chứng từ khấu trừ thuế thu nhập cá nhân (theo mẫu tham khảo 03/TNCN)')
         out['file_stem'] = 'TNCN'
+        # owner ruling YE2: an information copy, said in the three languages
+        # whatever the preparer's language; no official series or number
+        out['banner'] = INFO_COPY_3
+        out['list_note'] = _("Information copy")
         employer = out['blocks'][0]['rows']
         address = ', '.join(p for p in (company.street, company.street2, company.city) if p)
         employer[1:1] = [(_("Address"), address)] if address else []
@@ -468,7 +531,29 @@ class PbGovFilingVNQTT(models.Model):
         return out
 
     def _pb_certificate_vn_05qtt_tt89(self, data, person):
+        if person.get('settle'):
+            return None         # YE1: asked us to settle — no certificate
         return self._pb_vn_certificate(data, person, 'TT89')
 
     def _pb_certificate_vn_05qtt_tt80(self, data, person):
+        if person.get('settle'):
+            return None
         return self._pb_vn_certificate(data, person, 'TT80')
+
+    def _pb_cert_withheld(self, employee):
+        """YE1: a Vietnamese year-end certificate is not shown to a person
+        HR marked "Asked us to settle year-end tax" for that tax year, even
+        when the mark came after the release."""
+        res = super()._pb_cert_withheld(employee)
+        rec = self.sudo()
+        if res or not (rec.form_id.code or '').upper().startswith('VN_05QTT'):
+            return res
+        year = TY.tax_year_key(TY.month_of(rec.form_id.year_start_month or 1), rec.period_start)
+        row = self.env['pb.gov.year.settlement']._pb_rows([employee.id], 'VN', year).get(employee.id)
+        if not row:
+            return False
+        # ticked: hidden. Changed in either direction after this filing was
+        # prepared: hidden too — a certificate comes back only when HR
+        # prepares and releases the year again, never silently.
+        return bool(row.asked or (row.marked_on and rec.generated_at
+                                  and row.marked_on > rec.generated_at))

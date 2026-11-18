@@ -421,7 +421,47 @@ class PbGovFormBoard(models.AbstractModel):
             'currency_id': data['currency_id'],
             'people_checks': checks,
             'blocked': any(w.get('level') == 'block' for w in data['warnings']),
+            # owner ruling YE1 (Vietnam year-end): who asked us to settle
+            'settle': self._settle_rows(form, company, start, data),
         }
+
+    @api.model
+    def _settle_form(self, form):
+        return (form.code or '').upper().startswith('VN_05QTT')
+
+    @api.model
+    def _settle_rows(self, form, company, start, data):
+        if not self._settle_form(form):
+            return False
+        year = TY.tax_year_key(TY.month_of(form.year_start_month or 1), start)
+        people = data.get('employees') or []
+        rows = self.env['pb.gov.year.settlement']._pb_rows(
+            [p['employee_id'] for p in people], 'VN', year)
+        out = []
+        for p in people:
+            row = rows.get(p['employee_id'])
+            out.append({'employee_id': p['employee_id'], 'name': p.get('name') or '',
+                        'asked': bool(row and row.asked),
+                        'by': row.marked_by.name or '' if row else '',
+                        'on': self._when(row.marked_on) if row else ''})
+        return {'year': year, 'people': out}
+
+    @api.model
+    def set_settle(self, form_id, period, employee_id, value, scheme_ids=None, currency_id=None):
+        """Tick / untick "Asked us to settle year-end tax" for one person of
+        the period's people (payroll officer or manager); answers the check
+        again, so the figures on screen follow."""
+        company = self._door()
+        form = self._form(form_id)
+        if not self._settle_form(form):
+            raise UserError(_("This form has no “asked us to settle” choice."))
+        start, _end = self._bounds(form, period)
+        employee = self.env['hr.employee'].sudo().browse(int(employee_id or 0)).exists()
+        if not employee:
+            raise UserError(_("That person is not available here."))
+        year = TY.tax_year_key(TY.month_of(form.year_start_month or 1), start)
+        self.env['pb.gov.year.settlement']._pb_set(employee, company, 'VN', year, value)
+        return self.flow_check(form_id, period, scheme_ids, currency_id)
 
     @api.model
     def flow_prepare(self, form_id, period, scheme_ids=None, currency_id=None):

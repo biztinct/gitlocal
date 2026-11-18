@@ -94,6 +94,19 @@
               </tr>
             </tbody>
           </table>
+          <details t-if="C.settle and C.settle.people.length" class="pbgf-settle">
+            <summary><t t-out="icon('userCheck', 14)"/> <span>Asked us to settle year-end tax</span> <small class="pbgf-muted" t-esc="settledCount(C)"/></summary>
+            <p class="pbgf-muted pbgf-small">Tick the people who asked the company to settle their year-end tax for this year. They stay in the figures and are counted in Part II; they get no certificate.</p>
+            <ul class="pbgf-settle-list">
+              <li t-foreach="C.settle.people" t-as="sp" t-key="sp.employee_id" t-att-class="sp.asked ? 'is-on' : ''">
+                <label>
+                  <input type="checkbox" t-att-checked="sp.asked" t-att-disabled="state.busy" t-on-change="() => this.toggleSettle(sp)"/>
+                  <b t-esc="sp.name"/>
+                </label>
+                <small t-if="sp.by" class="pbgf-muted" t-esc="markedLine(sp)"/>
+              </li>
+            </ul>
+          </details>
           <details t-if="C.people_checks.length" class="pbgf-checks">
             <summary t-esc="lookLine(C.people_checks.length)"/>
             <ul><li t-foreach="C.people_checks" t-as="pc" t-key="pc_index"><b t-esc="pc.name"/> — <t t-esc="pc.checks.join('; ')"/></li></ul>

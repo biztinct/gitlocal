@@ -110,6 +110,27 @@ export class PbGovFiling extends Component {
     }
     get isYear() { return this.form && this.form.period_kind === "tax_year"; }
 
+    // ------------------------------------------------ YE1 (Vietnam year-end)
+    settledCount(c) {
+        const n = ((c && c.settle && c.settle.people) || []).filter((p) => p.asked).length;
+        return n === 1 ? _t("1 person asked us to settle") : _t("%s people asked us to settle", n);
+    }
+    markedLine(p) {
+        return _t("Marked by %(who)s on %(when)s", { who: p.by, when: p.on });
+    }
+    async toggleSettle(p) {
+        if (this.state.busy) { return; }
+        this.state.busy = true;
+        try {
+            this.state.check = await this.orm.call(MODEL, "set_settle", [this.formId, this.periodKey,
+                p.employee_id, !p.asked, this.state.schemeIds, this.state.check.currency_id || false]);
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That could not be done.")), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
     // ------------------------------------------------ certificates (S2-B)
     releasedLine(f) {
         return _t("Released to employees by %(who)s on %(when)s.", { who: f.released_by, when: f.released_on });

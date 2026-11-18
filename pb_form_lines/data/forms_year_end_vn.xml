@@ -21,7 +21,7 @@
         <field name="screen_note">The year-end declaration in its own line order with appendices 05-1, 05-2 and 05-3 as sheets, and a tax-withheld statement for each person.</field>
         <field name="source_url">https://amis.misa.vn/wp-content/uploads/2026/07/89_15072026_180604.pdf</field>
         <field name="source_note">Thông tư 89/2026/TT-BTC (signed 30 June 2026, in force 1 July 2026), Mẫu số 05/QTT-TNCN and its appendices 05-1/BK-QTT-TNCN, 05-2/BK-QTT-TNCN, 05-3/BK-QTT-TNCN, read from the signed text published by MISA (https://amis.misa.vn/wp-content/uploads/2026/07/89_15072026_180604.pdf, pages 312-318). Employee certificate: Nghị định 254/2026/NĐ-CP Điều 23-24 and the sample template 03/TNCN of Thông tư 91/2026/TT-BTC Phụ lục V. Read on 18 November 2026.</field>
-        <field name="inferred_note">The official files were read from copies published by others (MISA, VCCI), not from the Ministry's own site. Who counts as "with a labour contract" ([16] and appendix 05-1) is not checked: every tax resident is counted and listed on 05-1, every non-resident on 05-2. Part II (tax settled for people who authorised the company) is filled only from pay items HR puts on its lines: Payobook does not work tax out again. The per-person certificate is an information copy laid out like the sample 03/TNCN; it has no official series or number.</field>
+        <field name="inferred_note">The official files were read from copies published by others (MISA, VCCI), not from the Ministry's own site. Who counts as "with a labour contract" ([16] and appendix 05-1) is not checked: every tax resident is counted and listed on 05-1, every non-resident on 05-2. Part II counts the people HR marked "Asked us to settle year-end tax" for the year (they get no certificate); its balance lines need the tax due for the year from a pay item: Payobook does not work tax out again. The per-person certificate is an information copy laid out like the sample 03/TNCN; Payobook gives it no official series or number.</field>
         <field name="employee_certificates" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
@@ -382,8 +382,7 @@
         <field name="official_label">Tổng số cá nhân uỷ quyền cho tổ chức, cá nhân trả thu nhập quyết toán thay</field>
         <field name="only_if_line_id" ref="form_vn_05qtt_tt89_l40"/>
         <field name="mappable" eval="False"/>
-        <field name="note">Counts the people with an amount on the "tax due for the year" line.</field>
-        <field name="inferred" eval="True"/>
+        <field name="note">Counts the people HR marked "Asked us to settle year-end tax" for the year.</field>
     </record>
     <record id="form_vn_05qtt_tt89_l38" model="pb.gov.form.line">
         <field name="form_id" ref="form_vn_05qtt_tt89"/>
@@ -413,7 +412,7 @@
         <field name="screen_note">The year-end declaration in its own line order with appendices 05-1, 05-2 and 05-3 as sheets, and a tax-withheld statement for each person.</field>
         <field name="source_url">https://vanban.vcci.com.vn/hm_content/uploads/van-ban/80-2021-TT-BTC__Bieu_mau.rar</field>
         <field name="source_note">Thông tư 80/2021/TT-BTC Phụ lục II, Mẫu số 05/QTT-TNCN and appendices 05-1, 05-2, 05-3/BK-QTT-TNCN (form pack copy at https://vanban.vcci.com.vn/hm_content/uploads/van-ban/80-2021-TT-BTC__Bieu_mau.rar); column order of 05-1 and 05-2 checked against MISA's published guides. For tax years up to 2025. Read on 18 November 2026.</field>
-        <field name="inferred_note">The official files were read from copies published by others (MISA, VCCI), not from the Ministry's own site. Who counts as "with a labour contract" ([16] and appendix 05-1) is not checked: every tax resident is counted and listed on 05-1, every non-resident on 05-2. Part II (tax settled for people who authorised the company) is filled only from pay items HR puts on its lines: Payobook does not work tax out again. The per-person certificate is an information copy laid out like the sample 03/TNCN; it has no official series or number.</field>
+        <field name="inferred_note">The official files were read from copies published by others (MISA, VCCI), not from the Ministry's own site. Who counts as "with a labour contract" ([16] and appendix 05-1) is not checked: every tax resident is counted and listed on 05-1, every non-resident on 05-2. Part II counts the people HR marked "Asked us to settle year-end tax" for the year (they get no certificate); its balance lines need the tax due for the year from a pay item: Payobook does not work tax out again. The per-person certificate is an information copy laid out like the sample 03/TNCN; Payobook gives it no official series or number.</field>
         <field name="employee_certificates" eval="True"/>
         <field name="inferred" eval="True"/>
     </record>
@@ -731,8 +730,7 @@
         <field name="official_label">Tổng số cá nhân uỷ quyền cho tổ chức, cá nhân trả thu nhập quyết toán thay</field>
         <field name="only_if_line_id" ref="form_vn_05qtt_tt80_l38"/>
         <field name="mappable" eval="False"/>
-        <field name="note">Counts the people with an amount on the "tax due for the year" line.</field>
-        <field name="inferred" eval="True"/>
+        <field name="note">Counts the people HR marked "Asked us to settle year-end tax" for the year.</field>
     </record>
     <record id="form_vn_05qtt_tt80_l36" model="pb.gov.form.line">
         <field name="form_id" ref="form_vn_05qtt_tt80"/>
