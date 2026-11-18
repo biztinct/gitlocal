@@ -406,3 +406,32 @@ that says "W3" means that phase's row.
 | S2B1-6 | S2-B1 | Terms export (babel) picks up a string literal that sits in the SAME tuple as a `_()` call, e.g. `(_("Period"), '%s – %s' % (p['from'], ...))` exported "from" as a term. Build such values in a variable first. |
 | S2B1-7 | S2-B1 | `polib` re-saving a .po rewraps and reorders every occurrence line (a 1,600-line diff on a sibling branch's file). Merge PO text-level: append new entries at the end, insert new `#:` lines above an existing msgid only for data records that share it. A data record whose label equals an existing msgid needs its own `model:` occurrence or it stays English. |
 | S2B1-8 | S2-B1 | Worktree guard: a shell line that mixes pipes/loops/`&` with paths containing "gitlocal" (the scratchpad path does too) is refused. Put such commands in a scratchpad `.sh` and run `bash script.sh`. |
+| S2B2-1 | S2-B2 | An OWL `t-inherit` xpath that misses its target breaks the WHOLE screen at open ("Something went wrong") and no Python test sees it. Check the target's tag (Form lines detail is a `<section>`); keep a static test that evaluates every xpath (`test_t11_screen_extensions_find_their_targets`). |
+| S2B2-2 | S2-B2 | Changing a static template file is not enough for a running local server: purge `/web/assets/%` attachments + restart. |
+| S2B2-3 | S2-B2 | EPFO's document site answers 403 to non-browser fetches; SIPP / e-Dabu / ESIC templates are behind login — only CPF Board publishes its file spec openly. |
+| S2B2-4 | S2-B2 | `get_govt_reports_data` read scheme countries without sudo: a payroll officer without formula rights saw no country and a company with no country opened on Vietnam. Fixed in S2-B2. |
+| S2B2-5 | S2-B2 | The `upd_p6_t_tpl` admin user (id 2) is archived: a local walk needs its own DEMO user. |
+| S2B2-6 | S2-B2 | Text-level PO merge: replace a matched block by POSITION, not `str.replace(..., 1)` — identical `#.`/`#:` blocks repeat. |
+| S2C-1 | S2-C | Switching a data file from `noupdate="0"` to `"1"`: on upgrade the loader SKIPS existing records, so a NEW field in that XML never reaches an upgraded database — fill it (and flag `ir_model_data.noupdate`) in a post-migration. |
+| S2C-2 | S2-C | `_()` inside a nested function finds no `self`/`env` in its frame: logs "no translation language detected" and returns English. Use `self.env._(...)`. |
+| S2C-3 | S2-C | A regex that pulls `_("…")` out of source reads only the first piece of an implicit concatenation — keep each msgid on one line. |
+| S2C-4 | S2-C | `pb.bank.registry.match()` reads ONE country; no country = the Vietnamese rows only. A new caller for another country must pass `country=`. |
+| S2C-5 | S2-C | chrome-devtools `evaluate_script(sourcePath=…)` / `take_screenshot(filePath=…)` only reach files inside the workspace roots, not the scratchpad. |
+| S2C-6 | S2-C | A local server started with `-c <conf>` is not found by `pkill -f <logfile>`; stop it by port or by the conf path. |
+| S2C-7 | S2-C | `assertRaises((AccessError, UserError))` fails in Odoo 19 tests ("issubclass() arg 1 must be a class"): try/except inside a savepoint. |
+| S2C-8 | S2-C | Never run suites on a copy a browser walk seeded (committed routes, settings, marks): rebuild or restore first. |
+| S2D-1 | S2-D | `pb.me.detail.request.pb_portal_create` checked kinds against a module constant, so `selection_add` kinds were refused — read the field's selection. Check module-level constants before extending a selection. |
+| S2D-2 | S2-D | The application "settings stamp" hashes each rule's `write_date`; a before/after golden must exclude it (prove with a control run). |
+| S2D-3 | S2-D | Call `_pbme_needs_extra` in tests `with_user(<employee login>).sudo()` — as superuser other modules' hooks refuse ("That is not your employee record"). |
+| S2D-4 | S2-D | A website page `<title>` is the QWeb template's `name`: name portal templates in screen words. |
+| S2D-5 | S2-D | chrome-devtools `upload_file` refuses files outside the workspace roots: post `FormData` + `Blob` from the page. |
+| S2D-6 | S2-D | A flex heading with `<span>A</span> <t t-esc/>` shows a double gap; wrap the words in one span. |
+| S2D-7 | S2-D | `hr.formula.config` reads need a formula group: test sources as "pay team + formula user". |
+| S2D-8 | S2-D | The tax code on `hr.contract` / `hr.employee` has no tracking; a future `tracking=True` would print the full number in chatter — write copies with `mail_notrack` and post a masked line. |
+| S2D-9 | S2-D | A conf generator silently put a clashing port back; keep the phase port in the generator itself. |
+| S2M-1 | S2 deploy | Two wave-2 builders each built a Filings tile grouping (`tile_group` S2-B1, `filing_section` S2-B2) with the SAME field label "Shown under" (a load warning). Merge kept ONE grouping (`filing_section`, with `year_end` added), the two fields set in step in the data, `tile_group` relabelled. When two parallel builders touch one screen, the handover must name the single mechanism up front. |
+| S2M-2 | S2 deploy | `odoo-bin --test-tags /mod` runs post-install tests only for modules installed/upgraded IN THAT RUN: `/pb_hub` with no `-u pb_hub` silently runs nothing. Put every tagged module in `-u`. |
+| S2M-3 | S2 deploy | `pb_payai_actions` suite on the `upd_p6_t_tpl` copy: 1 failed + 46 errors on the 19.1 code too (plan/voice/amber tests need demo pay data the template lacks) — a recorded baseline now. |
+| S2M-4 | S2 deploy | The VN dependants check treats an EMPTY contract figure as 0: on payobook.com the demo scheme's `NPT` component is empty on 4,512 contracts while 2,453 demo people have confirmed dependants — they all get the HR-only "do not match" note unless the setting `pb_me_tax.vn_registered_dependants_codes` leaves `NPT` out (owner question). |
+| S2M-5 | S2 deploy | A server-log scan by time window (`awk '($1" "$2) >= start'`) lets every UNtimestamped continuation line of the whole log through (`Traceback`, `File …` sort after digits): it counted 61 "tracebacks" that were all older. Cut the log by line number from the stop (`grep -n -m1 '^<date> <hh:m>'`, `tail -n +N`). Also: `postgres` cannot read a file in a 750 `odoo` evidence folder — feed SQL on stdin. |
+| S2M-6 | S2 deploy | Two people can share a name in the demo: a browser check that opens "the" person from the People list by name may open the other one. Pick by id / job line. Also: a shell look that sets `odoo.modules.module.current_test` renders reports as HTML — pass `force_report_rendering=True`. |
