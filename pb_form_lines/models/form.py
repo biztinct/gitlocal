@@ -36,8 +36,13 @@ _logger = logging.getLogger(__name__)
 
 #: Who prepares filings and maps form lines (the filing flow's own rule,
 #: `pb_govt_reports/models/pb_filing_flow.py` `_FILING_GROUPS`).
+#: WDGAP FG1 (owner, 2026-11-18): also the "Government reports" permission —
+#: Compliance › Filings is open to both, and the right to see a filing is the
+#: right to prepare and download it. Read by xmlid (no dependency on
+#: pb_hr_govt); the ACL/record rules for it ship with pb_govt_reports.
 OFFICER_GROUPS = ('pb_hr_payroll_base.group_payroll_base_officer',
-                  'pb_hr_payroll_base.group_payroll_base_manager')
+                  'pb_hr_payroll_base.group_payroll_base_manager',
+                  'pb_hr_govt.group_pb_hr_govt_user')
 #: Who may say "accepted by the authority".
 MANAGER_GROUPS = ('pb_hr_payroll_base.group_payroll_base_manager',)
 

@@ -6,3 +6,10 @@ access_pb_filing_proposal_seat,pb.filing.proposal anyone asked to decide,model_p
 access_pb_govt_report_wizard_payroll_officer,pb.govt.report.wizard payroll officer,pb_hr_govt.model_pb_govt_report_wizard,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,1
 access_pb_govt_report_wizard_payroll_manager,pb.govt.report.wizard payroll manager,pb_hr_govt.model_pb_govt_report_wizard,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
 access_pb_govt_code_lookup_payroll_officer,pb.govt.code.lookup payroll officer,pb_hr_govt.model_pb_govt_code_lookup,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_filing_proposal_govt_user,pb.filing.proposal government reports,model_pb_filing_proposal,pb_hr_govt.group_pb_hr_govt_user,1,1,1,0
+access_pb_gov_form_govt_user,pb.gov.form government reports,pb_form_lines.model_pb_gov_form,pb_hr_govt.group_pb_hr_govt_user,1,0,0,0
+access_pb_gov_form_line_govt_user,pb.gov.form.line government reports,pb_form_lines.model_pb_gov_form_line,pb_hr_govt.group_pb_hr_govt_user,1,0,0,0
+access_pb_gov_form_map_govt_user,pb.gov.form.map government reports,pb_form_lines.model_pb_gov_form_map,pb_hr_govt.group_pb_hr_govt_user,1,1,1,1
+access_pb_gov_form_company_govt_user,pb.gov.form.company government reports,pb_form_lines.model_pb_gov_form_company,pb_hr_govt.group_pb_hr_govt_user,1,1,1,0
+access_pb_gov_filing_govt_user,pb.gov.filing government reports,pb_form_lines.model_pb_gov_filing,pb_hr_govt.group_pb_hr_govt_user,1,1,1,0
+access_pb_gov_filing_file_govt_user,pb.gov.filing.file government reports,pb_form_lines.model_pb_gov_filing_file,pb_hr_govt.group_pb_hr_govt_user,1,0,0,0

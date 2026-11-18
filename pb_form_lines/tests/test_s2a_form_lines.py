@@ -72,6 +72,16 @@ class S2AFixture(TransactionCase):
                                     company_id=cls.co_id.id, company_ids=both)
         cls.portal = new_test_user(cls.env, login='s2a_portal', groups='base.group_portal',
                                    company_id=cls.co_id.id, company_ids=[(6, 0, [cls.co_id.id])])
+        # a line manager / plain employee login: an internal user with no group
+        cls.plain = new_test_user(cls.env, login='s2a_plain', groups='base.group_user',
+                                  company_id=cls.co_id.id, company_ids=both)
+        # WDGAP FG1: the "Government reports" permission (pb_hr_govt), whose
+        # access rows ship with pb_govt_reports
+        govt = cls.env.ref('pb_hr_govt.group_pb_hr_govt_user', raise_if_not_found=False)
+        cls.govt_only = new_test_user(
+            cls.env, login='s2a_govt', groups='base.group_user,pb_hr_govt.group_pb_hr_govt_user',
+            company_id=cls.co_id.id, company_ids=both) \
+            if govt and 'pb.filing.proposal' in cls.env else None
 
         cls.cat_by_role = {
             'earning': cls.env.ref('om_hr_payroll.BASIC'),
@@ -695,6 +705,10 @@ class TestS2AFormLines(S2AFixture):
         # an officer may not say "accepted"; a manager may, who and when kept
         with self.assertRaises(AccessError):
             self.board(self.officer).set_accepted(self.form_id.id, True)
+        if self.govt_only:
+            # FG1: "Accepted by the authority" stays payroll manager only
+            with self.assertRaises(AccessError):
+                self.board(self.govt_only).set_accepted(self.form_id.id, True)
         card = self.board(self.manager).set_accepted(self.form_id.id, True)
         self.assertTrue(card['accepted'])
         self.assertEqual(card['accepted_by'], self.manager.name)
@@ -727,11 +741,18 @@ class TestS2AFormLines(S2AFixture):
 
     # ================================================================ T9 (RPC)
     def test_t9_access_officer_and_manager_yes_hr_and_portal_no(self):
+        """The access matrix. Yes: payroll officer, payroll manager and (WDGAP
+        FG1) the Government reports permission. No: HR without either,
+        a plain internal login (line manager), portal."""
         self.map_id()
-        for user in (self.officer, self.manager):
-            self.assertTrue(self.board(user).get_forms()['forms'])
+        allowed = [self.officer, self.manager] + ([self.govt_only] if self.govt_only else [])
+        for user in allowed:
+            self.assertTrue(self.board(user).get_forms()['forms'], user.login)
             self.board(user).get_form(self.form_id.id)
-        for user in (self.hr_only, self.portal):
+            self.board(user).flow_check(self.form_id.id, '2026-10')
+            self.assertTrue(self.Reader.with_user(user).with_context(
+                allowed_company_ids=[self.co_id.id]).read(self.form_id, self.co_id, OCT, OCT_END))
+        for user in (self.hr_only, self.portal, self.plain):
             board = self.board(user)
             for call in (lambda: board.get_forms(),
                          lambda: board.get_form(self.form_id.id),
@@ -753,8 +774,19 @@ class TestS2AFormLines(S2AFixture):
         self.assertFalse(self.env['pb.gov.filing'].with_user(self.hr_only).with_context(
             allowed_company_ids=[self.co_id.id]).search([('id', '=', out['id'])]))
         filing = self.env['pb.gov.filing'].browse(out['id'])
-        with self.assertRaises(AccessError):
-            filing.with_user(self.hr_only)._pb_download(out['files'][0]['id'])
+        for user in (self.hr_only, self.plain):
+            with self.assertRaises(AccessError):
+                filing.with_user(user)._pb_download(out['files'][0]['id'])
+        if self.govt_only:
+            # FG1: download follows the lens — the approved bytes, logged
+            Filing = self.env['pb.gov.filing'].with_user(self.govt_only).with_context(
+                allowed_company_ids=[self.co_id.id])
+            self.assertEqual(Filing.search([('id', '=', out['id'])]).id, out['id'])
+            name, _mime, raw = Filing.browse(out['id'])._pb_download(out['files'][0]['id'])
+            self.assertTrue(raw)
+            # …and may prepare one too (generate = lens)
+            again = self.board(self.govt_only).flow_prepare(self.form_id.id, '2026-10')
+            self.assertEqual(again['state'], 'approved')
         # the Filings board shows the tiles to the officer only
         Gov = self.env.get('pb.govt.reports')
         if Gov is not None:

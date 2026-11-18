@@ -72,6 +72,8 @@ import { PbAudit } from "@pb_audit/js/pb_audit";
 export const FILINGS_GATE = [
     "pb_hr_payroll_base.group_payroll_base_officer",
     "pb_hr_payroll_base.group_payroll_base_manager",
+    // WDGAP FG1 (owner): the Government reports permission keeps the lens
+    "pb_hr_govt.group_pb_hr_govt_user",
 ];
 
 /** `pb.bank.change.request` — every internal user, on purpose. */

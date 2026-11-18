@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP FG1 (owner, 2026-11-18): Compliance › Filings is open to the
+         payroll officers/managers AND the "Government reports" permission.
+         These rules give that permission the same reach as the payroll rules
+         of pb_form_lines (filings of the user's companies; the company rules
+         stay global) and of this module's proposals. -->
+    <record id="rule_gov_filing_govt_user" model="ir.rule">
+        <field name="name">Government filing: government reports permission</field>
+        <field name="model_id" ref="pb_form_lines.model_pb_gov_filing"/>
+        <field name="groups" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_filing_proposal_govt_user" model="ir.rule">
+        <field name="name">Filing: government reports permission</field>
+        <field name="model_id" ref="model_pb_filing_proposal"/>
+        <field name="groups" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

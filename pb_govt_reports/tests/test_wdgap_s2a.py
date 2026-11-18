@@ -36,10 +36,26 @@ class TestS2AFilingsBoard(TransactionCase):
         d = Flow.scope('VN', 'tang_ld')
         self.assertTrue(d['wizard_id'], "the wizard opens for the payroll officer (new ACL row)")
 
-    def test_s2a_2_the_old_group_alone_no_longer_produces(self):
+    def test_s2a_2_fg1_the_government_reports_permission_keeps_filings(self):
+        """WDGAP FG1 (owner): the "Government reports" permission alone still
+        opens Filings, and seeing is producing (lens = generate = download).
+        Anybody with neither group is refused."""
         Flow = self.env['pb.filing.flow'].with_user(self.govt_only).with_context(**self._as(self.govt_only))
-        with self.assertRaises(AccessError):
-            Flow.generate(0, 'VN', 'tang_ld', {})
+        self.assertTrue(Flow._require_officer())
+        d = Flow.scope('VN', 'tang_ld')
+        self.assertTrue(d['wizard_id'])
+        from odoo.addons.pb_govt_reports.models.filing_approval import PbFilingProposal
+        self.assertIn('pb_hr_govt.group_pb_hr_govt_user', PbFilingProposal._proposal_gate_groups)
+        nobody = new_test_user(self.env, login='s2a_gov_nobody', groups='base.group_user',
+                               company_id=self.company.id,
+                               company_ids=[(6, 0, [self.company.id])])
+        hr_only = new_test_user(self.env, login='s2a_gov_hr', groups='base.group_user,hr.group_hr_user',
+                                company_id=self.company.id,
+                                company_ids=[(6, 0, [self.company.id])])
+        for user in (nobody, hr_only):
+            with self.assertRaises(AccessError):
+                self.env['pb.filing.flow'].with_user(user).with_context(**self._as(user)).generate(
+                    0, 'VN', 'tang_ld', {})
 
     def test_s2a_3_tiles_for_the_form_catalogue(self):
         data = self.env['pb.govt.reports'].with_user(self.officer).with_context(
@@ -57,10 +73,17 @@ class TestS2AFilingsBoard(TransactionCase):
         self.assertEqual({f['code'] for f in indonesia['forms']}, {'ID_BPMP'})
         for f in indonesia['forms']:
             self.assertFalse(f['accepted'])
-        # nobody without the payroll officer right gets a tile
+        # WDGAP FG1: the "Government reports" permission sees the same tiles
         other = self.env['pb.govt.reports'].with_user(self.govt_only).with_context(
             **self._as(self.govt_only)).get_govt_reports_data('ID')
-        self.assertEqual(other['forms'], [])
+        self.assertEqual({f['code'] for f in other['forms']}, {'ID_BPMP'})
+        # …and nobody with neither group gets one
+        hr_only = new_test_user(self.env, login='s2a_gov_hr2', groups='base.group_user,hr.group_hr_user',
+                                company_id=self.company.id,
+                                company_ids=[(6, 0, [self.company.id])])
+        none = self.env['pb.govt.reports'].with_user(hr_only).with_context(
+            **self._as(hr_only)).get_govt_reports_data('ID')
+        self.assertEqual(none['forms'], [])
 
     def test_s2a_4_retired_countries_say_so(self):
         for cc in ('SG', 'TH', 'KH', 'MY'):

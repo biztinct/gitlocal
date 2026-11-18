@@ -73,8 +73,13 @@ _ONLY_GENERATE = ('mail', 'send', 'submit', 'post', 'transmit', 'email', 'sign')
 # The permission producing a filing has always needed and never checked.
 # Either of the two: a manager holds the officer role by implication on
 # most databases, but not on every one of them.
+#
+# WDGAP FG1 (owner, 2026-11-18): and the "Government reports" permission —
+# Compliance › Filings is open to both groups and the right to see it is the
+# right to produce (S2F-8: lens gate = generate gate = download gate).
 _FILING_GROUPS = ('pb_hr_payroll_base.group_payroll_base_officer',
-                  'pb_hr_payroll_base.group_payroll_base_manager')
+                  'pb_hr_payroll_base.group_payroll_base_manager',
+                  'pb_hr_govt.group_pb_hr_govt_user')
 
 # Per country: the wizard model, the field that carries WHICH filing, the field
 # holding the period, and the writable field set. An allow-list, not a

@@ -158,12 +158,14 @@ No model removed, no data migration. Note (S2A-1): the SG/TH/KH/MY/ID/IN legacy 
 * JS/SCSS/XML changed → asset purge + restart.
 * Silent install to check after `-i`: `pb_gov_form_map`, `pb_gov_filing`, `pb_gov_form_company` empty; no `biz_approval_request` with `res_model='pb.gov.filing'`; no new `ir_cron`; 3 forms / 53 lines.
 * No payslip figure changes (nothing writes payslips). Rehearsal on rize: read-only — run the reader for a rize ID and VN month with a mapping made in the copy and compare totals by hand with the payslips; check rize's `filing` route (whatever rize published applies).
-* Who sees the Filings lens changes (S2F-8): people holding only `pb_hr_govt.group_pb_hr_govt_user` (incl. the vendor-access role "govt-reports", `pb_vendor_access/hooks.py:482`) lose the lens; payroll officers/managers without that group gain it. Count both sets per database before go-live.
+* Who sees the Filings lens (revised by FG1, §9): **nobody loses it**. Gainers = payroll officers/managers who do NOT hold `pb_hr_govt.group_pb_hr_govt_user` — count them per database before go-live (read-only: users in `pb_hr_payroll_base.group_payroll_base_officer` ∪ `…_manager` minus users in `pb_hr_govt.group_pb_hr_govt_user`, active, internal). Everybody who sees the lens can also prepare and download filings (the "Government reports" permission now prepares/downloads the new tax returns too).
+* FG1: `pb_govt_reports` now depends on `pb_form_lines` (install `pb_form_lines` first or in the same `-i`/`-u` run).
 
 ### Merge-time tasks (other lanes)
 
 1. `pb_hub/static/src/js/hub_palette_entries.js:143` →
-   `const CMP_FILINGS = ["pb_hr_payroll_base.group_payroll_base_officer", "pb_hr_payroll_base.group_payroll_base_manager"];`
+   `const CMP_FILINGS = ["pb_hr_payroll_base.group_payroll_base_officer", "pb_hr_payroll_base.group_payroll_base_manager", "pb_hr_govt.group_pb_hr_govt_user"];`
+   (three groups since FG1)
    (fixes `pb_hub` `test_deep_links_onto_a_tab_carry_its_gate`; ledger S2A-2).
 2. Optional: `pb_compliance_hub/data/pb_sidebar.xml:34` — the Compliance rail item is shown to
    `pb_hr_govt.group_pb_hr_govt_user` + payroll manager; a payroll officer without either does
@@ -196,5 +198,56 @@ phase rows S2-A / S2-C / S2-D / S2-B added.
 3. Vietnam changed its tax declaration in July 2026. We built the new quarterly one and the old
    one from published guides, because the official pages could not be opened. Can an adviser
    or customer send one filed declaration so we can check the line numbers?
-4. People who could see Compliance › Filings only through the "Government reports" permission
-   will no longer see it; payroll officers will. Is that the right group of people?
+4. ~~Who sees Compliance › Filings~~ — answered by FG1 (§9).
+
+## 9. Follow-up FG1 (owner ruling 2026-11-18 ~15:45)
+
+**Ruling.** Compliance › Filings (the lens, the Tax returns tiles, Form lines, Prepare a
+filing, download of approved files) is open to BOTH payroll officers/managers AND the
+"Government reports" permission (`pb_hr_govt.group_pb_hr_govt_user`, incl. the
+vendor-access role "govt-reports"). Nobody loses the lens. S2F-8's point stands — lens gate
+= generate gate = download gate — all three were widened together. "Accepted by the
+authority" stays payroll manager only; who approves stays whatever the `filing` route names.
+
+**What changed (every gate, one list of three groups):**
+
+| Gate | File:line |
+|---|---|
+| Screen gate (lens) | `pb_compliance_hub/static/src/js/compliance_hub.js` `FILINGS_GATE` (+1 entry) |
+| VN social-insurance generate (flow) | `pb_govt_reports/models/pb_filing_flow.py` `_FILING_GROUPS` (+1 entry) |
+| Carrying out an approved VN filing proposal | `pb_govt_reports/models/filing_approval.py` `_proposal_gate_groups` (officer, manager, government reports) |
+| Tax returns: board RPC, reader officer check, prepare, download URL (all call `pb.gov.form.rights`) | `pb_form_lines/models/form.py:39-46` `OFFICER_GROUPS` (+ `pb_hr_govt.group_pb_hr_govt_user`, read by xmlid; `MANAGER_GROUPS` unchanged) |
+| ACL rows for the permission on `pb.gov.form`, `.line`, `.form.map`, `.form.company`, `pb.gov.filing`, `.filing.file`, `pb.filing.proposal` | `pb_govt_reports/security/ir.model.access.csv` (+7 rows) |
+| Record rules (all filings of the user's companies; proposals of the user's companies) | new `pb_govt_reports/security/filings_fg1_rules.xml` |
+| Dependency so those rows can name the models | `pb_govt_reports/__manifest__.py` depends + `pb_form_lines` |
+
+**Not touched:** `pb_form_lines/models/reader.py` and `pb_form_lines/models/filing.py`
+(0 lines) — both already ask `pb.gov.form.rights`; the only `pb_form_lines` code line
+touched is `models/form.py:39-46` (comment + the `OFFICER_GROUPS` tuple). Siblings
+`wdgap-s2b1` / `wdgap-s2b2` merge cleanly unless they edited that tuple.
+
+**Tests (access matrix).** `pb_form_lines` T9 now: yes = payroll officer, payroll manager,
+Government reports permission alone (board, Check, reader, prepare, download of approved
+bytes); no = HR without either, a plain internal login (line manager / employee), portal
+(board RPC, records, download). HTTP T9: Government reports permission → 200 + approved
+bytes; HR, plain login, portal → 303/403/404. T8: the Government reports permission alone
+cannot tick "Accepted by the authority". `pb_govt_reports` `test_wdgap_s2a` 2/3: the
+permission alone opens and generates the VN social-insurance filing and sees the tax-return
+tiles; HR-only / plain login refused and see no tiles. `pb_compliance_hub`: lens gate ==
+`_FILING_GROUPS` (3 groups), lens gate ⊆ the wizard's ACL groups.
+
+Run on a fresh copy (`upd_p6_t_tpl` → `wdgap_s2a_t`, 44 behind modules `-u`,
+`-i pb_form_lines` + `-u` touched): **116 tests, 3 failed = the same three as before FG1**:
+`test_generating_a_vn_filing_produces_a_real_file` (origin baseline),
+`pb_hub test_every_tab_has_a_row_or_says_why_not` (origin baseline),
+`pb_hub test_deep_links_onto_a_tab_carry_its_gate` (merge-time task 1, now with three
+groups). No new strings (no PO change).
+
+**Merge-time tasks added by FG1:**
+1. (updated in §5) `pb_hub` `CMP_FILINGS` = the three groups.
+4. `pb_payai_actions/payai/actions_amber.py:64` `FILING_GROUPS` (PayAI "prepare a filing"
+   command) still names officer/manager only — add `pb_hr_govt.group_pb_hr_govt_user` so
+   PayAI follows the lens too (other lane; not changed here).
+5. `pb_compliance_hub/data/pb_sidebar.xml:34` (Compliance rail item) already shows the item
+   to the Government reports permission + payroll manager; a payroll OFFICER without either
+   still has no rail item (unchanged; optional: add the officer group).

@@ -34,7 +34,14 @@ class TestS2ADownloadAddress(S2AFixture, HttpCase):
         self.assertIn('attachment', res.headers.get('Content-Disposition', ''))
         self.assertNotIn('odoo', res.headers.get('Content-Disposition', '').lower())
 
-        for user in (self.hr_only, self.portal):
+        if self.govt_only:
+            # WDGAP FG1: the Government reports permission downloads too
+            self._login(self.govt_only)
+            res = self.url_open(url)
+            self.assertEqual(res.status_code, 200)
+            self.assertEqual(res.content, expected)
+
+        for user in (self.hr_only, self.portal, self.plain):
             self._login(user)
             res = self.url_open(url, allow_redirects=False)
             self.assertIn(res.status_code, (303, 403, 404), user.login)
