@@ -26,6 +26,7 @@ access_payroll_journal_mgr,pb.payroll.journal mgr,model_pb_payroll_journal,om_hr
 access_payroll_journal_seat,pb.payroll.journal anyone asked to decide,model_pb_payroll_journal,base.group_user,1,0,0,0
 access_payroll_journal_system,pb.payroll.journal system,model_pb_payroll_journal,base.group_system,1,1,1,1
 access_delivery_batch_seat,pb.payslip.delivery.batch anyone asked to decide,model_pb_payslip_delivery_batch,base.group_user,1,0,0,0
+access_payment_list_file_hr,pb.payment.list.file hr,model_pb_payment_list_file,om_hr_payroll.group_hr_payroll_user,1,0,0,0
 access_payment_list_file_mgr,pb.payment.list.file mgr,model_pb_payment_list_file,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
 access_payment_list_file_seat,pb.payment.list.file anyone asked to decide,model_pb_payment_list_file,base.group_user,1,0,0,0
 access_payment_list_file_system,pb.payment.list.file system,model_pb_payment_list_file,base.group_system,1,1,1,1
