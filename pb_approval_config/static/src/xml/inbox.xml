@@ -69,7 +69,7 @@
           <div t-if="data.covering_for and data.covering_for.length" class="pbam-attn pbam-attn-info">
             <t t-out="ic('plane',18)"/>
             <span>
-              You are covering for <t t-esc="data.covering_for[0].name"/> until <t t-esc="data.covering_for[0].until"/>. Their requests show as your turn, marked "covering for".
+              You are covering for <t t-esc="data.covering_for[0].name"/> until <t t-esc="data.covering_for[0].until"/>. Their requests show as awaiting your approval, marked "covering for".
             </span>
           </div>
 
@@ -88,7 +88,7 @@
 
           <!-- ================== the shared filter panel ==================
                pb_filter_kit. The four tabs are its first four views, in the
-               same words (My turn · All I can see · Sent back · Finished);
+               same words (My approvals · All I can see · Sent back · Finished);
                the Learn anchor data-coach="ai-tabs" is set on that view row
                by inbox.js, and coach= puts data-coach="pbam-filters" on the
                panel's bar. The cards are its slot, one page at a time. -->
@@ -113,7 +113,7 @@
               </div>
               <h3 t-esc="emptyCopy.title"/>
               <p t-esc="emptyCopy.sub"/>
-              <button t-if="!tab" class="pbim-btn ghost" t-on-click="() => this.showMine()">Back to My turn</button>
+              <button t-if="!tab" class="pbim-btn ghost" t-on-click="() => this.showMine()">Back to My approvals</button>
             </div>
 
             <t t-else="">
@@ -149,7 +149,7 @@
                 <div class="pbam-reqmain">
                   <div class="pbam-reqt">
                     <span t-esc="cd.title"/>
-                    <span t-if="cd.mine" class="pbim-badge pbam-info">Your turn</span>
+                    <span t-if="cd.mine" class="pbim-badge pbam-info">Awaiting your approval</span>
                     <span t-elif="cd.blocked" class="pbim-badge pbam-err">Stuck</span>
                     <span t-elif="cd.state === 'returned'" class="pbim-badge pbam-warn">Sent back</span>
                     <span t-elif="cd.state === 'applied'" class="pbim-badge pbam-ok">Done</span>

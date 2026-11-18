@@ -377,7 +377,7 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
-msgid ". Their requests show as your turn, marked \"covering for\"."
+msgid ". Their requests show as awaiting your approval, marked \"covering for\"."
 msgstr ""
 
 #. module: pb_approval_config
@@ -509,9 +509,7 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid ""
-"A request is your turn when the step that is waiting names you: your own "
-"seat, or one you are covering."
+msgid "Requests waiting for your approval, including requests you are covering for someone else."
 msgstr ""
 
 #. module: pb_approval_config
@@ -982,7 +980,7 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
-msgid "Back to My turn"
+msgid "Back to My approvals"
 msgstr ""
 
 #. module: pb_approval_config
@@ -2025,7 +2023,7 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid "It is not your turn on this one."
+msgid "This request is not waiting for your approval."
 msgstr ""
 
 #. module: pb_approval_config
@@ -2273,13 +2271,13 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid "My turn"
+msgid "My approvals"
 msgstr ""
 
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid "My turn today"
+msgid "My approvals today"
 msgstr ""
 
 #. module: pb_approval_config
@@ -2607,7 +2605,7 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid "Not my turn"
+msgid "Not awaiting my approval"
 msgstr ""
 
 #. module: pb_approval_config
@@ -5367,7 +5365,7 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
-msgid "Your turn"
+msgid "Awaiting your approval"
 msgstr ""
 
 #. module: pb_approval_config

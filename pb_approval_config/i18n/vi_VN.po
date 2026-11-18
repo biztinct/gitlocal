@@ -248,8 +248,8 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
-msgid ". Their requests show as your turn, marked \"covering for\"."
-msgstr ". Yêu cầu của họ sẽ hiện là đến lượt bạn, có ghi \"trực thay cho\"."
+msgid ". Their requests show as awaiting your approval, marked \"covering for\"."
+msgstr ". Yêu cầu của họ sẽ hiện là chờ bạn phê duyệt, có ghi \"trực thay cho\"."
 
 #. module: pb_approval_config
 #. odoo-javascript
@@ -1707,8 +1707,8 @@ msgstr "Bắt buộc phải sửa"
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/js/inbox.js:0
-msgid "My turn"
-msgstr "Đến lượt tôi"
+msgid "My approvals"
+msgstr "Phê duyệt của tôi"
 
 #. module: pb_approval_config
 #. odoo-javascript
@@ -4180,8 +4180,8 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
-msgid "Your turn"
-msgstr "Đến lượt bạn"
+msgid "Awaiting your approval"
+msgstr "Chờ bạn phê duyệt"
 
 #. module: pb_approval_config
 #. odoo-python
@@ -5198,14 +5198,14 @@ msgstr "người gửi"
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid "A request is your turn when the step that is waiting names you: your own seat, or one you are covering."
-msgstr "Một yêu cầu đến lượt bạn khi bước đang chờ ghi tên bạn: vị trí của chính bạn, hoặc vị trí bạn đang làm thay."
+msgid "Requests waiting for your approval, including requests you are covering for someone else."
+msgstr "Các yêu cầu đang chờ bạn phê duyệt, bao gồm các yêu cầu bạn đang xử lý thay cho người khác."
 
 #. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
-msgid "Back to My turn"
-msgstr "Quay lại Đến lượt tôi"
+msgid "Back to My approvals"
+msgstr "Quay lại Phê duyệt của tôi"
 
 #. module: pb_approval_config
 #. odoo-python
@@ -5258,8 +5258,8 @@ msgstr "Đang tải…"
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid "My turn today"
-msgstr "Đến lượt tôi hôm nay"
+msgid "My approvals today"
+msgstr "Phê duyệt của tôi hôm nay"
 
 #. module: pb_approval_config
 #. odoo-python
@@ -5300,8 +5300,8 @@ msgstr "Chưa hoàn tất"
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid "Not my turn"
-msgstr "Chưa đến lượt tôi"
+msgid "Not awaiting my approval"
+msgstr "Không chờ tôi phê duyệt"
 
 #. module: pb_approval_config
 #. odoo-python
@@ -5619,8 +5619,8 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-msgid "It is not your turn on this one."
-msgstr "Chưa đến lượt bạn ở yêu cầu này."
+msgid "This request is not waiting for your approval."
+msgstr "Yêu cầu này không chờ bạn phê duyệt."
 
 #. module: pb_approval_config
 #. odoo-python

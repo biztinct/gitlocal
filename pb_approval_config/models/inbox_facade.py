@@ -300,14 +300,14 @@ class PbApprovalInbox(models.AbstractModel):
                   'domain': [('due_at', '=', False)]},
              ]},
             # ---- more filters
-            {'key': 'my_turn', 'label': _('My turn'), 'icon': 'userCheck',
+            {'key': 'my_turn', 'label': _('My approvals'), 'icon': 'userCheck',
              'group': 'people', 'type': 'choice',
-             'help': _('A request is your turn when the step that is waiting '
-                       'names you: your own seat, or one you are covering.'),
+             'help': _('Requests waiting for your approval, including requests '
+                       'you are covering for someone else.'),
              'options': [
                  {'value': 'yes', 'label': _('Waiting on me'), 'tone': 'blue',
                   'domain_method': '_pbf_my_turn'},
-                 {'value': 'no', 'label': _('Not my turn'), 'tone': 'slate',
+                 {'value': 'no', 'label': _('Not awaiting my approval'), 'tone': 'slate',
                   'domain_method': '_pbf_not_my_turn'},
              ]},
             {'key': 'process', 'label': _('What kind of request'), 'icon': 'workflow',
@@ -334,7 +334,7 @@ class PbApprovalInbox(models.AbstractModel):
     def _pbf_builtin_views(self):
         return [
             # the four tabs, in their own words (42 lessons and PayAI say them)
-            {'key': 'mine', 'label': _('My turn'), 'icon': 'userCheck',
+            {'key': 'mine', 'label': _('My approvals'), 'icon': 'userCheck',
              'filters': {'my_turn': ['yes']}},
             {'key': 'all', 'label': _('All I can see'),
              'filters': {'pile': ['waiting']}},
@@ -343,7 +343,7 @@ class PbApprovalInbox(models.AbstractModel):
             {'key': 'done', 'label': _('Finished'),
              'filters': {'pile': ['done']}},
             # and the questions asked most after them
-            {'key': 'today', 'label': _('My turn today'),
+            {'key': 'today', 'label': _('My approvals today'),
              'filters': {'my_turn': ['yes'], 'due': ['late', 'today']}},
             {'key': 'late', 'label': _('Late'), 'filters': {'due': ['late']}},
             {'key': 'back_to_me', 'label': _('Sent back to me'),
@@ -559,7 +559,7 @@ class PbApprovalInbox(models.AbstractModel):
             return False, _("This is stuck, so it has to be sorted out on "
                             "its own.")
         if not mine or request.state != 'pending':
-            return False, _("It is not your turn on this one.")
+            return False, _("This request is not waiting for your approval.")
         if process.money:
             return False, _("Money leaves the company with this one, so it "
                             "is approved on its own.")

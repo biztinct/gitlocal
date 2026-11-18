@@ -262,7 +262,7 @@ export class PbInbox extends Component {
     }
 
     /**
-     * Open one request's drawer on the tab and scope that list it — "My turn"
+     * Open one request's drawer on the tab and scope that list it — "My approvals"
      * when it is waiting for me, else "All I can see", "Sent back" or
      * "Finished" (P4:link-3: a decided request is not in flight any more).
      * The server says which pile; a request that is gone or not mine to read
@@ -607,7 +607,7 @@ export class PbInbox extends Component {
         return rows.length > 1 ? rows : [];
     }
 
-    /** Back to the start view (My turn). */
+    /** Back to the start view (My approvals). */
     showMine() { this.kit.useView("mine"); }
 
     open(card) { this.state.openId = card.id; }
