@@ -294,9 +294,20 @@ msgid "ECF (Eurasian Community Fund)"
 msgstr "ECF (Quỹ Cộng đồng Âu-Á)"
 
 #. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "ESI number"
+msgstr "Số ESI (bảo hiểm Ấn Độ)"
+
+#. module: pb_me_tax
 #: model:ir.model,name:pb_me_tax.model_hr_employee
 msgid "Employee"
 msgstr "Nhân viên"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_in_esi_number
+msgid "Employee State Insurance (ESI) insurance number. Kept by HR; the employee sees it on My Payobook, masked."
+msgstr "Số bảo hiểm ESI (Bảo hiểm Nhà nước cho Người lao động, Ấn Độ). Do nhân sự quản lý; nhân viên xem trên My Payobook, chỉ hiện bốn ký tự cuối."
 
 #. module: pb_me_tax
 #: model:ir.model,name:pb_me_tax.model_pb_me_home
@@ -355,6 +366,11 @@ msgstr "ID"
 #: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
 msgid "India"
 msgstr "Ấn Độ"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_esi_number
+msgid "India ESI number"
+msgstr "Số ESI (Ấn Độ)"
 
 #. module: pb_me_tax
 #: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_pan_number

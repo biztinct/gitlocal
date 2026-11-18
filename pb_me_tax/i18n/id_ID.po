@@ -294,9 +294,20 @@ msgid "ECF (Eurasian Community Fund)"
 msgstr "ECF (Dana Komunitas Eurasia)"
 
 #. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "ESI number"
+msgstr "Nomor ESI"
+
+#. module: pb_me_tax
 #: model:ir.model,name:pb_me_tax.model_hr_employee
 msgid "Employee"
 msgstr "Karyawan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_in_esi_number
+msgid "Employee State Insurance (ESI) insurance number. Kept by HR; the employee sees it on My Payobook, masked."
+msgstr "Nomor asuransi ESI (Employee State Insurance, India). Dikelola HR; karyawan melihatnya di My Payobook, tersamarkan."
 
 #. module: pb_me_tax
 #: model:ir.model,name:pb_me_tax.model_pb_me_home
@@ -355,6 +366,11 @@ msgstr "ID"
 #: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
 msgid "India"
 msgstr "India"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_esi_number
+msgid "India ESI number"
+msgstr "Nomor ESI India"
 
 #. module: pb_me_tax
 #: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_pan_number

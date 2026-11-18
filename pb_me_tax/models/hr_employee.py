@@ -55,6 +55,11 @@ class HrEmployeeTax(models.Model):
         help='The income tax regime the employee chose for this tax year.')
     pb_in_uan_number = fields.Char(
         string='India UAN (provident fund)', groups='hr.group_hr_user')
+    # Name probed first by the India ESI monthly file (S2-B2 fund_in.py).
+    pb_in_esi_number = fields.Char(
+        string='India ESI number', groups='hr.group_hr_user',
+        help='Employee State Insurance (ESI) insurance number. Kept by HR; '
+             'the employee sees it on My Payobook, masked.')
     pb_sg_tax_residency = fields.Selection(
         SG_RESIDENCY, string='Singapore tax residency',
         groups='hr.group_hr_user')
@@ -214,6 +219,8 @@ class HrEmployeeTax(models.Model):
                 shown=emp._pbtx_sel('pb_in_tax_regime', emp.pb_in_tax_regime))
             row('uan', _('UAN (provident fund)'), emp.pb_in_uan_number,
                 shown=mask(emp.pb_in_uan_number), hint=_('Kept by HR'))
+            row('esi', _('ESI number'), emp.pb_in_esi_number,
+                shown=mask(emp.pb_in_esi_number), hint=_('Kept by HR'))
         elif country == 'SG':
             row('nric', _('NRIC or FIN'), emp.identification_id,
                 shown=mask(emp.identification_id), hint=_('Kept by HR'))

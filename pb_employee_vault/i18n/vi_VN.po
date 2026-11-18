@@ -1409,3 +1409,9 @@ msgstr "Người phụ thuộc thuế (Việt Nam)"
 #: code:addons/pb_employee_vault/models/employee_details.py:0
 msgid "Check"
 msgstr "Kiểm tra"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "ESI number"
+msgstr "Số ESI (bảo hiểm Ấn Độ)"

@@ -15,7 +15,7 @@
                     <div class="alert alert-warning" role="status" invisible="not pb_vn_dependants_check"><b>Tax dependants:</b> <field name="pb_vn_dependants_check" readonly="1" nolabel="1" class="d-inline"/></div>
                     <group>
                         <group string="Indonesia"><field name="pb_id_ptkp_status"/></group>
-                        <group string="India"><field name="pb_in_pan_number"/><field name="pb_in_tax_regime"/><field name="pb_in_uan_number"/></group>
+                        <group string="India"><field name="pb_in_pan_number"/><field name="pb_in_tax_regime"/><field name="pb_in_uan_number"/><field name="pb_in_esi_number"/></group>
                         <group string="Singapore"><field name="pb_sg_tax_residency"/><field name="pb_sg_shg_fund"/></group>
                     </group>
                     <separator string="Changes asked for on My Payobook"/>

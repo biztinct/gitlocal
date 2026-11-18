@@ -166,6 +166,7 @@ _SPEC = [
         ('pb_in_pan_number', _lt("PAN"), False),
         ('pb_in_tax_regime', _lt("Tax regime"), False),
         ('pb_in_uan_number', _lt("UAN (provident fund)"), False),
+        ('pb_in_esi_number', _lt("ESI number"), False),
     ]),
     ('pay', 'sg', _lt("Singapore tax"), 'shield', 'SG', [
         ('pb_sg_tax_residency', _lt("Tax residency"), False),

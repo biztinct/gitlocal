@@ -94,3 +94,9 @@ msgstr "Tanggungan pajak Vietnam"
 #: code:addons/pb_employee_vault/models/employee_details.py:0
 msgid "Check"
 msgstr "Cek"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "ESI number"
+msgstr "Nomor ESI"

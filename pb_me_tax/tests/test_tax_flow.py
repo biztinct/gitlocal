@@ -223,7 +223,7 @@ class TestS2dTaxFlow(TaxCase):
         expect = {'VN': {'number'}, 'ID': {'number', 'ptkp',
                                            'pb_bpjs_employment_number',
                                            'pb_bpjs_health_number'},
-                  'IN': {'number', 'regime', 'uan'},
+                  'IN': {'number', 'regime', 'uan', 'esi'},
                   'SG': {'nric', 'residency', 'fund'}}
         for code, keys in expect.items():
             self._pay_by(self.emp, code)
