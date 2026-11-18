@@ -236,7 +236,9 @@ class PbMeDetailRequest(models.Model):
         employee = employee.sudo()
         if not employee or employee.user_id != self.env.user:
             raise AccessError(_("You can only change your own details."))
-        if kind not in dict(KINDS):
+        # Extension point (WDGAP S2-D): the field's selection, so a module
+        # that adds kinds with `selection_add` is offered them too.
+        if kind not in dict(self._fields['kind'].selection):
             raise UserError(_("That kind of change is not offered here."))
         Family = self.env['pb.employee.family'].sudo().with_context(
             active_test=False)
@@ -492,6 +494,13 @@ class PbMeDetailRequest(models.Model):
         return True
 
     # ============================================== what the person reads
+    @api.model
+    def _pb_page_domain(self):
+        """Extension point (WDGAP S2-D): the requests My details itself shows
+        (its "Your changes" list and its "sent back" row on the home). A
+        module whose kinds live on a page of their own narrows it."""
+        return []
+
     def _pb_paper_label(self):
         self.ensure_one()
         options = dict(self._fields['paper_kind']._description_selection(self.env))
