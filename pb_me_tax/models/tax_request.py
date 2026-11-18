@@ -190,8 +190,31 @@ class PbMeDetailRequestTax(models.Model):
         if not field or field not in emp._fields or not value:
             raise UserError(_("This tax detail cannot be kept for this person."))
         emp.write({field: value})
+        if rec.kind == 'tax_number' and rec.t_country == 'VN':
+            rec._pbtx_vn_contract_copy(value)
         rec._pbtx_file_proof()
         return super()._pb_apply()
+
+    def _pbtx_vn_contract_copy(self, value):
+        """Owner ruling TD3: a Vietnam tax code is also kept on the
+        contract (`hr.contract.vietnam_tax_code`). Only the CURRENT running
+        contract is updated — never a closed or past one — and its chatter
+        says so with the last four characters only. Nothing a payslip reads
+        changes (the tax code is not a pay figure)."""
+        self.ensure_one()
+        Contract = self.env['hr.contract']
+        if 'vietnam_tax_code' not in Contract._fields:
+            return False
+        contract = self.employee_id.sudo()._pbtx_running_contract()
+        if not contract or contract.vietnam_tax_code == value:
+            return False
+        contract.sudo().with_context(mail_notrack=True).write(
+            {'vietnam_tax_code': value})
+        if hasattr(contract, 'message_post'):
+            contract.sudo().message_post(body=self.env._(
+                "Personal tax code changed to %(number)s: approved change "
+                "%(ref)s from My Payobook.", number=mask(value), ref=self.name))
+        return contract
 
     def _pbtx_file_proof(self):
         """The proof goes into the person's documents, verified by the

@@ -30,10 +30,15 @@ from .tax_rules import (
 
 _logger = logging.getLogger(__name__)
 
-#: System parameter: the contract component code(s) that hold the registered
-#: tax dependants count, comma separated. Read-only use; never written.
+#: System parameter: the contract component CODE(S) that hold the registered
+#: tax dependants count, comma separated, in order of preference — the first
+#: code the running contract carries is the one compared. Keyed on the code
+#: (what formulas read), never on a label. Defaults: Rize's `VNREGISTER`, the
+#: Vietnam starter scheme's / demo world's `DEPS`, the demo `NPT`. Sudima's
+#: review scheme keeps no count (only a relief amount, `VNRELIEF`), so no
+#: note is shown there. Read-only use; never written by this module.
 VN_REGISTER_PARAM = 'pb_me_tax.vn_registered_dependants_codes'
-VN_REGISTER_DEFAULT = 'VNREGISTER'
+VN_REGISTER_DEFAULT = 'VNREGISTER,DEPS,NPT'
 
 
 class HrEmployeeTax(models.Model):
@@ -69,9 +74,27 @@ class HrEmployeeTax(models.Model):
 
     # ============================================================ the check
     def _pbtx_vn_codes(self):
+        """The codes, in order of preference (a list, not a set)."""
         raw = self.env['ir.config_parameter'].sudo().get_param(
             VN_REGISTER_PARAM, VN_REGISTER_DEFAULT) or ''
-        return {c.strip().upper() for c in raw.split(',') if c.strip()}
+        codes = []
+        for code in raw.split(','):
+            code = code.strip().upper()
+            if code and code not in codes:
+                codes.append(code)
+        return codes
+
+    def _pbtx_running_contract(self):
+        """The employee's CURRENT contract: running (state open), started,
+        not ended. Never a closed or past contract. Empty when none."""
+        self.ensure_one()
+        Contract = self.env['hr.contract'].sudo()
+        today = fields.Date.context_today(self)
+        return Contract.search([
+            ('employee_id', '=', self.id), ('state', '=', 'open'),
+            ('date_start', '<=', today),
+            '|', ('date_end', '=', False), ('date_end', '>=', today)],
+            order='date_start desc, id desc', limit=1)
 
     def _pbtx_vn_counts(self):
         """`(confirmed, registered)` for one employee, or None when either
@@ -79,23 +102,19 @@ class HrEmployeeTax(models.Model):
         no registered-dependants component on it)."""
         self.ensure_one()
         emp = self.sudo()
-        if 'vn_eligible_dependent_count' not in emp._fields:
+        if 'vn_eligible_dependent_count' not in emp._fields \
+                or 'advantages_ids' not in self.env['hr.contract']._fields:
             return None
-        Contract = self.env['hr.contract'].sudo()
-        if 'advantages_ids' not in Contract._fields:
-            return None
-        contract = Contract.search([
-            ('employee_id', '=', emp.id), ('state', '=', 'open')],
-            order='date_start desc, id desc', limit=1)
+        contract = emp._pbtx_running_contract()
         if not contract:
             return None
-        codes = self._pbtx_vn_codes()
-        lines = contract.advantages_ids.filtered(
-            lambda a: (a.advantage_template_id.code or '').upper() in codes)
-        if not lines:
-            return None
-        registered = int(round(sum(lines.mapped('amount'))))
-        return emp.vn_eligible_dependent_count, registered
+        for code in self._pbtx_vn_codes():
+            lines = contract.advantages_ids.filtered(
+                lambda a, c=code: (a.advantage_template_id.code or '').upper() == c)
+            if lines:
+                registered = int(round(sum(lines.mapped('amount'))))
+                return emp.vn_eligible_dependent_count, registered
+        return None
 
     @api.depends_context('uid')
     def _compute_pb_vn_dependants_check(self):

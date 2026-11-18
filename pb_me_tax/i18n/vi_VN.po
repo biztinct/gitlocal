@@ -158,6 +158,12 @@ msgid "Add or change family members"
 msgstr "Thêm hoặc sửa thành viên gia đình"
 
 #. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Add your tax number"
+msgstr "Thêm mã số thuế của bạn"
+
+#. module: pb_me_tax
 #: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
 msgid "Already added. Choose a file only to replace it."
 msgstr "Đã thêm. Chỉ chọn tệp nếu muốn thay thế."
@@ -527,6 +533,12 @@ msgstr "Mã số thuế cá nhân"
 
 #. module: pb_me_tax
 #. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Personal tax code changed to %(number)s: approved change %(ref)s from My Payobook."
+msgstr "Mã số thuế cá nhân đã đổi thành %(number)s: thay đổi %(ref)s từ My Payobook đã được duyệt."
+
+#. module: pb_me_tax
+#. odoo-python
 #: code:addons/pb_me_tax/models/tax_request.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_proof_file
 msgid "Proof"
 msgstr "Bằng chứng"
@@ -764,6 +776,12 @@ msgid "Your changes"
 msgstr "Các thay đổi của bạn"
 
 #. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Your company needs it for your pay"
+msgstr "Công ty cần thông tin này để tính lương cho bạn"
+
+#. module: pb_me_tax
 #: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
 msgid "Your pay set-up does not say yet which country you are paid in. Ask HR if a tax detail needs changing."
 msgstr "Thiết lập lương của bạn chưa cho biết bạn được trả lương ở quốc gia nào. Hãy hỏi nhân sự nếu cần sửa thông tin thuế."
@@ -782,3 +800,9 @@ msgstr "Chưa thể hiển thị thông tin thuế của bạn"
 #: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_home_tax
 msgid "Your tax number and tax choices"
 msgstr "Mã số thuế và các lựa chọn về thuế của bạn"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Your tax number is not on file yet."
+msgstr "Mã số thuế của bạn chưa có trong hồ sơ."

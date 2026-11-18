@@ -7,7 +7,7 @@ import logging
 
 from odoo import api, models
 
-from .tax_rules import TAX_KINDS
+from .tax_rules import KINDS_BY_COUNTRY, NUMBER_FIELD, TAX_KINDS
 
 _logger = logging.getLogger(__name__)
 
@@ -47,6 +47,30 @@ class PbMeHomeTax(models.AbstractModel):
                 sub=_('Read why, then change it and send it again'),
                 icon='rotate-ccw', tone='rose',
                 sentence=_('HR sent a change to your tax details back.'))
+        if self._pbtx_number_missing(emp):
+            put('tax_number_missing', 1, TAX_TILE,
+                label=_('Add your tax number'),
+                sub=_('Your company needs it for your pay'),
+                icon='shield', tone='indigo',
+                sentence=_('Your tax number is not on file yet.'))
+
+    @api.model
+    def _pbtx_number_missing(self, emp):
+        """Owner ruling TD1: remind a person whose tax number is not on file
+        for the country of their pay set-up — only where this module keeps a
+        tax number for that country (VN, ID, IN; not SG), and not while a
+        tax-number change is waiting for HR or was sent back (that has its
+        own row). A home row only; nothing is emailed."""
+        emp = emp.sudo()
+        country = emp._pbtx_country()
+        field = NUMBER_FIELD.get(country)
+        if 'tax_number' not in KINDS_BY_COUNTRY.get(country, ()) \
+                or not field or field not in emp._fields or emp[field]:
+            return False
+        return not self.env['pb.me.detail.request'].sudo().search_count([
+            ('employee_id', '=', emp.id), ('kind', '=', 'tax_number'),
+            '|', ('state', '=', 'hr_review'),
+            '&', ('state', '=', 'draft'), ('decision_note', '!=', False)])
 
     @api.model
     def _my_requests_rows(self, src, emp):

@@ -158,6 +158,12 @@ msgid "Add or change family members"
 msgstr "Tambah atau ubah anggota keluarga"
 
 #. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Add your tax number"
+msgstr "Tambahkan nomor pajak Anda"
+
+#. module: pb_me_tax
 #: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
 msgid "Already added. Choose a file only to replace it."
 msgstr "Sudah ditambahkan. Pilih berkas hanya untuk menggantinya."
@@ -527,6 +533,12 @@ msgstr "Kode pajak pribadi"
 
 #. module: pb_me_tax
 #. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Personal tax code changed to %(number)s: approved change %(ref)s from My Payobook."
+msgstr "Kode pajak pribadi diubah menjadi %(number)s: perubahan %(ref)s dari My Payobook telah disetujui."
+
+#. module: pb_me_tax
+#. odoo-python
 #: code:addons/pb_me_tax/models/tax_request.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_proof_file
 msgid "Proof"
 msgstr "Bukti"
@@ -764,6 +776,12 @@ msgid "Your changes"
 msgstr "Perubahan Anda"
 
 #. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Your company needs it for your pay"
+msgstr "Perusahaan membutuhkannya untuk gaji Anda"
+
+#. module: pb_me_tax
 #: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
 msgid "Your pay set-up does not say yet which country you are paid in. Ask HR if a tax detail needs changing."
 msgstr "Pengaturan gaji Anda belum menyebut negara tempat Anda digaji. Tanyakan HR jika ada data pajak yang perlu diubah."
@@ -782,3 +800,9 @@ msgstr "Data pajak Anda belum dapat ditampilkan"
 #: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_home_tax
 msgid "Your tax number and tax choices"
 msgstr "Nomor pajak dan pilihan pajak Anda"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Your tax number is not on file yet."
+msgstr "Nomor pajak Anda belum ada di data."
