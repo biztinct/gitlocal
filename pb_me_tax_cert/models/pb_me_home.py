@@ -16,14 +16,14 @@ READY_DAYS = 60
 
 try:
     from odoo.addons.pb_me_portal.models import pb_me_home
-    # Under "More" for now: pb_me_portal's home test pins the exact "Me"
-    # tiles (ledger S6A-4 / S6M-4). Moving it under "Me" is a merge-time task
-    # together with that test (WDGAP S2-B1 report).
+    # Under "Me" (owner ruling ME1 spirit), right after Tax details (pb_me_tax,
+    # seq +11) — moved at the WDGAP S2 merge together with pb_me_portal's
+    # pinned "Me" list (tests/test_me_home.py test_02; S2-B1 report task 4).
     pb_me_home.TILES.setdefault(TAX_CERT_TILE, {
-        'group': 'more',
+        'group': 'me',
         'icon': 'file-text',
         'tone': 'indigo',
-        'seq': pb_me_home.GROUPS.index('more') * 100 + 20,
+        'seq': pb_me_home.GROUPS.index('me') * 100 + 12,
     })
 except Exception:                           # noqa: BLE001 — a tile is not fatal
     _logger.warning('pb_me_tax_cert: the tax certificates tile could not be placed',

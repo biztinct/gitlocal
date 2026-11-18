@@ -60,9 +60,17 @@ DELIVER_DOOR = 'payhub_deliver'
 #: The Pay & Deliver role (pb_pay_delivery/models/approval_common.py PAY_GROUPS).
 PAY_GROUPS = ('om_hr_payroll.group_hr_payroll_manager',
               'account.group_account_invoice', 'account.group_account_user')
-#: Who produces a filing (pb_govt_reports/models/pb_filing_flow.py).
-FILING_GROUPS = ('pb_hr_payroll_base.group_payroll_base_officer',
-                 'pb_hr_payroll_base.group_payroll_base_manager')
+#: Who produces a filing: the flow's OWN gate (pb_govt_reports/models/
+#: pb_filing_flow.py `_FILING_GROUPS` — owner ruling FG1, WDGAP S2: payroll
+#: officer/manager or "Government reports"), read from there so PayAI never
+#: restates it. The fallback only matters when pb_govt_reports is absent, and
+#: then the command is not offered at all (method_gate needs pb.filing.flow).
+try:
+    from odoo.addons.pb_govt_reports.models.pb_filing_flow import _FILING_GROUPS as FILING_GROUPS
+except ImportError:  # pragma: no cover - pb_govt_reports not on the path
+    FILING_GROUPS = ('pb_hr_payroll_base.group_payroll_base_officer',
+                     'pb_hr_payroll_base.group_payroll_base_manager',
+                     'pb_hr_govt.group_pb_hr_govt_user')
 
 
 # ----------------------------------------------------------------- helpers

@@ -64,10 +64,11 @@ class TestMeHome(TransactionCase):
         # registry order: Profile, Documents, Tax Sheet, My Things, Pay
         # Package, My requests (TIERS T3a), Expenses (ETP E1), Letters from
         # HR (WDGAP S9-B), then the tiles other modules add to "Me" when they
-        # are loaded: My details and Certificates (WDGAP S6, owner ruling ME1)
+        # are loaded: My details and Certificates (WDGAP S6, owner ruling ME1),
+        # Tax details (WDGAP S2-D) and Tax certificates (WDGAP S2-B1)
         me = sorted((m['seq'], url) for url, m in pb_me_home.TILES.items()
                     if m['group'] == 'me' and not m.get('hidden'))
-        added = [u for u in ('/my/details', '/my/certificates')
+        added = [u for u in ('/my/details', '/my/certificates', '/my/tax', '/my/tax-certificates')
                  if u in pb_me_home.TILES]
         self.assertEqual([u for _s, u in me],
                          ['/my/profile', '/my/documents', '/my/taxsheet',

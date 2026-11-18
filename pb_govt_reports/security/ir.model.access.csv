@@ -13,3 +13,5 @@ access_pb_gov_form_map_govt_user,pb.gov.form.map government reports,pb_form_line
 access_pb_gov_form_company_govt_user,pb.gov.form.company government reports,pb_form_lines.model_pb_gov_form_company,pb_hr_govt.group_pb_hr_govt_user,1,1,1,0
 access_pb_gov_filing_govt_user,pb.gov.filing government reports,pb_form_lines.model_pb_gov_filing,pb_hr_govt.group_pb_hr_govt_user,1,1,1,0
 access_pb_gov_filing_file_govt_user,pb.gov.filing.file government reports,pb_form_lines.model_pb_gov_filing_file,pb_hr_govt.group_pb_hr_govt_user,1,0,0,0
+access_pb_gov_filing_certificate_govt_user,pb.gov.filing.certificate government reports,pb_form_lines.model_pb_gov_filing_certificate,pb_hr_govt.group_pb_hr_govt_user,1,0,0,0
+access_pb_gov_year_settlement_govt_user,pb.gov.year.settlement government reports,pb_form_lines.model_pb_gov_year_settlement,pb_hr_govt.group_pb_hr_govt_user,1,1,1,0

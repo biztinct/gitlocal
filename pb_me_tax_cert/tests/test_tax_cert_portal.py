@@ -108,7 +108,8 @@ class TestTaxCertificatesOnMyPayobook(S2B1Fixture, HttpCase):
         self.board(self.manager).set_released(filing.id, True)
         Home = self.env['pb.me.home'].with_user(self.u_ani).with_context(
             allowed_company_ids=[self.co_id.id])
-        self.assertEqual(Home.tile_meta('/my/tax-certificates')['group'], 'more')
+        # moved under "Me" at the WDGAP S2 merge (S2-B1 report task 4)
+        self.assertEqual(Home.tile_meta('/my/tax-certificates')['group'], 'me')
         rows = []
         Home._pbme_needs_extra(self.ani, lambda key, n, url, **kw: rows.append((key, n, url)))
         self.assertIn(('tax_certificate_ready', 1, '/my/tax-certificates'), rows)
