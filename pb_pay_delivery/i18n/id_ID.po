@@ -552,3 +552,1140 @@ msgstr "Menunggu persetujuan"
 #: code:addons/pb_pay_delivery/models/payment_list.py:0
 msgid "Approved"
 msgstr "Disetujui"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(n)s payments · %(total)s %(currency)s"
+msgstr "%(n)s pembayaran · %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "%(n)s sample people in the file • total %(total)s %(currency)s"
+msgstr "%(n)s orang contoh dalam file • total %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(people)s in the %(name)s file • total %(total)s %(currency)s"
+msgstr "%(people)s dalam file %(name)s • total %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%(what)s is longer than this bank takes (%(max)s characters)"
+msgstr "%(what)s lebih panjang dari yang diterima bank ini (%(max)s karakter)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%(what)s of this file is longer than the bank takes (%(max)s characters), so the file cannot be made."
+msgstr "%(what)s dari file ini lebih panjang dari yang diterima bank (%(max)s karakter), jadi file tidak dapat dibuat."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%(what)s on record (%(value)s) is not in the form this bank needs"
+msgstr "%(what)s yang tercatat (%(value)s) tidak dalam bentuk yang dibutuhkan bank ini"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(who)s · %(kind)s · %(rows)s rows · %(left)s left out"
+msgstr "%(who)s · %(kind)s · %(rows)s baris · %(left)s tidak dimasukkan"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "%s (our copy)"
+msgstr "%s (salinan kami)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s file"
+msgstr "File %s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%s has letters this bank does not take (accents or other alphabets)"
+msgstr "%s berisi huruf yang tidak diterima bank ini (aksen atau abjad lain)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%s has letters this file cannot hold"
+msgstr "%s berisi huruf yang tidak dapat dimuat file ini"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%s is missing"
+msgstr "%s tidak ada"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s people are left out of this bank file"
+msgstr "%s orang tidak dimasukkan ke file bank ini"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%s starts with a sign a spreadsheet would run as a formula"
+msgstr "%s diawali tanda yang akan dijalankan spreadsheet sebagai rumus"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__max_length
+msgid "0 = no limit. A longer value leaves the person out of the file (it is never cut)."
+msgstr "0 = tanpa batas. Nilai yang lebih panjang membuat orang itu tidak dimasukkan ke file (tidak pernah dipotong)."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 person is left out of this bank file"
+msgstr "1 orang tidak dimasukkan ke file bank ini"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "A bank layout needs at least one column."
+msgstr "Tata letak bank membutuhkan setidaknya satu kolom."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "A column"
+msgstr "Sebuah kolom"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "A layout Payobook ships cannot be changed here. Make your own copy and change the copy."
+msgstr "Tata letak bawaan Payobook tidak dapat diubah di sini. Buat salinan Anda sendiri lalu ubah salinannya."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "A layout Payobook ships cannot be changed. Make your own copy to change it — your copy is offered on Pay & deliver beside it."
+msgstr "Tata letak bawaan Payobook tidak dapat diubah. Buat salinan Anda sendiri untuk mengubahnya — salinan Anda ditawarkan di Bayar & kirim di sampingnya."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__account_pattern
+msgid "A pattern the account number must match (e.g. ^[0-9]{10}$). A person whose number does not match is left out."
+msgstr "Pola yang harus cocok dengan nomor rekening (mis. ^[0-9]{10}$). Orang yang nomornya tidak cocok tidak dimasukkan."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__code_pattern
+msgid "A pattern the bank code must match, e.g. ^[A-Z]{4}0[A-Z0-9]{6}$ for an IFSC. A person whose code does not match is left out."
+msgstr "Pola yang harus cocok dengan kode bank, mis. ^[A-Z]{4}0[A-Z0-9]{6}$ untuk IFSC. Orang yang kodenya tidak cocok tidak dimasukkan."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__required
+msgid "A person with nothing to put here is left out of the file, with the reason."
+msgstr "Orang yang tidak memiliki isi untuk kolom ini tidak dimasukkan ke file, beserta alasannya."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "A preview with sample people is shown for payment-list layouts. The Vietnamese bank file shows its own rows on Pay & deliver."
+msgstr "Pratinjau dengan orang contoh ditampilkan untuk tata letak daftar pembayaran. File bank Vietnam menampilkan barisnya sendiri di Bayar & kirim."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Add a column"
+msgstr "Tambah kolom"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__bank_bic
+msgid "Bank SWIFT/BIC code"
+msgstr "Kode SWIFT/BIC bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_res_bank__pb_clearing_code
+msgid "Bank code"
+msgstr "Kode bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__bank_clearing_code
+msgid "Bank code (IFSC, bank/branch code)"
+msgstr "Kode bank (IFSC, kode bank/cabang)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Bank file (any bank) downloaded"
+msgstr "File bank (bank apa pun) diunduh"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_hash
+msgid "Bank file stamp"
+msgstr "Cap file bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0 code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file__layout_id model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_id
+msgid "Bank layout"
+msgstr "Tata letak bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__pb_layout_key
+msgid "Bank layout key"
+msgstr "Kunci tata letak bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_name
+msgid "Bank layout name"
+msgstr "Nama tata letak bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts_doors.js:0 code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.actions.client,name:pb_pay_delivery.action_pb_bank_layouts
+msgid "Bank layouts"
+msgstr "Tata letak bank"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "Bank layouts are set up by the payroll manager."
+msgstr "Tata letak bank diatur oleh manajer penggajian."
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_pb_bank_layout_studio
+msgid "Bank layouts screen"
+msgstr "Layar tata letak bank"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "Choose what each column holds."
+msgstr "Pilih isi setiap kolom."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Column name"
+msgstr "Nama kolom"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Columns, in order"
+msgstr "Kolom, berurutan"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__copied_from_id
+msgid "Copied from"
+msgstr "Disalin dari"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__country_id
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__date_format
+msgid "Date written as"
+msgstr "Tanggal ditulis sebagai"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Download the bank's own file"
+msgstr "Unduh file milik bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__beneficiary_email
+msgid "Employee email"
+msgstr "Email karyawan"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__company_id
+msgid "Empty for a layout Payobook ships; a company's own copy belongs to that company."
+msgstr "Kosong untuk tata letak bawaan Payobook; salinan perusahaan menjadi milik perusahaan itu."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Find a layout or a country"
+msgstr "Cari tata letak atau negara"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "First row holds the column names"
+msgstr "Baris pertama berisi nama kolom"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Fixed text"
+msgstr "Teks tetap"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__account_pattern
+msgid "Form of the account number"
+msgstr "Bentuk nomor rekening"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__code_pattern
+msgid "Form of the bank code"
+msgstr "Bentuk kode bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "General list only"
+msgstr "Hanya daftar umum"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "Give the layout a name."
+msgstr "Beri nama tata letak."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Holds"
+msgstr "Berisi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__date_format
+msgid "How {date} and the payment-date column are written, e.g. %Y%m%d (20260630) or %d/%m/%Y (30/06/2026)."
+msgstr "Cara menulis {date} dan kolom tanggal pembayaran, mis. %Y%m%d (20260630) atau %d/%m/%Y (30/06/2026)."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__amount_format
+msgid "How {total} is written in the lines before and after the payments."
+msgstr "Cara menulis {total} di baris sebelum dan sesudah pembayaran."
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_in_neft
+msgid "India — NEFT / RTGS bulk transfer (general)"
+msgstr "India — transfer massal NEFT / RTGS (umum)"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_id_general
+msgid "Indonesia — bank transfer list (general)"
+msgstr "Indonesia — daftar transfer bank (umum)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__bank_format
+msgid "Key of this layout (vietcombank, bidv, …; a copy gets its own)."
+msgstr "Kunci tata letak ini (vietcombank, bidv, …; salinan mendapat kuncinya sendiri)."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Leave this layout without saving your changes?"
+msgstr "Tinggalkan tata letak ini tanpa menyimpan perubahan?"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_excluded_count
+msgid "Left out of the bank file"
+msgstr "Tidak dimasukkan ke file bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__line_ending
+msgid "Line ending"
+msgstr "Akhir baris"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__trailer_template
+msgid "Lines after the payments"
+msgstr "Baris setelah pembayaran"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__header_template
+msgid "Lines before the payments"
+msgstr "Baris sebelum pembayaran"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Longest"
+msgstr "Terpanjang"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__max_length
+msgid "Longest the bank takes"
+msgstr "Panjang maksimum yang diterima bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__target
+msgid "Made from"
+msgstr "Dibuat dari"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Made-up people only. The real file is made on Pay & deliver from the approved bank details."
+msgstr "Hanya orang rekaan. File sebenarnya dibuat di Bayar & kirim dari data bank yang disetujui."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Make our own copy"
+msgstr "Buat salinan kami"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Move down"
+msgstr "Pindah ke bawah"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Move up"
+msgstr "Pindah ke atas"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Must have"
+msgstr "Wajib"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__required
+msgid "Must not be empty"
+msgstr "Tidak boleh kosong"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__code_label
+msgid "Name of the bank code"
+msgstr "Nama kode bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "No layout matches."
+msgstr "Tidak ada tata letak yang cocok."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Nobody in this pay run can be put in the %s file. See who is left out and why, or prepare the general list instead."
+msgstr "Tidak ada seorang pun dalam penggajian ini yang dapat dimasukkan ke file %s. Lihat siapa yang tidak dimasukkan dan alasannya, atau siapkan daftar umum."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Not confirmed"
+msgstr "Belum dikonfirmasi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__inferred
+msgid "Not confirmed by the bank"
+msgstr "Belum dikonfirmasi oleh bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Not confirmed by the bank."
+msgstr "Belum dikonfirmasi oleh bank."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Not confirmed by the bank. Check with your bank before the first upload."
+msgstr "Belum dikonfirmasi oleh bank. Tanyakan ke bank Anda sebelum unggahan pertama."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "Not in the %(layout)s file: %(reasons)s"
+msgstr "Tidak ada di file %(layout)s: %(reasons)s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Not in the bank file"
+msgstr "Tidak ada di file bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Not offered"
+msgstr "Tidak ditawarkan"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Number"
+msgstr "Angka"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__row_count
+msgid "Number of payments"
+msgstr "Jumlah pembayaran"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Offer it again"
+msgstr "Tawarkan lagi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__header_template
+msgid "One line per line of text. Words in braces are filled in: {count} {total} {date} {company_account} {reference} {currency}."
+msgstr "Satu baris per baris teks. Kata dalam kurung kurawal diisi otomatis: {count} {total} {date} {company_account} {reference} {currency}."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "Paid in %(paid)s; this bank file pays in %(file)s only"
+msgstr "Dibayar dalam %(paid)s; file bank ini hanya membayar dalam %(file)s"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__payment_date
+msgid "Payment Date"
+msgstr "Tanggal pembayaran"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0 model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__payment_date
+msgid "Payment date"
+msgstr "Tanggal pembayaran"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__currency_id
+msgid "Pays in"
+msgstr "Membayar dalam"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__ascii_only
+msgid "Plain letters only"
+msgstr "Hanya huruf biasa"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Plain letters only (people with accents are left out, never changed)"
+msgstr "Hanya huruf biasa (orang dengan aksen tidak dimasukkan, tidak pernah diubah)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Preview with three sample people"
+msgstr "Pratinjau dengan tiga orang contoh"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_row_count
+msgid "Rows in the bank file"
+msgstr "Baris di file bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__trailer_template
+msgid "Same words as the lines before the payments."
+msgstr "Kata yang sama seperti baris sebelum pembayaran."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Save your changes first; the preview shows the saved layout."
+msgstr "Simpan perubahan Anda dulu; pratinjau menampilkan tata letak yang disimpan."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Saved."
+msgstr "Tersimpan."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts_doors.js:0
+msgid "See the bank file layouts, copy one and shape it to your bank's template."
+msgstr "Lihat tata letak file bank, salin satu dan sesuaikan dengan templat bank Anda."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Separator"
+msgstr "Pemisah"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts_doors.js:0
+msgid "Settings"
+msgstr "Pengaturan"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Show the preview"
+msgstr "Tampilkan pratinjau"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_sg_giro
+msgid "Singapore — GIRO / FAST bulk transfer (general)"
+msgstr "Singapura — transfer massal GIRO / FAST (umum)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Stop offering it"
+msgstr "Berhenti menawarkan"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Stop offering this copy on Pay & deliver? You can bring it back later."
+msgstr "Berhenti menawarkan salinan ini di Bayar & kirim? Anda dapat mengembalikannya nanti."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Text encoding"
+msgstr "Pengodean teks"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "That bank layout is not available. Choose another one, or the general list."
+msgstr "Tata letak bank itu tidak tersedia. Pilih yang lain, atau daftar umum."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0 code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "That bank layout no longer exists."
+msgstr "Tata letak bank itu sudah tidak ada."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The Excel file cannot be made on this server. Choose a CSV or text bank layout."
+msgstr "File Excel tidak dapat dibuat di server ini. Pilih tata letak bank CSV atau teks."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The SWIFT/BIC code"
+msgstr "Kode SWIFT/BIC"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The account holder name"
+msgstr "Nama pemilik rekening"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The account number"
+msgstr "Nomor rekening"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The account number is not in the form this bank needs"
+msgstr "Nomor rekening tidak dalam bentuk yang dibutuhkan bank ini"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The amount has cents, and this bank file takes whole amounts only"
+msgstr "Jumlahnya memiliki sen, dan file bank ini hanya menerima jumlah bulat"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The bank code"
+msgstr "Kode bank"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The bank name"
+msgstr "Nama bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__ascii_only
+msgid "The bank refuses letters with accents and other non-English characters: a person whose name or bank details carry one is left out of the file, with the reason (never changed or cut)."
+msgstr "Bank menolak huruf beraksen dan karakter non-Inggris: orang yang nama atau data banknya memuatnya tidak dimasukkan ke file, beserta alasannya (tidak pernah diubah atau dipotong)."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_res_bank__pb_clearing_code
+msgid "The bank's national code, used by bank payment files: Indonesia the 3-digit bank code, Singapore the 4-digit bank code. (An Indian IFSC belongs to each account, not to the bank.)"
+msgstr "Kode nasional bank, dipakai file pembayaran bank: Indonesia kode bank 3 digit, Singapura kode bank 4 digit. (IFSC India milik setiap rekening, bukan milik bank.)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The branch"
+msgstr "Cabang"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The company account"
+msgstr "Rekening perusahaan"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The email"
+msgstr "Email"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The employee name"
+msgstr "Nama karyawan"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The employee number"
+msgstr "Nomor karyawan"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file__attachment_id
+msgid "The file"
+msgstr "File"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "The form “%s” cannot be read. Leave it empty, or write a pattern such as ^[0-9]{10}$."
+msgstr "Bentuk “%s” tidak dapat dibaca. Kosongkan, atau tulis pola seperti ^[0-9]{10}$."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "The lines before or after the payments use a word this file cannot fill in: %(words)s. Use only: %(known)s."
+msgstr "Baris sebelum atau sesudah pembayaran memakai kata yang tidak dapat diisi file ini: %(words)s. Gunakan hanya: %(known)s."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__currency_id
+msgid "The one money this bank file pays in. Empty: the pay run's own money. People paid in another money are left out of it, with the reason."
+msgstr "Satu mata uang yang dibayar file bank ini. Kosong: mata uang penggajian itu sendiri. Orang yang dibayar dalam mata uang lain tidak dimasukkan, beserta alasannya."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts_doors.js:0
+msgid "The payment files each bank takes, and your own copies of them."
+msgstr "File pembayaran yang diterima setiap bank, dan salinan Anda sendiri."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "The payment files each bank takes. Copy a layout Payobook ships and shape your copy to your bank's own template."
+msgstr "File pembayaran yang diterima setiap bank. Salin tata letak bawaan Payobook dan sesuaikan salinan Anda dengan templat bank Anda."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The payment reference"
+msgstr "Referensi pembayaran"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The payslip shows take-home two ways; check it before paying"
+msgstr "Slip gaji menunjukkan gaji bersih dengan dua cara; periksa sebelum membayar"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The total of this file has cents, and this bank file writes its total as a whole number. Change how the total is written on Settings › Bank layouts."
+msgstr "Total file ini memiliki sen, dan file bank ini menulis totalnya sebagai bilangan bulat. Ubah cara penulisan total di Pengaturan › Tata letak bank."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__inferred
+msgid "This layout was not taken from the bank's own published specification. Check with your bank before the first upload."
+msgstr "Tata letak ini tidak diambil dari spesifikasi resmi yang diterbitkan bank. Tanyakan ke bank Anda sebelum unggahan pertama."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "This payment list was prepared without a bank layout, so there is no bank file to download. Prepare it again with a bank layout."
+msgstr "Daftar pembayaran ini disiapkan tanpa tata letak bank, jadi tidak ada file bank untuk diunduh. Siapkan lagi dengan tata letak bank."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_total
+msgid "Total of the bank file"
+msgstr "Total file bank"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__control_total
+msgid "Total of the file"
+msgstr "Total file"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__amount_format
+msgid "Total written as"
+msgstr "Total ditulis sebagai"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__number_format__dec2 model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__amount_format__dec2
+msgid "Two decimals (1234.50)"
+msgstr "Dua desimal (1234.50)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__number_format__implied2 model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__amount_format__implied2
+msgid "Two decimals without the point (123450)"
+msgstr "Dua desimal tanpa titik (123450)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Undo changes"
+msgstr "Batalkan perubahan"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__line_ending__lf
+msgid "Unix (LF)"
+msgstr "Unix (LF)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__target__bank_file
+msgid "Vietnamese bank file"
+msgstr "File bank Vietnam"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__code_label
+msgid "What this country calls the bank code the file carries (Indonesia \"Bank code\", India \"IFSC\", Singapore \"Bank / branch code\"). Used in the reasons people are left out."
+msgstr "Sebutan negara ini untuk kode bank di file (Indonesia \"Kode bank\", India \"IFSC\", Singapura \"Kode bank / cabang\"). Dipakai dalam alasan orang tidak dimasukkan."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Where this layout comes from"
+msgstr "Asal tata letak ini"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__amount_format__int
+msgid "Whole number"
+msgstr "Bilangan bulat"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__line_ending__crlf
+msgid "Windows (CR LF)"
+msgstr "Windows (CR LF)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Words filled in:"
+msgstr "Kata yang diisi:"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "Write the date with %Y (year), %m (month) and %d (day), for example %Y%m%d."
+msgstr "Tulis tanggal dengan %Y (tahun), %m (bulan) dan %d (hari), misalnya %Y%m%d."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Your copy"
+msgstr "Salinan Anda"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Your own copy is ready. Change it to match your bank's template."
+msgstr "Salinan Anda sudah siap. Ubah agar sesuai dengan templat bank Anda."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "and %s more — every one is in the Check column of the list"
+msgstr "dan %s lainnya — semuanya ada di kolom Periksa pada daftar"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "not confirmed by the bank"
+msgstr "belum dikonfirmasi oleh bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "shipped"
+msgstr "bawaan"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "your copies"
+msgstr "salinan Anda"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "— the number of payments, the total, the payment date, the company account, the reference and the money."
+msgstr "— jumlah pembayaran, total, tanggal pembayaran, rekening perusahaan, referensi dan mata uang."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "“%s” has no columns yet. Add its columns on Settings › Bank layouts."
+msgstr "“%s” belum memiliki kolom. Tambahkan kolomnya di Pengaturan › Tata letak bank."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "“%s” is a layout for the payment list (any bank), not for the Vietnamese bank file. Choose it under the payment list."
+msgstr "“%s” adalah tata letak untuk daftar pembayaran (bank apa pun), bukan untuk file bank Vietnam. Pilih di bagian daftar pembayaran."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The layout's own text (a column name, a fixed text, the lines before or after the payments, or the company account) has letters its text encoding (%s) cannot hold."
+msgstr "Teks milik tata letak (nama kolom, teks tetap, baris sebelum atau sesudah pembayaran, atau rekening perusahaan) berisi huruf yang tidak dapat dimuat pengodean teksnya (%s)."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The text encoding “%s” is not known. Use utf-8, utf-8-sig, ascii or latin-1."
+msgstr "Pengodean teks “%s” tidak dikenal. Gunakan utf-8, utf-8-sig, ascii atau latin-1."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file__name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_release__name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payroll_journal__name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__hr_payslip__pb_paid_method__other
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__width
+msgid "Width"
+msgstr "Lebar"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Action failed."
+msgstr "Tindakan gagal."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(n)s people · %(total)s %(currency)s"
+msgstr "%(n)s orang · %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(people)s · %(total)s %(currency)s to pay another way"
+msgstr "%(people)s · %(total)s %(currency)s dibayar dengan cara lain"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "A layout Payobook ships is not confirmed by any bank and stays marked that way. Make your own copy, check it with your bank, then tick “Confirmed with our bank” on the copy."
+msgstr "Tata letak bawaan Payobook belum dikonfirmasi bank mana pun dan tetap ditandai demikian. Buat salinan Anda sendiri, periksa dengan bank Anda, lalu centang “Sudah dikonfirmasi dengan bank kami” pada salinan."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "Account is in another name"
+msgstr "Rekening atas nama orang lain"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed_by
+msgid "Confirmed by"
+msgstr "Dikonfirmasi oleh"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed_on
+msgid "Confirmed on"
+msgstr "Dikonfirmasi pada"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed
+msgid "Confirmed with our bank"
+msgstr "Sudah dikonfirmasi dengan bank kami"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Confirmed with our bank by %(who)s on %(when)s"
+msgstr "Dikonfirmasi dengan bank oleh %(who)s pada %(when)s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "Keep “%s” in the note until you tick “Confirmed with our bank”."
+msgstr "Pertahankan “%s” di catatan sampai Anda mencentang “Sudah dikonfirmasi dengan bank kami”."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Save your changes first."
+msgstr "Simpan perubahan Anda dulu."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Tick this only after your bank has checked a test file made with this copy."
+msgstr "Centang ini hanya setelah bank Anda memeriksa file uji yang dibuat dengan salinan ini."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "Tick “Confirmed with our bank” before this copy stops saying it is not confirmed."
+msgstr "Centang “Sudah dikonfirmasi dengan bank kami” sebelum salinan ini berhenti menyatakan belum dikonfirmasi."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(people)s paid into another person's account · %(total)s %(currency)s"
+msgstr "%(people)s dibayar ke rekening orang lain · %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0 code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_res_company__pb_other_name_policy
+msgid "Accounts in another person's name"
+msgstr "Rekening atas nama orang lain"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Bank account in another person's name"
+msgstr "Rekening bank atas nama orang lain"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Choose how accounts in another person's name are paid."
+msgstr "Pilih cara membayar rekening atas nama orang lain."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "For the bank layouts of the payment list (not the Vietnamese bank file). The payment list flags these people either way."
+msgstr "Untuk tata letak bank daftar pembayaran (bukan file bank Vietnam). Apa pun pilihannya, daftar pembayaran tetap menandai orang-orang ini."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_res_company__pb_other_name_policy
+msgid "For the bank layouts of the payment list (not the Vietnamese bank file): leave such accounts out of the bank file, or pay them by file. Either way the payment list flags them."
+msgstr "Untuk tata letak bank daftar pembayaran (bukan file bank Vietnam): jangan masukkan rekening seperti ini ke file bank, atau bayar lewat file. Apa pun pilihannya, daftar pembayaran tetap menandainya."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__res_company__pb_other_name_policy__leave_out
+msgid "Leave out of the bank file"
+msgstr "Tidak dimasukkan ke file bank"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/other_name_chip.xml:0 model_terms:ir.ui.view,arch_db:pb_pay_delivery.view_employee_form_pb_other_name
+msgid "Mark as seen"
+msgstr "Tandai sudah dilihat"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_employee__pb_other_name_seen_by
+msgid "Marked as seen by"
+msgstr "Ditandai sudah dilihat oleh"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Marked as seen by %s. Payment is not changed by this."
+msgstr "Ditandai sudah dilihat oleh %s. Ini tidak mengubah pembayaran."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_employee__pb_other_name_seen_on
+msgid "Marked as seen on"
+msgstr "Ditandai sudah dilihat pada"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/other_name_chip.js:0
+msgid "Marking it as seen only hides this notice. Whether this person is paid by bank file is decided by the company setting on Settings › Payroll › Bank layouts."
+msgstr "Menandai sudah dilihat hanya menyembunyikan pemberitahuan ini. Apakah orang ini dibayar lewat file bank ditentukan oleh pengaturan perusahaan di Pengaturan › Penggajian › Tata letak bank."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "Only HR and the payroll team see this."
+msgstr "Hanya HR dan tim penggajian yang melihat ini."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Paid into another person's account"
+msgstr "Dibayar ke rekening orang lain"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__res_company__pb_other_name_policy__pay
+msgid "Pay by file"
+msgstr "Bayar lewat file"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Saved. The next bank file you prepare follows this; files already prepared do not change."
+msgstr "Tersimpan. File bank berikutnya yang Anda siapkan mengikuti ini; file yang sudah disiapkan tidak berubah."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/other_name.py:0
+msgid "That employee no longer exists."
+msgstr "Karyawan itu sudah tidak ada."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/other_name_chip.js:0
+msgid "This bank account is in another person's name: %s"
+msgstr "Rekening bank ini atas nama orang lain: %s"
+
+#. module: pb_pay_delivery
+#: model_terms:ir.ui.view,arch_db:pb_pay_delivery.view_employee_form_pb_other_name
+msgid "<span>This bank account is in another person's name:</span>"
+msgstr "<span>Rekening bank ini atas nama orang lain:</span>"

@@ -66,8 +66,23 @@ def account_ok(number):
 
 
 class PbBankRegistry(models.Model):
+    """The bank directory.
+
+    Born Vietnamese (the 40 rows of `vn_bank_registry_data.xml`, no country).
+    WDGAP S2-C adds a country and the bank's public national code so bank
+    files for other countries can name the bank the way their banks expect
+    (Indonesia: the 3-digit bank code; Singapore: the 4-digit bank code;
+    India: the first four letters every IFSC of the bank starts with).
+
+    THE VIETNAMESE MATCH IS UNCHANGED. A row with no country is a Vietnamese
+    row, and `match()` without a country reads ONLY those rows (and rows marked
+    Vietnam) — exactly the 40 it always read. So the Vietnamese bank file still
+    calls an Indonesian bank "unknown bank" (owner ruling BG3), and the bank
+    document check reads Vietnamese names exactly as before. Other countries
+    are matched only when the caller names the country.
+    """
     _name = 'pb.bank.registry'
-    _description = 'Vietnam Bank Registry'
+    _description = 'Bank directory'
     _order = 'short_name, name'
 
     name = fields.Char(string='Bank Name', required=True, translate=True)
@@ -78,19 +93,38 @@ class PbBankRegistry(models.Model):
         help='Comma-separated alternate names/abbreviations used for matching.')
     active = fields.Boolean(default=True)
     company_id = fields.Many2one('res.company', string='Company', index=True)
+    # WDGAP S2-C
+    country_id = fields.Many2one(
+        'res.country', string='Country', index=True,
+        help='Empty means a Vietnamese bank (the original directory).')
+    clearing_code = fields.Char(
+        string='Bank code',
+        help="The bank's public national code: Indonesia the 3-digit bank "
+             "code, Singapore the 4-digit bank code, India the first four "
+             "letters of every IFSC of this bank.")
 
     @api.model
-    def _all_terms(self):
-        """{registry_id: [folded terms]} for every active bank."""
+    def _country_domain(self, country=None):
+        """Which rows a match reads. No country = the Vietnamese rows only."""
+        code = country.code if isinstance(country, models.BaseModel) else country
+        code = (code or 'VN').upper()
+        if code == 'VN':
+            return ['|', ('country_id', '=', False), ('country_id.code', '=', 'VN')]
+        return [('country_id.code', '=', code)]
+
+    @api.model
+    def _all_terms(self, country=None):
+        """{registry_id: [folded terms]} for every active bank of a country
+        (no country: the Vietnamese directory, as always)."""
         out = {}
-        for rec in self.sudo().search([]):
+        for rec in self.sudo().search(self._country_domain(country)):
             terms = [rec.name or '', rec.short_name or '']
             terms += (rec.aliases or '').split(',')
             out[rec.id] = [fold(t) for t in terms if t and fold(t)]
         return out
 
     @api.model
-    def match(self, raw_name):
+    def match(self, raw_name, country=None):
         """Resolve a raw/OCR bank name to a registry record (or empty).
 
         Token-SUBSET match (order-independent): an alias resolves when all of its
@@ -98,12 +132,16 @@ class PbBankRegistry(models.Model):
         VN" resolves to Vietcombank via the "Ngan hang Ngoai thuong" alias even
         with the interposed "TMCP". The most-specific alias (most letters
         matched) wins. Deterministic, no AI.
+
+        ``country`` (a code or a res.country; WDGAP S2-C): which country's
+        banks to read. Left out, it reads the Vietnamese banks only — the
+        behaviour every existing caller relies on.
         """
         target = set(fold(raw_name).split())
         if not target:
             return self.browse()
         best_id, best_score = False, 0
-        for rid, terms in self._all_terms().items():
+        for rid, terms in self._all_terms(country).items():
             for t in terms:
                 toks = [w for w in t.split() if len(w) >= 2]
                 if toks and all(w in target for w in toks):

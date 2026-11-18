@@ -342,3 +342,28 @@ msgstr "Buka Kepatuhan › Bank"
 #: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
 msgid "Every bank change in this batch is decided."
 msgstr "Semua perubahan bank dalam kelompok ini sudah diputuskan."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__clearing_code
+msgid "Bank code"
+msgstr "Kode bank"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_bank_registry
+msgid "Bank directory"
+msgstr "Direktori bank"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__country_id
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_registry__country_id
+msgid "Empty means a Vietnamese bank (the original directory)."
+msgstr "Kosong berarti bank Vietnam (direktori awal)."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_registry__clearing_code
+msgid "The bank's public national code: Indonesia the 3-digit bank code, Singapore the 4-digit bank code, India the first four letters of every IFSC of this bank."
+msgstr "Kode nasional publik bank: Indonesia kode bank 3 digit, Singapura kode bank 4 digit, India empat huruf pertama setiap IFSC bank ini."

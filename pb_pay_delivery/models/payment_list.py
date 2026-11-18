@@ -198,6 +198,20 @@ class PbPaymentList(models.AbstractModel):
         return waiting
 
     @api.model
+    def _pb_name_band(self, holder, employee_name):
+        """The ONE name test of the payment list (the bank-document
+        check's bands): 'other' = the account is in another person's name
+        (under 60), 'close' = close to, not the same as, the employee's name
+        (60 to under 85), '' = the same name. The bank layouts read this same
+        answer (WDGAP S2-C ruling BL1); nothing else decides it."""
+        score = name_similarity(holder, employee_name or '')
+        if score < NAME_CLOSE:
+            return 'other'
+        if score < NAME_MATCH:
+            return 'close'
+        return ''
+
+    @api.model
     def _pb_is_change(self, proposed, number, bank, holder):
         """Does a waiting change propose anything other than what is paid
         to? (A copy of the account on record into the bank-file fields —
@@ -246,16 +260,17 @@ class PbPaymentList(models.AbstractModel):
             amount = currency.round(slip.pb_pay_totals().get('net') or 0.0)
             take_home = currency.round(slip._pb_net_amount() or 0.0)
             checks = []
+            name_band = ''
             if not number:
                 checks.append(_("No bank account on record"))
             else:
                 if not holder:
                     checks.append(_("No account holder name on record"))
                 else:
-                    score = name_similarity(holder, emp.name or '')
-                    if score < NAME_CLOSE:
+                    name_band = self._pb_name_band(holder, emp.name or '')
+                    if name_band == 'other':
                         checks.append(_("The account is in another person's name"))
-                    elif score < NAME_MATCH:
+                    elif name_band == 'close':
                         checks.append(_("The account holder name is close to, but not the same as, the employee's name"))
             changes = [p for p in waiting.get(emp.id, [])
                        if self._pb_is_change(p, _digits(number), bank, holder)]
@@ -285,6 +300,8 @@ class PbPaymentList(models.AbstractModel):
                 'reference': reference,
                 'in_bank_file': _("Yes") if slip.id in in_file else '',
                 'checks': checks,
+                # WDGAP S2-C BL1: the same name test, for the bank layouts
+                'name_band': name_band,
             })
         # the same account for two people of THIS list: both are flagged
         by_account = {}
@@ -489,7 +506,8 @@ class PbPaymentList(models.AbstractModel):
         """The door, then the approved list — refused in the bank file's own
         words. Returns the `pb.payment.list.file`."""
         run = self._pb_run(run_id)
-        if fmt not in FORMATS:
+        # WDGAP S2-C: 'bank' = the bank's own file made with a bank layout
+        if fmt not in FORMATS and fmt != 'bank':
             raise UserError(_("Choose Excel or CSV."))
         File = self.env['pb.payment.list.file']
         approved = File.search([('run_id', '=', run.id), ('state', '=', 'approved')],
@@ -595,9 +613,15 @@ class PbPaymentListFile(models.Model):
 
     # ------------------------------------------------------------ preparing
     @api.model
-    def prepare(self, run):
+    def prepare(self, run, layout=None, payment_date=None, company_account=None):
         """Build both files, store them, replace the last try. The caller
-        sends the record in (`biz.approval.engine.submit`)."""
+        sends the record in (`biz.approval.engine.submit`).
+
+        WDGAP S2-C: with a bank ``layout`` (a payment-list layout), the bank's
+        own file is made from the same rows and stored as a THIRD file,
+        approved with the other two; the general list's Check column then
+        says who is not in the bank file and why. Without one, nothing
+        differs from before (the general list is byte-identical)."""
         run = run if isinstance(run, models.BaseModel) \
             else self.env['hr.payslip.run'].browse(int(run))
         List = self.env['pb.payment.list']
@@ -605,7 +629,20 @@ class PbPaymentListFile(models.Model):
         self.require_pay()
         if (run.state or '') != 'done':
             raise UserError(_("“%s” has not been approved yet, so its payment list cannot be prepared. Send the pay run in for approval first.", run.name or ''))
-        data = List._pb_build_rows(run)
+        bank = None
+        if layout:
+            layout = List._pb_layout(layout)
+            if payment_date and isinstance(payment_date, str):
+                payment_date = fields.Date.to_date(payment_date)
+            payment_date = payment_date or fields.Date.context_today(self)
+            bank = List._pb_layout_build(run, layout, {
+                'payment_date': payment_date,
+                'company_account': company_account or ''})
+            data = List._pb_mark_left_out(bank['list_data'], layout, bank)
+            if data['count'] and not bank['count']:
+                raise UserError(_("Nobody in this pay run can be put in the %s file. See who is left out and why, or prepare the general list instead.", layout.name))
+        else:
+            data = List._pb_build_rows(run)
         if not data['count']:
             raise UserError(_("Nobody in this pay run is left to pay by bank transfer, so there is no payment list."))
         files = {'csv': List._pb_csv(data), 'xlsx': List._pb_xlsx(data, run)}
@@ -630,7 +667,10 @@ class PbPaymentListFile(models.Model):
             'xlsx_attachment_id': attachments['xlsx'].id,
             'csv_attachment_id': attachments['csv'].id,
             'file_hash': self._pb_hash(files['xlsx'], files['csv']),
-            'content_hash': List._pb_content_hash(files['csv']),
+            # what the GENERAL list says (the screen compares it with the
+            # general list now; a bank layout's left-out notes are not in it)
+            'content_hash': List._pb_content_hash(
+                List._pb_csv(List._pb_build_rows(run)) if bank else files['csv']),
             'row_count': data['count'],
             'check_count': data['check_count'],
             # the fact a route may test is the bank file's "control total":
@@ -646,23 +686,54 @@ class PbPaymentListFile(models.Model):
         })
         attachments['xlsx'].write({'res_id': record.id})
         attachments['csv'].write({'res_id': record.id})
+        if bank:
+            payload = bank['payload']
+            bank_attachment = Attachment.create({
+                'name': bank['filename'], 'type': 'binary', 'raw': payload,
+                'res_model': self._name, 'res_id': record.id,
+                'mimetype': bank['mimetype'],
+            })
+            record.sudo().write({
+                'layout_id': layout.id,
+                'layout_name': layout.name,
+                'layout_attachment_id': bank_attachment.id,
+                'layout_hash': hashlib.sha256(payload).hexdigest(),
+                'layout_row_count': bank['count'],
+                'layout_total': bank['total'],
+                'layout_currency': bank['currency'],
+                'layout_excluded_json': json.dumps(bank['excluded']),
+                'layout_excluded_count': len(bank['excluded']),
+                'layout_other_name_json': json.dumps(bank['other_name_totals']),
+                'payment_date': payment_date,
+                'company_account': company_account or False,
+                # the stamp covers all three files
+                'file_hash': self._pb_hash(files['xlsx'], files['csv'], payload),
+            })
         record._supersede_earlier()
         return record
 
     @staticmethod
-    def _pb_hash(xlsx_bytes, csv_bytes):
-        return hashlib.sha256(
-            hashlib.sha256(xlsx_bytes or b'').hexdigest().encode()
-            + hashlib.sha256(csv_bytes or b'').hexdigest().encode()).hexdigest()
+    def _pb_hash(xlsx_bytes, csv_bytes, bank_bytes=None):
+        stamp = (hashlib.sha256(xlsx_bytes or b'').hexdigest().encode()
+                 + hashlib.sha256(csv_bytes or b'').hexdigest().encode())
+        if bank_bytes is not None:
+            # WDGAP S2-C: the bank's own file is approved with the list
+            stamp += hashlib.sha256(bank_bytes).hexdigest().encode()
+        return hashlib.sha256(stamp).hexdigest()
 
     def _live_hash(self):
-        """The stamp of BOTH files as they are right now, read from the
+        """The stamp of ALL the files as they are right now, read from the
         attachments every time (ledger AM46, as the bank file)."""
         self.ensure_one()
         xlsx = self.xlsx_attachment_id.sudo()
         csv_file = self.csv_attachment_id.sudo()
         if not xlsx or not csv_file:
             return ''
+        if self.layout_hash:
+            bank = self.layout_attachment_id.sudo()
+            if not bank:
+                return ''
+            return self._pb_hash(xlsx.raw or b'', csv_file.raw or b'', bank.raw or b'')
         return self._pb_hash(xlsx.raw or b'', csv_file.raw or b'')
 
     def _supersede_earlier(self):
@@ -721,7 +792,7 @@ class PbPaymentListFile(models.Model):
                 'control_total': {'value': float(self.control_total or 0.0),
                                   'unit': currency.name or ''},
                 'row_count': {'value': self.row_count, 'unit': ''},
-                'excluded_count': {'value': 0, 'unit': ''},
+                'excluded_count': {'value': self.layout_excluded_count or 0, 'unit': ''},
                 'run_approved': {'value': self.run_is_approved(run), 'unit': ''},
                 'first_file_for_run': {'value': first, 'unit': ''},
             },
@@ -762,12 +833,42 @@ class PbPaymentListFile(models.Model):
         look. Names and the Check words only — never an account number."""
         self.ensure_one()
         chips = [{'label': _("Kind of file"), 'value': _("Payment list (any bank)")}]
+        if self.layout_name:
+            # WDGAP S2-C: the bank's own file goes with it
+            chips.append({'label': _("Bank layout"), 'value': self.layout_name})
+            chips.append({'label': _("In the bank file"),
+                          'value': _("%(n)s payments · %(total)s %(currency)s",
+                                     n=self.layout_row_count,
+                                     total='{:,.2f}'.format(self.layout_total or 0.0),
+                                     currency=self.layout_currency or '')})
+        if self.layout_name:
+            left_by_money = {}
+            for left in self._pb_layout_excluded():
+                entry = left_by_money.setdefault(left.get('currency') or '', [0, 0.0])
+                entry[0] += 1
+                entry[1] += max(float(left.get('amount') or 0.0), 0.0)
+            for money, (count, amount) in sorted(left_by_money.items()):
+                chips.append({'label': _("Left out of the bank file"),
+                              'value': _("%(n)s people · %(total)s %(currency)s",
+                                         n=count, total='{:,.2f}'.format(amount),
+                                         currency=money)})
+            for other in self._pb_layout_other_name():
+                chips.append({'label': _("Paid into another person's account"),
+                              'value': _("%(n)s people · %(total)s %(currency)s",
+                                         n=other.get('count') or 0,
+                                         total='{:,.2f}'.format(other.get('amount') or 0.0),
+                                         currency=other.get('currency') or '')})
         for total in self._pb_totals():
             chips.append({'label': _("Total %s", total.get('currency') or ''),
                           'value': '{:,.0f}'.format(total.get('amount') or 0.0)})
         rows = []
+        for left in self._pb_layout_excluded()[:40]:
+            rows.append({'head': (left.get('employee') or '')[:40],
+                         'sub': _("Not in the bank file"),
+                         'cells': ['; '.join(left.get('reasons') or [])[:120]],
+                         'tone': 'off'})
         data = self.env['pb.payment.list'].sudo()._pb_build_rows(self.run_id.sudo())
-        for row in [r for r in data['rows'] if r['checks']][:40]:
+        for row in [r for r in data['rows'] if r['checks']][:max(40 - len(rows), 0)]:
             rows.append({'head': (row['employee_name'] or '')[:40], 'sub': '',
                          'cells': ['; '.join(row['checks'])[:120]], 'tone': 'off'})
         if not rows:
@@ -825,6 +926,20 @@ class PbPaymentListFile(models.Model):
             raise UserError(_("This payment list has not been approved yet, so it cannot be downloaded. It is with %s.", self._waiting_for() or _('its approver')))
         if self._live_hash() != self.approved_hash:
             raise UserError(_("This is not the approved payment list — what is stored no longer matches what was signed off. Prepare it again."))
+        if fmt == 'bank':
+            # WDGAP S2-C: the bank's own file, approved with the list
+            if not self.layout_attachment_id:
+                raise UserError(_("This payment list was prepared without a bank layout, so there is no bank file to download. Prepare it again with a bank layout."))
+            attachment = self.layout_attachment_id.sudo()
+            self.sudo().write({'downloaded_at': fields.Datetime.now(),
+                               'downloaded_by': self.env.uid})
+            self.audit(
+                self.run_id, 'pb_payment_list', _("Bank file (any bank) downloaded"), '',
+                _("%(who)s · %(kind)s · %(rows)s rows · %(left)s left out",
+                  who=self.env.user.name, kind=self.layout_name or '',
+                  rows=self.layout_row_count, left=self.layout_excluded_count))
+            return attachment.name, attachment.mimetype or 'application/octet-stream', \
+                attachment.raw or b''
         attachment = (self.xlsx_attachment_id if fmt == 'xlsx'
                       else self.csv_attachment_id).sudo()
         self.sudo().write({'downloaded_at': fields.Datetime.now(),
@@ -847,6 +962,11 @@ class PbPayDeliveryPaymentList(models.AbstractModel):
             'downloadable': bool(latest and latest.state == 'approved'),
             'fast_lane': self._fast_lane('pb.payment.list.file', run),
             'row_count': latest.row_count if latest else 0,
+            # WDGAP S2-C: the bank's own file prepared with it, if any
+            'layout_name': latest.layout_name or '' if latest else '',
+            'layout_key': latest.layout_id.bank_format or '' if latest else '',
+            'layout_row_count': latest.layout_row_count if latest else 0,
+            'layout_excluded_count': latest.layout_excluded_count if latest else 0,
             # the run's people or bank details moved on since it was prepared
             'changed': bool(latest and latest.content_hash
                             and latest.content_hash != current_hash),
@@ -866,17 +986,56 @@ class PbPayDeliveryPaymentList(models.AbstractModel):
         validation['payment_list_can_pay'] = len(
             {x.get('slip_id') for x in validation.get('excluded') or []} & payable)
         summary['file'] = self._payment_list_file_payload(run, current)
+        # WDGAP S2-C: the bank layouts the list can also be made in
+        summary['layouts'] = self.env['pb.payment.list']._pb_layout_payload()
+        summary['today'] = fields.Date.to_string(fields.Date.context_today(self))
         data['payment_list'] = summary
         return data
 
     @api.model
-    def prepare_payment_list(self, run_id):
-        """Prepare the payment list and send it in — the bank file's gate."""
+    def prepare_payment_list(self, run_id, layout_key=None, payment_date=None,
+                             company_account=None):
+        """Prepare the payment list and send it in — the bank file's gate.
+        With a bank layout (WDGAP S2-C) the bank's own file goes with it."""
         self._require_access()
         run = self._run(run_id)
-        record = self.env['pb.payment.list.file'].prepare(run)
+        record = self.env['pb.payment.list.file'].prepare(
+            run, layout=layout_key or None, payment_date=payment_date or None,
+            company_account=company_account or None)
         self.env['biz.approval.engine'].submit(record)
         return {'state': record.state}
+
+    @api.model
+    def payment_list_layout_preview(self, run_id, layout_key, payment_date=None,
+                                    company_account=None):
+        """Who would be in the bank's own file and who is left out, and
+        why — before anything is prepared. Writes nothing; no account
+        number in the answer."""
+        self._require_access()
+        List = self.env['pb.payment.list']
+        run = List._pb_check_door(self._run(run_id))
+        layout = List._pb_layout(layout_key)
+        if payment_date and isinstance(payment_date, str):
+            payment_date = fields.Date.to_date(payment_date)
+        result = List._pb_layout_build(run, layout, {
+            'payment_date': payment_date or fields.Date.context_today(self),
+            'company_account': company_account or ''})
+        return {
+            'name': layout.name,
+            'inferred': bool(layout.inferred),
+            'note': layout.note or '',
+            'count': result['count'],
+            'total': result['total'],
+            'currency': result['currency'],
+            'excluded': [{'employee': x['employee'], 'reasons': x['reasons']}
+                         for x in result['excluded']],
+            # WDGAP S2-C ruling BL1: the people left out are counted apart,
+            # with what they are owed per money, never silently
+            'left_totals': result['left_totals'],
+            # ruling BL4: paid by the file into another person's account
+            'other_name_totals': [{k: t[k] for k in ('currency', 'count', 'amount')}
+                                  for t in result['other_name_totals']],
+        }
 
     @api.model
     def payment_list_check(self, run_id, fmt):
@@ -885,4 +1044,6 @@ class PbPayDeliveryPaymentList(models.AbstractModel):
         record = self.env['pb.payment.list']._pb_approved_file(run_id, fmt)
         if record._live_hash() != record.approved_hash:
             raise UserError(_("This is not the approved payment list — what is stored no longer matches what was signed off. Prepare it again."))
+        if fmt == 'bank' and not record.layout_attachment_id:
+            raise UserError(_("This payment list was prepared without a bank layout, so there is no bank file to download. Prepare it again with a bank layout."))
         return {'ok': True}

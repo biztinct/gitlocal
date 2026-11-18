@@ -402,9 +402,11 @@ class PbPayDelivery(models.AbstractModel):
                      'email': emp.work_email or ''}
             (recips if emp.work_email else no_email).append(entry)
 
+        # the Vietnamese bank file's layouts only (WDGAP S2-C: payment-list
+        # layouts are offered on the payment list card instead)
         banks = [{'key': l.bank_format, 'name': l.name}
                  for l in self.env['pb.bank.file.layout'].search(
-                     [], order='name')]
+                     [('target', '=', 'bank_file')], order='name')]
 
         currency = ((primary or {}).get('symbol')
                     or self.env.company.currency_id.symbol or '₫')

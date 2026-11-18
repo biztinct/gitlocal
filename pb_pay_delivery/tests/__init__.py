@@ -8,3 +8,5 @@ from . import test_wdgap_w2_merge_f1
 from . import test_wdgap_idb1_vn_golden
 from . import test_wdgap_idb1_payment_list
 from . import test_wdgap_idb1f_access
+from . import test_wdgap_s2c_golden
+from . import test_wdgap_s2c_bank_layouts

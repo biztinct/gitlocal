@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="0">
+<odoo noupdate="1">
     <!-- =====================================================================
          Phase F bank-file layouts — DATA (C18.42b). Adding a bank = a data
          file, zero code. Column vocabulary: bank_export_wizard.COLUMN_SOURCES.
@@ -10,12 +10,22 @@
          be confirmed against each bank's current import template before a live
          run (report-back §8.2). The engine is data-driven — corrections are a
          one-record edit, no code change.
+
+         WDGAP S2-C (ledger S2F-2): this file is noupdate="1" since
+         pb_pay_delivery 19.0.1.9.0 — an upgrade no longer rewrites these
+         layouts, so a correction made on a database survives. The
+         19.0.1.9.0 migration flags the rows of databases installed before
+         (ir_model_data.noupdate) and sets their country; it changes no
+         column. These are the VIETNAMESE BANK FILE's layouts
+         (target = bank_file, the default); payment-list layouts for banks in
+         other countries are in bank_layouts_world.xml.
          ===================================================================== -->
 
     <!-- Generic CSV -->
     <record id="layout_generic" model="pb.bank.file.layout">
         <field name="name">Generic CSV</field>
         <field name="bank_format">generic</field>
+        <field name="country_id" ref="base.vn"/>
         <field name="file_type">csv</field>
         <field name="encoding">utf-8-sig</field>
         <field name="with_header" eval="True"/>
@@ -56,6 +66,7 @@
     <record id="layout_vietcombank" model="pb.bank.file.layout">
         <field name="name">Vietcombank (VCB)</field>
         <field name="bank_format">vietcombank</field>
+        <field name="country_id" ref="base.vn"/>
         <field name="file_type">csv</field>
         <field name="encoding">utf-8-sig</field>
         <field name="with_header" eval="True"/>
@@ -101,6 +112,7 @@
     <record id="layout_bidv" model="pb.bank.file.layout">
         <field name="name">BIDV</field>
         <field name="bank_format">bidv</field>
+        <field name="country_id" ref="base.vn"/>
         <field name="file_type">csv</field>
         <field name="encoding">utf-8-sig</field>
         <field name="with_header" eval="True"/>
@@ -146,6 +158,7 @@
     <record id="layout_techcombank" model="pb.bank.file.layout">
         <field name="name">Techcombank (TCB)</field>
         <field name="bank_format">techcombank</field>
+        <field name="country_id" ref="base.vn"/>
         <field name="file_type">csv</field>
         <field name="encoding">utf-8-sig</field>
         <field name="with_header" eval="True"/>
@@ -186,6 +199,7 @@
     <record id="layout_mb_bank" model="pb.bank.file.layout">
         <field name="name">MB Bank</field>
         <field name="bank_format">mb_bank</field>
+        <field name="country_id" ref="base.vn"/>
         <field name="file_type">xlsx</field>
         <field name="with_header" eval="True"/>
         <field name="note">MB eBank bulk salary — Excel upload; Amount is a numeric cell. INFERRED.</field>
@@ -225,6 +239,7 @@
     <record id="layout_vietinbank" model="pb.bank.file.layout">
         <field name="name">VietinBank</field>
         <field name="bank_format">vietinbank</field>
+        <field name="country_id" ref="base.vn"/>
         <field name="file_type">txt</field>
         <field name="encoding">utf-8</field>
         <field name="with_header" eval="False"/>
@@ -259,6 +274,7 @@
     <record id="layout_acb" model="pb.bank.file.layout">
         <field name="name">ACB</field>
         <field name="bank_format">acb</field>
+        <field name="country_id" ref="base.vn"/>
         <field name="file_type">csv</field>
         <field name="encoding">utf-8-sig</field>
         <field name="with_header" eval="True"/>
