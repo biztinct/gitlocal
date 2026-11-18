@@ -282,6 +282,10 @@ class PbPaymentListLayout(models.AbstractModel):
                 reasons.append(_("No bank account on record"))
             if row.get('account') and not row.get('holder'):
                 reasons.append(_("No account holder name on record"))
+            if row.get('account') and row.get('name_band') == 'other':
+                # WDGAP S2-C ruling BL1: never sent to a bank in a file;
+                # finance pays it by hand (the general list still lists it)
+                reasons.append(_("Account is in another name"))
             if amount <= 0:
                 reasons.append(_("Take-home is zero or below"))
             take_home = row.get('take_home')
@@ -332,12 +336,23 @@ class PbPaymentListLayout(models.AbstractModel):
                     'employee_id': row.get('employee_id'),
                     'slip_id': row.get('slip_id'),
                     'reasons': unique,
+                    'amount': amount,
+                    'currency': row.get('currency') or '',
                 })
             else:
                 included.append(row)
 
         count = len(included)
         total = sum(float(r.get('amount') or 0.0) for r in included)
+        # what the people left out are owed, per money, never added across
+        # (ruling BL1: they are paid another way, and the screen says how much)
+        left_totals = {}
+        for left in excluded:
+            entry = left_totals.setdefault(left['currency'] or '', {
+                'currency': left['currency'] or '', 'count': 0, 'amount': 0.0})
+            entry['count'] += 1
+            entry['amount'] += max(left['amount'], 0.0)
+        left_totals = sorted(left_totals.values(), key=lambda t: t['currency'])
         decimals = currency.decimal_places if currency else 2
         total = round(total, decimals)
 
@@ -428,6 +443,7 @@ class PbPaymentListLayout(models.AbstractModel):
             'total': total,
             'currency': currency.name or '',
             'decimals': decimals,
+            'left_totals': left_totals,
         }
 
     @api.model

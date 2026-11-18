@@ -83,6 +83,15 @@
               <span> This layout was not taken from the bank's own published specification. Check with your bank before the first upload.</span>
             </div>
           </div>
+          <div t-if="state.layout.can_confirm" class="pbbl-banner confirm">
+            <label class="tick">
+              <input type="checkbox" t-att-checked="state.layout.bank_confirmed" t-att-disabled="state.busy"
+                     t-on-change="toggleConfirmed"/>
+              <span>Confirmed with our bank</span>
+            </label>
+            <span t-if="state.layout.bank_confirmed" class="who" t-esc="confirmedLine"/>
+            <span t-else="" class="who">Tick this only after your bank has checked a test file made with this copy.</span>
+          </div>
           <div t-if="!editable" class="pbbl-banner">
             <span t-out="icon('lock',16)"/>
             <span>A layout Payobook ships cannot be changed. Make your own copy to change it — your copy is offered on Pay &amp; deliver beside it.</span>

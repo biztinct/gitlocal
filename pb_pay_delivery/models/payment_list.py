@@ -198,6 +198,20 @@ class PbPaymentList(models.AbstractModel):
         return waiting
 
     @api.model
+    def _pb_name_band(self, holder, employee_name):
+        """The ONE name test of the payment list (the bank-document
+        check's bands): 'other' = the account is in another person's name
+        (under 60), 'close' = close to, not the same as, the employee's name
+        (60 to under 85), '' = the same name. The bank layouts read this same
+        answer (WDGAP S2-C ruling BL1); nothing else decides it."""
+        score = name_similarity(holder, employee_name or '')
+        if score < NAME_CLOSE:
+            return 'other'
+        if score < NAME_MATCH:
+            return 'close'
+        return ''
+
+    @api.model
     def _pb_is_change(self, proposed, number, bank, holder):
         """Does a waiting change propose anything other than what is paid
         to? (A copy of the account on record into the bank-file fields —
@@ -246,16 +260,17 @@ class PbPaymentList(models.AbstractModel):
             amount = currency.round(slip.pb_pay_totals().get('net') or 0.0)
             take_home = currency.round(slip._pb_net_amount() or 0.0)
             checks = []
+            name_band = ''
             if not number:
                 checks.append(_("No bank account on record"))
             else:
                 if not holder:
                     checks.append(_("No account holder name on record"))
                 else:
-                    score = name_similarity(holder, emp.name or '')
-                    if score < NAME_CLOSE:
+                    name_band = self._pb_name_band(holder, emp.name or '')
+                    if name_band == 'other':
                         checks.append(_("The account is in another person's name"))
-                    elif score < NAME_MATCH:
+                    elif name_band == 'close':
                         checks.append(_("The account holder name is close to, but not the same as, the employee's name"))
             changes = [p for p in waiting.get(emp.id, [])
                        if self._pb_is_change(p, _digits(number), bank, holder)]
@@ -285,6 +300,8 @@ class PbPaymentList(models.AbstractModel):
                 'reference': reference,
                 'in_bank_file': _("Yes") if slip.id in in_file else '',
                 'checks': checks,
+                # WDGAP S2-C BL1: the same name test, for the bank layouts
+                'name_band': name_band,
             })
         # the same account for two people of THIS list: both are flagged
         by_account = {}
@@ -823,6 +840,17 @@ class PbPaymentListFile(models.Model):
                                      n=self.layout_row_count,
                                      total='{:,.2f}'.format(self.layout_total or 0.0),
                                      currency=self.layout_currency or '')})
+        if self.layout_name:
+            left_by_money = {}
+            for left in self._pb_layout_excluded():
+                entry = left_by_money.setdefault(left.get('currency') or '', [0, 0.0])
+                entry[0] += 1
+                entry[1] += max(float(left.get('amount') or 0.0), 0.0)
+            for money, (count, amount) in sorted(left_by_money.items()):
+                chips.append({'label': _("Left out of the bank file"),
+                              'value': _("%(n)s people · %(total)s %(currency)s",
+                                         n=count, total='{:,.2f}'.format(amount),
+                                         currency=money)})
         for total in self._pb_totals():
             chips.append({'label': _("Total %s", total.get('currency') or ''),
                           'value': '{:,.0f}'.format(total.get('amount') or 0.0)})
@@ -994,6 +1022,9 @@ class PbPayDeliveryPaymentList(models.AbstractModel):
             'currency': result['currency'],
             'excluded': [{'employee': x['employee'], 'reasons': x['reasons']}
                          for x in result['excluded']],
+            # WDGAP S2-C ruling BL1: the people left out are counted apart,
+            # with what they are owed per money, never silently
+            'left_totals': result['left_totals'],
         }
 
     @api.model

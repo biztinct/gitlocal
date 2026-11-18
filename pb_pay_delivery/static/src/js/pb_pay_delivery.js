@@ -521,6 +521,16 @@ export class PbPayDelivery extends Component {
         return n === 1 ? _t("1 person is left out of this bank file")
                        : _t("%s people are left out of this bank file", n);
     }
+    /** What the people left out are owed, per money (ruling BL1). */
+    get plLeftOutTotals() {
+        const rows = (this.state.plPreview && this.state.plPreview.left_totals) || [];
+        return rows.map((t) => _t("%(people)s · %(total)s %(currency)s to pay another way", {
+            people: this.peopleLabel(t.count || 0),
+            total: (t.amount || 0).toLocaleString("en-US",
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            currency: t.currency || "",
+        })).join(" • ");
+    }
     get plLeftOutRows() {
         return ((this.state.plPreview && this.state.plPreview.excluded) || []).slice(0, 12);
     }

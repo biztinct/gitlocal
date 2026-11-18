@@ -179,6 +179,33 @@ export class PbBankLayouts extends Component {
         }
     }
     discard() { if (this.state.layout) { this._show(this.state.layout); } }
+    async toggleConfirmed(ev) {
+        if (this.state.busy || !this.state.layout || !this.state.layout.can_confirm) { return; }
+        const on = !!ev.target.checked;
+        if (this.state.dirty) {
+            ev.target.checked = !on;
+            this.notif.add(_t("Save your changes first."), { type: "warning" });
+            return;
+        }
+        this.state.busy = true;
+        try {
+            const layout = await this.orm.call(MODEL, "confirm_layout", [this.state.layout.id, on]);
+            this._show(layout);
+            this.state.board = await this.orm.call(MODEL, "get_board", []);
+        } catch (e) {
+            ev.target.checked = !on;
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+    get confirmedLine() {
+        const l = this.state.layout || {};
+        if (!l.bank_confirmed) { return ""; }
+        return _t("Confirmed with our bank by %(who)s on %(when)s", {
+            who: l.bank_confirmed_by || "", when: (l.bank_confirmed_on || "").slice(0, 10),
+        });
+    }
     async archive() {
         if (this.state.busy || !this.editable) { return; }
         if (!window.confirm(_t("Stop offering this copy on Pay & deliver? You can bring it back later."))) { return; }

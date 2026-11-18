@@ -12,10 +12,10 @@ Fixture: the IDB1 run (two companies, home money + IDR; see
   An     home money, Vietcombank   left out: another money, no Indonesian code
   Budi   BCA 014                   in the file
   Citra  no account                left out: no bank account on record
-  Dewi   BCA (another's name)      in (the general list flags the name)
+  Dewi   BCA (another's name)      left out: account is in another name (ruling BL1)
   Eka    Mandiri 008               in ┐ same account: flagged on the list
   Fajar  Mandiri 008               in ┘
-  Fitri  BCA                       in
+  Fitri  BCA (close name)          in (the general list flags the name)
   Gita   BCA, change waiting       in, with the LAST APPROVED account
   Hadi   BCA, take-home 0          left out: zero or below
   Ida    bank "=SUM(A1:A9)"        left out: no code, formula signs
@@ -39,9 +39,9 @@ from odoo.tools import mute_logger
 from odoo.addons.pb_pay_delivery.tests import test_wdgap_idb1_payment_list as idb1
 from odoo.addons.pb_pay_delivery.tests import test_wdgap_s2c_golden as golden
 
-IN_FILE = ('IDB1 Budi Santoso', 'IDB1 Dewi Lestari', 'IDB1 Eka Pratama',
+IN_FILE = ('IDB1 Budi Santoso', 'IDB1 Eka Pratama',
            'IDB1 Fajar Nugroho', 'IDB1 Fitri Handayani', 'IDB1 Gita Permata')
-IN_TOTAL = 7500000 + 2000000 + 1000000 + 1500000 + 900000 + 4000000
+IN_TOTAL = 7500000 + 1000000 + 1500000 + 900000 + 4000000
 
 
 class _S2cFixture(idb1._Idb1Fixture):
@@ -90,7 +90,7 @@ class TestS2cLayouts(_S2cFixture):
     def test_s2c_3a_indonesian_layout_renders_the_run(self):
         result = self.build(self.id_layout)
         self.assertEqual(sorted(r['employee'] for r in result['included']), sorted(IN_FILE))
-        self.assertEqual(result['count'], 6)
+        self.assertEqual(result['count'], 5)
         self.assertEqual(result['total'], IN_TOTAL)
         self.assertEqual(result['currency'], 'IDR')
         rows = self.csv_of(result)
@@ -103,12 +103,13 @@ class TestS2cLayouts(_S2cFixture):
         self.assertEqual(budi[5], '7500000.00')
         self.assertEqual(budi[7], 'IDB1 June, 2026-06-01 - 2026-06-30')
         self.assertEqual(by_holder['IDB1 Eka Pratama'][1], '008', 'Mandiri')
-        self.assertEqual(by_holder['Joko Widodo'][4], 'Joko Widodo',
+        self.assertNotIn('Joko Widodo', by_holder, 'an account in another name is left out (BL1)')
+        self.assertEqual(by_holder['Fitri Handaya'][4], 'Fitri Handaya',
                          "the account holder on record, never changed")
         self.assertEqual(by_holder['IDB1 Gita Permata'][3], '1111222233',
                          'a bank change waiting for approval is never used')
-        self.assertEqual([r[0] for r in rows[1:]], ['1', '2', '3', '4', '5', '6'])
-        self.assertEqual(len(rows), 7, 'header + 6 payments, nothing else')
+        self.assertEqual([r[0] for r in rows[1:]], ['1', '2', '3', '4', '5'])
+        self.assertEqual(len(rows), 6, 'header + 5 payments, nothing else')
         self.assertTrue(result['filename'].startswith('Indonesia'))
 
     def test_s2c_3b_header_trailer_counts_totals_and_formats(self):
@@ -117,9 +118,9 @@ class TestS2cLayouts(_S2cFixture):
                                date_format='%d%m%Y', with_header=False)
         result = self.build(layout, company_account='0099887766')
         rows = self.csv_of(result)
-        self.assertEqual(rows[0], ['H', '30062026', '0099887766', '6', '%d' % (IN_TOTAL * 100), 'IDR'])
-        self.assertEqual(rows[-1], ['T', '6', '%d' % (IN_TOTAL * 100)])
-        self.assertEqual(len(rows), 8, 'header line + 6 payments + trailer line')
+        self.assertEqual(rows[0], ['H', '30062026', '0099887766', '5', '%d' % (IN_TOTAL * 100), 'IDR'])
+        self.assertEqual(rows[-1], ['T', '5', '%d' % (IN_TOTAL * 100)])
+        self.assertEqual(len(rows), 7, 'header line + 5 payments + trailer line')
         # amounts per format on the amount column
         amount_col = layout.column_ids.filtered(lambda c: c.source == 'net_amount')
         for fmt, expected in (('dec2', '7500000.00'), ('implied2', '750000000'),
@@ -132,7 +133,7 @@ class TestS2cLayouts(_S2cFixture):
                              (0, 0, {'sequence': 210, 'header': 'Total', 'source': 'control_total',
                                      'number_format': 'dec2'})]
         body = self.csv_of(self.build(layout))[1:-1]
-        self.assertTrue(all(r[-2] == '6' and r[-1] == '%.2f' % IN_TOTAL for r in body))
+        self.assertTrue(all(r[-2] == '5' and r[-1] == '%.2f' % IN_TOTAL for r in body))
 
     def test_s2c_3c_fixed_width_text_never_cuts(self):
         layout = self.own_copy(self.id_layout, file_type='txt', with_header=False,
@@ -148,7 +149,7 @@ class TestS2cLayouts(_S2cFixture):
         lines = result['payload'].decode().split('\r\n')
         self.assertEqual(lines[-1], '', 'every line ends with CR LF')
         body = lines[:-2]
-        self.assertEqual(lines[-2], 'T6')
+        self.assertEqual(lines[-2], 'T5')
         self.assertTrue(all(len(line) == sum(w for w, _p in widths.values()) for line in body))
         self.assertTrue(body[0].startswith('0001014'))
         self.assertIn('000000750000000', lines[0] + ''.join(body))
@@ -209,7 +210,7 @@ class TestS2cLayouts(_S2cFixture):
     def test_s2c_4_left_out_with_reasons_and_in_the_check_column(self):
         result = self.build(self.id_layout)
         left = {x['employee']: x['reasons'] for x in result['excluded']}
-        self.assertEqual(set(left), {'IDB1 An Nguyen', 'IDB1 Citra Dewi',
+        self.assertEqual(set(left), {'IDB1 An Nguyen', 'IDB1 Citra Dewi', 'IDB1 Dewi Lestari',
                                      'IDB1 Hadi Susanto', 'IDB1 Ida Ayu'})
         self.assertIn('No bank account on record', left['IDB1 Citra Dewi'])
         self.assertIn('Take-home is zero or below', left['IDB1 Hadi Susanto'])
@@ -224,8 +225,8 @@ class TestS2cLayouts(_S2cFixture):
         text = base64.b64decode(record.csv_attachment_id.datas).decode('utf-8-sig')
         line = [r for r in csv.reader(io.StringIO(text)) if r and r[1] == 'IDB1 Citra Dewi'][0]
         self.assertIn('Not in the Indonesia — bank transfer list (general) file: No bank account on record', line[10])
-        self.assertEqual(record.layout_excluded_count, 4)
-        self.assertEqual(record.layout_row_count, 6)
+        self.assertEqual(record.layout_excluded_count, 5)
+        self.assertEqual(record.layout_row_count, 5)
         # whole amounts only: an amount with cents is left out, never rounded
         layout = self.own_copy(self.id_layout)
         layout.column_ids.filtered(lambda c: c.source == 'net_amount').number_format = 'int'
@@ -279,7 +280,7 @@ class TestS2cLayouts(_S2cFixture):
                                 ('field_name', '=', 'pb_payment_list')])
         text = ' '.join((e.field_label or '') + ' ' + (e.new_value or '') for e in entries)
         self.assertIn('Bank file (any bank) downloaded', text)
-        self.assertIn('6 rows', text)
+        self.assertIn('5 rows', text)
         self.assertFalse(re.search(r'\d{6,}', text), 'no account number in the trail')
         # the bank file's bytes changed after approval: refused
         record.layout_attachment_id.sudo().raw = payload + b'X'
@@ -341,7 +342,7 @@ class TestS2cLayouts(_S2cFixture):
         record = self.File.with_user(self.mgr).with_context(self._ctx(self.mgr)).prepare(
             self.payrun, layout=own.bank_format)
         self.assertEqual(record.layout_id, own)
-        self.assertEqual(record.layout_row_count, 6)
+        self.assertEqual(record.layout_row_count, 5)
 
     # ------------------------------------------------------------ test 7
     def test_s2c_7_upgrade_keeps_edits_and_rows(self):
@@ -487,6 +488,99 @@ class TestS2cLayouts(_S2cFixture):
         out = self.List._pb_layout_render(self.id_layout, rows, {})
         self.assertIn(b',000123456789012345678,', out['payload'])
 
+    # --------------------------------------------- follow-up BL1 (owner)
+    def test_s2c_bl1_account_in_another_name_left_out(self):
+        result = self.build(self.id_layout)
+        left = {x['employee']: x['reasons'] for x in result['excluded']}
+        self.assertEqual(left['IDB1 Dewi Lestari'], ['Account is in another name'])
+        self.assertIn('IDB1 Fitri Handayani', [r['employee'] for r in result['included']],
+                      'a close name is not "another name" (the list flags it, the file pays it)')
+        self.assertNotIn(b'Joko Widodo', result['payload'])
+        self.assertNotIn(b'5550001111', result['payload'])
+        # the SAME name test as the general list: "another person's name" there
+        # <=> left out here, for every person of the run
+        data = self.List._pb_build_rows(self.payrun)
+        for row in data['rows']:
+            other = "The account is in another person's name" in row['checks']
+            self.assertEqual(other, row['name_band'] == 'other', row['employee_name'])
+            self.assertEqual(other, 'Account is in another name' in left.get(row['employee_name'], []),
+                             row['employee_name'])
+        # a copy of the layout does the same
+        copy = self.own_copy(self.id_layout)
+        self.assertIn('IDB1 Dewi Lestari', [x['employee'] for x in self.build(copy)['excluded']])
+        # the general list still lists her, unchanged, and says why she is not in the file
+        record = self.File.with_user(self.mgr).with_context(self._ctx(self.mgr)).prepare(
+            self.payrun, layout=self.id_layout)
+        text = base64.b64decode(record.csv_attachment_id.datas).decode('utf-8-sig')
+        line = [r for r in csv.reader(io.StringIO(text)) if r and r[1] == 'IDB1 Dewi Lestari'][0]
+        self.assertEqual(line[5], '5550001111')
+        self.assertIn("The account is in another person's name", line[10])
+        self.assertIn('Not in the Indonesia — bank transfer list (general) file: Account is in another name',
+                      line[10])
+        # the summary counts the people left out apart, with what they are owed
+        preview = self.env['pb.pay.delivery'].with_user(self.mgr).with_context(
+            self._ctx(self.mgr)).payment_list_layout_preview(self.payrun.id, 'id_general', '2026-06-30')
+        self.assertEqual(preview['count'], 5)
+        self.assertEqual(len(preview['excluded']), 5)
+        totals = {t['currency']: t for t in preview['left_totals']}
+        self.assertEqual(totals['IDR']['count'], 4)
+        self.assertEqual(totals['IDR']['amount'], 3000000 + 2000000 + 0 + 800000)
+        self.assertEqual(sum(t['count'] for t in preview['left_totals']) + preview['count'],
+                         len(data['rows']), 'everybody is either in the file or counted as left out')
+        dumped = json.dumps(preview)
+        self.assertNotIn('5550001111', dumped)
+        self.assertNotIn('0012345678', dumped)
+        detail = record.sudo()._approval_detail(record.approval_request_id)
+        self.assertIn('Left out of the bank file', json.dumps(detail))
+
+    def test_s2c_bl1_general_list_unchanged(self):
+        """BL1 changes the bank-layout file only: the general list made
+        without a layout is still the golden bytes (and the Vietnamese file
+        is the IDB1 golden test, run in the same suite)."""
+        for kind in ('csv', 'xlsx'):
+            self.assertEqual(golden.stable_digest(self.List._pb_build(self.payrun, kind)[2], kind),
+                             golden.GOLDEN[kind], kind)
+
+    # ------------------------------- follow-up: "not confirmed" stays put
+    def test_s2c_bl2_not_confirmed_note_stays(self):
+        from odoo.addons.pb_pay_delivery.models.bank_file_layout import CHECK_WITH_BANK
+        shipped = (self.id_layout | self.in_layout | self.sg_layout)
+        for layout in shipped:
+            self.assertTrue(layout.inferred)
+            self.assertIn(CHECK_WITH_BANK, layout.note)
+            with self.assertRaises(ValidationError):
+                layout.write({'note': 'Our own words'})
+            with self.assertRaises(ValidationError):
+                layout.write({'inferred': False})
+            with self.assertRaises(ValidationError):
+                layout.write({'bank_confirmed': True})
+            with self.assertRaises(UserError):
+                layout.pb_set_bank_confirmed(True)
+        S = self.env['pb.bank.layout.studio'].with_user(self.mgr).with_context(self._ctx(self.mgr))
+        with self.assertRaises(UserError):
+            S.confirm_layout(self.id_layout.id, True)
+        copy = S.copy_layout(self.id_layout.id)
+        self.assertTrue(copy['inferred'])
+        self.assertTrue(copy['can_confirm'])
+        with self.assertRaises(ValidationError):
+            S.save_layout(copy['id'], {'note': 'Shaped to our bank'})
+        confirmed = S.confirm_layout(copy['id'], True)
+        self.assertTrue(confirmed['bank_confirmed'])
+        self.assertFalse(confirmed['inferred'])
+        self.assertEqual(confirmed['bank_confirmed_by'], 'IDB1 Pay Manager')
+        self.assertTrue(confirmed['bank_confirmed_on'])
+        saved = S.save_layout(copy['id'], {'note': 'Shaped to our bank'})
+        self.assertEqual(saved['note'], 'Shaped to our bank')
+        payload = self.List.with_user(self.mgr).with_context(self._ctx(self.mgr))._pb_layout_payload()
+        self.assertFalse([l for l in payload if l['key'] == copy['key']][0]['inferred'])
+        again = S.confirm_layout(copy['id'], False)
+        self.assertTrue(again['inferred'])
+        self.assertFalse(again['bank_confirmed_by'])
+        self.assertIn(CHECK_WITH_BANK, again['note'])
+        # the upgrade's migration put the tick on the platform trail
+        self.assertIn('bank_confirmed',
+                      self.env.ref('pb_pay_delivery.audit_rule_bank_file_layout').field_names)
+
     # ------------------------------------------------------------ test 11
     def test_s2c_11_no_vendor_name_in_files_or_names(self):
         import zipfile
@@ -546,7 +640,10 @@ class TestS2cTranslations(TransactionCase):
         found |= {"Bank file (any bank) downloaded", "Bank layout", "In the bank file",
                   "Not in the bank file", "%(n)s payments · %(total)s %(currency)s",
                   "1 person is left out of this bank file", "%s file",
-                  "Not confirmed by the bank. Check with your bank before the first upload."}
+                  "Not confirmed by the bank. Check with your bank before the first upload.",
+                  "Account is in another name", "Left out of the bank file",
+                  "Confirmed with our bank",
+                  "Tick this only after your bank has checked a test file made with this copy."}
         return found
 
     def test_s2c_11_vi_and_id_entries_load(self):

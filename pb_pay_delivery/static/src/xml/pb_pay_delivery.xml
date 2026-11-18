@@ -461,6 +461,7 @@
                     <div class="pl-preview-sum" t-esc="plPreviewLine"/>
                     <div t-if="state.plPreview.excluded.length" class="pl-left">
                       <div class="pl-left-h"><span t-out="ic('alert',13)"/> <span t-esc="plLeftOutTitle"/></div>
+                      <div t-if="plLeftOutTotals" class="pl-left-sum" t-esc="plLeftOutTotals"/>
                       <div t-foreach="plLeftOutRows" t-as="x" t-key="x_index" class="pl-left-row">
                         <b t-esc="x.employee"/> <span t-esc="reasonList(x.reasons)"/>
                       </div>

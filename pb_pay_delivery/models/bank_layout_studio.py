@@ -12,7 +12,7 @@ Every change is on the platform trail (`data/audit_rules.xml`, extended by the
 19.0.1.9.0 migration to the new fields).
 """
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 from .bank_file_layout import COLUMN_SOURCES, TEMPLATE_TOKENS
@@ -85,8 +85,13 @@ class PbBankLayoutStudio(models.AbstractModel):
             if out[name] is False and layout._fields[name].type != 'boolean':
                 out[name] = ''
         out['currency'] = layout.currency_id.name or ''
+        out['bank_confirmed'] = bool(layout.bank_confirmed)
+        out['bank_confirmed_by'] = layout.bank_confirmed_by.name or ''
+        out['bank_confirmed_on'] = fields.Datetime.to_string(layout.bank_confirmed_on) or ''
         out['editable'] = bool(layout.company_id
                                and layout.company_id in self.env.companies)
+        # a copy of a layout the bank has not confirmed can be confirmed
+        out['can_confirm'] = bool(out['editable'] and (layout.inferred or layout.bank_confirmed))
         out['column_rows'] = [{
             'id': c.id,
             'header': c.header or '',
@@ -163,6 +168,13 @@ class PbBankLayoutStudio(models.AbstractModel):
         if commands is not None:
             write['column_ids'] = commands
         layout.write(write)
+        return self._detail(layout)
+
+    @api.model
+    def confirm_layout(self, layout_id, confirmed):
+        """"Confirmed with our bank" on a company's copy (who + when)."""
+        layout = self._own_copy(layout_id)
+        layout.pb_set_bank_confirmed(bool(confirmed))
         return self._detail(layout)
 
     @api.model

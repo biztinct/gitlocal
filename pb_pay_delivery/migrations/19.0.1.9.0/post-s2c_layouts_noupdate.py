@@ -30,7 +30,8 @@ LAYOUT_AUDIT = ('name', 'bank_format', 'file_type', 'delimiter', 'encoding',
                 'with_header', 'active', 'target', 'country_id', 'currency_id',
                 'company_id', 'header_template', 'trailer_template',
                 'amount_format', 'date_format', 'line_ending', 'ascii_only',
-                'code_label', 'code_pattern', 'account_pattern')
+                'code_label', 'code_pattern', 'account_pattern', 'inferred',
+                'bank_confirmed', 'note')
 COLUMN_AUDIT = ('header', 'source', 'literal_value', 'width', 'pad',
                 'number_format', 'sequence', 'max_length', 'required')
 

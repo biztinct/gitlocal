@@ -890,6 +890,8 @@ msgid "Leave this layout without saving your changes?"
 msgstr "Tinggalkan tata letak ini tanpa menyimpan perubahan?"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
 #: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_excluded_count
 msgid "Left out of the bank file"
 msgstr "Tidak dimasukkan ke file bank"
@@ -1508,3 +1510,73 @@ msgstr "Lebar"
 #: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Action failed."
 msgstr "Tindakan gagal."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(n)s people · %(total)s %(currency)s"
+msgstr "%(n)s orang · %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(people)s · %(total)s %(currency)s to pay another way"
+msgstr "%(people)s · %(total)s %(currency)s dibayar dengan cara lain"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "A layout Payobook ships is not confirmed by any bank and stays marked that way. Make your own copy, check it with your bank, then tick “Confirmed with our bank” on the copy."
+msgstr "Tata letak bawaan Payobook belum dikonfirmasi bank mana pun dan tetap ditandai demikian. Buat salinan Anda sendiri, periksa dengan bank Anda, lalu centang “Sudah dikonfirmasi dengan bank kami” pada salinan."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "Account is in another name"
+msgstr "Rekening atas nama orang lain"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed_by
+msgid "Confirmed by"
+msgstr "Dikonfirmasi oleh"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed_on
+msgid "Confirmed on"
+msgstr "Dikonfirmasi pada"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed
+msgid "Confirmed with our bank"
+msgstr "Sudah dikonfirmasi dengan bank kami"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Confirmed with our bank by %(who)s on %(when)s"
+msgstr "Dikonfirmasi dengan bank oleh %(who)s pada %(when)s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "Keep “%s” in the note until you tick “Confirmed with our bank”."
+msgstr "Pertahankan “%s” di catatan sampai Anda mencentang “Sudah dikonfirmasi dengan bank kami”."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Save your changes first."
+msgstr "Simpan perubahan Anda dulu."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Tick this only after your bank has checked a test file made with this copy."
+msgstr "Centang ini hanya setelah bank Anda memeriksa file uji yang dibuat dengan salinan ini."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "Tick “Confirmed with our bank” before this copy stops saying it is not confirmed."
+msgstr "Centang “Sudah dikonfirmasi dengan bank kami” sebelum salinan ini berhenti menyatakan belum dikonfirmasi."

@@ -56,7 +56,10 @@
         .acts { display: flex; gap: 6px; flex-wrap: wrap; } }
     .pbbl-banner { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 12px;
         background: #F4F4F7; color: #4B4766; font-size: 13px;
-        &.warn { background: #FFF5E5; color: #6B4600; } }
+        &.warn { background: #FFF5E5; color: #6B4600; }
+        &.confirm { background: #fff; border: 1px solid #E6E4F2; flex-wrap: wrap; align-items: center;
+            .tick { display: flex; gap: 8px; align-items: center; margin: 0; font-weight: 600; }
+            .who { color: #7A7694; font-size: 12px; } } }
     .pbbl-note { background: #fff; border: 1px solid #E6E4F2; border-radius: 14px; padding: 12px 14px;
         .lbl { font-size: 12px; font-weight: 700; color: #4B4766; margin-bottom: 4px; }
         p { margin: 0; font-size: 12.5px; color: #4B4766; white-space: pre-wrap; overflow-wrap: anywhere; }

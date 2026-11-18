@@ -181,9 +181,9 @@ Vietnamese layouts were already INFERRED (Phase F) and are unchanged.
 
 ## 6. Decisions the owner may want to change
 
-- **Soft checks stay in the bank file.** A holder name that does not match the employee, two
-  people on one account: they are IN the bank file (as in the general list) and flagged in
-  the list's Check column. Hard problems (no account, zero take-home, take-home two ways,
+- **Soft checks stay in the bank file** — except an account in another person's name, which
+  ruling BL1 leaves OUT (see "Follow-up BL1"). A close-but-not-same holder name and two
+  people on one account are IN the bank file and flagged in the list's Check column. Hard problems (no account, zero take-home, take-home two ways,
   another money, missing/invalid bank code, too long, refused letters) leave the person OUT.
 - **One money per file.** A file pays in the layout's money (else its country's); people
   paid in another money are left out with the reason.
@@ -245,8 +245,79 @@ Vietnamese layouts were already INFERRED (Phase F) and are unchanged.
    own upload template (or sample file) from its online banking and sends it to us, we turn
    the "Indonesia — general" layout into that bank's exact file. Same for India and
    Singapore.
-2. When a person's account is in someone else's name, or two people share one account,
-   should they be left OUT of a bank's file (today: they stay in, and the payment list
-   flags them)?
+2. ~~Accounts in someone else's name in a bank's file~~ — ANSWERED by ruling BL1, see
+   "Follow-up BL1" below. Still open: two people sharing one account stay in the file
+   (flagged on the list) — should they be left out too?
 3. Should the payment date on Pay & deliver default to today, or to the last day of the
    pay period?
+
+## Follow-up BL1 (owner ruling 2026-11-18 ~15:25) — same branch
+
+**BL1 — an account in someone else's name is LEFT OUT of a bank-specific file** (the
+shipped ID/IN/SG layouts and any copy of them), with the reason "Account is in another
+name" on Pay & deliver and in the general payment list's Check column; finance pays that
+person by hand. The general payment list still lists everyone (IDB3), byte for byte; the
+Vietnamese bank file is untouched.
+
+What changed (`pb_pay_delivery` only, still 19.0.1.9.0 — never released):
+- **One name test.** The general list's own check is now a method,
+  `pb.payment.list._pb_name_band(holder, employee_name)` → `'other'` (under 60, "The
+  account is in another person's name"), `'close'` (60 to under 85), `''` — the same
+  `name_similarity` and the same two bands as before, so the list's bytes are unchanged
+  (golden). Each list row carries its `name_band`; the layout renderer leaves out a row
+  whose band is `'other'` with "Account is in another name". No new matching logic.
+- **Close names stay in.** A holder name close to, but not the same as, the employee's
+  (band `'close'`, e.g. a shortened name) is not "another name": it stays in the bank file
+  and stays flagged on the list, as before. (Owner question below.)
+- **Counted apart, never silently.** The Pay & deliver preview now says, under "N people are
+  left out of this bank file", what they are owed per money: "4 people · 5,800,000.00 IDR to
+  pay another way" (never two moneys added); the approver's detail gets a chip per money
+  "Left out of the bank file: N people · total". In the people-left-out list each person keeps
+  their reasons.
+
+**"Not confirmed by the bank — check with your bank before the first upload" cannot be
+removed** — this did NOT fully hold before (a manager could edit a shipped layout's note
+through the data, and a copy's note freely); now enforced:
+- the three shipped general layouts: the note must keep the sentence, `inferred` cannot be
+  switched off and they can never be marked confirmed (constraint
+  `_check_not_confirmed_note`, any write path);
+- a company's copy keeps the sentence until somebody ticks **"Confirmed with our bank"**
+  (Settings › Bank layouts, on the copy) — `bank_confirmed`, `bank_confirmed_by`,
+  `bank_confirmed_on` kept; ticking turns the copy's "Not confirmed" marks off; unticking puts
+  the sentence back and clears who/when. The tick is on the platform trail (migration
+  19.0.1.9.0 adds `inferred`, `bank_confirmed`, `note` to the layout-change rule).
+- Test: `test_s2c_bl2_not_confirmed_note_stays`.
+
+Tests added: `test_s2c_bl1_account_in_another_name_left_out` (Dewi — account in "Joko
+Widodo"'s name — left out with exactly that reason; Fitri — close name — in; for every person
+of the run "another person's name" on the list ⇔ left out of the file; a copy behaves the
+same; the general list still shows her account and both sentences in Check; preview counts
+4 IDR people left out with IDR 5,800,000 and everybody is either in the file or counted
+out; no account number in the preview), `test_s2c_bl1_general_list_unchanged` (CSV and
+Excel golden), `test_s2c_bl2_not_confirmed_note_stays`. Earlier expectations updated for
+Dewi now being left out (Indonesian file: 5 people, IDR 14,900,000).
+
+Results (fresh `wdgap_s2c_t` from the template, behind modules + this branch upgraded):
+
+| Run | Tests | Failed | Errors |
+|---|---|---|---|
+| `-u pb_bank_ocr,pb_pay_delivery,pb_approval_config`, tags `/pb_pay_delivery,/pb_bank_ocr,/pb_approval_config` | 307 | 4 | 7 — the 9 recorded baselines + 2 new tests hitting one ordering slip in the screen's detail (`can_confirm` read before `editable`), fixed |
+| after the fix, tags `wdgap_s2c,wdgap_idb1` (every S2-C and IDB1 test, incl. both goldens) | 52 | 0 | 0 |
+
+Touched suites therefore = baseline (the 9 recorded failures, nothing else).
+
+Browser (local `s2cb.localhost:8763`, DEMO run, own login, no approval needed on the copy):
+Pay & deliver › Indonesia layout → "4 people in the … file • total 14,000,000.00 IDR",
+"4 people are left out of this bank file", "2 people · 5,000,000.00 IDR to pay another way •
+2 people · 27,500,000.00 USD to pay another way", "DEMO Dewi Lestari — Account is in another
+name"; Settings › Bank layouts: a shipped layout shows no tick; its copy shows "Confirmed
+with our bank", ticking it reads "Confirmed with our bank by DEMO Walk Manager on
+2026-11-18" and the "Not confirmed" banner and chip go; console clean.
+
+New strings: 12 vi + 12 id entries (text-level), "Left out of the bank file" given its code
+occurrence.
+
+Owner question (plain words): a bank account whose holder name is CLOSE to the person's
+(for example a shortened name, "Fitri Handaya" for "Fitri Handayani") is still put in the
+bank's file and flagged on the list. Should those be left out too, like accounts in another
+person's name?

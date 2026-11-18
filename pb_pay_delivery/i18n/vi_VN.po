@@ -3280,6 +3280,8 @@ msgid "Leave this layout without saving your changes?"
 msgstr "Rời mẫu này mà không lưu thay đổi?"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
 #: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_excluded_count
 msgid "Left out of the bank file"
 msgstr "Bị loại khỏi tệp ngân hàng"
@@ -3865,3 +3867,73 @@ msgstr "Văn bản riêng của mẫu (tên cột, văn bản cố định, các
 #: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
 msgid "The text encoding “%s” is not known. Use utf-8, utf-8-sig, ascii or latin-1."
 msgstr "Bảng mã “%s” không được nhận biết. Hãy dùng utf-8, utf-8-sig, ascii hoặc latin-1."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(n)s people · %(total)s %(currency)s"
+msgstr "%(n)s người · %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(people)s · %(total)s %(currency)s to pay another way"
+msgstr "%(people)s · %(total)s %(currency)s cần trả theo cách khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "A layout Payobook ships is not confirmed by any bank and stays marked that way. Make your own copy, check it with your bank, then tick “Confirmed with our bank” on the copy."
+msgstr "Mẫu do Payobook cung cấp chưa được ngân hàng nào xác nhận và luôn được đánh dấu như vậy. Hãy tạo bản sao, kiểm tra với ngân hàng của bạn, rồi đánh dấu “Đã xác nhận với ngân hàng của chúng tôi” trên bản sao."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "Account is in another name"
+msgstr "Tài khoản đứng tên người khác"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed_by
+msgid "Confirmed by"
+msgstr "Xác nhận bởi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed_on
+msgid "Confirmed on"
+msgstr "Xác nhận ngày"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_confirmed
+msgid "Confirmed with our bank"
+msgstr "Đã xác nhận với ngân hàng của chúng tôi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Confirmed with our bank by %(who)s on %(when)s"
+msgstr "Đã xác nhận với ngân hàng bởi %(who)s ngày %(when)s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "Keep “%s” in the note until you tick “Confirmed with our bank”."
+msgstr "Giữ “%s” trong ghi chú cho đến khi bạn đánh dấu “Đã xác nhận với ngân hàng của chúng tôi”."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Save your changes first."
+msgstr "Hãy lưu thay đổi trước."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Tick this only after your bank has checked a test file made with this copy."
+msgstr "Chỉ đánh dấu sau khi ngân hàng đã kiểm tra một tệp thử tạo từ bản sao này."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "Tick “Confirmed with our bank” before this copy stops saying it is not confirmed."
+msgstr "Hãy đánh dấu “Đã xác nhận với ngân hàng của chúng tôi” trước khi bản sao này thôi ghi là chưa xác nhận."

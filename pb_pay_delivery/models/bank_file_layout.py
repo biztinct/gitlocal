@@ -57,6 +57,12 @@ COLUMN_SOURCES = [
     ('control_total', 'Total of the file'),
 ]
 
+#: The sentence every layout not confirmed by the bank carries in its note
+#: (WDGAP S2-C). It cannot be taken out of a shipped general layout, and a
+#: company's copy may drop it only once somebody ticked "Confirmed with our
+#: bank" (who and when are kept).
+CHECK_WITH_BANK = "Check with your bank before the first upload."
+
 #: The words a header or trailer line may carry, between braces.
 TEMPLATE_TOKENS = ('count', 'total', 'date', 'company_account', 'reference',
                    'currency')
@@ -158,6 +164,12 @@ class PbBankFileLayout(models.Model):
         help="This layout was not taken from the bank's own published "
              "specification. Check with your bank before the first upload.")
     is_shipped = fields.Boolean(compute='_compute_is_shipped')
+    #: a company's copy, checked against the bank's own template by a person
+    bank_confirmed = fields.Boolean(string='Confirmed with our bank', copy=False)
+    bank_confirmed_by = fields.Many2one('res.users', string='Confirmed by',
+                                        readonly=True, copy=False)
+    bank_confirmed_on = fields.Datetime(string='Confirmed on', readonly=True,
+                                        copy=False)
 
     _format_uniq = models.Constraint(
         'unique(bank_format)',
@@ -187,6 +199,44 @@ class PbBankFileLayout(models.Model):
                         "The lines before or after the payments use a word this file cannot fill in: %(words)s. Use only: %(known)s.",
                         words=', '.join('{%s}' % t for t in unknown),
                         known=', '.join('{%s}' % t for t in TEMPLATE_TOKENS)))
+
+    @api.constrains('note', 'inferred', 'bank_confirmed', 'company_id', 'target')
+    def _check_not_confirmed_note(self):
+        """A layout the bank has not confirmed keeps saying so.
+
+        * A shipped general layout (no company, made from the payment list)
+          is never "confirmed" and never loses the sentence.
+        * A company's copy of one keeps the sentence until somebody ticks
+          "Confirmed with our bank" (`pb_set_bank_confirmed`, who + when).
+        The Vietnamese layouts (`inferred` off) are not touched."""
+        for rec in self:
+            shipped_general = not rec.company_id and rec.target == 'payment_list'
+            if shipped_general and (rec.bank_confirmed or not rec.inferred):
+                raise ValidationError(_("A layout Payobook ships is not confirmed by any bank and stays marked that way. Make your own copy, check it with your bank, then tick “Confirmed with our bank” on the copy."))
+            if rec.inferred and not rec.bank_confirmed \
+                    and CHECK_WITH_BANK not in (rec.note or ''):
+                raise ValidationError(_("Keep “%s” in the note until you tick “Confirmed with our bank”.", CHECK_WITH_BANK))
+            if rec.company_id and not rec.inferred and not rec.bank_confirmed \
+                    and rec.copied_from_id.inferred:
+                raise ValidationError(_("Tick “Confirmed with our bank” before this copy stops saying it is not confirmed."))
+
+    def pb_set_bank_confirmed(self, confirmed):
+        """A company's copy: "Confirmed with our bank" on or off, with who
+        and when. Off again puts the sentence back in the note."""
+        self.ensure_one()
+        if not self.company_id:
+            raise UserError(_("A layout Payobook ships is not confirmed by any bank and stays marked that way. Make your own copy, check it with your bank, then tick “Confirmed with our bank” on the copy."))
+        if confirmed:
+            self.write({'bank_confirmed': True, 'inferred': False,
+                        'bank_confirmed_by': self.env.uid,
+                        'bank_confirmed_on': fields.Datetime.now()})
+        else:
+            note = self.note or ''
+            if CHECK_WITH_BANK not in note:
+                note = (note.rstrip() + ' ' + CHECK_WITH_BANK).strip()
+            self.write({'bank_confirmed': False, 'inferred': True, 'note': note,
+                        'bank_confirmed_by': False, 'bank_confirmed_on': False})
+        return True
 
     @api.constrains('code_pattern', 'account_pattern')
     def _check_patterns(self):
