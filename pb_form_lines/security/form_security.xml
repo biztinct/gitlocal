@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- WDGAP S2-A. Company rules are global (AND); the filing's group rules
+         OR together: anyone inside the business reads only the filings a
+         published route asked them to decide (seat_user_ids, ledger AM60);
+         the payroll officers and managers read every filing of their
+         companies. -->
+
+    <record id="rule_pb_gov_form_map_company" model="ir.rule">
+        <field name="name">Government form line item: company</field>
+        <field name="model_id" ref="model_pb_gov_form_map"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_gov_form_company_company" model="ir.rule">
+        <field name="name">Government form setting: company</field>
+        <field name="model_id" ref="model_pb_gov_form_company"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_gov_filing_company" model="ir.rule">
+        <field name="name">Government filing: company</field>
+        <field name="model_id" ref="model_pb_gov_filing"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_gov_filing_seat" model="ir.rule">
+        <field name="name">Government filing: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_gov_filing"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <record id="rule_pb_gov_filing_payroll" model="ir.rule">
+        <field name="name">Government filing: payroll</field>
+        <field name="model_id" ref="model_pb_gov_filing"/>
+        <field name="groups" eval="[(4, ref('pb_hr_payroll_base.group_payroll_base_officer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_pb_gov_filing_file_company" model="ir.rule">
+        <field name="name">Government filing file: company</field>
+        <field name="model_id" ref="model_pb_gov_filing_file"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

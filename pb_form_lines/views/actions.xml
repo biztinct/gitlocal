@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The two screens. No menu: they are opened from Compliance › Filings
+         (pb_govt_reports probes for this module). -->
+    <record id="action_pb_form_lines" model="ir.actions.client">
+        <field name="name">Form lines</field>
+        <field name="tag">pb_form_lines</field>
+    </record>
+    <record id="action_pb_gov_filing" model="ir.actions.client">
+        <field name="name">Prepare a filing</field>
+        <field name="tag">pb_gov_filing</field>
+    </record>
+</odoo>
