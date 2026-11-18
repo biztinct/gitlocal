@@ -34,6 +34,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.misc import format_date, formatLang
 
+from odoo.addons.pb_hr_payroll_formula.models import tax_year as TY
+
 _logger = logging.getLogger(__name__)
 
 FILING_PROCESS_KEY = 'filing'
@@ -143,6 +145,13 @@ class PbGovFiling(models.Model):
         end = fields.Date.to_date(end)
         if form.period_kind == 'month':
             return format_date(self.env, start, date_format='MMMM y')
+        if form.period_kind == 'tax_year':
+            # WDGAP S2-B: "2026", or "2026–27" for India's April year, when
+            # the period is exactly one of the authority's tax years
+            month = TY.month_of(form.year_start_month or 1)
+            key = TY.tax_year_key(month, start)
+            if (start, end) == TY.tax_year_bounds_for_key(month, key):
+                return TY.tax_year_label_for_key(month, key)
         return '%s – %s' % (format_date(self.env, start, date_format='MMM y'),
                             format_date(self.env, end, date_format='MMM y'))
 
@@ -213,12 +222,26 @@ class PbGovFiling(models.Model):
                          'mimetype': mimetype, 'attachment_id': attachment.id,
                          'sha256': hashlib.sha256(payload or b'').hexdigest(),
                          'size': len(payload or b'')})
+        # WDGAP S2-B: per-person certificates (year-end forms), made before
+        # the stamp so the approval covers them too
+        record._pb_after_render(data)
         record.sudo().write({'file_hash': record._live_hash()})
         record._supersede_earlier()
         record._log(_("Prepared by %(who)s from %(n)s finished payslips: %(people)s people, %(files)s files.",
                       who=self.env.user.name, n=len(data['payslip_ids']),
                       people=record.row_count, files=len(files)))
         return record.with_env(self.env)
+
+    def _pb_after_render(self, data):
+        """Hook: called once the files are stored and before the stamp is
+        taken (WDGAP S2-B certificates, `models/certificate.py`)."""
+        return True
+
+    def _pb_hash_parts(self):
+        """Hook: more sha256 hex digests the one stamp covers, after the
+        files' (WDGAP S2-B: the per-person certificates). None when one of
+        them is missing."""
+        return []
 
     def _pb_render(self, data):
         """The form's renderer, by its code — a method name made only of
@@ -256,6 +279,10 @@ class PbGovFiling(models.Model):
             parts.append(hashlib.sha256(raw).hexdigest())
         if not parts:
             return ''
+        extra = self._pb_hash_parts()
+        if extra is None:
+            return ''
+        parts += extra
         return hashlib.sha256(''.join(parts).encode()).hexdigest()
 
     def _supersede_earlier(self):

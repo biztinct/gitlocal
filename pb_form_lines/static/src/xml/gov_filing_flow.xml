@@ -25,6 +25,7 @@
           <t t-else=""><t t-out="icon('triangleAlert', 15)"/><span>Check with your adviser before first filing. The files say so too.</span></t>
         </div>
         <p t-if="form.inferred" class="pbgf-amber-text pbgf-small"><t t-out="icon('info', 12)"/> Part of this layout is not confirmed from an official source: <t t-esc="form.inferred_note"/></p>
+        <p t-if="form.screen_note" class="pbgf-muted pbgf-small pbgf-note"><t t-out="icon('fileText', 12)"/> <t t-esc="form.screen_note"/></p>
 
         <ol class="pbgf-steps">
           <li t-foreach="steps" t-as="s" t-key="s.key" t-att-class="{ 'is-on': s.on, 'is-done': s.done }">
@@ -43,17 +44,14 @@
           <div class="pbgf-period">
             <label t-if="state.periodKind === 'month'"><span>Month</span><input type="month" class="pbgf-in" t-att-value="state.period" t-on-change="onMonth"/></label>
             <t t-else="">
-              <label><span>Year</span>
+              <label><span t-if="isYear">Tax year</span><span t-else="">Year</span>
                 <select class="pbgf-in" t-on-change="onYear">
-                  <option t-foreach="years" t-as="y" t-key="y" t-att-value="y" t-att-selected="y === state.year" t-esc="y"/>
+                  <option t-foreach="years" t-as="y" t-key="y.key" t-att-value="y.key" t-att-selected="y.key === state.year" t-esc="y.label"/>
                 </select>
               </label>
-              <label><span>Quarter</span>
+              <label t-if="state.periodKind === 'quarter'"><span>Quarter</span>
                 <select class="pbgf-in" t-on-change="onQuarter">
-                  <option value="1" t-att-selected="state.quarter === 1">January – March</option>
-                  <option value="2" t-att-selected="state.quarter === 2">April – June</option>
-                  <option value="3" t-att-selected="state.quarter === 3">July – September</option>
-                  <option value="4" t-att-selected="state.quarter === 4">October – December</option>
+                  <option t-foreach="quarterLabels" t-as="ql" t-key="ql_index" t-att-value="ql_index + 1" t-att-selected="state.quarter === ql_index + 1" t-esc="ql"/>
                 </select>
               </label>
             </t>
@@ -96,6 +94,19 @@
               </tr>
             </tbody>
           </table>
+          <details t-if="C.settle and C.settle.people.length" class="pbgf-settle">
+            <summary><t t-out="icon('userCheck', 14)"/> <span>Asked us to settle year-end tax</span> <small class="pbgf-muted" t-esc="settledCount(C)"/></summary>
+            <p class="pbgf-muted pbgf-small">Tick the people who asked the company to settle their year-end tax for this year. They stay in the figures and are counted in Part II; they get no certificate.</p>
+            <ul class="pbgf-settle-list">
+              <li t-foreach="C.settle.people" t-as="sp" t-key="sp.employee_id" t-att-class="sp.asked ? 'is-on' : ''">
+                <label>
+                  <input type="checkbox" t-att-checked="sp.asked" t-att-disabled="state.busy" t-on-change="() => this.toggleSettle(sp)"/>
+                  <b t-esc="sp.name"/>
+                </label>
+                <small t-if="sp.by" class="pbgf-muted" t-esc="markedLine(sp)"/>
+              </li>
+            </ul>
+          </details>
           <details t-if="C.people_checks.length" class="pbgf-checks">
             <summary t-esc="lookLine(C.people_checks.length)"/>
             <ul><li t-foreach="C.people_checks" t-as="pc" t-key="pc_index"><b t-esc="pc.name"/> — <t t-esc="pc.checks.join('; ')"/></li></ul>
@@ -129,6 +140,18 @@
             </div>
           </div>
           <p t-if="F.downloaded_by" class="pbgf-muted pbgf-small" t-esc="downloadedLine(F)"/>
+          <div t-if="F.certificates" class="pbgf-release" t-att-class="F.released ? 'is-on' : ''">
+            <span class="pbgf-release-ic"><t t-out="icon(F.released ? 'userCheck' : 'users', 18)"/></span>
+            <div class="pbgf-release-tx">
+              <b t-esc="certCountLine(F)"/>
+              <small t-if="F.released" class="pbgf-muted" t-esc="releasedLine(F)"/>
+              <small t-elif="!F.downloadable" class="pbgf-muted">Once the filing is approved, a payroll manager can release each person's certificate to them on My Payobook.</small>
+              <small t-elif="!F.is_manager" class="pbgf-muted">Not shown to employees yet. A payroll manager releases them.</small>
+              <small t-else="" class="pbgf-muted">Not shown to employees yet. Releasing lets each person download only their own.</small>
+            </div>
+            <button t-if="F.can_release and !F.released" class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.busy" t-on-click="() => this.setReleased(true)"><t t-out="icon('send', 13)"/> Release to employees</button>
+            <button t-if="F.can_release and F.released" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.busy" t-on-click="() => this.setReleased(false)"><t t-out="icon('undo', 13)"/> Take back</button>
+          </div>
           <div class="pbgf-foot">
             <button class="pbim-btn ghost" t-on-click="startAgain">Prepare another</button>
             <button t-if="F.state === 'pending'" class="pbim-btn ghost" t-on-click="refreshFiling"><t t-out="icon('refresh', 14)"/> Look again</button>

@@ -45,9 +45,11 @@ export class PbGovFiling extends Component {
             this.formId = form.id;
             this.state.form = form;
             this.state.period = form.default_period;
-            this.state.periodKind = form.period_kind === "quarter" ? "quarter" : "month";
+            this.state.periodKind = form.period_kind === "quarter" ? "quarter"
+                : (form.period_kind === "tax_year" ? "year" : "month");
             const q = /^(\d{4})-Q([1-4])$/.exec(form.default_period || "");
             if (q) { this.state.year = parseInt(q[1], 10); this.state.quarter = parseInt(q[2], 10); }
+            if (/^\d{4}$/.test(form.default_period || "")) { this.state.year = parseInt(form.default_period, 10); }
             this.state.schemeIds = form.schemes.map((s) => s.id);
         } catch (e) {
             this.notif.add(this._msg(e, _t("This form could not be opened.")), { type: "danger" });
@@ -86,6 +88,7 @@ export class PbGovFiling extends Component {
     }
 
     get periodKey() {
+        if (this.state.periodKind === "year") { return String(this.state.year); }
         if (this.state.periodKind === "quarter") { return `${this.state.year}-Q${this.state.quarter}`; }
         return this.state.period && /^\d{4}-\d{2}$/.test(this.state.period) ? this.state.period : "";
     }
@@ -93,8 +96,61 @@ export class PbGovFiling extends Component {
     get canQuarter() { return this.form && (this.form.period_kind === "quarter" || this.form.quarter_allowed); }
     get canMonth() { return this.form && this.form.period_kind === "month"; }
     get years() {
+        // WDGAP S2-B: the server names the years in the authority's tax year
+        // ("2026–27" for India); the old list stays as the fallback
+        const opts = this.form && this.form.year_options;
+        if (opts && opts.length) { return opts.map((o) => ({ key: parseInt(o.key, 10), label: o.label })); }
         const y = new Date().getFullYear();
-        return [y - 2, y - 1, y, y + 1];
+        return [y - 2, y - 1, y, y + 1].map((k) => ({ key: k, label: String(k) }));
+    }
+    get quarterLabels() {
+        const labels = this.form && this.form.quarter_labels;
+        if (labels && labels.length === 4) { return labels; }
+        return [_t("January – March"), _t("April – June"), _t("July – September"), _t("October – December")];
+    }
+    get isYear() { return this.form && this.form.period_kind === "tax_year"; }
+
+    // ------------------------------------------------ YE1 (Vietnam year-end)
+    settledCount(c) {
+        const n = ((c && c.settle && c.settle.people) || []).filter((p) => p.asked).length;
+        return n === 1 ? _t("1 person asked us to settle") : _t("%s people asked us to settle", n);
+    }
+    markedLine(p) {
+        return _t("Marked by %(who)s on %(when)s", { who: p.by, when: p.on });
+    }
+    async toggleSettle(p) {
+        if (this.state.busy) { return; }
+        this.state.busy = true;
+        try {
+            this.state.check = await this.orm.call(MODEL, "set_settle", [this.formId, this.periodKey,
+                p.employee_id, !p.asked, this.state.schemeIds, this.state.check.currency_id || false]);
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That could not be done.")), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // ------------------------------------------------ certificates (S2-B)
+    releasedLine(f) {
+        return _t("Released to employees by %(who)s on %(when)s.", { who: f.released_by, when: f.released_on });
+    }
+    certCountLine(f) {
+        return f.certificates === 1 ? _t("1 personal certificate") : _t("%s personal certificates", f.certificates);
+    }
+    async setReleased(value) {
+        const f = this.state.filing;
+        if (!f || this.state.busy) { return; }
+        this.state.busy = true;
+        try {
+            this.state.filing = await this.orm.call(MODEL, "set_released", [f.id, value]);
+            this.notif.add(value ? _t("Released. Each person now sees their own certificate on My Payobook.")
+                : _t("Taken back. Employees no longer see these certificates."), { type: "success" });
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That could not be done.")), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
     }
 
     setKind(kind) {

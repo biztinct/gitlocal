@@ -42,6 +42,23 @@
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
+    <!-- WDGAP S2-B: a person's year-end certificate — company only; employees
+         reach their own through the My Payobook route, never the ORM. -->
+    <record id="rule_pb_gov_filing_certificate_company" model="ir.rule">
+        <field name="name">Government filing certificate: company</field>
+        <field name="model_id" ref="model_pb_gov_filing_certificate"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- Owner ruling YE1: "Asked us to settle year-end tax" — company only. -->
+    <record id="rule_pb_gov_year_settlement_company" model="ir.rule">
+        <field name="name">Asked to settle year-end tax: company</field>
+        <field name="model_id" ref="model_pb_gov_year_settlement"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
     <record id="rule_pb_gov_filing_file_company" model="ir.rule">
         <field name="name">Government filing file: company</field>
         <field name="model_id" ref="model_pb_gov_filing_file"/>

@@ -17,7 +17,7 @@
             <p class="pbim-sub">Statutory filings for <b><t t-esc="state.data.company"/></b> · <t t-esc="state.data.country_label"/></p>
           </div>
           <div class="ppl-head-actions">
-            <button t-if="state.data.form_lines and state.data.forms and state.data.forms.length" class="pbim-btn ghost gov-formlines" t-on-click="openFormLines"><t t-out="ic('listTree',15)"/> Form lines</button>
+            <button t-if="state.data.form_lines and ((state.data.forms and state.data.forms.length) or (state.data.year_end_forms and state.data.year_end_forms.length))" class="pbim-btn ghost gov-formlines" t-on-click="openFormLines"><t t-out="ic('listTree',15)"/> Form lines</button>
             <label class="gov-period"><t t-out="ic('calendar',15)"/>
               <input type="month" t-att-value="state.month" t-on-change="onMonth"/>
             </label>
@@ -45,6 +45,27 @@
                   <span t-if="f.required_missing.length" class="gov-flag is-amber"><t t-out="ic('alert',12)"/> Pay items to choose on Form lines</span>
                   <span t-elif="!f.accepted" class="gov-flag is-amber"><t t-out="ic('alert',12)"/> Check with your adviser before first filing</span>
                   <span t-else="" class="gov-flag is-green"><t t-out="ic('checkCircle',12)"/> Accepted by the authority</span>
+                  <span t-if="f.latest_state_label" class="gov-flag"><t t-esc="f.latest_period"/> · <t t-esc="f.latest_state_label"/></span>
+                </div>
+                <button class="pbim-btn primary gov-gen" t-on-click="() => this.openForm(f)">
+                  <t t-out="ic('fileCheck',15)"/> Prepare
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- WDGAP S2-B1: year-end paperwork (certificates, year-end returns) -->
+          <div t-if="state.data.year_end_forms and state.data.year_end_forms.length" class="pbim-panel gov-forms gov-yearend" data-coach="gr-yearend">
+            <div class="pbim-panel-h"><h2 class="pbim-h2"><t t-out="ic('calendarClock',18)"/> Year-end</h2></div>
+            <div class="gov-grid">
+              <div class="gov-tile" t-foreach="state.data.year_end_forms" t-as="f" t-key="f.id">
+                <span class="gov-tile-ic"><t t-out="ic('award',22)"/></span>
+                <div class="gov-tile-tx">
+                  <span class="nm" t-esc="f.name"/>
+                  <span class="jb" t-esc="f.official_name"/>
+                  <span t-if="f.required_missing.length" class="gov-flag is-amber"><t t-out="ic('alert',12)"/> Pay items to choose on Form lines</span>
+                  <span t-elif="!f.accepted" class="gov-flag is-amber"><t t-out="ic('alert',12)"/> Check with your adviser before first filing</span>
+                  <span t-else="" class="gov-flag is-green"><t t-out="ic('checkCircle',12)"/> Accepted by the authority</span>
+                  <span t-if="f.employee_certificates" class="gov-flag"><t t-out="ic('users',12)"/> A certificate for each person</span>
                   <span t-if="f.latest_state_label" class="gov-flag"><t t-esc="f.latest_period"/> · <t t-esc="f.latest_state_label"/></span>
                 </div>
                 <button class="pbim-btn primary gov-gen" t-on-click="() => this.openForm(f)">
