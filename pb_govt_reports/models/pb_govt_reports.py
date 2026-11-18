@@ -52,7 +52,31 @@ def _forms_for(env, company, country):
         return []
     Board = env['pb.gov.form.board']
     forms = env['pb.gov.form'].sudo().search([('country_code', '=', country)])
-    return [Board._form_card(form, company) for form in forms]
+    cards = [Board._form_card(form, company) for form in forms]
+    # WDGAP S2-B2: a form that is no filing of its own (the pay items the
+    # VN social-insurance reports read) gets no tile
+    return [c for c in cards if c.get('section', 'tax') != 'reports']
+
+
+#: WDGAP S2-B2 — the order of the tile groups; a section this list does not
+#: name comes after these, in the order its forms come.
+_SECTION_ORDER = ('tax', 'year_end', 'fund')
+_SECTION_ICON = {'tax': 'landmark', 'year_end': 'calendarClock', 'fund': 'wallet'}
+
+
+def _form_groups(forms):
+    """The form tiles grouped by where they sit (`section` of each card,
+    pb_form_lines): Tax returns, Fund files, … — each group with its label
+    from the card."""
+    groups = {}
+    for card in forms:
+        key = card.get('section') or 'tax'
+        group = groups.setdefault(key, {'key': key, 'label': card.get('section_label') or '',
+                                        'icon': _SECTION_ICON.get(key, 'fileCheck'),
+                                        'forms': []})
+        group['forms'].append(card)
+    order = {key: i for i, key in enumerate(_SECTION_ORDER)}
+    return sorted(groups.values(), key=lambda g: order.get(g['key'], len(order)))
 
 
 class PbGovtReports(models.AbstractModel):
@@ -101,7 +125,10 @@ class PbGovtReports(models.AbstractModel):
             'available': available or bool(forms),
             'wizards_available': available,
             # WDGAP S2-A: the tax returns of the form catalogue, as tiles
-            'forms': forms,
+            # (S2-B2: still the tax returns only — the S2-A meaning)
+            'forms': [c for c in forms if (c.get('section') or 'tax') == 'tax'],
+            # WDGAP S2-B2: every form tile, grouped (Tax returns, Fund files)
+            'form_groups': _form_groups(forms),
             'form_lines': 'pb.gov.form' in self.env,
             'groups': cat.get('groups', []) if available else [],
             'period': self._default_period(company),
