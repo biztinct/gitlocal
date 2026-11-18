@@ -25,6 +25,8 @@ class TangLdReportXlsx(ReportXlsxAbstract):
         employees = base._select_employees(wizard)
         payslips = base._get_payslips_in_range(company, wizard.date_from, wizard.date_to)
         lines_map = base._payslip_lines_map(payslips)
+        # WDGAP S2-B2: the pay items chosen on Form lines, when there are any
+        items = base._pb_si_items(company, wizard.date_from, wizard.date_to)
 
         # Header bold to match template columns
         headers = [
@@ -53,8 +55,8 @@ class TangLdReportXlsx(ReportXlsxAbstract):
             emp_lines = lines_map.get(emp.id, {})
             wage = emp.contract_id.wage if emp.contract_id else 0.0
             coef = emp.contract_id.struct_id.name if emp.contract_id else ""
-            allowance = emp_lines.get("ALLOW", 0.0)
-            extra = emp_lines.get("EXTRA", 0.0)
+            allowance = base._pb_si_amount(items, emp.id, emp_lines, "ALLOW")
+            extra = base._pb_si_amount(items, emp.id, emp_lines, "EXTRA")
             province_code, district_code, commune_code = base._location_codes(emp)
             reason_note = dict(wizard._fields["tang_reason"].selection).get(wizard.tang_reason, "") or ""
             region_note = wizard.tang_region_code or ""
@@ -80,6 +82,9 @@ class TangLdReportXlsx(ReportXlsxAbstract):
             sheet.write(row, 14, _fmt(wizard.tang_effective_date or wizard.date_from))
             sheet.write(row, 15, note)
             row += 1
+        si_note = base._pb_si_note(items, ("ALLOW", "EXTRA"))
+        if si_note:
+            sheet.write(row + 1, 0, si_note)
 
     def get_filename(self, wizard, record):
         base = self.env["pb.govt.report.base"]
