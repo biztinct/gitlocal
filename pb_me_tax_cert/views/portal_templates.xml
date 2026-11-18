@@ -43,6 +43,7 @@
               <div class="pbtc-row-main">
                 <div class="pbtc-row-t"><t t-esc="rw['title']"/><span t-if="rw['new']" class="pbtc-pill">New</span></div>
                 <div class="pbtc-row-s"><span>Tax year</span> <t t-esc="rw['year']"/><span class="pbtc-dot" aria-hidden="true"/><t t-esc="rw['company']"/></div>
+                <div t-if="rw['note']" class="pbtc-row-note"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="13"/></t><span t-esc="rw['note']"/></div>
               </div>
               <a class="pbme-btn pbme-btn--primary pbtc-dl" t-att-href="rw['url']"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>PDF</a>
             </li>

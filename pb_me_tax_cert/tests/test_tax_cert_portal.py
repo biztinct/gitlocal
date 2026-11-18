@@ -89,6 +89,20 @@ class TestTaxCertificatesOnMyPayobook(S2B1Fixture, HttpCase):
         self.assertNotEqual(res.headers.get('Content-Type'), 'application/pdf')
         self.assertIn('None yet', self.url_open('/my/tax-certificates').text)
 
+    def test_ye3_information_copy_beside_the_download(self):
+        """Owner ruling YE3 (India) and YE2 (Vietnam): the row says it is an
+        information copy, beside the download."""
+        u_arjun = new_test_user(self.env, login='s2b1_arjun', groups='base.group_portal',
+                                company_id=self.co_in.id, company_ids=[(6, 0, [self.co_in.id])])
+        self.arjun.sudo().user_id = u_arjun
+        self.map_in()
+        out = self.board(self.officer, self.co_in).flow_prepare(self.form_130.id, '2026')
+        self.board(self.manager, self.co_in).set_released(out['id'], True)
+        self._login(u_arjun)
+        page = self.url_open('/my/tax-certificates')
+        self.assertEqual(page.status_code, 200)
+        self.assertIn('your official certificate comes from the tax department', page.text)
+
     def test_home_tile_and_needs_you(self):
         filing, certs = self._prepared()
         self.board(self.manager).set_released(filing.id, True)

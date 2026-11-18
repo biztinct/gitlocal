@@ -54,6 +54,8 @@ class PbMeTaxCertPortal(PbMePortal):
                 'released': filing.pb_released_at,
                 'url': '/my/tax-certificates/%s/pdf' % cert.id,
                 'new': not cert.download_count,
+                # owner rulings YE2/YE3: "Information copy …" beside the download
+                'note': cert.list_note or '',
             })
         return request.render('pb_me_tax_cert.portal_my_tax_certificates', {
             'page_name': 'tax_certificates',
