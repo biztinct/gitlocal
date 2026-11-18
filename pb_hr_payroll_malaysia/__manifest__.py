@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Malaysia Payroll Extension',
-    'version': '16.0.1.0.1',
+    'version': '16.0.1.0.2',
     'category': 'Human Resources/Payroll',
     'summary': 'Malaysia payroll structure, on top of the standard payroll module',
     'description': """

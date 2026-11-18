@@ -144,3 +144,15 @@ msgstr "Quản lý SOCSO và EIS"
 #: dashboard.payroll:0
 msgid "Monthly Payroll Processing"
 msgstr "Xử lý bảng lương hàng tháng"
+
+#. module: pb_hr_payroll_malaysia
+#. odoo-python
+#: code:addons/pb_hr_payroll_malaysia/wizards/epf_wizard.py:0
+msgid "This file is not available yet, so nothing was made. Government filings are prepared on Compliance › Filings."
+msgstr "Tệp này chưa có nên không có gì được tạo. Tờ khai nhà nước được lập ở Tuân thủ › Tờ khai."
+
+#. module: pb_hr_payroll_malaysia
+#. odoo-python
+#: code:addons/pb_hr_payroll_malaysia/wizards/payroll_import_wizard.py:0
+msgid "This import is not available yet, so nothing was imported. Load pay data with the pay data file on the pay run instead."
+msgstr "Chức năng nhập này chưa có nên không có gì được nhập. Hãy nạp dữ liệu lương bằng tệp dữ liệu lương ở đợt lương."

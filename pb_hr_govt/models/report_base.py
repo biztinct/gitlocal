@@ -45,15 +45,24 @@ class PbGovtReportBase(models.AbstractModel):
         return employees
 
     def _get_payslips_in_range(self, company, date_from, date_to):
+        """FINISHED payslips only (WDGAP S2-A, S2F-3): a filing must never
+        report a draft or a payslip still waiting for approval."""
         Payslip = self.env["hr.payslip"]
         return Payslip.search(
             [
                 ("company_id", "=", company.id),
                 ("date_from", "<=", date_to),
                 ("date_to", ">=", date_from),
-                ("state", "in", ["done", "paid", "verify", "draft"]),
+                ("state", "in", ["done", "paid"]),
             ]
         )
+
+    def _insurance_book(self, emp):
+        """The social-insurance book number ("Mã sổ BHXH") from the employee
+        record (`vietnam_social_insurance_number`, pb_hr_payroll_vietnam, read
+        by probe). Empty when there is none — never the national ID, which is
+        a different number (WDGAP S2-A, S2F-3)."""
+        return (self._emp_field(emp, "vietnam_social_insurance_number") or "").strip()
 
     def _payslip_lines_map(self, payslips):
         """Return map: employee_id -> {rule_code: total amount} for quick lookup."""

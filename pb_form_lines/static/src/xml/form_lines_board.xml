@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_form_lines.PbFormLines">
+    <div class="pbim pbim-page pbgf">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading forms…</span></div>
+      <div t-else="" class="pbim-wrap">
+
+        <div class="pbgf-head">
+          <div>
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h1 class="pbim-h1">Form lines</h1>
+            <p class="pbim-sub">Say once which pay item goes on each line of each government form. Filings add those items up from finished payslips.</p>
+          </div>
+        </div>
+
+        <div t-if="state.data.countries.length > 1" class="pbgf-countries">
+          <span class="pbgf-k">Country</span>
+          <button t-foreach="state.data.countries" t-as="c" t-key="c.code" class="pbim-chip" t-att-class="{ 'active': c.code === state.country }" t-on-click="() => this.pickCountry(c.code)"><t t-esc="c.label"/></button>
+        </div>
+
+        <div t-if="!state.data.forms.length" class="pbim-panel">
+          <div class="pbim-empty pbgf-empty">
+            <t t-out="icon('fileText', 28)"/>
+            <h3>No government form for your countries yet</h3>
+            <p>Forms appear here for the countries of your company and of your pay schemes.</p>
+          </div>
+        </div>
+
+        <div t-else="" class="pbgf-layout">
+          <nav class="pbgf-forms" aria-label="Forms">
+            <button t-foreach="state.data.forms" t-as="f" t-key="f.id" type="button" class="pbgf-formcard" t-att-class="{ 'is-on': f.id === state.formId }" t-on-click="() => this.openForm(f.id)">
+              <span class="pbgf-formcard-top"><span class="pbgf-cc" t-esc="f.country_code"/><b t-esc="f.name"/></span>
+              <small class="pbgf-muted" t-esc="f.official_name"/>
+              <span class="pbgf-formcard-foot">
+                <span class="pbgf-count" t-esc="setLine(f)"/>
+                <span t-if="f.required_missing.length" class="pbgf-pill is-amber"><t t-out="icon('triangleAlert', 11)"/> Needs pay items</span>
+                <span t-elif="f.accepted" class="pbgf-pill is-green"><t t-out="icon('checkCircle', 11)"/> Accepted</span>
+              </span>
+            </button>
+          </nav>
+
+          <section t-if="form" class="pbgf-detail">
+            <div class="pbgf-detail-head">
+              <div class="pbgf-detail-id">
+                <h2 class="pbim-h2" t-esc="form.name"/>
+                <p class="pbgf-muted"><t t-esc="form.official_name"/><t t-if="form.authority"> · <t t-esc="form.authority"/></t><t t-if="form.valid"> · <t t-esc="form.valid"/></t></p>
+              </div>
+              <div class="pbgf-detail-acts">
+                <button class="pbim-btn ghost" t-on-click="openSuggest"><t t-out="icon('sparkles', 14)"/> Suggest from my pay schemes</button>
+                <button class="pbim-btn primary" t-on-click="prepare"><t t-out="icon('fileCheck', 14)"/> Prepare a filing</button>
+              </div>
+            </div>
+
+            <div class="pbgf-mark" t-att-class="form.accepted ? 'is-ok' : 'is-warn'">
+              <t t-if="form.accepted">
+                <t t-out="icon('checkCircle', 15)"/>
+                <span t-esc="acceptedLine"/>
+              </t>
+              <t t-else="">
+                <t t-out="icon('triangleAlert', 15)"/>
+                <span>Check with your adviser before first filing. Every file says so until a payroll manager marks this form accepted by the authority.</span>
+              </t>
+              <button t-if="form.is_manager" class="pbim-btn ghost pbgf-mark-btn" t-att-disabled="state.busy" t-on-click="toggleAccepted">
+                <t t-if="form.accepted">Take back</t><t t-else="">Mark accepted by the authority</t>
+              </button>
+            </div>
+
+            <div class="pbgf-source">
+              <button type="button" class="pbgf-linkbtn" t-on-click="toggleSource"><t t-out="icon(state.sourceOpen ? 'chevronUp' : 'chevronDown', 13)"/> Where this layout comes from</button>
+              <span t-if="form.inferred" class="pbgf-pill is-amber">Not fully confirmed from an official source</span>
+              <div t-if="state.sourceOpen" class="pbgf-source-body">
+                <p t-esc="form.source_note"/>
+                <p t-if="form.source_url"><a t-att-href="form.source_url" target="_blank" rel="noopener noreferrer" t-esc="form.source_url"/></p>
+                <p t-if="form.inferred_note" class="pbgf-amber-text" t-esc="form.inferred_note"/>
+              </div>
+            </div>
+
+            <div class="pbgf-settings">
+              <label>
+                <span>Employer's tax number</span>
+                <input type="text" class="pbgf-in" t-att-value="state.settings.employer_tax_id" t-on-input="(ev) => this.onSetting('employer_tax_id', ev)"/>
+              </label>
+              <label t-if="form.needs_place">
+                <span>Place of business number</span>
+                <input type="text" class="pbgf-in" t-att-value="state.settings.place_of_business" t-on-input="(ev) => this.onSetting('place_of_business', ev)" placeholder="Empty: the tax number followed by 000000"/>
+              </label>
+              <button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="saveSettings"><t t-out="icon('save', 14)"/> Save</button>
+            </div>
+
+            <div class="pbgf-lines">
+              <div t-foreach="form.lines" t-as="ln" t-key="ln.id" class="pbgf-line" t-att-class="lineTone(ln)">
+                <div class="pbgf-line-top">
+                  <span class="pbgf-code" t-esc="ln.code"/>
+                  <div class="pbgf-line-id">
+                    <b t-esc="ln.label"/>
+                    <small t-if="ln.official_label" class="pbgf-muted" t-esc="ln.official_label"/>
+                  </div>
+                  <span t-if="ln.required and !ln.items.length" class="pbgf-pill is-amber">Needs a pay item</span>
+                  <span t-if="ln.inferred" class="pbgf-pill is-slate" title="Not fully confirmed from an official source">Not confirmed</span>
+                  <button t-if="ln.mappable and !(state.editing and state.editing.lineId === ln.id)" class="pbim-btn pbim-btn-sm ghost" t-on-click="() => this.editLine(ln)"><t t-out="icon('pencil', 13)"/> Change</button>
+                </div>
+                <p t-if="ln.how" class="pbgf-how"><t t-out="icon('sigma', 12)"/> <t t-esc="ln.how"/></p>
+                <p t-if="ln.note" class="pbgf-muted pbgf-note" t-esc="ln.note"/>
+                <div t-if="ln.items.length and !(state.editing and state.editing.lineId === ln.id)" class="pbgf-chips">
+                  <span t-foreach="ln.items" t-as="it" t-key="it.rule_id" class="pbgf-chip" t-att-title="it.scheme">
+                    <t t-if="it.sign === 'subtract'">− </t><t t-esc="it.label"/> · <t t-esc="it.scheme"/>
+                    <t t-if="it.source === 'computed_value'"> · <t t-esc="sourceLabel(it.source)"/></t>
+                    <t t-if="it.share_pct !== 100"> · <t t-esc="it.share_pct"/>%</t>
+                  </span>
+                </div>
+                <t t-foreach="ln.items" t-as="it" t-key="it.rule_id">
+                  <p t-if="it.warning" class="pbgf-warn"><t t-out="icon('info', 12)"/> <t t-esc="it.label"/>: <t t-esc="it.warning"/></p>
+                </t>
+
+                <div t-if="state.editing and state.editing.lineId === ln.id" class="pbgf-edit">
+                  <p t-if="!state.editing.items.length" class="pbgf-muted">No pay item on this line yet. Pick one below.</p>
+                  <div t-foreach="state.editing.items" t-as="ci" t-key="ci.rule_id" class="pbgf-pick is-on">
+                    <div class="pbgf-pick-id"><b t-esc="ci.label"/><small><t t-esc="ci.scheme"/><t t-if="ci.role_label"> · <t t-esc="ci.role_label"/></t></small></div>
+                    <div class="pbim-seg">
+                      <button type="button" class="pbim-segbtn" t-att-class="{ 'on': ci.source === 'payslip_line' }" t-att-disabled="!ci.printed" t-on-click="() => this.setSource(ci, 'payslip_line')">Payslip line</button>
+                      <button type="button" class="pbim-segbtn" t-att-class="{ 'on': ci.source === 'computed_value' }" t-on-click="() => this.setSource(ci, 'computed_value')">Worked-out value</button>
+                    </div>
+                    <div t-if="state.editing.kind !== 'text'" class="pbim-seg">
+                      <button type="button" class="pbim-segbtn" t-att-class="{ 'on': ci.sign !== 'subtract' }" t-on-click="() => this.setSign(ci, 'add')">Add</button>
+                      <button type="button" class="pbim-segbtn" t-att-class="{ 'on': ci.sign === 'subtract' }" t-on-click="() => this.setSign(ci, 'subtract')">Take away</button>
+                    </div>
+                    <label t-if="state.editing.kind !== 'text'" class="pbgf-share"><input type="number" min="1" max="100" class="pbgf-in" t-att-value="ci.share_pct" t-on-change="(ev) => this.onShare(ci, ev)"/> %</label>
+                    <button type="button" class="pbim-btn pbim-btn-sm ghost" t-on-click="() => this.removeItem(ci)" aria-label="Remove"><t t-out="icon('x', 13)"/></button>
+                  </div>
+                  <input type="search" class="pbgf-in pbgf-find" placeholder="Find a pay item by name or code" t-att-value="state.optionTerm" t-on-input="onOptionSearch"/>
+                  <div class="pbgf-options">
+                    <p t-if="!state.options.length" class="pbgf-muted">No pay item found.</p>
+                    <button t-foreach="state.options" t-as="op" t-key="op.rule_id" type="button" class="pbgf-pick" t-att-class="{ 'is-had': hasItem(op) }" t-att-disabled="hasItem(op)" t-on-click="() => this.addItem(op)">
+                      <div class="pbgf-pick-id">
+                        <b t-esc="op.label"/>
+                        <small><t t-esc="op.scheme"/><t t-if="op.role_label"> · <t t-esc="op.role_label"/></t></small>
+                        <small t-if="!op.printed" class="pbgf-muted">Not printed on payslips</small>
+                      </div>
+                      <t t-if="!hasItem(op)"><t t-out="icon('plus', 14)"/></t>
+                    </button>
+                  </div>
+                  <div class="pbgf-edit-foot">
+                    <button class="pbim-btn ghost" t-on-click="cancelEdit">Cancel</button>
+                    <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="saveLine"><t t-out="icon('check', 14)"/> Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pbgf-tray">
+              <h3 class="pbgf-h3">Pay items on no line of this form</h3>
+              <p t-if="!form.tray.length" class="pbgf-muted">None — every pay item that adds to pay, is taken off or paid by the employer is on a line, or there is none.</p>
+              <div t-else="" class="pbgf-chips">
+                <span t-foreach="form.tray" t-as="tr" t-key="tr.rule_id" class="pbgf-chip is-quiet" t-att-title="tr.scheme"><t t-esc="tr.label"/> · <t t-esc="tr.role_label"/></span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ======================== suggest ======================== -->
+        <div t-if="state.suggestOpen" class="pbim-modal-scrim" t-on-click="closeSuggest">
+          <div class="pbim-modal pbgf-modal" t-on-click.stop="() => {}" role="dialog" aria-label="Suggested pay items">
+            <div class="pbgf-modal-head">
+              <h3>Suggested from your pay schemes</h3>
+              <button class="pbim-btn pbim-btn-sm ghost" t-on-click="closeSuggest" aria-label="Close"><t t-out="icon('x', 14)"/></button>
+            </div>
+            <p class="pbgf-muted pbgf-pad">Read from the pay items' names and what they do to pay. Nothing is saved until you press Save. Untick anything that is not right.</p>
+            <div t-if="state.suggestBusy and !state.proposals.length" class="pbim-busy"><div class="pbim-spin"/></div>
+            <div t-elif="!state.proposals.length" class="pbim-empty pbgf-empty">
+              <t t-out="icon('checkCircle', 28)"/>
+              <h3>Nothing to suggest</h3>
+              <p>Every line that can be suggested already has a pay item, or no pay item's name matches.</p>
+            </div>
+            <div t-else="" class="pbgf-proposals">
+              <button t-foreach="state.proposals" t-as="pp" t-key="pp.line_id + '-' + pp.rule_id" type="button" class="pbgf-proposal" t-att-class="{ 'is-off': !pp.on }" t-att-aria-pressed="pp.on ? 'true' : 'false'" t-on-click="() => this.toggleProposal(pp)">
+                <span class="pbgf-tick"><t t-if="pp.on" t-out="icon('check', 12)"/></span>
+                <span class="pbgf-code" t-esc="pp.line_code"/>
+                <span class="pbgf-proposal-id"><b t-esc="pp.line_label"/><small><t t-esc="pp.label"/> · <t t-esc="pp.scheme"/> · <t t-esc="pp.reason"/></small></span>
+              </button>
+            </div>
+            <div class="pbgf-modal-foot">
+              <button class="pbim-btn ghost" t-on-click="closeSuggest">Cancel</button>
+              <button class="pbim-btn primary" t-att-disabled="state.suggestBusy or !suggestCount" t-on-click="acceptSuggestions"><t t-out="icon('check', 14)"/> Save <t t-esc="suggestCount"/></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

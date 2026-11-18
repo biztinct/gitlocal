@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_form_lines.PbGovFiling">
+    <div class="pbim pbim-page pbgf pbgf-flow">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
+      <div t-elif="!form" class="pbim-wrap">
+        <div class="pbim-panel"><div class="pbim-empty pbgf-empty"><t t-out="icon('fileText', 28)"/><h3>This form is not available here</h3></div></div>
+      </div>
+      <div t-else="" class="pbim-wrap">
+
+        <div class="pbgf-head">
+          <div>
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h1 class="pbim-h1" t-esc="form.name"/>
+            <p class="pbim-sub"><t t-esc="form.official_name"/><t t-if="form.valid"> · <t t-esc="form.valid"/></t></p>
+          </div>
+          <div class="pbgf-detail-acts">
+            <button class="pbim-btn ghost" t-on-click="openLines"><t t-out="icon('listTree', 14)"/> Form lines</button>
+          </div>
+        </div>
+
+        <div class="pbgf-mark" t-att-class="form.accepted ? 'is-ok' : 'is-warn'">
+          <t t-if="form.accepted"><t t-out="icon('checkCircle', 15)"/><span t-esc="acceptedLine"/></t>
+          <t t-else=""><t t-out="icon('triangleAlert', 15)"/><span>Check with your adviser before first filing. The files say so too.</span></t>
+        </div>
+        <p t-if="form.inferred" class="pbgf-amber-text pbgf-small"><t t-out="icon('info', 12)"/> Part of this layout is not confirmed from an official source: <t t-esc="form.inferred_note"/></p>
+
+        <ol class="pbgf-steps">
+          <li t-foreach="steps" t-as="s" t-key="s.key" t-att-class="{ 'is-on': s.on, 'is-done': s.done }">
+            <span class="pbgf-step-n"><t t-if="s.done" t-out="icon('check', 12)"/><t t-else="" t-esc="s.n"/></span>
+            <span t-esc="s.label"/>
+          </li>
+        </ol>
+
+        <!-- ======================== 1 period ======================== -->
+        <section t-if="state.step === 'period'" class="pbim-panel pbgf-step">
+          <h3 class="pbgf-h3">Which period</h3>
+          <div t-if="canMonth and canQuarter" class="pbim-seg pbgf-seg">
+            <button type="button" class="pbim-segbtn" t-att-class="{ 'on': state.periodKind === 'month' }" t-on-click="() => this.setKind('month')">A month</button>
+            <button type="button" class="pbim-segbtn" t-att-class="{ 'on': state.periodKind === 'quarter' }" t-on-click="() => this.setKind('quarter')">A quarter</button>
+          </div>
+          <div class="pbgf-period">
+            <label t-if="state.periodKind === 'month'"><span>Month</span><input type="month" class="pbgf-in" t-att-value="state.period" t-on-change="onMonth"/></label>
+            <t t-else="">
+              <label><span>Year</span>
+                <select class="pbgf-in" t-on-change="onYear">
+                  <option t-foreach="years" t-as="y" t-key="y" t-att-value="y" t-att-selected="y === state.year" t-esc="y"/>
+                </select>
+              </label>
+              <label><span>Quarter</span>
+                <select class="pbgf-in" t-on-change="onQuarter">
+                  <option value="1" t-att-selected="state.quarter === 1">January – March</option>
+                  <option value="2" t-att-selected="state.quarter === 2">April – June</option>
+                  <option value="3" t-att-selected="state.quarter === 3">July – September</option>
+                  <option value="4" t-att-selected="state.quarter === 4">October – December</option>
+                </select>
+              </label>
+            </t>
+          </div>
+          <h3 class="pbgf-h3">Which pay schemes</h3>
+          <p t-if="!form.schemes.length" class="pbgf-muted">This company has no pay scheme for this country.</p>
+          <div class="pbgf-schemes">
+            <button t-foreach="form.schemes" t-as="sc" t-key="sc.id" type="button" class="pbgf-scheme" t-att-class="{ 'is-on': hasScheme(sc.id) }" t-att-aria-pressed="hasScheme(sc.id) ? 'true' : 'false'" t-on-click="() => this.toggleScheme(sc.id)">
+              <span class="pbgf-tick"><t t-if="hasScheme(sc.id)" t-out="icon('check', 12)"/></span>
+              <b t-esc="sc.name"/><small class="pbgf-muted"><t t-esc="sc.currency"/></small><small t-if="!sc.active" class="pbgf-muted">Not active</small>
+            </button>
+          </div>
+          <div class="pbgf-foot">
+            <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="runCheck"><t t-out="icon('calculator', 14)"/> Check the figures</button>
+          </div>
+        </section>
+
+        <!-- ======================== 2 check ======================== -->
+        <section t-if="state.step === 'check' and state.check" class="pbim-panel pbgf-step">
+          <t t-set="C" t-value="state.check"/>
+          <div class="pbgf-glance">
+            <div class="pbgf-glance-n"><b t-esc="C.people"/><small>people</small></div>
+            <div class="pbgf-glance-n"><b t-esc="C.payslips"/><small>finished payslips</small></div>
+            <div class="pbgf-glance-n"><b t-esc="C.period_label"/><small>period</small></div>
+            <div t-if="C.currency" class="pbgf-glance-n"><b t-esc="C.currency"/><small>currency</small></div>
+          </div>
+          <div t-if="C.warnings.length" class="pbgf-warnings">
+            <p t-foreach="C.warnings" t-as="w" t-key="w_index" class="pbgf-warnrow" t-att-class="warnTone(w)"><t t-out="icon(w.level === 'info' ? 'info' : 'triangleAlert', 13)"/> <span t-esc="w.message"/></p>
+          </div>
+          <div t-if="C.currencies.length > 1 and !C.currency" class="pbgf-period">
+            <p class="pbgf-muted">Choose one currency: a filing never adds two currencies together.</p>
+          </div>
+          <table t-if="C.lines.length" class="pbgf-table">
+            <thead><tr><th>Line</th><th>What it is</th><th class="num">Figure</th></tr></thead>
+            <tbody>
+              <tr t-foreach="C.lines" t-as="l" t-key="l.code">
+                <td class="pbgf-codecell" t-esc="l.code"/>
+                <td><span t-esc="l.label"/><small t-if="l.official_label" class="pbgf-muted d-block" t-esc="l.official_label"/></td>
+                <td class="num" t-esc="lineValue(l)"/>
+              </tr>
+            </tbody>
+          </table>
+          <details t-if="C.people_checks.length" class="pbgf-checks">
+            <summary t-esc="lookLine(C.people_checks.length)"/>
+            <ul><li t-foreach="C.people_checks" t-as="pc" t-key="pc_index"><b t-esc="pc.name"/> — <t t-esc="pc.checks.join('; ')"/></li></ul>
+          </details>
+          <div class="pbgf-foot">
+            <button class="pbim-btn ghost" t-on-click="backToPeriod">Back</button>
+            <button class="pbim-btn primary" t-att-disabled="state.busy or C.blocked" t-on-click="prepare"><t t-out="icon('send', 14)"/> Prepare and send for approval</button>
+          </div>
+        </section>
+
+        <!-- ======================== 3 approval + download ======================== -->
+        <section t-if="state.step === 'approval' and state.filing" class="pbim-panel pbgf-step">
+          <t t-set="F" t-value="state.filing"/>
+          <div class="pbgf-filing-head">
+            <div>
+              <h3 class="pbgf-h3" t-esc="F.name"/>
+              <p class="pbgf-muted" t-esc="preparedLine(F)"/>
+            </div>
+            <span class="pbgf-pill" t-att-class="stateTone(F.state)" t-esc="F.state_label"/>
+          </div>
+          <p t-if="F.state === 'pending'" class="pbgf-muted"><t t-out="icon('hourglass', 13)"/> <span t-esc="waitingLine(F)"/> <span>The files can be downloaded once it is approved.</span></p>
+          <p t-if="F.state === 'returned'" class="pbgf-amber-text">Sent back. Prepare it again or send it in again.</p>
+          <p t-if="F.state === 'rejected'" class="pbgf-amber-text">Turned down. Prepare it again if it is needed.</p>
+          <p t-if="F.state === 'superseded'" class="pbgf-muted">A newer filing replaced this one.</p>
+          <p t-if="F.adviser_mark" class="pbgf-amber-text pbgf-small"><t t-out="icon('triangleAlert', 12)"/> These files say “Check with your adviser before first filing”.</p>
+          <div class="pbgf-files">
+            <div t-foreach="F.files" t-as="file" t-key="file.id" class="pbgf-file">
+              <t t-out="icon('fileSpreadsheet', 16)"/>
+              <span class="pbgf-file-name" t-esc="file.name"/>
+              <button class="pbim-btn pbim-btn-sm" t-att-class="F.downloadable ? 'primary' : 'ghost'" t-att-disabled="!F.downloadable or state.busy" t-on-click="() => this.downloadFile(file)"><t t-out="icon('download', 13)"/> Download</button>
+            </div>
+          </div>
+          <p t-if="F.downloaded_by" class="pbgf-muted pbgf-small" t-esc="downloadedLine(F)"/>
+          <div class="pbgf-foot">
+            <button class="pbim-btn ghost" t-on-click="startAgain">Prepare another</button>
+            <button t-if="F.state === 'pending'" class="pbim-btn ghost" t-on-click="refreshFiling"><t t-out="icon('refresh', 14)"/> Look again</button>
+            <button t-if="F.can_resend" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="resend"><t t-out="icon('send', 14)"/> Send in again</button>
+          </div>
+        </section>
+
+        <section t-if="form.history.length" class="pbgf-history">
+          <h3 class="pbgf-h3">Earlier filings</h3>
+          <button t-foreach="form.history" t-as="h" t-key="h.id" type="button" class="pbgf-histrow" t-on-click="() => this.openFiling(h)">
+            <span class="pbgf-pill" t-att-class="stateTone(h.state)" t-esc="h.state_label"/>
+            <b t-esc="h.period"/>
+            <small class="pbgf-muted" t-esc="historyLine(h)"/>
+          </button>
+        </section>
+      </div>
+    </div>
+  </t>
+
+</templates>

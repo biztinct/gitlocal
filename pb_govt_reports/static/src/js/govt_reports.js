@@ -60,6 +60,34 @@ export class PbGovtReports extends Component {
     }
 
     selectCountry(cc) { this.load(cc); }
+
+    /**
+     * WDGAP S2-A — the tax returns of the form catalogue (pb_form_lines,
+     * present only when the server sends `forms`). A CLICK handler: opens
+     * the stepped flow period → check → approval → download.
+     */
+    openForm(form) {
+        if (this._opening) return;
+        this._opening = true;
+        openHub(this.action, {
+            tag: "pb_gov_filing",
+            context: { pb_form_id: form.id },
+            back: this.back && (this.back.tag || this.back.xmlid)
+                ? this.back : { label: _t("Government Reports"), tag: "pb_govt_reports" },
+        });
+    }
+
+    /** The Form lines board: which pay item goes on which line. */
+    openFormLines() {
+        if (this._opening) return;
+        this._opening = true;
+        openHub(this.action, {
+            tag: "pb_form_lines",
+            context: { pb_country: this.state.data.country_code },
+            back: this.back && (this.back.tag || this.back.xmlid)
+                ? this.back : { label: _t("Government Reports"), tag: "pb_govt_reports" },
+        });
+    }
     onMonth(ev) { this.state.month = ev.target.value || this.state.month; }
 
     /** Is this country's wizard drivable through the facade on this database? */
