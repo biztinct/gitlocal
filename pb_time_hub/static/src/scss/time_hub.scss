@@ -7,7 +7,8 @@
 //  real colour, not a comment (W14).
 // =====================================================================
 
-.pbim.pbth {
+// Keep the Time hub namespace separate from the take-home calculator (.pbth).
+.pbim.pbtimehub {
     // The WfDrawer scrim is position:absolute and belongs to THIS surface —
     // without a positioned root it would escape to the viewport and cover the
     // sidebar and breadcrumb (wf_kit.scss :160-169).
@@ -26,44 +27,44 @@
     svg { display: block; }
 
     // ------------------------------------------------------------- header
-    .pbth-head {
+    .pbtimehub-head {
         flex: none;
         padding: 16px 22px 0;
         background: var(--pbim-surface, #fff);
         border-bottom: 1px solid var(--pbim-line, #E2E8F0);
     }
-    .pbth-row {
+    .pbtimehub-row {
         display: flex;
         align-items: center;
         gap: 14px;
         flex-wrap: wrap;
     }
-    .pbth-title {
+    .pbtimehub-title {
         margin: 0;
         font-size: 19px;
         font-weight: 700;
         letter-spacing: -.01em;
         color: var(--pbim-ink, #1B1733);
     }
-    .pbth-ctx { margin-left: auto; }
+    .pbtimehub-ctx { margin-left: auto; }
 
     // ------------------------------------------------- embedded (P3a, W17)
-    // The hub is already a flex column with `.pbth-body` as its only scroller,
+    // The hub is already a flex column with `.pbtimehub-body` as its only scroller,
     // so hosting it needs no structural change — the head just loses its title
     // row, and the lens tabs move up to where the title used to be.
-    &.pbth--embedded {
-        .pbth-head { padding-top: 12px; }
-        .pbth-lens { margin-top: 0; }
+    &.pbtimehub--embedded {
+        .pbtimehub-head { padding-top: 12px; }
+        .pbtimehub-lens { margin-top: 0; }
     }
 
     // -------------------------------------------------------- lens tabs
-    .pbth-lens {
+    .pbtimehub-lens {
         display: flex;
         gap: 4px;
         margin-top: 14px;
         overflow-x: auto;
     }
-    .pbth-lens__tab {
+    .pbtimehub-lens__tab {
         display: inline-flex;
         align-items: center;
         gap: 7px;
@@ -84,8 +85,8 @@
             border-bottom-color: var(--pbim-primary, #5A4BB0);
         }
     }
-    .pbth-lens__ic { flex: none; }
-    .pbth-lens__n {
+    .pbtimehub-lens__ic { flex: none; }
+    .pbtimehub-lens__n {
         background: var(--pbim-rose-soft, #FCE7EF);
         color: var(--pbim-rose, #DC2668);
         border-radius: 999px;
@@ -99,7 +100,7 @@
     .wfrb { margin: 0 0 14px; }
 
     // ------------------------------------------------------------- body
-    .pbth-body {
+    .pbtimehub-body {
         flex: 1 1 auto;
         min-height: 0;
         overflow: auto;
@@ -110,13 +111,13 @@
     // height, and an auto height makes it grow to content and overflow its
     // ceilings rail. So the body stops scrolling and becomes the flex parent
     // while that lens is showing.
-    .pbth-body--fill {
+    .pbtimehub-body--fill {
         overflow: hidden;
         display: flex;
         flex-direction: column;
     }
-    .pbth-lensbody { min-height: 0; }
-    .pbth-lensbody--grid {
+    .pbtimehub-lensbody { min-height: 0; }
+    .pbtimehub-lensbody--grid {
         display: flex;
         flex: 1 1 auto;
         min-height: 360px;
@@ -125,23 +126,23 @@
     }
 
     // ---------------------------------------------------------- drawer
-    .pbth-dr-load {
+    .pbtimehub-dr-load {
         display: flex;
         align-items: center;
         gap: 10px;
         padding: 30px 0;
         color: var(--pbim-muted, #64748B);
-        svg { animation: pbth-spin 1s linear infinite; }
+        svg { animation: pbtimehub-spin 1s linear infinite; }
     }
 
-    .pbth-dr-who {
+    .pbtimehub-dr-who {
         display: flex;
         align-items: center;
         gap: 10px;
         padding-bottom: 12px;
         border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
     }
-    .pbth-av {
+    .pbtimehub-av {
         width: 34px;
         height: 34px;
         border-radius: 50%;
@@ -149,7 +150,7 @@
         flex: none;
         background: var(--pbim-soft, #EDEAF8);
     }
-    .pbth-dr-who__txt {
+    .pbtimehub-dr-who__txt {
         min-width: 0;
         .n {
             font-size: 13px;
@@ -162,7 +163,7 @@
         .s { font-size: 10.5px; color: var(--pbim-muted, #64748B); }
     }
 
-    .pbth-wksum {
+    .pbtimehub-wksum {
         display: flex;
         gap: 6px;
         margin: 12px 0;
@@ -193,7 +194,7 @@
     }
 
     // the person's week as a table — the owner's named pain point
-    .pbth-dt {
+    .pbtimehub-dt {
         width: 100%;
         border-collapse: collapse;
         font-size: 11px;
@@ -227,13 +228,13 @@
         .pos { color: var(--pbim-amber, #D97706); font-weight: 700; }
         .neg { color: var(--pbim-rose, #DC2668); font-weight: 700; }
     }
-    .pbth-flag {
+    .pbtimehub-flag {
         font-size: 9px;
         font-weight: 800;
         color: var(--pbim-primary, #5A4BB0);
         margin-left: 3px;
     }
-    .pbth-din {
+    .pbtimehub-din {
         display: inline-block;
         min-width: 36px;
         border: 1px solid var(--pbim-line, #E2E8F0);
@@ -257,15 +258,15 @@
     }
 
     // -------------------------------------------------------------- chips
-    .pbth-chips {
+    .pbtimehub-chips {
         display: flex;
         gap: 6px;
         flex-wrap: wrap;
         margin: 12px 0 10px;
     }
-    .pbth-chips__empty { font-size: 11px; color: var(--pbim-muted, #64748B); }
+    .pbtimehub-chips__empty { font-size: 11px; color: var(--pbim-muted, #64748B); }
 
-    .pbth-pill {
+    .pbtimehub-pill {
         display: inline-flex;
         align-items: center;
         gap: 4px;
@@ -285,8 +286,8 @@
     }
 
     // ------------------------------------------------------------ actions
-    .pbth-dr-acts { display: flex; gap: 8px; margin-top: 4px; }
-    .pbth-btn {
+    .pbtimehub-dr-acts { display: flex; gap: 8px; margin-top: 4px; }
+    .pbtimehub-btn {
         flex: 1;
         display: inline-flex;
         align-items: center;
@@ -314,7 +315,7 @@
     }
 }
 
-@keyframes pbth-spin {
+@keyframes pbtimehub-spin {
     to { transform: rotate(360deg); }
 }
 
@@ -324,7 +325,7 @@
 //  2013 palette do not come across. Bar GEOMETRY is reused from the facade,
 //  the ink is pbim's.
 // =====================================================================
-.pbim.pbth .pbtl {
+.pbim.pbtimehub .pbtl {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -346,7 +347,7 @@
         .t { font-size: 14px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
         .s { font-size: 12px; }
     }
-    .pbtl-load svg { animation: pbth-spin 1s linear infinite; }
+    .pbtl-load svg { animation: pbtimehub-spin 1s linear infinite; }
 
     // ------------------------------------------------------------ legend
     .pbtl-legend {
