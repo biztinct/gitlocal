@@ -53,6 +53,11 @@ class VietnamBankExportWizard(models.TransientModel):
     #: carries anybody whose money has already been released (a follow-up
     #: file after a hold is lifted pays only the people not yet paid).
     pb_unpaid_only = fields.Boolean(string='Only people not paid yet')
+    #: WDGAP S2-C (ledger S2F-1): the layout to use when its key is not one of
+    #: the `bank_format` selection values (a company's copy, a bank added as
+    #: data). `bank_format` stays a selection for the old callers; the layout
+    #: and the file name follow this key whenever it is set.
+    pb_layout_key = fields.Char(string='Bank layout key')
 
     # ------------------------------------------------------------- access
     def _check_pay_access(self):
@@ -70,6 +75,20 @@ class VietnamBankExportWizard(models.TransientModel):
             "This requires the Payroll Manager or a Finance role."))
 
     # ------------------------------------------------------------- helpers
+    def _pb_layout_key(self):
+        """The layout this file is made with (WDGAP S2-C, S2F-1)."""
+        return self.pb_layout_key or self.bank_format
+
+    @api.model
+    def _pb_wizard_values(self, key):
+        """`bank_format` + `pb_layout_key` for a layout key: a key the
+        selection knows is passed exactly as before (same bytes, same name);
+        any other key rides on `pb_layout_key`."""
+        known = [k for k, _label in self._fields['bank_format']._description_selection(self.env)]
+        if key in known:
+            return {'bank_format': key}
+        return {'bank_format': 'generic', 'pb_layout_key': key}
+
     @api.model
     def _slip_net(self, slip):
         """The amount to pay this person: the scheme's own take-home line.
@@ -239,12 +258,20 @@ class VietnamBankExportWizard(models.TransientModel):
         self.ensure_one()
         self._check_pay_access()
 
-        layout = self.env['pb.bank.file.layout']._for_format(self.bank_format)
+        key = self._pb_layout_key()
+        layout = self.env['pb.bank.file.layout']._for_format(key)
         if not layout:
             raise UserError(_(
                 "No bank-file layout is configured for '%s'. A layout is a data "
                 "record (pb.bank.file.layout) — add one to support this bank.",
-                self.bank_format))
+                key))
+        if 'target' in layout._fields and layout.target != 'bank_file':
+            # WDGAP S2-C: a payment-list layout reads the approved account on
+            # record, not the Vietnamese bank-file fields
+            raise UserError(_(
+                "“%s” is a layout for the payment list (any bank), not for the "
+                "Vietnamese bank file. Choose it under the payment list.",
+                layout.name))
 
         slips = self._resolve_slips()
         if not slips:
@@ -314,7 +341,7 @@ class VietnamBankExportWizard(models.TransientModel):
             ext = 'csv'
 
         filename = '%s_%s.%s' % (
-            self.bank_format, (self._period_label() or 'transfer').replace(' ', ''), ext)
+            key, (self._period_label() or 'transfer').replace(' ', ''), ext)
         return {
             'file_b64': base64.b64encode(data).decode(),
             'filename': filename,

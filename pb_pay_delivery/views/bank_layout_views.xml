@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP S2-C — Settings › Payroll › Bank layouts. Opened by this XMLID
+         from the Settings card and the command palette (never a bare tag:
+         a bare tag returns through a breadcrumb labelled "Unnamed", R180). -->
+    <record id="action_pb_bank_layouts" model="ir.actions.client">
+        <field name="name">Bank layouts</field>
+        <field name="tag">pb_bank_layouts</field>
+    </record>
+
+    <!-- The bank's national code, beside its SWIFT/BIC code. -->
+    <record id="view_res_bank_form_pb_code" model="ir.ui.view">
+        <field name="name">res.bank.form.pb.code</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="arch" type="xml">
+            <field name="bic" position="after">
+                <field name="pb_clearing_code"/>
+            </field>
+        </field>
+    </record>
+</odoo>

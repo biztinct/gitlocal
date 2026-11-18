@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-C: a company's own copy of a bank layout is that company's.
+         The layouts Payobook ships (no company) are everybody's. Global, so
+         it narrows every group's read, including the payroll manager's. -->
+    <record id="rule_bank_file_layout_company" model="ir.rule">
+        <field name="name">Bank layout: shipped, or my company's copy</field>
+        <field name="model_id" ref="model_pb_bank_file_layout"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_bank_file_column_company" model="ir.rule">
+        <field name="name">Bank layout column: shipped, or my company's copy</field>
+        <field name="model_id" ref="model_pb_bank_file_column"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('layout_id.company_id', '=', False), ('layout_id.company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

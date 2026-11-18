@@ -487,6 +487,8 @@ msgid "Money out"
 msgstr "Hết tiền"
 
 #. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
 #: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__name
 #: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__name
 msgid "Name"
@@ -846,6 +848,8 @@ msgid "Vietnam Bank Transfer Export"
 msgstr "Xuất khẩu chuyển khoản ngân hàng Việt Nam"
 
 #. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
 #: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__width
 msgid "Width"
 msgstr "Chiều rộng"
@@ -2486,6 +2490,8 @@ msgid "Other bank transfer"
 msgstr "Chuyển khoản khác"
 
 #. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
 #: model:ir.model.fields.selection,name:pb_pay_delivery.selection__hr_payslip__pb_paid_method__other
 msgid "Other"
 msgstr "Khác"
@@ -2936,3 +2942,926 @@ msgstr "Danh sách chuyển khoản đang chờ %s phê duyệt."
 #: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
 msgid "Something in this pay run changed since the payment list was prepared. Prepare it again before paying."
 msgstr "Kỳ lương này đã có thay đổi kể từ khi chuẩn bị danh sách chuyển khoản. Hãy chuẩn bị lại trước khi trả."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(n)s payments · %(total)s %(currency)s"
+msgstr "%(n)s khoản thanh toán · %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "%(n)s sample people in the file • total %(total)s %(currency)s"
+msgstr "%(n)s người mẫu trong tệp • tổng %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(people)s in the %(name)s file • total %(total)s %(currency)s"
+msgstr "%(people)s trong tệp %(name)s • tổng %(total)s %(currency)s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%(what)s is longer than this bank takes (%(max)s characters)"
+msgstr "%(what)s dài hơn mức ngân hàng này nhận (%(max)s ký tự)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%(what)s of this file is longer than the bank takes (%(max)s characters), so the file cannot be made."
+msgstr "%(what)s của tệp này dài hơn mức ngân hàng nhận (%(max)s ký tự), nên không thể tạo tệp."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%(what)s on record (%(value)s) is not in the form this bank needs"
+msgstr "%(what)s đã lưu (%(value)s) không đúng dạng ngân hàng này cần"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "%(who)s · %(kind)s · %(rows)s rows · %(left)s left out"
+msgstr "%(who)s · %(kind)s · %(rows)s dòng · %(left)s người bị loại ra"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "%s (our copy)"
+msgstr "%s (bản sao của chúng tôi)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s file"
+msgstr "Tệp %s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%s has letters this bank does not take (accents or other alphabets)"
+msgstr "%s có chữ mà ngân hàng này không nhận (dấu hoặc bảng chữ cái khác)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%s has letters this file cannot hold"
+msgstr "%s có chữ mà tệp này không chứa được"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%s is missing"
+msgstr "Thiếu %s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s people are left out of this bank file"
+msgstr "%s người bị loại khỏi tệp ngân hàng này"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "%s starts with a sign a spreadsheet would run as a formula"
+msgstr "%s bắt đầu bằng một ký hiệu mà bảng tính sẽ chạy như công thức"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__max_length
+msgid "0 = no limit. A longer value leaves the person out of the file (it is never cut)."
+msgstr "0 = không giới hạn. Giá trị dài hơn sẽ khiến người đó bị loại khỏi tệp (không bao giờ bị cắt)."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 person is left out of this bank file"
+msgstr "1 người bị loại khỏi tệp ngân hàng này"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "A bank layout needs at least one column."
+msgstr "Một mẫu tệp ngân hàng cần ít nhất một cột."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "A column"
+msgstr "Một cột"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "A layout Payobook ships cannot be changed here. Make your own copy and change the copy."
+msgstr "Không thể sửa ở đây mẫu do Payobook cung cấp. Hãy tạo bản sao của bạn và sửa bản sao."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "A layout Payobook ships cannot be changed. Make your own copy to change it — your copy is offered on Pay & deliver beside it."
+msgstr "Không thể sửa mẫu do Payobook cung cấp. Hãy tạo bản sao của bạn để sửa — bản sao được đưa ra trên Thanh toán và giao hàng bên cạnh mẫu gốc."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__account_pattern
+msgid "A pattern the account number must match (e.g. ^[0-9]{10}$). A person whose number does not match is left out."
+msgstr "Mẫu mà số tài khoản phải khớp (ví dụ ^[0-9]{10}$). Người có số không khớp sẽ bị loại ra."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__code_pattern
+msgid "A pattern the bank code must match, e.g. ^[A-Z]{4}0[A-Z0-9]{6}$ for an IFSC. A person whose code does not match is left out."
+msgstr "Mẫu mà mã ngân hàng phải khớp, ví dụ ^[A-Z]{4}0[A-Z0-9]{6}$ cho mã IFSC. Người có mã không khớp sẽ bị loại ra."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__required
+msgid "A person with nothing to put here is left out of the file, with the reason."
+msgstr "Người không có gì để điền vào đây sẽ bị loại khỏi tệp, kèm lý do."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "A preview with sample people is shown for payment-list layouts. The Vietnamese bank file shows its own rows on Pay & deliver."
+msgstr "Bản xem trước với người mẫu chỉ có cho mẫu danh sách chuyển khoản. Tệp ngân hàng Việt Nam hiển thị các dòng của nó trên Thanh toán và giao hàng."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Add a column"
+msgstr "Thêm một cột"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__bank_bic
+msgid "Bank SWIFT/BIC code"
+msgstr "Mã SWIFT/BIC của ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_res_bank__pb_clearing_code
+msgid "Bank code"
+msgstr "Mã ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__bank_clearing_code
+msgid "Bank code (IFSC, bank/branch code)"
+msgstr "Mã ngân hàng (IFSC, mã ngân hàng/chi nhánh)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Bank file (any bank) downloaded"
+msgstr "Đã tải tệp ngân hàng (mọi ngân hàng)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_hash
+msgid "Bank file stamp"
+msgstr "Dấu tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0 code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file__layout_id model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_id
+msgid "Bank layout"
+msgstr "Mẫu tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__pb_layout_key
+msgid "Bank layout key"
+msgstr "Khóa mẫu tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_name
+msgid "Bank layout name"
+msgstr "Tên mẫu tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts_doors.js:0 code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.actions.client,name:pb_pay_delivery.action_pb_bank_layouts
+msgid "Bank layouts"
+msgstr "Mẫu tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "Bank layouts are set up by the payroll manager."
+msgstr "Mẫu tệp ngân hàng do quản lý tiền lương thiết lập."
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_pb_bank_layout_studio
+msgid "Bank layouts screen"
+msgstr "Màn hình mẫu tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "Choose what each column holds."
+msgstr "Hãy chọn nội dung của từng cột."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Column name"
+msgstr "Tên cột"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Columns, in order"
+msgstr "Các cột, theo thứ tự"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__copied_from_id
+msgid "Copied from"
+msgstr "Sao chép từ"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__country_id
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__date_format
+msgid "Date written as"
+msgstr "Ngày được viết dạng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Download the bank's own file"
+msgstr "Tải tệp riêng của ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__beneficiary_email
+msgid "Employee email"
+msgstr "Email nhân viên"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__company_id
+msgid "Empty for a layout Payobook ships; a company's own copy belongs to that company."
+msgstr "Để trống với mẫu do Payobook cung cấp; bản sao của công ty thuộc về công ty đó."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Find a layout or a country"
+msgstr "Tìm mẫu hoặc quốc gia"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "First row holds the column names"
+msgstr "Dòng đầu tiên là tên cột"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Fixed text"
+msgstr "Văn bản cố định"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__account_pattern
+msgid "Form of the account number"
+msgstr "Dạng của số tài khoản"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__code_pattern
+msgid "Form of the bank code"
+msgstr "Dạng của mã ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "General list only"
+msgstr "Chỉ danh sách chung"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "Give the layout a name."
+msgstr "Hãy đặt tên cho mẫu."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Holds"
+msgstr "Chứa"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__date_format
+msgid "How {date} and the payment-date column are written, e.g. %Y%m%d (20260630) or %d/%m/%Y (30/06/2026)."
+msgstr "Cách viết {date} và cột ngày thanh toán, ví dụ %Y%m%d (20260630) hoặc %d/%m/%Y (30/06/2026)."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__amount_format
+msgid "How {total} is written in the lines before and after the payments."
+msgstr "Cách viết {total} trong các dòng trước và sau các khoản thanh toán."
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_in_neft
+msgid "India — NEFT / RTGS bulk transfer (general)"
+msgstr "Ấn Độ — chuyển khoản hàng loạt NEFT / RTGS (chung)"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_id_general
+msgid "Indonesia — bank transfer list (general)"
+msgstr "Indonesia — danh sách chuyển khoản ngân hàng (chung)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__bank_format
+msgid "Key of this layout (vietcombank, bidv, …; a copy gets its own)."
+msgstr "Khóa của mẫu này (vietcombank, bidv, …; bản sao có khóa riêng)."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Leave this layout without saving your changes?"
+msgstr "Rời mẫu này mà không lưu thay đổi?"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_excluded_count
+msgid "Left out of the bank file"
+msgstr "Bị loại khỏi tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__line_ending
+msgid "Line ending"
+msgstr "Kết thúc dòng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__trailer_template
+msgid "Lines after the payments"
+msgstr "Các dòng sau các khoản thanh toán"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__header_template
+msgid "Lines before the payments"
+msgstr "Các dòng trước các khoản thanh toán"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Longest"
+msgstr "Dài nhất"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__max_length
+msgid "Longest the bank takes"
+msgstr "Độ dài tối đa ngân hàng nhận"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__target
+msgid "Made from"
+msgstr "Tạo từ"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Made-up people only. The real file is made on Pay & deliver from the approved bank details."
+msgstr "Chỉ là người giả định. Tệp thật được tạo trên Thanh toán và giao hàng từ thông tin ngân hàng đã duyệt."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Make our own copy"
+msgstr "Tạo bản sao của chúng tôi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Move down"
+msgstr "Chuyển xuống"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Move up"
+msgstr "Chuyển lên"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Must have"
+msgstr "Bắt buộc"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__required
+msgid "Must not be empty"
+msgstr "Không được để trống"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__code_label
+msgid "Name of the bank code"
+msgstr "Tên của mã ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "No layout matches."
+msgstr "Không có mẫu nào khớp."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Nobody in this pay run can be put in the %s file. See who is left out and why, or prepare the general list instead."
+msgstr "Không ai trong kỳ lương này có thể đưa vào tệp %s. Xem ai bị loại ra và vì sao, hoặc chuẩn bị danh sách chung."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Not confirmed"
+msgstr "Chưa xác nhận"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__inferred
+msgid "Not confirmed by the bank"
+msgstr "Chưa được ngân hàng xác nhận"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Not confirmed by the bank."
+msgstr "Chưa được ngân hàng xác nhận."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Not confirmed by the bank. Check with your bank before the first upload."
+msgstr "Chưa được ngân hàng xác nhận. Hãy hỏi ngân hàng của bạn trước lần tải lên đầu tiên."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "Not in the %(layout)s file: %(reasons)s"
+msgstr "Không có trong tệp %(layout)s: %(reasons)s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "Not in the bank file"
+msgstr "Không có trong tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Not offered"
+msgstr "Không đưa ra"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Number"
+msgstr "Số"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__row_count
+msgid "Number of payments"
+msgstr "Số khoản thanh toán"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Offer it again"
+msgstr "Đưa ra lại"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__header_template
+msgid "One line per line of text. Words in braces are filled in: {count} {total} {date} {company_account} {reference} {currency}."
+msgstr "Mỗi dòng là một dòng văn bản. Các từ trong ngoặc nhọn được điền tự động: {count} {total} {date} {company_account} {reference} {currency}."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "Paid in %(paid)s; this bank file pays in %(file)s only"
+msgstr "Được trả bằng %(paid)s; tệp ngân hàng này chỉ trả bằng %(file)s"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__payment_date
+msgid "Payment Date"
+msgstr "Ngày thanh toán"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0 model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__payment_date
+msgid "Payment date"
+msgstr "Ngày thanh toán"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__currency_id
+msgid "Pays in"
+msgstr "Trả bằng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__ascii_only
+msgid "Plain letters only"
+msgstr "Chỉ chữ không dấu"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Plain letters only (people with accents are left out, never changed)"
+msgstr "Chỉ chữ không dấu (người có dấu bị loại ra, không bao giờ bị sửa)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Preview with three sample people"
+msgstr "Xem trước với ba người mẫu"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_row_count
+msgid "Rows in the bank file"
+msgstr "Số dòng trong tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__trailer_template
+msgid "Same words as the lines before the payments."
+msgstr "Các từ giống như các dòng trước các khoản thanh toán."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Save your changes first; the preview shows the saved layout."
+msgstr "Hãy lưu thay đổi trước; bản xem trước hiển thị mẫu đã lưu."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts_doors.js:0
+msgid "See the bank file layouts, copy one and shape it to your bank's template."
+msgstr "Xem các mẫu tệp ngân hàng, sao chép một mẫu và chỉnh theo mẫu của ngân hàng bạn."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Separator"
+msgstr "Dấu phân cách"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts_doors.js:0
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Show the preview"
+msgstr "Hiện bản xem trước"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_sg_giro
+msgid "Singapore — GIRO / FAST bulk transfer (general)"
+msgstr "Singapore — chuyển khoản hàng loạt GIRO / FAST (chung)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Stop offering it"
+msgstr "Ngừng đưa ra"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Stop offering this copy on Pay & deliver? You can bring it back later."
+msgstr "Ngừng đưa bản sao này ra trên Thanh toán và giao hàng? Bạn có thể đưa lại sau."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Text encoding"
+msgstr "Bảng mã văn bản"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "That bank layout is not available. Choose another one, or the general list."
+msgstr "Mẫu tệp ngân hàng đó không dùng được. Hãy chọn mẫu khác, hoặc danh sách chung."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0 code:addons/pb_pay_delivery/models/bank_layout_studio.py:0
+msgid "That bank layout no longer exists."
+msgstr "Mẫu tệp ngân hàng đó không còn tồn tại."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The Excel file cannot be made on this server. Choose a CSV or text bank layout."
+msgstr "Không thể tạo tệp Excel trên máy chủ này. Hãy chọn mẫu ngân hàng dạng CSV hoặc văn bản."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The SWIFT/BIC code"
+msgstr "Mã SWIFT/BIC"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The account holder name"
+msgstr "Tên chủ tài khoản"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The account number"
+msgstr "Số tài khoản"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The account number is not in the form this bank needs"
+msgstr "Số tài khoản không đúng dạng ngân hàng này cần"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The amount has cents, and this bank file takes whole amounts only"
+msgstr "Số tiền có phần lẻ, mà tệp ngân hàng này chỉ nhận số tròn"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The bank code"
+msgstr "Mã ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The bank name"
+msgstr "Tên ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__ascii_only
+msgid "The bank refuses letters with accents and other non-English characters: a person whose name or bank details carry one is left out of the file, with the reason (never changed or cut)."
+msgstr "Ngân hàng không nhận chữ có dấu và ký tự không phải tiếng Anh: người có tên hoặc thông tin ngân hàng chứa các ký tự đó bị loại khỏi tệp, kèm lý do (không bao giờ bị sửa hay cắt)."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_res_bank__pb_clearing_code
+msgid "The bank's national code, used by bank payment files: Indonesia the 3-digit bank code, Singapore the 4-digit bank code. (An Indian IFSC belongs to each account, not to the bank.)"
+msgstr "Mã quốc gia của ngân hàng, dùng trong tệp chi trả: Indonesia mã ngân hàng 3 chữ số, Singapore mã ngân hàng 4 chữ số. (Mã IFSC của Ấn Độ thuộc về từng tài khoản, không thuộc về ngân hàng.)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The branch"
+msgstr "Chi nhánh"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The company account"
+msgstr "Tài khoản công ty"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The email"
+msgstr "Email"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The employee name"
+msgstr "Tên nhân viên"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The employee number"
+msgstr "Mã nhân viên"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file__attachment_id
+msgid "The file"
+msgstr "Tệp"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "The form “%s” cannot be read. Leave it empty, or write a pattern such as ^[0-9]{10}$."
+msgstr "Không đọc được dạng “%s”. Hãy để trống, hoặc viết một mẫu như ^[0-9]{10}$."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "The lines before or after the payments use a word this file cannot fill in: %(words)s. Use only: %(known)s."
+msgstr "Các dòng trước hoặc sau các khoản thanh toán dùng một từ mà tệp này không điền được: %(words)s. Chỉ dùng: %(known)s."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__currency_id
+msgid "The one money this bank file pays in. Empty: the pay run's own money. People paid in another money are left out of it, with the reason."
+msgstr "Loại tiền duy nhất tệp ngân hàng này trả. Để trống: loại tiền của kỳ lương. Người được trả bằng loại tiền khác bị loại ra, kèm lý do."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts_doors.js:0
+msgid "The payment files each bank takes, and your own copies of them."
+msgstr "Các tệp chi trả mà từng ngân hàng nhận, và các bản sao của bạn."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "The payment files each bank takes. Copy a layout Payobook ships and shape your copy to your bank's own template."
+msgstr "Các tệp chi trả mà từng ngân hàng nhận. Sao chép một mẫu Payobook cung cấp và chỉnh bản sao theo mẫu của ngân hàng bạn."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The payment reference"
+msgstr "Nội dung thanh toán"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The payslip shows take-home two ways; check it before paying"
+msgstr "Phiếu lương cho thấy thực lĩnh theo hai cách; hãy kiểm tra trước khi trả"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The total of this file has cents, and this bank file writes its total as a whole number. Change how the total is written on Settings › Bank layouts."
+msgstr "Tổng của tệp này có phần lẻ, mà tệp ngân hàng này ghi tổng là số tròn. Hãy đổi cách ghi tổng tại Cài đặt › Mẫu tệp ngân hàng."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__inferred
+msgid "This layout was not taken from the bank's own published specification. Check with your bank before the first upload."
+msgstr "Mẫu này không lấy từ đặc tả do chính ngân hàng công bố. Hãy hỏi ngân hàng của bạn trước lần tải lên đầu tiên."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list.py:0
+msgid "This payment list was prepared without a bank layout, so there is no bank file to download. Prepare it again with a bank layout."
+msgstr "Danh sách chi trả này được chuẩn bị không có mẫu ngân hàng, nên không có tệp ngân hàng để tải. Hãy chuẩn bị lại với một mẫu ngân hàng."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payment_list_file__layout_total
+msgid "Total of the bank file"
+msgstr "Tổng của tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__control_total
+msgid "Total of the file"
+msgstr "Tổng của tệp"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0 model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__amount_format
+msgid "Total written as"
+msgstr "Tổng được viết dạng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__number_format__dec2 model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__amount_format__dec2
+msgid "Two decimals (1234.50)"
+msgstr "Hai chữ số thập phân (1234.50)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__number_format__implied2 model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__amount_format__implied2
+msgid "Two decimals without the point (123450)"
+msgstr "Hai chữ số thập phân không có dấu chấm (123450)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Undo changes"
+msgstr "Hoàn tác thay đổi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__line_ending__lf
+msgid "Unix (LF)"
+msgstr "Unix (LF)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__target__bank_file
+msgid "Vietnamese bank file"
+msgstr "Tệp ngân hàng Việt Nam"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__code_label
+msgid "What this country calls the bank code the file carries (Indonesia \"Bank code\", India \"IFSC\", Singapore \"Bank / branch code\"). Used in the reasons people are left out."
+msgstr "Tên mà quốc gia này gọi mã ngân hàng trong tệp (Indonesia \"Mã ngân hàng\", Ấn Độ \"IFSC\", Singapore \"Mã ngân hàng / chi nhánh\"). Dùng trong lý do người bị loại ra."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Where this layout comes from"
+msgstr "Nguồn gốc của mẫu này"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__amount_format__int
+msgid "Whole number"
+msgstr "Số tròn"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__line_ending__crlf
+msgid "Windows (CR LF)"
+msgstr "Windows (CR LF)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Words filled in:"
+msgstr "Các từ được điền:"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file_layout.py:0
+msgid "Write the date with %Y (year), %m (month) and %d (day), for example %Y%m%d."
+msgstr "Viết ngày bằng %Y (năm), %m (tháng) và %d (ngày), ví dụ %Y%m%d."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "Your copy"
+msgstr "Bản sao của bạn"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/bank_layouts.js:0
+msgid "Your own copy is ready. Change it to match your bank's template."
+msgstr "Bản sao của bạn đã sẵn sàng. Hãy sửa cho khớp với mẫu của ngân hàng bạn."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "and %s more — every one is in the Check column of the list"
+msgstr "và %s người khác — tất cả đều có trong cột Kiểm tra của danh sách"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "not confirmed by the bank"
+msgstr "chưa được ngân hàng xác nhận"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "shipped"
+msgstr "có sẵn"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "your copies"
+msgstr "bản sao của bạn"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/bank_layouts.xml:0
+msgid "— the number of payments, the total, the payment date, the company account, the reference and the money."
+msgstr "— số khoản thanh toán, tổng, ngày thanh toán, tài khoản công ty, nội dung và loại tiền."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "“%s” has no columns yet. Add its columns on Settings › Bank layouts."
+msgstr "“%s” chưa có cột nào. Hãy thêm cột tại Cài đặt › Mẫu tệp ngân hàng."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "“%s” is a layout for the payment list (any bank), not for the Vietnamese bank file. Choose it under the payment list."
+msgstr "“%s” là mẫu cho danh sách chuyển khoản (mọi ngân hàng), không phải cho tệp ngân hàng Việt Nam. Hãy chọn nó ở phần danh sách chuyển khoản."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The layout's own text (a column name, a fixed text, the lines before or after the payments, or the company account) has letters its text encoding (%s) cannot hold."
+msgstr "Văn bản riêng của mẫu (tên cột, văn bản cố định, các dòng trước hoặc sau các khoản thanh toán, hoặc tài khoản công ty) có chữ mà bảng mã (%s) không chứa được."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_list_layout.py:0
+msgid "The text encoding “%s” is not known. Use utf-8, utf-8-sig, ascii or latin-1."
+msgstr "Bảng mã “%s” không được nhận biết. Hãy dùng utf-8, utf-8-sig, ascii hoặc latin-1."

@@ -118,11 +118,14 @@ class PbBankFile(models.Model):
         'res.users', 'pb_bank_file_seat_rel', 'file_id', 'user_id',
         string='Asked to decide', copy=False)
 
-    @api.depends('run_id', 'bank_format', 'generated_at')
+    @api.depends('run_id', 'bank_format', 'generated_at', 'layout_id')
     def _compute_name(self):
         for rec in self:
+            # a company's own copy is named by its layout (its key is made up)
+            bank = rec.layout_id.name if rec.layout_id.company_id \
+                else (rec.bank_format or '').title()
             rec.name = _("Bank file · %(bank)s · %(run)s",
-                         bank=(rec.bank_format or '').title() or _('bank'),
+                         bank=bank or _('bank'),
                          run=rec.run_id.name or '')
 
     def excluded(self):
@@ -154,13 +157,16 @@ class PbBankFile(models.Model):
                 "prepared from it. Send the pay run in for approval first.",
                 run.name or ''))
 
-        wizard = self.env['vietnam.bank.export.wizard'].create({
-            'payslip_run_id': run.id, 'bank_format': bank_format,
-            'company_account_number': company_account or False,
+        Wizard = self.env['vietnam.bank.export.wizard']
+        wizard = Wizard.create(dict(
+            # WDGAP S2-C (S2F-1): any layout key, not only the selection's
+            Wizard._pb_wizard_values(bank_format),
+            payslip_run_id=run.id,
+            company_account_number=company_account or False,
             # never pay anybody twice: the people already paid by a released
             # file are not in a new one (WDGAP PR-C)
-            'pb_unpaid_only': True,
-        })
+            pb_unpaid_only=True,
+        ))
         follow_up = bool(self._pb_released_files(run))
         result = wizard._generate()
         data = base64.b64decode(result['file_b64'])

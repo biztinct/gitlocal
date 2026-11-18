@@ -427,7 +427,55 @@
                 <span t-out="ic('alert',14)"/> <span>Something in this pay run changed since the payment list was prepared. Prepare it again before paying.</span>
               </div>
 
+              <!-- WDGAP S2-C: the same rows in a bank's own layout -->
+              <div t-if="plLayouts.length and payList.count" class="pl-layout">
+                <div class="pl-layout-h">Bank layout</div>
+                <div class="pl-chips">
+                  <button t-attf-class="chip {{ !state.plLayout ? 'active' : '' }}"
+                          t-on-click="() => this.selectPlLayout('')">
+                    <span class="dot" t-out="ic('fileSpreadsheet',14)"/><span class="nm">General list only</span>
+                  </button>
+                  <button t-foreach="plLayouts" t-as="lay" t-key="lay.key"
+                          t-attf-class="chip {{ state.plLayout === lay.key ? 'active' : '' }}"
+                          t-on-click="() => this.selectPlLayout(lay.key)">
+                    <span class="dot" t-out="ic('landmark',14)"/><span class="nm" t-esc="lay.name"/>
+                  </button>
+                </div>
+                <t t-if="state.plLayout">
+                  <div class="pl-fields">
+                    <label class="pbpd-field">
+                      <span>Payment date</span>
+                      <input type="date" t-att-value="state.plDate" t-on-change="onPlDate"/>
+                    </label>
+                    <label class="pbpd-field">
+                      <span>Company debit account <em>(optional)</em></span>
+                      <input type="text" t-att-value="state.plAccount" t-on-input="onPlAccount"
+                             t-on-change="() => this.loadPlPreview()"/>
+                    </label>
+                  </div>
+                  <div t-if="plLayoutInfo and plLayoutInfo.inferred" class="pl-inferred">
+                    <span t-out="ic('info',13)"/>
+                    <span>Not confirmed by the bank. Check with your bank before the first upload.</span>
+                  </div>
+                  <div t-if="state.plPreview" class="pl-preview">
+                    <div class="pl-preview-sum" t-esc="plPreviewLine"/>
+                    <div t-if="state.plPreview.excluded.length" class="pl-left">
+                      <div class="pl-left-h"><span t-out="ic('alert',13)"/> <span t-esc="plLeftOutTitle"/></div>
+                      <div t-foreach="plLeftOutRows" t-as="x" t-key="x_index" class="pl-left-row">
+                        <b t-esc="x.employee"/> <span t-esc="reasonList(x.reasons)"/>
+                      </div>
+                      <div t-if="plLeftOutMore" class="pl-left-more" t-esc="plLeftOutMore"/>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
               <div class="pl-actions">
+                <button t-if="payListFile.layout_name" class="pbpd-btn ghost sm"
+                        t-att-disabled="state.busy or !payListFile.downloadable"
+                        t-on-click="() => this.downloadPayList('bank')" title="Download the bank's own file">
+                  <span t-out="ic('download',13)"/><span t-esc="plBankFileLabel"/>
+                </button>
                 <button class="pbpd-btn ghost sm" t-att-disabled="state.busy or !payListFile.downloadable"
                         t-on-click="() => this.downloadPayList('xlsx')" title="Download the payment list as an Excel file">
                   <span t-out="ic('download',13)"/><span>Excel</span>
