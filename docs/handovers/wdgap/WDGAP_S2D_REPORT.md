@@ -168,3 +168,52 @@ Static: pyflakes clean (only `__init__` re-exports), XML parse, no vendor word.
 ## 10. Left for later
 - Year-end certificate download (S2-B). Malaysia (not in G1).
 - Approvals drawer link to the proof file (M2).
+
+## Follow-up TD1–TD3 (owner rulings 2026-11-18 ~15:20)
+
+The four §9 questions were answered (rulings TD1–TD3 + the Sudima lookup note). pb_me_tax stays
+19.0.1.0.0 (not yet released anywhere); no other module changed in this follow-up.
+
+| Ruling | Built | Where |
+|---|---|---|
+| **TD1** reminder | "Needs you" row `tax_number_missing` — "Add your tax number" / "Your company needs it for your pay", opens Tax details. Shown only when the country of the pay set-up keeps a tax number here (VN, ID, IN — not SG or any other country), the number is empty, and no tax-number change is waiting for HR or sent back (the sent-back row covers that). Through the `_pbme_needs_extra` hook; pb_me_portal not edited; nothing emailed. Silent-install note: this row is now deliberately visible on day one to people with no number on file (owner choice). | `pb_me_tax/models/pb_me_home.py` (`_pbtx_number_missing`) |
+| **TD2** HR-only | Already so by design: no request kind exists for India UAN or Singapore tax residency; each kind's form whitelist ignores any other value. Now proven by test: crafted kinds refused; crafted extra values on an offered kind never written; rows read-only ("Kept by HR"), UAN masked. | `tests/test_followup_td.py` TD2 |
+| **TD3** contract copy | Approving a Vietnam tax code writes the employee AND `hr.contract.vietnam_tax_code` on the CURRENT contract only (running, started, not ended — new helper `_pbtx_running_contract`); never a closed, past or future contract; other countries never touch the contract. Written with `mail_notrack`; the contract chatter gets one line "Personal tax code changed to •••• 5678: approved change DET/… from My Payobook." (last 4 only). | `models/tax_request.py` (`_pbtx_vn_contract_copy`), `models/hr_employee.py` |
+| Dependants lookup without Rize's label | Keyed on the contract component CODE, never the label: setting `pb_me_tax.vn_registered_dependants_codes`, ordered, default `VNREGISTER,DEPS,NPT`; the first code the running contract carries is compared; a past contract is never read. Found read-only: Rize `VNREGISTER` (repo tools); the Vietnam starter scheme and the demo world `DEPS` ("Number of Dependents" / "Registered dependants"), one demo scheme `NPT` (local demo copy `upd_p5e_pay`; there they are pay-data inputs, not contract components, so no note); **Sudima's scheme as built in the repo (`tools/prepare_sudima_payroll_review.py`) keeps no dependants count at all — only a relief amount `VNRELIEF` — so no note can be shown there** (correct: nothing to compare). | `models/hr_employee.py` |
+
+**Tests (all pass; `t5` + `t6`)**
+
+| # | Test |
+|---|---|
+| TD1.1 | VN, ID, IN with no number → "Add your tax number", 1, `/my/tax` |
+| TD1.2 | SG and MY → no reminder |
+| TD1.3 | gone while waiting; sent back → only the sent-back row; gone once approved/on file; back after "Take it back" |
+| TD1.4 | in the home data; no mail created |
+| TD2 | crafted kinds `tax_uan`/`tax_residency`/field name refused; crafted UAN/residency values on PAN / fund requests never written; rows read-only, UAN masked |
+| TD3.1 | current contract copy written after approval only; past contract unchanged; chatter shows `•••• 5678`, never the full number (no tracking value either) |
+| TD3.2 | a future and an ended contract are not written |
+| TD3.3 | an Indonesia tax number never touches the contract |
+| TD3.4 | payslip inputs, computed values and lines identical before/after the contract copy |
+| DL.1 | `DEPS` with a Vietnamese label is found; when a contract carries two codes the first in the setting wins |
+| DL.2 | an unknown code is not guessed from its label; naming it in the setting makes the note appear |
+| DL.3 | a past contract's component is never compared |
+
+Golden (script, same three payslips as T8): before/after install **IDENTICAL**; then a Vietnam
+tax code approved for the golden person (employee + running contract written: True/True) and the
+three payslips recomputed — inputs, computed values and lines **identical** for all three.
+
+Suites (`t5`, fresh copy): pb_me_details 26/0, pb_employee_vault 21/0, pb_me_tax 41/0,
+pb_me_portal 93 with the baseline six + `test_02_tile_meta…` (merge-time task M1) — 181 tests,
+5 failed + 2 errors, = baseline + M1. vi/id PO regenerated from a fresh export (149 entries,
+none missing). The home row was checked through the home data (TD1.4) and the rendered /my page of test H4 (same person, Vietnam, no number); no separate browser pass for this one row.
+
+**Deployer read-only check (dependants code)** — per database, before or after go-live:
+`select t.code, t.name, count(a.id) from hr_contract_advantage_template t join hr_contract_advantage a on a.advantage_template_id = t.id join hr_contract c on c.id = a.contract_id and c.state = 'open' where t.name ilike '%depend%' or t.name ilike '%phụ thuộc%' or t.code ilike '%DEP%' or t.code ilike '%NPT%' group by 1, 2;`
+If a database shows a registered-dependants code other than `VNREGISTER`/`DEPS`/`NPT` (Sudima is
+expected to show none), set `pb_me_tax.vn_registered_dependants_codes` there (System parameters);
+nothing else changes.
+
+New gotchas: **S2D-8** the tax code on `hr.contract` and `hr.employee` are plain fields with no
+tracking; a future `tracking=True` would print the full number in chatter — write the copy with
+`mail_notrack` and post a masked line. **S2D-9** `setup.sh`-style conf regeneration silently put
+the port back to a clashing one; keep the phase port in the generator itself.
