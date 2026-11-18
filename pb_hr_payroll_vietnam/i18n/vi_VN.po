@@ -3648,3 +3648,15 @@ msgstr "người phê duyệt của nó"
 #. module: pb_hr_payroll_vietnam
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+msgid "This tax report is not available here, so nothing was made. The monthly and quarterly tax declaration is prepared on Compliance › Filings."
+msgstr "Báo cáo thuế này không có ở đây nên không có gì được tạo. Tờ khai thuế tháng và quý được lập ở Tuân thủ › Tờ khai."
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+msgid "This report is not available here, so nothing was made. The social insurance reports are on Compliance › Filings."
+msgstr "Báo cáo này không có ở đây nên không có gì được tạo. Các báo cáo bảo hiểm xã hội nằm ở Tuân thủ › Tờ khai."

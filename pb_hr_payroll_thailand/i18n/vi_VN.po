@@ -144,3 +144,9 @@ msgstr "Quản lý quỹ dự phòng"
 #: dashboard.payroll:0
 msgid "Monthly Payroll Processing"
 msgstr "Xử lý bảng lương hàng tháng"
+
+#. module: pb_hr_payroll_thailand
+#. odoo-python
+#: code:addons/pb_hr_payroll_thailand/wizards/social_security_wizard.py:0
+msgid "This file is not available yet, so nothing was made. Government filings are prepared on Compliance › Filings."
+msgstr "Tệp này chưa có nên không có gì được tạo. Tờ khai nhà nước được lập ở Tuân thủ › Tờ khai."

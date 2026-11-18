@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from datetime import datetime, date
 
 
@@ -124,25 +125,17 @@ class VietnamPayrollDashboard(models.Model):
             ]
         }
 
-    def action_generate_vietnam_tax_report(self):
-        """Generate Vietnam tax report"""
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Vietnam Tax Report'),
-            'res_model': 'vietnam.tax.report.wizard',
-            'view_mode': 'form',
-            'target': 'new'
-        }
+    def action_generate_vietnam_tax_report(self, *args, **kwargs):
+        """WDGAP S2-A (S2F-4): RETIRED. This door used to say a file was
+        made (or data imported) and made none. It now says so and makes
+        no claim. (Vietnam dashboard tax report button)"""
+        raise UserError(_("This tax report is not available here, so nothing was made. The monthly and quarterly tax declaration is prepared on Compliance › Filings."))
 
-    def action_generate_vietnam_social_insurance_report(self):
-        """Generate Vietnam social insurance report"""
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Vietnam Social Insurance Report'),
-            'res_model': 'vietnam.social.insurance.report.wizard',
-            'view_mode': 'form',
-            'target': 'new'
-        }
+    def action_generate_vietnam_social_insurance_report(self, *args, **kwargs):
+        """WDGAP S2-A (S2F-4): RETIRED. This door used to say a file was
+        made (or data imported) and made none. It now says so and makes
+        no claim. (Vietnam dashboard social insurance button (dangling model))"""
+        raise UserError(_("This report is not available here, so nothing was made. The social insurance reports are on Compliance › Filings."))
 
     def action_export_vietnam_bank_transfer(self):
         """Export Vietnam bank transfer file"""
