@@ -58,12 +58,12 @@ _logger = logging.getLogger(__name__)
 # constants here and are never taken from the payload: `getattr(wizard, name)`
 # with a name off the wire is a remote-method-call primitive, and a wizard has
 # `unlink` on it like every other record.
+#
+# WDGAP S2-A (S2F-4): Singapore, Thailand, Cambodia and Malaysia are no longer
+# adapted. Their wizards claimed a submission file was generated and wrote
+# none; a country's filings now come from the form catalogue (pb_form_lines).
 _GENERATE = {
     'VN': 'action_export',
-    'SG': 'action_generate_cpf_file',
-    'TH': 'action_generate_ssf_file',
-    'KH': 'action_generate_nssf_file',
-    'MY': 'action_generate_epf_file',
 }
 
 # A defence in depth over the table above, asserted in the tests as well: no
@@ -106,18 +106,8 @@ ADAPTERS = {
             'tang_ld': ['tang_reason', 'tang_effective_date', 'tang_region_code'],
         },
     },
-    # The other four wizards are the same shape — a name, a period, a country,
-    # and a button — so they are adapted through the same facade. They are NOT
-    # the same in what they produce, and `generate()` says so: none of them
-    # writes a file (see the module docstring).
-    'SG': {'model': 'cpf.submission.wizard', 'key_field': None, 'period': 'point',
-           'common': ['name', 'submission_period'], 'conditional': {}},
-    'TH': {'model': 'social.security.wizard', 'key_field': None, 'period': 'point',
-           'common': ['name', 'submission_period'], 'conditional': {}},
-    'KH': {'model': 'nssf.wizard', 'key_field': None, 'period': 'point',
-           'common': ['name', 'submission_period'], 'conditional': {}},
-    'MY': {'model': 'epf.wizard', 'key_field': None, 'period': 'point',
-           'common': ['name', 'submission_period'], 'conditional': {}},
+    # WDGAP S2-A: the four "point period" wizards (SG CPF, TH SSF, KH NSSF,
+    # MY EPF) were retired from this table — they wrote no file.
 }
 
 # Relational fields the flow offers as a bounded picker rather than as a raw id
@@ -510,7 +500,7 @@ class PbFilingFlow(models.AbstractModel):
         """The period this filing covers, as the screen shows it."""
         if spec['period'] == 'range':
             return '%s → %s' % (w.date_from or '', w.date_to or '')
-        return str(getattr(w, 'submission_period', '') or '')
+        return ''
 
     @api.model
     def _materialise(self, w, outcome):

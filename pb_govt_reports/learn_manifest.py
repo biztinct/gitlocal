@@ -69,6 +69,29 @@ MANIFESTS = {
                 'anchor': 'gr-grid',
             },
             {
+                # WDGAP S2-A — the tax returns of the form catalogue
+                'key': 'tax_returns', 'derived': True,
+                'column': {'en': "Tax returns", 'vi': "Tờ khai thuế"},
+                'from': _PY + ':_forms_for',
+                'how': {
+                    'en': "The monthly tax returns this country has, filled from finished "
+                          "payslips through Form lines. Each says \"Check with your "
+                          "adviser before first filing\" until a payroll manager marks "
+                          "it accepted by the authority.",
+                    'vi': "Các tờ khai thuế hằng tháng của quốc gia này, lấy số liệu từ "
+                          "phiếu lương đã hoàn tất qua Dòng biểu mẫu. Mỗi tờ khai ghi "
+                          "\"Hãy hỏi ý kiến tư vấn trước lần nộp đầu tiên\" cho đến khi "
+                          "quản lý lương đánh dấu được cơ quan chấp nhận.",
+                },
+                'if_changed': {
+                    'en': "Prepare opens the steps: period, check, send for approval, "
+                          "download. Nothing is filed with the authority from here.",
+                    'vi': "Nút Lập mở các bước: kỳ, kiểm tra, gửi duyệt, tải xuống. "
+                          "Không có gì được nộp cho cơ quan từ đây.",
+                },
+                'anchor': 'gr-forms',
+            },
+            {
                 'key': 'country', 'derived': True,
                 'column': {'en': "Country", 'vi': "Quốc gia"},
                 'from': _PY + ':get_govt_reports_data',

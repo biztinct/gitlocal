@@ -34,19 +34,25 @@ _CATALOG = {
             ]},
         ],
     },
-    'SG': {'wizard_model': 'cpf.submission.wizard', 'groups': [
-        {'label': 'Social Security', 'icon': 'checkCircle', 'reports': [
-            {'key': 'cpf', 'en': 'CPF Submission', 'vi': 'CPF Submission'}]}]},
-    'TH': {'wizard_model': 'social.security.wizard', 'groups': [
-        {'label': 'Social Security', 'icon': 'checkCircle', 'reports': [
-            {'key': 'ssf', 'en': 'SSF Submission', 'vi': 'SSF Submission'}]}]},
-    'KH': {'wizard_model': 'nssf.wizard', 'groups': [
-        {'label': 'Social Security', 'icon': 'checkCircle', 'reports': [
-            {'key': 'nssf', 'en': 'NSSF Submission', 'vi': 'NSSF Submission'}]}]},
-    'MY': {'wizard_model': 'epf.wizard', 'groups': [
-        {'label': 'Social Security', 'icon': 'checkCircle', 'reports': [
-            {'key': 'epf', 'en': 'EPF / SOCSO / EIS', 'vi': 'EPF / SOCSO / EIS'}]}]},
+    # WDGAP S2-A (S2F-4): the Singapore CPF, Thailand SSF, Cambodia NSSF and
+    # Malaysia EPF tiles are RETIRED. Their wizards wrote no file and said
+    # they had; a country's filings now come from the form catalogue
+    # (pb_form_lines, `forms` below) once its forms are built.
 }
+
+
+def _forms_for(env, company, country):
+    """The government forms of `country` (pb_form_lines, by probe — this
+    module does not depend on it), as the board's tiles. Empty for a person
+    without the payroll officer right: the same right that prepares them."""
+    if 'pb.gov.form' not in env or 'pb.gov.form.board' not in env:
+        return []
+    Rights = env['pb.gov.form.rights']
+    if not Rights._pb_is_officer():
+        return []
+    Board = env['pb.gov.form.board']
+    forms = env['pb.gov.form'].sudo().search([('country_code', '=', country)])
+    return [Board._form_card(form, company) for form in forms]
 
 
 class PbGovtReports(models.AbstractModel):
@@ -86,12 +92,17 @@ class PbGovtReports(models.AbstractModel):
         cat = _CATALOG.get(sel, {})
         wizard_model = cat.get('wizard_model')
         available = bool(wizard_model) and wizard_model in self.env
+        forms = _forms_for(self.env, company, sel)
         return {
             'company': company.name,
             'country_code': sel,
             'country_label': _COUNTRY_NAMES.get(sel, sel),
             'wizard_model': wizard_model or '',
-            'available': available,
+            'available': available or bool(forms),
+            'wizards_available': available,
+            # WDGAP S2-A: the tax returns of the form catalogue, as tiles
+            'forms': forms,
+            'form_lines': 'pb.gov.form' in self.env,
             'groups': cat.get('groups', []) if available else [],
             'period': self._default_period(company),
             'countries': sorted(
