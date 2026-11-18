@@ -37,7 +37,8 @@ class PbMeHome(models.AbstractModel):
         Req = self.env['pb.me.detail.request'].sudo()
         back = Req.search_count([('employee_id', '=', emp.id),
                                  ('state', '=', 'draft'),
-                                 ('decision_note', '!=', False)])
+                                 ('decision_note', '!=', False)]
+                                + Req._pb_page_domain())
         Bank = self.env['pb.bank.change.request'].sudo()
         back += Bank.search_count([('employee_id', '=', emp.id),
                                    ('pb_origin', '=', 'self_service'),

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S2-D — Tax details on My Payobook. Pages reuse pb_me_portal's
+       .pbme kit and pb_me_details' .pbmd layer (cards, rows, pills, toast,
+       forms); `.pbtx-*` is this module's thin layer
+       (static/src/scss/me_tax.scss). Every sentence sits on one line (ledger
+       PRD-3). No %-formatting inside t-att-* (ledger PRB-W5). Loop names:
+       rows `tr`, dependants `dp`, requests `rq`, options `op`, diff rows `rw`. -->
+
+  <template id="portal_breadcrumbs_tax" name="Tax details breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="41">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'my_tax'" class="breadcrumb-item active">Tax details</li>
+      <li t-if="page_name in ('my_tax_form', 'my_tax_request')" class="breadcrumb-item"><a href="/my/tax">Tax details</a></li>
+      <li t-if="page_name == 'my_tax_form'" class="breadcrumb-item active">Change</li>
+      <li t-if="page_name == 'my_tax_request'" class="breadcrumb-item active">Your change</li>
+    </xpath>
+  </template>
+
+  <template id="portal_my_home_tax" name="Tax details home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="23">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Tax details</t>
+        <t t-set="text">Your tax number and tax choices</t>
+        <t t-set="url" t-value="'/my/tax'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/tax                                                       -->
+  <!-- ============================================================= -->
+  <template id="portal_my_tax" name="Tax details">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd pbtx">
+        <t t-call="pb_me_details.pbmd_toast"/>
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Tax details</t>
+          <t t-set="hero_sub">The tax details your company keeps for your pay. Ask for a change here: HR checks it first, and your record changes only once it is approved.</t>
+        </t>
+
+        <t t-if="not supported">
+          <section class="pbme-card pbmd-card pbtx-empty">
+            <span class="pbtx-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="24"/></t></span>
+            <t t-if="not country">
+              <h2 class="pbmd-h2">Your tax details cannot be shown yet</h2>
+              <p class="pbmd-muted">Your pay set-up does not say yet which country you are paid in. Ask HR if a tax detail needs changing.</p>
+            </t>
+            <t t-else="">
+              <h2 class="pbmd-h2"><span><span>Tax details for</span> <t t-esc="country_name"/> <span>are not on My Payobook yet</span></span></h2>
+              <p class="pbmd-muted">Ask HR if a tax detail needs changing.</p>
+            </t>
+          </section>
+        </t>
+
+        <t t-else="">
+          <div class="pbtx-grid">
+            <section class="pbme-card pbmd-card pbtx-main">
+              <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="17"/></t><span><span>Paid in</span> <t t-esc="country_name"/></span></h2>
+              <p class="pbmd-muted">Numbers show their last four characters only.</p>
+              <ul class="pbmd-list">
+                <li t-foreach="rows" t-as="tr" class="pbmd-row pbtx-row">
+                  <div class="pbmd-row-main">
+                    <div class="pbmd-row-t" t-esc="tr['label']"/>
+                    <div class="pbmd-row-s pbtx-value"><t t-if="tr['has']"><t t-esc="tr['value']"/></t><t t-else="">Not on file</t></div>
+                    <div class="pbmd-chips">
+                      <span t-if="tr['waiting']" class="pbmd-chip pbmd-chip--wait">Change waiting for HR</span>
+                      <span t-if="tr['hint']" class="pbmd-chip" t-esc="tr['hint']"/>
+                    </div>
+                  </div>
+                  <a t-if="tr['kind'] and not tr['waiting']" class="pbmd-row-go" t-att-href="'/my/tax/change/' + tr['kind']"><t t-if="tr['has']">Change</t><t t-else="">Add</t></a>
+                </li>
+              </ul>
+              <p class="pbmd-fine">A change reaches your pay only where your company's pay rules use it.</p>
+            </section>
+
+            <section t-if="country == 'VN'" class="pbme-card pbmd-card pbtx-deps">
+              <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'users'"/><t t-set="isz" t-value="17"/></t>Tax dependants</h2>
+              <p class="pbmd-muted">The people who reduce the tax on your pay.</p>
+              <p t-if="not dependants" class="pbmd-none">No tax dependants on file.</p>
+              <ul t-else="" class="pbmd-list">
+                <li t-foreach="dependants" t-as="dp" class="pbmd-row">
+                  <div class="pbmd-row-main">
+                    <div class="pbmd-row-t" t-esc="dp['name']"/>
+                    <div t-if="dp['since']" class="pbmd-row-s"><span>Since</span> <span t-out="dp['since']" t-options="{'widget': 'date'}"/></div>
+                  </div>
+                  <span t-att-class="'pbtx-state pbtx-state--' + dp['state']" t-esc="dp['label']"/>
+                </li>
+              </ul>
+              <div class="pbmd-actions">
+                <a class="pbme-btn pbme-btn--ghost" href="/my/details"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user-plus'"/><t t-set="isz" t-value="15"/></t>Add or change family members</a>
+              </div>
+              <p class="pbmd-fine">Family members are kept in My details. A dependant changes your tax only after the pay team confirms it.</p>
+            </section>
+          </div>
+        </t>
+
+        <section t-if="requests" class="pbme-card pbmd-card pbmd-changes">
+          <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="17"/></t>Your changes</h2>
+          <ul class="pbmd-list">
+            <li t-foreach="requests" t-as="rq" class="pbmd-row">
+              <a class="pbmd-row-link" t-att-href="'/my/tax/request/' + str(rq['id'])">
+                <div class="pbmd-row-main">
+                  <div class="pbmd-row-t" t-esc="rq['title']"/>
+                  <div t-if="rq['note'] and rq['state'] in ('sent_back', 'refused')" class="pbmd-row-s pbmd-why"><span>Reason:</span> <t t-esc="rq['note']"/></div>
+                </div>
+                <t t-call="pb_me_details.pbmd_pill"><t t-set="state" t-value="rq['state']"/><t t-set="is_bank" t-value="False"/></t>
+              </a>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  One form for every kind of tax change                          -->
+  <!-- ============================================================= -->
+  <template id="portal_tax_form" name="Change a tax detail">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd pbtx">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title"><t t-if="kind == 'tax_number'" t-esc="number_label"/><t t-elif="kind == 'tax_status'">PTKP status</t><t t-elif="kind == 'tax_regime'">Tax regime</t><t t-else="">Self-help group fund</t></t>
+          <t t-set="hero_sub">HR checks it first. Nothing changes on your record until it is approved.</t>
+        </t>
+        <section class="pbme-card pbmd-card pbmd-form-card">
+          <div t-if="req and req.decision_note" class="pbmd-back">
+            <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="16"/></t>
+            <div><b>HR sent this back.</b> <span t-esc="req.decision_note"/></div>
+          </div>
+          <t t-call="pb_me_details.pbmd_alert"/>
+          <form action="/my/tax/send" method="post" enctype="multipart/form-data" class="pbmd-form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="kind" t-att-value="kind"/>
+            <input t-if="req" type="hidden" name="request_id" t-att-value="req.id"/>
+
+            <t t-if="kind == 'tax_number'">
+              <p t-if="current" class="pbmd-muted"><span>On your record now:</span> <b t-esc="current"/></p>
+              <div class="pbme-form-grid">
+                <label class="pbme-form-wide"><span>New number</span><input type="text" name="t_number" maxlength="40" autocomplete="off" t-att-value="v.get('t_number') or ''"/></label>
+              </div>
+              <p t-if="country == 'VN'" class="pbmd-fine">10 digits, or the 12-digit number on your chip ID card.</p>
+              <p t-elif="country == 'ID'" class="pbmd-fine">15 digits, or your 16-digit NIK when it is used as your NPWP.</p>
+              <p t-elif="country == 'IN'" class="pbmd-fine">10 characters, for example ABCDE1234F.</p>
+              <div t-if="has_nik" class="pbmd-checks">
+                <label class="pbmd-check"><input type="checkbox" name="t_use_nik" value="1" t-att-checked="v.get('t_use_nik') and v.get('t_use_nik') not in ('0', False)"/><span><b>Use my NIK as my NPWP</b><small>The national ID number on your record is used. Leave the box above empty.</small></span></label>
+              </div>
+            </t>
+
+            <t t-elif="kind == 'tax_status'">
+              <div class="pbme-form-grid">
+                <label class="pbme-form-wide"><span>Your PTKP status</span>
+                  <select name="t_ptkp" required="required">
+                    <option value="">Choose…</option>
+                    <option t-foreach="options['ptkp']" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == v.get('t_ptkp')" t-esc="op[1]"/>
+                  </select>
+                </label>
+              </div>
+              <p class="pbmd-fine">Dependants are family members you support, up to three.</p>
+            </t>
+
+            <t t-elif="kind == 'tax_regime'">
+              <div class="pbme-form-grid">
+                <label class="pbme-form-wide"><span>The tax regime you choose for this tax year</span>
+                  <select name="t_regime" required="required">
+                    <option value="">Choose…</option>
+                    <option t-foreach="options['regime']" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == v.get('t_regime')" t-esc="op[1]"/>
+                  </select>
+                </label>
+              </div>
+            </t>
+
+            <t t-else="">
+              <div class="pbme-form-grid">
+                <label class="pbme-form-wide"><span>The fund you give to through your pay</span>
+                  <select name="t_fund" required="required">
+                    <option value="">Choose…</option>
+                    <option t-foreach="options['fund']" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == v.get('t_fund')" t-esc="op[1]"/>
+                  </select>
+                </label>
+              </div>
+            </t>
+
+            <label class="pbmd-drop"><input type="file" name="file" accept="application/pdf,image/png,image/jpeg"/><span class="pbmd-drop-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="16"/></t></span><span class="pbmd-drop-t"><b t-if="proof_required">A photo or scan that shows it</b><b t-else="">A photo or scan that shows it (optional)</b><span t-if="req and req.attachment_id">Already added. Choose a file only to replace it.</span><span t-else="">PDF, JPG or PNG, up to 10 MB</span></span></label>
+
+            <label class="pbmd-note"><span>Note to HR (optional)</span><textarea name="note" rows="2" maxlength="500"><t t-esc="v.get('note') or ''"/></textarea></label>
+            <div class="pbmd-actions">
+              <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send to HR</button>
+              <a href="/my/tax" class="pbme-btn pbme-btn--ghost">Cancel</a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  One change: where it is                                       -->
+  <!-- ============================================================= -->
+  <template id="portal_tax_request" name="Your tax detail change">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd pbtx">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">Your change</t>
+          <t t-set="hero_title" t-value="r['title']"/>
+        </t>
+        <section class="pbme-card pbmd-card">
+          <div class="pbmd-status">
+            <t t-call="pb_me_details.pbmd_pill"><t t-set="state" t-value="r['state']"/><t t-set="is_bank" t-value="False"/></t>
+            <span t-if="r['state'] == 'hr_review'" class="pbmd-muted">HR has it. Nothing changes on your record until it is approved.</span>
+            <span t-elif="r['state'] == 'approved'" class="pbmd-muted">Your record is updated.</span>
+          </div>
+          <div t-if="r['note'] and r['state'] == 'refused'" class="pbmd-back"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t><div><b>Why:</b> <span t-esc="r['note']"/></div></div>
+          <table class="pbme-diff pbmd-diff">
+            <thead><tr><th>Detail</th><th>Now</th><th>Proposed</th></tr></thead>
+            <tbody>
+              <tr t-foreach="rows" t-as="rw" t-att-class="'is-changed' if rw[1] != rw[2] else ''">
+                <td class="pbme-diff-f" t-esc="rw[0]"/>
+                <td class="pbme-diff-cur" t-esc="rw[1] or '—'"/>
+                <td class="pbme-diff-new" t-esc="rw[2] or '—'"/>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pbmd-actions">
+            <form t-if="r['state'] == 'hr_review'" t-att-action="'/my/tax/request/' + str(r['id']) + '/withdraw'" method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <button type="submit" class="pbme-btn pbme-btn--ghost"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="15"/></t>Take it back</button>
+            </form>
+            <a href="/my/tax" class="pbme-btn pbme-btn--ghost">Back to my tax details</a>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+</odoo>

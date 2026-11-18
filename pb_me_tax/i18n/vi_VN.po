@@ -1,0 +1,824 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-18 04:00+0000\n"
+"PO-Revision-Date: 2026-11-18 04:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "%(what)s: %(value)s"
+msgstr "%(what)s: %(value)s"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "10 characters, for example ABCDE1234F."
+msgstr "10 ký tự, ví dụ ABCDE1234F."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "10 digits, or the 12-digit number on your chip ID card."
+msgstr "10 chữ số, hoặc số 12 chữ số trên thẻ căn cước gắn chip của bạn."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "15 digits, or your 16-digit NIK when it is used as your NPWP."
+msgstr "15 chữ số, hoặc số NIK 16 chữ số của bạn khi NIK được dùng làm NPWP."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<b>HR sent this back.</b>"
+msgstr "<b>Bộ phận nhân sự đã gửi trả lại.</b>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "<b>Tax dependants:</b>"
+msgstr "<b>Người phụ thuộc thuế:</b>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "<b>Why:</b>"
+msgstr "<b>Lý do:</b>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<option value=\"\">Choose…</option>"
+msgstr "<option value=\"\">Chọn…</option>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span><b>Use my NIK as my NPWP</b><small>The national ID number on your record is used. Leave the box above empty.</small></span>"
+msgstr "<span><b>Dùng NIK của tôi làm NPWP</b><small>Số căn cước trong hồ sơ của bạn sẽ được dùng. Để trống ô phía trên.</small></span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>New number</span>"
+msgstr "<span>Số mới</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>Note to HR (optional)</span>"
+msgstr "<span>Ghi chú cho nhân sự (không bắt buộc)</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>On your record now:</span>"
+msgstr "<span>Đang có trong hồ sơ của bạn:</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>Paid in</span>"
+msgstr "<span>Được trả lương tại</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>Reason:</span>"
+msgstr "<span>Lý do:</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>Since</span>"
+msgstr "<span>Từ</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>Tax details for</span>"
+msgstr "<span>Thông tin thuế cho</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>The fund you give to through your pay</span>"
+msgstr "<span>Quỹ bạn đóng góp qua lương</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>The tax regime you choose for this tax year</span>"
+msgstr "<span>Chế độ thuế bạn chọn cho năm tính thuế này</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>Your PTKP status</span>"
+msgstr "<span>Tình trạng PTKP của bạn</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>are not on My Payobook yet</span>"
+msgstr "<span>chưa có trên My Payobook</span>"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "A PAN has 10 characters: 5 letters, 4 numbers and 1 letter, for example ABCDE1234F."
+msgstr "Số PAN có 10 ký tự: 5 chữ cái, 4 chữ số và 1 chữ cái, ví dụ ABCDE1234F."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "A change reaches your pay only where your company's pay rules use it."
+msgstr "Thay đổi chỉ ảnh hưởng đến lương khi quy tắc tính lương của công ty bạn có dùng đến nó."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "A personal tax code has 10 digits, or 12 when it is the number on your chip ID card."
+msgstr "Mã số thuế cá nhân có 10 chữ số, hoặc 12 chữ số khi là số trên thẻ căn cước gắn chip."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "A photo or scan that shows it"
+msgstr "Ảnh chụp hoặc bản quét thể hiện thông tin này"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "A photo or scan that shows it (optional)"
+msgstr "Ảnh chụp hoặc bản quét thể hiện thông tin này (không bắt buộc)"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Add a photo or scan that shows it, so HR can check it."
+msgstr "Hãy thêm ảnh chụp hoặc bản quét thể hiện thông tin này để nhân sự kiểm tra."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Add or change family members"
+msgstr "Thêm hoặc sửa thành viên gia đình"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Add your tax number"
+msgstr "Thêm mã số thuế của bạn"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Already added. Choose a file only to replace it."
+msgstr "Đã thêm. Chỉ chọn tệp nếu muốn thay thế."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "An NPWP has 15 digits, or 16 when your NIK is used as your NPWP."
+msgstr "NPWP có 15 chữ số, hoặc 16 chữ số khi NIK của bạn được dùng làm NPWP."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Approving a tax detail an employee asked for writes it to this record only. A payslip changes only where a pay scheme is set up to read that detail; none reads it when this is first switched on."
+msgstr "Duyệt một thông tin thuế mà nhân viên đề nghị chỉ ghi thông tin đó vào hồ sơ này. Phiếu lương chỉ thay đổi khi một bảng lương được thiết lập để đọc thông tin đó; khi mới bật, không bảng lương nào đọc nó."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Ask HR if a tax detail needs changing."
+msgstr "Hãy hỏi bộ phận nhân sự nếu cần sửa thông tin thuế."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "BPJS employment number"
+msgstr "Số BPJS lao động"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "BPJS health number"
+msgstr "Số BPJS y tế"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Back to my tax details"
+msgstr "Quay lại thông tin thuế của tôi"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Being checked"
+msgstr "Đang được kiểm tra"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__cdac model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__cdac
+msgid "CDAC (Chinese Development Assistance Council)"
+msgstr "CDAC (Hội đồng Hỗ trợ Phát triển Người Hoa)"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_breadcrumbs_tax model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_pb_me_detail_request
+msgid "Change to my details"
+msgstr "Thay đổi thông tin của tôi"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Change waiting for HR"
+msgstr "Thay đổi đang chờ nhân sự"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Changes asked for on My Payobook"
+msgstr "Các thay đổi được đề nghị trên My Payobook"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Changes only if a pay rule reads it"
+msgstr "Chỉ đổi khi quy tắc lương đọc nó"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Choose one of the options."
+msgstr "Hãy chọn một lựa chọn."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Counted for tax"
+msgstr "Được tính giảm trừ thuế"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_country
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Dependants are family members you support, up to three."
+msgstr "Người phụ thuộc là thành viên gia đình bạn nuôi dưỡng, tối đa ba người."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Detail"
+msgstr "Thông tin"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__display_name model:ir.model.fields,field_description:pb_me_tax.field_hr_formula_config__display_name model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__display_name model:ir.model.fields,field_description:pb_me_tax.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_me_tax.field_pb_people__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Do not match the contract"
+msgstr "Không khớp với hợp đồng"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Does not match: %(confirmed)s confirmed by HR, %(registered)s on the contract. Nothing was changed."
+msgstr "Không khớp: %(confirmed)s người được nhân sự xác nhận, %(registered)s người trên hợp đồng. Không có gì bị thay đổi."
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__ecf model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__ecf
+msgid "ECF (Eurasian Community Fund)"
+msgstr "ECF (Quỹ Cộng đồng Âu-Á)"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "ESI number"
+msgstr "Số ESI (bảo hiểm Ấn Độ)"
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_hr_employee
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_in_esi_number
+msgid "Employee State Insurance (ESI) insurance number. Kept by HR; the employee sees it on My Payobook, masked."
+msgstr "Số bảo hiểm ESI (Bảo hiểm Nhà nước cho Người lao động, Ấn Độ). Do nhân sự quản lý; nhân viên xem trên My Payobook, chỉ hiện bốn ký tự cuối."
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Dữ liệu trang chủ nhân viên"
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr "Cấu hình công thức lương"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Family members are kept in My details. A dependant changes your tax only after the pay team confirms it."
+msgstr "Thành viên gia đình được lưu trong Thông tin của tôi. Người phụ thuộc chỉ làm thay đổi thuế của bạn sau khi bộ phận lương xác nhận."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "HR checks it first. Nothing changes on your record until it is approved."
+msgstr "Nhân sự kiểm tra trước. Hồ sơ của bạn không thay đổi cho đến khi được duyệt."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "HR has it. Nothing changes on your record until it is approved."
+msgstr "Nhân sự đang xử lý. Hồ sơ của bạn không thay đổi cho đến khi được duyệt."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "HR sent %s tax changes back"
+msgstr "Nhân sự đã gửi trả %s thay đổi về thuế"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "HR sent a change to your tax details back."
+msgstr "Nhân sự đã gửi trả một thay đổi về thông tin thuế của bạn."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "HR sent a tax change back"
+msgstr "Nhân sự đã gửi trả một thay đổi về thuế"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__none model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__none
+msgid "I do not give to a self-help group fund"
+msgstr "Tôi không đóng góp quỹ tự lực cộng đồng"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__id model:ir.model.fields,field_description:pb_me_tax.field_hr_formula_config__id model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__id model:ir.model.fields,field_description:pb_me_tax.field_pb_me_home__id model:ir.model.fields,field_description:pb_me_tax.field_pb_people__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "India"
+msgstr "Ấn Độ"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_esi_number
+msgid "India ESI number"
+msgstr "Số ESI (Ấn Độ)"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_pan_number
+msgid "India PAN"
+msgstr "Số PAN (Ấn Độ)"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_uan_number
+msgid "India UAN (provident fund)"
+msgstr "Số UAN quỹ dự phòng (Ấn Độ)"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_tax_regime
+msgid "India tax regime"
+msgstr "Chế độ thuế (Ấn Độ)"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_id_ptkp_status
+msgid "Indonesia PTKP status"
+msgstr "Tình trạng PTKP (Indonesia)"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/0 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/0
+msgid "K/0 · Married, no dependants"
+msgstr "K/0 · Đã kết hôn, không có người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/1 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/1
+msgid "K/1 · Married, 1 dependant"
+msgstr "K/1 · Đã kết hôn, 1 người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/2 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/2
+msgid "K/2 · Married, 2 dependants"
+msgstr "K/2 · Đã kết hôn, 2 người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/3 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/3
+msgid "K/3 · Married, 3 dependants"
+msgstr "K/3 · Đã kết hôn, 3 người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/i/0 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/i/0
+msgid "K/I/0 · Married, spouse's income added, no dependants"
+msgstr "K/I/0 · Đã kết hôn, gộp thu nhập vợ/chồng, không có người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/i/1 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/i/1
+msgid "K/I/1 · Married, spouse's income added, 1 dependant"
+msgstr "K/I/1 · Đã kết hôn, gộp thu nhập vợ/chồng, 1 người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/i/2 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/i/2
+msgid "K/I/2 · Married, spouse's income added, 2 dependants"
+msgstr "K/I/2 · Đã kết hôn, gộp thu nhập vợ/chồng, 2 người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/i/3 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/i/3
+msgid "K/I/3 · Married, spouse's income added, 3 dependants"
+msgstr "K/I/3 · Đã kết hôn, gộp thu nhập vợ/chồng, 3 người phụ thuộc"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Kept by HR"
+msgstr "Do nhân sự quản lý"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__mbmf model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__mbmf
+msgid "MBMF (Mosque Building and Mendaki Fund)"
+msgstr "MBMF (Quỹ Xây dựng Thánh đường và Mendaki)"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Missing"
+msgstr "Còn thiếu"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "NPWP (tax number)"
+msgstr "NPWP (mã số thuế)"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "NRIC or FIN"
+msgstr "Số NRIC hoặc FIN"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_in_tax_regime__new model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_regime__new
+msgid "New tax regime"
+msgstr "Chế độ thuế mới"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "No longer counted"
+msgstr "Không còn được tính"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "No tax dependants on file."
+msgstr "Chưa có người phụ thuộc thuế trong hồ sơ."
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_tax_residency__non_resident
+msgid "Not a tax resident"
+msgstr "Không phải cư trú thuế"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Not counted"
+msgstr "Không được tính"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Not on file"
+msgstr "Chưa có trong hồ sơ"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Now"
+msgstr "Hiện tại"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Numbers show their last four characters only."
+msgstr "Các số chỉ hiện bốn ký tự cuối."
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_in_tax_regime__old model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_regime__old
+msgid "Old tax regime"
+msgstr "Chế độ thuế cũ"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "PAN (tax number)"
+msgstr "PAN (mã số thuế)"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "PDF, JPG or PNG, up to 10 MB"
+msgstr "PDF, JPG hoặc PNG, tối đa 10 MB"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_ptkp model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__kind__tax_status model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "PTKP status"
+msgstr "Tình trạng PTKP"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr "Dữ liệu màn hình Nhân sự"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Personal tax code"
+msgstr "Mã số thuế cá nhân"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Personal tax code changed to %(number)s: approved change %(ref)s from My Payobook."
+msgstr "Mã số thuế cá nhân đã đổi thành %(number)s: thay đổi %(ref)s từ My Payobook đã được duyệt."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_proof_file
+msgid "Proof"
+msgstr "Bằng chứng"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_proof_name
+msgid "Proof file name"
+msgstr "Tên tệp bằng chứng"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Proposed"
+msgstr "Đề nghị"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Read why, then change it and send it again"
+msgstr "Đọc lý do, sau đó sửa và gửi lại"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__sinda model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__sinda
+msgid "SINDA (Singapore Indian Development Association)"
+msgstr "SINDA (Hiệp hội Phát triển Người Ấn tại Singapore)"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_fund model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__kind__tax_fund model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Self-help group fund"
+msgstr "Quỹ tự lực cộng đồng"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Send to HR"
+msgstr "Gửi cho nhân sự"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_vn_dependants_check
+msgid "Shown only when the tax dependants HR confirmed differ from the registered tax dependants on the running contract. Nothing is changed for you."
+msgstr "Chỉ hiện khi số người phụ thuộc thuế nhân sự đã xác nhận khác với số người phụ thuộc đã đăng ký trên hợp đồng đang hiệu lực. Không có gì bị thay đổi."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_sg_shg_fund
+msgid "Singapore self-help group fund"
+msgstr "Quỹ tự lực cộng đồng (Singapore)"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_sg_tax_residency
+msgid "Singapore tax residency"
+msgstr "Cư trú thuế (Singapore)"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__tk/0 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__tk/0
+msgid "TK/0 · Not married, no dependants"
+msgstr "TK/0 · Chưa kết hôn, không có người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__tk/1 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__tk/1
+msgid "TK/1 · Not married, 1 dependant"
+msgstr "TK/1 · Chưa kết hôn, 1 người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__tk/2 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__tk/2
+msgid "TK/2 · Not married, 2 dependants"
+msgstr "TK/2 · Chưa kết hôn, 2 người phụ thuộc"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__tk/3 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__tk/3
+msgid "TK/3 · Not married, 3 dependants"
+msgstr "TK/3 · Chưa kết hôn, 3 người phụ thuộc"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Take it back"
+msgstr "Rút lại"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0 model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Tax dependants"
+msgstr "Người phụ thuộc thuế"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_vn_dependants_check
+msgid "Tax dependants check"
+msgstr "Kiểm tra người phụ thuộc thuế"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_pb_me_detail_request_form_tax
+msgid "Tax detail"
+msgstr "Thông tin thuế"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_tax_request_ids
+msgid "Tax detail changes"
+msgstr "Thay đổi thông tin thuế"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0 model_terms:ir.ui.view,arch_db:pb_me_tax.portal_breadcrumbs_tax model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_home_tax model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Tax details"
+msgstr "Thông tin thuế"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_number model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__kind__tax_number
+msgid "Tax number"
+msgstr "Mã số thuế"
+
+#. module: pb_me_tax
+#: model:pb.employee.document.category,name:pb_me_tax.cat_tax_paper
+msgid "Tax paper"
+msgstr "Giấy tờ thuế"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_regime model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__kind__tax_regime model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Tax regime"
+msgstr "Chế độ thuế"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Tax residency"
+msgstr "Cư trú thuế"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_tax_residency__resident
+msgid "Tax resident"
+msgstr "Cư trú thuế"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "That is already what your record says."
+msgstr "Hồ sơ của bạn đã ghi đúng như vậy."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "That number is already on your record."
+msgstr "Số này đã có trong hồ sơ của bạn."
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_in_tax_regime
+msgid "The income tax regime the employee chose for this tax year."
+msgstr "Chế độ thuế thu nhập nhân viên chọn cho năm tính thuế này."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "The national ID number on your record is not a 16-digit NIK. Type your NPWP instead."
+msgstr "Số căn cước trong hồ sơ của bạn không phải NIK 16 chữ số. Hãy nhập NPWP của bạn."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "The people who reduce the tax on your pay."
+msgstr "Những người giúp giảm thuế trên lương của bạn."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "The tax details your company keeps for your pay. Ask for a change here: HR checks it first, and your record changes only once it is approved."
+msgstr "Thông tin thuế công ty lưu để tính lương cho bạn. Đề nghị thay đổi tại đây: nhân sự kiểm tra trước, và hồ sơ của bạn chỉ thay đổi khi được duyệt."
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_id_ptkp_status
+msgid "The tax-free allowance status the employee declared. Changed on My Payobook with HR approval, or by HR here."
+msgstr "Tình trạng PTKP (mức miễn thuế) nhân viên đã khai. Được đổi trên My Payobook khi nhân sự duyệt, hoặc do nhân sự sửa tại đây."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "There is no national ID number (NIK) on your record. Type your NPWP instead."
+msgstr "Hồ sơ của bạn chưa có số căn cước (NIK). Hãy nhập NPWP của bạn."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "This change is not offered for the country you are paid in."
+msgstr "Thay đổi này không áp dụng cho quốc gia bạn được trả lương."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "This tax detail cannot be kept for this person."
+msgstr "Không thể lưu thông tin thuế này cho người này."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "UAN (provident fund)"
+msgstr "UAN (quỹ dự phòng)"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_use_nik
+msgid "Use my NIK as my NPWP"
+msgstr "Dùng NIK của tôi làm NPWP"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Waiting for the pay team to confirm"
+msgstr "Đang chờ bộ phận lương xác nhận"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__kind
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Write your tax number."
+msgstr "Hãy nhập mã số thuế của bạn."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "You can only change your own details."
+msgstr "Bạn chỉ có thể thay đổi thông tin của chính mình."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_breadcrumbs_tax model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Your change"
+msgstr "Thay đổi của bạn"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Your changes"
+msgstr "Các thay đổi của bạn"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Your company needs it for your pay"
+msgstr "Công ty cần thông tin này để tính lương cho bạn"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Your pay set-up does not say yet which country you are paid in. Ask HR if a tax detail needs changing."
+msgstr "Thiết lập lương của bạn chưa cho biết bạn được trả lương ở quốc gia nào. Hãy hỏi nhân sự nếu cần sửa thông tin thuế."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Your record is updated."
+msgstr "Hồ sơ của bạn đã được cập nhật."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Your tax details cannot be shown yet"
+msgstr "Chưa thể hiển thị thông tin thuế của bạn"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_home_tax
+msgid "Your tax number and tax choices"
+msgstr "Mã số thuế và các lựa chọn về thuế của bạn"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Your tax number is not on file yet."
+msgstr "Mã số thuế của bạn chưa có trong hồ sơ."

@@ -1,0 +1,43 @@
+// =====================================================================
+//  Tax details on My Payobook — .pbtx-* (WDGAP S2-D)
+//
+//  A thin layer on pb_me_details' .pbmd cards (the page root is
+//  `.pbme.pbmd.pbtx`). Tokens only (--pbim-*), flat colours, no gradients.
+//  Quiet: grey at rest; the one coloured thing is the person's turn.
+// =====================================================================
+
+.pbme.pbmd.pbtx {
+    .pbtx-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; margin-bottom: 16px; }
+    .pbtx-grid > .pbtx-main:only-child { grid-column: 1 / -1; max-width: 720px; }
+    .pbtx-value { font-variant-numeric: tabular-nums; letter-spacing: .03em; }
+    .pbtx-row .pbmd-row-go { align-self: center; }
+
+    .pbtx-empty {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 6px; max-width: 720px; margin-bottom: 16px;
+        .pbmd-h2 { flex-wrap: wrap; gap: 4px; }
+    }
+    .pbtx-empty-ic {
+        display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate); margin-bottom: 4px;
+    }
+
+    .pbtx-state {
+        display: inline-flex; align-items: center; gap: 6px; flex: none; white-space: nowrap; align-self: center;
+        padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        &::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .55; }
+    }
+    .pbtx-state--ok { background: var(--pbim-green-soft); color: var(--pbim-green); &::before { opacity: 1; } }
+    .pbtx-state--wait {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); color: var(--pbim-text);
+        &::before { background: var(--pbim-amber); opacity: 1; }
+    }
+
+    @media (max-width: 820px) {
+        .pbtx-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 520px) {
+        .pbtx-row { flex-direction: row; }
+        .pbmd-row .pbtx-state { align-self: flex-start; }
+    }
+}

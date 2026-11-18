@@ -34,3 +34,69 @@ msgid ""
 "%s days before a document expires, HR gets a to-do on the employee to renew it."
 msgstr ""
 "%s hari sebelum dokumen kedaluwarsa, HR menerima tugas pada karyawan tersebut untuk memperbaruinya."
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "PTKP status"
+msgstr "Status PTKP"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "India tax"
+msgstr "Pajak India"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "PAN"
+msgstr "PAN"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Tax regime"
+msgstr "Rezim pajak"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "UAN (provident fund)"
+msgstr "UAN (dana pensiun)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Singapore tax"
+msgstr "Pajak Singapura"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Tax residency"
+msgstr "Status pajak"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Self-help group fund"
+msgstr "Dana kelompok swadaya"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Vietnam tax dependants"
+msgstr "Tanggungan pajak Vietnam"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Check"
+msgstr "Cek"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "ESI number"
+msgstr "Nomor ESI"
