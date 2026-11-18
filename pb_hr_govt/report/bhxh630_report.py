@@ -77,20 +77,20 @@ class Bhxh630ReportXlsx(ReportXlsxAbstract):
             bank_bic = wizard.bhxh630_bank_code or emp_bank_code
 
             # Keep template headers; only write data columns in the official order.
-            sheet.write(row, 0, emp.identification_id or emp.barcode or "")
+            sheet.write(row, 0, base._insurance_book(emp))
             sheet.write(row, 1, emp.name or "")
             sheet.write(row, 2, _fmt(date_from))
             sheet.write(row, 3, _fmt(date_to))
-            sheet.write(row, 4, wizard.bhxh630_certificate_serial or "SERIAL-001")  # TODO replace with actual chứng từ serial
+            sheet.write(row, 4, wizard.bhxh630_certificate_serial or "")
             sheet.write(row, 5, benefit_label)
             sheet.write(row, 6, emp.identification_id or "")
             sheet.write_number(row, 7, total_days)
             sheet.write(row, 8, wizard.bhxh630_supplement_batch or "")  # TODO Đợt bổ sung if applicable
             sheet.write(row, 9, payment_label)
-            sheet.write(row, 10, bank_number or "0000000000")  # TODO replace with real bank account
+            sheet.write(row, 10, bank_number or "")
             sheet.write(row, 11, bank_holder or company.name or "")
-            sheet.write(row, 12, bank_bic or "BANKXXX")  # TODO replace with real bank code
-            sheet.write(row, 13, emp.barcode or "EMP-CODE")  # TODO replace with actual employee code
+            sheet.write(row, 12, bank_bic or "")
+            sheet.write(row, 13, emp.barcode or "")
             sheet.write(row, 14, _fmt(date_from))  # Từ ngày đơn vị đề nghị
             sheet.write(row, 15, "")  # Nghỉ dưỡng thai
             sheet.write(row, 16, "")  # Ngày sinh con

@@ -57,10 +57,10 @@ class GiamLdReportXlsx(ReportXlsxAbstract):
             note = (
                 f"{reason_note} - {region_note}".strip(" -")
                 if reason_note or region_note
-                else f"Mã vùng:{province_code}; QH:{district_code}; XP:{commune_code} (TODO replace with actual codes)"
+                else f"Mã vùng:{province_code}; QH:{district_code}; XP:{commune_code}"
             )
             sheet.write(row, 0, emp.name or "")
-            sheet.write(row, 1, emp.identification_id or "")
+            sheet.write(row, 1, base._insurance_book(emp))
             sheet.write(row, 2, _fmt(emp.birthday))
             sheet.write(row, 3, base._is_female(emp) and "X" or "")
             sheet.write(row, 4, emp.identification_id or "")
