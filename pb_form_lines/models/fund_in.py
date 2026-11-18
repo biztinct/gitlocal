@@ -28,6 +28,16 @@ from odoo import _, api, fields, models
 
 from .fund_common import XLSX, digits, whole
 
+#: THE ONE PLACE the member numbers are looked for (by field name; a name
+#: this database does not have is skipped). Employee fields first, then the
+#: running contract's. MERGE: when Step 2 phase S2-D names its HR-only ESI
+#: field ("Follow-up ESI" in WDGAP_S2D_REPORT.md), put that name FIRST in
+#: ESI_EMPLOYEE_FIELDS.
+UAN_EMPLOYEE_FIELDS = ('pb_in_uan_number', 'uan_number')     # pb_me_tax (S2-D)
+UAN_CONTRACT_FIELDS = ('uan_number',)                        # legacy pb_hr_payroll_india
+ESI_EMPLOYEE_FIELDS = ('pb_in_esi_number', 'esi_ip_number', 'esi_number')
+ESI_CONTRACT_FIELDS = ('esi_number',)                        # legacy pb_hr_payroll_india
+
 ECR_SEP = '#~#'
 ESI_HEADS = [
     'IP Number (10 Digits)',
@@ -53,15 +63,13 @@ class PbGovFormReaderFundIN(models.AbstractModel):
 
     @api.model
     def _pb_fund_identity_in_epf_ecr(self, form, employee):
-        uan = digits(self._pb_probe(employee, ('pb_in_uan_number', 'uan_number'),
-                                    ('uan_number',)))
+        uan = digits(self._pb_probe(employee, UAN_EMPLOYEE_FIELDS, UAN_CONTRACT_FIELDS))
         missing = [] if uan else [_("UAN (provident fund number)")]
         return self._pb_fund_answer(employee, {'member': uan}, missing)
 
     @api.model
     def _pb_fund_identity_in_esi(self, form, employee):
-        ip = digits(self._pb_probe(employee, ('pb_in_esi_number', 'esi_ip_number', 'esi_number'),
-                                   ('esi_number',)))
+        ip = digits(self._pb_probe(employee, ESI_EMPLOYEE_FIELDS, ESI_CONTRACT_FIELDS))
         missing = [] if ip else [_("ESI insurance number")]
         return self._pb_fund_answer(employee, {'member': ip}, missing)
 

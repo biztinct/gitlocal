@@ -21,6 +21,7 @@ from unittest.mock import patch
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import TransactionCase, new_test_user, tagged
 
+from odoo.addons.pb_form_lines.models import fund_in
 from odoo.addons.pb_form_lines.models.fund_sg import RECORD
 
 OCT = date(2026, 10, 1)
@@ -254,9 +255,9 @@ class S2B2Fixture(TransactionCase):
 
         def probe(reader, employee, names, contract_names=()):
             nums = FAKE_NUMBERS.get(employee.id) or {}
-            if 'pb_in_uan_number' in names:
+            if tuple(names) == tuple(fund_in.UAN_EMPLOYEE_FIELDS):
                 return nums.get('uan', '')
-            if 'pb_in_esi_number' in names:
+            if tuple(names) == tuple(fund_in.ESI_EMPLOYEE_FIELDS):
                 return nums.get('esi', '')
             return original(reader, employee, names, contract_names)
         return patch.object(Reader, '_pb_probe', probe)
@@ -669,6 +670,46 @@ class TestS2B2FundFiles(S2B2Fixture):
                 self.assertTrue(found, '%s: %s finds nothing' % (target, xp.get('expr')))
                 checked += 1
         self.assertGreaterEqual(checked, 8)
+
+    # ================================================================ ESI number
+    def _esi_people(self, filing):
+        sheet = xlsx_rows([raw for n, raw in self.files(filing).items() if 'summary' not in n][0])
+        people = xlsx_rows([raw for n, raw in self.files(filing).items() if 'summary' in n][0], 'People')
+        return {r[0]: r for r in sheet[1:]}, {r[0]: r for r in people[1:]}
+
+    def _esi_prepare(self):
+        Filing = self.env['pb.gov.filing'].with_user(self.officer).with_context(
+            allowed_company_ids=[self.co_in.id])
+        return Filing.prepare(self.forms['IN_ESI'], self.co_in, OCT, OCT_END)
+
+    def test_esi_number_on_the_record_puts_the_person_in_the_file(self):
+        """The ESI number is read from the employee record through the ONE
+        list `fund_in.ESI_EMPLOYEE_FIELDS` (no mock of the probe): a field
+        put on that list and filled → the person is IN the ESI file; the
+        others, with no number, are left out with the reason."""
+        self.map_all()
+        self.dev.sudo().barcode = '3100999999'
+        with patch.object(fund_in, 'ESI_EMPLOYEE_FIELDS', ('barcode',) + tuple(fund_in.ESI_EMPLOYEE_FIELDS)):
+            filing = self._esi_prepare()
+        sheet, people = self._esi_people(filing)
+        self.assertEqual(set(sheet), {'3100999999'}, "Dev is in the file under his ESI number")
+        self.assertEqual(people['DEMO S2B2 Dev'][-2], 'Yes')
+        self.assertEqual(people['DEMO S2B2 Arjun'][-2], 'No')
+        self.assertIn('No ESI insurance number', people['DEMO S2B2 Arjun'][-1])
+
+    def test_esi_field_from_tax_details_when_installed(self):
+        """After the merge with Step 2 phase S2-D: its HR-only ESI field (the
+        first name of `ESI_EMPLOYEE_FIELDS` this database has) filled → the
+        person is IN the ESI file. Skipped while no listed field exists."""
+        Emp = self.env['hr.employee']
+        name = next((n for n in fund_in.ESI_EMPLOYEE_FIELDS if n in Emp._fields), None)
+        if not name:
+            self.skipTest('no ESI number field on the employee record here yet (S2-D)')
+        self.map_all()
+        self.priya.sudo().write({name: '3100123457'})
+        sheet, people = self._esi_people(self._esi_prepare())
+        self.assertIn('3100123457', sheet)
+        self.assertEqual(people['DEMO S2B2 Priya'][-2], 'Yes')
 
     # ================================================================ probe
     def test_the_member_number_probe_reads_by_name(self):

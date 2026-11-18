@@ -219,3 +219,87 @@ tests, 0 failed**. `pb_hr_govt` (golden + mapped), `pb_fund_payments`,
    employee record (and to My Payobook tax details)?
 3. The CPF file needs the company's CPF submission number (for example 201912345APTE01). Does
    Rize Singapore pay through one submission number, or more than one?
+
+## Follow-up (coordinator, 2026-11-18 — owner ruling FG1 + India ESI number)
+
+### FG1 — one shared gate, no restated group lists
+
+Checked every line this phase added (`git diff 2a822298d..wdgap-s2b2`, tests excluded):
+**no production line names a group.** Who may see and use a fund file is decided only by S2-A's
+helpers on `pb.gov.form.rights` (`pb_form_lines/models/form.py:39-42` `OFFICER_GROUPS` /
+`MANAGER_GROUPS`, `:250` `_pb_is_officer`, `:258` `_pb_require_officer`), reached through code
+S2-A owns:
+
+| Way in | Gate | Owner |
+|---|---|---|
+| Fund files tiles on Compliance › Filings | `pb_govt_reports/models/pb_govt_reports.py` `_forms_for` → `Rights._pb_is_officer()` (S2-A line, unchanged here) | S2-A |
+| Form lines / check / prepare / send / download of a fund file | `pb.gov.form.board._door` → `_pb_require_officer`; `pb.gov.filing.prepare` / `_pb_download` → `_pb_require_officer`; my `flow_check` override calls `super()` (the door) before anything else | S2-A |
+| VN social-insurance reports (mapped items) | unchanged: the report wizard's own rights; `_pb_si_items` reads under sudo AFTER them | pb_hr_govt |
+
+So when the S2-A builder widens the shared gate for FG1, the fund files follow with no change
+here; nothing to re-point. (The tests' `OFFICER`/`MANAGER` strings are fixture logins, not
+gates; the HR-only login they refuse holds `hr.group_hr_user`, not
+`pb_hr_govt.group_pb_hr_govt_user`, so FG1 does not change their expectation.)
+
+The two board fixes are in **shared `pb_govt_reports` code** (`get_govt_reports_data`); they
+touch no S2-B1 file and no gate. Exact diff for the merger (on top of `origin/wdgap-s2a`
+`pb_govt_reports/models/pb_govt_reports.py`):
+
+```diff
+         try:
+-            cfgs = self.env['hr.formula.config'].with_context(active_test=False).search(
++            # sudo: only the country codes of this company's own schemes are read
++            # (a payroll officer without formula rights saw no country — S2-B2)
++            cfgs = self.env['hr.formula.config'].sudo().with_context(active_test=False).search(
+                 [('company_id', '=', company.id)])
+             present |= {(c.country_code or '').upper() for c in cfgs if c.country_code}
+         except Exception:
+             pass
+         present.discard('')
+ 
+-        sel = (country_code or home_cc or 'VN').upper()
++        # WDGAP S2-B2: a company with no country of its own opens on its pay
++        # schemes' country (it used to open on Vietnam whatever it paid)
++        sel = (country_code or home_cc or (sorted(present)[0] if present else 'VN')).upper()
+```
+
+plus the grouping hunks listed in §5 task 3 (`_forms_for` drops `section == 'reports'`,
+`_SECTION_ORDER`, `_SECTION_ICON`, `_form_groups`, `'forms'` = tax returns only,
+`'form_groups'`), and in `static/src/xml/govt_reports.xml` the "Form lines" door condition
+`state.data.form_groups and state.data.form_groups.length`, the `form_groups` panel loop and the
+fund flag line. If the FG1 gate change rewrites `get_govt_reports_data`, re-apply these hunks on
+top; they do not depend on who passes the gate.
+
+### India ESI number — one list
+
+Every member-number field the fund files look for is now a named constant at the top of its
+file (the only place to edit):
+
+| Constant | Value today | File |
+|---|---|---|
+| `ESI_EMPLOYEE_FIELDS` | `('pb_in_esi_number', 'esi_ip_number', 'esi_number')` | `pb_form_lines/models/fund_in.py` |
+| `ESI_CONTRACT_FIELDS` | `('esi_number',)` (legacy, uninstallable) | same |
+| `UAN_EMPLOYEE_FIELDS` / `UAN_CONTRACT_FIELDS` | `('pb_in_uan_number', 'uan_number')` / `('uan_number',)` | same |
+| `NRIC_EMPLOYEE_FIELDS` / `NRIC_CONTRACT_FIELDS` | `('pb_sg_nric', 'singapore_nric_fin')` / `('singapore_nric_fin',)`, then the national ID when it has the S/T shape | `fund_sg.py` |
+| `BPJS_TK_FIELDS` / `BPJS_KES_FIELDS` | `('pb_bpjs_employment_number',)` / `('pb_bpjs_health_number',)` | `fund_id.py` |
+
+**Merge-time task 6:** when `WDGAP_S2D_REPORT.md` "Follow-up ESI" names the HR-only ESI field,
+put that name FIRST in `ESI_EMPLOYEE_FIELDS` (`pb_form_lines/models/fund_in.py`). If it is
+`pb_in_esi_number`, nothing to do — it is already first. (`origin/wdgap-s2d` @ d157190ca does
+not name it yet.)
+
+Tests added (`TestS2B2FundFiles`):
+* `test_esi_number_on_the_record_puts_the_person_in_the_file` — no mock of the probe: a real
+  employee field is put on `ESI_EMPLOYEE_FIELDS` and filled for one person → that person is IN
+  the ESI file under the number ("In the file: Yes"); the others are left out with "No ESI
+  insurance number on the employee record".
+* `test_esi_field_from_tax_details_when_installed` — uses the first listed name that exists on
+  `hr.employee` (S2-D's field after the merge), fills it → the person is IN the file; skipped
+  until such a field exists (skipped on this branch).
+* The helper that stands in for the missing UAN/ESI fields now keys on the constants, so
+  renaming the list does not break it.
+
+Results (fresh `wdgap_s2b2_t` from `upd_p6_t_tpl`, same upgrade set, `/pb_form_lines,/pb_govt_reports`):
+**48 tests, 0 failed, 0 errors**; `test_esi_number_on_the_record_puts_the_person_in_the_file`
+passes; `test_esi_field_from_tax_details_when_installed` skipped (no ESI field on this branch —
+it runs after the S2-D merge). Database dropped afterwards.

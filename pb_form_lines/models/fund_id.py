@@ -22,6 +22,11 @@ from odoo import _, api, fields, models
 from .fund_common import XLSX, digits, whole
 
 
+#: THE ONE PLACE the BPJS member numbers are looked for (pb_employee_vault).
+BPJS_TK_FIELDS = ('pb_bpjs_employment_number',)
+BPJS_KES_FIELDS = ('pb_bpjs_health_number',)
+
+
 def _ddmmyyyy(text):
     day = fields.Date.to_date(text) if text else None
     return day.strftime('%d-%m-%Y') if day else ''
@@ -38,7 +43,7 @@ class PbGovFormReaderFundID(models.AbstractModel):
     @api.model
     def _pb_fund_identity_id_bpjs_tk(self, form, employee):
         nik = self._pb_id_nik(employee)
-        kpj = digits(self._pb_probe(employee, ('pb_bpjs_employment_number',)))
+        kpj = digits(self._pb_probe(employee, BPJS_TK_FIELDS))
         missing = []
         if not kpj:
             missing.append(_("BPJS Ketenagakerjaan number"))
@@ -49,7 +54,7 @@ class PbGovFormReaderFundID(models.AbstractModel):
     @api.model
     def _pb_fund_identity_id_bpjs_kes(self, form, employee):
         nik = self._pb_id_nik(employee)
-        card = digits(self._pb_probe(employee, ('pb_bpjs_health_number',)))
+        card = digits(self._pb_probe(employee, BPJS_KES_FIELDS))
         missing = []
         if not card:
             missing.append(_("BPJS Kesehatan card number"))

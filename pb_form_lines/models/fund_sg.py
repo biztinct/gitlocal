@@ -59,6 +59,10 @@ FUND_CODES = {'MBMF': '02', 'SINDA': '03', 'CDAC': '04', 'ECF': '05'}
 FORBIDDEN = set('_+$<>:;?!=[]`^|"~')
 CPF_ACCOUNT = re.compile(r'^[ST]\d{7}[A-Z]$')
 CSN = re.compile(r'^([A-Z0-9]{9,10})([A-Z]{3})(\d{2})$')
+#: THE ONE PLACE the CPF account number (NRIC/FIN) is looked for, by field
+#: name; then the national ID when it has the S/T shape.
+NRIC_EMPLOYEE_FIELDS = ('pb_sg_nric', 'singapore_nric_fin')
+NRIC_CONTRACT_FIELDS = ('singapore_nric_fin',)              # legacy pb_hr_payroll_singapore
 MONTHS = ('JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC')
 
 
@@ -81,8 +85,7 @@ class PbGovFormReaderFundSG(models.AbstractModel):
         employee with SDL only) needs no CPF account number. Whether someone
         is left out is decided with their figures (`_pb_fund_reasons_…`)."""
         account = ''
-        for raw in (self._pb_probe(employee, ('pb_sg_nric', 'singapore_nric_fin'),
-                                   ('singapore_nric_fin',)),
+        for raw in (self._pb_probe(employee, NRIC_EMPLOYEE_FIELDS, NRIC_CONTRACT_FIELDS),
                     employee.sudo().identification_id or ''):
             text = re.sub(r'\s+', '', raw or '').upper()
             if CPF_ACCOUNT.match(text):
