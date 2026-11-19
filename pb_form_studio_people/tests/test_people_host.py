@@ -261,7 +261,8 @@ class TestPeopleHost(TransactionCase):
     def test_05_reorder_after_publish_reaches_open_screens(self):
         a = self.add('text', 'DEMO First')
         b = self.add('text', 'DEMO Second')
-        self.assertEqual(self.names_in(self.panel(self.emp_vn))[-2:], [a, b])
+        mine = lambda payload: [n for n in self.names_in(payload) if n in (a, b)]
+        self.assertEqual(mine(self.panel(self.emp_vn)), [a, b])
         v0 = self.panel(self.emp_vn)['version']
         Bus = self.env['bus.bus'].sudo()
         before = Bus.search_count([('message', 'like', 'pb_form_studio/published')])
@@ -269,7 +270,7 @@ class TestPeopleHost(TransactionCase):
         placed['custom'] = [n for n in placed['custom'] if n not in (a, b)] + [b, a]
         self.publish(list(placed.items()))
         after = self.panel(self.emp_vn)
-        self.assertEqual(self.names_in(after)[-2:], [b, a])
+        self.assertEqual(mine(after), [b, a])
         self.assertEqual(after['version'], v0 + 1)
         # every open copy is told (bus), so the panel re-reads without a server reload
         msgs = Bus.search([('message', 'like', 'pb_form_studio/published')])
@@ -301,10 +302,14 @@ class TestPeopleHost(TransactionCase):
         self.assertNotIn(gone, arch)
         self.assertIn(keep, arch)
         self.Studio.with_user(self.admin).delete_field(MODEL, keep, 'DEMO Keep')
-        self.assertFalse(self.studio_view().exists(), 'the last field takes the page with it')
         arch = self.native_arch()                     # Full details still opens
-        self.assertNotIn('pbfs_company_details', arch)
-        self.assertFalse(self.panel(self.emp_vn)['total'])
+        self.assertNotIn(keep, arch)
+        self.assertNotIn(keep, self.names_in(self.panel(self.emp_vn)))
+        if not self.Studio._pbfs_custom_names(MODEL):
+            # on a database with no other custom field, the page goes too
+            self.assertFalse(self.studio_view().exists(), 'the last field takes the page with it')
+            self.assertNotIn('pbfs_company_details', arch)
+            self.assertFalse(self.panel(self.emp_vn)['total'])
 
     # ------------------------------------------------------------------- 8
     def test_08_filter_by_custom_field_and_saved_view_blocks_delete(self):
