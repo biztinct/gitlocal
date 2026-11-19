@@ -77,6 +77,7 @@ gains the product's audit mixin so a change is recorded wherever it came from.
     ],
     'data': [
         'security/pb_settings_security.xml',
+        'security/ir.model.access.csv',
         'views/pb_settings_action.xml',
         'views/outgoing_email_views.xml',
         'data/pb_sidebar.xml',

@@ -15,6 +15,7 @@ logs nothing — five of exactly that shape survived in `hr.flow.wizard` until P
 went looking. So the hub asks, and hides what is not there.
 """
 import logging
+from .outgoing_email import may_manage_email
 
 from odoo import api, models
 
@@ -56,7 +57,7 @@ SYSTEM_GROUP = 'base.group_system'
 # system administrator is refused, including a caller whose payload has been
 # edited in the browser, because the answer does not depend on the payload.
 # =============================================================================
-PLATFORM_ONLY_CATEGORIES = ('org', 'payroll', 'email')
+PLATFORM_ONLY_CATEGORIES = ('org', 'payroll')
 
 # The raw Users & permission groups action is still refused below wherever a
 # caller tries to place it, but it no longer has a category or palette door.
@@ -68,7 +69,6 @@ PLATFORM_ONLY_CATEGORIES = ('org', 'payroll', 'email')
 #: are not.
 PLATFORM_ONLY_ACTIONS = (
     'base.action_res_users',
-    'pb_settings.action_outgoing_email',
     'base.action_res_company_form',
     'om_hr_payroll.action_hr_payroll_configuration',
     'pb_sidebar.action_pb_sidebar_item',
@@ -169,6 +169,8 @@ class PbSettings(models.AbstractModel):
 
     def _gate_category(self, key, descriptor):
         """Rule 2 then rule 3, for one category. Never called for an administrator."""
+        if key == 'email':
+            return may_manage_email(self.env)
         if key in PLATFORM_ONLY_CATEGORIES:
             return False
         groups = [g for g in (descriptor.get('groups') or [])
@@ -220,6 +222,8 @@ class PbSettings(models.AbstractModel):
         if isinstance(tag, str) and tag in PLATFORM_ONLY_TAGS:
             return False
         xmlid = card.get('xmlid')
+        if xmlid == 'pb_settings.action_outgoing_email':
+            return may_manage_email(self.env)
         if isinstance(xmlid, str) and xmlid in PLATFORM_ONLY_ACTIONS:
             return False
         return True

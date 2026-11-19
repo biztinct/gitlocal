@@ -200,6 +200,7 @@
                         </div>
                         <div class="pev-doc-meta">
                           <span t-if="doc.issue_date"><t t-esc="doc.issue_date"/></span>
+                          <span t-if="doc.expiry_date">Expiry: <t t-esc="doc.expiry_date"/></span>
                           <span t-attf-class="pev-exp {{ expiryCls(doc) }}" t-esc="expiryLabel(doc)"/>
                         </div>
                         <div class="pev-doc-actions">

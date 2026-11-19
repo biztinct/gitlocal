@@ -41,6 +41,7 @@ if servers:
     servers.write(vals)
 else:
     servers=M.create(vals)
+company.pb_outgoing_mail_server_id = servers
 assert not servers.active
 assert servers not in e['ir.mail_server'].search([])
 assert {t:digest(t) for t in protected} == before, 'Protected data changed'

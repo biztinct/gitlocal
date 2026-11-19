@@ -247,8 +247,8 @@ export const CATEGORIES = [
         groups: ADMIN,
         cards: [
             { id: "outgoing_email", xmlid: "pb_settings.action_outgoing_email",
-              icon: "mail", label: _t("Outgoing email servers"),
-              sub: _t("Add or edit servers, test the connection, and activate them when ready. New servers start inactive.") },
+              icon: "mail", label: _t("Outgoing email server"),
+              sub: _t("Edit your company’s server, test the connection, and activate it when ready. New servers start inactive.") },
         ],
     },
 ];
@@ -339,10 +339,9 @@ export function groupOf(cat) {
  * ever disagree the SERVER's list is the one that decides — this one can only
  * ever hide something the server would also have hidden.
  */
-export const PLATFORM_ONLY_CATEGORIES = ["org", "payroll", "email"];
+export const PLATFORM_ONLY_CATEGORIES = ["org", "payroll"];
 export const PLATFORM_ONLY_ACTIONS = [
     "base.action_res_users",
-    "pb_settings.action_outgoing_email",
     "base.action_res_company_form",
     "om_hr_payroll.action_hr_payroll_configuration",
     "pb_sidebar.action_pb_sidebar_item",
