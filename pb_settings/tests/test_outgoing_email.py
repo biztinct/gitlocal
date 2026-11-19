@@ -41,8 +41,7 @@ class TestOutgoingEmail(TransactionCase):
         model = self.env['pb.company.mail.settings'].with_user(user)
         with self.assertRaises(AccessError):
             model.default_get(['smtp_host'])
-        wizard = model.create({'name':'Forged','smtp_host':'smtp.example.invalid','smtp_user':'a@example.invalid',
-            'from_filter':'a@example.invalid','smtp_pass':'test-only'})
+        wizard = model.browse(1)  # A forged RPC target must fail before reading or writing it.
         with self.assertRaises(AccessError):
             wizard.action_save()
         with self.assertRaises(AccessError):
