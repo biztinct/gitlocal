@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sample records follow the companies the reader works in. -->
+    <record id="rule_pb_form_sample_company" model="ir.rule">
+        <field name="name">Form builder sample: own companies</field>
+        <field name="model_id" ref="model_pb_form_sample"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>
