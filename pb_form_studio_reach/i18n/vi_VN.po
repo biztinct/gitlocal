@@ -1,0 +1,291 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_form_studio_reach
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 10:13+0000\n"
+"PO-Revision-Date: 2026-11-19 10:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/records.py:0
+msgid "%s does not apply to this person's country of work."
+msgstr "%s không áp dụng cho quốc gia làm việc của người này."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "<option value=\"\">Choose…</option>"
+msgstr "<option value=\"\">Chọn…</option>"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "A change is already waiting for HR; sending again replaces it."
+msgstr "Đã có một thay đổi đang chờ nhân sự; gửi lại sẽ thay thế nó."
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_access
+msgid "Access & delegation board — facade"
+msgstr "Bảng quyền truy cập & bàn giao"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid "Approved and written to the employee record."
+msgstr "Đã duyệt và ghi vào hồ sơ nhân viên."
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_biz_audit_entry
+msgid "Audit Entry"
+msgstr "Mục nhật ký thay đổi"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_biz_audit_rule
+msgid "Audit Rule"
+msgstr "Quy tắc ghi nhật ký thay đổi"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Change company details"
+msgstr "Thay đổi thông tin công ty"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_my_details_form_builder
+msgid "Change these details"
+msgstr "Thay đổi các thông tin này"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_me_detail_request
+msgid "Change to my details"
+msgstr "Thay đổi thông tin của tôi"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid ""
+"Change what is wrong and send it. Some details are saved at once; the others"
+" change on your record once HR approves them."
+msgstr ""
+"Sửa những gì chưa đúng rồi gửi đi. Một số thông tin được lưu ngay; các thông"
+" tin khác chỉ đổi trên hồ sơ của bạn sau khi nhân sự duyệt."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Changes once HR approves it."
+msgstr "Thay đổi sau khi nhân sự duyệt."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/form_studio.py:0
+msgid "Changes waiting on My Payobook"
+msgstr "Thay đổi đang chờ trên My Payobook"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/controllers/portal.py:0
+#: code:addons/pb_form_studio_reach/models/mapping.py:0
+#: model:ir.model.fields.selection,name:pb_form_studio_reach.selection__pb_me_detail_request__kind__company_details
+msgid "Company details"
+msgstr "Thông tin công ty"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/formula_sources.py:0
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid "Company details: %s"
+msgstr "Thông tin công ty: %s"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_entry__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_mixin__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_rule__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_access__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_employee_timeline__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_form_field_meta__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_form_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_formula_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_records_desk__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_employee_timeline
+msgid "Employee 360 Timeline"
+msgstr "Dòng thời gian 360 của nhân viên"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr "Cấu hình công thức Excel"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_biz_audit_mixin
+msgid "Field-Change Audit Mixin"
+msgstr "Ghi nhật ký thay đổi trường"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_form_studio
+msgid "Form builder"
+msgstr "Trình tạo biểu mẫu"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_form_field_meta
+msgid "Form builder field settings"
+msgstr "Thiết lập trường của Trình tạo biểu mẫu"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_entry__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_mixin__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_rule__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_access__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_employee_timeline__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_form_field_meta__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_form_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_formula_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_records_desk__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_my_details_form_builder
+msgid ""
+"Kept by your company. If something here is wrong, ask HR to correct it."
+msgstr ""
+"Do công ty của bạn lưu giữ. Nếu có gì chưa đúng, hãy nhờ nhân sự sửa lại."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "No"
+msgstr "Không"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/controllers/portal.py:0
+msgid "Nothing was changed."
+msgstr "Không có gì được thay đổi."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/form_studio.py:0
+msgid "Pay formulas"
+msgstr "Công thức tính lương"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/form_studio.py:0
+msgid ""
+"Pay formulas read this field: %s. Choose another source for them first, then"
+" switch \"Use in pay formulas\" off."
+msgstr ""
+"Các công thức tính lương đang đọc trường này: %s. Hãy chọn nguồn khác cho "
+"chúng trước, rồi tắt \"Dùng trong công thức tính lương\"."
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_formula_studio
+msgid "Payobook Formula Studio data layer (wraps the formula engine)"
+msgstr "Lớp dữ liệu của Xưởng công thức"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr "Dữ liệu bảng hợp đồng"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__fb_values_json
+msgid "Proposed company details"
+msgstr "Thông tin công ty được đề xuất"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__fb_model
+msgid "Record type"
+msgstr "Loại hồ sơ"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_records_desk
+msgid "Records Desk"
+msgstr "Bàn hồ sơ"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__fb_replaced
+msgid "Replaced by a newer change"
+msgstr "Đã được thay bằng một thay đổi mới hơn"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Saved at once."
+msgstr "Lưu ngay."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Send"
+msgstr "Gửi"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid ""
+"The company no longer takes changes to %s on My Payobook, so this change was"
+" closed. Nothing on your record changed."
+msgstr ""
+"Công ty không còn nhận thay đổi %s trên My Payobook, nên thay đổi này đã "
+"được đóng. Hồ sơ của bạn không thay đổi gì."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid "There is no change to send."
+msgstr "Không có thay đổi nào để gửi."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "There is nothing you can change here right now."
+msgstr "Hiện bạn chưa thể thay đổi gì ở đây."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/controllers/portal.py:0
+msgid "This change could not be sent."
+msgstr "Không gửi được thay đổi này."
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__kind
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid "You can only change your own details."
+msgstr "Bạn chỉ có thể thay đổi thông tin của chính mình."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_my_details_form_builder
+msgid "change waiting for HR"
+msgstr "thay đổi đang chờ nhân sự"
