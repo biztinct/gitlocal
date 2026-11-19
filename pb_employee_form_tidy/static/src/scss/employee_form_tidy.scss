@@ -1,0 +1,23 @@
+// TIDY-E — small touches on the People list button and the employee form's
+// Country of Work line. Payobook tokens via the theme's CSS variables.
+.o_pb_cow_fill .o_pb_cow_count {
+    margin-left: 6px;
+    padding: 0 7px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--pb-amber-50, #FFF7E6);
+    color: var(--pb-amber-700, #8A5A00);
+}
+
+.o_pb_cow_line {
+    flex-wrap: wrap;
+    .o_field_widget select,
+    .o_field_widget input {
+        min-width: 9rem;
+    }
+}
+
+.o_pb_cow_hint {
+    margin: 2px 0 0 1.6rem;
+}

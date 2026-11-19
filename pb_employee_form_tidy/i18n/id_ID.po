@@ -1,0 +1,259 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 04:51+0000\n"
+"PO-Revision-Date: 2026-11-19 04:51+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_import.py:0
+msgid "%(list)s and %(n)s more"
+msgstr "%(list)s dan %(n)s lainnya"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "%(n)s people have no Country of Work."
+msgstr "%(n)s orang belum memiliki Negara Kerja."
+
+#. module: pb_employee_form_tidy
+#: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_employee_form_tidy
+msgid ""
+"<i class=\"fa fa-globe fa-fw me-1 text-primary\" title=\"Country of Work\"/>\n"
+"                    <span class=\"text-muted fw-normal me-2 text-nowrap\">Country of Work</span>"
+msgstr ""
+"<i class=\"fa fa-globe fa-fw me-1 text-primary\" title=\"Negara Kerja\"/>\n"
+"                    <span class=\"text-muted fw-normal me-2 text-nowrap\">Negara Kerja</span>"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,help:pb_employee_form_tidy.field_hr_employee__pb_bank_on_record
+msgid ""
+"An approved bank account is on record: the employee's bank account (a change"
+" still waiting for approval does not count), or the Vietnamese bank file's "
+"account."
+msgstr ""
+"Rekening bank yang disetujui sudah tercatat: rekening bank karyawan "
+"(perubahan yang masih menunggu persetujuan tidak dihitung), atau rekening di"
+" file bank Vietnam."
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_hr_employee__pb_bank_on_record
+msgid "Approved bank account on record"
+msgstr "Rekening bank disetujui tercatat"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_pb_cow_fill_log__by_country
+msgid "By country"
+msgstr "Per negara"
+
+#. module: pb_employee_form_tidy
+#: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_pb_cow_fill_wizard
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_pb_cow_fill_log__company_ids
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_hr_employee__payroll_country
+msgid "Country of Work"
+msgstr "Negara Kerja"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model,name:pb_employee_form_tidy.model_pb_cow_fill_log
+msgid "Country of Work fill — who, when, how many"
+msgstr "Pengisian Negara Kerja — siapa, kapan, berapa orang"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Country of Work filled for %(n)s people."
+msgstr "Negara Kerja diisi untuk %(n)s orang."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_import.py:0
+msgid ""
+"Country of Work was left as it was for %(n)s row(s): the file's value is not"
+" a country this system knows — %(list)s. Use a country name or code, such as"
+" Vietnam or VN."
+msgstr ""
+"Negara Kerja dibiarkan seperti semula pada %(n)s baris: nilai di file bukan "
+"negara yang dikenal sistem ini — %(list)s. Gunakan nama atau kode negara, "
+"misalnya Vietnam atau VN."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Everyone already has a Country of Work. Nothing to fill."
+msgstr "Semua orang sudah memiliki Negara Kerja. Tidak ada yang perlu diisi."
+
+#. module: pb_employee_form_tidy
+#. odoo-javascript
+#: code:addons/pb_employee_form_tidy/static/src/xml/people_country_fill.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_pb_cow_fill_wizard
+msgid "Fill Country of Work"
+msgstr "Isi Negara Kerja"
+
+#. module: pb_employee_form_tidy
+#: model:ir.actions.act_window,name:pb_employee_form_tidy.action_pb_cow_fill_wizard
+#: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_pb_cow_fill_wizard
+msgid "Fill empty Country of Work"
+msgstr "Isi Negara Kerja yang kosong"
+
+#. module: pb_employee_form_tidy
+#. odoo-javascript
+#: code:addons/pb_employee_form_tidy/static/src/xml/people_country_fill.xml:0
+msgid "Fill empty Country of Work from each person's pay set-up"
+msgstr "Isi Negara Kerja yang kosong dari pengaturan gaji tiap orang"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model,name:pb_employee_form_tidy.model_pb_cow_fill_wizard
+msgid "Fill empty Country of Work from pay set-up"
+msgstr "Isi Negara Kerja yang kosong dari pengaturan gaji"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_pb_cow_fill_log__user_id
+msgid "Filled by"
+msgstr "Diisi oleh"
+
+#. module: pb_employee_form_tidy
+#: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_pb_cow_fill_wizard
+msgid ""
+"Fills Country of Work only where it is empty, from the pay set-up each\n"
+"                    person is paid under. A Country of Work that is already set is never changed."
+msgstr ""
+"Mengisi Negara Kerja hanya jika masih kosong, dari pengaturan gaji tempat\n"
+"                    tiap orang digaji. Negara Kerja yang sudah terisi tidak pernah diubah."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Last filled by %(who)s on %(when)s: %(n)s people."
+msgstr "Terakhir diisi oleh %(who)s pada %(when)s: %(n)s orang."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Left empty, because"
+msgstr "Dibiarkan kosong, karena"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "No contract, so no pay set-up to read"
+msgstr "Belum ada kontrak, jadi tidak ada pengaturan gaji untuk dibaca"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "No pay set-up pays this person yet"
+msgstr "Belum ada pengaturan gaji yang menggaji orang ini"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Nobody can be filled from a pay set-up."
+msgstr "Tidak ada yang bisa diisi dari pengaturan gaji."
+
+#. module: pb_employee_form_tidy
+#: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_employee_form_tidy
+msgid "Not set"
+msgstr "Belum diatur"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Nothing to fill — no empty Country of Work could be decided."
+msgstr ""
+"Tidak ada yang diisi — tidak ada Negara Kerja kosong yang bisa ditentukan."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Only HR managers can fill Country of Work for everyone."
+msgstr "Hanya manajer HR yang dapat mengisi Negara Kerja untuk semua orang."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Paid under pay set-ups of two countries — choose by hand"
+msgstr "Digaji dengan pengaturan gaji dua negara — pilih secara manual"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Paid under pay set-ups of two countries:"
+msgstr "Digaji dengan pengaturan gaji dua negara:"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "People"
+msgstr "Orang"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_pb_cow_fill_log__filled_count
+msgid "People filled"
+msgstr "Orang yang diisi"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_pb_cow_fill_log__left_count
+msgid "People left empty"
+msgstr "Orang yang dibiarkan kosong"
+
+#. module: pb_employee_form_tidy
+#: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_employee_form_tidy
+msgid "Set Country of Work to see country details"
+msgstr "Atur Negara Kerja untuk melihat detail per negara"
+
+#. module: pb_employee_form_tidy
+#: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_employee_form_tidy
+msgid ""
+"The country this person works and is paid in. It decides which country boxes"
+" show on this record, and sets the work timezone unless the work location "
+"has its own. It is not nationality."
+msgstr ""
+"Negara tempat orang ini bekerja dan digaji. Ini menentukan kotak negara mana"
+" yang tampil di catatan ini, dan mengatur zona waktu kerja kecuali lokasi "
+"kerja punya zona waktu sendiri. Ini bukan kewarganegaraan."
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,help:pb_employee_form_tidy.field_hr_employee__payroll_country
+msgid ""
+"The country this person works and is paid in. It decides which country boxes"
+" show on this record. It is not nationality."
+msgstr ""
+"Negara tempat orang ini bekerja dan digaji. Ini menentukan kotak negara mana"
+" yang tampil di catatan ini. Ini bukan kewarganegaraan."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Will be set to"
+msgstr "Akan diisi"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "and %(n)s more"
+msgstr "dan %(n)s lainnya"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_import.py:0
+msgid "row %(row)s (\"%(value)s\")"
+msgstr "baris %(row)s (\"%(value)s\")"

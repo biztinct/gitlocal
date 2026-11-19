@@ -29,10 +29,22 @@ this module.
         'pb_hr_payroll_base',      # Country of Work (payroll_country)
         'pb_hr_payroll_formula',   # Date of Joining, the pay data file import
         'pb_people',               # the People list and its Payroll-ready figure
+        'pb_records',              # Updates / Records sheets (country words)
+        'pb_formula_studio',       # Mapping (Country of Work lane)
+        'pb_payrun_wizard',        # the pay data load result note
     ],
     'data': [
+        'security/ir.model.access.csv',
         'views/hr_employee_views.xml',
+        'views/country_of_work_fill_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'pb_employee_form_tidy/static/src/js/people_country_fill.js',
+            'pb_employee_form_tidy/static/src/xml/people_country_fill.xml',
+            'pb_employee_form_tidy/static/src/scss/employee_form_tidy.scss',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,
