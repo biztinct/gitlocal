@@ -686,7 +686,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid ""
-"Everyone in this company sees the new layout the next time the screen loads."
+"Everyone, in every company, sees the new layout the next time the screen loads."
 msgstr ""
 
 #. module: pb_form_studio

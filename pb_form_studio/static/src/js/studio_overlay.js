@@ -600,7 +600,7 @@ export class FormStudioOverlay extends Component {
     closeSheet() { this.state.sheet = null; }
     get publishSub() {
         const added = Object.keys(this.state.creates).length;
-        const base = _t("Everyone in this company sees the new layout the next time the screen loads.");
+        const base = _t("Everyone, in every company, sees the new layout the next time the screen loads.");
         return added ? base + " " + _t("New fields are added to every record of this kind (%s), empty until filled.", this.recordsText) : base;
     }
     publishPayload(overwrite) {

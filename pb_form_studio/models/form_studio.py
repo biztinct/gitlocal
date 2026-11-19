@@ -631,16 +631,78 @@ class PbFormStudio(models.AbstractModel):
     # ============================================================ layout
     @api.model
     def _pbfs_layout(self, host_key, company=None):
-        company = company or self.env.company
-        return self.env['pb.form.layout'].sudo().search(
-            [('host_key', '=', host_key), ('company_id', '=', company.id)], limit=1)
+        """THE published layout of a screen — ONE per screen for the whole
+        database (owner ruling R18, 2026-11-20): a field placed on a screen
+        shows for every company, on the employee and the contract screens
+        alike, exactly as its column, its list cell and the Full details page
+        already did. `company` is accepted and ignored (old callers).
+
+        Before R18 the layout was looked up per company: the employee panel
+        used the reader's WORKING company and the contract panel the
+        contract's company, so a field placed while working in company A
+        never showed on either panel in company B. A database that still
+        holds one row per company is folded into one by the end-migration of
+        19.0.1.2.0 (`_pbfs_merge_company_layouts`); until then the newest
+        published row wins."""
+        rows = self.env['pb.form.layout'].sudo().search([('host_key', '=', host_key)])
+        if len(rows) > 1:
+            rows = rows.sorted(lambda l: (l.published_at or l.write_date or fields.Datetime.now(),
+                                          l.version, l.id), reverse=True)
+        return rows[:1]
+
+    @api.model
+    def _pbfs_merge_company_layouts(self):
+        """R18 one-time step: fold every screen that has a layout in several
+        companies into ONE (the newest published one), adding at the end of
+        the same section any field placed only in another company's layout,
+        so nothing placed on a screen anywhere leaves it. A field placed in
+        no layout stays off every screen (the administrator's choice). Writes
+        nothing where a screen has at most one layout — and so nothing at all
+        on a database with no custom field. → `{screens, removed, added}`."""
+        Layout = self.env['pb.form.layout'].sudo()
+        out = {'screens': 0, 'removed': 0, 'added': 0}
+        models_touched = set()
+        for host_key in sorted(set(Layout.search([]).mapped('host_key'))):
+            rows = Layout.search([('host_key', '=', host_key)])
+            if len(rows) < 2:
+                continue
+            keep = self._pbfs_layout(host_key)
+            sections = [{'id': s.get('id'), 'fields': list(s.get('fields') or [])}
+                        for s in (keep.sections or []) if isinstance(s, dict)]
+            by_id = {s['id']: s for s in sections}
+            placed = {n for s in sections for n in s['fields']}
+            for other in (rows - keep).sorted(lambda l: (l.published_at or l.write_date, l.id),
+                                              reverse=True):
+                for sec in other.sections or []:
+                    if not isinstance(sec, dict):
+                        continue
+                    for name in sec.get('fields') or []:
+                        if not isinstance(name, str) or name in placed:
+                            continue
+                        target = by_id.get(sec.get('id'))
+                        if target is None:
+                            target = by_id[sec.get('id')] = {'id': sec.get('id'), 'fields': []}
+                            sections.append(target)
+                        target['fields'].append(name)
+                        placed.add(name)
+                        out['added'] += 1
+            keep.write({'sections': sections, 'version': max(rows.mapped('version')) + 1})
+            out['removed'] += len(rows - keep)
+            (rows - keep).unlink()
+            out['screens'] += 1
+            models_touched.add(keep.model)
+        for model in models_touched:
+            if model in self.env:
+                self._pbfs_resync_native(model)
+        return out
 
     @api.model
     def _pbfs_effective(self, host_key, stored=None, company=None):
         """The full, ordered section list for a host — host order, stored
         placement, every fallback applied. Never loses a field: anything in a
         section that no longer exists (or is locked) moves to the host's
-        custom section."""
+        custom section. `company` is ignored since R18 (one layout per
+        screen, see `_pbfs_layout`)."""
         host = self._pbfs_host(host_key)
         Model = self.env[host['model']]
         if stored is None:
@@ -711,9 +773,7 @@ class PbFormStudio(models.AbstractModel):
         Model = self.env[model]
         layout = self._pbfs_layout(host_key)
         sections = self._pbfs_effective(host_key)
-        draft = self.env['pb.form.layout.draft'].sudo().search([
-            ('host_key', '=', host_key), ('company_id', '=', self.env.company.id),
-            ('user_id', '=', self.env.uid)], limit=1)
+        draft = self._pbfs_drafts(host_key)[:1]
         version = layout.version if layout else 0
         names = set(self._pbfs_std_names(host)) | set(self._pbfs_custom_names(model))
         names = [n for n in names if n in Model._fields]
@@ -1220,13 +1280,21 @@ class PbFormStudio(models.AbstractModel):
 
     # ---------------------------------------------------- draft/publish
     @api.model
+    def _pbfs_drafts(self, host_key):
+        """This administrator's draft(s) of a screen, newest first. One per
+        person per screen whatever company they work in (R18: the layout is
+        the same for every company, so is the draft of it)."""
+        return self.env['pb.form.layout.draft'].sudo().search(
+            [('host_key', '=', host_key), ('user_id', '=', self.env.uid)],
+            order='write_date desc, id desc')
+
+    @api.model
     def save_draft(self, host_key, payload):
         self._pbfs_check_admin()
         self._pbfs_host(host_key)
         layout = self._pbfs_layout(host_key)
         Draft = self.env['pb.form.layout.draft'].sudo()
-        draft = Draft.search([('host_key', '=', host_key), ('company_id', '=', self.env.company.id),
-                              ('user_id', '=', self.env.uid)], limit=1)
+        draft = self._pbfs_drafts(host_key)[:1]
         base = (payload or {}).get('base_version')
         vals = {'payload': payload or {},
                 'base_version': base if isinstance(base, int) else (layout.version if layout else 0)}
@@ -1240,9 +1308,7 @@ class PbFormStudio(models.AbstractModel):
     @api.model
     def discard_draft(self, host_key):
         self._pbfs_check_admin()
-        self.env['pb.form.layout.draft'].sudo().search([
-            ('host_key', '=', host_key), ('company_id', '=', self.env.company.id),
-            ('user_id', '=', self.env.uid)]).unlink()
+        self._pbfs_drafts(host_key).unlink()
         return True
 
     @api.model
@@ -1307,11 +1373,11 @@ class PbFormStudio(models.AbstractModel):
         if layout:
             layout.write(vals)
         else:
+            # The row needs a company; it is only where it was first made —
+            # the layout is read for every company (R18).
             layout = self.env['pb.form.layout'].sudo().create(dict(
                 vals, host_key=host_key, model=model, company_id=self.env.company.id))
-        self.env['pb.form.layout.draft'].sudo().search([
-            ('host_key', '=', host_key), ('company_id', '=', self.env.company.id),
-            ('user_id', '=', self.env.uid)]).unlink()
+        self._pbfs_drafts(host_key).unlink()
         changes = [str(c)[:200] for c in (payload.get('changes') or [])][:100]
         self._pbfs_audit('publish', host_key, model, None,
                          _('Published %(screen)s, version %(v)s', screen=host['title'],
@@ -1325,8 +1391,8 @@ class PbFormStudio(models.AbstractModel):
     def _pbfs_notify(self, host_key, version):
         if 'bus.bus' not in self.env:
             return
-        users = self.env['res.users'].sudo().search([
-            ('share', '=', False), ('company_ids', 'in', self.env.company.id)])
+        # R18: one layout for every company, so everybody hears about it.
+        users = self.env['res.users'].sudo().search([('share', '=', False)])
         Bus = self.env['bus.bus'].sudo()
         for user in users:
             Bus._sendone(user.partner_id, 'pb_form_studio/published',
@@ -1591,9 +1657,8 @@ class PbFormStudio(models.AbstractModel):
         if not metas:
             return []
         hidden = self._pbfs_portal_hidden(model)
-        company = rec.company_id if rec and 'company_id' in rec._fields and rec.company_id else None
         order, where = [], {}
-        for sec in self._pbfs_effective(key, company=company):
+        for sec in self._pbfs_effective(key):           # one layout for all companies (R18)
             for name in sec['fields']:
                 if name in metas and name not in where:
                     order.append(name)

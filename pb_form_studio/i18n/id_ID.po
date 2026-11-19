@@ -627,8 +627,8 @@ msgstr "Semua orang"
 #. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
-msgid "Everyone in this company sees the new layout the next time the screen loads."
-msgstr "Semua orang di perusahaan ini melihat tata letak baru saat layar dimuat berikutnya."
+msgid "Everyone, in every company, sees the new layout the next time the screen loads."
+msgstr "Semua orang, di setiap perusahaan, melihat tata letak baru saat layar dimuat berikutnya."
 
 #. module: pb_form_studio
 #. odoo-javascript

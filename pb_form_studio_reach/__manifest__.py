@@ -25,7 +25,7 @@ Silent install: creates no field, layout, job, mail or approval. Nothing
 reaches anything until a custom field exists on a record type a screen has
 registered with the Form builder.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
