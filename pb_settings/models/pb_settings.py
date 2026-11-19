@@ -56,7 +56,7 @@ SYSTEM_GROUP = 'base.group_system'
 # system administrator is refused, including a caller whose payload has been
 # edited in the browser, because the answer does not depend on the payload.
 # =============================================================================
-PLATFORM_ONLY_CATEGORIES = ('org', 'payroll')
+PLATFORM_ONLY_CATEGORIES = ('org', 'payroll', 'email')
 
 # The raw Users & permission groups action is still refused below wherever a
 # caller tries to place it, but it no longer has a category or palette door.
@@ -68,6 +68,7 @@ PLATFORM_ONLY_CATEGORIES = ('org', 'payroll')
 #: are not.
 PLATFORM_ONLY_ACTIONS = (
     'base.action_res_users',
+    'pb_settings.action_outgoing_email',
     'base.action_res_company_form',
     'om_hr_payroll.action_hr_payroll_configuration',
     'pb_sidebar.action_pb_sidebar_item',

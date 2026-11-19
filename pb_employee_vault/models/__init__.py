@@ -16,3 +16,5 @@ from . import payroll_profile
 from . import workflow_timetable
 
 from . import employee_profile_tools
+
+from . import weekday_location

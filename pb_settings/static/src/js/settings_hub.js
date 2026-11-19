@@ -241,6 +241,16 @@ export const CATEGORIES = [
               sub: _t("The details that print on payslips, filings and letters — and a preview of each one.") },
         ],
     },
+    {
+        key: "email", icon: "mail", label: _t("Outgoing email"),
+        blurb: _t("Configure the server used to send email from this site."),
+        groups: ADMIN,
+        cards: [
+            { id: "outgoing_email", xmlid: "pb_settings.action_outgoing_email",
+              icon: "mail", label: _t("Outgoing email servers"),
+              sub: _t("Add or edit servers, test the connection, and activate them when ready. New servers start inactive.") },
+        ],
+    },
 ];
 
 /**
@@ -305,7 +315,7 @@ export const GROUP_OF_CATEGORY = {
     hiring: "hr", announcements: "hr", journeys: "hr",
     approvals: "workflows",
     guided_setup: "system", about: "system", payai_can_act: "system",
-    demo_data: "system",
+    demo_data: "system", email: "system",
 };
 
 /** The rail group a category belongs to. */
@@ -329,9 +339,10 @@ export function groupOf(cat) {
  * ever disagree the SERVER's list is the one that decides — this one can only
  * ever hide something the server would also have hidden.
  */
-export const PLATFORM_ONLY_CATEGORIES = ["org", "payroll"];
+export const PLATFORM_ONLY_CATEGORIES = ["org", "payroll", "email"];
 export const PLATFORM_ONLY_ACTIONS = [
     "base.action_res_users",
+    "pb_settings.action_outgoing_email",
     "base.action_res_company_form",
     "om_hr_payroll.action_hr_payroll_configuration",
     "pb_sidebar.action_pb_sidebar_item",
