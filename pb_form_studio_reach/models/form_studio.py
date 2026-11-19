@@ -21,7 +21,8 @@ class PbFormStudioReach(models.AbstractModel):
     # ------------------------------------------------------------ finders
     @api.model
     def _pbfs_reference_finders(self):
-        return super()._pbfs_reference_finders() + ['_pbfr_refs_formulas']
+        return super()._pbfs_reference_finders() + ['_pbfr_refs_formulas',
+                                                    '_pbfr_refs_portal_requests']
 
     @api.model
     def _pbfr_formula_rules(self, model, name):
@@ -41,6 +42,21 @@ class PbFormStudioReach(models.AbstractModel):
                  for r in rules]
         return [self._pbfs_ref('formula', self.env._('Pay formulas'), names,
                                count=len(rules))]
+
+    @api.model
+    def _pbfr_refs_portal_requests(self, model, name):
+        """Changes employees proposed on My Payobook that still wait for HR
+        (or were taken back to be sent again). Switching "Employee can change
+        it" off closes them with a note; deleting would lose them silently."""
+        Req = self.env['pb.me.detail.request'].sudo()
+        reqs = Req.search([('kind', '=', 'company_details'), ('fb_model', '=', model),
+                           ('state', 'in', ('draft', 'hr_review')), ('fb_replaced', '=', False),
+                           ('fb_values_json', 'like', '"%s"' % name)])
+        reqs = reqs.filtered(lambda r: name in r._pbfr_values())
+        if not reqs:
+            return []
+        return [self._pbfs_ref('portal_request', self.env._('Changes waiting on My Payobook'),
+                               reqs.mapped('employee_id.name'), count=len(reqs))]
 
     # ------------------------------------------------------------- guards
     @api.model

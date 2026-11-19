@@ -6,3 +6,4 @@ from . import records
 from . import mapping
 from . import access
 from . import audit
+from . import portal_request

@@ -43,6 +43,12 @@ registered with the Form builder.
     'data': [
         'views/portal_templates.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            # Learn anchors (lesson "Add your own fields") on the Field library.
+            'pb_form_studio_reach/static/src/xml/learn_anchors.xml',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,

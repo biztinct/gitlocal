@@ -65,7 +65,9 @@ class RecordsDeskFormBuilder(models.AbstractModel):
     @api.model
     def _read_cell(self, probe, card, employee, contract, memo=None):
         if self._pbfr_not_here(card, employee, contract, memo):
-            return {'v': None, 'label': '', 'missing': True}
+            # A blank cell — not "missing" (that word means "no contract" to
+            # the desk); a change is then refused by `_coerce` below.
+            return {'v': None, 'label': '', 'not_here': True}
         return super()._read_cell(probe, card, employee, contract, memo)
 
     @api.model
