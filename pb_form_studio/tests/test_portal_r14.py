@@ -221,12 +221,11 @@ class TestPortalR14(TransactionCase):
                              'a stale signal stops counting after its window')
 
     # 32 ------------------------------------------------------------------
-    def test_32_everyone_alias_still_answers(self):
-        n = self.make('text', 'DEMO Everyone field', vis='all')
-        h = self.make('text', 'DEMO HR field', vis='hr')
-        names = [s['name'] for s in self.Studio.fields_for(MODEL, 'everyone')]
-        self.assertIn(n, names)
-        self.assertNotIn(h, names)
+    def test_32_everyone_alias_removed(self):
+        self.make('text', 'DEMO Everyone field', vis='all')
+        self.make('text', 'DEMO HR field', vis='hr')
+        self.assertEqual(self.Studio.fields_for(MODEL, 'everyone'), [])
+        self.assertEqual(self.Studio.values_for(MODEL, [], 'everyone'), {})
 
     # 33 ------------------------------------------------------------------
     def test_33_publish_routes_standard_ticks(self):

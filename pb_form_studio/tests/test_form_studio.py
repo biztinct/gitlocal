@@ -452,13 +452,9 @@ class TestFormStudio(TransactionCase):
         self.assertNotIn(hr_f, staff_list)
         self.assertNotIn('S3CRET', str(self.Studio.with_user(self.hr).values_for(
             MODEL, [self.rec_vn.id], 'list')))
-        # 'everyone' is decided by the setting, even around a sudo record.
+        # The old 'everyone' alias is gone: it answers nothing, even around sudo.
         ev = self.Studio._pbfs_values_for(self.rec_vn.sudo(), 'everyone')
-        self.assertIn(open_f, ev[self.rec_vn.id])
-        self.assertNotIn(secret, ev[self.rec_vn.id])
-        self.assertNotIn(hr_f, ev[self.rec_vn.id])
-        metas = self.Studio._pbfs_meta(MODEL, list(ev[self.rec_vn.id]))
-        self.assertEqual({m.vis for m in metas.values()}, {'all'})
+        self.assertEqual(ev[self.rec_vn.id], {})
         # Plain RPC reads.
         Rec = self.env[MODEL].with_user(self.staff)
         self.assertNotIn(secret, Rec.browse(self.rec_vn.id).read()[0])

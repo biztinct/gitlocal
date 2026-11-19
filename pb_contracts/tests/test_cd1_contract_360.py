@@ -243,7 +243,7 @@ class TestCd1Contract360(TransactionCase):
     # =====================================================================
     def test_02_terms_are_grouped_in_the_declared_order(self):
         payload = self._payload()
-        self.assertEqual([g['key'] for g in payload['terms']],
+        self.assertEqual([g['key'] for g in payload['terms'] if not g.get('pbfs')],
                          ['money', 'dates', 'place', 'rules'])
         money = payload['terms'][0]
         self.assertEqual(money['fields'][0]['name'], 'wage')

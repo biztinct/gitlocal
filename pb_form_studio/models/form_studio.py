@@ -1519,8 +1519,8 @@ class PbFormStudio(models.AbstractModel):
                            caller, so safe around a record read with elevated
                            rights. Items: {name, label, help, type, kind,
                            options, comodel, section, section_title, edit, mode}.
-                'everyone' DEPRECATED alias kept for fs-5 (R3, replaced by R14):
-                           custom fields whose visibility is "Everyone".
+        Any other purpose answers nothing (the old 'everyone' alias of R3 was
+        removed at the Form builder merge: nothing calls it since R14).
         Each list item carries `countries` (ids; empty = all) so a list can
         blank the cell for records elsewhere — `_pbfs_values_for` does that.
         """
@@ -1528,16 +1528,15 @@ class PbFormStudio(models.AbstractModel):
             return []
         if purpose == 'portal':
             return self._pbfs_portal_fields(model, record)
+        if purpose not in ('list', 'formula', 'all'):
+            return []
         Model = self.env[model]
         out = []
         for name, meta in self._pbfs_meta(model).items():
             field = Model._fields.get(name)
             if not field or not meta.custom:
                 continue
-            if purpose == 'everyone':
-                if meta.vis != 'all':
-                    continue
-            elif not self._pbfs_can_read_field(Model, field):
+            if not self._pbfs_can_read_field(Model, field):
                 continue
             if purpose == 'list' and not meta.list_ok:
                 continue
@@ -1736,8 +1735,7 @@ class PbFormStudio(models.AbstractModel):
     def _pbfs_values_for(self, records, purpose='list'):
         """Python helper for lists / exports / self-service:
         `{record id: {field name: {value, display}}}` for `fields_for(purpose)`;
-        a field that does not apply to a record's country is a blank cell.
-        With purpose 'everyone' it may be handed a sudo recordset."""
+        a field that does not apply to a record's country is a blank cell."""
         specs = self.fields_for(records._name, purpose)
         countries = self._pbfs_record_countries(records)
         metas = self._pbfs_meta(records._name, [s['name'] for s in specs])
@@ -1757,8 +1755,8 @@ class PbFormStudio(models.AbstractModel):
     @api.model
     def values_for(self, model, record_ids, purpose='list'):
         """RPC face of `_pbfs_values_for` — caller's own rights, never
-        elevated ('everyone' is refused here: it is a server-side helper)."""
-        if purpose == 'everyone' or model not in self._pbfs_host_models():
+        elevated."""
+        if purpose not in ('list', 'formula', 'all') or model not in self._pbfs_host_models():
             return {}
         records = self.env[model].browse([int(i) for i in record_ids or []]).exists()
         records.check_access('read')
