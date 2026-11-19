@@ -491,7 +491,7 @@ export class ListColumns {
 
 /** base64 → a saved file, without leaving the page (the Records Desk way). */
 export function saveFile(res) {
-    const binary = browser.atob(res.file_b64);
+    const binary = window.atob(res.file_b64);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
         bytes[i] = binary.charCodeAt(i);

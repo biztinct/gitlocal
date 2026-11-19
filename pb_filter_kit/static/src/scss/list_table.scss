@@ -40,7 +40,8 @@
 .pbf-cols-scrim { display: none; }
 .pbf-cols-pop {
     position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; width: 340px;
-    max-height: 72vh; display: flex; flex-direction: column;
+    // the list scrolls inside; the footer (Save / Reset) always stays in view
+    max-height: calc(100vh - 360px); min-height: 300px; display: flex; flex-direction: column;
     background: var(--pbf-card, #fff); border: 1px solid var(--pbf-line, #E2E8F0); border-radius: 14px;
     box-shadow: var(--pbf-shadow-lg, 0 18px 48px rgba(27, 23, 51, .18));
     animation: pbf-pop .16s var(--pbf-ease, ease);
@@ -178,7 +179,9 @@
 .pbf-lt--l .pbf-lt-table .is-pin { box-shadow: 6px 0 10px -8px rgba(27, 23, 51, .28); }
 .pbf-lt-cb input { width: 16px; height: 16px; accent-color: var(--pbf-p, #5A4BB0); cursor: pointer; }
 
-.pbf-lt-person { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+.pbf-lt-person { display: flex; align-items: center; gap: 10px; min-width: 0; }
+// the person column keeps a readable width; long names end in "…"
+.pbf-lt-table td.k-person { min-width: 220px; max-width: 300px; }
 .pbf-lt-av {
     width: 30px; height: 30px; border-radius: 9px; flex: none; background-size: cover; background-position: center;
     background-color: var(--pbf-soft, #EDEAF8); color: var(--pbf-p-ink, #241F52);
@@ -212,6 +215,7 @@
 @media (max-width: 640px) {
     .pbf-lt-table th, .pbf-lt-table td { padding: 9px 10px; }
     .pbf-lt-pn { max-width: 150px; }
+    .pbf-lt-table td.k-person { min-width: 170px; max-width: 200px; }
     .pbf-lt-table .pbf-lt-cb { padding-left: 10px; width: 36px; }
     .pbf-lt--cb .pbf-lt-table .is-pin { left: 36px; }
 }
