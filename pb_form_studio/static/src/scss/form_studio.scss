@@ -155,11 +155,12 @@
     .pbfb-banners { display: grid; gap: 8px; padding: 10px 16px 0; &:empty { display: none; } }
     .pbfb-wide-note { margin: 16px; }
 
-    .pbfb-work { flex: 1; min-height: 0; display: grid; grid-template-columns: 272px minmax(0, 1fr) 316px; gap: 16px; padding: 16px; overflow: hidden; }
+    .pbfb-work { flex: 1; min-height: 0; display: grid; grid-template-columns: 304px minmax(0, 1fr) 316px; gap: 16px; padding: 16px; overflow: hidden; }
     .pbfb-panel { background: #fff; border: 1px solid var(--pbim-line); border-radius: var(--pbim-r); box-shadow: var(--pbfb-sh); overflow: auto; min-height: 0;
         h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--pbim-muted); padding: 14px 16px 8px; margin: 0; font-weight: 800; } }
     .pbfb-ptabs { display: flex; gap: 2px; border-bottom: 1px solid var(--pbim-line); padding: 0 12px;
-        button { padding: 10px 8px; font-weight: 700; color: var(--pbim-muted); border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; cursor: pointer; font: inherit; font-weight: 700; }
+        button { padding: 10px 7px; font-weight: 700; color: var(--pbim-muted); border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; cursor: pointer; font: inherit; font-weight: 700;
+            font-size: 13px; white-space: nowrap; }
         button.on { color: var(--pbim-primary); border-color: var(--pbim-primary); } }
     .pbfb-pal { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 12px 12px;
         &.one { grid-template-columns: 1fr; } }
@@ -202,6 +203,35 @@
         > span { display: inline-flex; align-items: center; gap: 6px; }
         i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid var(--pbim-line);
             &.o { border: 2px dashed var(--pbim-primary-light); } &.l { background: var(--pbim-bg); border-style: dashed; } &.c { background: var(--pbim-soft); border-color: transparent; } } }
+
+    // R24 — the filter on top of the left column: sticky while the list scrolls.
+    .pbfb-findbar { position: sticky; top: 0; z-index: 2; background: #fff; display: grid; gap: 8px;
+        padding: 12px 12px 8px; border-bottom: 1px solid var(--pbim-line-2); }
+    .pbfb-cow { display: flex; align-items: center; gap: 6px; border: 1px solid var(--pbim-line); border-radius: 10px; padding: 0 0 0 10px;
+        color: var(--pbim-muted); background: #fff;
+        select { border: 0; background: transparent; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--pbim-text); padding: 7px 8px 7px 0;
+            flex: 1; min-width: 0; outline: none; }
+        &:focus-within { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-soft); } }
+
+    // R23 — the "Standard fields" tab: one row per field, grouped by its tab.
+    .pbfb-std-l { display: grid; gap: 4px; padding: 0 12px 12px; }
+    .pbfb-std-g { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--pbim-muted);
+        padding: 10px 4px 2px; }
+    button.pbfb-std-it { display: flex; align-items: flex-start; gap: 9px; width: 100%; text-align: left; cursor: pointer;
+        padding: 8px 10px; border: 1px solid var(--pbim-line); border-radius: 10px; background: #fff;
+        font: inherit; color: var(--pbim-text); box-shadow: none; transition: background .14s, border-color .14s;
+        .ck { color: var(--pbim-muted); display: grid; margin-top: 1px; }
+        .tx { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+        b { font-weight: 700; font-size: 12.5px; overflow-wrap: anywhere; }
+        small { font-size: 11.5px; font-weight: 600; color: var(--pbim-muted); }
+        .lk { color: var(--pbim-muted); display: grid; margin-top: 2px; }
+        &:hover { border-color: var(--pbim-primary-light); background: var(--pbim-soft); }
+        &.on .ck { color: var(--pbim-teal); }
+        &.renamed .ck { color: var(--pbim-primary); }
+        &.hid { background: var(--pbim-bg); border-style: dashed;
+            b { color: var(--pbim-muted); text-decoration: line-through; text-decoration-color: var(--pbim-line); }
+            .ck { color: var(--pbim-amber); } }
+        &.sel { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-soft); } }
 
     // properties
     .pbfb-empty-prop { padding: 28px 18px; color: var(--pbim-muted); text-align: center; font-weight: 600; line-height: 1.5;
@@ -260,6 +290,36 @@
             letter-spacing: .02em; font-weight: 700 !important; color: var(--pbim-text); outline: none; } }
     .pbfb-btnrow { display: flex; gap: 8px; }
 
+    // R24 — search box, type/kind chips, count and the "no match" state
+    // (overlay left column and Field library).
+    .pbfb-find { display: flex; align-items: center; gap: 6px; padding: 7px 8px 7px 10px; border: 1px solid var(--pbim-line);
+        border-radius: 10px; background: #fff; min-width: 0;
+        .ic { color: var(--pbim-muted); display: grid; }
+        input { border: 0; outline: none; flex: 1; min-width: 0; font: inherit; font-size: 13px; font-weight: 600; background: transparent; padding: 0; }
+        &:focus-within { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-soft); } }
+    button.pbfb-find-x { border: 0; background: var(--pbim-bg); color: var(--pbim-muted); border-radius: 999px; width: 22px; height: 22px;
+        display: grid; place-items: center; padding: 0; cursor: pointer; flex: none; box-shadow: none;
+        &:hover { background: var(--pbim-soft); color: var(--pbim-primary); } }
+    .pbfb-tchips { display: flex; gap: 4px; flex-wrap: wrap;
+        button { padding: 3px 9px; border-radius: 999px; font: inherit; font-size: 11.5px; font-weight: 700; background: var(--pbim-bg);
+            color: var(--pbim-muted); border: 1px solid transparent; cursor: pointer; box-shadow: none;
+            &:hover { color: var(--pbim-primary); }
+            &.on { background: var(--pbim-soft); color: var(--pbim-primary); border-color: var(--pbim-primary-light); } } }
+    .pbfb-count { margin: 0; font-size: 11.5px; font-weight: 700; color: var(--pbim-muted); font-variant-numeric: tabular-nums; }
+    .pbfb-nomatch { display: grid; justify-items: center; gap: 6px; padding: 18px 10px; text-align: center; color: var(--pbim-muted);
+        border: 1px dashed var(--pbim-line); border-radius: 12px; font-size: 12.5px;
+        .ic { color: var(--pbim-primary-light); } b { color: var(--pbim-text); } }
+
+    // R23 — a standard field's screen rule in the properties panel / sheet.
+    .pbfb-stdblock { display: grid; gap: 8px; padding: 10px 12px 12px; border-radius: 12px; background: var(--pbim-bg);
+        label { display: grid; gap: 4px; } }
+    .pbfb-stdblock-h { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--pbim-primary);
+        text-transform: uppercase; letter-spacing: .06em; }
+    .pbfb-seg.three { grid-template-columns: repeat(3, minmax(0, 1fr));
+        button { flex-direction: column; gap: 3px; line-height: 1.2; padding: 7px 4px; }
+        button.on { background: var(--pbim-primary); }
+        button[disabled] { opacity: .4; cursor: not-allowed; } }
+
     // sheets
     .pbfb-sheet { position: fixed; inset: 0; background: rgba(30, 27, 46, .45); display: grid; place-items: center; z-index: 1052; padding: 16px; }
     // NOT min(520px, 100%): libsass evaluates min() itself and refuses
@@ -283,7 +343,7 @@
     .pbfb-libtop { display: flex; gap: 14px; align-items: center; margin-bottom: 16px;
         h1 { font-size: 22px; font-weight: 800; margin: 0; letter-spacing: -.01em; } p { margin: 2px 0 0; color: var(--pbim-muted); font-weight: 600; } }
     .pbfb-libtop-ic { width: 46px; height: 46px; border-radius: 14px; background: var(--pbim-soft); color: var(--pbim-primary); display: grid; place-items: center; flex: none; }
-    .pbfb-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 12px 0 16px; }
+    .pbfb-kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin: 12px 0 16px; }
     .pbfb-kpi { background: #fff; border: 1px solid var(--pbim-line); border-radius: var(--pbim-r); padding: 14px 16px; display: flex; gap: 12px; align-items: center;
         .ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--pbim-soft); color: var(--pbim-primary); }
         &.t-g .ic { background: var(--pbim-green-soft); color: var(--pbim-green); }
@@ -318,6 +378,15 @@
         i { display: inline-block; width: 64px; height: 6px; border-radius: 999px; background: var(--pbim-line-2); overflow: hidden; position: relative;
             &::after { content: ""; position: absolute; inset: 0; width: var(--p); background: var(--pbim-primary); border-radius: 999px; } } }
     .pbfb-usedn { font-weight: 800; color: #92400E; background: var(--pbim-amber-soft); padding: 2px 8px; border-radius: 999px; }
+    // R23/R24 — standard rows and the one filter bar
+    .pbfb-libnote { margin-bottom: 12px; }
+    .pbfb-libsearch { min-width: 240px; flex: 1 1 240px; max-width: 360px; }
+    .pbfb-libfind .pbfb-cow { flex: 0 1 220px; }
+    .pbfb-libnomatch { margin: 16px; }
+    .rt.std i { background: var(--pbim-primary-light); }
+    tr.pbfb-stdrow.hid td .name { color: var(--pbim-muted); text-decoration: line-through; text-decoration-color: var(--pbim-line); }
+    .pbfb-lockchip { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 800; padding: 2px 8px;
+        border-radius: 999px; background: var(--pbim-bg); color: var(--pbim-muted); cursor: help; }
     .pbfb-foot { color: var(--pbim-muted); font-size: 12.5px; padding: 12px 0 24px; line-height: 1.6; max-width: 75ch; b { color: var(--pbim-text); } }
 
     // dev host

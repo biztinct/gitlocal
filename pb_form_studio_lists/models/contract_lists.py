@@ -11,6 +11,9 @@ from odoo import api, models
 from .list_columns import money_format, to_date
 
 MODEL = 'hr.contract'
+#: R23 — the field behind each standard column (see people_lists.py).
+COLUMN_FIELDS = {'employee': 'employee_id', 'structure': 'struct_id', 'date_start': 'date_start',
+                 'date_end': 'date_end', 'state': 'state', 'wage': 'wage', 'name': 'name'}
 
 
 class PbContractsLists(models.AbstractModel):
@@ -38,7 +41,8 @@ class PbContractsLists(models.AbstractModel):
                                    'checked yet.')})
         cols.append({'key': 'name', 'label': _('Contract reference'), 'kind': 'text',
                      'default': False})
-        return cols + self.env['pb.form.studio.lists']._pbfl_columns(MODEL)
+        Lists = self.env['pb.form.studio.lists']
+        return Lists._pbfl_std_columns(MODEL, cols, COLUMN_FIELDS) + Lists._pbfl_columns(MODEL)
 
     def _pbf_export_name(self):
         return self.env._('Contracts')

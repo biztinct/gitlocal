@@ -232,52 +232,7 @@ patch(PbEmployeeDetail.prototype, {
 //  3. The publish sheet: say it once, plainly (ADDENDUM item 3)
 // ===================================================================
 patch(FormStudioOverlay.prototype, {
-    setup() {
-        super.setup(...arguments);
-        this.pbfp = useState({ term: "" });
-    },
     get pbfpHasNewFields() { return Object.keys(this.state.creates || {}).length > 0; },
-
-    // ---------------------------------------------------------------
-    //  4. "Standard fields": the My Payobook ticks of the standard boxes,
-    //     where they already sit (owner: "a tick in front of the field").
-    //     Picking one opens its settings on the right WITHOUT placing it on
-    //     this screen; Publish sends the ticks (engine `update_portal`).
-    //     Only for screens whose record type has a My Payobook page.
-    // ---------------------------------------------------------------
-    get pbfpStdAll() {
-        return Object.values(this.state.fields || {})
-            .filter((f) => !f.custom && !f.deleted && f.portal)
-            .sort((a, b) => String(a.label).localeCompare(String(b.label)));
-    },
-    get pbfpHasStd() { return this.pbfpStdAll.length > 0; },
-    get pbfpStdFields() {
-        const t = (this.pbfp.term || "").trim().toLowerCase();
-        return this.pbfpStdAll.filter((f) => !t || String(f.label).toLowerCase().includes(t));
-    },
-    get pbfpStdOnCount() { return this.pbfpStdAll.filter((f) => f.portal.show).length; },
-    get pbfpStdCountText() {
-        const n = this.pbfpStdOnCount;
-        return n === 1 ? _t("1 standard field is on My Payobook") : _t("%s standard fields are on My Payobook", n);
-    },
-    pbfpOnTerm(ev) { this.pbfp.term = ev.target.value; },
-    pbfpStdState(f) {
-        const p = f.portal || {};
-        if (!p.show) { return ""; }
-        if (!p.edit) { return _t("Shown"); }
-        return p.mode === "instant" ? _t("Shown · can change, saves at once") : _t("Shown · can change, HR approves");
-    },
-    pbfpStdLocked(f) {
-        const p = f.portal || {};
-        return !p.can_show ? p.show_reason || "" : "";
-    },
-    pbfpStdClass(f) {
-        return { on: Boolean(f.portal && f.portal.show), sel: this.state.sel === f.name,
-                 off: Boolean(f.portal && !f.portal.can_show) };
-    },
-    pbfpStdIcon(f) {
-        const p = f.portal || {};
-        return this.ic(p.show ? "checkCircle" : (p.can_show ? "circle" : "lock"), 15);
-    },
-    pbfpPick(f) { this.select(f); },
+    // 4. The "Standard fields" tab of R14 moved into the engine's overlay
+    //    (FS-7: hide, rename and the filter of R23/R24, for every record type).
 });

@@ -432,6 +432,8 @@ class PbFormStudio(models.AbstractModel):
         for t in self._pbfs_types():
             if t['key'] == kind:
                 return t['label']
+        if kind == 'readonly':
+            return self.env._('List of records')
         return kind
 
     @api.model
@@ -585,9 +587,12 @@ class PbFormStudio(models.AbstractModel):
         # A standard field may have a settings row too (R14 ticks only): its
         # visibility / required / list / countries stay the product's own.
         cmeta = meta if custom else None
+        # R23: a standard field's own label (screen rule) wins on every screen.
+        own = None if custom else self._pbfs_std_label_of(meta)
         out = {
             'name': name,
-            'label': desc.get('string') or name,
+            'label': own or desc.get('string') or name,
+            'field_label': desc.get('string') or name,
             'help': desc.get('help') or '',
             'type': field.type,
             'kind': kind,
@@ -802,6 +807,17 @@ class PbFormStudio(models.AbstractModel):
         refs = {n: self.field_references(model, n) for n in names if n.startswith(PREFIX)}
         for n, r in refs.items():
             flds[n]['used_by'] = r
+        for d in flds.values():
+            d['placeable'] = True
+        # R23 — every standard field of the record type, with its screen rule
+        # (hide / own label), for the "Standard fields" tab. Most of them are
+        # not placeable in an open section: they are drawn where the product
+        # draws them; only their screen rule changes.
+        self._pbfs_std_sweep()
+        for n, sd in self._pbfs_std_all(model).items():
+            if n not in flds:
+                flds[n] = self._pbfs_std_light(Model, n, sd)
+            flds[n]['stdbox'] = sd
         targets = self._pbfs_link_targets()
         return {
             'host': {'key': host_key, 'model': model, 'title': host['title'],
@@ -828,6 +844,7 @@ class PbFormStudio(models.AbstractModel):
             'records': counts.get('__total__', 0),
             'busy': self._pbfs_busy(),
             'langs': self._pbfs_langs(),
+            'lang': self.env.lang or 'en_US',
         }
 
     @api.model
@@ -1368,8 +1385,10 @@ class PbFormStudio(models.AbstractModel):
             if real.startswith(PREFIX):
                 self.update_field(model, real, vals)
             else:
-                # a standard field: only its My Payobook ticks can change
-                self.update_portal(model, real, vals)
+                # a standard field: its My Payobook ticks (R14) and its screen
+                # rule — hidden / own label (R23). No column is added or
+                # dropped, so the pay-run guard does not apply to it.
+                self.with_context(pbfs_publishing=True).update_standard(model, real, vals)
         sections = []
         for sec in payload.get('sections') or []:
             names = []
@@ -1437,6 +1456,7 @@ class PbFormStudio(models.AbstractModel):
         country = self._pbfs_record_countries(record)[record.id]
         metas = self._pbfs_meta(host['model'])
         locked = self._pbfs_locked_fields(host['model'])
+        std_rules = self._pbfs_std_rules(host['model'])       # R23
         out = []
         for sec in self._pbfs_effective(host_key):
             item = {k: sec.get(k) for k in ('id', 'title', 'icon', 'tone', 'kind', 'note')}
@@ -1448,6 +1468,8 @@ class PbFormStudio(models.AbstractModel):
                 meta = metas.get(name)
                 custom = name.startswith(PREFIX) and bool(meta)
                 if custom and not self._pbfs_applies(meta, country):
+                    continue
+                if not custom and self._pbfs_std_hidden(std_rules.get(name), country):
                     continue
                 desc = self._pbfs_describe(Model, name, meta=meta, locked=locked)
                 desc.pop('labels', None)
@@ -1929,8 +1951,31 @@ class PbFormStudio(models.AbstractModel):
                              'total': counts.get('__total__', 0), 'where': where,
                              'used_by': self.field_references(model, name)})
                 rows.append(desc)
-        return {'fields': rows, 'screens': screens, 'langs': self._pbfs_langs(),
-                'countries': [{'id': c.id, 'name': c.name} for c in self.env['res.country'].search([])],
+        # R23 — the standard fields of each record type, with their screen
+        # rule and (where offered) their My Payobook ticks.
+        self._pbfs_std_sweep()
+        std_rows = []
+        for model in models_seen:
+            if any(h.get('dev') for h in hosts.values() if h['model'] == model):
+                continue
+            Model = self.env[model]
+            record_type = next((h['title'] for h in hosts.values() if h['model'] == model), model)
+            portal_names = set()
+            for host in hosts.values():
+                if host['model'] == model and host.get('portal'):
+                    portal_names |= set(self._pbfs_std_names(host))
+            metas = self._pbfs_meta(model)
+            for name, sd in self._pbfs_std_all(model).items():
+                row = self._pbfs_std_light(Model, name, sd)
+                if name in portal_names:
+                    row['portal'] = self._pbfs_portal_desc(model, name, metas.get(name))
+                row.update({'model': model, 'record_type': record_type, 'stdbox': sd,
+                            'where': [sd['tab']] if sd['tab'] else [], 'used_by': []})
+                std_rows.append(row)
+        return {'fields': rows, 'std': std_rows, 'screens': screens, 'langs': self._pbfs_langs(),
+                'countries': [{'id': c.id, 'name': c.name, 'code': c.code}
+                              for c in self.env['res.country'].search([])],
+                'lang': self.env.lang or 'en_US',
                 'busy': self._pbfs_busy()}
 
     @api.model

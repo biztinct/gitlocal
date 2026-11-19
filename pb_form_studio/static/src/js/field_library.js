@@ -11,14 +11,15 @@
  * Administrator only: the card is registered for `base.group_system`, and
  * `library` / `update_field` / `delete_field` refuse anybody else.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, useRef, onWillStart, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { rpcBus } from "@web/core/network/rpc";
 import { fsIc, KIND_ICON } from "./fs_icons";
-import { FACADE } from "./fs_words";
+import { FACADE, fold, foldMatch, isSlashKey } from "./fs_words";
 
-const LANG_NAMES = { vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
+const LANG_NAMES = { en_US: "English", vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
 
 export class FieldLibrary extends Component {
     static template = "pb_form_studio.FieldLibrary";
@@ -29,8 +30,20 @@ export class FieldLibrary extends Component {
         this.action = useService("action");
         this.notification = useService("notification");
         this.state = useState({
-            loading: true, error: "", rows: [], screens: [], langs: [], countries: [],
+            loading: true, error: "", rows: [], std: [], screens: [], langs: [], countries: [],
             busy: "", filter: "all", term: "", edit: null, del: null, saving: false,
+            // R24 — kind chip and Country of Work picker (client-side only)
+            kind: "all", country: 0, lang: "en_US",
+            // R23 — the Edit sheet of a standard field
+            stdEdit: null,
+        });
+        this.search = useRef("libSearch");
+        useExternalListener(window, "keydown", (ev) => {
+            if (isSlashKey(ev) && !this.state.edit && !this.state.del && !this.state.stdEdit && this.search.el) {
+                ev.preventDefault();
+                this.search.el.focus();
+                this.search.el.select();
+            }
         });
         onWillStart(() => this.load());
     }
@@ -41,8 +54,9 @@ export class FieldLibrary extends Component {
         this.state.loading = true;
         try {
             const res = await this.orm.call(FACADE, "library", []);
-            Object.assign(this.state, { rows: res.fields, screens: res.screens, langs: res.langs,
-                                        countries: res.countries, busy: res.busy, error: "" });
+            Object.assign(this.state, { rows: res.fields, std: res.std || [], screens: res.screens,
+                                        langs: res.langs, countries: res.countries, busy: res.busy,
+                                        lang: res.lang || "en_US", error: "" });
         } catch (e) {
             this.state.error = (e && e.data && e.data.message) || _t("The Field library could not open.");
         } finally {
@@ -66,23 +80,95 @@ export class FieldLibrary extends Component {
     // ------------------------------------------------------------ figures
     get recordTypes() {
         const out = [];
-        for (const r of this.state.rows) { if (!out.includes(r.record_type)) { out.push(r.record_type); } }
+        for (const r of this.allRows) { if (!out.includes(r.record_type)) { out.push(r.record_type); } }
         return out;
     }
+    /** Own fields first, then every standard field (R23), one list. */
+    get allRows() { return [...this.state.rows, ...this.state.std]; }
+    isStdRow(r) { return Boolean(r.stdbox && !r.custom); }
+    rowHidden(r) {
+        if (this.isStdRow(r)) { return Boolean(r.stdbox.hidden || (r.stdbox.countries || []).length); }
+        return !r.where.length;
+    }
+    rowOnPortal(r) { return Boolean(r.portal && r.portal.show); }
+    /** R24 — does the field show for people of this Country of Work? */
+    rowApplies(r, cid) {
+        if (!cid) { return true; }
+        if (this.isStdRow(r)) {
+            const s = r.stdbox;
+            if (!s.lock && (s.hidden || (s.countries || []).some((c) => c.id === cid))) { return false; }
+            return !(s.rule && s.rule.country_id && s.rule.country_id !== cid);
+        }
+        return !(r.countries || []).length || r.countries.some((c) => c.id === cid);
+    }
     get rows() {
-        const t = (this.state.term || "").toLowerCase().trim();
-        return this.state.rows.filter((r) => (this.state.filter === "all" || r.record_type === this.state.filter)
-            && (!t || r.label.toLowerCase().includes(t) || (r.help || "").toLowerCase().includes(t)));
+        const kind = this.state.kind;
+        const cid = Number(this.state.country) || 0;
+        return this.allRows.filter((r) => {
+            if (this.state.filter !== "all" && r.record_type !== this.state.filter) { return false; }
+            if (kind === "own" && this.isStdRow(r)) { return false; }
+            if (kind === "std" && !this.isStdRow(r)) { return false; }
+            if (kind === "hidden" && !this.rowHidden(r)) { return false; }
+            if (kind === "portal" && !this.rowOnPortal(r)) { return false; }
+            if (!this.rowApplies(r, cid)) { return false; }
+            return foldMatch(this.state.term, r.label, r.help, (r.stdbox || {}).builtin);
+        });
+    }
+    get kindChips() {
+        return [
+            { key: "all", label: _t("All") }, { key: "own", label: _t("Own fields") },
+            { key: "std", label: _t("Standard fields") }, { key: "hidden", label: _t("Hidden") },
+            { key: "portal", label: _t("On My Payobook") },
+        ];
+    }
+    kindClass(c) { return { on: this.state.kind === c.key }; }
+    setKind(key) { this.state.kind = key; }
+    get countryOptions() { return [...this.state.countries].sort((a, b) => a.name.localeCompare(b.name)); }
+    onCountry(ev) { this.state.country = Number(ev.target.value) || 0; }
+    isCountry(c) { return Number(this.state.country) === c.id; }
+    get filtered() {
+        return Boolean(fold(this.state.term)) || this.state.kind !== "all" || this.state.filter !== "all"
+            || Boolean(Number(this.state.country));
+    }
+    get countText() {
+        const n = this.rows.length;
+        const total = this.allRows.length;
+        if (this.filtered) { return _t("%(n)s of %(total)s", { n, total }); }
+        return total === 1 ? _t("1 field") : _t("%s fields", total);
+    }
+    clearFilters() {
+        Object.assign(this.state, { term: "", kind: "all", filter: "all", country: 0 });
+        if (this.search.el) { this.search.el.focus(); }
+    }
+    onSearchKey(ev) {
+        if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); this.state.term = ""; }
     }
     get kpis() {
         const rows = this.state.rows;
+        const std = this.state.std;
         return [
             { key: "n", icon: "sparkles", tone: "", value: rows.length, label: _t("Custom fields") },
             { key: "f", icon: "calculator", tone: "g", value: rows.filter((r) => r.formula_ok).length, label: _t("Feed pay formulas") },
             { key: "l", icon: "columns", tone: "b", value: rows.filter((r) => r.list_ok).length, label: _t("Shown in lists") },
             { key: "h", icon: "eyeOff", tone: "a", value: rows.filter((r) => !r.where.length).length, label: _t("Not on any screen") },
+            { key: "sh", icon: "eyeOff", tone: "a", value: std.filter((r) => this.rowHidden(r)).length, label: _t("Standard fields hidden") },
+            { key: "sr", icon: "pencil", tone: "", value: std.filter((r) => Object.keys(r.stdbox.labels || {}).length).length, label: _t("Standard fields renamed") },
         ];
     }
+    // standard rows (R23)
+    stdHiddenText(r) {
+        const s = r.stdbox;
+        if (s.ignored) { return _t("Locked now, shown"); }
+        if (s.hidden) { return _t("Hidden for everyone"); }
+        if ((s.countries || []).length) { return _t("Hidden in %s", s.countries.map((c) => c.name).join(", ")); }
+        if (s.rule) { return _t("Only %s", s.rule.country); }
+        return _t("All countries");
+    }
+    stdRenamedText(r) {
+        const s = r.stdbox;
+        return Object.keys(s.labels || {}).length ? _t("Built-in label: %s", s.builtin) : "";
+    }
+    get hasOwn() { return this.state.rows.length > 0; }
     kpiClass(k) { return { quiet: !k.value, ["t-" + k.tone]: Boolean(k.tone) }; }
     filterClass(key) { return { on: this.state.filter === key }; }
     setFilter(key) { this.state.filter = key; }
@@ -195,6 +281,117 @@ export class FieldLibrary extends Component {
             this.state.saving = false;
         }
     }
+
+    // -------------------------------------------- standard field (R23 sheet)
+    startStdEdit(r) {
+        const s = r.stdbox;
+        this.state.edit = null;
+        this.state.del = null;
+        this.state.stdEdit = {
+            row: r, labels: { ...(s.labels || {}) },
+            mode: s.hidden ? "all" : ((s.countries || []).length ? "some" : "shown"),
+            countries: (s.countries || []).map((c) => ({ ...c })), countryTerm: "",
+            portal: r.portal ? { ...r.portal } : null,
+        };
+    }
+    closeStdEdit() { this.state.stdEdit = null; }
+    get allLangs() { return this.state.langs || ["en_US"]; }
+    stdBuiltin(lang) {
+        const s = this.state.stdEdit.row.stdbox;
+        return (s.builtins || {})[lang] || s.builtin || "";
+    }
+    onStdLabel(lang, ev) {
+        const v = ev.target.value.trim();
+        const e = this.state.stdEdit;
+        if (v && v !== this.stdBuiltin(lang)) { e.labels[lang] = v; } else { delete e.labels[lang]; }
+    }
+    resetStdLabels() { this.state.stdEdit.labels = {}; }
+    get stdHasLabels() { return Object.keys(this.state.stdEdit.labels || {}).length > 0; }
+    setStdMode(mode) {
+        const e = this.state.stdEdit;
+        if (mode !== "shown" && e.row.stdbox.lock) { return; }
+        e.mode = mode;
+        if (mode !== "some") { e.countries = []; }
+    }
+    stdModeClass(mode) { return { on: this.state.stdEdit.mode === mode }; }
+    onStdCountryTerm(ev) { this.state.stdEdit.countryTerm = ev.target.value; }
+    get stdCountryMatches() {
+        const e = this.state.stdEdit;
+        const t = fold(e.countryTerm);
+        if (!t) { return []; }
+        const chosen = new Set(e.countries.map((c) => c.id));
+        const rank = (c) => (fold(c.name).startsWith(t) ? 0 : 1);
+        return this.state.countries.filter((c) => !chosen.has(c.id) && (fold(c.name).includes(t) || fold(c.code) === t))
+            .sort((a, b) => rank(a) - rank(b)).slice(0, 6);
+    }
+    stdMatchLabel(c) {
+        const r = this.state.stdEdit.row.stdbox.rule;
+        return r && r.country_id && r.country_id !== c.id ? _t("%s (not used there)", c.name) : c.name;
+    }
+    addStdCountry(c) { this.state.stdEdit.countries.push({ id: c.id, name: c.name }); this.state.stdEdit.countryTerm = ""; }
+    removeStdCountry(c) { this.state.stdEdit.countries = this.state.stdEdit.countries.filter((x) => x.id !== c.id); }
+    stdRuleText() {
+        const r = this.state.stdEdit.row.stdbox.rule;
+        return r ? _t("Shown only where Country of Work is %s: not used in other countries. That rule comes with the product and cannot be changed here.", r.country) : "";
+    }
+    toggleStdPortal(which) {
+        const p = this.state.stdEdit.portal;
+        if (which === "show") {
+            if (!p.can_show) { return; }
+            p.show = !p.show;
+            if (!p.show) { p.edit = false; }
+        } else {
+            if (!p.can_edit) { return; }
+            p.edit = !p.edit;
+            if (p.edit) { p.show = true; }
+        }
+    }
+    setStdPortalMode(mode) { this.state.stdEdit.portal.mode = mode; }
+    stdPortalModeClass(mode) { return { on: this.state.stdEdit.portal.mode === mode }; }
+    async saveStdEdit() {
+        const e = this.state.stdEdit;
+        if (e.mode === "some" && !e.countries.length) {
+            this.notification.add(_t("Pick at least one country, or choose Shown."), { type: "warning" });
+            return;
+        }
+        const vals = { std_labels: e.labels, std_hidden: e.mode === "all",
+                       std_country_ids: e.mode === "some" ? e.countries.map((c) => c.id) : [] };
+        if (e.row.stdbox.lock) { delete vals.std_hidden; delete vals.std_country_ids; }
+        if (e.row.stdbox.lock && e.mode === "shown") { Object.assign(vals, { std_hidden: false, std_country_ids: [] }); }
+        if (e.row.stdbox.label_lock) { delete vals.std_labels; }
+        if (e.portal) {
+            Object.assign(vals, { portal_show: e.portal.show, portal_edit: e.portal.edit, portal_mode: e.portal.mode });
+        }
+        this.state.saving = true;
+        try {
+            await this.orm.call(FACADE, "update_standard", [e.row.model, e.row.name, vals]);
+            rpcBus.trigger("CLEAR-CACHES", "get_views");
+            this.notification.add(_t("Saved. Everyone sees the change the next time their screen loads."), { type: "success" });
+            this.state.stdEdit = null;
+            await this.load();
+        } catch (err) {
+            this.notification.add((err && err.data && err.data.message) || _t("That could not be saved."), { type: "danger" });
+        } finally {
+            this.state.saving = false;
+        }
+    }
+    /** One click back to the product's own way (the history keeps the line). */
+    async undoStd(r) {
+        this.state.saving = true;
+        try {
+            const vals = { std_labels: {} };
+            if (!r.stdbox.lock || r.stdbox.ignored) { Object.assign(vals, { std_hidden: false, std_country_ids: [] }); }
+            await this.orm.call(FACADE, "update_standard", [r.model, r.name, vals]);
+            rpcBus.trigger("CLEAR-CACHES", "get_views");
+            this.notification.add(_t("%s is back to how the product shows it.", r.stdbox.builtin), { type: "success" });
+            await this.load();
+        } catch (err) {
+            this.notification.add((err && err.data && err.data.message) || _t("That could not be saved."), { type: "danger" });
+        } finally {
+            this.state.saving = false;
+        }
+    }
+    stdChanged(r) { return this.rowHidden(r) || Object.keys(r.stdbox.labels || {}).length > 0; }
 
     // ------------------------------------------------------------- delete
     startDelete(r) { this.state.edit = null; this.state.del = { row: r, typed: "" }; }

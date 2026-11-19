@@ -203,3 +203,47 @@ msgstr "Có"
 #: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
 msgid "name"
 msgstr "tên"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr ""
+"Tệp dữ liệu lương điền trường này, nên lương phụ thuộc vào trường này."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
+msgstr ""
+"Một công thức lương đọc trường này, nên lương phụ thuộc vào trường này."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
+msgstr "Phê duyệt, quyền truy cập và thiết lập lương dựa vào trường này."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Contract panel: %s"
+msgstr "Bảng hợp đồng: %s"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It names the contract on every payslip and file."
+msgstr "Trường này đặt tên hợp đồng trên mọi phiếu lương và tệp."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It says whose contract this is."
+msgstr "Trường này cho biết hợp đồng của ai."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
+msgstr "Lương hoặc hồ sơ pháp định phụ thuộc vào trường này."

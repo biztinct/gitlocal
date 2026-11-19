@@ -534,3 +534,83 @@ msgstr "Con được tính giảm trừ thuế được thêm trong Thông tin c
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "The time zone follows the place of work and is used to count working time, so only HR changes it."
 msgstr "Múi giờ theo nơi làm việc và được dùng để tính thời gian làm việc, nên chỉ bộ phận nhân sự thay đổi."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr ""
+"Tệp dữ liệu lương điền trường này, nên lương phụ thuộc vào trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
+msgstr ""
+"Một công thức lương đọc trường này, nên lương phụ thuộc vào trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
+msgstr "Phê duyệt, quyền truy cập và thiết lập lương dựa vào trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Bank files depend on this field."
+msgstr "Tệp ngân hàng phụ thuộc vào trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Government forms and statutory files print this field."
+msgstr "Biểu mẫu nhà nước và hồ sơ pháp định in trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "It names the person on every payslip and file."
+msgstr "Trường này ghi tên người lao động trên mọi phiếu lương và tệp."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Logins, approvals and the time clock follow this field."
+msgstr "Đăng nhập, phê duyệt và chấm công dựa vào trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
+msgstr "Lương hoặc hồ sơ pháp định phụ thuộc vào trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Pay or statutory files of that country depend on this field."
+msgstr "Lương hoặc hồ sơ pháp định của nước đó phụ thuộc vào trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Job"
+msgstr "Bảng bên: Công việc"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Pay & tax"
+msgstr "Bảng bên: Lương và thuế"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Personal"
+msgstr "Bảng bên: Cá nhân"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Tax and social insurance files depend on this field."
+msgstr "Hồ sơ thuế và bảo hiểm xã hội phụ thuộc vào trường này."
