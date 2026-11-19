@@ -104,6 +104,49 @@ class TestNativeLook(TransactionCase):
             self.assertEqual([a.get('name') for a in specs[0]], ['class'])
             self.assertFalse(arch.xpath('//field|//page|//group|//button'))
 
+    def test_05_employee_screen_fixes(self):
+        """Addendum: the version record's always-empty Contract / Wage rows are
+        hidden (their fields stay in the form), one line says where the
+        contract's dates and wage are, two labels are corrected - and no field
+        definition or stored label changes."""
+        form, models = self._form('hr.employee', self.users['administrator'])
+        root = etree.fromstring(form['arch'])
+        page = root.xpath("//page[@name='payroll_information']")
+        self.assertTrue(page)
+        page = page[0]
+        for xp in ("//label[@for='contract_date_start']", "//div[@name='contract_dates']",
+                   "//label[@for='wage']", "//div[@name='wage']"):
+            nodes = page.xpath('.' + xp)
+            self.assertTrue(nodes, xp)
+            self.assertIn(nodes[0].get('invisible'), ('1', 'True'), xp)
+        # the fields are still part of the form (values load and save as before)
+        for name in ('contract_date_start', 'contract_date_end', 'wage'):
+            self.assertTrue(page.xpath(".//field[@name='%s']" % name), name)
+        note = page.xpath(".//div[hasclass('o_pb_nl_contract_note')]")
+        self.assertTrue(note)
+        self.assertIn('Current Contract', note[0].text)
+        self.assertEqual(root.xpath("//field[@name='tham_gia_bhxh']")[0].get('string'),
+                         'Social insurance (BHXH)')
+        emp_id = root.xpath("//field[@name='parent_id']/following-sibling::field[@name='employee_id']")
+        self.assertEqual(emp_id[0].get('string'), 'Employee ID')
+        # stored field labels untouched (other screens keep theirs)
+        fields = self.env['ir.model.fields']._get('hr.employee', 'tham_gia_bhxh')
+        self.assertEqual(fields.with_context(lang='en_US').field_description, 'Tham gia BHXH')
+        self.assertEqual(self.env['hr.employee']._fields['employee_id'].string, 'Employee Id')
+
+    def test_06_screen_fixes_change_no_value(self):
+        """Saving the employee through the form with the fixes keeps the
+        version record's contract dates and wage exactly as they were."""
+        from odoo.tests import Form
+        emp = self.env['hr.employee'].create({'name': 'DEMO FS6 values'})
+        before = emp.read(['contract_date_start', 'contract_date_end', 'wage', 'tham_gia_bhxh', 'employee_id'])[0]
+        with Form(emp.with_user(self.users['administrator'])) as f:
+            f.job_title = 'DEMO FS6 saved'
+        emp.invalidate_recordset()
+        after = emp.read(['contract_date_start', 'contract_date_end', 'wage', 'tham_gia_bhxh', 'employee_id'])[0]
+        self.assertEqual(before, after)
+        self.assertEqual(emp.job_title, 'DEMO FS6 saved')
+
     def test_04_other_native_forms_keep_their_arch(self):
         """Five other native forms are not touched by this module."""
         mine = {self.env.ref(v).id for _m, _p, v, _k in FORMS}

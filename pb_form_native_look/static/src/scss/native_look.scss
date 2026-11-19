@@ -285,3 +285,30 @@ $pb-nl-phone: 767.98px;
         .o_notebook .nav-link { transition: none; }
     }
 }
+
+// ── Payroll tab: the line that replaces the always-empty Contract / Wage rows
+// (views/employee_form_fixes.xml). Quiet, with a Lucide "info" glyph; styled
+// with or without the engine.
+.o_form_view .o_pb_nl_contract_note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 2px 0 var(--vuf-sp-3, 12px);
+    padding: 8px 12px;
+    border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-primary-soft, #EDEAF8);
+    color: var(--vuf-muted, #6B7280) !important;
+    font-size: 12.5px;
+    line-height: 1.45;
+
+    &::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 15px;
+        height: 15px;
+        margin-top: 1px;
+        background-color: var(--vuf-primary, #5A4BB0);
+        -webkit-mask: url("/biz_theme/static/src/img/lucide/info.svg") center / contain no-repeat;
+        mask: url("/biz_theme/static/src/img/lucide/info.svg") center / contain no-repeat;
+    }
+}
