@@ -94,7 +94,10 @@ class TestPayrollReady(TransactionCase):
         self.assertEqual(k['with_bank'], ready_people + 1)          # + no-contract person
         # not ready = no running contract OR no approved bank account
         self.assertEqual(k['not_ready'], 5 - ready_people)
-        self.assertEqual(k['ready_pct'], round(100 * (ready_people + 1) / 5))
+        # TIDY-E2: the % is the share that IS payroll-ready (running contract +
+        # approved bank), the complement of "Not payroll-ready" — not bank alone
+        self.assertEqual(k['ready_pct'], round(100 * ready_people / 5))
+        self.assertEqual(k['ready_pct'], round(100 * (5 - k['not_ready']) / 5))
 
     def test_05c_the_filter_sections(self):
         People = self._people()
