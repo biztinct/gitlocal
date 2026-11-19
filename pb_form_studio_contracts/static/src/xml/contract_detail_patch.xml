@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       FS-3: the contract page shows the administrator's own fields,
+       look-only. W22 / W23 / W96 as in the drawer patch.
+       ================================================================== -->
+  <t t-name="pb_form_studio_contracts.PbContractDetail" t-inherit="pb_contracts.PbContractDetail" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('ppl-d-top')]/button[last()]" position="after">
+      <FormStudioWand studio="fs3Studio"/>
+    </xpath>
+    <xpath expr="//div[hasclass('ppl-d-railpanel')]" position="after">
+      <div t-if="fs3Sections.length" class="pbfb pbfs3-page">
+        <PbFieldGrid sections="fs3Sections" mode="'read'" model="'hr.contract'" currency="fs3Currency"/>
+      </div>
+    </xpath>
+    <xpath expr="//div[hasclass('ppl-cdetail')]" position="inside">
+      <FormStudioOverlay t-if="fs3Studio.state.open" t-props="fs3Studio.overlayProps"/>
+    </xpath>
+  </t>
+
+</templates>
