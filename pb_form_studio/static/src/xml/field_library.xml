@@ -43,7 +43,7 @@
             <div class="pbfb-tbl">
               <table>
                 <thead><tr>
-                  <th>Field</th><th>Record type</th><th>Type</th><th>Appears in</th><th>Filled</th><th>Who can see</th><th>Countries</th><th>Used by</th><th/>
+                  <th>Field</th><th>Record type</th><th>Type</th><th>Appears in</th><th>Filled</th><th>Who can see</th><th>Countries</th><th>My Payobook</th><th>Used by</th><th/>
                 </tr></thead>
                 <tbody>
                   <tr t-foreach="rows" t-as="r" t-key="r.model + r.name">
@@ -55,6 +55,7 @@
                     <td><span class="pbfb-fill"><i t-att-style="fillStyle(r)"/><t t-esc="fillText(r)"/></span></td>
                     <td t-esc="r.vis_label"/>
                     <td t-esc="countriesText(r)"/>
+                    <td t-esc="portalText(r)"/>
                     <td><span t-if="usedCount(r)" class="pbfb-usedn" t-esc="usedCount(r)"/><span t-else="" class="muted">—</span></td>
                     <td class="acts">
                       <button type="button" class="pbfb-btn sm ghost-dark" t-on-click="() => this.startEdit(r)"><t t-out="ic('pencil',13)"/> <span>Edit</span></button>
@@ -111,6 +112,17 @@
               <button type="button" class="pbfb-sw" role="switch" aria-label="Show in lists" t-att-aria-checked="switchAttr(e.list_ok)" t-on-click="() => this.onEditToggle('list_ok')"/></div>
             <div class="pbfb-row"><div><div class="t">Use in pay formulas</div></div>
               <button type="button" class="pbfb-sw" role="switch" aria-label="Use in pay formulas" t-att-disabled="!e.row.formula_possible" t-att-aria-checked="switchAttr(e.formula_ok)" t-on-click="() => this.onEditToggle('formula_ok')"/></div>
+            <div t-if="e.portal" class="pbfb-portal">
+              <div class="pbfb-portal-h"><t t-out="ic('smartphone',14)"/> <span>My Payobook</span></div>
+              <div class="pbfb-row"><div><div class="t">Show on My Payobook</div><div class="d" t-if="!e.portal.can_show" t-esc="e.portal.show_reason"/></div>
+                <button type="button" class="pbfb-sw" role="switch" aria-label="Show on My Payobook" t-att-disabled="!e.portal.can_show" t-att-aria-checked="switchAttr(e.portal.show)" t-on-click="() => this.toggleEditPortal('show')"/></div>
+              <div class="pbfb-row"><div><div class="t">Employee can change it</div><div class="d" t-if="!e.portal.can_edit" t-esc="e.portal.edit_reason"/></div>
+                <button type="button" class="pbfb-sw" role="switch" aria-label="Employee can change it" t-att-disabled="!e.portal.can_edit" t-att-aria-checked="switchAttr(e.portal.edit)" t-on-click="() => this.toggleEditPortal('edit')"/></div>
+              <div t-if="e.portal.edit" class="pbfb-seg" role="group" aria-label="When the employee changes it">
+                <button type="button" t-att-class="editModeClass('approve')" t-on-click="() => this.setEditMode('approve')"><t t-out="ic('userCheck',13)"/> <span>HR approves the change</span></button>
+                <button type="button" t-att-class="editModeClass('instant')" t-on-click="() => this.setEditMode('instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
+              </div>
+            </div>
             <div t-if="e.row.used_by.length" class="pbfb-used">
               <div class="pbfb-lab">Used by</div>
               <div t-foreach="e.row.used_by" t-as="u" t-key="u_index" class="pbfb-used-row"><t t-out="ic('link',13)"/> <b t-esc="u.label"/> <span class="n" t-esc="u.count"/></div>

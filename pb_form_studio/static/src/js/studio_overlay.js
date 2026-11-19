@@ -237,14 +237,34 @@ export class FormStudioOverlay extends Component {
             countries: (spec.country_ids || []).map((id) => this.countryById(id)).filter(Boolean),
             options: (spec.options || []).map((l, i) => ({ value: "", label: l, key: i })),
             comodel: spec.comodel || false, labels: spec.labels || {}, helps: spec.helps || {},
-            filled: 0, used_by: [],
+            filled: 0, used_by: [], portal: this.pendingPortal(spec),
         };
     }
     countryById(id) {
         const c = (this.data.countries || []).find((x) => x.id === id);
         return c ? { id: c.id, name: c.name } : null;
     }
+    /** R14 rules for a field that does not exist yet (the server decides for
+     *  existing ones, and re-checks everything on Publish). */
+    pendingPortal(spec) {
+        if (!(this.data.host || {}).portal) { return null; }
+        const editable = ["text", "longtext", "integer", "number", "date", "select", "bool", "m2o"].includes(spec.type);
+        return {
+            show: Boolean(spec.portal_show), edit: Boolean(spec.portal_edit), mode: spec.portal_mode || "approve",
+            can_show: true, show_reason: "", can_edit: editable,
+            edit_reason: editable ? "" : _t("Money and files can be shown, not changed by the employee."),
+        };
+    }
     mergeIntoDesc(desc, vals) {
+        if (desc.portal && ["portal_show", "portal_edit", "portal_mode"].some((k) => k in vals)) {
+            const p = { ...desc.portal };
+            if ("portal_show" in vals) { p.show = vals.portal_show; }
+            if ("portal_edit" in vals) { p.edit = vals.portal_edit; }
+            if ("portal_mode" in vals) { p.mode = vals.portal_mode; }
+            if (p.edit) { p.show = true; }
+            if (!p.show) { p.edit = false; }
+            desc.portal = p;
+        }
         if ("label" in vals) { desc.label = vals.label; }
         if ("help" in vals) { desc.help = vals.help; }
         if (vals.labels) { desc.labels = { ...(desc.labels || {}), ...vals.labels }; }
@@ -413,6 +433,49 @@ export class FormStudioOverlay extends Component {
         this.edit(f, key, !f[descKey], label);
     }
     switchAttr(on) { return on ? "true" : "false"; }
+    // ------------------------------------------------- My Payobook (R14)
+    portalOn(f) { return Boolean(f && f.portal); }
+    portalShowHelp(f) {
+        const p = f.portal;
+        return p.can_show ? _t("Shown on the employee's own My Payobook page, even when only HR can see it here.") : p.show_reason;
+    }
+    portalEditHelp(f) {
+        const p = f.portal;
+        return p.can_edit ? _t("The employee can change it on My Payobook.") : p.edit_reason;
+    }
+    togglePortal(f, which) {
+        const p = f.portal;
+        if (which === "show") {
+            if (!p.can_show) { return; }
+            const on = !p.show;
+            this.editPortal(f, on ? { portal_show: true } : { portal_show: false, portal_edit: false });
+        } else {
+            if (!p.can_edit) { return; }
+            const on = !p.edit;
+            this.editPortal(f, on ? { portal_show: true, portal_edit: true } : { portal_edit: false });
+        }
+    }
+    /** Several ticks, one change line. */
+    editPortal(f, vals) {
+        if (f.pending) {
+            const tmp = f.name.split(":")[1];
+            Object.assign(this.state.creates[tmp], vals);
+            Object.assign(this.state.fields[f.name], this.pendingDesc(tmp, this.state.creates[tmp]), { name: f.name });
+            this.scheduleDraft();
+            return;
+        }
+        this.state.updates[f.name] = { ...(this.state.updates[f.name] || {}), ...vals };
+        this.mergeIntoDesc(f, vals);
+        const what = _t("%(label)s: %(what)s", { label: f.label, what: _t("My Payobook") });
+        // one line per field however many ticks were touched
+        if (this.state.changes.some((c) => c.kind === "changed" && c.ref === f.name && c.what === what)) {
+            this.scheduleDraft();
+        } else {
+            this.note("changed", what, f.name);
+        }
+    }
+    setPortalMode(f, mode) { if (f.portal.mode !== mode) { this.editPortal(f, { portal_mode: mode }); } }
+    modeClass(f, mode) { return { on: f.portal.mode === mode }; }
     get requiredWord() { return _t("required"); }
     get listWord() { return _t("show in lists"); }
     get formulaWord() { return _t("use in pay formulas"); }
@@ -479,7 +542,7 @@ export class FormStudioOverlay extends Component {
             { label: _t("This screen"), on: this.placedNames.has(f.name) },
             { label: _t("Lists"), on: Boolean(f.list_ok) },
             { label: _t("Pay formulas"), on: Boolean(f.formula_ok) },
-            { label: _t("Self-service"), on: f.vis === "all" },
+            { label: _t("My Payobook"), on: Boolean(f.portal && f.portal.show) },
         ];
     }
     chipClass(c) { return { on: c.on }; }

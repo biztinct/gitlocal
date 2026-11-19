@@ -98,7 +98,7 @@ export class FieldLibrary extends Component {
             { label: _t("Screen"), on: r.where.length > 0 },
             { label: _t("Lists"), on: r.list_ok },
             { label: _t("Formulas"), on: r.formula_ok },
-            { label: _t("Self-service"), on: r.vis === "all" },
+            { label: _t("My Payobook"), on: Boolean(r.portal && r.portal.show) },
         ];
     }
     usageClass(u) { return { on: u.on }; }
@@ -115,8 +115,31 @@ export class FieldLibrary extends Component {
             labels: { ...(r.labels || {}) }, helps: { ...(r.helps || {}) },
             countries: (r.countries || []).map((c) => ({ ...c })), options: (r.options || []).map((o) => ({ ...o })),
             countryTerm: "",
+            portal: r.portal ? { ...r.portal } : null,
         };
     }
+    // My Payobook (R14)
+    portalText(r) {
+        const p = r.portal;
+        if (!p) { return "—"; }
+        if (!p.show) { return _t("Not shown"); }
+        if (!p.edit) { return _t("Shown"); }
+        return p.mode === "instant" ? _t("Can change · saves at once") : _t("Can change · HR approves");
+    }
+    toggleEditPortal(which) {
+        const p = this.state.edit.portal;
+        if (which === "show") {
+            if (!p.can_show) { return; }
+            p.show = !p.show;
+            if (!p.show) { p.edit = false; }
+        } else {
+            if (!p.can_edit) { return; }
+            p.edit = !p.edit;
+            if (p.edit) { p.show = true; }
+        }
+    }
+    setEditMode(mode) { this.state.edit.portal.mode = mode; }
+    editModeClass(mode) { return { on: this.state.edit.portal.mode === mode }; }
     closeEdit() { this.state.edit = null; }
     get langs() { return (this.state.langs || []).filter((l) => l !== "en_US"); }
     langName(l) { return LANG_NAMES[l] || l; }
@@ -157,6 +180,9 @@ export class FieldLibrary extends Component {
             formula_ok: e.formula_ok, labels: e.labels, country_ids: e.countries.map((c) => c.id),
         };
         if (e.row.kind === "select") { vals.options = e.options.map((o) => ({ value: o.value, label: o.label })); }
+        if (e.portal) {
+            Object.assign(vals, { portal_show: e.portal.show, portal_edit: e.portal.edit, portal_mode: e.portal.mode });
+        }
         this.state.saving = true;
         try {
             await this.orm.call(FACADE, "update_field", [e.row.model, e.row.name, vals]);

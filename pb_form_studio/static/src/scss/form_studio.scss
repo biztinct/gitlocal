@@ -229,6 +229,16 @@
     .pbfb-where { display: flex; gap: 5px; flex-wrap: wrap;
         span { font-size: 11.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--pbim-bg); color: var(--pbim-muted); display: inline-flex; align-items: center; gap: 4px;
             &.on { background: var(--pbim-green-soft); color: var(--pbim-green); } } }
+    // R14 — My Payobook ticks: a tinted block so it reads as its own decision.
+    .pbfb-portal { display: grid; gap: 4px; padding: 10px 12px 12px; border-radius: 12px; background: var(--pbim-teal-soft);
+        .pbfb-row { border-top-color: rgba(15, 118, 110, .15); }
+        .pbfb-row.off .t { color: var(--pbim-muted); } }
+    .pbfb-portal-h { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--pbim-teal);
+        text-transform: uppercase; letter-spacing: .06em; }
+    .pbfb-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: #fff; border-radius: 10px; padding: 3px; margin-top: 6px;
+        button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: 0; background: transparent; padding: 7px 8px;
+            border-radius: 8px; font: inherit; font-size: 12px; font-weight: 800; color: var(--pbim-muted); cursor: pointer; text-align: center;
+            &.on { background: var(--pbim-teal); color: #fff; } } }
     .pbfb-opts { display: grid; gap: 6px; }
     .pbfb-opt { display: flex; gap: 6px; align-items: center; input { flex: 1; } }
     .pbfb-countries { display: grid; gap: 6px; width: 100%;
