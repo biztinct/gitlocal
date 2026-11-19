@@ -44,6 +44,9 @@ this module.
             'pb_employee_form_tidy/static/src/xml/people_country_fill.xml',
             'pb_employee_form_tidy/static/src/scss/employee_form_tidy.scss',
         ],
+        'web.assets_frontend': [
+            'pb_employee_form_tidy/static/src/scss/me_tax_hint.scss',
+        ],
     },
     'installable': True,
     'application': False,
