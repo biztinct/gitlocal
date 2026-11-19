@@ -138,6 +138,7 @@
   <t t-name="pb_filter_kit.ListTable">
     <div class="pbf-lt" t-att-class="{ 'pbf-lt--l': st.left, 'pbf-lt--r': st.right, 'pbf-lt--cb': props.selectable }"
          t-att-data-coach="props.coach or undefined">
+      <t t-set="shown" t-value="cols.columns"/>
       <div class="pbf-lt-scroll" t-ref="scroll" t-on-scroll="measure">
         <table class="pbf-lt-table">
           <thead>
@@ -146,7 +147,7 @@
                 <input type="checkbox" t-att-checked="allTicked" aria-label="Tick every row shown"
                        t-on-click.stop="onTickAll"/>
               </th>
-              <th t-foreach="cols.columns" t-as="c" t-key="c.key" t-att-class="thClass(c)"
+              <th t-foreach="shown" t-as="c" t-key="c.key" t-att-class="thClass(c)"
                   t-att-aria-sort="ariaSort(c)" t-att-title="c.custom ? c.help or c.label : c.help or undefined"
                   t-on-click="() => this.sortBy(c)">
                 <span class="pbf-lt-th">
@@ -166,7 +167,7 @@
                 <input type="checkbox" t-att-checked="isTicked(row)" t-att-aria-label="row.name or ''"
                        t-on-click.stop="() => this.onTick(row)"/>
               </td>
-              <td t-foreach="cols.columns" t-as="c" t-key="c.key" t-att-class="tdClass(c)">
+              <td t-foreach="shown" t-as="c" t-key="c.key" t-att-class="tdClass(c)">
                 <t t-if="c.kind === 'person'">
                   <span class="pbf-lt-person">
                     <span class="pbf-lt-av" t-attf-style="background-image:url({{ row.avatar or '' }})">

@@ -1,0 +1,295 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 11:01+0000\n"
+"PO-Revision-Date: 2026-11-19 11:01+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/table_flag.js:0
+msgid "%s days"
+msgstr "%s ngày"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/table_flag.js:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/contracts_table.xml:0
+msgid "Answers Payobook filled in by itself"
+msgstr "Câu trả lời Payobook tự điền"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Answers Payobook filled in by itself that nobody has checked yet."
+msgstr "Các câu trả lời Payobook tự điền mà chưa ai kiểm tra."
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Answers to check"
+msgstr "Câu trả lời cần kiểm tra"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/contracts_table.xml:0
+msgid "Change"
+msgstr "Sửa"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+#: code:addons/pb_form_studio_lists/static/src/xml/people_table.xml:0
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Contract ends"
+msgstr "Hợp đồng kết thúc"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Contract reference"
+msgstr "Mã hợp đồng"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Contract start"
+msgstr "Bắt đầu hợp đồng"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_form_studio_lists
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_form_studio_lists__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_people__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/contracts_table.js:0
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "Ends within 30 days"
+msgstr "Kết thúc trong vòng 30 ngày"
+
+#. module: pb_form_studio_lists
+#: model:ir.model,name:pb_form_studio_lists.model_pb_form_studio_lists
+msgid "Form builder: list columns"
+msgstr "Trình tạo biểu mẫu: cột danh sách"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/contracts_table.xml:0
+msgid ""
+"From the usual answers of the scheme that pays each person. Confirm the ones"
+" that are right; change the rest."
+msgstr ""
+"Từ câu trả lời thường dùng của chế độ lương trả cho từng người. Xác nhận "
+"những câu đúng; sửa phần còn lại."
+
+#. module: pb_form_studio_lists
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_form_studio_lists__id
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_people__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Job"
+msgstr "Công việc"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Joined"
+msgstr "Ngày vào làm"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/contracts_table.xml:0
+msgid "Looks right"
+msgstr "Có vẻ đúng"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Marked when a contract ends within 30 days."
+msgstr "Được đánh dấu khi hợp đồng kết thúc trong vòng 30 ngày."
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Marked when a running contract ends within 30 days."
+msgstr "Được đánh dấu khi hợp đồng đang chạy kết thúc trong vòng 30 ngày."
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Monthly wage"
+msgstr "Lương tháng"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "No bank details"
+msgstr "Chưa có thông tin ngân hàng"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/contracts_table.js:0
+msgid "No end date"
+msgstr "Không có ngày kết thúc"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "No running contract"
+msgstr "Không có hợp đồng đang chạy"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/people_table.xml:0
+msgid "Open their contract"
+msgstr "Mở hợp đồng của họ"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Pay structure"
+msgstr "Cơ cấu lương"
+
+#. module: pb_form_studio_lists
+#: model:ir.model,name:pb_form_studio_lists.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr ""
+
+#. module: pb_form_studio_lists
+#: model:ir.model,name:pb_form_studio_lists.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr ""
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/contracts_table.js:0
+msgid ""
+"Payobook filled these in from the scheme's usual answers. Open the contract "
+"to check or change them."
+msgstr ""
+"Payobook đã điền các mục này từ câu trả lời thường dùng của chế độ lương. Mở"
+" hợp đồng để kiểm tra hoặc sửa."
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "Payroll ready"
+msgstr "Sẵn sàng tính lương"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Payroll-ready"
+msgstr "Sẵn sàng tính lương"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "Ready"
+msgstr "Sẵn sàng"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Ready means a running contract and bank details on file."
+msgstr "Sẵn sàng nghĩa là có hợp đồng đang chạy và thông tin ngân hàng."
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/table_flag.js:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Work email"
+msgstr "Email công việc"

@@ -149,7 +149,8 @@ export class ListColumns {
     // --------------------------------------------------------------- load
     ensure() {
         if (!this._loading) {
-            this._loading = this.load();
+            // raw: a promise behind a reactive proxy cannot be awaited
+            this._loading = markRaw(this.load());
         }
         return this._loading;
     }

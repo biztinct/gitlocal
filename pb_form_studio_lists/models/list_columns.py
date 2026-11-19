@@ -42,11 +42,27 @@ class PbFormStudioLists(models.AbstractModel):
         return out
 
     @api.model
+    def _pbfl_prefetch(self, records, specs):
+        """Read every custom column of `records` in ONE query.
+
+        The ORM never prefetches manual fields (core `fields.py`, "prefetch
+        only stored, column, non-manual fields"), so the engine's per-record
+        read would cost one query per column per page. `fetch` loads them all
+        at once into the cache the engine then reads from. Only names the
+        engine already handed this reader (`fields_for`) are fetched."""
+        names = [s['name'] for s in specs if s['name'] in records._fields
+                 and records._fields[s['name']].column_type]
+        if names and records:
+            records.fetch(names)
+
+    @api.model
     def _pbfl_attach(self, rows, model):
         """Add `pbfs: {field: display}` to each page row (one dict per id)."""
-        if not rows or not self._pbfl_specs(model):
+        specs = self._pbfl_specs(model) if rows else []
+        if not specs:
             return rows
         records = self.env[model].browse([r['id'] for r in rows if r.get('id')])
+        self._pbfl_prefetch(records, specs)
         values = self.env['pb.form.studio']._pbfs_values_for(records, 'list')
         for row in rows:
             cells = values.get(row.get('id')) or {}
@@ -56,9 +72,12 @@ class PbFormStudioLists(models.AbstractModel):
     @api.model
     def _pbfl_cells(self, records, keys):
         """`{id: {field: excel cell}}` for the custom keys asked for."""
-        specs = {s['name']: s for s in self._pbfl_specs(records._name) if s['name'] in keys}
+        every = self._pbfl_specs(records._name)
+        specs = {s['name']: s for s in every if s['name'] in keys}
         if not specs or not records:
             return {}
+        # the engine reads every list field, so all of them come in one query
+        self._pbfl_prefetch(records, every)
         values = self.env['pb.form.studio']._pbfs_values_for(records, 'list')
         out = {}
         for rec in records:
