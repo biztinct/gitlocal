@@ -34,6 +34,16 @@ class PbFormFieldMeta(models.Model):
                                    'meta_id', 'country_id', string='Countries of work')
     # The host that made it, so the Field library can say where it came from.
     host_key = fields.Char()
+    # R14 — My Payobook, per field (standard fields get a row only for these
+    # flags; no field is created for them). Set through
+    # `pb.form.studio.update_portal` / `update_field`, which refuse what the
+    # host's `_pbfs_portal_hidden` / `_pbfs_portal_locked` forbid.
+    portal_show = fields.Boolean(string='Show on My Payobook')
+    portal_edit = fields.Boolean(string='Employee can change it')
+    portal_mode = fields.Selection([('approve', 'HR approves the change'),
+                                    ('instant', 'Saves at once')],
+                                   string='When the employee changes it',
+                                   default='approve', required=True)
 
     _field_uniq = models.Constraint('UNIQUE (field_id)',
                                     'A field has one set of Form builder settings.')
