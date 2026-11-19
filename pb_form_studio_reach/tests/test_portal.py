@@ -3,7 +3,8 @@
 HTTP as a real portal login. P1 shown-only vs changeable; P2 saved at once vs
 after HR approves, refusal writes nothing; P3 forged fields refused; P4 only
 the session's own record; P5 Country of Work; P6 untick closes an open
-request; P7 one open request per field; P8 delete blocker; P9 vi words."""
+request; P7 one open request per field; P8 delete blocker. (Vietnamese and
+Indonesian words: test_gates 11a/11c; phone width: the browser walk.)"""
 import json
 import re
 
