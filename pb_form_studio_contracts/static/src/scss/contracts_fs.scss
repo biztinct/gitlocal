@@ -1,0 +1,97 @@
+// =====================================================================
+//  FS-3 — the administrator's own fields on the contract screens.
+//  Drawer rules sit under `.pbc` and reuse its tokens (--p, --p-s, --line…,
+//  pb_contracts/static/src/scss/contract_360.scss); the page rules sit under
+//  `.pbfb` (the engine's grid). Classes are `.pbfs3-*` (`.pbfs` belongs to
+//  Formula Studio, FS1-2). No hex invented beyond the tokens' own fallbacks.
+//  No mixed-unit min()/max() (libsass, FS1-3).
+// =====================================================================
+
+.pbc {
+    // ---- the "Company details" group: the same cells, a brand accent ----
+    .pbc-sec.pbfs3-sec {
+        position: relative;
+        padding: 12px 12px 4px; margin-left: -12px; margin-right: -12px;
+        border-radius: var(--r);
+        // A light tint, never a gradient (Payobook design system).
+        background: var(--p-s);
+        .pbc-sec-h { color: var(--p-d); svg { color: var(--p); } }
+    }
+    .pbc-cell.pbfs3-cell {
+        background: var(--surf);
+        &.editable:hover { background: var(--p-s); }
+        &.pbfs3-long { grid-column: 1 / -1;
+            .v { white-space: pre-wrap; font-weight: 500; font-size: 13.5px; line-height: 1.45; } }
+    }
+
+    // ---- the editor's new kinds ----
+    .pbc-in.pbfs3-ta {
+        height: auto; min-height: 84px; line-height: 1.45; resize: vertical;
+        padding: 6px 0; white-space: pre-wrap;
+    }
+    .pbfs3-file {
+        display: flex; align-items: center; gap: 9px; width: 100%; cursor: pointer; margin: 2px 0 0;
+        padding: 8px 10px; border: 1px dashed var(--p); border-radius: 8px; background: var(--p-s); color: var(--p);
+        .t { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+        .a { font-weight: 800; font-size: 12.5px; }
+        .h { font-size: 11px; color: var(--mut); }
+        input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+        &:focus-within { outline: 2px solid var(--p); outline-offset: 2px; }
+    }
+    .pbfs3-dl {
+        display: inline-flex; align-items: center; gap: 5px; margin-top: 2px; width: max-content;
+        font-size: 12px; font-weight: 700; color: var(--p); text-decoration: none;
+        &:hover { text-decoration: underline; }
+    }
+
+    // ---- the administrator's way in ----
+    button.pbfs3-prompt {
+        display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+        margin: 4px 0 18px; padding: 14px 16px; cursor: pointer;
+        border: 1.5px dashed var(--p); border-radius: var(--r);
+        background: var(--surf); color: var(--ink); font: inherit;
+        transition: background .15s ease, transform .15s ease;
+        .ic { width: 36px; height: 36px; border-radius: 10px; flex: none; display: grid; place-items: center;
+              background: var(--p-s); color: var(--p); }
+        .tx { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+        .h { font-weight: 800; font-size: 14px; }
+        .s { font-size: 12.5px; color: var(--mut); }
+        .go { display: inline-flex; align-items: center; gap: 6px; flex: none; white-space: nowrap;
+              padding: 7px 12px; border-radius: 10px; background: var(--p); color: #fff; font-weight: 800; font-size: 12.5px; }
+        &:hover { background: var(--p-s); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
+    }
+
+    // ---- the wand beside the close button ----
+    .pbc-head-side .pbfb-wand.compact { height: 34px; padding: 0 9px; }
+
+    @media (max-width: 640px) {
+        // On a phone the header's name column was already narrow and the
+        // wand would squeeze it to one word per line: while the wand is
+        // there (administrator only), the wage, wand and close button take
+        // a row of their own under the name. Nobody else's header changes.
+        .pbc-head:has(.pbfb-wand) {
+            flex-wrap: wrap; row-gap: 10px;
+            .pbc-head-id { flex: 1 1 100%; min-width: 0; }
+            .pbc-head-side { flex: 1 1 100%; justify-content: flex-end; }
+            .pbc-wage { margin-right: auto; text-align: left; }
+        }
+        .pbc-sec.pbfs3-sec { margin-left: -6px; margin-right: -6px; padding: 10px 6px 2px; }
+        button.pbfs3-prompt { flex-wrap: wrap; .go { margin-left: 50px; } }
+    }
+}
+
+// ---- the contract page: the wand as tall as the buttons beside it ----
+.ppl-d-top .pbfb-wand { padding-top: 9px; padding-bottom: 9px; }
+
+// ---- the contract page: one wide card, three columns of values ----
+.pbfb.pbfs3-page {
+    .pbfb-grid { grid-template-columns: minmax(0, 1fr); }
+    .pbfb-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 900px) { .pbfb-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) { .pbfb-fields { grid-template-columns: minmax(0, 1fr); } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbc button.pbfs3-prompt { transition: none; }
+}
