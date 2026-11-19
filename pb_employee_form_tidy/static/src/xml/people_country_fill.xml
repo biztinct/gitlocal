@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- TIDY-E 3b — the People list header: one quiet button, HR managers only,
+       only while somebody has no Country of Work. -->
+  <t t-inherit="pb_people.PbPeople" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('ppl-head-actions')]/button[hasclass('primary')]" position="before">
+      <button t-if="cowFillShown" class="pbim-btn outline o_pb_cow_fill" t-on-click="openCountryFill"
+              title="Fill empty Country of Work from each person's pay set-up">
+        <t t-out="ic('globe',15)"/> Fill Country of Work
+        <span class="o_pb_cow_count" t-esc="cowEmpty"/>
+      </button>
+    </xpath>
+  </t>
+
+  <!-- TIDY-E 3a — the pay data load result: rows whose Country of Work word
+       is not a country this system knows (the row itself was loaded). -->
+  <t t-inherit="pb_payrun_wizard.PayrunWizard" t-inherit-mode="extension">
+    <xpath expr="//p[hasclass('pw-warn')][contains(@t-if, 'bank_waiting')]" position="after">
+      <p class="pw-warn o_pb_cow_unknown" t-if="state.summary.sheet and state.summary.sheet.country_unknown"
+         t-esc="state.summary.sheet.country_unknown"/>
+    </xpath>
+  </t>
+
+</templates>
