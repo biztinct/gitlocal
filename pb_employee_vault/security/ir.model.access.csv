@@ -9,3 +9,6 @@ access_pb_employee_document_hr_core,employee document hr core,model_pb_employee_
 access_pb_employee_document_payroll_mgr,employee document payroll mgr,model_pb_employee_document,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
 access_pb_employee_document_hr_mgr,employee document hr mgr,model_pb_employee_document,hr.group_hr_manager,1,1,1,1
 access_pb_employee_document_system,employee document system,model_pb_employee_document,base.group_system,1,1,1,1
+access_resume_upload_hr,resume upload hr,model_pb_employee_resume_upload,hr.group_hr_user,1,1,1,1
+access_resume_upload_payroll,resume upload payroll,model_pb_employee_resume_upload,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_resume_upload_system,resume upload system,model_pb_employee_resume_upload,base.group_system,1,1,1,1
