@@ -63,7 +63,9 @@ class PbFormAudit(models.Model):
         ('create_field', 'Added a field'),
         ('update_field', 'Changed a field'),
         ('delete_field', 'Deleted a field'),
+        ('portal_change', 'Changed on My Payobook'),
     ], required=True)
+    res_id = fields.Integer(string='Record', help='The record a My Payobook change was saved on.')
     field_name = fields.Char()
     summary = fields.Char()
     detail = fields.Json()
