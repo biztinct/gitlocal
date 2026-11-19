@@ -214,6 +214,17 @@ class AccessStudio(models.AbstractModel):
                 if field and field.store:
                     fields_out.append({'key': key, 'label': field.string, 'required': bool(field.required or key == Model._rec_name),
                         'readonly': bool(field.readonly), 'sensitive': key in spec.get('sensitive', [])})
+            # FS-5 — extra (manual) fields named by `_studio_extra_fields`,
+            # listed under their record type in the reader's language. Only
+            # those the person editing the policy may read themselves.
+            for key in self._studio_extra_fields(name):
+                field = Model._fields.get(key)
+                if field is None or not field.manual or not field.store \
+                        or key in spec['fields'] or not Model._has_field_access(field, 'read'):
+                    continue
+                fields_out.append({'key': key, 'label': field._description_string(self.env),
+                    'required': bool(field.required), 'readonly': bool(field.readonly),
+                    'sensitive': False, 'extra': True})
             state = Model._fields.get(spec.get('state'))
             states = state._description_selection(self.env) if state and state.type == 'selection' else []
             result.append({'key': name, 'label': spec['label'], 'fields': fields_out,

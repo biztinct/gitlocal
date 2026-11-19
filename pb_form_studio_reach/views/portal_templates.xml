@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- FS-5 item 4 (R3): fields the company added with the Form builder whose
+       visibility is "Everyone", shown SEE ONLY on My details. The values come
+       from the controller (`pbfr_sections`, picked by the field's own setting,
+       never by the caller). No form, no link, no write. -->
+  <template id="portal_my_details_form_builder" name="My details: company details (Form builder)"
+            inherit_id="pb_me_details.portal_my_details">
+    <xpath expr="//section[hasclass('pbmd-family')]" position="after">
+      <t t-foreach="pbfr_sections or []" t-as="pbfr">
+        <section t-attf-class="pbme-card pbmd-card pbfr-card pbfr-card--#{pbfr['key']}">
+          <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'briefcase' if pbfr['key'] == 'employee' else 'file-text'"/><t t-set="isz" t-value="17"/></t><t t-esc="pbfr['title']"/></h2>
+          <p class="pbmd-muted">Kept by your company. If something here is wrong, ask HR to correct it.</p>
+          <dl class="pbmd-kv">
+            <div t-foreach="pbfr['rows']" t-as="row">
+              <dt t-esc="row['label']"/>
+              <dd><t t-esc="row['value'] or '—'"/></dd>
+            </div>
+          </dl>
+        </section>
+      </t>
+    </xpath>
+  </template>
+</odoo>

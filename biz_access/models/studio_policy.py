@@ -24,6 +24,25 @@ _CATALOGUE_FIELD_NAMES = frozenset(name for spec in RESOURCES.values() for name 
 class StudioPolicyService(models.AbstractModel):
     _inherit = 'pb.access'
 
+    # ------------------------------------------------------- extra fields hook
+    # FS-5 (FORM STUDIO) — fields a tenant adds at runtime (manual fields) are
+    # not in the static RESOURCES catalogue. Another module may name them here
+    # so the Access screens list them under their record type and a field
+    # rule set on one is enforced exactly like a catalogue field's. Only
+    # MANUAL fields are ever honoured, so a hook can never pull a module's own
+    # field into (or out of) the reviewed catalogue. Unnamed fields keep
+    # today's default ("edit" under the record policy).
+    @api.model
+    def _studio_extra_fields(self, model):
+        """Hook: names of extra (manual) fields of `model` to list and police."""
+        return []
+
+    @api.model
+    def _studio_is_extra_field(self, model, name):
+        field = self.env[model]._fields.get(name) if model in self.env else None
+        return bool(field is not None and field.manual
+                    and name in self._studio_extra_fields(model))
+
     def _studio_sources(self, user, model):
         # Never search the protected business resource while collecting policy.
         # Baseline permission grants stay independent of assigned profiles.
@@ -239,8 +258,15 @@ class StudioResourceGuard(models.AbstractModel):
         # application facade uses sudo for labels, including values already in
         # Odoo's shared field cache. Do not alter sudo itself: the ORM needs it
         # to compile recursive native record rules safely.
-        if self._name not in RESOURCES or name not in RESOURCES[self._name]['fields'] or self.env.uid == 1:
+        if self._name not in RESOURCES or self.env.uid == 1:
             return
+        if name not in RESOURCES[self._name]['fields']:
+            # FS-5: a manual field named by `_studio_extra_fields` is checked
+            # too. One dict lookup for every other name.
+            field = self._fields.get(name)
+            if field is None or not field.manual or \
+                    not self.env['pb.access']._studio_is_extra_field(self._name, name):
+                return
         if self.env.context.get('_pb_reveal') is REVEAL and self.env.context.get('_pb_reveal_field') == name:
             return
         ids = self.ids if self and all(isinstance(i, int) for i in self.ids) else None
@@ -270,7 +296,8 @@ class StudioResourceGuard(models.AbstractModel):
             return False
         if self._name not in RESOURCES or self.env.context.get('_pb_reveal') is REVEAL and self.env.context.get('_pb_reveal_field') == field.name:
             return True
-        if operation == 'read' and not self.env.su and field.name not in RESOURCES[self._name]['fields']:
+        if operation == 'read' and not self.env.su and field.name not in RESOURCES[self._name]['fields'] \
+                and not (field.manual and self.env['pb.access']._studio_is_extra_field(self._name, field.name)):
             # A field outside the catalogue has no field rule: its answer is the
             # record scope alone, which every non-sudo fetch and search already
             # enforces through _check_access and the record-rule domain. Sudo
