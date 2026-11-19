@@ -29,6 +29,12 @@ msgid "%(label)s to %(section)s"
 msgstr "%(label)s sang %(section)s"
 
 #. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "%(label)s: %(old)s → %(new)s (changed on My Payobook by %(who)s, %(how)s)"
+msgstr "%(label)s: %(old)s → %(new)s (đổi trên My Payobook bởi %(who)s, %(how)s)"
+
+#. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "%(label)s: %(what)s"
@@ -148,12 +154,6 @@ msgid "A pay run is being worked out right now. Try again in a few minutes."
 msgstr "Một kỳ lương đang được tính. Hãy thử lại sau vài phút."
 
 #. module: pb_form_studio
-#. odoo-python
-#: code:addons/pb_form_studio/models/form_studio.py:0
-msgid "A practice pay run is being worked out right now. Try again when it has finished."
-msgstr "Một kỳ lương thử đang được tính. Hãy thử lại khi đã xong."
-
-#. module: pb_form_studio
 #: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_layout_host_company_uniq
 msgid "A screen has one published layout per company."
 msgstr "Mỗi màn hình có một bố cục đã công bố cho mỗi công ty."
@@ -266,6 +266,18 @@ msgstr "Phiên bản gốc"
 
 #. module: pb_form_studio
 #. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · HR approves"
+msgstr "Được sửa · nhân sự duyệt"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · saves at once"
+msgstr "Được sửa · lưu ngay"
+
+#. module: pb_form_studio
+#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Cancel"
 msgstr "Huỷ"
@@ -292,6 +304,11 @@ msgstr "Đã đổi %(label)s: %(what)s"
 #: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__update_field
 msgid "Changed a field"
 msgstr "Đã đổi một trường"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__portal_change
+msgid "Changed on My Payobook"
+msgstr "Đã đổi trên My Payobook"
 
 #. module: pb_form_studio
 #. odoo-javascript
@@ -369,6 +386,12 @@ msgstr "Quốc gia làm việc"
 #: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "Country"
 msgstr "Quốc gia"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Country of Work decides which fields apply."
+msgstr "Quốc gia làm việc quyết định trường nào được áp dụng."
 
 #. module: pb_form_studio
 #: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__country_id
@@ -540,6 +563,12 @@ msgstr "Email"
 #: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "Employee"
 msgstr "Nhân viên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_edit
+msgid "Employee can change it"
+msgstr "Nhân viên được sửa"
 
 #. module: pb_form_studio
 #. odoo-python
@@ -742,6 +771,12 @@ msgstr "Hãy đặt tên cho trường."
 
 #. module: pb_form_studio
 #. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__approve
+msgid "HR approves the change"
+msgstr "Nhân sự duyệt thay đổi"
+
+#. module: pb_form_studio
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__hr
 msgid "HR staff and administrators"
@@ -933,6 +968,13 @@ msgstr "Tiền"
 
 #. module: pb_form_studio
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Money and files can be shown, not changed by the employee."
+msgstr "Tiền và tệp chỉ được hiển thị, nhân viên không thể sửa."
+
+#. module: pb_form_studio
+#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
 msgid "Monthly wage"
 msgstr "Lương tháng"
@@ -948,6 +990,13 @@ msgstr "Đã chuyển"
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Must be filled in before the record is saved."
 msgstr "Phải điền trước khi lưu hồ sơ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "My Payobook"
+msgstr "My Payobook"
 
 #. module: pb_form_studio
 #. odoo-javascript
@@ -997,6 +1046,12 @@ msgstr "Không có trên màn hình nào"
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Not on this screen"
 msgstr "Không có trên màn hình này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Not shown"
+msgstr "Không hiển thị"
 
 #. module: pb_form_studio
 #. odoo-javascript
@@ -1163,6 +1218,12 @@ msgstr "Điện thoại"
 #. module: pb_form_studio
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick how a change by the employee is saved."
+msgstr "Hãy chọn cách lưu thay đổi của nhân viên."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "Pick one of the choices."
 msgstr "Hãy chọn một trong các lựa chọn."
 
@@ -1260,6 +1321,11 @@ msgid "Publishing did not work. Nothing was changed."
 msgstr "Công bố không thành công. Không có gì thay đổi."
 
 #. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__res_id
+msgid "Record"
+msgstr "Hồ sơ"
+
+#. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
 msgid "Record type"
@@ -1339,6 +1405,12 @@ msgstr "Đã lưu. Mọi người sẽ thấy thay đổi ở lần mở màn h�
 
 #. module: pb_form_studio
 #. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__instant
+msgid "Saves at once"
+msgstr "Lưu ngay"
+
+#. module: pb_form_studio
+#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0
 msgid "Screen"
 msgstr "Màn hình"
@@ -1362,12 +1434,6 @@ msgstr "Các mục"
 
 #. module: pb_form_studio
 #. odoo-javascript
-#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
-msgid "Self-service"
-msgstr "Tự phục vụ"
-
-#. module: pb_form_studio
-#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0
 msgid "Settings"
 msgstr "Cài đặt"
@@ -1380,13 +1446,19 @@ msgstr "Hiện trong danh sách"
 
 #. module: pb_form_studio
 #. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_show
+msgid "Show on My Payobook"
+msgstr "Hiện trên My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Show this field only for people working in these countries."
 msgstr "Chỉ hiện trường này cho người làm việc ở các quốc gia này."
 
 #. module: pb_form_studio
 #. odoo-javascript
-#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "Shown"
 msgstr "Đã hiện"
 
@@ -1395,6 +1467,12 @@ msgstr "Đã hiện"
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0
 msgid "Shown in lists"
 msgstr "Hiện trong danh sách"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Shown on the employee's own My Payobook page, even when only HR can see it here."
+msgstr "Hiện trên trang My Payobook của chính nhân viên, kể cả khi ở đây chỉ nhân sự được xem."
 
 #. module: pb_form_studio
 #. odoo-javascript
@@ -1531,10 +1609,21 @@ msgid "The Form builder history cannot be changed."
 msgstr "Không thể sửa lịch sử Trình tạo biểu mẫu."
 
 #. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "The employee can change it on My Payobook."
+msgstr "Nhân viên có thể sửa trên My Payobook."
+
+#. module: pb_form_studio
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "The file is too big (at most 10 MB)."
 msgstr "Tệp quá lớn (tối đa 10 MB)."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_audit__res_id
+msgid "The record a My Payobook change was saved on."
+msgstr "Hồ sơ nhận thay đổi từ My Payobook."
 
 #. module: pb_form_studio
 #. odoo-javascript
@@ -1572,6 +1661,12 @@ msgid "These still use it. Remove it there first."
 msgstr "Những mục này vẫn đang dùng nó. Hãy bỏ ở đó trước."
 
 #. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This cannot be changed here."
+msgstr "Không thể sửa mục này ở đây."
+
+#. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "This deletes the field and every value in it (%s filled in). A copy of the values is kept in the Form builder history."
@@ -1592,8 +1687,32 @@ msgstr "Trường này không áp dụng cho quốc gia làm việc của hồ s
 #. module: pb_form_studio
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field is not offered on this screen."
+msgstr "Trường này không có trên màn hình này."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "This field is still used by: %s. Remove it there first."
 msgstr "Trường này vẫn đang được dùng bởi: %s. Hãy bỏ ở đó trước."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This kind of record has no self-service page."
+msgstr "Loại hồ sơ này không có trang tự phục vụ."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This link can be shown, not changed by the employee."
+msgstr "Liên kết này chỉ được hiển thị, nhân viên không thể sửa."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record cannot be shown here."
+msgstr "Không thể hiển thị hồ sơ này ở đây."
 
 #. module: pb_form_studio
 #. odoo-python
@@ -1631,6 +1750,12 @@ msgstr "Màn hình này không nhận trường tuỳ chỉnh."
 #: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
 msgid "This test screen is for the administrator, in developer mode."
 msgstr "Màn hình thử này dành cho quản trị viên, ở chế độ nhà phát triển."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This value is worked out by the system."
+msgstr "Giá trị này do hệ thống tự tính."
 
 #. module: pb_form_studio
 #: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__titles
@@ -1698,6 +1823,12 @@ msgstr "Phiên bản"
 #: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__view_id
 msgid "View"
 msgstr "Màn hình"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_mode
+msgid "When the employee changes it"
+msgstr "Khi nhân viên sửa"
 
 #. module: pb_form_studio
 #. odoo-javascript
@@ -1785,6 +1916,12 @@ msgid "another administrator"
 msgstr "một quản trị viên khác"
 
 #. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "approved by %s"
+msgstr "được %s duyệt"
+
+#. module: pb_form_studio
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
@@ -1860,6 +1997,12 @@ msgstr "chọn một"
 #: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "required"
 msgstr "bắt buộc"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "saved at once"
+msgstr "lưu ngay"
 
 #. module: pb_form_studio
 #. odoo-python

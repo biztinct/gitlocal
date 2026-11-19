@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 04:19+0000\n"
-"PO-Revision-Date: 2026-11-19 04:19+0000\n"
+"POT-Creation-Date: 2026-11-19 10:09+0000\n"
+"PO-Revision-Date: 2026-11-19 10:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -31,6 +31,13 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "%(label)s to %(section)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid ""
+"%(label)s: %(old)s → %(new)s (changed on My Payobook by %(who)s, %(how)s)"
 msgstr ""
 
 #. module: pb_form_studio
@@ -159,14 +166,6 @@ msgid "A pay run is being worked out right now. Try again in a few minutes."
 msgstr ""
 
 #. module: pb_form_studio
-#. odoo-python
-#: code:addons/pb_form_studio/models/form_studio.py:0
-msgid ""
-"A practice pay run is being worked out right now. Try again when it has "
-"finished."
-msgstr ""
-
-#. module: pb_form_studio
 #: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_layout_host_company_uniq
 msgid "A screen has one published layout per company."
 msgstr ""
@@ -287,6 +286,18 @@ msgstr ""
 
 #. module: pb_form_studio
 #. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · HR approves"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · saves at once"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Cancel"
@@ -314,6 +325,11 @@ msgstr ""
 #. module: pb_form_studio
 #: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__update_field
 msgid "Changed a field"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__portal_change
+msgid "Changed on My Payobook"
 msgstr ""
 
 #. module: pb_form_studio
@@ -400,6 +416,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "Country"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Country of Work decides which fields apply."
 msgstr ""
 
 #. module: pb_form_studio
@@ -592,6 +614,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "Employee"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_edit
+msgid "Employee can change it"
 msgstr ""
 
 #. module: pb_form_studio
@@ -804,6 +834,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "Give the field a name."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__approve
+msgid "HR approves the change"
 msgstr ""
 
 #. module: pb_form_studio
@@ -1028,6 +1066,14 @@ msgstr ""
 
 #. module: pb_form_studio
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Money and files can be shown, not changed by the employee."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
 msgid "Monthly wage"
 msgstr ""
@@ -1042,6 +1088,17 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Must be filled in before the record is saved."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "My Payobook"
 msgstr ""
 
 #. module: pb_form_studio
@@ -1093,6 +1150,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Not on this screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Not shown"
 msgstr ""
 
 #. module: pb_form_studio
@@ -1266,6 +1329,12 @@ msgstr ""
 #. module: pb_form_studio
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick how a change by the employee is saved."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "Pick one of the choices."
 msgstr ""
 
@@ -1365,6 +1434,11 @@ msgid "Publishing did not work. Nothing was changed."
 msgstr ""
 
 #. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__res_id
+msgid "Record"
+msgstr ""
+
+#. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
 msgid "Record type"
@@ -1449,6 +1523,14 @@ msgstr ""
 
 #. module: pb_form_studio
 #. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__instant
+msgid "Saves at once"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0
 msgid "Screen"
 msgstr ""
@@ -1473,13 +1555,6 @@ msgstr ""
 #. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0
-#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
-msgid "Self-service"
-msgstr ""
-
-#. module: pb_form_studio
-#. odoo-javascript
-#: code:addons/pb_form_studio/static/src/js/field_library.js:0
 msgid "Settings"
 msgstr ""
 
@@ -1493,12 +1568,21 @@ msgstr ""
 
 #. module: pb_form_studio
 #. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_show
+msgid "Show on My Payobook"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Show this field only for people working in these countries."
 msgstr ""
 
 #. module: pb_form_studio
 #. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "Shown"
 msgstr ""
@@ -1507,6 +1591,14 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0
 msgid "Shown in lists"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"Shown on the employee's own My Payobook page, even when only HR can see it "
+"here."
 msgstr ""
 
 #. module: pb_form_studio
@@ -1648,9 +1740,20 @@ msgid "The Form builder history cannot be changed."
 msgstr ""
 
 #. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "The employee can change it on My Payobook."
+msgstr ""
+
+#. module: pb_form_studio
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "The file is too big (at most 10 MB)."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_audit__res_id
+msgid "The record a My Payobook change was saved on."
 msgstr ""
 
 #. module: pb_form_studio
@@ -1691,6 +1794,12 @@ msgid "These still use it. Remove it there first."
 msgstr ""
 
 #. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This cannot be changed here."
+msgstr ""
+
+#. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
@@ -1714,7 +1823,31 @@ msgstr ""
 #. module: pb_form_studio
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field is not offered on this screen."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
 msgid "This field is still used by: %s. Remove it there first."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This kind of record has no self-service page."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This link can be shown, not changed by the employee."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record cannot be shown here."
 msgstr ""
 
 #. module: pb_form_studio
@@ -1755,6 +1888,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
 msgid "This test screen is for the administrator, in developer mode."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This value is worked out by the system."
 msgstr ""
 
 #. module: pb_form_studio
@@ -1828,6 +1967,14 @@ msgstr ""
 #. module: pb_form_studio
 #: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__view_id
 msgid "View"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_mode
+msgid "When the employee changes it"
 msgstr ""
 
 #. module: pb_form_studio
@@ -1920,6 +2067,12 @@ msgid "another administrator"
 msgstr ""
 
 #. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "approved by %s"
+msgstr ""
+
+#. module: pb_form_studio
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_form_studio/models/form_studio.py:0
@@ -1999,6 +2152,12 @@ msgstr ""
 #: code:addons/pb_form_studio/models/form_studio.py:0
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "required"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "saved at once"
 msgstr ""
 
 #. module: pb_form_studio

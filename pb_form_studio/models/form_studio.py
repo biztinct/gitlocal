@@ -26,6 +26,7 @@ import re
 import unicodedata
 from datetime import timedelta
 
+from markupsafe import Markup
 from psycopg2 import errors as pg_errors
 
 from odoo import api, fields, models, tools
@@ -78,6 +79,17 @@ FORBIDDEN_MODELS = {
 FORBIDDEN_PREFIXES = ('ir.', 'res.users', 'res.groups', 'account.', 'biz.access',
                       'pb.access', 'base.', 'bus.', 'mail.')
 
+#: R14 — kinds of field an employee may change on My Payobook (everything the
+#: engine can coerce safely). Money and files can be shown only.
+PORTAL_EDIT_TTYPES = ('char', 'text', 'integer', 'float', 'date', 'selection', 'boolean',
+                      'many2one')
+PORTAL_KEYS = ('portal_show', 'portal_edit', 'portal_mode')
+#: A transaction that has held a payslip write lock longer than this is stuck,
+#: not a pay-run chunk: it no longer counts as "being worked out".
+BUSY_LOCK_MINUTES = 10
+#: A practice run left 'computing' stops counting after this long.
+BUSY_PRACTICE_MINUTES = 15
+
 #: m2o/m2m fields pointing at ir.model.fields that are NOT a reason to keep a
 #: field: our own settings, the field's own pieces, defaults and history.
 REF_SKIP = {
@@ -106,7 +118,8 @@ class PbFormStudio(models.AbstractModel):
         """Every screen that hosts custom fields. Extend with `super()`.
 
         `{host_key: {model, title, icon, sections, default_layout,
-        std_fields, custom_section, country_field, country_view_field,
+        standard_fields (alias std_fields), custom_section, country_field,
+        country_view_field, portal,
         copy_custom, native_views, dev}}` — see THE HOST CONTRACT.
         """
         _ = self.env._
@@ -131,15 +144,31 @@ class PbFormStudio(models.AbstractModel):
                 'default_layout': {'about': ['name', 'email', 'phone'],
                                    'place': ['city', 'country_id', 'date_start'],
                                    'custom': []},
-                'std_fields': ['name', 'email', 'phone', 'city', 'country_id',
-                               'date_start'],
+                'standard_fields': ['name', 'email', 'phone', 'city', 'country_id',
+                                    'date_start'],
                 'custom_section': 'custom',
                 'country_field': 'country_id',
                 'country_view_field': 'country_id',
                 'copy_custom': False,
                 'native_views': [],
+                # R14 — this screen's record type has a self-service page.
+                'portal': True,
             },
         }
+
+    @api.model
+    def _pbfs_portal_locked(self, model):
+        """`{field name: reason}` — may be SHOWN on My Payobook, never changed
+        there by the employee. Extend with `super()` (R14 locked list)."""
+        if model == 'pb.form.sample':
+            return {'country_id': self.env._('Country of Work decides which fields apply.')}
+        return {}
+
+    @api.model
+    def _pbfs_portal_hidden(self, model):
+        """`{field name: reason}` — never shown on My Payobook (pay figures).
+        Extend with `super()`."""
+        return {}
 
     @api.model
     def _pbfs_locked_fields(self, model):
@@ -207,40 +236,153 @@ class PbFormStudio(models.AbstractModel):
         return {h['model'] for h in self._pbfs_hosts().values()}
 
     @api.model
+    def _pbfs_std_names(self, host):
+        """The standard fields a host offers (`standard_fields`; the FS-1
+        name `std_fields` is still read)."""
+        return list(host.get('standard_fields') or host.get('std_fields') or [])
+
+    # ================================================================ R14
+    @api.model
+    def _pbfs_portal_host(self, model):
+        """(host key, host) of the first host of `model` with `portal: True`."""
+        for key, host in self._pbfs_hosts().items():
+            if host['model'] == model and host.get('portal'):
+                return key, host
+        return None, None
+
+    @api.model
+    def _pbfs_portal_rules(self, model, name):
+        """What My Payobook may do with one field, and why not — in screen words.
+        → {can_show, show_reason, can_edit, edit_reason}."""
+        _ = self.env._
+        Model = self.env[model]
+        field = Model._fields.get(name)
+        key, host = self._pbfs_portal_host(model)
+        out = {'can_show': True, 'show_reason': '', 'can_edit': True, 'edit_reason': ''}
+        if not host or not field:
+            reason = _('This kind of record has no self-service page.')
+            return {'can_show': False, 'show_reason': reason, 'can_edit': False, 'edit_reason': reason}
+        if not name.startswith(PREFIX) and name not in self._pbfs_std_names(host):
+            reason = _('This field is not offered on this screen.')
+            return {'can_show': False, 'show_reason': reason, 'can_edit': False, 'edit_reason': reason}
+        hidden = self._pbfs_portal_hidden(model)
+        if name in hidden:
+            return {'can_show': False, 'show_reason': hidden[name],
+                    'can_edit': False, 'edit_reason': hidden[name]}
+        locked = self._pbfs_portal_locked(model)
+        if name in locked:
+            out.update(can_edit=False, edit_reason=locked[name])
+        elif field.type not in PORTAL_EDIT_TTYPES:
+            out.update(can_edit=False, edit_reason=_('Money and files can be shown, not changed by the employee.'))
+        elif field.type == 'many2one' and field.comodel_name not in self._pbfs_link_targets():
+            out.update(can_edit=False, edit_reason=_('This link can be shown, not changed by the employee.'))
+        elif not field.store or (field.compute and not field.inverse) or field.readonly:
+            out.update(can_edit=False, edit_reason=_('This value is worked out by the system.'))
+        return out
+
+    @api.model
+    def _pbfs_portal_desc(self, model, name, meta):
+        """The two ticks + mode as the properties panel draws them, or None
+        when the record type has no self-service page."""
+        key, _host = self._pbfs_portal_host(model)
+        if not key:
+            return None
+        rules = self._pbfs_portal_rules(model, name)
+        return {'show': bool(meta and meta.portal_show), 'edit': bool(meta and meta.portal_edit),
+                'mode': (meta.portal_mode if meta else 'approve') or 'approve', **rules}
+
+    @api.model
+    def _pbfs_ensure_meta(self, model, name):
+        """The settings row of a field, made for a STANDARD field on first use
+        (no field is created; the row only carries flags)."""
+        meta = self._pbfs_meta(model, [name]).get(name)
+        if meta:
+            return meta
+        row = self._pbfs_field_row(model, name)
+        if not row:
+            raise UserError(self.env._('This field is not offered on this screen.'))
+        return self.env['pb.form.field.meta'].sudo().create({
+            'field_id': row.id, 'custom': False, 'vis': 'all'})
+
+    @api.model
+    def _pbfs_set_portal(self, model, name, vals):
+        """Validate and store the My Payobook ticks of one field (server-side
+        refusal of anything the hooks forbid). → list of changed words."""
+        _ = self.env._
+        if not any(k in vals for k in PORTAL_KEYS):
+            return []
+        meta = self._pbfs_ensure_meta(model, name)
+        rules = self._pbfs_portal_rules(model, name)
+        show = bool(vals.get('portal_show', meta.portal_show))
+        edit = bool(vals.get('portal_edit', meta.portal_edit))
+        mode = vals.get('portal_mode', meta.portal_mode) or 'approve'
+        if mode not in ('approve', 'instant'):
+            raise UserError(_('Pick how a change by the employee is saved.'))
+        if 'portal_show' in vals and not show:
+            edit = False                    # unticking "shown" clears "can change"
+        elif edit:
+            show = True                     # a field you can change is a field you can see
+        if show and not rules['can_show']:
+            raise UserError(rules['show_reason'])
+        if edit and not rules['can_edit']:
+            raise UserError(rules['edit_reason'])
+        new = {'portal_show': show, 'portal_edit': edit, 'portal_mode': mode}
+        changed = {k: v for k, v in new.items() if meta[k] != v}
+        if not changed:
+            return []
+        meta.write(changed)
+        return [_('My Payobook')]
+
+    @api.model
     def _pbfs_check_model(self, model):
         if self._pbfs_model_forbidden(model) or model not in self._pbfs_host_models():
             raise UserError(self.env._('Custom fields cannot be added to this kind of record.'))
 
     @api.model
     def _pbfs_busy(self):
-        """Plain reason why fields cannot be added or removed right now, or ''."""
-        _ = self.env._
+        """Plain reason why fields cannot be added or removed right now, or ''.
+
+        DATABASE-WIDE on purpose: adding or dropping a column changes a table
+        every company in the database shares, and a pay run in company A holds
+        that table exactly as one in company B does. Every signal is BOUNDED
+        IN TIME, so a stale one (a crashed browser between two chunks, a
+        practice run left "computing", a stuck transaction) can never block
+        for longer than its window:
+          1. another transaction writing payslips NOW — counted only while that
+             transaction is younger than BUSY_LOCK_MINUTES;
+          2. a draft run's draft/verify payslip written in the last
+             BUSY_MINUTES (a browser-driven compute between two chunks);
+          3. a practice run 'computing', written in the last BUSY_PRACTICE_MINUTES.
+        """
+        msg = self.env._('A pay run is being worked out right now. Try again in a few minutes.')
         cr = self.env.cr
-        # 1. Another transaction is writing payslips this very moment.
         cr.execute("""
-            SELECT 1 FROM pg_locks l JOIN pg_class c ON c.oid = l.relation
+            SELECT 1 FROM pg_locks l
+              JOIN pg_class c ON c.oid = l.relation
+              JOIN pg_stat_activity a ON a.pid = l.pid
              WHERE c.relname IN ('hr_payslip', 'hr_payslip_line')
+               -- pg_locks covers the whole server, and databases copied from one
+               -- template share table oids: without this, a pay run in ANOTHER
+               -- database (another tenant) would block this one.
+               AND l.database = (SELECT oid FROM pg_database WHERE datname = current_database())
                AND l.mode = 'RowExclusiveLock' AND l.granted
                AND l.pid <> pg_backend_pid()
-             LIMIT 1""")
+               AND a.xact_start > now() - make_interval(mins => %s)
+             LIMIT 1""", [BUSY_LOCK_MINUTES])
         if cr.fetchone():
-            return _('A pay run is being worked out right now. Try again in a few minutes.')
-        # 2. A draft pay run's payslips were written moments ago (a chunked
-        #    compute between two chunks).
+            return msg
         if 'hr.payslip' in self.env and 'hr.payslip.run' in self.env:
             since = fields.Datetime.now() - timedelta(minutes=BUSY_MINUTES)
             Slip = self.env['hr.payslip'].sudo().with_context(active_test=False)
             if Slip.search_count([('state', 'in', ('draft', 'verify')),
                                   ('payslip_run_id.state', '=', 'draft'),
                                   ('write_date', '>=', since)], limit=1):
-                return _('A pay run is being worked out right now. Try again in a few minutes.')
-        # 3. A practice run is computing.
+                return msg
         if 'hr.formula.shadow.run' in self.env:
-            since = fields.Datetime.now() - timedelta(minutes=30)
+            since = fields.Datetime.now() - timedelta(minutes=BUSY_PRACTICE_MINUTES)
             if self.env['hr.formula.shadow.run'].sudo().search_count(
                     [('state', '=', 'computing'), ('write_date', '>=', since)], limit=1):
-                return _('A practice pay run is being worked out right now. '
-                         'Try again when it has finished.')
+                return msg
         return ''
 
     @api.model
@@ -423,6 +565,9 @@ class PbFormStudio(models.AbstractModel):
         desc = field.get_description(self.env, ['string', 'help', 'type', 'relation',
                                                 'required', 'readonly'])
         kind = TTYPE_KIND.get(field.type, 'text')
+        # A standard field may have a settings row too (R14 ticks only): its
+        # visibility / required / list / countries stay the product's own.
+        cmeta = meta if custom else None
         out = {
             'name': name,
             'label': desc.get('string') or name,
@@ -434,13 +579,14 @@ class PbFormStudio(models.AbstractModel):
             'std': not custom,
             'locked': name in locked,
             'reason': locked.get(name, ''),
-            'vis': meta.vis if meta else 'all',
-            'vis_label': self._pbfs_vis_label(meta.vis if meta else 'all'),
-            'required': bool(meta.is_required) if meta else bool(field.required),
-            'list_ok': bool(meta.list_ok) if meta else False,
-            'formula_ok': bool(meta.formula_ok) if meta else False,
+            'vis': cmeta.vis if cmeta else 'all',
+            'vis_label': self._pbfs_vis_label(cmeta.vis if cmeta else 'all'),
+            'required': bool(cmeta.is_required) if cmeta else bool(field.required),
+            'list_ok': bool(cmeta.list_ok) if cmeta else False,
+            'formula_ok': bool(cmeta.formula_ok) if cmeta else False,
             'formula_possible': field.type in FORMULA_TTYPES,
-            'countries': [{'id': c.id, 'name': c.name} for c in meta.country_ids] if meta else [],
+            'countries': [{'id': c.id, 'name': c.name} for c in cmeta.country_ids] if cmeta else [],
+            'portal': self._pbfs_portal_desc(Model._name, name, meta),
             'options': self._pbfs_options(field),
             'comodel': field.comodel_name if field.type == 'many2one' else False,
             'comodel_label': self._pbfs_link_targets().get(field.comodel_name, '')
@@ -504,7 +650,7 @@ class PbFormStudio(models.AbstractModel):
         open_ids = [s['id'] for s in host['sections'] if s['kind'] == 'open']
         custom_id = host.get('custom_section') if host.get('custom_section') in open_ids \
             else (open_ids[-1] if open_ids else None)
-        placeable = set(host.get('std_fields') or []) | set(self._pbfs_custom_names(host['model']))
+        placeable = set(self._pbfs_std_names(host)) | set(self._pbfs_custom_names(host['model']))
         placeable = {n for n in placeable if n in Model._fields}
 
         placed = {sid: [] for sid in open_ids}
@@ -569,7 +715,7 @@ class PbFormStudio(models.AbstractModel):
             ('host_key', '=', host_key), ('company_id', '=', self.env.company.id),
             ('user_id', '=', self.env.uid)], limit=1)
         version = layout.version if layout else 0
-        names = set(host.get('std_fields') or []) | set(self._pbfs_custom_names(model))
+        names = set(self._pbfs_std_names(host)) | set(self._pbfs_custom_names(model))
         names = [n for n in names if n in Model._fields]
         metas = self._pbfs_meta(model)
         locked = self._pbfs_locked_fields(model)
@@ -583,7 +729,8 @@ class PbFormStudio(models.AbstractModel):
         return {
             'host': {'key': host_key, 'model': model, 'title': host['title'],
                      'icon': host.get('icon') or 'fileText',
-                     'custom_section': host.get('custom_section')},
+                     'custom_section': host.get('custom_section'),
+                     'portal': bool(host.get('portal'))},
             'version': version,
             'published_by': layout.published_by.name if layout and layout.published_by else '',
             'published_at': fields.Datetime.to_string(layout.published_at)
@@ -751,6 +898,7 @@ class PbFormStudio(models.AbstractModel):
             'country_ids': [(6, 0, self._pbfs_country_ids(vals.get('country_ids')))],
             'host_key': host_key,
         })
+        self._pbfs_set_portal(model, row.name, vals)
         self._pbfs_audit('create_field', host_key, model, row.name,
                          _('Added %(label)s (%(type)s)', label=label,
                            type=self._pbfs_type_label(kind)))
@@ -825,6 +973,7 @@ class PbFormStudio(models.AbstractModel):
         if 'options' in vals and row.ttype == 'selection':
             if self._pbfs_update_options(model, row, vals['options']):
                 changes.append(_('choices'))
+        changes += self._pbfs_set_portal(model, name, vals)
         if changes:
             self._pbfs_audit('update_field', meta.host_key, model, name,
                              _('Changed %(label)s: %(what)s',
@@ -1126,8 +1275,13 @@ class PbFormStudio(models.AbstractModel):
             created[str(spec.get('tmp'))] = desc['name']
         for name, vals in (payload.get('updates') or {}).items():
             real = created.get(name.split(':', 1)[1], name) if name.startswith('new:') else name
-            if real in self.env[model]._fields:
+            if real not in self.env[model]._fields:
+                continue
+            if real.startswith(PREFIX):
                 self.update_field(model, real, vals)
+            else:
+                # a standard field: only its My Payobook ticks can change
+                self.update_portal(model, real, vals)
         sections = []
         for sec in payload.get('sections') or []:
             names = []
@@ -1228,8 +1382,10 @@ class PbFormStudio(models.AbstractModel):
                              and record.currency_id else self.env.company.currency_id.symbol) or ''}
 
     @api.model
-    def _pbfs_coerce(self, field, value):
-        """→ (stored value, error text or None)."""
+    def _pbfs_coerce(self, field, value, check_read=True):
+        """→ (stored value, error text or None). `check_read=False` (My
+        Payobook) checks a link's target exists and is one of the allowed
+        kinds instead of asking whether the employee may read it."""
         _ = self.env._
         t = field.type
         if value is None or value == '' or value is False:
@@ -1259,6 +1415,13 @@ class PbFormStudio(models.AbstractModel):
                     return None, _('Pick one of the choices.')
                 return value, None
             if t == 'many2one':
+                if not check_read:
+                    if field.comodel_name not in self._pbfs_link_targets():
+                        return None, _('You cannot pick that record.')
+                    rec = self.env[field.comodel_name].sudo().browse(int(value)).exists()
+                    if not rec:
+                        return None, _('That record no longer exists.')
+                    return rec.id, None
                 rec = self.env[field.comodel_name].browse(int(value)).exists()
                 if not rec:
                     return None, _('That record no longer exists.')
@@ -1343,21 +1506,28 @@ class PbFormStudio(models.AbstractModel):
         return {'ok': True, 'values': out}
 
     @api.model
-    def fields_for(self, model, purpose='list'):
-        """Custom fields of `model` for a list, an export, a formula catalogue
-        or a self-service page. Labels in the caller's language.
+    def fields_for(self, model, purpose='list', record=None):
+        """Fields of `model` for a list, an export, a formula catalogue or
+        My Payobook. Labels in the caller's language.
 
-        purpose 'list'     fields marked "Show in lists" the caller may read
-                'formula'  fields marked "Use in pay formulas" the caller may read
+        purpose 'list'     custom fields marked "Show in lists" the caller may read
+                'formula'  custom fields marked "Use in pay formulas" the caller may read
                 'all'      every custom field the caller may read
-                'everyone' ONLY fields whose visibility is "Everyone" — decided
-                           from the setting, not from the caller, so it is safe
-                           to use around an elevated (sudo) record (R3).
-        Each item carries `countries` (ids; empty = all) so a list can blank
-        the cell for records elsewhere — `_pbfs_values_for` does that for you.
+                'portal'   R14 — standard AND custom fields ticked "Show on My
+                           Payobook", in layout order, for `record` (Country of
+                           Work honoured); decided from the ticks, not from the
+                           caller, so safe around a record read with elevated
+                           rights. Items: {name, label, help, type, kind,
+                           options, comodel, section, section_title, edit, mode}.
+                'everyone' DEPRECATED alias kept for fs-5 (R3, replaced by R14):
+                           custom fields whose visibility is "Everyone".
+        Each list item carries `countries` (ids; empty = all) so a list can
+        blank the cell for records elsewhere — `_pbfs_values_for` does that.
         """
         if model not in self._pbfs_host_models():
             return []
+        if purpose == 'portal':
+            return self._pbfs_portal_fields(model, record)
         Model = self.env[model]
         out = []
         for name, meta in self._pbfs_meta(model).items():
@@ -1384,6 +1554,183 @@ class PbFormStudio(models.AbstractModel):
                 'comodel': field.comodel_name if field.type == 'many2one' else False,
             })
         return out
+
+    # ------------------------------------------------------- My Payobook
+    @api.model
+    def _pbfs_portal_record(self, model, record, operation='read'):
+        """The record a My Payobook helper works on, read with elevated rights.
+
+        A RECORDSET comes from server code (the self-service controller), which
+        has already decided the record is the employee's own: it is trusted.
+        An ID can only come over the wire (RPC): then the CALLER must be allowed
+        to `operation` it with their own rights — so nobody can read or change
+        another person's ticked fields by sending an id."""
+        if isinstance(record, int) or (isinstance(record, str) and record.isdigit()):
+            rec = self.env[model].browse(int(record)).exists()
+            if not rec:
+                raise UserError(self.env._('This record cannot be shown here.'))
+            rec.check_access(operation)
+            return rec.sudo()
+        if record is None or getattr(record, '_name', None) != model:
+            raise UserError(self.env._('This record cannot be shown here.'))
+        return record[:1].sudo()
+
+    @api.model
+    def _pbfs_portal_fields(self, model, record=None):
+        key, host = self._pbfs_portal_host(model)
+        if not key:
+            return []
+        Model = self.env[model]
+        rec = self._pbfs_portal_record(model, record) if record is not None else None
+        country = self._pbfs_record_countries(rec)[rec.id] if rec else False
+        metas = {n: m for n, m in self._pbfs_meta(model).items() if m.portal_show}
+        if not metas:
+            return []
+        hidden = self._pbfs_portal_hidden(model)
+        company = rec.company_id if rec and 'company_id' in rec._fields and rec.company_id else None
+        order, where = [], {}
+        for sec in self._pbfs_effective(key, company=company):
+            for name in sec['fields']:
+                if name in metas and name not in where:
+                    order.append(name)
+                    where[name] = (sec['id'], sec['title'])
+        custom_id = host.get('custom_section')
+        custom_title = next((s['title'] for s in host['sections'] if s['id'] == custom_id), '')
+        for name in metas:                      # ticked but not placed on the screen
+            if name not in where:
+                order.append(name)
+                where[name] = (custom_id, custom_title)
+        out = []
+        for name in order:
+            meta, field = metas[name], Model._fields.get(name)
+            if not field or name in hidden:
+                continue
+            if name.startswith(PREFIX) and rec is not None and not self._pbfs_applies(meta, country):
+                continue
+            rules = self._pbfs_portal_rules(model, name)
+            if not rules['can_show']:
+                continue
+            desc = field.get_description(self.env, ['string', 'help'])
+            kind = TTYPE_KIND.get(field.type, 'text')
+            out.append({
+                'name': name, 'label': desc.get('string') or name, 'help': desc.get('help') or '',
+                'type': field.type, 'kind': kind, 'options': self._pbfs_options(field),
+                'comodel': field.comodel_name if field.type == 'many2one' else False,
+                'section': where[name][0], 'section_title': where[name][1],
+                'edit': bool(meta.portal_edit and rules['can_edit']),
+                'mode': meta.portal_mode or 'approve',
+                'required': bool(meta.custom and meta.is_required),
+            })
+        return out
+
+    @api.model
+    def portal_values(self, model, record):
+        """`{name: {value, display}}` for the My Payobook fields of `record`
+        (only those — nothing else is read). Safe around a sudo record."""
+        rec = self._pbfs_portal_record(model, record)
+        out = {}
+        for spec in self._pbfs_portal_fields(model, rec):
+            field = rec._fields[spec['name']]
+            out[spec['name']] = {'value': self._pbfs_raw(rec, field),
+                                 'display': self._pbfs_display(rec, field)}
+        return out
+
+    @api.model
+    def portal_check(self, model, record, vals):
+        """Validate + coerce a change proposed on My Payobook.
+
+        → `{'instant': {name: value}, 'approve': {name: value},
+            'errors': {name: text}}`. Anything not changeable for THIS record
+        (not ticked, locked, hidden, another country, wrong type) lands in
+        `errors` — callers refuse the whole submission when it is not empty.
+        Unchanged values are dropped."""
+        _ = self.env._
+        rec = self._pbfs_portal_record(model, record)
+        specs = {s['name']: s for s in self._pbfs_portal_fields(model, rec)}
+        out = {'instant': {}, 'approve': {}, 'errors': {}}
+        for name, value in (vals or {}).items():
+            spec = specs.get(name)
+            if not spec or not spec['edit']:
+                out['errors'][name] = _('This cannot be changed here.')
+                continue
+            field = rec._fields[name]
+            stored, err = self._pbfs_coerce(field, value, check_read=False)
+            if err:
+                out['errors'][name] = err
+                continue
+            if spec['required'] and (stored is False or stored is None or stored == ''):
+                out['errors'][name] = _('Fill this in: it is required.')
+                continue
+            if stored == self._pbfs_raw(rec, field) or (
+                    field.type == 'date' and stored and fields.Date.to_string(stored) == self._pbfs_raw(rec, field)):
+                continue
+            out[spec['mode'] if spec['mode'] in ('instant', 'approve') else 'approve'][name] = stored
+        return out
+
+    @api.model
+    def portal_apply(self, model, record, vals, origin=None):
+        """THE single write path for My Payobook changes (saved at once, or
+        after HR approved). Re-checks everything (a field unticked meanwhile is
+        refused), writes ONLY those fields, and leaves a history line per
+        field: who proposed, who approved or "saved at once", label, old → new.
+
+        `origin`: `{'proposed_by': user id, 'approved_by': user id or False}`
+        (defaults: the caller proposed, nobody approved = saved at once).
+        → `{ok: True, values: {name: {value, display}}}`."""
+        _ = self.env._
+        rec = self._pbfs_portal_record(model, record, "write")
+        checked = self.portal_check(model, rec, vals)
+        if checked['errors']:
+            raise UserError('; '.join(sorted(set(checked['errors'].values()))))
+        clean = dict(checked['instant'], **checked['approve'])
+        if not clean:
+            return {'ok': True, 'values': {}}
+        origin = origin or {}
+        Users = self.env['res.users'].sudo()
+        proposer = Users.browse(origin.get('proposed_by') or self.env.uid).exists()
+        approver = Users.browse(origin.get('approved_by') or 0).exists()
+        how = (_('approved by %s', approver.name) if approver else _('saved at once'))
+        before = {n: self._pbfs_display(rec.sudo(), rec._fields[n]) for n in clean}
+        rec.sudo().write(clean)
+        lines, out = [], {}
+        for name in clean:
+            field = rec._fields[name]
+            label = field.get_description(self.env, ['string']).get('string') or name
+            after = self._pbfs_display(rec.sudo(), field)
+            out[name] = {'value': self._pbfs_raw(rec.sudo(), field), 'display': after}
+            text = _('%(label)s: %(old)s → %(new)s (changed on My Payobook by %(who)s, %(how)s)',
+                     label=label, old=before[name] or '—', new=after or '—',
+                     who=proposer.name or '', how=how)
+            lines.append(text)
+            self.env['pb.form.audit'].sudo().create({
+                'action': 'portal_change', 'model': model, 'field_name': name, 'res_id': rec.id,
+                'summary': text[:500], 'user_id': proposer.id or self.env.uid,
+                'company_id': (rec.company_id.id if 'company_id' in rec._fields else False)
+                or self.env.company.id,
+                'detail': {'old': before[name], 'new': after, 'proposed_by': proposer.id,
+                           'approved_by': approver.id or False},
+            })
+        if hasattr(rec, 'message_post'):
+            rec.sudo().message_post(body=Markup('<br/>').join(lines), message_type='comment',
+                                    subtype_xmlid='mail.mt_note')
+        return {'ok': True, 'values': out}
+
+    @api.model
+    def update_portal(self, model, name, vals):
+        """Administrator: set the My Payobook ticks of a STANDARD or custom
+        field (`portal_show`, `portal_edit`, `portal_mode`). Refuses what the
+        host's hooks forbid, in plain words."""
+        self._pbfs_check_admin()
+        if model not in self._pbfs_host_models() or name not in self.env[model]._fields:
+            raise UserError(self.env._('This field is not offered on this screen.'))
+        changed = self._pbfs_set_portal(model, name, {k: v for k, v in (vals or {}).items()
+                                                      if k in PORTAL_KEYS})
+        if changed:
+            label = self.env[model]._fields[name].get_description(self.env, ['string']).get('string')
+            self._pbfs_audit('update_field', None, model, name,
+                             self.env._('Changed %(label)s: %(what)s', label=label,
+                                        what=', '.join(changed)))
+        return self._pbfs_describe(self.env[model], name)
 
     @api.model
     def _pbfs_values_for(self, records, purpose='list'):

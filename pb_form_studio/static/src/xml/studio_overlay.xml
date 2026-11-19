@@ -205,6 +205,22 @@
                   <p class="pbfb-hint flush">Standard fields come with the product: they can be placed and ordered, never deleted or retyped.</p>
                 </t>
 
+                <div t-if="portalOn(f)" class="pbfb-portal">
+                  <div class="pbfb-portal-h"><t t-out="ic('smartphone',14)"/> <span>My Payobook</span></div>
+                  <div class="pbfb-row" t-att-class="{ off: !f.portal.can_show }">
+                    <div><div class="t">Show on My Payobook</div><div class="d" t-esc="portalShowHelp(f)"/></div>
+                    <button type="button" class="pbfb-sw" role="switch" aria-label="Show on My Payobook" t-att-aria-checked="switchAttr(f.portal.show)" t-att-disabled="!f.portal.can_show" t-att-title="f.portal.show_reason" t-on-click="() => this.togglePortal(f, 'show')"/>
+                  </div>
+                  <div class="pbfb-row" t-att-class="{ off: !f.portal.can_edit }">
+                    <div><div class="t">Employee can change it</div><div class="d" t-esc="portalEditHelp(f)"/></div>
+                    <button type="button" class="pbfb-sw" role="switch" aria-label="Employee can change it" t-att-aria-checked="switchAttr(f.portal.edit)" t-att-disabled="!f.portal.can_edit" t-att-title="f.portal.edit_reason" t-on-click="() => this.togglePortal(f, 'edit')"/>
+                  </div>
+                  <div t-if="f.portal.edit" class="pbfb-seg" role="group" aria-label="When the employee changes it">
+                    <button type="button" t-att-class="modeClass(f, 'approve')" t-on-click="() => this.setPortalMode(f, 'approve')"><t t-out="ic('userCheck',13)"/> <span>HR approves the change</span></button>
+                    <button type="button" t-att-class="modeClass(f, 'instant')" t-on-click="() => this.setPortalMode(f, 'instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
+                  </div>
+                </div>
+
                 <label>Place in section
                   <select t-on-change="(ev) => this.onMoveTo(f, ev)">
                     <option t-foreach="sectionChoices()" t-as="sec" t-key="sec.id" t-att-value="sec.id" t-att-selected="isSelectedSection(f, sec)" t-esc="sec.title"/>
