@@ -519,15 +519,19 @@ class ApplicationFormulaConfig(models.Model):
                 attendance = self.env['hr.attendance'].sudo().browse(attendance_ids).exists()
                 if any(a.employee_id != employee or not a.check_out for a in attendance):
                     time_errors.append('Unreconciled attendance on %s.' % day)
-                live = sum((a.check_out - a.check_in).total_seconds() / 3600.
+                policy_rows = attendance.filtered(lambda a: bool(getattr(a, 'pb_policy_roster_id', False)))
+                if policy_rows and (len(policy_rows) != len(attendance) or any(not a._pb_policy_valid(day) for a in policy_rows)):
+                    time_errors.append('Shift calculation is mixed or needs review on %s.' % day)
+                live = sum(a._pb_policy_values()['normal_hours'] if a in policy_rows else (a.check_out - a.check_in).total_seconds() / 3600.
                            for a in attendance if a.check_out and a.check_in)
                 if abs(live - regular) > .02:
                     time_errors.append('Timesheet and attendance differ on %s.' % day)
                 if any(pytz.utc.localize(a.check_in).astimezone(tz).date() != day
                        or (a.check_out and pytz.utc.localize(a.check_out - timedelta(microseconds=1)).astimezone(tz).date() != day)
-                       for a in attendance if a.check_in):
+                       for a in attendance if a.check_in and a not in policy_rows):
                     time_errors.append('Attendance crossing local work dates needs an approved daily split on %s.' % day)
                 exclusive_ot = 0.
+                policy_night = 0.
                 for kind, item in (cell.get('ot') or {}).items():
                     rid = item.get('id')
                     if not rid:
@@ -556,6 +560,13 @@ class ApplicationFormulaConfig(models.Model):
                     # additional block to deduct from the ordinary duration.
                     if kind != 'night':
                         exclusive_ot += request.approved_hours + request.bonus_hours
+                    else:
+                        policy_night += request.approved_hours + request.bonus_hours
+                if policy_rows:
+                    expected_ot = sum(a._pb_policy_values()['overtime_hours'] for a in policy_rows)
+                    expected_night = sum(a._pb_policy_values()['night_hours'] for a in policy_rows)
+                    if abs(exclusive_ot - expected_ot) > .02 or abs(policy_night - expected_night) > .02:
+                        time_errors.append('Approved overtime differs from the shift calculation on %s.' % day)
                 sources = {getattr(a, 'pb_entry_source', False) or 'device' for a in attendance}
                 if len(sources) > 1:
                     time_errors.append('Mixed grid/device attendance needs a reviewed daily split on %s.' % day)
@@ -563,7 +574,9 @@ class ApplicationFormulaConfig(models.Model):
                     # Packet reg is the signed raw punch span. Actual paid
                     # attendance excludes configured lunch; approved OT is
                     # separate from ordinary time on device punches.
-                    regular = sum(a.worked_hours for a in attendance) - exclusive_ot
+                    regular = (sum(a._pb_policy_values()['normal_hours'] for a in policy_rows)
+                               if policy_rows and len(policy_rows) == len(attendance)
+                               else sum(a.worked_hours for a in attendance) - exclusive_ot)
                 if regular < -.02 or regular + data['leave_hours'] + data['holiday'] > data['hours'] + .02:
                     time_errors.append('Regular work, leave or holiday overlap/exceed scheduled hours on %s.' % day)
                 data['regular'] = max(0., regular)
@@ -571,6 +584,10 @@ class ApplicationFormulaConfig(models.Model):
         Attendance = self.env.get('hr.attendance')
         unmatched = Attendance.sudo().search([('employee_id', '=', employee.id),
             ('check_in', '<', utc_end), '|', ('check_out', '=', False), ('check_out', '>', utc_start)]) if Attendance is not None else []
+        if Attendance is not None and 'pb_policy_work_day' in Attendance._fields:
+            unmatched = unmatched.filtered(lambda a: not a.pb_policy_roster_id)
+            unmatched |= Attendance.sudo().search([('employee_id', '=', employee.id),
+                ('pb_policy_work_day', '>=', start), ('pb_policy_work_day', '<=', end)])
         att_ids = {aid for packet in packets for cell in packet.days()
                    if _date(cell.get('date')) in days for aid in (cell.get('attendance_ids') or [])}
         if any(a.id not in att_ids for a in unmatched):

@@ -256,8 +256,8 @@ class PbTimesheetPacket(models.Model):
         Req = self.env['hr.overtime.request'].sudo()
         attendances = Att.search([
             ('employee_id', '=', employee.id),
-            ('check_in', '>=', start), ('check_in', '<=', end),
-        ], order='check_in')
+        ] + (Att._pb_date_domain(start, end, self.week_start, self.week_end)
+             if hasattr(Att, '_pb_date_domain') else [('check_in', '>=', start), ('check_in', '<=', end)]), order='check_in')
         requests = Req.search([
             ('employee_id', '=', employee.id),
             ('date', '>=', self.week_start), ('date', '<=', self.week_end

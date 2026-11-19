@@ -207,8 +207,8 @@ class AttendanceWeekEntry(models.TransientModel):
         # employees are company-scoped in _employees().
         atts = Att.sudo().search([
             ('employee_id', 'in', emps.ids),
-            ('check_in', '>=', ws_dt), ('check_in', '<=', we_dt),
-        ])
+        ] + (Att._pb_date_domain(ws_dt, we_dt, week_start, week_end)
+             if hasattr(Att, '_pb_date_domain') else [('check_in', '>=', ws_dt), ('check_in', '<=', we_dt)]))
         att_by_cell = {}  # (emp_id, iso) -> list of atts
         tz_cache = {}
         for a in atts:
@@ -487,9 +487,8 @@ class AttendanceWeekEntry(models.TransientModel):
         lo_dt, hi_dt = Att._pb_week_window_utc(allowed, d_min, d_max)
         atts = Att.search([
             ('employee_id', 'in', emp_ids),
-            ('check_in', '>=', lo_dt),
-            ('check_in', '<=', hi_dt),
-        ])
+        ] + (Att._pb_date_domain(lo_dt, hi_dt, d_min, d_max)
+             if hasattr(Att, '_pb_date_domain') else [('check_in', '>=', lo_dt), ('check_in', '<=', hi_dt)]))
         att_map = {}
         tz_cache = {}
         for a in atts:
