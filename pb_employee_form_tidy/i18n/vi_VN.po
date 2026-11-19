@@ -102,6 +102,12 @@ msgstr ""
 
 #. module: pb_employee_form_tidy
 #. odoo-python
+#: code:addons/pb_employee_form_tidy/models/hr_employee.py:0
+msgid "Employment profile"
+msgstr "Hồ sơ việc làm"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
 #: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
 msgid "Everyone already has a Country of Work. Nothing to fill."
 msgstr "Mọi người đều đã có Quốc gia làm việc. Không có gì để điền."
@@ -231,6 +237,12 @@ msgstr ""
 #: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
 msgid "Paid under pay set-ups of two countries:"
 msgstr "Được trả lương theo thiết lập lương của hai quốc gia:"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/hr_employee.py:0
+msgid "Payroll facts"
+msgstr "Dữ kiện tính lương"
 
 #. module: pb_employee_form_tidy
 #. odoo-python

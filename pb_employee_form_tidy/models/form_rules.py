@@ -59,6 +59,15 @@ FORM_RULES = {
     # R12: Payroll-ready reads the approved bank account; this box is not it.
     'account_number': REMOVE,
 
+    # ---- Payroll tab (core hr, the employee's version record) — FS follow-up 1
+    # (owner, 2026-11-20). Like the Contract / Wage rows pb_form_native_look
+    # hides there, these two are the platform's own version-record boxes:
+    # Payobook keeps the contract (and its pay structure) on hr.contract, so
+    # they are leftovers. Screen-only: the fields, their values and every
+    # reader (contract templates, imports) are untouched.
+    'contract_type_id': REMOVE,               # "Contract Type"
+    'structure_type_id': REMOVE,              # "Pay Category"
+
     # ---- Employment profile (pb_employee_vault)
     'pb_position_reference': REMOVE,          # audit: unsure -> owner: remove
     'pb_emergency_relationship': REMOVE,      # audit: unsure -> owner: remove

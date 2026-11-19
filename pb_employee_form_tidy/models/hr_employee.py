@@ -50,11 +50,39 @@ class HrEmployee(models.Model):
         try:
             form_rules.apply_rules(arch)
             form_rules.show_full_dates(arch, self.env, self._name)
+            self._pb_tidy_tab_names(arch)
         except Exception:       # noqa: BLE001 — a tidy-up must never cost the form
             _logger.exception("Employee form tidy-up could not be applied; "
                               "the form is shown as the modules draw it.")
             arch, view = super()._get_view(view_id, view_type, **options)
         return arch, view
+
+    @api.model
+    def _pb_tidy_tab_names(self, arch):
+        """FS follow-up 1 — two tab names that stayed English for Vietnamese
+        and Indonesian readers: "Employment profile" (pb_employee_vault, a page
+        with no name) and "Payroll facts" (pb_payroll_mapping_vn, rize only).
+
+        Done here, not by an xpath in a view: one owner is not installed on
+        every database (an xpath to its page would fail to install there),
+        and the owners' modules are shipped by other work streams. The arch
+        reaching this method is already in the reader's language, so a page
+        still carrying the English words has no translation of its own; it
+        gets this module's words (code terms, read from this module's .po —
+        there is no stored copy to fix). An owner translation, once it exists,
+        wins because the English words are then gone.
+        """
+        lang = self.env.lang or 'en_US'
+        if lang == 'en_US':
+            return
+        names = {
+            'Employment profile': self.env._("Employment profile"),
+            'Payroll facts': self.env._("Payroll facts"),
+        }
+        for page in arch.iter('page'):
+            word = names.get(page.get('string'))
+            if word:
+                page.set('string', word)
 
     # ---------------------------------------------------- timezone note
     def _compute_pb_work_timezone_note(self):

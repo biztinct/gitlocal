@@ -80,8 +80,8 @@ contract_date_end,KEEP,general
 wage,KEEP,general
 employee_type,KEEP,general
 pb_probation_state,KEEP,general
-contract_type_id,KEEP,general
-structure_type_id,KEEP,general
+contract_type_id,REMOVE FROM SCREEN,general
+structure_type_id,REMOVE FROM SCREEN,general
 resource_calendar_id,KEEP,general
 badge_ids,KEEP,general
 user_id,KEEP,general

@@ -43,10 +43,12 @@ registered with the Form builder.
     'data': [
         'views/portal_templates.xml',
     ],
-    # The Learn lesson "Add your own fields" (L42) and its three anchors on the
-    # Field library were held back at the go-live: pb_learn's own consistency
-    # suite fails with them (Coach detection, Ask list, outline station, the
-    # library's Node run). Kept on origin/fs-5 for a follow-up.
+    'assets': {
+        'web.assets_backend': [
+            # Learn anchors (lesson "Add your own fields") on the Field library.
+            'pb_form_studio_reach/static/src/xml/learn_anchors.xml',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,

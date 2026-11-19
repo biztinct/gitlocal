@@ -2167,6 +2167,21 @@
       "screen": "formula",
       "file": "pb_formula_studio/static/src/xml/studio_experience.xml",
       "desc": "Formula Engine, the default Table view: Component, Source / calculation, Value type and Preview value, one row per component."
+    },
+    "fb-head": {
+      "screen": "formbuilder",
+      "file": "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
+      "desc": "Form builder (Field library) title and its line."
+    },
+    "fb-kpis": {
+      "screen": "formbuilder",
+      "file": "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
+      "desc": "The Field library numbers line."
+    },
+    "fb-table": {
+      "screen": "formbuilder",
+      "file": "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
+      "desc": "The Field library table, one row per custom field."
     }
   },
   "pattern": {
@@ -2333,7 +2348,8 @@
       "pb_hiring/static/src/xml/hiring_privacy_p4.xml",
       "pb_hiring/static/src/xml/hiring_p6.xml",
       "pb_hiring/static/src/xml/hiring_setup.xml",
-      "pb_hiring/static/src/xml/hiring_numbers.xml"
+      "pb_hiring/static/src/xml/hiring_numbers.xml",
+      "pb_form_studio_reach/static/src/xml/learn_anchors.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <!-- Learn anchors on the Field library (lesson L42 "Add your own fields").
+       Laid from outside so pb_form_studio is not edited. -->
+  <t t-inherit="pb_form_studio.FieldLibrary" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbfb-libtop')]" position="attributes">
+      <attribute name="data-coach">fb-head</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbfb-kpis')]" position="attributes">
+      <attribute name="data-coach">fb-kpis</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbfb-tbl')]" position="attributes">
+      <attribute name="data-coach">fb-table</attribute>
+    </xpath>
+  </t>
+</templates>
