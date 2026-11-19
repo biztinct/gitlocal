@@ -979,6 +979,11 @@ class PbFormStudio(models.AbstractModel):
                              _('Changed %(label)s: %(what)s',
                                label=row.with_context(lang=self.env.lang).field_description,
                                what=', '.join(changes)))
+        if 'country_ids' in meta_vals:
+            # The Full details page carries the Country of Work rule in its
+            # markup: a change made from the Field library (no Publish after
+            # it) must reach the page too (R10, found at the merge).
+            self._pbfs_resync_native(model)
         return self._pbfs_describe(self.env[model], name)
 
     @api.model

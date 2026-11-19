@@ -503,6 +503,12 @@ class TestFormStudio(TransactionCase):
         self.assertLess(arch.index(b), arch.index(a), 'layout order')
         self.assertIn('notebook', arch, 'a notebook is added where the screen has none')
         self.assertIn('country_id not in [%s]' % self.india.id, arch)
+        # A country change made from the Field library (no Publish) reaches the page.
+        self.studio().update_field(MODEL, a, {'country_ids': [self.india.id]})
+        self.assertRegex(view.arch_db, r'<field [^>]*name="%s"[^>]*invisible' % a)
+        self.studio().update_field(MODEL, a, {'country_ids': []})
+        self.assertNotRegex(view.arch_db, r'<field [^>]*name="%s"[^>]*invisible' % a)
+        arch = view.arch_db
         self.env[MODEL].get_view(parent.id, 'form')          # the parent still renders
         # A broken arch never replaces a good one.
         rec = self.env['pb.form.native.view'].search([('parent_xmlid', '=', xmlid)])
