@@ -64,9 +64,8 @@ class TestLists(TransactionCase):
                     out[key] = dict(host)
             return out
         cls.startClassPatcher(patch.object(Studio, '_pbfs_hosts', hosts))
-        # The engine's "pay run busy" probe reads pg_locks across EVERY
-        # database of the cluster (report gotcha FS4-1): another builder's
-        # test run must not refuse our fields.
+        # The engine's "pay run busy" probe (FS1-8) must not let a pay run in
+        # another test of this database refuse our fields: lists do not test it.
         cls.startClassPatcher(patch.object(Studio, '_pbfs_busy', lambda self: ''))
 
         cls.Studio = cls.env['pb.form.studio']
