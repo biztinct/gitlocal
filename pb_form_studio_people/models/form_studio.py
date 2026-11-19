@@ -182,8 +182,7 @@ class PbFormStudio(models.AbstractModel):
     @api.model
     def _pbfs_portal_hidden(self, model):
         """R14: never shown on My Payobook — the wage and every pay figure."""
-        parent = getattr(super(), '_pbfs_portal_hidden', None)
-        out = dict(parent(model) or {}) if parent else {}
+        out = dict(super()._pbfs_portal_hidden(model) or {})
         if model != MODEL:
             return out
         reason = self.env._('Pay figures are never shown on My Payobook.')
@@ -197,8 +196,7 @@ class PbFormStudio(models.AbstractModel):
     def _pbfs_portal_locked(self, model):
         """R14: may be shown, never changed by the employee. One plain reason
         per field; the first that applies wins."""
-        parent = getattr(super(), '_pbfs_portal_locked', None)
-        out = dict(parent(model) or {}) if parent else {}
+        out = dict(super()._pbfs_portal_locked(model) or {})
         if model != MODEL:
             return out
         _ = self.env._

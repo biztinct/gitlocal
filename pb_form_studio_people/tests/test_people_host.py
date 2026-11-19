@@ -10,7 +10,6 @@ browser walk: both are run by the scripts named in the report.
 """
 import re
 from pathlib import Path
-from unittest.mock import patch
 
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import TransactionCase, new_test_user, tagged
@@ -67,16 +66,6 @@ class TestPeopleHost(TransactionCase):
         cls.emp_none = Emp.create({'name': 'DEMO No Country'})
         cls.staff_emp = Emp.create({'name': 'DEMO Staff', 'user_id': cls.staff.id,
                                     'parent_id': cls.boss_emp.id})
-
-    def setUp(self):
-        super().setUp()
-        # The engine's "pay run being worked out" lock probe reads pg_locks
-        # for the whole server, and template copies share table ids, so a
-        # pay run in ANOTHER local database blocks this one (FS2-1, merge
-        # task M1 in the report). The engine's own test_08 covers the rail.
-        busy = patch.object(type(self.Studio), '_pbfs_busy', lambda self: '')
-        busy.start()
-        self.addCleanup(busy.stop)
 
     # ---------------------------------------------------------------- utils
     def publish(self, sections, creates=None, user=None):
@@ -407,6 +396,42 @@ class TestPeopleHost(TransactionCase):
             self.assertIn('Already on My details', locked['private_phone'])
         # other record types are not touched by this host
         self.assertNotIn('wage', self.Studio._pbfs_portal_hidden('pb.form.sample'))
+
+    def test_13b_engine_refuses_forbidden_ticks_for_the_employee(self):
+        """The real engine (fs-1 R14) applies this host's lists on save."""
+        St = self.Studio.with_user(self.admin)
+        with self.assertRaises(UserError):
+            St.update_portal(MODEL, 'wage', {'portal_show': True})           # never shown
+        St.update_portal(MODEL, 'payroll_country', {'portal_show': True})    # shown is fine...
+        with self.assertRaises(UserError):
+            St.update_portal(MODEL, 'payroll_country', {'portal_edit': True})  # ...changed is not
+        with self.assertRaises(UserError):
+            St.update_portal(MODEL, 'department_id', {'portal_edit': True})
+        # an ordinary box the employee may change: stored, typed in by hand
+        hidden = self.Studio._pbfs_portal_hidden(MODEL)
+        locked = self.Studio._pbfs_portal_locked(MODEL)
+        Emp = self.env[MODEL]
+
+        def plain(n):
+            f = Emp._fields[n]
+            return (n not in hidden and n not in locked and f.store and not f.readonly
+                    and not (f.compute and not f.inverse) and f.type in ('char', 'text', 'date'))
+        box = next(n for n in self.Studio._pbfs_hosts()[HOST]['standard_fields'] if plain(n))
+        d = St.update_portal(MODEL, box,
+                             {'portal_show': True, 'portal_edit': True, 'portal_mode': 'instant'})
+        self.assertTrue(d['portal']['show'] and d['portal']['edit'])
+        studio = St.get_studio(HOST)['fields']
+        self.assertFalse(studio['payroll_country']['portal']['can_edit'])
+        self.assertTrue(studio['payroll_country']['portal']['edit_reason'])
+        self.assertFalse(studio['wage']['portal']['can_show'])
+        rows = {r['name']: r for r in St.fields_for(MODEL, 'portal', record=self.emp_vn)}
+        self.assertTrue(rows[box]['edit'])
+        self.assertFalse(rows['payroll_country']['edit'])
+        self.assertNotIn('wage', rows)
+        # a forged change of a locked box from My Payobook is refused by the engine
+        res = St.portal_check(MODEL, self.emp_vn, {'payroll_country': 'IN'})
+        self.assertIn('payroll_country', res.get('errors') or {})
+        self.assertEqual(self.emp_vn.payroll_country, 'VN')
 
     # ------------------------------------------------------------------ 10
     def test_10_silent_install(self):
