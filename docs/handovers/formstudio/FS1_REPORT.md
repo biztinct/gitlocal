@@ -1,7 +1,8 @@
 # FS-1 — Form builder engine (`pb_form_studio`) — report
 
-Branch `fs-1` (from `origin/19.1` @ ef422ae4a). New module `pb_form_studio` **19.0.1.0.0**.
-No existing module was edited. Not deployed. Local database `fs_1_t` (dropped at the end).
+Branch `fs-1` (from `origin/19.1` @ ef422ae4a). New module `pb_form_studio` **19.0.1.1.0**
+(19.0.1.0.0 = first delivery; 19.0.1.1.0 = follow-up R14 "fields on My Payobook" + bounded
+pay-run signal, §13). No existing module was edited. Not deployed. Local databases dropped.
 
 ## 1. Verified facts (origin/19.1 @ ef422ae4a; core = ~/odoo19/odoo)
 
@@ -124,6 +125,15 @@ without it: **identical failure set, 4 of 173, none names a pb_form_studio file*
 | 22 | native-view sync: nothing → no view; publish regenerates; layout order; notebook added where the screen has none; `invisible` on the country field; a broken arch never replaces a good one; delete drops the field from the page first; last field removes the page | PASS (test_22) |
 | 23 | `copy_field_names`; `copied` per host default (False) and per field (True carried by `copy()`) | PASS (test_23) |
 | 24 | "Used by" in `get_studio` and the Field library | PASS (test_24) |
+| 25 | R14 flags on custom AND standard fields (standard: settings row, no new field, still not renamable); "can change" ⇒ shown, untick shown ⇒ not changeable; administrator only | PASS (test_25) |
+| 26 | refused on the server with the reason: hidden (show), locked (change), money/file (change), standard field not offered, host without a self-service page; panel gets `can_show/can_edit` + reasons | PASS (test_26) |
+| 27 | `fields_for(…, 'portal', record=)`: layout order, sections, edit/mode, Country of Work per record, ticked HR/admin-only field still shown, untick = absent, labels in vi | PASS (test_27) |
+| 28 | `portal_values`: only ticked fields, nothing else read; an id over the wire needs the caller's own read right | PASS (test_28) |
+| 29 | `portal_check`: instant vs approve split; shown-only, required-empty, other country, forged standard / locked / unknown names → errors; unchanged dropped; bad date | PASS (test_29) |
+| 30 | `portal_apply`: writes only those fields, returns only those, history line (proposer, approver or "saved at once", old → new); unticked meanwhile → refused, nothing written; an id over the wire needs write right | PASS (test_30) |
+| 31 | pay-run signal: another company's run blocks (database-wide, plain sentence); a payslip older than the window stops counting; windows ≤ 15 min | PASS (test_31) |
+| 32 | deprecated `'everyone'` alias still answers for fs-5 | PASS (test_32) |
+| 33 | Publish routes standard-field ticks (`update_portal`) and new-field ticks (`create_field`) | PASS (test_33) |
 
 ### 4.1 Fresh-install run
 New copy of `upd_p6_t_tpl` (+ FS1-4 fix), `-i pb_form_studio --test-enable --test-tags
@@ -158,7 +168,10 @@ class PbFormStudio(models.AbstractModel):
                 {'id': 'custom', 'title': _('Company details'), 'icon': 'sparkles', 'tone': 'brand', 'kind': 'open'},
             ],
             'default_layout': {'personal': ['name', 'work_email'], 'custom': []},
-            'std_fields': ['name', 'work_email'],   # standard fields the admin may place
+            'standard_fields': ['name', 'work_email'],  # standard fields offered to the Studio
+                                                    # (placement + My Payobook ticks; the
+                                                    # FS-1 name `std_fields` is still read)
+            'portal': True,                         # R14: this record type has a My Payobook page
             'custom_section': 'custom',             # where lost fields land
             'country_field': 'x_country_of_work_path',   # R10: dotted path to a res.country on the record
             'country_view_field': 'country_id',     # a DIRECT m2o res.country on the model, for native invisible=
@@ -176,7 +189,10 @@ class PbFormStudio(models.AbstractModel):
 ```
 Optional hooks: `_pbfs_link_targets()` (add `{model: label}` a link field may point at);
 `_pbfs_reference_finders()` (append a method name `(model, field_name) -> [{kind, label, count,
-names}]`; non-empty = delete blocker and "Used by").
+names}]`; non-empty = delete blocker and "Used by"); R14 `_pbfs_portal_locked(model)` →
+`{field: reason}` (may be shown on My Payobook, never changed there) and
+`_pbfs_portal_hidden(model)` → `{field: reason}` (never shown). Both are re-checked on every
+read and write, not only when the administrator ticks.
 
 **2. Read** — `pb.form.studio.render(host_key, record_id)` (caller's own rights, never sudo) →
 ```
@@ -230,16 +246,56 @@ order; field visibility via the field's groups; per-country `invisible=` on `cou
 regenerated on every publish and before every field delete; removed when no custom field is placed;
 validated in a savepoint and the previous arch kept on failure. Returns the view or False.
 
-**6. Lists, exports, formulas, self-service** — `fields_for(model, purpose)` with purpose `'list'`
-("Show in lists"), `'formula'` ("Use in pay formulas", numeric/date/choice/yes-no only), `'all'`,
-`'everyone'` (visibility "Everyone" only, decided from the setting — safe around sudo, R3). Labels in
-the caller's language; each item carries `countries`. Values: Python `_pbfs_values_for(records,
-purpose)` → `{id: {name: {value, display}}}` with a blank cell where the field does not apply; RPC
-`values_for(model, ids, purpose)` (caller's rights; refuses 'everyone').
+**6. Lists, exports, formulas** — `fields_for(model, purpose)` with purpose `'list'`
+("Show in lists"), `'formula'` ("Use in pay formulas", numeric/date/choice/yes-no only), `'all'`
+(custom fields the caller may read). Labels in the caller's language; each item carries
+`countries`. Values: Python `_pbfs_values_for(records, purpose)` → `{id: {name: {value,
+display}}}` with a blank cell where the field does not apply; RPC `values_for(model, ids,
+purpose)` (caller's rights). `'everyone'` is a DEPRECATED alias kept only because branch fs-5
+(`pb_form_studio_reach/controllers/portal.py:44,47`) still calls it — R14 replaces it with
+`'portal'` (item 9); remove the alias once fs-5 has moved.
 
 **7. Copying** — `copy_field_names(model)` → custom field names to carry on renewal/copy (R7).
 
 **8. Link lookups** — `lookup(model, field_name, term)` → `[{id, label}]` (caller's rights).
+
+**9. My Payobook (R14, replaces R3)** — per field, standard AND custom, three settings on
+`pb.form.field.meta`: `portal_show` ("Show on My Payobook"), `portal_edit` ("Employee can change
+it"), `portal_mode` (`approve` "HR approves the change", default | `instant` "Saves at once").
+A standard field gets a settings row only (no field is made; it cannot be renamed, retyped or
+deleted). "Can change" implies "shown"; unticking "shown" clears "can change". The Studio
+refuses on the server: a field in `_pbfs_portal_hidden` (show), in `_pbfs_portal_locked` (change),
+money / file / non-allowed link / computed or read-only fields (change), standard fields not in
+`standard_fields`, record types whose host has no `portal: True`. The properties panel and the
+Field library show the two ticks and the mode, greyed with the reason when not allowed.
+- `fields_for(model, 'portal', record=rec)` → `[{name, label, help, type, kind, options, comodel,
+  section, section_title, edit, mode, required}]` in published layout order (ticked fields not
+  placed come last under the custom section); labels in the caller's language; Country of Work
+  honoured for `rec`; decided from the ticks — NOT from "who can see it" (a field only HR sees
+  can still be shown to its own employee) — so it is safe around a record read with elevated rights.
+- `portal_values(model, rec)` → `{name: {value, display}}` for exactly those fields.
+- `portal_check(model, rec, vals)` → `{'instant': {name: value}, 'approve': {name: value},
+  'errors': {name: text}}` — validated + coerced; anything not changeable for THIS record (not
+  ticked, locked, hidden, another country, wrong value, required left empty, forged name) is in
+  `errors`: refuse the whole submission when it is not empty. Unchanged values are dropped.
+- `portal_apply(model, rec, vals, origin={'proposed_by': uid, 'approved_by': uid|False})` → the
+  single write path (saved at once, or after HR approved): re-checks everything (a field unticked
+  meanwhile is refused), writes ONLY those fields, adds a history line per field on the record's
+  chatter and in the Form builder history ("label: old → new (changed on My Payobook by X,
+  approved by Y | saved at once)"), returns `{ok, values}` for those fields only.
+- Record argument: a RECORDSET (server code that already decided it is the employee's own) is
+  trusted and read with elevated rights; an ID (over the wire) is only accepted if the CALLER may
+  read it (`portal_values`, `fields_for`) or write it (`portal_apply`) with their own rights.
+
+**10. "A pay run is being worked out" — the rule.** `create_field` and `delete_field` (and Publish
+when it adds or deletes) are refused DATABASE-WIDE while any company's pay run is being worked
+out: adding or dropping a column changes a table every company in the database shares, so a run in
+one company holds it for all. Message, always: "A pay run is being worked out right now. Try again
+in a few minutes." Every signal is bounded in time, so a stale one cannot block for hours: a
+transaction writing payslips counts only while it is younger than 10 minutes; a draft run's
+payslip written in the last 3 minutes; a practice run left "computing" for at most 15 minutes. The
+column change itself waits at most 5 seconds for a lock. Changing labels, ticks, layout or values
+is never blocked. Tests that create fields patch `_pbfs_busy` (name is stable).
 
 ### What the dev host does that a real host must repeat
 1. Register in `_pbfs_hosts` with stable section ids, a custom section, `std_fields`, a
@@ -313,6 +369,10 @@ None (new module only). FS-2…FS-6 branch from `origin/fs-1`.
   browser on a threaded server; use workers only for the registry proof.
 - FS1-6 Core refuses to drop a field a view still names: regenerate the Studio page BEFORE unlink.
 - FS1-7 Deleting a field silently deletes its pay-data import mappings (cascade) — a blocker.
+- FS1-8 `pg_locks` lists locks of EVERY database on the server, and databases copied from one
+  template share table oids: a lock check joined to `pg_class` by oid alone sees another
+  database's (another tenant's, another builder's) pay run. Always filter `l.database =` the
+  current database. Found when the R14 tests were blocked by another builder's local run.
 
 ## 11. Owner questions (plain)
 - When an administrator limits a field to some countries, people who may see the field at all can
@@ -321,6 +381,33 @@ None (new module only). FS-2…FS-6 branch from `origin/fs-1`.
   locked down completely (slower screens, more work)?
 - New fields are made the moment you press Publish, and their type can never change. Should the
   publish sheet ask for a second "Yes, make these fields" tick when new fields are in it?
+
+## 13. Follow-up 2026-11-19 evening — R14 "fields on My Payobook" (replaces R3) + bounded pay-run signal
+
+Built exactly to FS_HOSTS_HANDOVER.md "ADDENDUM 2 — Engine — FS-1 builder" (contract in §5 items
+1, 6, 9, 10): meta `portal_show` / `portal_edit` / `portal_mode` (rows for standard fields too),
+host keys `portal` and `standard_fields` (`std_fields` still read — fs-2 and fs-3 use it), hooks
+`_pbfs_portal_locked` / `_pbfs_portal_hidden`, `update_portal`, `fields_for(model, 'portal',
+record=)`, `portal_values`, `portal_check`, `portal_apply` (history on the record's chatter and
+in the Form builder history), ticks + mode in the properties panel (standard and custom fields,
+greyed with the reason) and in the Field library (column "My Payobook" + Edit sheet). Module
+19.0.1.1.0.
+- **`'everyone'` purpose: KEPT as a deprecated alias** — fs-5 still calls it
+  (`pb_form_studio_reach/controllers/portal.py:44,47`). fs-5 should move to `'portal'`; then delete it.
+- **Pay-run signal (employee-host question):** kept DATABASE-WIDE (a column change touches a table
+  all companies share), one plain sentence, every signal time-bounded (≤ 10 / 3 / 15 minutes) —
+  rule in §5 item 10. Found and fixed while doing this: the lock check saw OTHER databases' pay
+  runs on the same server (FS1-8) — it now looks at this database only.
+- Tests: 9 new (25-33, `tests/test_portal_r14.py`). Full module suite on a new template copy:
+  **29 test methods, 0 failed, 0 errors** (33 incl. class set-up). PO regenerated: 347 entries
+  each in vi / id; no "Odoo" anywhere (test 15).
+- Browser (desktop): standard field "Email" ticked shown + can change + "Saves at once" →
+  Publish → saved; "Country of work" shows "Employee can change it" greyed with "Country of Work
+  decides which fields apply."; Field library column + Edit sheet with the money field's change
+  tick greyed ("Money and files can be shown, not changed by the employee."). Console clean.
+  Fixed: two identical change lines when two ticks of one field were touched.
+- Commits added on `fs-1` for host branches to merge: see the final message / `git log
+  origin/fs-1` after `87ede1a76`.
 
 ## 12. Left for later
 - Per-record read block for country-limited fields (owner question 1).
