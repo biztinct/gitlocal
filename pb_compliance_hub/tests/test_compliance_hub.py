@@ -117,6 +117,12 @@ class TestComplianceGates(TransactionCase):
                          "the filings lens is offered to %s, which cannot use "
                          "the wizard behind it" % (declared - acl))
 
+    def test_s2a_the_filings_gate_is_the_right_that_produces_a_filing(self):
+        """WDGAP S2-A (S2F-8): seeing the Filings lens and producing a filing
+        are one right — the filing flow's own `_FILING_GROUPS`."""
+        from odoo.addons.pb_govt_reports.models.pb_filing_flow import _FILING_GROUPS
+        self.assertEqual(set(_js_list(self.SRC, 'FILINGS_GATE')), set(_FILING_GROUPS))
+
     def test_the_bank_gate_is_deliberately_every_internal_user(self):
         """An employee files their OWN bank change on this surface, so a
         narrower gate would hide the cockpit from the population it exists for.
@@ -568,24 +574,23 @@ class TestFilingFlow(TransactionCase):
                          "a statutory extract belongs to its creator, not to a "
                          "transient that is about to be vacuumed")
 
-    def test_a_country_whose_wizard_writes_no_file_says_so(self):
-        """Four of the five country wizards return a notification claiming a
-        submission file was generated and write nothing at all. The flow reports
-        what happened, not what the message says (W42)."""
-        from odoo.addons.pb_govt_reports.models.pb_filing_flow import ADAPTERS
-        stub = None
+    def test_the_false_claim_countries_are_retired(self):
+        """WDGAP S2-A (S2F-4, test 10). Four country wizards (SG CPF, TH SSF,
+        KH NSSF, MY EPF) returned a notification claiming a submission file
+        was generated and wrote nothing at all. They are no longer adapted and
+        no longer on the board: the flow refuses them in words, and the board
+        offers no tile for them (a country's filings now come from the form
+        catalogue)."""
+        from odoo.addons.pb_govt_reports.models.pb_filing_flow import (
+            ADAPTERS, _GENERATE)
+        from odoo.addons.pb_govt_reports.models.pb_govt_reports import _CATALOG
         for cc in ('SG', 'TH', 'KH', 'MY'):
-            if ADAPTERS[cc]['model'] in self.env:
-                stub = cc
-                break
-        if stub is None:
-            self.skipTest("no non-VN country module installed on this database")
-        d = self.Flow.scope(stub, '')
-        try:
-            out = self.Flow.generate(d['wizard_id'], stub, '', {})
-        except UserError:
-            # "No employees found for … submission in the selected period" is
-            # the wizard's own guard and a perfectly correct outcome here.
-            return
-        self.assertEqual(out['artifacts'], [])
-        self.assertTrue(out['message'])
+            self.assertNotIn(cc, ADAPTERS)
+            self.assertNotIn(cc, _GENERATE)
+            self.assertNotIn(cc, _CATALOG)
+            with self.assertRaises(UserError):
+                self.Flow.scope(cc, '')
+            board = self.env['pb.govt.reports'].get_govt_reports_data(cc)
+            self.assertFalse(board['groups'], cc)
+            self.assertFalse(board['wizards_available'], cc)
+        self.assertEqual(sorted(ADAPTERS), ['VN'])

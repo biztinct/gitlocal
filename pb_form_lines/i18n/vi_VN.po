@@ -1,0 +1,4487 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-18 04:21+0000\n"
+"PO-Revision-Date: 2026-11-18 04:21+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "%(done)s of %(all)s lines set"
+msgstr "Đã đặt %(done)s / %(all)s dòng"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "%(n)s finished payslips of %(schemes)s are not counted: none of that scheme's pay items is on this form."
+msgstr "%(n)s phiếu lương đã hoàn tất của %(schemes)s không được tính: chưa có khoản lương nào của chương trình đó nằm trên biểu mẫu này."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "%(n)s people have no %(what)s on their employee record."
+msgstr "%(n)s người chưa có %(what)s trong hồ sơ nhân viên."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "%(n)s people · %(who)s · %(when)s"
+msgstr "%(n)s người · %(who)s · %(when)s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "%(who)s approved the filing %(name)s (%(n)s people)"
+msgstr "%(who)s đã duyệt tờ khai %(name)s (%(n)s người)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "%(who)s downloaded %(file)s (%(n)s people)."
+msgstr "%(who)s đã tải xuống %(file)s (%(n)s người)."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form.py:0
+msgid "%(who)s marked “%(form)s” as accepted by the authority."
+msgstr "%(who)s đã đánh dấu “%(form)s” là được cơ quan chấp nhận."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form.py:0
+msgid "%(who)s took back “accepted by the authority” for “%(form)s”. Files will say “Check with your adviser before first filing” again."
+msgstr "%(who)s đã bỏ đánh dấu “được cơ quan chấp nhận” cho “%(form)s”. Các tệp sẽ lại ghi “Hãy hỏi ý kiến tư vấn trước lần nộp đầu tiên”."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "%(who)s · %(file)s · %(n)s people"
+msgstr "%(who)s · %(file)s · %(n)s người"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "%s pay items put on their lines."
+msgstr "Đã đặt %s khoản lương vào dòng của chúng."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "%s payslips"
+msgstr "%s phiếu lương"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "%s payslips in this period are not finished yet and are left out."
+msgstr "%s phiếu lương trong kỳ này chưa hoàn tất nên không được tính."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "%s people need a look"
+msgstr "%s người cần xem lại"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__round_digits
+msgid "-1: the money's own rounding."
+msgstr "-1: làm tròn theo loại tiền."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "1 pay item put on its line."
+msgstr "Đã đặt 1 khoản lương vào dòng của nó."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "1 person has no %s on their employee record."
+msgstr "1 người chưa có %s trong hồ sơ nhân viên."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "1 person needs a look"
+msgstr "1 người cần xem lại"
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_form_company
+msgid "A company's settings for a government form"
+msgstr "Thiết lập của công ty cho một biểu mẫu nhà nước"
+
+#. module: pb_form_lines
+#: model:ir.model.constraint,message:pb_form_lines.constraint_pb_gov_form_code_uniq
+msgid "A form code is used once."
+msgstr "Mỗi mã biểu mẫu chỉ dùng một lần."
+
+#. module: pb_form_lines
+#: model:ir.model.constraint,message:pb_form_lines.constraint_pb_gov_form_line_form_code_uniq
+msgid "A line code is used once per form."
+msgstr "Mỗi mã dòng chỉ dùng một lần trong một biểu mẫu."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "A month"
+msgstr "Một tháng"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__quarter_allowed
+msgid "A monthly form the authority also accepts per quarter."
+msgstr "Biểu mẫu tháng mà cơ quan cũng chấp nhận theo quý."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/filing.py:0
+msgid "A newer filing has replaced this one. Download that one instead."
+msgstr "Đã có tờ khai mới hơn thay thế hồ sơ này. Hãy tải hồ sơ đó."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "A newer filing has replaced this one. Send that one in instead."
+msgstr "Đã có tờ khai mới hơn thay thế hồ sơ này. Hãy gửi hồ sơ đó."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "A newer filing replaced this one."
+msgstr "Một tờ khai mới hơn đã thay thế hồ sơ này."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "A quarter"
+msgstr "Một quý"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Accepted"
+msgstr "Đã được chấp nhận"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__accepted_by
+msgid "Accepted By"
+msgstr "Người đánh dấu chấp nhận"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__accepted_on
+msgid "Accepted On"
+msgstr "Ngày đánh dấu chấp nhận"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__accepted
+msgid "Accepted by the authority"
+msgstr "Được cơ quan chấp nhận"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Accepted by the authority before"
+msgstr "Đã được cơ quan chấp nhận trước đây"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0 code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Accepted by the authority — marked by %(who)s on %(when)s."
+msgstr "Được cơ quan chấp nhận — %(who)s đánh dấu ngày %(when)s."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_needaction model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_needaction model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_map__sign__add
+msgid "Add"
+msgstr "Cộng"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Adds to pay"
+msgstr "Cộng vào lương"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__kind__money
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_biz_approval_request_seat
+msgid "Approval Request Seat"
+msgstr "Vị trí phê duyệt"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Approval and download"
+msgstr "Phê duyệt và tải xuống"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__approval_state
+msgid "Approval status"
+msgstr "Trạng thái phê duyệt"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_filing__state__approved
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Approved by %s."
+msgstr "Đã được %s duyệt."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__approved_hash
+msgid "Approved stamp"
+msgstr "Dấu đã duyệt"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "April – June"
+msgstr "Tháng 4 – Tháng 6"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__sign_rule__as_read
+msgid "As read from the payslips"
+msgstr "Như đọc từ phiếu lương"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được yêu cầu quyết định"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__attachment_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__attachment_id
+msgid "Attachment"
+msgstr "Tệp đính kèm"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_attachment_count model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_attachment_count model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__authority
+msgid "Authority"
+msgstr "Cơ quan"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Both added and taken off"
+msgstr "Vừa cộng vừa trừ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Cambodia"
+msgstr "Campuchia"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Check"
+msgstr "Kiểm tra"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Check the figures"
+msgstr "Kiểm tra số liệu"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/fund_form.py:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__adviser_wording__adviser
+msgid "Check with your adviser before first filing"
+msgstr "Hãy hỏi ý kiến tư vấn trước lần nộp đầu tiên"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Check with your adviser before first filing. Every file says so until a payroll manager marks this form accepted by the authority."
+msgstr "Hãy hỏi ý kiến tư vấn trước lần nộp đầu tiên. Mọi tệp đều ghi như vậy cho đến khi quản lý lương đánh dấu biểu mẫu này là được cơ quan chấp nhận."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Check with your adviser before first filing. The files say so too."
+msgstr "Hãy hỏi ý kiến tư vấn trước lần nộp đầu tiên. Các tệp cũng ghi như vậy."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Choose one currency: a filing never adds two currencies together."
+msgstr "Hãy chọn một loại tiền: tờ khai không bao giờ cộng hai loại tiền với nhau."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__code model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__code model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__operand_codes
+msgid "Comma-separated line codes."
+msgstr "Các mã dòng, cách nhau bằng dấu phẩy."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__suggest_roles
+msgid "Comma-separated pay roles the Suggest pass accepts."
+msgstr "Các vai trò lương mà bước Gợi ý chấp nhận, cách nhau bằng dấu phẩy."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__output_kinds
+msgid "Comma-separated: xml, xlsx, csv."
+msgstr "Cách nhau bằng dấu phẩy: xml, xlsx, csv."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__company_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__company_id code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__compute_op
+msgid "Compute Op"
+msgstr "Cách tính"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Counted from the people in the filing"
+msgstr "Đếm từ những người trong tờ khai"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__country_code model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__country_code
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05kk_tt80_l17 model:pb.gov.form.line,note:pb_form_lines.form_vn_05kk_tt89_l16
+msgid "Counts every tax resident in the filing; the length of the labour contract (3 months or more) is not checked."
+msgstr "Đếm mọi người cư trú trong tờ khai; thời hạn hợp đồng lao động (từ 3 tháng trở lên) không được kiểm tra."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__only_if_line_id
+msgid "Counts or adds only the people for whom that line is not zero."
+msgstr "Chỉ đếm hoặc cộng những người có dòng đó khác 0."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__create_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__create_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__currency_id code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Currency"
+msgstr "Loại tiền"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_biz_approval_request_seat__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_board__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_reader__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_rights__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__display_name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__downloaded_at
+msgid "Downloaded At"
+msgstr "Thời điểm tải xuống"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__downloaded_by
+msgid "Downloaded By"
+msgstr "Người tải xuống"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Earlier filings"
+msgstr "Các tờ khai trước"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Employer cost"
+msgstr "Chi phí doanh nghiệp"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__employer_tax_id code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Employer's tax number"
+msgstr "Mã số thuế của doanh nghiệp"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Empty: the tax number followed by 000000"
+msgstr "Để trống: mã số thuế kèm 000000"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Every line that can be suggested already has a pay item, or no pay item's name matches."
+msgstr "Mọi dòng có thể gợi ý đều đã có khoản lương, hoặc không có tên khoản lương nào khớp."
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__population__all
+msgid "Everyone"
+msgstr "Mọi người"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l37
+msgid "Exempt income of high-quality digital industry staff"
+msgstr "Thu nhập được miễn thuế của nhân lực chất lượng cao ngành công nghiệp công nghệ số"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l39
+msgid "Exempt income of high-technology staff"
+msgstr "Thu nhập được miễn thuế của nhân lực công nghệ cao"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l25
+msgid "Exempt under oil and gas contracts"
+msgstr "Được miễn theo hợp đồng dầu khí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l27
+msgid "Exempt: experts supporting start-ups"
+msgstr "Miễn thuế: chuyên gia hỗ trợ khởi nghiệp sáng tạo"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l26
+msgid "Exempt: science, technology and innovation tasks"
+msgstr "Miễn thuế: nhiệm vụ khoa học, công nghệ và đổi mới sáng tạo"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__factor
+msgid "Factor"
+msgstr "Hệ số"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Figure"
+msgstr "Số liệu"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__file_ids
+msgid "File"
+msgstr "Tệp"
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_filing_file
+msgid "File of a government filing"
+msgstr "Tệp của tờ khai nhà nước"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__file_hash
+msgid "File stamp"
+msgstr "Dấu tệp"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__output_kinds
+msgid "Files made"
+msgstr "Các tệp được tạo"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__filing_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__filing_id
+msgid "Filing"
+msgstr "Tờ khai"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Fill in the employer's tax number (NPWP, 15 or 16 digits) for this form on Form lines first."
+msgstr "Hãy nhập mã số thuế của doanh nghiệp (NPWP, 15 hoặc 16 chữ số) cho biểu mẫu này ở mục Dòng biểu mẫu trước."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Find a pay item by name or code"
+msgstr "Tìm khoản lương theo tên hoặc mã"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__valid_from
+msgid "First period this layout is for."
+msgstr "Kỳ đầu tiên áp dụng mẫu này."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_follower_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_follower_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_partner_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_partner_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (đối tác)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "For periods %(a)s to %(b)s"
+msgstr "Cho các kỳ từ %(a)s đến %(b)s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "For periods from %s"
+msgstr "Cho các kỳ từ %s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "For periods up to %s"
+msgstr "Cho các kỳ đến %s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__form_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__form_id
+msgid "Form"
+msgstr "Biểu mẫu"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__line_id
+msgid "Form line"
+msgstr "Dòng biểu mẫu"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0 code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 model:ir.actions.client,name:pb_form_lines.action_pb_form_lines
+msgid "Form lines"
+msgstr "Dòng biểu mẫu"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Forms"
+msgstr "Biểu mẫu"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Forms appear here for the countries of your company and of your pay schemes."
+msgstr "Biểu mẫu hiện ở đây cho các quốc gia của công ty và của các chương trình lương."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 model:ir.model,name:pb_form_lines.model_pb_gov_filing
+msgid "Government filing"
+msgstr "Tờ khai nhà nước"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Government filing downloaded"
+msgstr "Đã tải xuống tờ khai nhà nước"
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_form
+msgid "Government form"
+msgstr "Biểu mẫu nhà nước"
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_form_reader
+msgid "Government form figures from finished payslips"
+msgstr "Số liệu biểu mẫu nhà nước từ phiếu lương đã hoàn tất"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form.py:0
+msgid "Government forms are prepared by payroll. Ask somebody who looks after payroll to do this, or to give you the payroll officer permission."
+msgstr "Biểu mẫu nhà nước do bộ phận lương lập. Hãy nhờ người phụ trách lương làm việc này, hoặc cấp cho bạn quyền chuyên viên lương."
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_form_board
+msgid "Government forms: screens"
+msgstr "Biểu mẫu nhà nước: màn hình"
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_form_rights
+msgid "Government forms: who may do what"
+msgstr "Biểu mẫu nhà nước: ai được làm gì"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_gross
+msgid "Gross income"
+msgstr "Tổng thu nhập"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__mappable
+msgid "HR may put pay items on this line."
+msgstr "Nhân sự có thể đặt khoản lương vào dòng này."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__has_message model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__has_message model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_biz_approval_request_seat__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_board__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_reader__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_rights__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_needaction model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_needaction model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_sms_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_sms_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_error model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "In the import file"
+msgstr "Trong tệp nhập"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l35
+msgid "Income tax to be withheld in the period"
+msgstr "Số thuế TNCN phải khấu trừ trong kỳ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_pph21
+msgid "Income tax withheld (PPh 21)"
+msgstr "Thuế thu nhập đã khấu trừ (PPh 21)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l45
+msgid "Income tax withheld on the insurance premiums of line 23 (10%)"
+msgstr "Thuế TNCN đã khấu trừ trên phí bảo hiểm ở dòng 23 (10%)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l32
+msgid "Income tax withheld on the insurance premiums of line 24 (10%)"
+msgstr "Thuế TNCN đã khấu trừ trên phí bảo hiểm ở dòng 24 (10%)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "India"
+msgstr "Ấn Độ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Information only"
+msgstr "Chỉ để tham khảo"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_is_follower model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_is_follower model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_is_follower
+msgid "Is Follower"
+msgstr "Đang theo dõi"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "It could not be sent in."
+msgstr "Không gửi được."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form_map.py:0
+msgid "Its name contains “%s”."
+msgstr "Tên của nó có chứa “%s”."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "January – March"
+msgstr "Tháng 1 – Tháng 3"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "July – September"
+msgstr "Tháng 7 – Tháng 9"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__label
+msgid "Label"
+msgstr "Nhãn"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__write_uid model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__write_date model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__write_date
+msgid "Last Updated on"
+msgstr "Ngày cập nhật cuối"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Last downloaded by %(who)s on %(when)s."
+msgstr "%(who)s tải xuống lần cuối ngày %(when)s."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__valid_to
+msgid "Last period this layout is for."
+msgstr "Kỳ cuối cùng áp dụng mẫu này."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Line"
+msgstr "Dòng"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "Line %(code)s “%(label)s” has no pay item from %(schemes)s."
+msgstr "Dòng %(code)s “%(label)s” chưa có khoản lương nào từ %(schemes)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "Line %s was below zero and is shown as zero"
+msgstr "Dòng %s âm nên được hiển thị là 0"
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_form_line
+msgid "Line of a government form"
+msgstr "Dòng của biểu mẫu nhà nước"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__line_ids
+msgid "Lines"
+msgstr "Các dòng"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Loading forms…"
+msgstr "Đang tải biểu mẫu…"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Look again"
+msgstr "Xem lại"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Malaysia"
+msgstr "Malaysia"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__mappable
+msgid "Mappable"
+msgstr "Có thể đặt khoản lương"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Mark accepted by the authority"
+msgstr "Đánh dấu được cơ quan chấp nhận"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__quarter_allowed
+msgid "May also be filed for a quarter"
+msgstr "Cũng có thể khai theo quý"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__mimetype
+msgid "Mimetype"
+msgstr "Kiểu tệp"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__period_kind__month
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Monthly income tax slips — permanent employees (BPMP)"
+msgstr "Chứng từ thuế thu nhập hàng tháng — nhân viên chính thức (BPMP)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_id_bpmp
+msgid "Monthly income tax slips — permanent employees (PPh 21)"
+msgstr "Chứng từ thuế thu nhập hàng tháng — nhân viên chính thức (PPh 21)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Monthly tax slips summary"
+msgstr "Tóm tắt chứng từ thuế tháng"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "NIK or tax number"
+msgstr "NIK hoặc mã số thuế"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__name model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__name code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__official_name
+msgid "Name on the form"
+msgstr "Tên trên biểu mẫu"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__required
+msgid "Needs a pay item"
+msgstr "Cần một khoản lương"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Needs pay items"
+msgstr "Cần khoản lương"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__sign_rule__never_negative
+msgid "Never below zero"
+msgstr "Không bao giờ dưới 0"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 code:addons/pb_form_lines/models/fund_common.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0 code:addons/pb_form_lines/models/fund_form.py:0
+msgid "No %s on the employee record"
+msgstr "Hồ sơ nhân viên chưa có %s"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "No government form for your countries yet"
+msgstr "Chưa có biểu mẫu nhà nước nào cho các quốc gia của bạn"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "No pay item found."
+msgstr "Không tìm thấy khoản lương nào."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "No pay item is on any line of this form yet. Open Form lines and say which pay items go where."
+msgstr "Chưa có khoản lương nào trên dòng nào của biểu mẫu này. Hãy mở Dòng biểu mẫu và cho biết khoản lương nào vào dòng nào."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "No pay item on this line yet. Pick one below."
+msgstr "Dòng này chưa có khoản lương nào. Hãy chọn bên dưới."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "No position on the employee record"
+msgstr "Hồ sơ nhân viên chưa có chức vụ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Nobody in this filing can go into the import file: %s."
+msgstr "Không ai trong tờ khai này có thể đưa vào tệp nhập: %s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Nobody is in this filing, so there is nothing to prepare."
+msgstr "Tờ khai này không có ai nên không có gì để lập."
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__population__non_resident model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l20 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l25 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l30 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l33 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l19 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l24 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l32 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l35
+msgid "Non-residents"
+msgstr "Người không cư trú"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "None of the pay schemes on this form pays in %s."
+msgstr "Không chương trình lương nào trên biểu mẫu này trả bằng %s."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "None — every pay item that adds to pay, is taken off or paid by the employer is on a line, or there is none."
+msgstr "Không có — mọi khoản cộng vào lương, bị trừ hoặc do doanh nghiệp trả đều đã nằm trên một dòng, hoặc không có khoản nào."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_id_bpmp_pph21
+msgid "Not a column of the import file: it gives the rate and the control total."
+msgstr "Không phải là cột của tệp nhập: dùng để tính tỷ lệ và tổng kiểm soát."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Not active"
+msgstr "Không còn dùng"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Not confirmed"
+msgstr "Chưa xác nhận"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__inferred model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__inferred
+msgid "Not confirmed from an official source"
+msgstr "Chưa được xác nhận từ nguồn chính thức"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Not fully confirmed from an official source"
+msgstr "Chưa được xác nhận đầy đủ từ nguồn chính thức"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Not printed on payslips"
+msgstr "Không in trên phiếu lương"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__note model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "Nothing could be suggested just now."
+msgstr "Hiện chưa gợi ý được gì."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Nothing to suggest"
+msgstr "Không có gì để gợi ý"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_needaction_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_needaction_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số việc cần làm"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_error_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_error_counter model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_needaction_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_needaction_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__message_has_error_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__message_has_error_counter model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị lỗi gửi"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__kind__count
+msgid "Number of people"
+msgstr "Số người"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "October – December"
+msgstr "Tháng 10 – Tháng 12"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l23 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l28 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l31 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l22 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l31 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l34 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l44
+msgid "Of which: non-residents"
+msgstr "Trong đó: cá nhân không cư trú"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l22 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l27 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l30 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l21 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l30 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l33 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l43
+msgid "Of which: tax residents"
+msgstr "Trong đó: cá nhân cư trú"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l20 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l19
+msgid "Of whom: non-residents"
+msgstr "Trong đó: cá nhân không cư trú"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l19 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l18
+msgid "Of whom: tax residents"
+msgstr "Trong đó: cá nhân cư trú"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l17 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l16 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l17 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l16
+msgid "Of whom: tax residents with a labour contract"
+msgstr "Trong đó: cá nhân cư trú có hợp đồng lao động"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__compute_op__ratio
+msgid "One line divided by another"
+msgstr "Một dòng chia cho dòng khác"
+
+#. module: pb_form_lines
+#: model:ir.model.constraint,message:pb_form_lines.constraint_pb_gov_form_company_company_form_uniq
+msgid "One setting per company and form."
+msgstr "Mỗi công ty và biểu mẫu chỉ có một thiết lập."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form.py:0
+msgid "Only a payroll manager can say a form was accepted by the authority."
+msgstr "Chỉ quản lý lương mới được xác nhận biểu mẫu đã được cơ quan chấp nhận."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__only_if_line_id
+msgid "Only people with an amount on"
+msgstr "Chỉ những người có số tiền ở"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__operand_codes
+msgid "Operand Codes"
+msgstr "Mã các dòng dùng để tính"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l28
+msgid "Other exempt income"
+msgstr "Thu nhập được miễn thuế khác"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l41
+msgid "Other tax exempted"
+msgstr "Số thuế được miễn khác"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__inferred
+msgid "Part of this layout could not be confirmed from the authority's own published specification."
+msgstr "Một phần của mẫu này chưa được xác nhận từ quy định chính thức do cơ quan công bố."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Part of this layout is not confirmed from an official source:"
+msgstr "Một phần của mẫu này chưa được xác nhận từ nguồn chính thức:"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Passport"
+msgstr "Hộ chiếu"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__rule_id
+msgid "Pay item"
+msgstr "Khoản lương"
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_form_map
+msgid "Pay item on a government form line"
+msgstr "Khoản lương trên dòng biểu mẫu nhà nước"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__map_ids
+msgid "Pay items"
+msgstr "Các khoản lương"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Pay items on no line of this form"
+msgstr "Khoản lương chưa nằm trên dòng nào của biểu mẫu này"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__config_id
+msgid "Pay scheme"
+msgstr "Chương trình lương"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__scheme_ids
+msgid "Pay schemes"
+msgstr "Các chương trình lương"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__payslip_ids
+msgid "Payslip"
+msgstr "Phiếu lương"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0 code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_map__source__payslip_line
+msgid "Payslip line"
+msgstr "Dòng phiếu lương"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__row_count model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_people model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_people model:pb.gov.form.line,label:pb_form_lines.form_in_24q_lpeople model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_lpeople model:pb.gov.form.line,label:pb_form_lines.form_in_form138_lpeople model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_lpeople model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_lpeople code:addons/pb_form_lines/models/fund_common.py:0 model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_people model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_people model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_people model:pb.gov.form.line,label:pb_form_lines.form_in_esi_people model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_people
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "People in the import file"
+msgstr "Số người trong tệp nhập"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "People left out of the import file"
+msgstr "Số người không đưa vào tệp nhập"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05kk_tt80_l26
+msgid "People subject to withholding are taken to be the people whose tax was withheld (line 29 above zero)."
+msgstr "Cá nhân thuộc diện khấu trừ được hiểu là những người đã bị khấu trừ thuế (dòng 29 lớn hơn 0)."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05kk_tt89_l29
+msgid "People subject to withholding are taken to be the people whose tax was withheld (line 42 above zero)."
+msgstr "Cá nhân thuộc diện khấu trừ được hiểu là những người đã bị khấu trừ thuế (dòng 42 lớn hơn 0)."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l18 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l17
+msgid "People whose tax was withheld"
+msgstr "Tổng số cá nhân đã khấu trừ thuế"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__scope__employee
+msgid "Per person"
+msgstr "Theo từng người"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__compute_op__percent
+msgid "Percentage of a line"
+msgstr "Tỷ lệ phần trăm của một dòng"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0 code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Period"
+msgstr "Kỳ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__period_end
+msgid "Period End"
+msgstr "Cuối kỳ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__period_kind
+msgid "Period Kind"
+msgstr "Loại kỳ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__period_label model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__period_label
+msgid "Period Label"
+msgstr "Tên kỳ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__period_start
+msgid "Period Start"
+msgstr "Đầu kỳ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_vn_05kk_tt89
+msgid "Personal income tax declaration 05/KK-TNCN (from July 2026, by quarter)"
+msgstr "Tờ khai thuế TNCN 05/KK-TNCN (từ tháng 7/2026, theo quý)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_vn_05kk_tt80
+msgid "Personal income tax declaration 05/KK-TNCN (up to June 2026)"
+msgstr "Tờ khai thuế TNCN 05/KK-TNCN (đến tháng 6/2026)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn.py:0
+msgid "Personal tax code"
+msgstr "Mã số thuế cá nhân"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Philippines"
+msgstr "Philippines"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Pick at least one pay scheme."
+msgstr "Hãy chọn ít nhất một chương trình lương."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/reader.py:0 code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Pick the period first."
+msgstr "Hãy chọn kỳ trước."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__place_of_business
+msgid "Place of business number"
+msgstr "Mã địa điểm kinh doanh"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Points to check"
+msgstr "Điểm cần kiểm tra"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__population
+msgid "Population"
+msgstr "Nhóm người"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Position"
+msgstr "Chức vụ"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0 code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.actions.client,name:pb_form_lines.action_pb_gov_filing
+msgid "Prepare a filing"
+msgstr "Lập tờ khai"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Prepare and send for approval"
+msgstr "Lập và gửi duyệt"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Prepare another"
+msgstr "Lập hồ sơ khác"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_filing__state__draft
+msgid "Prepared"
+msgstr "Đã lập"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Prepared and approved. The files can be downloaded."
+msgstr "Đã lập và đã duyệt. Có thể tải các tệp."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Prepared and sent for approval."
+msgstr "Đã lập và gửi duyệt."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__generated_by
+msgid "Prepared by"
+msgstr "Người lập"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Prepared by %(who)s from %(n)s finished payslips: %(people)s people, %(files)s files."
+msgstr "%(who)s đã lập từ %(n)s phiếu lương đã hoàn tất: %(people)s người, %(files)s tệp."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Prepared by %(who)s on %(when)s · %(n)s people"
+msgstr "%(who)s lập ngày %(when)s · %(n)s người"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__generated_at
+msgid "Prepared on"
+msgstr "Ngày lập"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__source_url
+msgid "Published at"
+msgstr "Nơi công bố"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__period_kind__quarter
+msgid "Quarter"
+msgstr "Quý"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_rate
+msgid "Rate (%)"
+msgstr "Tỷ lệ (%)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__rating_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__rating_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Read from finished payslips"
+msgstr "Đọc từ phiếu lương đã hoàn tất"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_id_bpmp_ptkp model:pb.gov.form.line,note:pb_form_lines.form_id_bpa1_ptkp
+msgid "Read from the pay item put here; when none, from the employee record."
+msgstr "Đọc từ khoản lương đặt ở đây; nếu không có thì từ hồ sơ nhân viên."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Read from the pay items' names and what they do to pay. Nothing is saved until you press Save. Untick anything that is not right."
+msgstr "Đọc từ tên các khoản lương và tác động của chúng lên lương. Chưa có gì được lưu cho đến khi bạn bấm Lưu. Hãy bỏ chọn những gì không đúng."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Remove"
+msgstr "Gỡ bỏ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_filing__state__superseded
+msgid "Replaced"
+msgstr "Đã được thay thế"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__superseded_by_id
+msgid "Replaced by"
+msgstr "Được thay bằng"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Replaced by a newer filing."
+msgstr "Đã được thay bằng tờ khai mới hơn."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__round_digits
+msgid "Round Digits"
+msgstr "Số chữ số làm tròn"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__message_has_sms_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__message_has_sms_error model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__base_line_id
+msgid "Same people and items as"
+msgstr "Cùng người và khoản như"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Say once which pay item goes on each line of each government form. Filings add those items up from finished payslips."
+msgstr "Cho biết một lần khoản lương nào vào từng dòng của từng biểu mẫu nhà nước. Tờ khai cộng các khoản đó từ phiếu lương đã hoàn tất."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__adviser_mark
+msgid "Says \"check with your adviser\""
+msgstr "Có ghi “hãy hỏi ý kiến tư vấn”"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__scope
+msgid "Scope"
+msgstr "Phạm vi"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Send in again"
+msgstr "Gửi lại"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_filing__state__returned
+msgid "Sent back"
+msgstr "Bị trả lại"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Sent back. Prepare it again or send it in again."
+msgstr "Bị trả lại. Hãy lập lại hoặc gửi lại."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Sent back: %s"
+msgstr "Bị trả lại: %s"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__sequence model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__sequence model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__sha256 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__sha256
+msgid "Sha256"
+msgstr "Sha256"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__share_pct
+msgid "Share (%)"
+msgstr "Tỷ lệ phần (%)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__sign
+msgid "Sign"
+msgstr "Dấu"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__sign_rule
+msgid "Sign Rule"
+msgstr "Quy tắc dấu"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_file__size model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__size
+msgid "Size"
+msgstr "Kích thước"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_map__source
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__suggest_roles
+msgid "Suggest Roles"
+msgstr "Vai trò để gợi ý"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__suggest_words
+msgid "Suggest Words"
+msgstr "Từ để gợi ý"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Suggest from my pay schemes"
+msgstr "Gợi ý từ chương trình lương của tôi"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Suggested from your pay schemes"
+msgstr "Gợi ý từ chương trình lương của bạn"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Suggested pay items"
+msgstr "Khoản lương được gợi ý"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__compute_op__sum
+msgid "Sum of lines"
+msgstr "Tổng các dòng"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Summary"
+msgstr "Tóm tắt"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/form.py:0
+msgid "Switch to that company first."
+msgstr "Hãy chuyển sang công ty đó trước."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_map__sign__subtract
+msgid "Take away"
+msgstr "Trừ đi"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Take back"
+msgstr "Bỏ đánh dấu"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Take-home pay"
+msgstr "Lương thực nhận"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Taken off pay"
+msgstr "Trừ vào lương"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l38
+msgid "Tax exempted for high-quality digital industry staff"
+msgstr "Số thuế được miễn của nhân lực chất lượng cao ngành công nghiệp công nghệ số"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l40
+msgid "Tax exempted for high-technology research or strategic technology staff"
+msgstr "Số thuế được miễn của nhân lực công nghệ cao, nghiên cứu phát triển hoặc công nghệ chiến lược"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Tax number"
+msgstr "Mã số thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_vn_05kk_tt80 model:pb.gov.form,authority:pb_form_lines.form_vn_05kk_tt89 model:pb.gov.form,authority:pb_form_lines.form_vn_05qtt_tt80 model:pb.gov.form,authority:pb_form_lines.form_vn_05qtt_tt89
+msgid "Tax office"
+msgstr "Cơ quan thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_id_bpmp model:pb.gov.form,authority:pb_form_lines.form_id_bpa1
+msgid "Tax office (DJP)"
+msgstr "Cơ quan thuế Indonesia (DJP)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn.py:0
+msgid "Tax resident"
+msgstr "Cư trú"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__population__resident model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l19 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l24 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l29 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l32 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l18 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l23 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l31 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l34
+msgid "Tax residents"
+msgstr "Cá nhân cư trú"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Tax status"
+msgstr "Tình trạng thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpmp_ptkp model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_ptkp
+msgid "Tax status (TK / K / HB)"
+msgstr "Tình trạng thuế (TK / K / HB)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "Tax withheld"
+msgstr "Thuế đã khấu trừ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__period_kind__tax_year
+msgid "Tax year"
+msgstr "Năm tính thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l25
+msgid "Taxable income exempt under oil and gas contracts"
+msgstr "Thu nhập chịu thuế được miễn theo hợp đồng dầu khí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l24 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l23
+msgid "Taxable income from life and other voluntary insurance bought from insurers not set up in Vietnam"
+msgstr "Thu nhập chịu thuế từ phí mua bảo hiểm nhân thọ, bảo hiểm không bắt buộc khác của doanh nghiệp bảo hiểm không thành lập tại Việt Nam"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l26 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l29
+msgid "Taxable income paid to people subject to withholding"
+msgstr "Thu nhập chịu thuế trả cho cá nhân thuộc diện phải khấu trừ thuế"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__code
+msgid "Technical key; also picks the file renderer."
+msgstr "Khóa kỹ thuật; cũng chọn cách tạo tệp."
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__kind__text
+msgid "Text"
+msgstr "Văn bản"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Thailand"
+msgstr "Thái Lan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form.py:0
+msgid "That company no longer exists."
+msgstr "Công ty đó không còn tồn tại."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "That could not be changed."
+msgstr "Không thể thay đổi."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "That could not be saved."
+msgstr "Không thể lưu."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "That file could not be downloaded."
+msgstr "Không thể tải tệp đó."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/filing.py:0
+msgid "That file is not part of this filing."
+msgstr "Tệp đó không thuộc tờ khai này."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "That filing could not be opened."
+msgstr "Không thể mở tờ khai đó."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "That filing is not available here."
+msgstr "Tờ khai đó không có ở đây."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/reader.py:0
+msgid "That government form is not available here."
+msgstr "Biểu mẫu nhà nước đó không có ở đây."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/form_map.py:0
+msgid "That line belongs to another form."
+msgstr "Dòng đó thuộc biểu mẫu khác."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__code
+msgid "The box number or column on the form."
+msgstr "Số ô hoặc cột trên biểu mẫu."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "The figures could not be read."
+msgstr "Không đọc được số liệu."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "The file could not be made."
+msgstr "Không tạo được tệp."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "The file is missing, so it cannot be approved."
+msgstr "Thiếu tệp nên không thể duyệt."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "The files can be downloaded once it is approved."
+msgstr "Có thể tải các tệp sau khi được duyệt."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__adviser_mark
+msgid "The files carry the adviser sentence: the company had not marked this form accepted by the authority when they were prepared."
+msgstr "Các tệp có câu nhắc hỏi ý kiến tư vấn: khi lập, công ty chưa đánh dấu biểu mẫu này là được cơ quan chấp nhận."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "The filing changed after it was sent in, so this approval no longer covers it. Prepare it again."
+msgstr "Tờ khai đã thay đổi sau khi gửi nên lần duyệt này không còn áp dụng. Hãy lập lại."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "The filing could not be prepared."
+msgstr "Không lập được tờ khai."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "The form could not be read."
+msgstr "Không đọc được biểu mẫu."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__required
+msgid "The form is not complete until a pay item is on this line."
+msgstr "Biểu mẫu chưa đầy đủ cho đến khi dòng này có khoản lương."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__official_name
+msgid "The form's own title, in the authority's language. Never translated."
+msgstr "Tiêu đề gốc của biểu mẫu, bằng ngôn ngữ của cơ quan. Không dịch."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0
+msgid "The forms could not be read."
+msgstr "Không đọc được các biểu mẫu."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__total_line_code
+msgid "The line whose total an approver sees as the amount."
+msgstr "Dòng có tổng được người duyệt xem là số tiền."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__official_label
+msgid "The line's own words on the form, in the authority's language. Never translated."
+msgstr "Lời gốc của dòng trên biểu mẫu, bằng ngôn ngữ của cơ quan. Không dịch."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "The pay schemes on this form pay in %s. Two currencies are never added together: choose one currency and make one filing for each."
+msgstr "Các chương trình lương trên biểu mẫu này trả bằng %s. Không bao giờ cộng hai loại tiền với nhau: hãy chọn một loại tiền và lập một tờ khai cho mỗi loại."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form_map.py:0
+msgid "The share is a percentage above 0 and up to 100."
+msgstr "Tỷ lệ phần là phần trăm lớn hơn 0 và tối đa 100."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "There are no finished payslips in this period."
+msgstr "Không có phiếu lương đã hoàn tất nào trong kỳ này."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "There is no file to approve."
+msgstr "Không có tệp để duyệt."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "These files say “Check with your adviser before first filing”."
+msgstr "Các tệp này có ghi “Hãy hỏi ý kiến tư vấn trước lần nộp đầu tiên”."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "This company has no pay scheme for this country."
+msgstr "Công ty này chưa có chương trình lương cho quốc gia này."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "This filing has already been sent in."
+msgstr "Tờ khai này đã được gửi."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/filing.py:0
+msgid "This filing has not been approved yet, so it cannot be downloaded."
+msgstr "Tờ khai này chưa được duyệt nên chưa thể tải xuống."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "This filing is not waiting to be sent in."
+msgstr "Tờ khai này không ở trạng thái chờ gửi."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "This filing was turned down. Prepare it again."
+msgstr "Tờ khai này đã bị từ chối. Hãy lập lại."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "This form could not be opened."
+msgstr "Không mở được biểu mẫu này."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "This form has no file layout yet."
+msgstr "Biểu mẫu này chưa có cách tạo tệp."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "This form is filed per month: pick a month."
+msgstr "Biểu mẫu này khai theo tháng: hãy chọn một tháng."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "This form is filed per quarter: pick a quarter."
+msgstr "Biểu mẫu này khai theo quý: hãy chọn một quý."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "This form is not available here"
+msgstr "Biểu mẫu này không có ở đây"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/filing.py:0
+msgid "This is not the approved filing — what is stored no longer matches what was signed off. Prepare it again."
+msgstr "Đây không phải tờ khai đã duyệt — nội dung lưu trữ không còn khớp với nội dung đã được duyệt. Hãy lập lại."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form_map.py:0
+msgid "This item is not printed on payslips, so it is read from the value the scheme worked out."
+msgstr "Khoản này không in trên phiếu lương nên được đọc từ giá trị chương trình lương đã tính."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "This layout is not the one for that period. Pick the other version of the form."
+msgstr "Mẫu này không dùng cho kỳ đó. Hãy chọn phiên bản khác của biểu mẫu."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "This layout of “%s” is not the one for that period."
+msgstr "Mẫu “%s” này không dùng cho kỳ đó."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__base_line_id
+msgid "This line takes the per-person amounts of that line, for its own population only. Nothing is mapped to it."
+msgstr "Dòng này lấy số tiền từng người của dòng đó, chỉ cho nhóm người của mình. Không đặt khoản lương nào vào dòng này."
+
+#. module: pb_form_lines
+#: model:ir.model.constraint,message:pb_form_lines.constraint_pb_gov_form_map_line_rule_uniq
+msgid "This pay item is already on this line."
+msgstr "Khoản lương này đã nằm trên dòng này."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "This period crosses the start of the tax year of “%s”. Make one filing for each tax year."
+msgstr "Kỳ này vắt qua đầu năm tính thuế của “%s”. Hãy lập một tờ khai cho mỗi năm tính thuế."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0 code:addons/pb_form_lines/models/render_vn.py:0
+msgid "To check"
+msgstr "Cần kiểm tra"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__total_amount
+msgid "Total"
+msgstr "Tổng"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__total_line_code
+msgid "Total Line Code"
+msgstr "Mã dòng tổng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l32
+msgid "Total assessable income for working out the tax"
+msgstr "Tổng thu nhập tính thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l16 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l15 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l16 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l15
+msgid "Total employees"
+msgstr "Tổng số người lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l36
+msgid "Total income tax exempted in the period"
+msgstr "Tổng số thuế TNCN được miễn trong kỳ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l29 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l42
+msgid "Total income tax withheld"
+msgstr "Tổng số thuế TNCN đã khấu trừ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__scope__total
+msgid "Total only"
+msgstr "Chỉ tổng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l24
+msgid "Total tax-exempt income in the period"
+msgstr "Tổng thu nhập được miễn thuế trong kỳ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt80_l21 model:pb.gov.form.line,label:pb_form_lines.form_vn_05kk_tt89_l20 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l23 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l22
+msgid "Total taxable income paid"
+msgstr "Tổng thu nhập chịu thuế trả cho cá nhân"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__totals_json
+msgid "Totals Json"
+msgstr "Tổng (JSON)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_filing__state__rejected
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Turned down. Prepare it again if it is needed."
+msgstr "Bị từ chối. Hãy lập lại nếu cần."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Turned down: %s"
+msgstr "Bị từ chối: %s"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_map__code
+msgid "Unique code for this rule (e.g., BASIC, HRA, PIT)"
+msgstr "Mã duy nhất của khoản này (ví dụ BASIC, HRA, PIT)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__valid_from
+msgid "Valid From"
+msgstr "Áp dụng từ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__valid_to
+msgid "Valid To"
+msgstr "Áp dụng đến"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Vietnam"
+msgstr "Việt Nam"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Waiting for %s."
+msgstr "Đang chờ %s."
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_filing__state__pending
+msgid "Waiting for approval"
+msgstr "Chờ duyệt"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Waiting for its approver."
+msgstr "Đang chờ người duyệt."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__warning_count
+msgid "Warning Count"
+msgstr "Số cảnh báo"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__warnings_json
+msgid "Warnings Json"
+msgstr "Cảnh báo (JSON)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__website_message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_company__website_message_ids model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn website"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing__website_message_ids model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_company__website_message_ids model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên website"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__inferred_note
+msgid "What is not confirmed"
+msgstr "Điều chưa được xác nhận"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "What it is"
+msgstr "Nội dung"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "What this filing says"
+msgstr "Nội dung tờ khai này"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__source_note
+msgid "Where the layout comes from"
+msgstr "Nguồn của mẫu"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0
+msgid "Where this layout comes from"
+msgstr "Nguồn của mẫu này"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Which filing"
+msgstr "Tờ khai nào"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Which pay schemes"
+msgstr "Chương trình lương nào"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Which period"
+msgstr "Kỳ nào"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/filing.py:0
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form_line__suggest_words
+msgid "Words (any language, comma-separated) the Suggest pass looks for in pay item names."
+msgstr "Các từ (mọi ngôn ngữ, cách nhau bằng dấu phẩy) mà bước Gợi ý tìm trong tên khoản lương."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form_line__official_label
+msgid "Words on the form"
+msgstr "Lời trên biểu mẫu"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_id_bpmp_rate
+msgid "Worked out as tax withheld divided by gross income, unless a pay item is put on this line."
+msgstr "Tính bằng thuế đã khấu trừ chia cho tổng thu nhập, trừ khi có khoản lương đặt ở dòng này."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Worked out from line %s"
+msgstr "Tính từ dòng %s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "Worked out from lines %s unless a pay item is put here"
+msgstr "Tính từ các dòng %s trừ khi có khoản lương đặt ở đây"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__kind__computed
+msgid "Worked out from other lines"
+msgstr "Tính từ các dòng khác"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/form_lines_board.js:0 code:addons/pb_form_lines/static/src/xml/form_lines_board.xml:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_map__source__computed_value
+msgid "Worked-out value"
+msgstr "Giá trị đã tính"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0 code:addons/pb_form_lines/models/render_vn.py:0 code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "currency"
+msgstr "loại tiền"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "finished payslips"
+msgstr "phiếu lương đã hoàn tất"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "no NIK or tax number"
+msgstr "không có NIK hoặc mã số thuế"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "no gross income"
+msgstr "không có tổng thu nhập"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "no tax status (TK/K/HB)"
+msgstr "không có tình trạng thuế (TK/K/HB)"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "people"
+msgstr "người"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "period"
+msgstr "kỳ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "personal tax code"
+msgstr "mã số thuế cá nhân"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id.py:0
+msgid "rate below zero"
+msgstr "tỷ lệ âm"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form_map.py:0
+msgid "“%s” belongs to a pay scheme of another company."
+msgstr "“%s” thuộc chương trình lương của công ty khác."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/form_map.py:0
+msgid "“%s” belongs to no company."
+msgstr "“%s” không thuộc công ty nào."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0 code:addons/pb_form_lines/models/form_map.py:0
+msgid "“%s” is worked out from other lines, so no pay item can be put on it."
+msgstr "“%s” được tính từ các dòng khác nên không thể đặt khoản lương vào."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "%(a)s to %(b)s"
+msgstr "%(a)s đến %(b)s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "%(company)s · %(form)s · %(year)s"
+msgstr "%(company)s · %(form)s · %(year)s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "%(name)s · tax year %(year)s"
+msgstr "%(name)s · năm tính thuế %(year)s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "%(who)s downloaded their own certificate %(file)s."
+msgstr "%(who)s đã tải chứng từ của chính mình %(file)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "%(who)s released %(n)s certificates to employees on My Payobook."
+msgstr "%(who)s đã phát hành %(n)s chứng từ cho nhân viên trên My Payobook."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "%(who)s took the certificates back from My Payobook."
+msgstr "%(who)s đã thu hồi các chứng từ khỏi My Payobook."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "%(who)s · %(file)s"
+msgstr "%(who)s · %(file)s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "%s people have a different number of dependants on record and on the contract: to check."
+msgstr "%s người có số người phụ thuộc trong hồ sơ khác với trên hợp đồng: cần kiểm tra."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "%s people have benefits in kind: IRAS needs Appendix 8A with them, which Payobook does not make. Add it in the myTax Portal before you submit."
+msgstr "%s người có phúc lợi bằng hiện vật: IRAS cần kèm Phụ lục 8A, Payobook không lập phụ lục này. Hãy bổ sung trên myTax Portal trước khi nộp."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "%s people have gains from share options: IRAS needs Appendix 8B with them, which Payobook does not make. Add it in the myTax Portal before you submit."
+msgstr "%s người có lãi từ quyền chọn cổ phiếu: IRAS cần kèm Phụ lục 8B, Payobook không lập phụ lục này. Hãy bổ sung trên myTax Portal trước khi nộp."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "%s personal certificates"
+msgstr "%s chứng từ cá nhân"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "1 person has a different number of dependants on record and on the contract: to check."
+msgstr "1 người có số người phụ thuộc trong hồ sơ khác với trên hợp đồng: cần kiểm tra."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "1 personal certificate"
+msgstr "1 chứng từ cá nhân"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__year_start_month
+msgid "1-12. The month the authority's own tax year starts in (India: April). Used for tax-year and quarter periods; each pay scheme still says its own tax year and the reader warns when they differ."
+msgstr "1-12. Tháng bắt đầu năm tính thuế của cơ quan thuế (Ấn Độ: tháng 4). Dùng cho kỳ năm tính thuế và kỳ quý; mỗi chương trình lương vẫn có năm tính thuế riêng và hệ thống cảnh báo khi chúng khác nhau."
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_filing_certificate
+msgid "A person's year-end certificate"
+msgstr "Chứng từ cuối năm của một người"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__screen_note
+msgid "A plain sentence shown on the screen beside the form (what the files are for)."
+msgstr "Một câu đơn giản hiển thị cạnh biểu mẫu (các tệp dùng để làm gì)."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Address"
+msgstr "Địa chỉ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld1 model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_allow
+msgid "Allowances"
+msgstr "Phụ cấp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_lpaid model:pb.gov.form.line,label:pb_form_lines.form_in_form138_lpaid
+msgid "Amount paid or credited"
+msgstr "Số tiền đã trả hoặc ghi có"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "An information copy laid out like the sample 03/TNCN. The official withholding certificate carries the company's own series and number."
+msgstr "Bản thông tin trình bày theo mẫu tham khảo 03/TNCN. Chứng từ khấu trừ chính thức mang ký hiệu và số của chính công ty."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Annexure II is empty: the year-end certificate form is not set up yet."
+msgstr "Annexure II đang trống: biểu mẫu chứng từ cuối năm chưa được thiết lập."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Annexure II reads the year's salary figures from “%s”. Put the year's pay items on its lines on Form lines, then prepare this quarter again."
+msgstr "Annexure II lấy số liệu lương cả năm từ “%s”. Hãy đặt các khoản lương của năm vào các dòng của biểu mẫu đó trong Dòng biểu mẫu, rồi lập lại quý này."
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_vn_05qtt_tt89
+msgid "Annual personal income tax finalisation 05/QTT-TNCN (tax year 2026 onwards)"
+msgstr "Quyết toán thuế TNCN năm 05/QTT-TNCN (năm tính thuế 2026 trở đi)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_vn_05qtt_tt80
+msgid "Annual personal income tax finalisation 05/QTT-TNCN (tax years up to 2025)"
+msgstr "Quyết toán thuế TNCN năm 05/QTT-TNCN (năm tính thuế đến 2025)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__year_start_month
+msgid "Authority's tax year starts in"
+msgstr "Năm tính thuế của cơ quan thuế bắt đầu vào"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Before sending"
+msgstr "Trước khi gửi"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l6
+msgid "Benefits in kind taxed through pay"
+msgstr "Phúc lợi bằng hiện vật bị khấu trừ thuế qua lương"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_lb
+msgid "Bonus"
+msgstr "Thưởng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l7
+msgid "Bonus, holiday allowance (THR) and similar"
+msgstr "Thưởng, phụ cấp lễ (THR) và tương tự"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "CPF"
+msgstr "CPF"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__certificate_ids
+msgid "Certificate"
+msgstr "Chứng từ"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__certificate_count
+msgid "Certificate Count"
+msgstr "Số chứng từ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4d
+msgid "Commuted value of pension"
+msgstr "Giá trị lương hưu nhận một lần"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld3b
+msgid "Compensation for loss of office"
+msgstr "Bồi thường mất việc"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4e
+msgid "Compensation received by workmen"
+msgstr "Bồi thường người lao động nhận được"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Compulsory insurance deducted"
+msgstr "Bảo hiểm bắt buộc đã trừ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lins model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lins
+msgid "Compulsory insurance deducted (appendix 05-1)"
+msgstr "Bảo hiểm bắt buộc đã trừ (phụ lục 05-1)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_lmbf
+msgid "Contributions to the Mosque Building Fund"
+msgstr "Đóng góp cho Quỹ xây dựng nhà thờ Hồi giáo"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l17 model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l16
+msgid "Counts every tax resident; the length of the labour contract is not checked."
+msgstr "Đếm mọi cá nhân cư trú; không kiểm tra thời hạn hợp đồng lao động."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Date of birth"
+msgstr "Ngày sinh"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Dependants counted for the family deduction: %s."
+msgstr "Số người phụ thuộc được tính giảm trừ gia cảnh: %s."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_lc
+msgid "Director's fees"
+msgstr "Thù lao giám đốc"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ldon
+msgid "Donations deducted from salary"
+msgstr "Khoản quyên góp trừ vào lương"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__download_count
+msgid "Download Count"
+msgstr "Số lần tải"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 code:addons/pb_form_lines/models/render_in.py:0 code:addons/pb_form_lines/models/render_sg.py:0 code:addons/pb_form_lines/models/render_vn_qtt.py:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__employee_id model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__employee_name
+msgid "Employee Name"
+msgstr "Tên nhân viên"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Employee income for the year — Form IR8A"
+msgstr "Thu nhập trong năm của nhân viên — Biểu mẫu IR8A"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_sg_ir8a
+msgid "Employee income for the year — Form IR8A (Auto-Inclusion Scheme)"
+msgstr "Thu nhập trong năm của nhân viên — Biểu mẫu IR8A (Auto-Inclusion Scheme)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Employee number"
+msgstr "Mã nhân viên"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_lcpf
+msgid "Employee's compulsory CPF contribution"
+msgstr "Khoản đóng CPF bắt buộc của nhân viên"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "Employer"
+msgstr "Người sử dụng lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld5
+msgid "Employer contributions to an overseas pension or provident fund without tax concession"
+msgstr "Khoản người sử dụng lao động đóng vào quỹ hưu trí hoặc quỹ dự phòng ở nước ngoài không được ưu đãi thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l4b
+msgid "Entertainment allowance"
+msgstr "Phụ cấp tiếp khách"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld6
+msgid "Excess or voluntary CPF contribution by the employer"
+msgstr "Khoản CPF vượt mức hoặc tự nguyện do người sử dụng lao động đóng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_le
+msgid "Exempt income or income under tax remission"
+msgstr "Thu nhập được miễn hoặc được giảm thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l27
+msgid "Exempt under a petroleum contract"
+msgstr "Miễn theo hợp đồng dầu khí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2h
+msgid "Exempt: any other exemption under section 10"
+msgstr "Miễn: các khoản miễn khác theo mục 10"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2e
+msgid "Exempt: any other exemption under section 11"
+msgstr "Miễn: các khoản miễn khác theo mục 11"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2c
+msgid "Exempt: commuted pension"
+msgstr "Miễn: lương hưu nhận một lần"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2b
+msgid "Exempt: gratuity"
+msgstr "Miễn: trợ cấp thôi việc"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2b model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2e
+msgid "Exempt: house rent allowance"
+msgstr "Miễn: phụ cấp tiền nhà"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2d
+msgid "Exempt: leave encashment"
+msgstr "Miễn: tiền phép không nghỉ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2c model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2f
+msgid "Exempt: other special allowances"
+msgstr "Miễn: các phụ cấp đặc biệt khác"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l28
+msgid "Exempt: science, technology and innovation work"
+msgstr "Miễn: thực hiện nhiệm vụ khoa học, công nghệ và đổi mới sáng tạo"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l29
+msgid "Exempt: start-up support experts"
+msgstr "Miễn: chuyên gia hỗ trợ khởi nghiệp sáng tạo"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2a model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2a
+msgid "Exempt: travel concession"
+msgstr "Miễn: hỗ trợ đi lại"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lfamded model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lfamded
+msgid "Family deduction: self and dependants (appendix 05-1)"
+msgstr "Giảm trừ gia cảnh: bản thân và người phụ thuộc (phụ lục 05-1)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Field"
+msgstr "Chỉ tiêu"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Figures for your return preparer. The official certificate's Part A comes from the tax department's portal; rows 13 to 17 show only figures your pay scheme holds."
+msgstr "Số liệu cho người lập tờ khai của bạn. Phần A của chứng từ chính thức lấy từ cổng thông tin của cơ quan thuế; dòng 13 đến 17 chỉ hiển thị số liệu mà chương trình lương của bạn có."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0 model:pb.gov.form,screen_note:pb_form_lines.form_in_24q model:pb.gov.form,screen_note:pb_form_lines.form_in_form130c model:pb.gov.form,screen_note:pb_form_lines.form_in_form138 model:pb.gov.form,screen_note:pb_form_lines.form_in_form16b
+msgid "Figures for your return preparer: the upload file itself is made with the tax department's own utility."
+msgstr "Số liệu cho người lập tờ khai của bạn: tệp tải lên được lập bằng công cụ riêng của cơ quan thuế."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "Figures read from the finished payslips of this tax year. Nothing was worked out again."
+msgstr "Số liệu đọc từ các phiếu lương đã hoàn tất của năm tính thuế này. Không tính lại gì."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Fill in the employer's tax reference number (UEN) for this form on Form lines first."
+msgstr "Hãy nhập mã số thuế của người sử dụng lao động (UEN) cho biểu mẫu này trong Dòng biểu mẫu trước."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Fill in the software company name and check the contact person, number and e-mail. The file asks IRAS to check it only (validateOnly true): change that to false to submit."
+msgstr "Điền tên công ty phần mềm và kiểm tra người liên hệ, số điện thoại và e-mail. Tệp chỉ yêu cầu IRAS kiểm tra (validateOnly true): đổi thành false để nộp."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_id_bpa1_l22
+msgid "For the summary and the person's certificate. The import file carries 0 here: the tax office's system adds up the monthly slips itself."
+msgstr "Dùng cho bản tổng hợp và chứng từ của người đó. Tệp nhập ghi 0 ở đây: hệ thống của cơ quan thuế tự cộng các phiếu hàng tháng."
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__fund_file model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__fund
+msgid "Fund files"
+msgstr "Tệp nộp quỹ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld7a
+msgid "Gains from share options, section 10(1)(b)"
+msgstr "Lãi từ quyền chọn cổ phiếu, mục 10(1)(b)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld7b
+msgid "Gains from share options, section 10(1)(g)"
+msgstr "Lãi từ quyền chọn cổ phiếu, mục 10(1)(g)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Gifts to charity, humanitarian and study funds"
+msgstr "Đóng góp từ thiện, nhân đạo, khuyến học"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lcharity model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lcharity
+msgid "Gifts to charity, humanitarian and study funds (appendix 05-1)"
+msgstr "Đóng góp từ thiện, nhân đạo, khuyến học (phụ lục 05-1)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4c
+msgid "Gratuity"
+msgstr "Trợ cấp thôi việc"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld3
+msgid "Gratuity, notice pay, ex-gratia payment and others"
+msgstr "Trợ cấp thôi việc, tiền báo trước, khoản trả tự nguyện và khác"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld2
+msgid "Gross commission"
+msgstr "Hoa hồng gộp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l8
+msgid "Gross income (1 to 7)"
+msgstr "Tổng thu nhập gộp (1 đến 7)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_la
+msgid "Gross salary, fees, leave pay, wages and overtime pay"
+msgstr "Lương gộp, thù lao, tiền phép, tiền công và tiền làm thêm giờ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l9 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l9
+msgid "Gross total income"
+msgstr "Tổng thu nhập gộp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l16 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l16
+msgid "Health and education cess"
+msgstr "Phụ thu y tế và giáo dục"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l4
+msgid "Honorarium and similar payments"
+msgstr "Thù lao và các khoản tương tự"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l7a
+msgid "House property income or loss reported by the employee"
+msgstr "Thu nhập hoặc lỗ từ nhà ở do nhân viên kê khai"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "ID number"
+msgstr "Số giấy tờ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "ID or passport number"
+msgstr "Số định danh hoặc hộ chiếu"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "IR8A summary"
+msgstr "Tổng hợp IR8A"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_sg_ir8a
+msgid "IRAS"
+msgstr "IRAS"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "IRAS takes at most 2,000 people in one submission. Prepare one filing per pay scheme."
+msgstr "IRAS nhận tối đa 2.000 người trong một lần nộp. Hãy lập một hồ sơ cho mỗi chương trình lương."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "In the submission"
+msgstr "Có trong hồ sơ nộp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_in_24q model:pb.gov.form,authority:pb_form_lines.form_in_form130c model:pb.gov.form,authority:pb_form_lines.form_in_form138 model:pb.gov.form,authority:pb_form_lines.form_in_form16b
+msgid "Income Tax Department"
+msgstr "Cơ quan thuế thu nhập"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "Income and deductions"
+msgstr "Thu nhập và các khoản giảm trừ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Income and deductions (whole dollars)"
+msgstr "Thu nhập và các khoản giảm trừ (đô la chẵn)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Income and tax for the year"
+msgstr "Thu nhập và thuế trong năm"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l6 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l6
+msgid "Income chargeable under \"Salaries\""
+msgstr "Thu nhập chịu thuế thuộc mục \"Tiền lương\""
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Income tax is worked out on"
+msgstr "Thu nhập tính thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lassess model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lassess
+msgid "Income tax is worked out on (appendix 05-1)"
+msgstr "Thu nhập tính thuế (phụ lục 05-1)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l22
+msgid "Income tax withheld in the year (PPh 21)"
+msgstr "Thuế thu nhập đã khấu trừ trong năm (PPh 21)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Income year"
+msgstr "Năm thu nhập"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l5
+msgid "Insurance premiums paid by the employer"
+msgstr "Phí bảo hiểm do người sử dụng lao động trả"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Item"
+msgstr "Mục"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Kind of income"
+msgstr "Khoản thu nhập"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__last_download
+msgid "Last Download"
+msgstr "Lần tải gần nhất"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4g
+msgid "Leave encashment"
+msgstr "Tiền phép không nghỉ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_llife
+msgid "Life insurance premiums deducted from salary"
+msgstr "Phí bảo hiểm nhân thọ trừ vào lương"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "Lines 9 and 12 to 21 and 23 are worked out by the tax office's system from these figures and the monthly slips."
+msgstr "Các dòng 9, 12 đến 21 và 23 do hệ thống của cơ quan thuế tính từ các số liệu này và các phiếu hàng tháng."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l7b
+msgid "Loss from house property reported by the employee"
+msgstr "Lỗ từ nhà ở do nhân viên kê khai"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__employee_certificates
+msgid "Makes a certificate for each person"
+msgstr "Lập chứng từ cho từng người"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "Months"
+msgstr "Tháng"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Months paid"
+msgstr "Các tháng được trả"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "NRIC or FIN"
+msgstr "NRIC hoặc FIN"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "NRIC, FIN or other ID"
+msgstr "NRIC, FIN hoặc giấy tờ khác"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Nationality"
+msgstr "Quốc tịch"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_sg_ir8a_ld8
+msgid "Needs Appendix 8A, which Payobook does not make."
+msgstr "Cần Phụ lục 8A, Payobook không lập phụ lục này."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_sg_ir8a_ld7a model:pb.gov.form.line,note:pb_form_lines.form_sg_ir8a_ld7b
+msgid "Needs Appendix 8B, which Payobook does not make."
+msgstr "Cần Phụ lục 8B, Payobook không lập phụ lục này."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l21 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l21
+msgid "Net tax payable"
+msgstr "Số thuế ròng phải nộp"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Nobody in this filing can go into the submission file: %s."
+msgstr "Không ai trong hồ sơ này có thể đưa vào tệp nộp: %s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "Not in the import file yet: %s."
+msgstr "Chưa có trong tệp nhập: %s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Not in the submission file yet: %s."
+msgstr "Chưa có trong tệp nộp: %s."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Not shown to employees yet. A payroll manager releases them."
+msgstr "Chưa hiển thị cho nhân viên. Quản lý lương sẽ phát hành."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Not shown to employees yet. Releasing lets each person download only their own."
+msgstr "Chưa hiển thị cho nhân viên. Khi phát hành, mỗi người chỉ tải được chứng từ của chính mình."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_lcess
+msgid "Of which: health and education cess"
+msgstr "Trong đó: phụ thu y tế và giáo dục"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_lsurch
+msgid "Of which: surcharge"
+msgstr "Trong đó: phụ phí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l34 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l36
+msgid "Of which: tax withheld on insurance premiums from insurers not set up in Vietnam"
+msgstr "Trong đó: thuế đã khấu trừ trên phí bảo hiểm của doanh nghiệp bảo hiểm không thành lập tại Việt Nam"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l27
+msgid "Of which: taxable income exempt under a petroleum contract"
+msgstr "Trong đó: thu nhập chịu thuế được miễn theo hợp đồng dầu khí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l26 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l25
+msgid "Of which: taxable premiums of life and other voluntary insurance from insurers not set up in Vietnam"
+msgstr "Trong đó: phí bảo hiểm nhân thọ và bảo hiểm tự nguyện khác chịu thuế của doanh nghiệp bảo hiểm không thành lập tại Việt Nam"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l37 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l39
+msgid "Of which: withheld by the former company before a transfer"
+msgstr "Trong đó: đã khấu trừ tại tổ chức cũ trước khi điều chuyển"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Once the filing is approved, a payroll manager can release each person's certificate to them on My Payobook."
+msgstr "Khi hồ sơ được duyệt, quản lý lương có thể phát hành chứng từ của từng người cho họ trên My Payobook."
+
+#. module: pb_form_lines
+#: model:pb.gov.form,screen_note:pb_form_lines.form_id_bpa1
+msgid "One slip per person for the tax year: the tax office's import file, a summary, and a certificate for each person that a payroll manager can release to employees."
+msgstr "Một chứng từ cho mỗi người trong năm tính thuế: tệp nhập của cơ quan thuế, bản tổng hợp, và chứng từ cho từng người mà quản lý lương có thể phát hành cho nhân viên."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "Only a payroll manager can release certificates to employees."
+msgstr "Chỉ quản lý lương mới có thể phát hành chứng từ cho nhân viên."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l13 model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l14 model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l15 model:pb.gov.form.line,note:pb_form_lines.form_in_form130c_l16 model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l13 model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l14 model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l15 model:pb.gov.form.line,note:pb_form_lines.form_in_form16b_l16
+msgid "Only from a pay item that holds it: Payobook does not work tax out again."
+msgstr "Chỉ lấy từ khoản lương có sẵn số liệu này: Payobook không tính lại thuế."
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form_line__sign_rule__positive_part
+msgid "Only the part above zero"
+msgstr "Chỉ phần lớn hơn 0"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l38 model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l40
+msgid "Only when the pay scheme itself works out the year's tax due; Payobook does not work tax out again."
+msgstr "Chỉ khi chính chương trình lương tính số thuế phải nộp cả năm; Payobook không tính lại thuế."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Opting out of the new regime"
+msgstr "Không chọn chế độ thuế mới"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l3
+msgid "Other allowances, overtime and the like"
+msgstr "Phụ cấp khác, làm thêm giờ và tương tự"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10n
+msgid "Other deductions under Chapter VI-A"
+msgstr "Các khoản giảm trừ khác theo Chương VI-A"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10k
+msgid "Other deductions under Chapter VIII"
+msgstr "Các khoản giảm trừ khác theo Chương VIII"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l7a model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l7b
+msgid "Other income reported by the employee"
+msgstr "Thu nhập khác do nhân viên kê khai"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/reader.py:0
+msgid "PAN"
+msgstr "PAN"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "Paid for months %(a)s to %(b)s only"
+msgstr "Chỉ được trả từ tháng %(a)s đến tháng %(b)s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Paid from – to"
+msgstr "Được trả từ – đến"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l10
+msgid "Pension and old-age contributions paid by the employee"
+msgstr "Khoản đóng hưu trí và tuổi già do nhân viên trả"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l22 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l21
+msgid "People given the family deduction"
+msgstr "Số người được giảm trừ gia cảnh"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "People in the submission"
+msgstr "Số người trong hồ sơ nộp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l35 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l37
+msgid "People who asked the company to settle their tax"
+msgstr "Số người ủy quyền cho công ty quyết toán thay"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l21 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l20
+msgid "People with income exempt under a tax treaty"
+msgstr "Số người có thu nhập được miễn theo hiệp định thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l18 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l17
+msgid "People with tax withheld"
+msgstr "Số người đã khấu trừ thuế"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Period of payment"
+msgstr "Thời gian trả"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Personal income tax withheld"
+msgstr "Thuế thu nhập cá nhân đã khấu trừ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__employee_certificates
+msgid "Preparing this form also makes one PDF per person, which a payroll manager can release to employees on My Payobook once the filing is approved."
+msgstr "Khi lập biểu mẫu này, hệ thống cũng tạo một tệp PDF cho mỗi người; quản lý lương có thể phát hành cho nhân viên trên My Payobook sau khi hồ sơ được duyệt."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1c model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1c
+msgid "Profits in lieu of salary"
+msgstr "Khoản thay cho lương"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_form138
+msgid "Quarterly salary tax statement figures — Form 138 (from April 2026)"
+msgstr "Số liệu bảng kê thuế lương theo quý — Biểu mẫu 138 (từ tháng 4/2026)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_24q
+msgid "Quarterly salary tax statement figures — Form 24Q (quarters up to March 2026)"
+msgstr "Số liệu bảng kê thuế lương theo quý — Biểu mẫu 24Q (các quý đến tháng 3/2026)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l14
+msgid "Rebate under section 156"
+msgstr "Giảm thuế theo mục 156"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l14
+msgid "Rebate under section 87A"
+msgstr "Giảm thuế theo mục 87A"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Release to employees"
+msgstr "Phát hành cho nhân viên"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__pb_released_by
+msgid "Released by"
+msgstr "Phát hành bởi"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__pb_released_at
+msgid "Released on"
+msgstr "Phát hành lúc"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing__pb_released
+msgid "Released to employees"
+msgstr "Đã phát hành cho nhân viên"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Released to employees by %(who)s on %(when)s."
+msgstr "Đã phát hành cho nhân viên bởi %(who)s lúc %(when)s."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Released. Each person now sees their own certificate on My Payobook."
+msgstr "Đã phát hành. Mỗi người giờ thấy chứng từ của chính mình trên My Payobook."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l18
+msgid "Relief under section 157"
+msgstr "Giảm theo mục 157"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l18
+msgid "Relief under section 89"
+msgstr "Giảm theo mục 89"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld4
+msgid "Retirement benefits accrued from 1993"
+msgstr "Quyền lợi hưu trí tích lũy từ 1993"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Row"
+msgstr "Dòng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1a model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1a
+msgid "Salary"
+msgstr "Lương"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Salary and tax deducted — Form 130 Part C (figures)"
+msgstr "Lương và thuế đã khấu trừ — Biểu mẫu 130 Phần C (số liệu)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Salary and tax deducted — Form 16 Part B (figures)"
+msgstr "Lương và thuế đã khấu trừ — Biểu mẫu 16 Phần B (số liệu)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Salary and wages"
+msgstr "Tiền lương, tiền công"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_form130c
+msgid "Salary certificate figures — Form 130 Part C (tax year 2026-27 onwards)"
+msgstr "Số liệu chứng từ lương — Biểu mẫu 130 Phần C (năm tính thuế 2026-27 trở đi)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_form16b
+msgid "Salary certificate figures — Form 16 Part B (tax years up to 2025-26)"
+msgstr "Số liệu chứng từ lương — Biểu mẫu 16 Phần B (năm tính thuế đến 2025-26)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l3 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l3
+msgid "Salary from this employer after exemptions"
+msgstr "Lương từ người sử dụng lao động này sau các khoản miễn"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l1
+msgid "Salary or regular pension"
+msgstr "Lương hoặc lương hưu định kỳ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1e model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1e
+msgid "Salary reported from other employers"
+msgstr "Lương kê khai từ người sử dụng lao động khác"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Salary, deductions and tax"
+msgstr "Lương, giảm trừ và thuế"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__screen_note
+msgid "Screen Note"
+msgstr "Ghi chú trên màn hình"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10a
+msgid "Section 123: life insurance premia, provident fund, pension schemes"
+msgstr "Mục 123: phí bảo hiểm nhân thọ, quỹ dự phòng, chương trình hưu trí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10c
+msgid "Section 124(1)(a): employer to pension scheme"
+msgstr "Mục 124(1)(a): người sử dụng lao động đóng vào chương trình hưu trí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10b
+msgid "Section 124(3): notified pension scheme (own)"
+msgstr "Mục 124(3): chương trình hưu trí được công bố (tự đóng)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10f
+msgid "Section 125(1): employee to the Agnipath scheme"
+msgstr "Mục 125(1): nhân viên đóng vào chương trình Agnipath"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10g
+msgid "Section 125(2): Central Government to the Agnipath scheme"
+msgstr "Mục 125(2): Chính phủ trung ương đóng vào chương trình Agnipath"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10d
+msgid "Section 126: health insurance"
+msgstr "Mục 126: bảo hiểm sức khỏe"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10e
+msgid "Section 129: education loan interest"
+msgstr "Mục 129: lãi vay học tập"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10h
+msgid "Section 133: donations"
+msgstr "Mục 133: quyên góp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l10i
+msgid "Section 153: savings account interest"
+msgstr "Mục 153: lãi tài khoản tiết kiệm"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10a
+msgid "Section 80C: life insurance premia, provident fund"
+msgstr "Mục 80C: phí bảo hiểm nhân thọ, quỹ dự phòng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10b
+msgid "Section 80CCC: pension funds"
+msgstr "Mục 80CCC: quỹ hưu trí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10c
+msgid "Section 80CCD(1): pension scheme (own)"
+msgstr "Mục 80CCD(1): chương trình hưu trí (tự đóng)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10e
+msgid "Section 80CCD(1B): notified pension scheme"
+msgstr "Mục 80CCD(1B): chương trình hưu trí được công bố"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10f
+msgid "Section 80CCD(2): employer to pension scheme"
+msgstr "Mục 80CCD(2): người sử dụng lao động đóng vào chương trình hưu trí"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10j
+msgid "Section 80CCH: Central Government to the Agnipath scheme"
+msgstr "Mục 80CCH: Chính phủ trung ương đóng vào chương trình Agnipath"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10i
+msgid "Section 80CCH: employee to the Agnipath scheme"
+msgstr "Mục 80CCH: nhân viên đóng vào chương trình Agnipath"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10g
+msgid "Section 80D: health insurance"
+msgstr "Mục 80D: bảo hiểm sức khỏe"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10h
+msgid "Section 80E: education loan interest"
+msgstr "Mục 80E: lãi vay học tập"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10k
+msgid "Section 80G: donations"
+msgstr "Mục 80G: quyên góp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10l
+msgid "Section 80TTA: savings account interest"
+msgstr "Mục 80TTA: lãi tài khoản tiết kiệm"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__filing_section
+msgid "Shown under"
+msgstr "Hiển thị trong mục"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4b model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l4a
+msgid "Standard deduction"
+msgstr "Khoản giảm trừ tiêu chuẩn"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l15 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l15
+msgid "Surcharge"
+msgstr "Phụ phí"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Taken back. Employees no longer see these certificates."
+msgstr "Đã thu hồi. Nhân viên không còn thấy các chứng từ này."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l2
+msgid "Tax allowance"
+msgstr "Phụ cấp thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l20
+msgid "Tax collected elsewhere, reported on Form 122"
+msgstr "Thuế thu tại nguồn khác, kê khai trên Biểu mẫu 122"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l20
+msgid "Tax collected elsewhere, reported on Form 12BAA"
+msgstr "Thuế thu tại nguồn khác, kê khai trên Biểu mẫu 12BAA"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_24q_ltds model:pb.gov.form.line,label:pb_form_lines.form_in_form138_ltds
+msgid "Tax deducted (tax, surcharge and cess)"
+msgstr "Thuế đã khấu trừ (thuế, phụ phí và phụ thu)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l19
+msgid "Tax deducted elsewhere, reported on Form 122"
+msgstr "Thuế khấu trừ tại nơi khác, kê khai trên Biểu mẫu 122"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l19
+msgid "Tax deducted elsewhere, reported on Form 12BAA"
+msgstr "Thuế khấu trừ tại nơi khác, kê khai trên Biểu mẫu 12BAA"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_ltds model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_ltds
+msgid "Tax deducted from pay in the year"
+msgstr "Thuế đã khấu trừ từ lương trong năm"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l38 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l40
+msgid "Tax due for the year (settled for them)"
+msgstr "Thuế phải nộp cả năm (quyết toán thay)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4a model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l4c
+msgid "Tax on employment (professional tax)"
+msgstr "Thuế nghề nghiệp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l13 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l13
+msgid "Tax on total income"
+msgstr "Thuế trên tổng thu nhập"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l41 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l45
+msgid "Tax overpaid"
+msgstr "Thuế đã nộp thừa"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l17 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l17
+msgid "Tax payable"
+msgstr "Thuế phải nộp"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__tax_return model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__tax
+msgid "Tax returns"
+msgstr "Tờ khai thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l40 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l44
+msgid "Tax still to pay"
+msgstr "Thuế còn phải nộp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l42
+msgid "Tax waived: high-quality digital technology workers"
+msgstr "Thuế được miễn: nhân lực công nghiệp công nghệ số chất lượng cao"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l43
+msgid "Tax waived: high-technology workers"
+msgstr "Thuế được miễn: nhân lực công nghệ cao"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l39 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l41
+msgid "Tax waived: still due of 50,000 dong or less"
+msgstr "Thuế được miễn: số còn phải nộp từ 50.000 đồng trở xuống"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l36 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l38
+msgid "Tax withheld from them"
+msgstr "Thuế đã khấu trừ của họ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Tax withheld in the year"
+msgstr "Thuế đã khấu trừ trong năm"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_ltreaty model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_ltreaty
+msgid "Taxable income exempt under a tax treaty (appendix 05-1)"
+msgstr "Thu nhập chịu thuế được miễn theo hiệp định (phụ lục 05-1)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l28 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l30
+msgid "Taxable income of people with tax withheld"
+msgstr "Thu nhập chịu thuế của những người đã khấu trừ thuế"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Taxable income subject to withholding"
+msgstr "Thu nhập chịu thuế phải khấu trừ"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "That could not be done."
+msgstr "Không thể thực hiện việc đó."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing_certificate__title
+msgid "The certificate's title, as printed on it."
+msgstr "Tiêu đề của chứng từ, như in trên đó."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "The certificates could not be printed: %s"
+msgstr "Không thể in các chứng từ: %s"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "The filing must be approved before its certificates can be released."
+msgstr "Hồ sơ phải được duyệt trước khi phát hành chứng từ."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "The submission file starts with this sentence as a note: take it out before sending."
+msgstr "Tệp nộp bắt đầu bằng câu này dưới dạng ghi chú: hãy xóa trước khi gửi."
+
+#. module: pb_form_lines
+#: model:pb.gov.form,screen_note:pb_form_lines.form_sg_ir8a
+msgid "The submission payload for AIS software, the IR8A import workbook for the myTax Portal, a summary, and an IR8A for each person."
+msgstr "Tệp nộp cho phần mềm AIS, sổ tính nhập IR8A cho myTax Portal, bản tổng hợp và một IR8A cho mỗi người."
+
+#. module: pb_form_lines
+#: model:pb.gov.form,screen_note:pb_form_lines.form_vn_05qtt_tt80 model:pb.gov.form,screen_note:pb_form_lines.form_vn_05qtt_tt89
+msgid "The year-end declaration in its own line order with appendices 05-1, 05-2 and 05-3 as sheets, and a tax-withheld statement for each person."
+msgstr "Tờ khai cuối năm theo đúng thứ tự chỉ tiêu, các phụ lục 05-1, 05-2 và 05-3 ở các trang tính, và bảng thuế đã khấu trừ cho từng người."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "This certificate is not available any more."
+msgstr "Chứng từ này không còn sẵn."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "This certificate is not yours."
+msgstr "Chứng từ này không phải của bạn."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "This filing has no certificates for employees."
+msgstr "Hồ sơ này không có chứng từ cho nhân viên."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "This form is filed per tax year: pick a year."
+msgstr "Biểu mẫu này nộp theo năm tính thuế: hãy chọn một năm."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__title
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "To check: %(records)s dependants on record for the year, %(contract)s registered on the contract"
+msgstr "Cần kiểm tra: %(records)s người phụ thuộc trong hồ sơ của năm, %(contract)s đăng ký trên hợp đồng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l11
+msgid "Total deductions under Chapter VI-A"
+msgstr "Tổng giảm trừ theo Chương VI-A"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l11
+msgid "Total deductions under Chapter VIII"
+msgstr "Tổng giảm trừ theo Chương VIII"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l5
+msgid "Total deductions under section 16"
+msgstr "Tổng giảm trừ theo mục 16"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l5
+msgid "Total deductions under section 19(1)"
+msgstr "Tổng giảm trừ theo mục 19(1)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l26
+msgid "Total exempt income in the year"
+msgstr "Tổng thu nhập được miễn trong kỳ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l2f model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l2i
+msgid "Total exemption claimed"
+msgstr "Tổng khoản miễn đã kê khai"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1d model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1d
+msgid "Total gross salary"
+msgstr "Tổng lương gộp"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0 model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ltotal
+msgid "Total income"
+msgstr "Tổng thu nhập"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "Total income (whole dollars)"
+msgstr "Tổng thu nhập (đô la chẵn)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_lothers
+msgid "Total of items d1 to d8"
+msgstr "Tổng các mục d1 đến d8"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l8 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l8
+msgid "Total other income reported"
+msgstr "Tổng thu nhập khác đã kê khai"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_l31 model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_l33
+msgid "Total personal income tax withheld"
+msgstr "Tổng số thuế TNCN đã khấu trừ"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l12 model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l12
+msgid "Total taxable income"
+msgstr "Tổng thu nhập chịu thuế"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l10d
+msgid "Total under sections 80C, 80CCC and 80CCD(1)"
+msgstr "Tổng theo các mục 80C, 80CCC và 80CCD(1)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_ir8a_ld8
+msgid "Value of benefits in kind"
+msgstr "Giá trị phúc lợi bằng hiện vật"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l1b model:pb.gov.form.line,label:pb_form_lines.form_in_form16b_l1b
+msgid "Value of perquisites"
+msgstr "Giá trị phúc lợi"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt80_lpension model:pb.gov.form.line,label:pb_form_lines.form_vn_05qtt_tt89_lpension
+msgid "Voluntary pension fund deducted (appendix 05-1)"
+msgstr "Quỹ hưu trí tự nguyện được trừ (phụ lục 05-1)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_form130c_l4f
+msgid "Voluntary retirement or termination payment"
+msgstr "Khoản nghỉ hưu tự nguyện hoặc chấm dứt hợp đồng"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_form__tile_group
+msgid "Which group of tiles on Compliance › Filings shows this form."
+msgstr "Nhóm ô nào trong Tuân thủ › Hồ sơ nộp hiển thị biểu mẫu này."
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__tile_group__year_end model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__year_end
+msgid "Year-end"
+msgstr "Cuối năm"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "Year-end certificate downloaded"
+msgstr "Đã tải chứng từ cuối năm"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "Year-end certificates released"
+msgstr "Đã phát hành chứng từ cuối năm"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/certificate.py:0
+msgid "Year-end certificates taken back"
+msgstr "Đã thu hồi chứng từ cuối năm"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "Year-end income tax slip (BPA1)"
+msgstr "Chứng từ khấu trừ thuế cuối năm (BPA1)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 model:pb.gov.form,name:pb_form_lines.form_id_bpa1
+msgid "Year-end income tax slips — permanent employees (BPA1)"
+msgstr "Chứng từ khấu trừ thuế cuối năm — nhân viên chính thức (BPA1)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "Year-end tax slips summary"
+msgstr "Tổng hợp chứng từ thuế cuối năm"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpa1_l11
+msgid "Zakat or required religious gifts paid through the employer"
+msgstr "Zakat hoặc khoản đóng góp tôn giáo bắt buộc trả qua người sử dụng lao động"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0 code:addons/pb_form_lines/models/render_sg.py:0
+msgid "an amount below zero"
+msgstr "một số tiền nhỏ hơn 0"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "an amount longer than 9 digits"
+msgstr "một số tiền dài hơn 9 chữ số"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "no NRIC, FIN, work permit or passport number"
+msgstr "không có số NRIC, FIN, giấy phép lao động hoặc hộ chiếu"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "no date of birth"
+msgstr "không có ngày sinh"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "no position (needed with a passport)"
+msgstr "không có chức danh (bắt buộc khi dùng hộ chiếu)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_sg.py:0
+msgid "no sex on the employee record"
+msgstr "hồ sơ nhân viên không có giới tính"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_id_bpa1.py:0
+msgid "tax status %s cannot go in the import file"
+msgstr "tình trạng thuế %s không thể đưa vào tệp nhập"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/settle.py:0
+msgid "%(who)s marked that %(name)s asked us to settle year-end tax for %(year)s."
+msgstr "%(who)s đã ghi nhận %(name)s ủy quyền cho công ty quyết toán thuế năm %(year)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/settle.py:0
+msgid "%(who)s took back “asked us to settle year-end tax” for %(name)s, %(year)s. A certificate appears only when the year is prepared and released again."
+msgstr "%(who)s đã bỏ đánh dấu “ủy quyền cho công ty quyết toán thuế” của %(name)s, năm %(year)s. Chứng từ chỉ xuất hiện khi năm đó được lập và phát hành lại."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "%s people asked us to settle"
+msgstr "%s người ủy quyền quyết toán thay"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "%s people asked us to settle their year-end tax: no certificate is made for them."
+msgstr "%s người ủy quyền cho công ty quyết toán thuế năm: không lập chứng từ cho họ."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "1 person asked us to settle"
+msgstr "1 người ủy quyền quyết toán thay"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "1 person asked us to settle their year-end tax: no certificate is made for them."
+msgstr "1 người ủy quyền cho công ty quyết toán thuế năm: không lập chứng từ cho họ."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_filing_certificate__list_note
+msgid "A short line shown beside the download on My Payobook (e.g. that this is an information copy)."
+msgstr "Một dòng ngắn hiển thị cạnh nút tải trên My Payobook (ví dụ: đây là bản sao thông tin)."
+
+#. module: pb_form_lines
+#: model:ir.model,name:pb_form_lines.model_pb_gov_year_settlement
+msgid "Asked the employer to settle year-end tax"
+msgstr "Ủy quyền cho người sử dụng lao động quyết toán thuế"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0 model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__asked
+msgid "Asked us to settle year-end tax"
+msgstr "Ủy quyền cho công ty quyết toán thuế năm"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Asked us to settle year-end tax: no certificate for this year"
+msgstr "Ủy quyền cho công ty quyết toán thuế: không có chứng từ cho năm này"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt80_l35 model:pb.gov.form.line,note:pb_form_lines.form_vn_05qtt_tt89_l37
+msgid "Counts the people HR marked \"Asked us to settle year-end tax\" for the year."
+msgstr "Đếm những người được HR đánh dấu \"Ủy quyền cho công ty quyết toán thuế năm\" trong năm."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Information copy"
+msgstr "Bản sao thông tin"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_in.py:0
+msgid "Information copy — your official certificate comes from the tax department"
+msgstr "Bản sao thông tin — chứng từ chính thức của bạn do cơ quan thuế cấp"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_filing_certificate__list_note
+msgid "List Note"
+msgstr "Ghi chú danh sách"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__marked_by
+msgid "Marked By"
+msgstr "Đánh dấu bởi"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__marked_on
+msgid "Marked On"
+msgstr "Đánh dấu lúc"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/js/gov_filing_flow.js:0
+msgid "Marked by %(who)s on %(when)s"
+msgstr "Đánh dấu bởi %(who)s lúc %(when)s"
+
+#. module: pb_form_lines
+#: model:ir.model.constraint,message:pb_form_lines.constraint_pb_gov_year_settlement_employee_year_uniq
+msgid "One answer per person, country and tax year."
+msgstr "Mỗi người, quốc gia và năm tính thuế chỉ có một câu trả lời."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/render_vn_qtt.py:0
+msgid "Part II needs the tax due for the year from your pay scheme: put that pay item on its line on Form lines. Until then the balance lines stay at 0."
+msgstr "Phần II cần số thuế phải nộp cả năm từ chương trình lương của bạn: hãy đặt khoản lương đó vào dòng của nó trong Dòng biểu mẫu. Đến lúc đó các dòng chênh lệch giữ ở 0."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_year_settlement__tax_year
+msgid "Tax Year"
+msgstr "Năm tính thuế"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "That person is not available here."
+msgstr "Người này không có ở đây."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,help:pb_form_lines.field_pb_gov_year_settlement__tax_year
+msgid "The calendar year the tax year starts in."
+msgstr "Năm dương lịch mà năm tính thuế bắt đầu."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/board.py:0
+msgid "This form has no “asked us to settle” choice."
+msgstr "Biểu mẫu này không có lựa chọn “ủy quyền quyết toán thay”."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/gov_filing_flow.xml:0
+msgid "Tick the people who asked the company to settle their year-end tax for this year. They stay in the figures and are counted in Part II; they get no certificate."
+msgstr "Đánh dấu những người đã ủy quyền cho công ty quyết toán thuế năm nay. Họ vẫn nằm trong số liệu và được tính ở Phần II; họ không nhận chứng từ."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/settle.py:0
+msgid "That person belongs to another company."
+msgstr "Người này thuộc công ty khác."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "%(n)s people are left out of the file — the summary lists each with the reason. The file's total leaves out their %(amount)s: %(total)s."
+msgstr "%(n)s người không có trong tệp — bảng tổng hợp ghi từng người kèm lý do. Tổng của tệp không gồm %(amount)s của họ: %(total)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "%s people are left out of the file. Their figures are not in the file's totals."
+msgstr "%s người không có trong tệp. Số liệu của họ không nằm trong tổng của tệp."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "1 person is left out of the file (%(why)s). The file's total leaves out their %(amount)s: %(total)s."
+msgstr "1 người không có trong tệp (%(why)s). Tổng của tệp không gồm %(amount)s của người này: %(total)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "1 person is left out of the file. Their figures are not in the file's totals."
+msgstr "1 người không có trong tệp. Số liệu của người này không nằm trong tổng của tệp."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "A figure is below zero"
+msgstr "Có số liệu nhỏ hơn 0"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "A figure is below zero or too large for the file"
+msgstr "Có số liệu nhỏ hơn 0 hoặc quá lớn so với tệp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_aw
+msgid "Additional wages"
+msgstr "Tiền lương bổ sung"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan"
+msgstr "BPJS Kesehatan"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "BPJS Kesehatan card number"
+msgstr "Số thẻ BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan company code"
+msgstr "Mã công ty BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_id_bpjs_kes
+msgid "BPJS Kesehatan — monthly member and contribution sheet (e-Dabu)"
+msgstr "BPJS Kesehatan — bảng thành viên và tiền đóng hằng tháng (e-Dabu)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan"
+msgstr "BPJS Ketenagakerjaan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan company number (NPP)"
+msgstr "Mã số công ty BPJS Ketenagakerjaan (NPP)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "BPJS Ketenagakerjaan number"
+msgstr "Số BPJS Ketenagakerjaan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_id_bpjs_tk
+msgid "BPJS Ketenagakerjaan — monthly wage report (SIPP)"
+msgstr "BPJS Ketenagakerjaan — báo cáo tiền lương hằng tháng (SIPP)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cdac
+msgid "CDAC"
+msgstr "CDAC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF Board"
+msgstr "Quỹ CPF"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "CPF account number"
+msgstr "Số tài khoản CPF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF contributions, SDL and self-help funds — CPF EZPay file"
+msgstr "Tiền đóng CPF, SDL và quỹ tương trợ cộng đồng — tệp CPF EZPay"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "CPF submission number (CSN)"
+msgstr "Số nộp CPF (CSN)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_sg_cpf_ezpay
+msgid "CPF submission number (CSN), for example 201912345APTE01"
+msgstr "Số nộp CPF (CSN), ví dụ 201912345APTE01"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_total
+msgid "CPF — employee and employer"
+msgstr "CPF — người lao động và người sử dụng lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_ee
+msgid "CPF — employee share"
+msgstr "CPF — phần người lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_cpf_er
+msgid "CPF — employer share"
+msgstr "CPF — phần người sử dụng lao động"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Check first"
+msgstr "Kiểm tra trước"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_form.py:0 model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__adviser_wording__fund
+msgid "Check with the fund before the first upload"
+msgstr "Hãy kiểm tra với quỹ trước lần tải lên đầu tiên"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Check with the fund before the first upload. Every file says so until a payroll manager marks this form accepted."
+msgstr "Hãy kiểm tra với quỹ trước lần tải lên đầu tiên. Mọi tệp đều ghi như vậy cho đến khi quản lý lương đánh dấu biểu mẫu này đã được chấp nhận."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "Check with the fund before the first upload. The files say so too."
+msgstr "Hãy kiểm tra với quỹ trước lần tải lên đầu tiên. Các tệp cũng ghi như vậy."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__compare_line_codes
+msgid "Compare Line Codes"
+msgstr "Các dòng đối chiếu"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_ncp_days
+msgid "Days not paid (NCP days)"
+msgstr "Số ngày không được trả lương (NCP)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "Days not paid rounded to a whole day"
+msgstr "Số ngày không được trả lương đã làm tròn thành ngày nguyên"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_days
+msgid "Days paid in the month"
+msgstr "Số ngày được trả lương trong tháng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jkm_er
+msgid "Death cover (JKM) — employer"
+msgstr "Bảo hiểm tử tuất (JKM) — người sử dụng lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ecf
+msgid "ECF"
+msgstr "ECF"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "EPF wages are more than gross wages"
+msgstr "Lương EPF lớn hơn tổng lương"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_in_epf_ecr
+msgid "EPFO"
+msgstr "EPFO"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_in_epf_ecr
+msgid "EPFO establishment code"
+msgstr "Mã cơ sở EPFO"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "ESI insurance number"
+msgstr "Số bảo hiểm ESI"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_esi
+msgid "ESI monthly contribution sheet (ESIC)"
+msgstr "Bảng tiền đóng ESI hằng tháng (ESIC)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_esi_ee
+msgid "ESI — employee share"
+msgstr "ESI — phần người lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_esi_er
+msgid "ESI — employer share"
+msgstr "ESI — phần người sử dụng lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_in_esi
+msgid "ESIC"
+msgstr "ESIC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,employer_label:pb_form_lines.form_in_esi
+msgid "ESIC employer code"
+msgstr "Mã người sử dụng lao động ESIC"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_ee_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_ee_total model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ee_total
+msgid "Employee share"
+msgstr "Phần người lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_er_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_er_total model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_er_total
+msgid "Employer share"
+msgstr "Phần người sử dụng lao động"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Everyone read from payslips"
+msgstr "Mọi người, đọc từ phiếu lương"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "Fill in the CPF submission number (CSN) for this form on Form lines first: the company's UEN, the payment type and the serial number, for example 201912345APTE01."
+msgstr "Hãy điền số nộp CPF (CSN) cho biểu mẫu này ở Dòng biểu mẫu trước: mã UEN của công ty, loại khoản nộp và số thứ tự, ví dụ 201912345APTE01."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments for %(month)s: %(amount)s — the same as this file."
+msgstr "Nộp quỹ %(month)s: %(amount)s — bằng với tệp này."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments for %(month)s: %(amount)s. This file: %(file)s. They differ by %(diff)s."
+msgstr "Nộp quỹ %(month)s: %(amount)s. Tệp này: %(file)s. Chênh lệch %(diff)s."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_compare.py:0
+msgid "Fund payments has not worked out this month yet: its figure is what it would work out today."
+msgstr "Nộp quỹ chưa tính tháng này: con số là số nó sẽ tính ra hôm nay."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_gross
+msgid "Gross wages"
+msgstr "Tổng lương"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_kes_ee
+msgid "Health insurance — employee"
+msgstr "Bảo hiểm y tế — người lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_kes_er
+msgid "Health insurance — employer"
+msgstr "Bảo hiểm y tế — người sử dụng lao động"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0 code:addons/pb_form_lines/models/fund_in.py:0
+msgid "In the file"
+msgstr "Trong tệp"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_edli_wages
+msgid "Insurance wages (EDLI)"
+msgstr "Lương tính bảo hiểm (EDLI)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_mbmf
+msgid "MBMF"
+msgstr "MBMF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_mat
+msgid "Maternity leave days"
+msgstr "Số ngày nghỉ thai sản"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "NIK"
+msgstr "NIK"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "NIK (16 digits)"
+msgstr "NIK (16 chữ số)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__employer_label
+msgid "Name of the company's number"
+msgstr "Tên số của công ty"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "Name written without the characters the file cannot carry"
+msgstr "Tên được ghi bỏ các ký tự tệp không chứa được"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "No CPF account number (NRIC starting S or T) on the employee record"
+msgstr "Hồ sơ nhân viên chưa có số tài khoản CPF (NRIC bắt đầu bằng S hoặc T)"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "No days paid: type the reason code for zero working days on the portal"
+msgstr "Không có ngày được trả lương: hãy nhập mã lý do cho số ngày làm việc bằng 0 trên cổng thông tin"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_id.py:0
+msgid "No wage for BPJS"
+msgstr "Không có tiền lương cho BPJS"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Nobody in this filing can go into the upload file: %s."
+msgstr "Không ai trong hồ sơ này đưa được vào tệp tải lên: %s."
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__adviser_wording
+msgid "Note until accepted"
+msgstr "Ghi chú cho đến khi được chấp nhận"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jht_ee
+msgid "Old-age savings (JHT) — employee"
+msgstr "Tiết kiệm tuổi già (JHT) — người lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jht_er
+msgid "Old-age savings (JHT) — employer"
+msgstr "Tiết kiệm tuổi già (JHT) — người sử dụng lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_ow
+msgid "Ordinary wages"
+msgstr "Tiền lương thường xuyên"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_extra
+msgid "Other additions"
+msgstr "Các khoản bổ sung"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jp_ee
+msgid "Pension (JP) — employee"
+msgstr "Hưu trí (JP) — người lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jp_er
+msgid "Pension (JP) — employer"
+msgstr "Hưu trí (JP) — người sử dụng lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_eps_er
+msgid "Pension fund (EPS) — employer share"
+msgstr "Quỹ hưu trí (EPS) — phần người sử dụng lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_eps_wages
+msgid "Pension fund wages (EPS)"
+msgstr "Lương tính quỹ hưu trí (EPS)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_in_epf_ecr
+msgid "Provident fund monthly return — ECR file (EPFO)"
+msgstr "Tờ khai quỹ dự phòng hằng tháng — tệp ECR (EPFO)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_epf_wages
+msgid "Provident fund wages (EPF)"
+msgstr "Lương tính quỹ dự phòng (EPF)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_epf_ee
+msgid "Provident fund — employee share"
+msgstr "Quỹ dự phòng — phần người lao động"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_diff_er
+msgid "Provident fund — employer share (EPF less EPS)"
+msgstr "Quỹ dự phòng — phần người sử dụng lao động (EPF trừ EPS)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_refund
+msgid "Refund of advances"
+msgstr "Hoàn trả tạm ứng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_sinda
+msgid "SINDA"
+msgstr "SINDA"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_shg_total
+msgid "Self-help group funds"
+msgstr "Quỹ tương trợ cộng đồng"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_vn_si_items_sick
+msgid "Sick leave days"
+msgstr "Số ngày nghỉ ốm"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_sdl
+msgid "Skills Development Levy (SDL)"
+msgstr "Phí phát triển kỹ năng (SDL)"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,name:pb_form_lines.form_vn_si_items
+msgid "Social-insurance reports — pay items they read"
+msgstr "Báo cáo bảo hiểm xã hội — các khoản lương được đọc"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "The ESI insurance number is not 10 digits"
+msgstr "Số bảo hiểm ESI không đủ 10 chữ số"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "The UAN is not 12 digits"
+msgstr "Số UAN không đủ 12 chữ số"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0 code:addons/pb_form_lines/models/fund_sg.py:0
+msgid "The name has letters the file cannot carry"
+msgstr "Tên có chữ cái mà tệp không chứa được"
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "These files say “Check with the fund before the first upload”."
+msgstr "Các tệp này ghi “Hãy kiểm tra với quỹ trước lần tải lên đầu tiên”."
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/vn_si_items.py:0
+msgid "These pay items are read by the Vietnamese social-insurance reports on Compliance › Filings. There is no file of its own to prepare."
+msgstr "Các khoản lương này được các báo cáo bảo hiểm xã hội Việt Nam ở Tuân thủ › Tờ khai đọc. Không có tệp riêng để chuẩn bị."
+
+#. module: pb_form_lines
+#. odoo-javascript
+#: code:addons/pb_form_lines/static/src/xml/fund_files.xml:0
+msgid "These pay items are read by the Vietnamese social-insurance reports on Compliance › Filings. Until a pay item is on a line, the reports read their usual codes."
+msgstr "Các khoản lương này được các báo cáo bảo hiểm xã hội Việt Nam ở Tuân thủ › Tờ khai đọc. Khi một dòng chưa có khoản lương, báo cáo đọc mã quen thuộc của nó."
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_sg_cpf_ezpay_total
+msgid "Total for CPF Board"
+msgstr "Tổng nộp Quỹ CPF"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_total model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_total model:pb.gov.form.line,label:pb_form_lines.form_in_epf_ecr_total model:pb.gov.form.line,label:pb_form_lines.form_in_esi_total
+msgid "Total for the fund"
+msgstr "Tổng nộp quỹ"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "UAN"
+msgstr "UAN"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "UAN (provident fund number)"
+msgstr "UAN (số quỹ dự phòng)"
+
+#. module: pb_form_lines
+#: model:ir.model.fields.selection,name:pb_form_lines.selection__pb_gov_form__filing_section__reports
+msgid "Used by reports"
+msgstr "Dùng cho báo cáo"
+
+#. module: pb_form_lines
+#: model:pb.gov.form,authority:pb_form_lines.form_vn_si_items
+msgid "Vietnam Social Security"
+msgstr "Bảo hiểm xã hội Việt Nam"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_wage
+msgid "Wage reported to BPJS"
+msgstr "Tiền lương báo cho BPJS"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_kes_wage
+msgid "Wage reported to BPJS Health"
+msgstr "Tiền lương báo cho BPJS Kesehatan"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_in_esi_wages
+msgid "Wages for ESI"
+msgstr "Tiền lương tính ESI"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_in.py:0
+msgid "Whole rupees, rounded half up"
+msgstr "Rupee nguyên, làm tròn từ nửa lên"
+
+#. module: pb_form_lines
+#. odoo-python
+#: code:addons/pb_form_lines/models/fund_common.py:0
+msgid "Why not / to check"
+msgstr "Lý do / cần kiểm tra"
+
+#. module: pb_form_lines
+#: model:pb.gov.form.line,label:pb_form_lines.form_id_bpjs_tk_jkk_er
+msgid "Work accident cover (JKK) — employer"
+msgstr "Bảo hiểm tai nạn lao động (JKK) — người sử dụng lao động"
+
+#. module: pb_form_lines
+#: model:ir.model.fields,field_description:pb_form_lines.field_pb_gov_form__tile_group
+msgid "Tile group"
+msgstr "Nhóm ô hiển thị"

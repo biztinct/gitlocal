@@ -524,3 +524,57 @@ msgstr "Nội dung"
 #: code:addons/pb_govt_reports/models/filing_approval.py:0
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Form lines"
+msgstr "Dòng biểu mẫu"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Tax returns"
+msgstr "Tờ khai thuế"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Pay items to choose on Form lines"
+msgstr "Cần chọn khoản lương ở Dòng biểu mẫu"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Check with your adviser before first filing"
+msgstr "Hãy hỏi ý kiến tư vấn trước lần nộp đầu tiên"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Accepted by the authority"
+msgstr "Được cơ quan chấp nhận"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Prepare"
+msgstr "Lập"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "A certificate for each person"
+msgstr "Chứng từ cho từng người"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Year-end"
+msgstr "Cuối năm"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Check with the fund before the first upload"
+msgstr "Hãy kiểm tra với quỹ trước lần tải lên đầu tiên"

@@ -55,6 +55,14 @@ export class PbPayDelivery extends Component {
             sel: {},
             payOther: null,
             undo: null,
+            // WDGAP S2-C — the payment list in a bank's own layout: which
+            // layout ("" = the general list), the payment date, the company
+            // account, and what that layout would leave out (preview)
+            plLayout: "",
+            plDate: "",
+            plAccount: "",
+            plPreview: null,
+            plLayoutSet: false,
         });
         onWillStart(async () => {
             if (this.state.runId) { await this.load(); }
@@ -107,6 +115,17 @@ export class PbPayDelivery extends Component {
                 const used = d.banks.find(b => b.key === d.bank_file.bank_format);
                 const vcb = d.banks.find(b => b.key === "vietcombank");
                 this.state.bank = (used || vcb || d.banks[0]).key;
+            }
+            const pl = d.payment_list || {};
+            if (!this.state.plDate) { this.state.plDate = pl.today || ""; }
+            if (!this.state.plLayoutSet) {
+                // the layout the last list was prepared with, else the general list
+                this.state.plLayoutSet = true;
+                const key = (pl.file && pl.file.layout_key) || "";
+                if (key && (pl.layouts || []).some((l) => l.key === key)) {
+                    this.state.plLayout = key;
+                    this.loadPlPreview();
+                }
             }
             if (d.release && d.release.bank_reference) {
                 this.state.bankReference = d.release.bank_reference;
@@ -464,11 +483,82 @@ export class PbPayDelivery extends Component {
         return again ? _t("Prepare the payment list again and send it in")
                      : _t("Prepare the payment list for approval");
     }
+    // ---------------------------- WDGAP S2-C: the bank's own layout
+    get plLayouts() { return this.payList.layouts || []; }
+    get plLayoutInfo() {
+        return this.plLayouts.find((l) => l.key === this.state.plLayout) || null;
+    }
+    async selectPlLayout(key) {
+        this.state.plLayout = key || "";
+        this.state.plPreview = null;
+        if (key) { await this.loadPlPreview(); }
+    }
+    onPlDate(ev) { this.state.plDate = ev.target.value; this.loadPlPreview(); }
+    onPlAccount(ev) { this.state.plAccount = ev.target.value; }
+    async loadPlPreview() {
+        if (!this.state.plLayout || !this.state.runId) { this.state.plPreview = null; return; }
+        try {
+            this.state.plPreview = await this.orm.call(MODEL, "payment_list_layout_preview",
+                [this.state.runId, this.state.plLayout, this.state.plDate || false,
+                 this.state.plAccount || false]);
+        } catch (e) {
+            this.state.plPreview = null;
+            this.notif.add(this._err(e), { type: "danger" });
+        }
+    }
+    get plPreviewLine() {
+        const p = this.state.plPreview;
+        if (!p) { return ""; }
+        const people = this.peopleLabel(p.count || 0);
+        return _t("%(people)s in the %(name)s file • total %(total)s %(currency)s", {
+            people, name: p.name, total: (p.total || 0).toLocaleString("en-US",
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            currency: p.currency || "",
+        });
+    }
+    get plLeftOutTitle() {
+        const n = ((this.state.plPreview && this.state.plPreview.excluded) || []).length;
+        return n === 1 ? _t("1 person is left out of this bank file")
+                       : _t("%s people are left out of this bank file", n);
+    }
+    /** What the people left out are owed, per money (ruling BL1). */
+    get plLeftOutTotals() {
+        const rows = (this.state.plPreview && this.state.plPreview.left_totals) || [];
+        return rows.map((t) => _t("%(people)s · %(total)s %(currency)s to pay another way", {
+            people: this.peopleLabel(t.count || 0),
+            total: (t.amount || 0).toLocaleString("en-US",
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            currency: t.currency || "",
+        })).join(" • ");
+    }
+    /** Ruling BL4 "Pay by file": in the file, paid into another person's account. */
+    get plOtherNameLine() {
+        const rows = (this.state.plPreview && this.state.plPreview.other_name_totals) || [];
+        return rows.map((t) => _t("%(people)s paid into another person's account · %(total)s %(currency)s", {
+            people: this.peopleLabel(t.count || 0),
+            total: (t.amount || 0).toLocaleString("en-US",
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            currency: t.currency || "",
+        })).join(" • ");
+    }
+    get plLeftOutRows() {
+        return ((this.state.plPreview && this.state.plPreview.excluded) || []).slice(0, 12);
+    }
+    get plLeftOutMore() {
+        const n = ((this.state.plPreview && this.state.plPreview.excluded) || []).length;
+        return n > 12 ? _t("and %s more — every one is in the Check column of the list", n - 12) : "";
+    }
+    get plBankFileLabel() {
+        return _t("%s file", this.payListFile.layout_name || "");
+    }
+
     async preparePayList() {
         if (this.state.busy) { return; }
         this.state.busy = true;
         try {
-            await this.orm.call(MODEL, "prepare_payment_list", [this.state.runId]);
+            await this.orm.call(MODEL, "prepare_payment_list", [this.state.runId,
+                this.state.plLayout || false, this.state.plDate || false,
+                this.state.plAccount || false]);
             await this.load();
             const f = this.payListFile;
             this.notif.add(

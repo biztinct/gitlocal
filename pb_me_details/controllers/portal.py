@@ -102,7 +102,8 @@ class PbMeDetailsPortal(PbMePortal):
                 'has': bool(number),
                 'expiry': emp[expiry_f] if expiry_f and expiry_f in emp._fields else False,
             })
-        reqs = Req.search([('employee_id', '=', emp.id)], limit=12)
+        reqs = Req.search([('employee_id', '=', emp.id)] + Req._pb_page_domain(),
+                          limit=12)
         open_kinds = {(r.kind, r.member_id.id) for r in reqs if r.state == 'hr_review'}
         bank_reqs = Bank.search([('employee_id', '=', emp.id),
                                  ('pb_origin', '=', 'self_service')], limit=5)

@@ -53,26 +53,12 @@ class CPFSubmissionWizard(models.TransientModel):
                     if cpf_employer_line:
                         record.total_cpf_employer += sum(cpf_employer_line.mapped('amount'))
     
-    def action_generate_cpf_file(self):
-        """Generate CPF submission file"""
-        self.ensure_one()
-        
-        if not self.total_employees:
-            raise UserError(_('No employees found for CPF submission in the selected period.'))
-        
-        # This would generate the actual CPF submission file
-        # For now, return a success message
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('CPF Submission'),
-                'message': _('CPF submission file generated successfully for %d employees.') % self.total_employees,
-                'type': 'success',
-                'sticky': False,
-            }
-        }
-    
+    def action_generate_cpf_file(self, *args, **kwargs):
+        """WDGAP S2-A (S2F-4): RETIRED. This door used to say a file was
+        made (or data imported) and made none. It now says so and makes
+        no claim. (Singapore CPF submission)"""
+        raise UserError(_("This file is not available yet, so nothing was made. Government filings are prepared on Compliance › Filings."))
+
     def action_preview_cpf_data(self):
         """Preview CPF submission data"""
         self.ensure_one()

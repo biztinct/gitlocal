@@ -61,7 +61,7 @@ class Bhxhdstk01ReportXlsx(ReportXlsxAbstract):
             idx = self.start_row_danhsach + offset
             sheet.write(idx, 0, offset + 1)
             sheet.write(idx, 1, emp.name or "")
-            sheet.write(idx, 2, emp.identification_id or "")
+            sheet.write(idx, 2, base._insurance_book(emp))
             sheet.write(idx, 3, _fmt(emp.birthday))
             sheet.write(idx, 4, base._is_female(emp) and "X" or "")
             sheet.write(idx, 5, emp.country_id.name or "")

@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-B2 — India: provident fund ECR and ESI monthly contribution. See pb_form_lines/models/fund_in.py. -->
+
+    <record id="form_in_epf_ecr" model="pb.gov.form">
+        <field name="code">IN_EPF_ECR</field>
+        <field name="country_code">IN</field>
+        <field name="sequence">30</field>
+        <field name="name">Provident fund monthly return — ECR file (EPFO)</field>
+        <field name="official_name">Electronic Challan cum Return (ECR 2.0)</field>
+        <field name="authority">EPFO</field>
+        <field name="period_kind">month</field>
+        <field name="quarter_allowed" eval="False"/>
+        <field name="output_kinds">txt,xlsx</field>
+        <field name="total_line_code">TOTAL</field>
+        <field name="filing_section">fund</field>
+        <field name="tile_group">fund_file</field>
+        <field name="adviser_wording">fund</field>
+        <field name="employer_label">EPFO establishment code</field>
+        <field name="compare_line_codes">EPF_EE,EPS_ER,DIFF_ER</field>
+        <field name="source_url">https://www.epfindia.gov.in/site_docs/PDFs/EPFOUnifiedPortal/Introduction_ECR2.0.pdf</field>
+        <field name="source_note">EPFO, "Introduction ECR 2.0" (EPFO Unified Portal) — the ECR text file: one line per member, no header line, 11 fields separated by #~#: UAN, member name, gross wages, EPF wages, EPS wages, EDLI wages, EPF contribution remitted, EPS contribution remitted, EPF-EPS difference remitted, NCP days, refund of advances; whole rupees. The EPFO page answered 403 from here; the same layout is published by laabam.one ("How to File PF Return (ECR 2.0)") and fundraksha.com ("PF ECR Format Explained"). Read on 18 November 2026.</field>
+        <field name="inferred" eval="True"/>
+        <field name="inferred_note">EPFO's own document could not be opened (403), so the field list, its order and the whole-rupee rule come from published guides that all agree. Rounding is half up to the rupee. The adviser note is on the summary workbook, not in the text file (the file has no place for a note).</field>
+    </record>
+    <record id="form_in_epf_ecr_gross" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">GROSS</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Gross wages</field>
+        <field name="official_label">Gross Wages</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">gross wages,gross salary,gross pay,total earnings,gross</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_epf_wages" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">EPF_WAGES</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Provident fund wages (EPF)</field>
+        <field name="official_label">EPF Wages</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">epf wages,pf wages,pf wage,epf wage,pf basic,epf basic</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_eps_wages" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">EPS_WAGES</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Pension fund wages (EPS)</field>
+        <field name="official_label">EPS Wages</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">eps wages,eps wage,pension wages</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_edli_wages" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">EDLI_WAGES</field>
+        <field name="sequence">40</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Insurance wages (EDLI)</field>
+        <field name="official_label">EDLI Wages</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">edli wages,edli wage,edli</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_epf_ee" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">EPF_EE</field>
+        <field name="sequence">50</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Provident fund — employee share</field>
+        <field name="official_label">EPF Contribution Remitted</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">pf,epf,provident fund</field>
+        <field name="suggest_roles">deduction</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_eps_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">EPS_ER</field>
+        <field name="sequence">60</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Pension fund (EPS) — employer share</field>
+        <field name="official_label">EPS Contribution Remitted</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">eps,pension fund</field>
+        <field name="suggest_roles">employer_cost</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_diff_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">DIFF_ER</field>
+        <field name="sequence">70</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Provident fund — employer share (EPF less EPS)</field>
+        <field name="official_label">EPF EPS Difference Remitted</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">employer pf,pf employer,epf employer,er pf,er epf,epf er,pf er</field>
+        <field name="suggest_roles">employer_cost</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_ncp_days" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">NCP_DAYS</field>
+        <field name="sequence">80</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="round_digits">2</field>
+        <field name="label">Days not paid (NCP days)</field>
+        <field name="official_label">NCP Days</field>
+        <field name="suggest_words">ncp days,ncp,loss of pay days,lop days,unpaid days</field>
+        <field name="suggest_roles">info,deduction</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_refund" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">REFUND</field>
+        <field name="sequence">90</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Refund of advances</field>
+        <field name="official_label">Refund of Advances</field>
+        <field name="suggest_words">refund of advance,pf advance refund</field>
+        <field name="suggest_roles">deduction,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_epf_ecr_ee_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">EE_TOTAL</field>
+        <field name="sequence">100</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">EPF_EE</field>
+        <field name="label">Employee share</field>
+        <field name="official_label">Employee share</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_epf_ecr_er_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">ER_TOTAL</field>
+        <field name="sequence">110</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">EPS_ER,DIFF_ER</field>
+        <field name="label">Employer share</field>
+        <field name="official_label">Employer share</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_epf_ecr_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">TOTAL</field>
+        <field name="sequence">120</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">EE_TOTAL,ER_TOTAL</field>
+        <field name="label">Total for the fund</field>
+        <field name="official_label">Total contribution</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_epf_ecr_people" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_epf_ecr"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">130</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Members</field>
+        <field name="mappable" eval="False"/>
+    </record>
+
+    <record id="form_in_esi" model="pb.gov.form">
+        <field name="code">IN_ESI</field>
+        <field name="country_code">IN</field>
+        <field name="sequence">31</field>
+        <field name="name">ESI monthly contribution sheet (ESIC)</field>
+        <field name="official_name">ESIC — Monthly Contribution (MC) upload</field>
+        <field name="authority">ESIC</field>
+        <field name="period_kind">month</field>
+        <field name="quarter_allowed" eval="False"/>
+        <field name="output_kinds">xlsx</field>
+        <field name="total_line_code">TOTAL</field>
+        <field name="filing_section">fund</field>
+        <field name="tile_group">fund_file</field>
+        <field name="adviser_wording">fund</field>
+        <field name="employer_label">ESIC employer code</field>
+        <field name="compare_line_codes">ESI_EE,ESI_ER</field>
+        <field name="source_url">https://www.esic.gov.in/</field>
+        <field name="source_note">ESIC employer portal, "Monthly Contribution" upload: the MC Excel template is downloaded on the portal after login. Columns: IP number (10 digits), IP name, days for which wages were paid, total monthly wages, reason code for zero working days, last working day (DD/MM/YYYY), as described in published guides (treelife.in, "ESI Returns and Challan Filing"; docs.pockethrms.com, "ESI Return File"). Read on 18 November 2026.</field>
+        <field name="inferred" eval="True"/>
+        <field name="inferred_note">The ESIC template is not published: the column heads are written as the portal's template is described in published guides. Days are whole days (a part day counts as a day). The reason code for zero working days and the last working day are left for the portal.</field>
+    </record>
+    <record id="form_in_esi_days" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_esi"/>
+        <field name="code">DAYS</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="round_digits">2</field>
+        <field name="label">Days paid in the month</field>
+        <field name="official_label">No of Days for which wages paid/payable during the month</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">paid days,payable days,days paid,days worked,working days,esi days</field>
+        <field name="suggest_roles">info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_esi_wages" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_esi"/>
+        <field name="code">WAGES</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Wages for ESI</field>
+        <field name="official_label">Total Monthly Wages</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">esi wages,esic wages,esi gross,gross wages,gross</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_esi_esi_ee" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_esi"/>
+        <field name="code">ESI_EE</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">ESI — employee share</field>
+        <field name="official_label">Employee contribution (0.75%)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">esi,esic</field>
+        <field name="suggest_roles">deduction</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_esi_esi_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_esi"/>
+        <field name="code">ESI_ER</field>
+        <field name="sequence">40</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">ESI — employer share</field>
+        <field name="official_label">Employer contribution (3.25%)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">esi,esic</field>
+        <field name="suggest_roles">employer_cost</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_esi_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_esi"/>
+        <field name="code">TOTAL</field>
+        <field name="sequence">50</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">ESI_EE,ESI_ER</field>
+        <field name="label">Total for the fund</field>
+        <field name="official_label">Total contribution</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_esi_people" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_esi"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">60</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Insured persons</field>
+        <field name="mappable" eval="False"/>
+    </record>
+</odoo>
