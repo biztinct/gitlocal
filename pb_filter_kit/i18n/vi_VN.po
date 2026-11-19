@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-10-30 12:30+0000\n"
 "PO-Revision-Date: 2026-10-30 12:30+0000\n"
@@ -844,3 +844,336 @@ msgstr "60 ngày tới"
 #: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
 msgid "Next 60 days"
 msgstr "60 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "%(shown)s of %(total)s rows are in the file — that is the most one file holds. Filter the list and download again for the rest."
+msgstr "Tệp có %(shown)s trên %(total)s dòng — đó là mức tối đa một tệp chứa được. Hãy lọc danh sách rồi tải lại cho phần còn lại."
+
+#. module: pb_filter_kit
+#: model:ir.model.constraint,message:pb_filter_kit.constraint_pb_list_layout_screen_company_uniq
+msgid "A list has one default set of columns per company."
+msgstr "Mỗi danh sách có một bộ cột mặc định cho mỗi công ty."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Added with the Form builder"
+msgstr "Thêm bằng Trình tạo biểu mẫu"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Always first"
+msgstr "Luôn ở đầu"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Building the file for %s rows…"
+msgstr "Đang tạo tệp cho %s dòng…"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Cards"
+msgstr "Thẻ"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Choose which columns the table shows, and their order"
+msgstr "Chọn cột nào hiện trong bảng và thứ tự của chúng"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0 code:addons/pb_filter_kit/static/src/xml/list_table.xml:0 model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__columns model:ir.model.fields,field_description:pb_filter_kit.field_pb_list_layout__columns
+msgid "Columns"
+msgstr "Cột"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,help:pb_filter_kit.field_pb_filter_view__columns
+msgid "Columns chosen for the table view of this list."
+msgstr "Các cột được chọn cho dạng bảng của danh sách này."
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_list_layout__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Download these columns, for every row the filters match, as an Excel file"
+msgstr "Tải các cột này, cho mọi dòng khớp bộ lọc, thành tệp Excel"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Downloaded — %s rows in the file."
+msgstr "Đã tải xuống — tệp có %s dòng."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Downloaded — 1 row in the file."
+msgstr "Đã tải xuống — tệp có 1 dòng."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Drop here to move it to the end"
+msgstr "Thả vào đây để đưa xuống cuối"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "For everyone"
+msgstr "Cho mọi người"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Forget your own choice and use the company's columns"
+msgstr "Bỏ lựa chọn riêng và dùng các cột của công ty"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Just me"
+msgstr "Chỉ mình tôi"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "List"
+msgstr "Danh sách"
+
+#. module: pb_filter_kit
+#: model:ir.model,name:pb_filter_kit.model_pb_list_layout
+msgid "List columns for everyone"
+msgstr "Cột danh sách cho mọi người"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Move %s down"
+msgstr "Đưa %s xuống"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Move %s up"
+msgstr "Đưa %s lên"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Move down"
+msgstr "Đưa xuống"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Move up"
+msgstr "Đưa lên"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+msgid "Only an administrator can choose the columns for everyone."
+msgstr "Chỉ quản trị viên mới có thể chọn cột cho mọi người."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Only you see these choices. Drag a column, or use the arrows, to change the order."
+msgstr "Chỉ bạn thấy các lựa chọn này. Kéo một cột, hoặc dùng mũi tên, để đổi thứ tự."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Save for everyone"
+msgstr "Lưu cho mọi người"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Saved for everyone. People who chose their own columns keep them."
+msgstr "Đã lưu cho mọi người. Ai đã tự chọn cột riêng vẫn giữ lựa chọn của mình."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Saved for you"
+msgstr "Đã lưu cho bạn"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Saving…"
+msgstr "Đang lưu…"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Show as a table with columns you choose"
+msgstr "Hiện dạng bảng với các cột bạn chọn"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Show as cards"
+msgstr "Hiện dạng thẻ"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Show the list as"
+msgstr "Hiện danh sách dạng"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Spreadsheets cannot be written on this server yet. Ask an administrator to install the spreadsheet library."
+msgstr "Máy chủ này chưa thể tạo bảng tính. Hãy nhờ quản trị viên cài đặt thư viện bảng tính."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Standard set"
+msgstr "Bộ chuẩn"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Table"
+msgstr "Bảng"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "The columns everyone in this company starts with. People who chose their own keep them."
+msgstr "Các cột mà mọi người trong công ty này bắt đầu với. Ai đã tự chọn cột riêng vẫn giữ lựa chọn của mình."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "The columns for everyone could not be saved."
+msgstr "Không thể lưu các cột cho mọi người."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "The company's columns"
+msgstr "Các cột của công ty"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,help:pb_filter_kit.field_pb_list_layout__columns
+msgid "The default columns, in order, for everyone in this company."
+msgstr "Các cột mặc định, theo thứ tự, cho mọi người trong công ty này."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "The file could not be built."
+msgstr "Không thể tạo tệp."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "The file could not be built. Try again in a moment."
+msgstr "Không thể tạo tệp. Hãy thử lại sau giây lát."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "The standard columns"
+msgstr "Các cột chuẩn"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "The table could not be shown just now. Try again in a moment."
+msgstr "Hiện chưa thể hiển thị bảng. Hãy thử lại sau giây lát."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+msgid "These columns could not be saved. Try again."
+msgstr "Không thể lưu các cột này. Hãy thử lại."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "This list cannot be downloaded as a table."
+msgstr "Danh sách này không thể tải xuống dưới dạng bảng."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+msgid "This list cannot keep a choice of columns."
+msgstr "Danh sách này không thể lưu lựa chọn cột."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Tick every row shown"
+msgstr "Chọn mọi dòng đang hiện"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,help:pb_filter_kit.field_pb_list_layout__screen
+msgid "Which list these columns belong to, e.g. \"employees\"."
+msgstr "Danh sách mà các cột này thuộc về, ví dụ \"employees\"."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Who these columns are for"
+msgstr "Các cột này dành cho ai"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Your columns could not be reset. Try again in a moment."
+msgstr "Không thể đặt lại các cột của bạn. Hãy thử lại sau giây lát."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Your columns could not be saved. Try again in a moment."
+msgstr "Không thể lưu các cột của bạn. Hãy thử lại sau giây lát."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Your own columns"
+msgstr "Các cột riêng của bạn"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Your own columns are gone: you now see the company's columns."
+msgstr "Đã bỏ các cột riêng của bạn: giờ bạn thấy các cột của công ty."

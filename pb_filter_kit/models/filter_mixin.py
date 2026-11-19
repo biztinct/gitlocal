@@ -23,8 +23,11 @@ Every section degrades on its own: a field this database does not have, or
 one the user may not read (``groups=``), drops out of the panel instead of
 breaking it (the every-probe-its-own-guard rule).
 """
+import base64
+import io
 import logging
-from datetime import date, timedelta
+import re
+from datetime import date, datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
 
@@ -84,6 +87,30 @@ class PbFilterMixin(models.AbstractModel):
     def _pbf_layout_extra(self):
         """Anything else the screen wants to hand the panel (e.g. currency)."""
         return {}
+
+    # ---- table view (kit 1.5.0). A board without `_pbf_columns` has no
+    # table and none of the methods below is ever called for it.
+
+    def _pbf_columns(self):
+        """The table view's columns, in their standard order:
+
+        `[{key, label, kind, default, pin?, align?, sort?: {asc, desc},
+        custom?, help?, field?, sub?}]` — `kind` is how the browser draws a
+        cell ('person', 'text', 'date', 'money', 'badge', 'flag', 'count',
+        'custom'); `default` = shown before anybody chooses; `pin` = always
+        first and always shown; `sort` names the board's own sort keys
+        (`_pbf_sorts`) a heading switches between."""
+        return []
+
+    def _pbf_table_rows(self, records, keys):
+        """`{record id: {column key: cell}}` for the Excel download. A cell is
+        a str, a number, a date, a bool, None, or `{'v': value, 'fmt':
+        number format}`. Only the keys asked for need filling."""
+        return {}
+
+    def _pbf_export_name(self):
+        """File and sheet name of the Excel download (no extension)."""
+        return _('List')
 
     # ============================================================ helpers
     def _pbf_records(self):
@@ -618,3 +645,163 @@ class PbFilterMixin(models.AbstractModel):
             if s['key'] == sort:
                 return s['order']
         return sorts[0]['order'] if sorts else None
+
+    # ====================================================== table view (1.5.0)
+    @api.model
+    def _pbf_column_spec(self):
+        """The board's columns, cleaned: unique keys, one pinned column at
+        most (the first that asks), every entry with a label and a kind."""
+        out, seen, pinned = [], set(), False
+        for c in self._pbf_columns() or []:
+            key = c.get('key')
+            if not key or key in seen or not c.get('label'):
+                continue
+            seen.add(key)
+            c = dict(c)
+            c.setdefault('kind', 'text')
+            c['default'] = bool(c.get('default', True))
+            if c.get('pin') and not pinned:
+                pinned = True
+                c['default'] = True
+            else:
+                c['pin'] = False
+            out.append(c)
+        return out
+
+    @api.model
+    def pbf_columns(self):
+        """Once, when the table view first shows: the board's columns and the
+        stored choices (company default, the person's own, the remembered
+        view mode)."""
+        spec = self._pbf_column_spec()
+        screen = self._pbf_screen()
+        store = self.env['pb.filter.view'].pbf_columns_read(screen) if spec else {
+            'mine': None, 'mode': None, 'company': None, 'can_company': False}
+        return dict(store, screen=screen, columns=spec)
+
+    @api.model
+    def pbf_export_table(self, filters=None, search=None, sort=None, columns=None):
+        """The table view as an Excel file: the visible columns in their order
+        (`columns` = keys), every row the filters match (capped), the board's
+        sort. Columns the board does not offer THIS person are ignored, so a
+        hand-made request cannot widen what the screen shows."""
+        spec = {c['key']: c for c in self._pbf_column_spec()}
+        if not spec:
+            return {'ok': False, 'msg': _('This list cannot be downloaded as a table.')}
+        keys = [k for k in dict.fromkeys(columns or []) if k in spec]
+        pinned = [k for k, c in spec.items() if c.get('pin')]
+        for k in pinned:
+            if k not in keys:
+                keys.insert(0, k)
+        if not keys:
+            keys = [k for k, c in spec.items() if c.get('default')]
+        Rec = self._pbf_records()
+        domain = self.pbf_domain(filters or {}, search)
+        total = Rec.search_count(domain)
+        records = Rec.search(domain, order=self.pbf_order(sort), limit=EXPORT_CAP)
+        cells = self._pbf_table_rows(records, keys) or {}
+        name = self._pbf_export_name() or _('List')
+        try:
+            data = _xlsx_bytes(name, [spec[k] for k in keys],
+                               [cells.get(r.id) or {} for r in records], keys,
+                               yes=_('Yes'), no=_('No'))
+        except ImportError:
+            return {'ok': False, 'msg': _('Spreadsheets cannot be written on this server yet. '
+                                          'Ask an administrator to install the spreadsheet library.')}
+        day = fields.Date.to_string(self._pbf_today())
+        return {
+            'ok': True,
+            'file_b64': base64.b64encode(data).decode('ascii'),
+            'filename': '%s %s.xlsx' % (_safe_file_name(name), day),
+            'mimetype': XLSX_MIME,
+            'rows': len(records),
+            'total': total,
+            'columns': len(keys),
+            'truncated': total > len(records),
+        }
+
+
+# ============================================================ spreadsheet
+#: Rows in one download. Said out loud on screen when a list is longer.
+EXPORT_CAP = 10000
+XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+#: A cell starting with one of these is read as a formula by a spreadsheet.
+FORMULA_START = ('=', '+', '-', '@', '\t', '\r')
+_CONTROL_RE = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f]')
+
+
+def _safe_file_name(name):
+    name = re.sub(r'[\\/:*?"<>|\[\]]+', ' ', name or '').strip()
+    return ' '.join(name.split())[:60] or 'List'
+
+
+def _sheet_title(name):
+    # a sheet name: at most 31 characters, none of []:*?/\
+    title = re.sub(r'[\[\]:*?/\\]+', ' ', name or '').strip()
+    return (' '.join(title.split())[:31]) or 'List'
+
+
+def _xlsx_bytes(name, columns, rows, keys, yes='Yes', no='No'):
+    """One sheet: a bold heading row, then a row per record. Strings are
+    always written as TEXT (never a formula, whatever they start with)."""
+    import openpyxl
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = _sheet_title(name)
+    head_font = Font(bold=True, color='241F52')
+    head_fill = PatternFill('solid', fgColor='EDEAF8')
+    widths = []
+    for idx, col in enumerate(columns, start=1):
+        label = _CONTROL_RE.sub('', str(col.get('label') or col.get('key')))
+        cell = ws.cell(row=1, column=idx)
+        _set_text(cell, label)
+        cell.font = head_font
+        cell.fill = head_fill
+        cell.alignment = Alignment(vertical='center')
+        widths.append(min(max(len(label) + 2, 10), 48))
+    for r, row in enumerate(rows, start=2):
+        for idx, key in enumerate(keys, start=1):
+            value = row.get(key)
+            fmt = None
+            if isinstance(value, dict):
+                value, fmt = value.get('v'), value.get('fmt')
+            cell = ws.cell(row=r, column=idx)
+            if value is None or value == '':
+                continue
+            if isinstance(value, bool):
+                _set_text(cell, yes if value else no)
+            elif isinstance(value, (int, float)):
+                cell.value = value
+                if fmt:
+                    cell.number_format = fmt
+            elif isinstance(value, (date, datetime)):
+                cell.value = value
+                cell.number_format = fmt or 'dd mmm yyyy'
+            else:
+                text = _CONTROL_RE.sub('', str(value))
+                if not text:
+                    continue
+                _set_text(cell, text)
+                widths[idx - 1] = min(max(widths[idx - 1], len(text) + 2), 48)
+    for idx, w in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(idx)].width = w
+    ws.freeze_panes = 'B2' if len(columns) > 1 else 'A2'
+    if rows and columns:
+        ws.auto_filter.ref = 'A1:%s%d' % (get_column_letter(len(columns)), len(rows) + 1)
+    buf = io.BytesIO()
+    wb.save(buf)
+    return buf.getvalue()
+
+
+def _set_text(cell, text):
+    """Write `text` as a plain string. openpyxl turns any string starting
+    with "=" into a formula, and a spreadsheet reads "+", "-", "@" the same
+    way when a cell is edited: such a cell is forced to text and marked
+    with the spreadsheet's own "this is text" prefix."""
+    cell.value = text
+    cell.data_type = 's'
+    if text.startswith(FORMULA_START):
+        cell.quotePrefix = True

@@ -1,0 +1,421 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 11:01+0000\n"
+"PO-Revision-Date: 2026-11-19 11:01+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid ""
+"%(shown)s of %(total)s rows are in the file — that is the most one file "
+"holds. Filter the list and download again for the rest."
+msgstr ""
+"%(shown)s dari %(total)s baris ada di berkas — itu batas satu berkas. Saring"
+" daftar lalu unduh lagi untuk sisanya."
+
+#. module: pb_filter_kit
+#: model:ir.model.constraint,message:pb_filter_kit.constraint_pb_list_layout_screen_company_uniq
+msgid "A list has one default set of columns per company."
+msgstr "Setiap daftar memiliki satu set kolom bawaan per perusahaan."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Added with the Form builder"
+msgstr "Ditambahkan dengan Pembuat formulir"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Always first"
+msgstr "Selalu pertama"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Building the file for %s rows…"
+msgstr "Membuat berkas untuk %s baris…"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Cards"
+msgstr "Kartu"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Choose which columns the table shows, and their order"
+msgstr "Pilih kolom yang ditampilkan tabel dan urutannya"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__columns
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_list_layout__columns
+msgid "Columns"
+msgstr "Kolom"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,help:pb_filter_kit.field_pb_filter_view__columns
+msgid "Columns chosen for the table view of this list."
+msgstr "Kolom yang dipilih untuk tampilan tabel daftar ini."
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_list_layout__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Contract"
+msgstr "Kontrak"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid ""
+"Download these columns, for every row the filters match, as an Excel file"
+msgstr ""
+"Unduh kolom ini, untuk setiap baris yang cocok dengan filter, sebagai berkas"
+" Excel"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Downloaded — %s rows in the file."
+msgstr "Terunduh — %s baris di berkas."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Downloaded — 1 row in the file."
+msgstr "Terunduh — 1 baris di berkas."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Drop here to move it to the end"
+msgstr "Lepas di sini untuk memindahkannya ke akhir"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "For everyone"
+msgstr "Untuk semua orang"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Forget your own choice and use the company's columns"
+msgstr "Lupakan pilihan Anda dan pakai kolom perusahaan"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Just me"
+msgstr "Hanya saya"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "List"
+msgstr "Daftar"
+
+#. module: pb_filter_kit
+#: model:ir.model,name:pb_filter_kit.model_pb_list_layout
+msgid "List columns for everyone"
+msgstr "Kolom daftar untuk semua orang"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Move %s down"
+msgstr "Pindahkan %s ke bawah"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Move %s up"
+msgstr "Pindahkan %s ke atas"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Move down"
+msgstr "Ke bawah"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Move up"
+msgstr "Ke atas"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+msgid "Only an administrator can choose the columns for everyone."
+msgstr "Hanya administrator yang dapat memilih kolom untuk semua orang."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid ""
+"Only you see these choices. Drag a column, or use the arrows, to change the "
+"order."
+msgstr ""
+"Hanya Anda yang melihat pilihan ini. Seret kolom, atau gunakan panah, untuk "
+"mengubah urutan."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Reset"
+msgstr "Atur ulang"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Save for everyone"
+msgstr "Simpan untuk semua orang"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Saved for everyone. People who chose their own columns keep them."
+msgstr ""
+"Disimpan untuk semua orang. Orang yang memilih kolom sendiri tetap "
+"memakainya."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Saved for you"
+msgstr "Disimpan untuk Anda"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Saving…"
+msgstr "Menyimpan…"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__screen
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_list_layout__screen
+msgid "Screen"
+msgstr "Layar"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Show as a table with columns you choose"
+msgstr "Tampilkan sebagai tabel dengan kolom pilihan Anda"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Show as cards"
+msgstr "Tampilkan sebagai kartu"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Show the list as"
+msgstr "Tampilkan daftar sebagai"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid ""
+"Spreadsheets cannot be written on this server yet. Ask an administrator to "
+"install the spreadsheet library."
+msgstr ""
+"Server ini belum dapat membuat lembar kerja. Minta administrator memasang "
+"pustaka lembar kerja."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Standard set"
+msgstr "Set standar"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Table"
+msgstr "Tabel"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid ""
+"The columns everyone in this company starts with. People who chose their own"
+" keep them."
+msgstr ""
+"Kolom awal untuk semua orang di perusahaan ini. Orang yang memilih kolom "
+"sendiri tetap memakainya."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "The columns for everyone could not be saved."
+msgstr "Kolom untuk semua orang tidak dapat disimpan."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "The company's columns"
+msgstr "Kolom perusahaan"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,help:pb_filter_kit.field_pb_list_layout__columns
+msgid "The default columns, in order, for everyone in this company."
+msgstr "Kolom bawaan, berurutan, untuk semua orang di perusahaan ini."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "The file could not be built."
+msgstr "Berkas tidak dapat dibuat."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "The file could not be built. Try again in a moment."
+msgstr "Berkas tidak dapat dibuat. Coba lagi sebentar lagi."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "The standard columns"
+msgstr "Kolom standar"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "The table could not be shown just now. Try again in a moment."
+msgstr "Tabel belum dapat ditampilkan. Coba lagi sebentar lagi."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+msgid "These columns could not be saved. Try again."
+msgstr "Kolom ini tidak dapat disimpan. Coba lagi."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "This list cannot be downloaded as a table."
+msgstr "Daftar ini tidak dapat diunduh sebagai tabel."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+msgid "This list cannot keep a choice of columns."
+msgstr "Daftar ini tidak dapat menyimpan pilihan kolom."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Tick every row shown"
+msgstr "Centang semua baris yang tampil"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Today"
+msgstr "Hari ini"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,help:pb_filter_kit.field_pb_list_layout__screen
+msgid "Which list these columns belong to, e.g. \"employees\"."
+msgstr "Daftar pemilik kolom ini, misalnya \"employees\"."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Who these columns are for"
+msgstr "Kolom ini untuk siapa"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Your columns could not be reset. Try again in a moment."
+msgstr "Kolom Anda tidak dapat diatur ulang. Coba lagi sebentar lagi."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Your columns could not be saved. Try again in a moment."
+msgstr "Kolom Anda tidak dapat disimpan. Coba lagi sebentar lagi."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/list_table.xml:0
+msgid "Your own columns"
+msgstr "Kolom pribadi Anda"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/list_table.js:0
+msgid "Your own columns are gone: you now see the company's columns."
+msgstr "Kolom pribadi Anda dihapus: sekarang Anda melihat kolom perusahaan."

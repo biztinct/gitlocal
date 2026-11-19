@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_pb_filter_view_user,pb.filter.view user,model_pb_filter_view,base.group_user,1,1,1,1
+access_pb_list_layout_user,pb.list.layout user,model_pb_list_layout,base.group_user,1,0,0,0
+access_pb_list_layout_admin,pb.list.layout admin,model_pb_list_layout,base.group_system,1,1,1,1
