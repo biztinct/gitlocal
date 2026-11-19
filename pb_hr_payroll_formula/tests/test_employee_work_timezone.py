@@ -64,7 +64,10 @@ class TestEmployeeWorkTimezone(TransactionCase):
         self.assertEqual(employee.tz, 'Asia/Tokyo')
         indonesia = self.employee(payroll_country='ID')
         self.assertEqual(indonesia.tz, 'Asia/Jakarta')
-        self.assertIn('Payroll Country: Asia/Jakarta', indonesia.pb_work_timezone_note)
+        # TIDY-E: pb_employee_form_tidy names the box "Country of Work" on screen
+        # (this note included); either wording is the same source.
+        self.assertRegex(indonesia.pb_work_timezone_note,
+                         r'(Payroll Country|Country of Work): Asia/Jakarta')
         self.assertEqual(self.employee(country_id=self.env.ref('base.vn').id).resource_calendar_id, self.calendar)
         self.assertFalse(self.employee()._pb_default_work_timezone())
 
