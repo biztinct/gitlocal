@@ -17,9 +17,9 @@
  see FS3_REPORT.md.)
 
 The engine's "a pay run is being worked out" guard is switched off in this
-suite: it reads `pg_locks` for the WHOLE database cluster, so another
-database's pay run (another builder's test suite on this Mac) makes every
-field creation refuse (FS3_REPORT, merge-time task M2).
+suite so it never depends on payslips other suites write. (Before engine
+19.0.1.1.0 it also read `pg_locks` for the whole database server, so another
+database's pay run made every field creation refuse — fixed on fs-1.)
 """
 import base64
 import re
@@ -112,7 +112,7 @@ class TestFs3Contracts(TransactionCase):
 
     def setUp(self):
         super().setUp()
-        # Cluster-wide lock probe in the engine (see the module docstring).
+        # The pay-run guard (see the module docstring).
         self.startPatcher(patch.object(type(self.env['pb.form.studio']), '_pbfs_busy',
                                        lambda self_: ''))
 
