@@ -59,9 +59,13 @@ class PbPeople(models.AbstractModel):
                 continue            # the panel draws its own tabs
             for f in sec.get('fields') or []:
                 if f.get('kind') == 'money' and not unmask:
-                    f.update(value=False, display=masked, writable=False, masked=True)
+                    # drawn as a locked line (lock icon, quiet ink), not as money
+                    f.update(value=False, display=masked, writable=False, masked=True,
+                             kind='readonly')
                 total += 1
-                if not f.get('masked') and f.get('display') not in (None, '', False):
+                # "Filled in" = somebody answered: a ticked yes/no, a number
+                # other than 0, any text, date, choice, link or file.
+                if not f.get('masked') and f.get('value') not in (None, '', False, 0, 0.0):
                     filled += 1
                 writable += 1 if f.get('writable') else 0
             sections.append(sec)
