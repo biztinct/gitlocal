@@ -17,7 +17,7 @@
                         <field name="smtp_user"/>
                         <field name="smtp_pass" password="True" placeholder="Leave blank to keep the saved password"/>
                         <field name="password_saved"/>
-                        <field name="from_filter"/>
+                        <field name="from_filter" string="Sender email"/>
                         <field name="enabled"/>
                     </group>
                 </group>

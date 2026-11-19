@@ -3,6 +3,7 @@ import smtplib
 import ssl
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError, UserError
+from odoo.tools import email_normalize
 
 
 def may_manage_email(env):
@@ -55,6 +56,8 @@ class OutgoingEmailSettings(models.TransientModel):
         company = self._company()
         if not self.smtp_host or not self.smtp_user or not self.from_filter:
             raise ValidationError(_('Enter the SMTP server, username and sender email.'))
+        if not email_normalize(self.from_filter) or ',' in self.from_filter:
+            raise ValidationError(_('Enter one complete sender email address authorized by this mail provider.'))
         if not 1 <= self.smtp_port <= 65535 or self.smtp_encryption not in ('ssl','starttls'):
             raise ValidationError(_('Use an encrypted SMTP connection with a valid port.'))
         password = self.smtp_pass or company.pb_outgoing_mail_server_id.smtp_pass
@@ -63,7 +66,7 @@ class OutgoingEmailSettings(models.TransientModel):
         return {'name':self.name, 'smtp_host':self.smtp_host.strip(), 'smtp_port':self.smtp_port,
                 'smtp_encryption':self.smtp_encryption, 'smtp_authentication':'login',
                 'smtp_user':self.smtp_user.strip(), 'smtp_pass':password,
-                'from_filter':self.from_filter.strip(), 'active':self.enabled}
+                'from_filter':email_normalize(self.from_filter), 'active':self.enabled}
 
     def action_save(self):
         company = self._company()
@@ -94,3 +97,18 @@ class OutgoingEmailSettings(models.TransientModel):
             raise UserError(_('Connection or sign-in failed. Check the SMTP settings and password. No email was sent.')) from None
         return {'type':'ir.actions.client','tag':'display_notification','params':{
             'title':_('Connection successful'), 'message':_('Encrypted sign-in passed. No email was sent and activation was not changed.'), 'type':'success'}}
+
+
+class MailServer(models.Model):
+    _inherit = 'ir.mail_server'
+
+    def _find_mail_server(self, email_from, mail_servers=None):
+        server, sender = super()._find_mail_server(email_from, mail_servers=mail_servers)
+        configured = self.env.company.sudo().pb_outgoing_mail_server_id
+        # Only this company's explicitly configured, active tenant server.
+        # Mail domains, reply-to handling and other servers remain standard.
+        if server and server == configured and configured.active:
+            preferred = email_normalize(configured.from_filter)
+            if preferred and ',' not in configured.from_filter and not self._match_from_filter(sender, configured.from_filter):
+                return server, preferred
+        return server, sender

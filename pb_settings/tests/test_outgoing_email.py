@@ -25,6 +25,14 @@ class TestOutgoingEmail(TransactionCase):
         self.assertTrue(server)
         self.assertFalse(server.active)
         self.assertFalse(wizard.smtp_pass)
+        mail_model = self.env['ir.mail_server'].with_company(company)
+        selected, sender = mail_model._find_mail_server('person@different.example', mail_servers=server)
+        self.assertFalse(selected)  # Inactive stays excluded from delivery.
+        server.active = True
+        selected, sender = mail_model._find_mail_server('person@different.example', mail_servers=server)
+        self.assertEqual(selected, server)
+        self.assertEqual(sender, 'support@example.invalid')
+        server.active = False
         self.assertFalse(model.default_get(['smtp_pass']).get('smtp_pass'))
         self.assertTrue(model.default_get(['password_saved'])['password_saved'])
         with self.assertRaises(AccessError):
