@@ -26,6 +26,11 @@ class TestReachPortal(ReachCase, HttpCase):
             return
         seat(cls.env, cls.company, 'hr_lead', cls.hr)
         S = cls.env['pb.form.studio'].with_user(cls.admin)
+        # Merged tree: the real employee host (FS-2) never lets an employee
+        # change a field marked "Use in pay formulas" (R14). The fields these
+        # tests change are made plain inputs first (no formula reads them here).
+        for name in (cls.f_sel, cls.f_date, cls.f_in):
+            S.update_field('hr.employee', name, {'formula_ok': False})
 
         def tick(name, show=True, edit=False, mode='approve'):
             S.update_portal('hr.employee', name,
