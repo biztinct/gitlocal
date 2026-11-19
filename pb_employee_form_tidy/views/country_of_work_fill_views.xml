@@ -9,12 +9,18 @@
             <form string="Fill empty Country of Work">
                 <field name="done" invisible="1"/>
                 <field name="fill_count" invisible="1"/>
+                <field name="company_count" invisible="1"/>
                 <p class="text-muted" invisible="done">
-                    Fills Country of Work only where it is empty, from the pay set-up each
-                    person is paid under. A Country of Work that is already set is never changed.
+                    Fills Country of Work only where it is empty: first from the pay set-up each
+                    person is paid under, otherwise from their company's country. A Country of
+                    Work that is already set is never changed.
                 </p>
                 <div class="alert alert-success" role="status" invisible="not done">
                     <field name="result_text" readonly="1" nolabel="1" class="d-inline"/>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-3" invisible="done or not company_count">
+                    <field name="use_company" nolabel="1"/>
+                    <label for="use_company"/>
                 </div>
                 <field name="preview_html" readonly="1" nolabel="1"/>
                 <footer>

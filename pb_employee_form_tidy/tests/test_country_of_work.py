@@ -118,84 +118,131 @@ class TestCountryOfWorkFill(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        Company = cls.env['res.company'].sudo()
+        cls.co_vn = Company.create({'name': 'DEMO fill company VN',
+                                    'country_id': cls.env.ref('base.vn').id})
+        cls.co_none = Company.create({'name': 'DEMO fill company no country'})
+        cls.co_none.partner_id.country_id = False
+        cls.co_us = Company.create({'name': 'DEMO fill company US',
+                                    'country_id': cls.env.ref('base.us').id})
+        cls.companies = cls.co_vn | cls.co_none | cls.co_us
         cls.manager, cls.officer = common.make_hr_users(cls.env, 'fill')
-        cls.company = cls.env.company
+        for user in (cls.manager, cls.officer):
+            user.sudo().write({'company_ids': [(4, c.id) for c in cls.companies]})
         Emp = cls.env['hr.employee'].sudo()
         Config = cls.env['hr.formula.config'].sudo()
         cls.vn = Config.create({'name': 'DEMO fill VN', 'country_code': 'VN',
-                                'company_id': cls.company.id})
+                                'company_id': cls.co_vn.id})
         cls.sg = Config.create({'name': 'DEMO fill SG', 'country_code': 'SG',
-                                'company_id': cls.company.id})
+                                'company_id': cls.co_vn.id})
+        cls.has_map = 'pb_paid_by_id' in Emp._fields
 
-        def person(name, country=False, paid=None, advance=None, contract=True):
-            emp = Emp.create({'name': name, 'company_id': cls.company.id,
+        def person(name, company, country=False, paid=None, advance=None, contract=True):
+            emp = Emp.create({'name': name, 'company_id': company.id,
                               'payroll_country': country})
             if contract:
                 cls.env['hr.contract'].sudo().create({
                     'name': name, 'employee_id': emp.id, 'wage': 100.0, 'state': 'open',
-                    'date_start': '2025-01-01', 'company_id': cls.company.id})
-            vals = {}
-            if 'pb_paid_by_id' in Emp._fields:
-                vals['pb_paid_by_id'] = paid.id if paid else False
+                    'date_start': '2025-01-01', 'company_id': company.id})
+            if cls.has_map:
+                vals = {'pb_paid_by_id': paid.id if paid else False}
                 if 'pb_paid_by_advance_id' in Emp._fields:
                     vals['pb_paid_by_advance_id'] = advance.id if advance else False
                 if 'pb_paid_by_stale' in Emp._fields:
                     vals['pb_paid_by_stale'] = False
-            if vals:
                 emp.write(vals)
             return emp
 
-        cls.has_map = 'pb_paid_by_id' in Emp._fields
-        cls.fill_vn = person('DEMO fill empty VN', paid=cls.vn)
-        cls.keep_id = person('DEMO fill already ID', country='ID', paid=cls.vn)
-        cls.no_contract = person('DEMO fill no contract', paid=cls.vn, contract=False)
-        cls.two = person('DEMO fill two countries', paid=cls.vn, advance=cls.sg)
+        # (a) decides: a contract and a "Paid by" pay set-up in Singapore,
+        #     inside a company whose country is Vietnam — the pay set-up wins
+        cls.by_pay = person('DEMO fill paid SG', cls.co_vn, paid=cls.sg)
+        # (b) decides: no contract (so no pay set-up), company in Vietnam
+        cls.by_company = person('DEMO fill no contract VN co', cls.co_vn, contract=False)
+        cls.keep_id = person('DEMO fill already ID', cls.co_vn, country='ID', paid=cls.vn)
+        cls.two = person('DEMO fill two countries', cls.co_vn, paid=cls.vn, advance=cls.sg)
+        cls.no_country = person('DEMO fill company without country', cls.co_none, contract=False)
+        cls.not_offered = person('DEMO fill company in the US', cls.co_us, contract=False)
 
-    def _wizard(self, user=None):
-        return self.env['pb.cow.fill.wizard'].with_user(user or self.manager).create({})
+    def _wizard(self, user=None, companies=None, **vals):
+        return self.env['pb.cow.fill.wizard'].with_user(user or self.manager).with_context(
+            allowed_company_ids=(companies or self.companies).ids).create(vals)
 
-    def test_07a_preview_then_fill_only_empties(self):
+    def test_07a_preview_shows_both_sources_and_what_is_left(self):
         if not self.has_map:
             self.skipTest("the scheme map is not installed")
         wizard = self._wizard()
         preview = json.loads(wizard.preview_json)
-        self.assertGreaterEqual(preview['fill'].get('VN', 0), 1)
-        self.assertIn(self.two.id, [r['id'] for r in preview['two_countries']])
-        self.assertIn('no_contract', preview['left'])
-        self.assertIn('DEMO fill two countries', wizard.preview_html)
-        self.assertNotIn('Odoo', wizard.preview_html)
+        self.assertEqual(preview['empty'], 5)
+        self.assertEqual(preview['from_pay_setup'], {'SG': 1})
+        self.assertEqual(preview['from_company'], {'VN': 1})
+        self.assertEqual(preview['fill'], {'SG': 1, 'VN': 1})
+        self.assertEqual(preview['left'], {'two_countries': 1, 'company_no_country': 1,
+                                           'company_country_not_offered': 1})
+        self.assertEqual((wizard.fill_count, wizard.company_count), (2, 1))
+        html = str(wizard.preview_html)
+        for words in ('From pay set-up', 'From the company', 'DEMO fill two countries',
+                      'has no country', 'not one of the Country of Work choices'):
+            self.assertIn(words, html)
+        self.assertNotIn('Odoo', html)
 
-        res = wizard.action_fill()
-        self.assertGreaterEqual(res['total'], 1)
-        self.assertEqual(self.fill_vn.payroll_country, 'VN')
-        self.assertEqual(self.keep_id.payroll_country, 'ID', "a set Country of Work was overwritten")
-        self.assertFalse(self.no_contract.payroll_country)
-        self.assertFalse(self.two.payroll_country, "a two-country person was decided by the button")
-        log = self.env['pb.cow.fill.log'].sudo().search([], limit=1)
-        self.assertEqual(log.user_id, self.manager)
-        self.assertEqual(log.filled_count, res['total'])
-        self.assertEqual(json.loads(log.by_country).get('VN', 0), res['filled'].get('VN', 0))
-
-        # second run: the same people are not touched again
-        again = self._wizard().action_fill()
-        self.assertEqual(again['filled'].get('VN', 0), 0)
-
-    def test_07b_never_overwrites_even_when_set_after_the_preview(self):
+    def test_07b_both_sources_fill_only_empties_and_once(self):
         if not self.has_map:
             self.skipTest("the scheme map is not installed")
-        wizard = self._wizard()
-        self.fill_vn.payroll_country = 'SG'           # someone sets it meanwhile
-        wizard.action_fill()
-        self.assertEqual(self.fill_vn.payroll_country, 'SG')
+        res = self._wizard().action_fill()
+        self.assertEqual((res['total'], res['from_company']), (2, 1))
+        self.assertEqual(self.by_pay.payroll_country, 'SG', "rule (a) did not win")
+        self.assertEqual(self.by_company.payroll_country, 'VN', "rule (b) did not fill")
+        self.assertEqual(self.keep_id.payroll_country, 'ID', "a set Country of Work was overwritten")
+        self.assertFalse(self.two.payroll_country, "a two-country person was decided")
+        self.assertFalse(self.no_country.payroll_country)
+        self.assertFalse(self.not_offered.payroll_country)
+        log = self.env['pb.cow.fill.log'].sudo().search([], limit=1)
+        self.assertEqual(log.user_id, self.manager)
+        self.assertEqual((log.filled_count, log.company_count, log.left_count), (2, 1, 3))
+        self.assertEqual(json.loads(log.by_country), {'SG': 1, 'VN': 1})
+        # idempotent: a second run decides nothing new
+        self.assertEqual(self._wizard().action_fill()['total'], 0)
 
-    def test_07c_hr_managers_only(self):
+    def test_07c_the_company_part_can_be_unticked(self):
+        if not self.has_map:
+            self.skipTest("the scheme map is not installed")
+        wizard = self._wizard(use_company=False)
+        preview = json.loads(wizard.preview_json)
+        self.assertEqual(preview['fill'], {'SG': 1})
+        self.assertEqual(preview['from_company'], {'VN': 1})
+        self.assertIn('Not ticked', str(wizard.preview_html))
+        res = wizard.action_fill()
+        self.assertEqual((res['total'], res['from_company']), (1, 0))
+        self.assertEqual(self.by_pay.payroll_country, 'SG')
+        self.assertFalse(self.by_company.payroll_country, "the unticked part was filled")
+        # ticked on a later run: the company part is filled then
+        res = self._wizard().action_fill()
+        self.assertEqual((res['total'], res['from_company']), (1, 1))
+        self.assertEqual(self.by_company.payroll_country, 'VN')
+
+    def test_07d_company_source_alone(self):
+        """The live case: no pay set-up decides anybody (no contract, or a pay
+        set-up linked to nobody) — the company's country decides."""
+        res = self._wizard(companies=self.co_vn | self.co_none).action_fill()
+        self.assertEqual(self.by_company.payroll_country, 'VN')
+        self.assertGreaterEqual(res['from_company'], 1)
+        self.assertFalse(self.no_country.payroll_country, "a company without a country decided")
+
+    def test_07e_never_overwrites_even_when_set_after_the_preview(self):
+        wizard = self._wizard()
+        self.by_company.payroll_country = 'SG'           # someone sets it meanwhile
+        wizard.action_fill()
+        self.assertEqual(self.by_company.payroll_country, 'SG')
+
+    def test_07f_hr_managers_only(self):
         with self.assertRaises(AccessError):
             self._wizard(self.officer)
         head = self.env['pb.people'].with_user(self.officer).get_roster_head()
         self.assertFalse(head['kpis']['cow_can_fill'])
-        head = self.env['pb.people'].with_user(self.manager).get_roster_head()
+        head = self.env['pb.people'].with_user(self.manager).with_context(
+            allowed_company_ids=self.companies.ids).get_roster_head()
         self.assertTrue(head['kpis']['cow_can_fill'])
-        self.assertGreaterEqual(head['kpis']['cow_empty'], 3)
+        self.assertGreaterEqual(head['kpis']['cow_empty'], 5)
 
 
 @tagged('post_install', '-at_install', 'tidy_e')

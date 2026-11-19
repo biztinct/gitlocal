@@ -100,7 +100,13 @@ class PbPeople(models.AbstractModel):
             kpis['not_ready'] = self._safe(
                 lambda: Emp.search_count(emp_dom + status_dom['notready']))
         headcount = kpis.get('headcount') or 0
-        kpis['ready_pct'] = round(100 * with_bank / headcount) if headcount else 0
+        # TIDY-E2 (deploy report TE-D3): "Payroll-ready %" is the share that IS
+        # payroll-ready (running contract AND approved bank) — the complement of
+        # "Not payroll-ready" beside it. It used to be bank ÷ headcount, so a site
+        # with all contracts still drafts read 99 % next to 651 not ready.
+        not_ready = kpis.get('not_ready') or 0
+        kpis['ready_pct'] = round(100 * max(headcount - not_ready, 0) / headcount) \
+            if headcount else 0
         # TIDY-E 3b — the "Fill Country of Work" button (HR managers, only
         # while somebody has none).
         kpis['cow_empty'] = self._safe(

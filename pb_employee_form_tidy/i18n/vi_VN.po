@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 04:51+0000\n"
-"PO-Revision-Date: 2026-11-19 04:51+0000\n"
+"POT-Creation-Date: 2026-11-19 13:17+0000\n"
+"PO-Revision-Date: 2026-11-19 13:17+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: vi_VN\n"
@@ -33,6 +33,11 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-globe fa-fw me-1 text-primary\" title=\"Quốc gia làm việc\"/>\n"
 "                    <span class=\"text-muted fw-normal me-2 text-nowrap\">Quốc gia làm việc</span>"
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_pb_cow_fill_wizard__use_company
+msgid "Also fill from the company's country"
+msgstr "Điền thêm theo quốc gia của công ty"
 
 #. module: pb_employee_form_tidy
 #: model:ir.model.fields,help:pb_employee_form_tidy.field_hr_employee__pb_bank_on_record
@@ -110,6 +115,7 @@ msgstr "Điền Quốc gia làm việc"
 
 #. module: pb_employee_form_tidy
 #: model:ir.actions.act_window,name:pb_employee_form_tidy.action_pb_cow_fill_wizard
+#: model:ir.model,name:pb_employee_form_tidy.model_pb_cow_fill_wizard
 #: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_pb_cow_fill_wizard
 msgid "Fill empty Country of Work"
 msgstr "Điền Quốc gia làm việc còn trống"
@@ -117,13 +123,10 @@ msgstr "Điền Quốc gia làm việc còn trống"
 #. module: pb_employee_form_tidy
 #. odoo-javascript
 #: code:addons/pb_employee_form_tidy/static/src/xml/people_country_fill.xml:0
-msgid "Fill empty Country of Work from each person's pay set-up"
-msgstr "Điền Quốc gia làm việc còn trống theo thiết lập lương của từng người"
-
-#. module: pb_employee_form_tidy
-#: model:ir.model,name:pb_employee_form_tidy.model_pb_cow_fill_wizard
-msgid "Fill empty Country of Work from pay set-up"
-msgstr "Điền Quốc gia làm việc còn trống theo thiết lập lương"
+msgid "Fill empty Country of Work from each person's pay set-up or company"
+msgstr ""
+"Điền Quốc gia làm việc còn trống theo thiết lập lương hoặc công ty của từng "
+"người"
 
 #. module: pb_employee_form_tidy
 #: model:ir.model.fields,field_description:pb_employee_form_tidy.field_pb_cow_fill_log__user_id
@@ -133,11 +136,25 @@ msgstr "Người điền"
 #. module: pb_employee_form_tidy
 #: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_pb_cow_fill_wizard
 msgid ""
-"Fills Country of Work only where it is empty, from the pay set-up each\n"
-"                    person is paid under. A Country of Work that is already set is never changed."
+"Fills Country of Work only where it is empty: first from the pay set-up each\n"
+"                    person is paid under, otherwise from their company's country. A Country of\n"
+"                    Work that is already set is never changed."
 msgstr ""
-"Chỉ điền Quốc gia làm việc ở những người còn trống, theo thiết lập lương mà\n"
-"                    từng người đang được trả lương. Quốc gia làm việc đã có sẵn không bao giờ bị thay đổi."
+"Chỉ điền Quốc gia làm việc ở những người còn trống: trước hết theo thiết lập lương\n"
+"                    mà từng người đang được trả lương, nếu không thì theo quốc gia của công ty. Quốc gia\n"
+"                    làm việc đã có sẵn không bao giờ bị thay đổi."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "From pay set-up"
+msgstr "Theo thiết lập lương"
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "From the company's country"
+msgstr "Theo quốc gia của công ty"
 
 #. module: pb_employee_form_tidy
 #. odoo-python
@@ -154,14 +171,18 @@ msgstr "Để trống, vì"
 #. module: pb_employee_form_tidy
 #. odoo-python
 #: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
-msgid "No contract, so no pay set-up to read"
-msgstr "Chưa có hợp đồng nên không có thiết lập lương để đọc"
+msgid "No pay set-up decides, and the company has no country"
+msgstr "Không có thiết lập lương nào xác định, và công ty chưa có quốc gia"
 
 #. module: pb_employee_form_tidy
 #. odoo-python
 #: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
-msgid "No pay set-up pays this person yet"
-msgstr "Chưa có thiết lập lương nào trả lương cho người này"
+msgid ""
+"No pay set-up decides, and the company's country is not one of the Country "
+"of Work choices"
+msgstr ""
+"Không có thiết lập lương nào xác định, và quốc gia của công ty không nằm "
+"trong các lựa chọn Quốc gia làm việc"
 
 #. module: pb_employee_form_tidy
 #. odoo-python
@@ -177,9 +198,20 @@ msgstr "Chưa đặt"
 #. module: pb_employee_form_tidy
 #. odoo-python
 #: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
+msgid "Not ticked: these people stay empty this time."
+msgstr "Chưa chọn: những người này vẫn để trống lần này."
+
+#. module: pb_employee_form_tidy
+#. odoo-python
+#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
 msgid "Nothing to fill — no empty Country of Work could be decided."
 msgstr ""
 "Không có gì để điền — không xác định được Quốc gia làm việc nào còn trống."
+
+#. module: pb_employee_form_tidy
+#: model:ir.model.fields,field_description:pb_employee_form_tidy.field_pb_cow_fill_log__company_count
+msgid "Of which from the company"
+msgstr "Trong đó theo công ty"
 
 #. module: pb_employee_form_tidy
 #. odoo-python
@@ -217,6 +249,15 @@ msgid "People left empty"
 msgstr "Số người để trống"
 
 #. module: pb_employee_form_tidy
+#: model:ir.model.fields,help:pb_employee_form_tidy.field_pb_cow_fill_wizard__use_company
+msgid ""
+"People whose pay set-up does not decide get their company's country. Untick "
+"to fill only from pay set-ups."
+msgstr ""
+"Những người mà thiết lập lương không xác định được sẽ nhận quốc gia của công"
+" ty mình. Bỏ chọn để chỉ điền theo thiết lập lương."
+
+#. module: pb_employee_form_tidy
 #: model_terms:ir.ui.view,arch_db:pb_employee_form_tidy.view_employee_form_tidy
 msgid "Set Country of Work to see country details"
 msgstr "Đặt Quốc gia làm việc để xem thông tin theo quốc gia"
@@ -240,12 +281,6 @@ msgid ""
 msgstr ""
 "Quốc gia nơi người này làm việc và được trả lương. Nó quyết định các ô theo "
 "quốc gia nào hiển thị trên hồ sơ này. Đây không phải quốc tịch."
-
-#. module: pb_employee_form_tidy
-#. odoo-python
-#: code:addons/pb_employee_form_tidy/models/country_of_work_fill.py:0
-msgid "Will be set to"
-msgstr "Sẽ được đặt là"
 
 #. module: pb_employee_form_tidy
 #. odoo-python
