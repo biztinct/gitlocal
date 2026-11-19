@@ -2596,6 +2596,34 @@ const STATIONS = {
           ],
         },
       },
+      /* FORM STUDIO FS-5 — the Form builder: fields a company adds itself. */
+      {
+        id: "formbuilder", icon: "sparkles", mins: 5, after: null,
+        roles: ["owner"],
+        search: B("form builder, add a field, custom field, company details, field library, my own fields",
+                  "trình tạo biểu mẫu, thêm trường, trường riêng, thông tin công ty, thư viện trường"),
+        title: B("Add your own fields", "Thêm các trường của riêng bạn"),
+        desc: B("The details your company keeps that Payobook does not ask for: add them once, and they reach lists, sheets, pay formulas and My Payobook.",
+                "Những thông tin công ty bạn cần mà Payobook không hỏi sẵn: thêm một lần, và chúng có mặt ở danh sách, bảng tính, công thức tính lương và My Payobook."),
+        outline: {
+          what: B("Settings › Form builder lists every field your company added, where it appears, how many records fill it and what uses it. Fields are added on the record screens themselves, with the Form builder button.",
+                  "Cài đặt › Trình tạo biểu mẫu liệt kê mọi trường công ty bạn đã thêm, nó xuất hiện ở đâu, bao nhiêu hồ sơ đã điền và cái gì đang dùng nó. Trường được thêm ngay trên màn hình hồ sơ, bằng nút Trình tạo biểu mẫu."),
+          why: B("A uniform size, a locker number, a site allowance: each company keeps something nobody else does. A real field is checked, translated, kept in history and can be read by a pay formula — a note in a comment box is none of those.",
+                 "Cỡ đồng phục, số tủ đồ, phụ cấp công trường: công ty nào cũng có thứ riêng. Một trường thật được kiểm tra, dịch, lưu lịch sử và công thức tính lương đọc được — một ghi chú trong ô bình luận thì không."),
+          when: B("When HR keeps a detail in a spreadsheet beside Payobook. When a pay formula needs a fact that is not on the record. When employees should see or update a detail themselves.",
+                  "Khi nhân sự giữ một thông tin trong bảng tính bên ngoài Payobook, khi công thức tính lương cần một dữ kiện chưa có trên hồ sơ, và khi nhân viên cần tự xem hoặc cập nhật một thông tin của công ty."),
+          prereq: B("Only the administrator can add, change or delete fields. Who can see each field is chosen field by field.",
+                    "Chỉ quản trị viên mới thêm, sửa hoặc xoá được trường. Ai được xem từng trường được chọn riêng cho mỗi trường."),
+          mistakes: [
+            B("Picking the wrong type. A field's type cannot be changed after it is published; delete it and add a new one while it is still empty.",
+              "Chọn sai loại. Loại của một trường không đổi được sau khi đã xuất bản; hãy xoá và thêm trường mới khi nó còn trống."),
+            B("Leaving a private detail visible to everyone. Set Who can see it before anyone fills it in.",
+              "Để một thông tin riêng tư hiện cho mọi người. Hãy đặt Ai được xem trước khi có người điền vào."),
+            B("Trying to delete a field a pay formula, a mapping or a saved view still uses. The Field library says what uses it; change those first.",
+              "Cố xoá một trường mà công thức tính lương, ánh xạ hoặc chế độ xem đã lưu vẫn đang dùng. Thư viện trường cho biết cái gì đang dùng nó; hãy sửa những chỗ đó trước."),
+          ],
+        },
+      },
     ],
   },
 
@@ -7852,6 +7880,72 @@ const LESSONS = {
     },
   },
 
+  /* FORM STUDIO FS-5 — "Add your own fields". Settings › Form builder (the
+     Field library, pb_form_studio). Anchors are laid by pb_form_studio_reach
+     (static/src/xml/learn_anchors.xml) on the library's own template. */
+  L42: {
+    id: "L42", station: "formbuilder", mins: 5,
+    title: B("Add your own fields", "Thêm các trường của riêng bạn"),
+    goal: B("Know where your company's own fields live, what each one reaches, and why a field cannot simply be deleted.",
+            "Biết các trường riêng của công ty nằm ở đâu, mỗi trường đi tới những đâu, và vì sao không thể xoá một trường một cách đơn giản."),
+    steps: [
+      {
+        screen: "formbuilder", anchor: "fb-head",
+        /* source: pb_form_studio/static/src/xml/field_library.xml:9 */
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("One list of every field you added", "Một danh sách mọi trường bạn đã thêm"),
+        look: B("The Form builder page under Settings: its title and the line under it.",
+                "Trang Trình tạo biểu mẫu trong Cài đặt: tiêu đề và dòng chữ bên dưới."),
+        means: B("Fields are added on the record screens with the Form builder button. This page lists all of them in one place.",
+                 "Trường được thêm trên màn hình hồ sơ bằng nút Trình tạo biểu mẫu. Trang này liệt kê tất cả ở một chỗ."),
+        affects: B("Only the administrator can open it or change a field. Everyone else just sees the fields on the screens.",
+                   "Chỉ quản trị viên mở được trang này hoặc sửa một trường. Những người khác chỉ thấy các trường trên màn hình."),
+      },
+      {
+        screen: "formbuilder", anchor: "fb-kpis",
+        /* source: pb_form_studio/static/src/xml/field_library.xml:21 */
+        kicker: B("The numbers", "Các con số"),
+        title: B("How many, and how filled", "Bao nhiêu, và điền đến đâu"),
+        look: B("The numbers line at the top of the list.",
+                "Dòng con số ở đầu danh sách."),
+        means: B("Grey numbers are zero. A number in colour is something worth a look, such as a field nobody has filled.",
+                 "Con số màu xám là bằng không. Con số có màu là điều nên xem, ví dụ một trường chưa ai điền."),
+        affects: B("Reading them changes nothing.",
+                   "Đọc chúng không thay đổi gì."),
+      },
+      {
+        screen: "formbuilder", anchor: "fb-table",
+        /* source: pb_form_studio/static/src/xml/field_library.xml:43 */
+        kicker: B("One row a field", "Mỗi trường một dòng"),
+        title: B("Where it appears, who sees it, what uses it", "Xuất hiện ở đâu, ai thấy, cái gì dùng nó"),
+        look: B("A row: the field, its record type, its type, where it appears, how filled it is, who can see it, its countries and Used by.",
+                "Một dòng: tên trường, loại hồ sơ, kiểu, nơi xuất hiện, mức điền, ai được xem, các quốc gia và Được dùng bởi."),
+        means: B("Used by names the pay formulas, mappings, saved views and changes waiting on My Payobook that read this field.",
+                 "Được dùng bởi liệt kê các công thức tính lương, ánh xạ, chế độ xem đã lưu và các thay đổi đang chờ trên My Payobook có đọc trường này."),
+        affects: B("A field that something uses cannot be deleted until that is changed, so no formula or sheet loses its input without warning.",
+                   "Một trường đang được dùng thì không xoá được cho tới khi chỗ dùng nó được sửa, nên không công thức hay bảng tính nào mất dữ liệu đầu vào mà không báo."),
+      },
+    ],
+    quiz: {
+      question: B("A pay formula reads the field Site days. You want to delete the field. What happens?",
+                  "Một công thức tính lương đọc trường Ngày công trường. Bạn muốn xoá trường này. Điều gì xảy ra?"),
+      options: [
+        {
+          text: B("The delete is refused and the formula is named", "Việc xoá bị từ chối và công thức được nêu tên"),
+          correct: true,
+          explanation: B("Yes. Choose another source for the formula first; then the field can go.",
+                         "Đúng vậy. Hãy chọn nguồn khác cho công thức trước; sau đó mới xoá được trường."),
+        },
+        {
+          text: B("The field goes and the formula reads zero", "Trường bị xoá và công thức đọc số 0"),
+          correct: false,
+          explanation: B("Let's rethink that. A pay formula never silently loses its input — the delete stops first.",
+                         "Hãy nghĩ lại một chút. Công thức tính lương không bao giờ âm thầm mất đầu vào — việc xoá sẽ dừng lại trước."),
+        },
+      ],
+    },
+  },
+
   L33: {
     id: "L33", station: "structures", mins: 6,
     title: B("Salary structures, and when you need one", "Cấu trúc lương, và khi nào bạn cần"),
@@ -9941,6 +10035,14 @@ const SCREEN_CTX = {
     next: B("Fix what is wrong, approve as-is only what really happened, read the handoff, then Lock week & send to payroll. A time-clock day missing its check-out is fixed with a correction before you lock.",
             "Điều chỉnh những gì sai, chỉ duyệt nguyên trạng những gì thật sự đã xảy ra, đọc phần chuyển giao, rồi Khóa tuần và gửi vào bảng lương. Một ngày từ máy chấm công thiếu giờ ra được sửa bằng một đề nghị chỉnh sửa trước khi khoá."),
     chips: ["lockweek", "whatnext"],
+  },
+  formbuilder: {
+    open: "pb_form_studio.action_pb_form_library",
+    blurb: B("Form builder: every field your company added, where it appears, who can see it and what uses it.",
+             "Trình tạo biểu mẫu: mọi trường công ty bạn đã thêm, nó xuất hiện ở đâu, ai được xem và cái gì đang dùng nó."),
+    next: B("Add a field on the record screen itself with the Form builder button. Here, open a row to rename it, change who can see it or delete it.",
+            "Thêm trường ngay trên màn hình hồ sơ bằng nút Trình tạo biểu mẫu. Ở đây, mở một dòng để đổi tên, đổi người được xem hoặc xoá nó."),
+    chips: ["whatpage"],
   },
   access: {
     open: "biz_access.action_pb_access_board",
