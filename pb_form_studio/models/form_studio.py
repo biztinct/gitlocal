@@ -449,11 +449,20 @@ class PbFormStudio(models.AbstractModel):
         if custom:
             # The other languages, so the properties panel can edit them.
             row = self._pbfs_field_row(Model._name, name)
+            # A language with no translation of its own reads back the
+            # English text; show it as empty so the box invites a translation
+            # instead of pretending one exists.
             labels, helps = {}, {}
+            en = row.with_context(lang='en_US')
             for lang in self._pbfs_langs():
                 r = row.with_context(lang=lang)
                 labels[lang] = r.field_description or ''
                 helps[lang] = r.help or ''
+                if lang != 'en_US':
+                    if labels[lang] == (en.field_description or ''):
+                        labels[lang] = ''
+                    if helps[lang] == (en.help or ''):
+                        helps[lang] = ''
             out['labels'] = labels
             out['helps'] = helps
             if counts is not None:

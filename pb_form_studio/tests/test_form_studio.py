@@ -337,13 +337,21 @@ class TestFormStudio(TransactionCase):
 
     # ------------------------------------------------------------------ 13
     def test_13_silent_install(self):
+        # Meaningful on a database where the Form builder was only just
+        # installed (the report's run is a fresh install). Once somebody has
+        # used it, its own history says so and there is nothing to prove.
+        self.env.cr.execute("SELECT count(*) FROM pb_form_audit WHERE create_date < now()")
+        if self.env.cr.fetchone()[0]:
+            self.skipTest('the Form builder has been used on this database')
+        # Everything older than this class's first record was made by the install.
+        since = self.admin.create_date
         for model in ('pb.form.field.meta', 'pb.form.layout', 'pb.form.layout.draft',
-                      'pb.form.native.view'):
-            # Only what this test class itself made.
-            self.assertFalse(self.env[model].search([('create_uid', 'not in', [
-                self.admin.id, self.env.uid])]), model)
+                      'pb.form.native.view', 'pb.form.audit', 'pb.form.sample'):
+            self.env.cr.execute("SELECT count(*) FROM %s WHERE create_date < %%s"
+                                % self.env[model]._table, [since])
+            self.assertEqual(self.env.cr.fetchone()[0], 0, model)
         self.env.cr.execute("SELECT count(*) FROM ir_model_fields WHERE name LIKE 'x\\_pbfs\\_%%' "
-                            "AND create_date < now() - interval '1 minute'")
+                            "AND create_date < %s", [since])
         self.assertEqual(self.env.cr.fetchone()[0], 0)
         data = self.env['ir.model.data'].search([('module', '=', 'pb_form_studio')])
         self.assertFalse(data.filtered(lambda d: d.model in ('ir.cron', 'mail.template',
@@ -354,7 +362,8 @@ class TestFormStudio(TransactionCase):
     def test_14_caps(self):
         with self.assertRaisesRegex(UserError, 'at most 60'):
             self.make('text', 'x' * 61)
-        with patch.object(fs, 'MAX_PER_MODEL', 2):
+        already = len(self.Studio._pbfs_custom_names(MODEL))
+        with patch.object(fs, 'MAX_PER_MODEL', already + 2):
             self.make('text', 'DEMO A')
             self.make('text', 'DEMO B')
             with self.assertRaisesRegex(UserError, 'most it can have'):
@@ -408,9 +417,10 @@ class TestFormStudio(TransactionCase):
         self.assertTrue(W.write_values(MODEL, self.rec_vn.id, {every: '12'})['ok'])
         # Lists / exports: the column exists, the cell is blank elsewhere.
         self.studio().update_field(MODEL, india, {'list_ok': True})
-        spec = W.fields_for(MODEL, 'list')
-        self.assertEqual([s['name'] for s in spec], [india])
-        self.assertEqual(spec[0]['countries'], [self.india.id])
+        spec = {s['name']: s for s in W.fields_for(MODEL, 'list')}
+        self.assertIn(india, spec)
+        self.assertNotIn(every, spec, 'not marked "Show in lists"')
+        self.assertEqual(spec[india]['countries'], [self.india.id])
         self.rec_vn.sudo().write({india: 'leftover'})
         vals = W.values_for(MODEL, [self.rec_in.id, self.rec_vn.id], 'list')
         self.assertEqual(vals[self.rec_in.id][india]['display'], 'ABCDE1234F')
@@ -436,13 +446,19 @@ class TestFormStudio(TransactionCase):
         hr_render = str(self.Studio.with_user(self.hr).render(HOST, self.rec_vn.id))
         self.assertNotIn('S3CRET', hr_render)
         self.assertIn('HRONLY', hr_render)
-        self.assertEqual([f['name'] for f in self.Studio.with_user(self.staff).fields_for(MODEL, 'list')],
-                         [open_f])
+        staff_list = [f['name'] for f in self.Studio.with_user(self.staff).fields_for(MODEL, 'list')]
+        self.assertIn(open_f, staff_list)
+        self.assertNotIn(secret, staff_list)
+        self.assertNotIn(hr_f, staff_list)
         self.assertNotIn('S3CRET', str(self.Studio.with_user(self.hr).values_for(
             MODEL, [self.rec_vn.id], 'list')))
         # 'everyone' is decided by the setting, even around a sudo record.
         ev = self.Studio._pbfs_values_for(self.rec_vn.sudo(), 'everyone')
-        self.assertEqual(set(ev[self.rec_vn.id]), {open_f})
+        self.assertIn(open_f, ev[self.rec_vn.id])
+        self.assertNotIn(secret, ev[self.rec_vn.id])
+        self.assertNotIn(hr_f, ev[self.rec_vn.id])
+        metas = self.Studio._pbfs_meta(MODEL, list(ev[self.rec_vn.id]))
+        self.assertEqual({m.vis for m in metas.values()}, {'all'})
         # Plain RPC reads.
         Rec = self.env[MODEL].with_user(self.staff)
         self.assertNotIn(secret, Rec.browse(self.rec_vn.id).read()[0])
@@ -479,6 +495,7 @@ class TestFormStudio(TransactionCase):
         self.env['ir.model.data'].create({'module': '__pbfs_test__', 'name': 'sample_form2',
                                           'model': 'ir.ui.view', 'res_id': parent.id})
         xmlid = '__pbfs_test__.sample_form2'
+        self.publish([])      # a layout with no custom field placed (a used database may have some)
         self.assertFalse(self.Studio._pbfs_sync_native_view(MODEL, xmlid, 'Company details', HOST),
                          'no custom field → no view content')
         a = self.make('text', 'DEMO First')['name']

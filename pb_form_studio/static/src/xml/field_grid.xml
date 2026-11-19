@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       Form builder: the picker, the editor and the field grid.
+       W22: no double hyphen inside an XML comment. W23: one class
+       attribute per element (a static class is paired with t-att-class
+       only). W96: every expression is a component method.
+       PRD-3: each translatable sentence stays on one line.
+       ================================================================== -->
+
+  <t t-name="pb_form_studio.Picker">
+    <div class="pbfb-pick" t-ref="root" tabindex="-1" t-att-style="posStyle"
+         t-on-keydown="onKey" t-on-click.stop="">
+      <div class="pbfb-pick-s" t-if="filterable">
+        <span class="ic"><t t-out="ic('search',14)"/></span>
+        <input t-ref="input" type="text" t-att-value="state.term" t-att-placeholder="placeholder"
+               t-on-input="onInput" t-on-keydown="onKey"/>
+        <span t-if="state.loading" class="pbfb-spin"/>
+      </div>
+      <div class="pbfb-pick-l">
+        <button t-foreach="state.rows" t-as="row" t-key="row_index" type="button"
+                class="pbfb-pick-r" t-att-class="rowClass(row_index)"
+                t-on-mouseenter="() => this.setActive(row_index)" t-on-click="() => this.pick(row)">
+          <span class="lb" t-esc="row.label"/>
+          <span class="ck" t-out="ic('check',13)"/>
+        </button>
+        <div t-if="!state.rows.length" class="pbfb-pick-e" t-esc="emptyLabel"/>
+      </div>
+      <button t-if="props.allowClear" type="button" class="pbfb-pick-c" t-on-click="clear" t-esc="clearText"/>
+    </div>
+  </t>
+
+  <t t-name="pb_form_studio.Editor">
+    <div class="pbfb-ed" t-ref="root" tabindex="-1" t-att-class="edClass" t-on-keydown="onKey" t-on-click.stop="">
+      <t t-if="kind === 'bool'">
+        <div class="pbfb-bool">
+          <button type="button" class="pbfb-bool-b" t-att-class="boolClass(true)" t-on-click="() => this.onBool(true)" t-esc="yesLabel"/>
+          <button type="button" class="pbfb-bool-b" t-att-class="boolClass(false)" t-on-click="() => this.onBool(false)" t-esc="noLabel"/>
+        </div>
+      </t>
+      <t t-elif="kind === 'select'">
+        <PbfsPicker rows="pickerRows" allowClear="allowClear" anchorEl="props.anchorEl"
+                    current="props.value" onPick.bind="onPick" onCancel="props.onCancel"/>
+      </t>
+      <t t-elif="kind === 'm2o'">
+        <PbfsPicker lookup="props.lookup" allowClear="allowClear" anchorEl="props.anchorEl"
+                    onPick.bind="onPick" onCancel="props.onCancel"/>
+      </t>
+      <t t-elif="kind === 'date'">
+        <input t-ref="input" type="date" class="pbfb-in" t-att-value="state.draft"
+               t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+      <t t-elif="kind === 'longtext'">
+        <textarea t-ref="input" class="pbfb-in" rows="3" t-att-value="state.draft"
+                  t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+      <t t-elif="kind === 'file'">
+        <label class="pbfb-file">
+          <t t-out="ic('paperclip',14)"/> <span t-esc="chooseFileLabel"/>
+          <input t-ref="input" type="file" t-on-change="onFile" t-on-keydown="onKey"/>
+        </label>
+      </t>
+      <t t-elif="isNumeric">
+        <span class="pbfb-cur" t-if="currencyPrefix" t-esc="currencyPrefix"/>
+        <input t-ref="input" type="text" class="pbfb-in num" t-att-inputmode="inputMode"
+               t-att-value="state.draft" t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+      <t t-else="">
+        <input t-ref="input" type="text" class="pbfb-in" t-att-value="state.draft"
+               t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+    </div>
+  </t>
+
+  <t t-name="pb_form_studio.FieldGrid">
+    <div class="pbfb-grid">
+      <t t-foreach="visibleSections" t-as="sec" t-key="sec.id">
+        <section class="pbfb-card" t-att-class="cardClass(sec)">
+          <header class="pbfb-card-h">
+            <span class="pbfb-card-ic" t-att-class="toneCls(sec)" t-out="secIcon(sec)"/>
+            <h3 t-esc="sec.title"/>
+          </header>
+          <t t-if="sec.kind === 'locked'">
+            <t t-if="hasSlot(sec)"><t t-slot="{{ sec.id }}"/></t>
+            <p t-else="" class="pbfb-card-note"><t t-out="ic('info',14)"/> <span t-esc="sec.note"/></p>
+          </t>
+          <div t-else="" class="pbfb-fields">
+            <t t-foreach="sec.fields" t-as="f" t-key="f.name">
+              <div class="pbfb-f" t-att-class="cellClass(f)" t-att-tabindex="cellTab(f)"
+                   t-on-click="(ev) => this.start(f, ev)" t-on-keydown="(ev) => this.onCellKey(f, ev)">
+                <div class="pbfb-f-lab" t-att-title="f.help">
+                  <t t-out="kindIcon(f)"/> <span t-esc="f.label"/>
+                  <span class="req" t-if="f.required">*</span>
+                  <span class="pen" t-if="canEdit(f)" t-out="ic('pencil',12)"/>
+                </div>
+                <t t-if="isEditing(f)">
+                  <PbfsEditor entry="f" value="editValue(f)" currency="props.currency or ''"
+                              lookup="lookupFor(f)" anchorEl="anchorEl"
+                              onCommit="(v, d) => this.commit(f, v, d)" onCancel.bind="cancel"/>
+                </t>
+                <t t-else="">
+                  <div class="pbfb-f-val" t-att-class="valueClass(f)">
+                    <a t-if="fileUrl(f)" t-att-href="fileUrl(f)" t-on-click.stop="" t-esc="display(f)"/>
+                    <t t-elif="isEmpty(f)" t-esc="emptyText()"/>
+                    <t t-else="" t-esc="display(f)"/>
+                  </div>
+                </t>
+                <div class="pbfb-f-err" t-if="errorFor(f)"><t t-out="ic('alert',12)"/> <span t-esc="errorFor(f)"/></div>
+              </div>
+            </t>
+          </div>
+        </section>
+      </t>
+    </div>
+  </t>
+
+</templates>

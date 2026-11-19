@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- The dev-only test screen (host pbfs_sample). W22 / W23 / W96 / PRD-3. -->
+  <t t-name="pb_form_studio.DevHost">
+    <div class="pbim pbim-page pbfb pbfb-dev">
+      <div class="pbim-wrap">
+        <div t-if="state.loading" class="pbfb-loading"><span class="pbfb-spin"/> <span>Loading…</span></div>
+        <div t-elif="!state.allowed" class="pbfb-note lock"><t t-out="ic('lock',16)"/> <span>This test screen is for the administrator, in developer mode.</span></div>
+        <t t-else="">
+          <div class="pbfb-devbar">
+            <span class="pbfb-devtag"><t t-out="ic('beaker',14)"/> <span>Test screen</span></span>
+            <span class="pbfb-spacer"/>
+            <FormStudioWand studio="studio"/>
+          </div>
+          <div t-if="state.error" class="pbfb-note err"><t t-out="ic('octagonX',16)"/> <span t-esc="state.error"/></div>
+          <div class="pbfb-hero">
+            <div class="av" t-esc="initials"/>
+            <div>
+              <h1 t-esc="name"/>
+              <div class="sub">Sample record · nothing here is real</div>
+            </div>
+          </div>
+          <PbFieldGrid sections="sections" mode="'edit'" model="model" currency="currency"
+                       staged="state.staged" errors="state.errors" onChange.bind="onChange">
+            <t t-set-slot="pay">
+              <div class="pbfb-paint">
+                <div class="t"><div class="l">Monthly wage</div><div class="v money">—</div></div>
+                <div class="t"><div class="l">Pay scheme</div><div class="v">—</div></div>
+              </div>
+            </t>
+          </PbFieldGrid>
+          <div t-if="dirtyCount" class="pbfb-savebar">
+            <span t-esc="dirtyText"/>
+            <span class="pbfb-spacer"/>
+            <button type="button" class="pbfb-btn ghost-dark" t-on-click="discard">Discard</button>
+            <button type="button" class="pbfb-btn primary" t-att-disabled="state.saving" t-on-click="save"><t t-out="ic('check',15)"/> <span>Save</span></button>
+          </div>
+        </t>
+      </div>
+      <FormStudioOverlay t-if="studio.state.open" t-props="studio.overlayProps"/>
+    </div>
+  </t>
+
+</templates>

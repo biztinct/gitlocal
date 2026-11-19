@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Settings, Form builder: the Field library. W22 / W23 / W96 / PRD-3 as in the other files. -->
+  <t t-name="pb_form_studio.FieldLibrary">
+    <div class="pbim pbim-page pbfb pbfb-lib">
+      <div class="pbim-wrap">
+        <button type="button" class="pbfb-back" t-on-click="goBack"><t t-out="ic('back',14)"/> <span t-esc="backLabel"/></button>
+        <div class="pbfb-libtop">
+          <span class="pbfb-libtop-ic" t-out="ic('wand',22)"/>
+          <div>
+            <h1>Form builder</h1>
+            <p>Every custom field in this company, where it appears, how filled it is and what uses it.</p>
+          </div>
+        </div>
+
+        <div t-if="state.loading" class="pbfb-loading"><span class="pbfb-spin"/> <span>Loading the Field library…</span></div>
+        <div t-elif="state.error" class="pbfb-note err"><t t-out="ic('octagonX',16)"/> <span t-esc="state.error"/></div>
+        <t t-else="">
+          <div t-if="state.busy" class="pbfb-note warn"><t t-out="ic('alert',15)"/> <span t-esc="state.busy"/></div>
+          <div class="pbfb-kpis">
+            <div t-foreach="kpis" t-as="k" t-key="k.key" class="pbfb-kpi" t-att-class="kpiClass(k)">
+              <span class="ic" t-out="ic(k.icon,18)"/>
+              <div><div class="v" t-esc="k.value"/><div class="l" t-esc="k.label"/></div>
+            </div>
+          </div>
+
+          <div t-if="!hasRows" class="pbfb-emptycard">
+            <span class="ic" t-out="ic('sparkles',28)"/>
+            <h2 t-esc="emptyTitle"/>
+            <p>Open a record screen and press Form builder to add the fields your company needs.</p>
+          </div>
+
+          <div t-else="" class="pbfb-listwrap">
+            <div class="pbfb-listtop">
+              <div class="pbfb-fchips">
+                <button type="button" t-att-class="filterClass('all')" t-on-click="() => this.setFilter('all')">All</button>
+                <button type="button" t-foreach="recordTypes" t-as="rt" t-key="rt" t-att-class="filterClass(rt)" t-on-click="() => this.setFilter(rt)" t-esc="rt"/>
+              </div>
+              <span class="pbfb-spacer"/>
+              <label class="pbfb-search"><t t-out="ic('search',14)"/><input type="text" placeholder="Search fields" t-att-value="state.term" t-on-input="onTerm"/></label>
+            </div>
+            <div class="pbfb-tbl">
+              <table>
+                <thead><tr>
+                  <th>Field</th><th>Record type</th><th>Type</th><th>Appears in</th><th>Filled</th><th>Who can see</th><th>Countries</th><th>Used by</th><th/>
+                </tr></thead>
+                <tbody>
+                  <tr t-foreach="rows" t-as="r" t-key="r.model + r.name">
+                    <td><span class="name" t-esc="r.label"/><span class="sub" t-esc="r.help"/><span class="code"><span>Field code</span> <t t-esc="r.name"/></span></td>
+                    <td><span class="rt"><i/><t t-esc="r.record_type"/></span></td>
+                    <td><span class="ty"><t t-out="kindIcon(r)"/> <t t-esc="r.type_label"/></span><span class="sub" t-if="r.options.length" t-esc="optionsText(r)"/></td>
+                    <td><div class="pbfb-usage"><span t-foreach="usage(r)" t-as="u" t-key="u_index" t-att-class="usageClass(u)" t-esc="u.label"/></div>
+                        <span class="sub" t-foreach="r.where" t-as="w" t-key="w_index" t-esc="w"/></td>
+                    <td><span class="pbfb-fill"><i t-att-style="fillStyle(r)"/><t t-esc="fillText(r)"/></span></td>
+                    <td t-esc="r.vis_label"/>
+                    <td t-esc="countriesText(r)"/>
+                    <td><span t-if="usedCount(r)" class="pbfb-usedn" t-esc="usedCount(r)"/><span t-else="" class="muted">—</span></td>
+                    <td class="acts">
+                      <button type="button" class="pbfb-btn sm ghost-dark" t-on-click="() => this.startEdit(r)"><t t-out="ic('pencil',13)"/> <span>Edit</span></button>
+                      <button type="button" class="pbfb-btn sm danger icon" title="Delete" aria-label="Delete" t-on-click="() => this.startDelete(r)"><t t-out="ic('trash',13)"/></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <p class="pbfb-foot"><b>Payslips, payslip lines and government returns cannot take custom fields:</b> <span>their shape is fixed by the pay scheme and the official file formats.</span></p>
+        </t>
+      </div>
+
+      <!-- Edit sheet -->
+      <div t-if="state.edit" class="pbfb-sheet" t-on-click.self="closeEdit">
+        <div class="pbfb-sheet-box wide" role="dialog" aria-modal="true">
+          <t t-set="e" t-value="state.edit"/>
+          <div class="hd"><h2 t-esc="e.row.label"/><p><t t-esc="e.row.record_type"/> · <t t-esc="e.row.type_label"/></p></div>
+          <div class="bd pbfb-prop">
+            <label>Label<input type="text" maxlength="60" t-att-value="e.label" t-on-input="(ev) => this.onEditInput('label', ev)"/></label>
+            <label t-foreach="langs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
+              <input type="text" maxlength="60" t-att-value="e.labels[lang] or ''" t-att-placeholder="e.label" t-on-input="(ev) => this.onEditLang(lang, ev)"/>
+            </label>
+            <label>Help text<textarea t-on-input="(ev) => this.onEditInput('help', ev)"><t t-esc="e.help"/></textarea></label>
+            <div t-if="e.row.kind === 'select'" class="pbfb-opts">
+              <span class="pbfb-lab">Choices</span>
+              <div t-foreach="e.options" t-as="o" t-key="o_index" class="pbfb-opt">
+                <input type="text" maxlength="60" t-att-value="o.label" t-on-input="(ev) => this.onOption(o_index, ev)"/>
+                <button type="button" class="pbfb-btn sm ghost-dark icon" title="Remove this choice" aria-label="Remove this choice" t-on-click="() => this.removeOption(o_index)"><t t-out="ic('x',13)"/></button>
+              </div>
+              <button type="button" class="pbfb-btn sm outline" t-on-click="addOption"><t t-out="ic('plus',13)"/> <span>Add a choice</span></button>
+            </div>
+            <label>Who can see it
+              <select t-on-change="(ev) => this.onEditInput('vis', ev)">
+                <option t-foreach="visOptions" t-as="v" t-key="v.value" t-att-value="v.value" t-att-selected="v.value === e.vis" t-esc="v.label"/>
+              </select>
+            </label>
+            <div class="pbfb-countries">
+              <div class="t">Countries of work</div>
+              <div class="pbfb-cchips">
+                <button type="button" class="pbfb-cchip" t-att-class="{ on: !e.countries.length }" t-on-click="allCountries"><t t-out="ic('globe',12)"/> <span>All countries</span></button>
+                <span t-foreach="e.countries" t-as="c" t-key="c.id" class="pbfb-cchip on"><span t-esc="c.name"/>
+                  <button type="button" aria-label="Remove" t-on-click="() => this.removeCountry(c)"><t t-out="ic('x',11)"/></button></span>
+              </div>
+              <input type="text" class="pbfb-csearch" placeholder="Add a country…" t-att-value="e.countryTerm" t-on-input="onCountryTerm"/>
+              <div class="pbfb-cmatch" t-if="countryMatches.length">
+                <button t-foreach="countryMatches" t-as="c" t-key="c.id" type="button" t-on-click="() => this.addCountry(c)" t-esc="c.name"/>
+              </div>
+            </div>
+            <div class="pbfb-row"><div><div class="t">Required</div></div>
+              <button type="button" class="pbfb-sw" role="switch" aria-label="Required" t-att-aria-checked="switchAttr(e.required)" t-on-click="() => this.onEditToggle('required')"/></div>
+            <div class="pbfb-row"><div><div class="t">Show in lists</div></div>
+              <button type="button" class="pbfb-sw" role="switch" aria-label="Show in lists" t-att-aria-checked="switchAttr(e.list_ok)" t-on-click="() => this.onEditToggle('list_ok')"/></div>
+            <div class="pbfb-row"><div><div class="t">Use in pay formulas</div></div>
+              <button type="button" class="pbfb-sw" role="switch" aria-label="Use in pay formulas" t-att-disabled="!e.row.formula_possible" t-att-aria-checked="switchAttr(e.formula_ok)" t-on-click="() => this.onEditToggle('formula_ok')"/></div>
+            <div t-if="e.row.used_by.length" class="pbfb-used">
+              <div class="pbfb-lab">Used by</div>
+              <div t-foreach="e.row.used_by" t-as="u" t-key="u_index" class="pbfb-used-row"><t t-out="ic('link',13)"/> <b t-esc="u.label"/> <span class="n" t-esc="u.count"/></div>
+            </div>
+          </div>
+          <div class="ft">
+            <button type="button" class="pbfb-btn ghost-dark" t-on-click="closeEdit">Cancel</button>
+            <button type="button" class="pbfb-btn primary" t-att-disabled="state.saving" t-on-click="saveEdit"><t t-out="ic('check',15)"/> <span>Save</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete sheet -->
+      <div t-if="state.del" class="pbfb-sheet" t-on-click.self="closeDelete">
+        <div class="pbfb-sheet-box" role="dialog" aria-modal="true">
+          <t t-set="d" t-value="state.del"/>
+          <div class="hd"><h2>Delete this field?</h2><p t-esc="d.row.label"/></div>
+          <div class="bd">
+            <t t-if="d.row.used_by.length">
+              <div class="pbfb-note err"><t t-out="ic('octagonX',15)"/> <div><b>Cannot delete.</b> <span>These still use it. Remove it there first.</span></div></div>
+              <div t-foreach="d.row.used_by" t-as="u" t-key="u_index" class="pbfb-used-row"><t t-out="ic('link',13)"/> <b t-esc="u.label"/> <span class="n" t-esc="u.count"/>
+                <div class="names" t-if="u.names.length" t-esc="u.names.join(', ')"/></div>
+            </t>
+            <div t-else="" class="pbfb-confirm">
+              <div class="pbfb-note err"><t t-out="ic('alert',15)"/> <span t-esc="deleteWarn(d.row)"/></div>
+              <label><span t-esc="typeToConfirm(d.row)"/><input type="text" autocomplete="off" t-att-value="d.typed" t-on-input="onDelTyped"/></label>
+            </div>
+          </div>
+          <div class="ft">
+            <button type="button" class="pbfb-btn ghost-dark" t-on-click="closeDelete">Cancel</button>
+            <button type="button" t-if="!d.row.used_by.length" class="pbfb-btn danger" t-att-disabled="!delReady or state.saving" t-on-click="doDelete"><t t-out="ic('trash',15)"/> <span>Delete</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
