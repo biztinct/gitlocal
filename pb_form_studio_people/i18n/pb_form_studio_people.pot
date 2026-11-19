@@ -1,0 +1,416 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 09:59+0000\n"
+"PO-Revision-Date: 2026-11-19 09:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%(filled)s of %(total)s filled in"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s details need a look before they can be saved."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s unsaved changes"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 detail needs a look before it can be saved."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 unsaved change"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "A field's type cannot be changed after it is published."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "A pay formula reads it, so only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Add or move fields"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Add your own fields"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Already on My details: the employee changes it there."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Bank details are changed through the bank change request."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Company details"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Company details saved."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Company, team, manager and job are set by HR."
+msgstr ""
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__pbfs_country_of_work_id
+msgid "Country of Work"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Country of Work decides which rules apply. Only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Details your company keeps for this person."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Discard"
+msgstr ""
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_form_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_people__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Documents"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Drawn by the side panel itself. Fields cannot be placed here."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#: model:ir.model,name:pb_form_studio_people.model_hr_employee
+msgid "Employee"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Every change to this person, newest first. %s"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+#: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
+msgid "Form builder"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Form builder: add your own fields to this panel, or move them"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"HR fills them in on this tab. You decide who can see each one and in which "
+"countries it applies."
+msgstr ""
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_form_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_people__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Identity, contact and family details. %s"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Job"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Keep editing"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"Keep the details your company tracks for every employee, such as a uniform "
+"size, a locker number or a union membership, right here."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Leave without saving"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Login and access details are set by HR."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "More about the job"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "More about the person"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "No"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid ""
+"None of the fields made so far apply to people whose Country of Work is %s."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Not filled in"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Nothing to show for this person"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Only HR can see these details."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Only payroll managers can change amounts."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Open the Form builder"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Part of the contract. Only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Pay & tax"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Pay figures are never shown on My Payobook."
+msgstr ""
+
+#. module: pb_form_studio_people
+#: model:ir.model,name:pb_form_studio_people.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Personal"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Position, team and place of work. %s"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Profile"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save and go"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save them before you leave, or leave without saving."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Saving did not work. Nothing was changed."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Tax numbers and status are changed through Tax details."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Tax, insurance and bank details. %s"
+msgstr ""
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,help:pb_form_studio_people.field_hr_employee__pbfs_country_of_work_id
+msgid ""
+"The country of the Country of Work box, used to show only the fields that "
+"apply to it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "This employee no longer exists."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid ""
+"This person has no Country of Work recorded, so only fields for all "
+"countries show here."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Timeline"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Unsaved changes"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Uploaded documents, by kind. %s"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Visible to payroll managers only"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Wage, department, manager and contract dates. %s"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Yes"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "You can look at these details but not change them."
+msgstr ""

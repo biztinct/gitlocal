@@ -1,0 +1,429 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 09:59+0000\n"
+"PO-Revision-Date: 2026-11-19 09:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%(filled)s of %(total)s filled in"
+msgstr "Đã điền %(filled)s / %(total)s"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s details need a look before they can be saved."
+msgstr "%s thông tin cần xem lại trước khi lưu."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s unsaved changes"
+msgstr "%s thay đổi chưa lưu"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 detail needs a look before it can be saved."
+msgstr "1 thông tin cần xem lại trước khi lưu."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 unsaved change"
+msgstr "1 thay đổi chưa lưu"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "A field's type cannot be changed after it is published."
+msgstr "Sau khi công bố, không thể đổi kiểu của trường."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "A pay formula reads it, so only HR changes it."
+msgstr "Công thức lương đọc trường này, nên chỉ bộ phận nhân sự được đổi."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Add or move fields"
+msgstr "Thêm hoặc di chuyển trường"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Add your own fields"
+msgstr "Thêm trường của riêng bạn"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Already on My details: the employee changes it there."
+msgstr "Đã có trong Thông tin của tôi: nhân viên đổi ở đó."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Bank details are changed through the bank change request."
+msgstr "Thông tin ngân hàng được đổi qua yêu cầu đổi tài khoản ngân hàng."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Company details"
+msgstr "Thông tin công ty"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Company details saved."
+msgstr "Đã lưu thông tin công ty."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Company, team, manager and job are set by HR."
+msgstr "Công ty, phòng ban, quản lý và công việc do bộ phận nhân sự đặt."
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__pbfs_country_of_work_id
+msgid "Country of Work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Country of Work decides which rules apply. Only HR changes it."
+msgstr ""
+"Quốc gia làm việc quyết định quy định nào được áp dụng. Chỉ bộ phận nhân sự "
+"được đổi."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Details your company keeps for this person."
+msgstr "Những thông tin công ty bạn lưu cho người này."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Discard"
+msgstr "Bỏ thay đổi"
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_form_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_people__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Documents"
+msgstr "Tài liệu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Drawn by the side panel itself. Fields cannot be placed here."
+msgstr "Do bảng bên tự hiển thị. Không thể đặt trường vào đây."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#: model:ir.model,name:pb_form_studio_people.model_hr_employee
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Every change to this person, newest first. %s"
+msgstr "Mọi thay đổi của người này, mới nhất trước. %s"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+#: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
+msgid "Form builder"
+msgstr "Trình tạo biểu mẫu"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Form builder: add your own fields to this panel, or move them"
+msgstr ""
+"Trình tạo biểu mẫu: thêm trường của riêng bạn vào bảng này, hoặc di chuyển "
+"chúng"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"HR fills them in on this tab. You decide who can see each one and in which "
+"countries it applies."
+msgstr ""
+"Bộ phận nhân sự điền ở thẻ này. Bạn quyết định ai được xem từng trường và "
+"trường áp dụng ở quốc gia nào."
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_form_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_people__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Identity, contact and family details. %s"
+msgstr "Thông tin nhân thân, liên hệ và gia đình. %s"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Job"
+msgstr "Công việc"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Keep editing"
+msgstr "Tiếp tục chỉnh sửa"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"Keep the details your company tracks for every employee, such as a uniform "
+"size, a locker number or a union membership, right here."
+msgstr ""
+"Lưu ngay tại đây những thông tin công ty bạn theo dõi cho mỗi nhân viên, như"
+" cỡ đồng phục, số tủ đồ hay việc tham gia công đoàn."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Leave without saving"
+msgstr "Rời đi không lưu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Login and access details are set by HR."
+msgstr "Thông tin đăng nhập và quyền truy cập do bộ phận nhân sự đặt."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "More about the job"
+msgstr "Thêm về công việc"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "More about the person"
+msgstr "Thêm về người này"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid ""
+"None of the fields made so far apply to people whose Country of Work is %s."
+msgstr "Chưa có trường nào áp dụng cho người có quốc gia làm việc là %s."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Not filled in"
+msgstr "Chưa điền"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Nothing to show for this person"
+msgstr "Không có gì để hiển thị cho người này"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Only HR can see these details."
+msgstr "Chỉ bộ phận nhân sự được xem các thông tin này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Only payroll managers can change amounts."
+msgstr "Chỉ quản lý lương được đổi số tiền."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Open the Form builder"
+msgstr "Mở Trình tạo biểu mẫu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Part of the contract. Only HR changes it."
+msgstr "Thuộc hợp đồng. Chỉ bộ phận nhân sự được đổi."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Pay & tax"
+msgstr "Lương & thuế"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Pay figures are never shown on My Payobook."
+msgstr "Số liệu lương không bao giờ hiện trên My Payobook."
+
+#. module: pb_form_studio_people
+#: model:ir.model,name:pb_form_studio_people.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr "Dữ liệu màn hình Nhân sự của Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Personal"
+msgstr "Cá nhân"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Position, team and place of work. %s"
+msgstr "Vị trí, phòng ban và nơi làm việc. %s"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Profile"
+msgstr "Hồ sơ"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save and go"
+msgstr "Lưu rồi đi"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save them before you leave, or leave without saving."
+msgstr "Hãy lưu trước khi rời đi, hoặc rời đi mà không lưu."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Saving did not work. Nothing was changed."
+msgstr "Lưu không thành công. Không có gì thay đổi."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Tax numbers and status are changed through Tax details."
+msgstr "Mã số thuế và tình trạng thuế được đổi qua Thông tin thuế."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Tax, insurance and bank details. %s"
+msgstr "Thông tin thuế, bảo hiểm và ngân hàng. %s"
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,help:pb_form_studio_people.field_hr_employee__pbfs_country_of_work_id
+msgid ""
+"The country of the Country of Work box, used to show only the fields that "
+"apply to it."
+msgstr ""
+"Quốc gia trong ô Quốc gia làm việc, dùng để chỉ hiện các trường áp dụng cho "
+"quốc gia đó."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "This employee no longer exists."
+msgstr "Nhân viên này không còn tồn tại."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid ""
+"This person has no Country of Work recorded, so only fields for all "
+"countries show here."
+msgstr ""
+"Người này chưa có quốc gia làm việc, nên ở đây chỉ hiện các trường áp dụng "
+"cho mọi quốc gia."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Timeline"
+msgstr "Dòng thời gian"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Unsaved changes"
+msgstr "Thay đổi chưa lưu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Uploaded documents, by kind. %s"
+msgstr "Tài liệu đã tải lên, theo loại. %s"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Visible to payroll managers only"
+msgstr "Chỉ quản lý lương được xem"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Wage, department, manager and contract dates. %s"
+msgstr "Lương, phòng ban, quản lý và ngày hợp đồng. %s"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "You can look at these details but not change them."
+msgstr "Bạn có thể xem các thông tin này nhưng không được thay đổi."

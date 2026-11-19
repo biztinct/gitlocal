@@ -372,6 +372,37 @@ class TestPeopleHost(TransactionCase):
         self.emp_vn.write({'payroll_country': 'IN'})
         self.assertIn(pan, self.names_in(self.panel(self.emp_vn)))
 
+    # ------------------------------------------------------------- 13 R14
+    def test_13_my_payobook_host_flags_and_locked_list(self):
+        host = self.Studio._pbfs_hosts()[HOST]
+        self.assertIs(host['portal'], True)
+        std = host['standard_fields']
+        for name in ('name', 'birthday', 'private_phone', 'department_id', 'payroll_country'):
+            self.assertIn(name, std)
+        for name in ('image_1920', 'child_ids', 'employee_properties', 'version_id'):
+            self.assertNotIn(name, std)
+        self.assertTrue(all(n in self.env[MODEL]._fields for n in std))
+        self.assertEqual(host['std_fields'], [], 'standard boxes stay where the panel draws them')
+        plain = self.add('text', 'DEMO Shirt colour')
+        formula = self.add('integer', 'DEMO Shift points', formula_ok=True)
+        money = self.add('money', 'DEMO Shoe allowance')
+        hidden = self.Studio._pbfs_portal_hidden(MODEL)
+        locked = self.Studio._pbfs_portal_locked(MODEL)
+        self.assertIn('wage', hidden)
+        self.assertIn(money, hidden, 'a pay figure is never shown')
+        for name in ('payroll_country', 'company_id', 'parent_id', 'department_id', 'job_id',
+                     'user_id', 'contract_date_start', 'bank_name', formula):
+            self.assertIn(name, locked, name)
+        self.assertNotIn(plain, locked)
+        self.assertNotIn(plain, hidden)
+        self.assertNotIn('spouse_complete_name', locked, 'an ordinary box may be offered')
+        if 'pb.me.detail.request' in self.env:
+            self.assertIn('Already on My details', locked['marital'])
+        if 'pb.profile.change.request' in self.env:
+            self.assertIn('Already on My details', locked['private_phone'])
+        # other record types are not touched by this host
+        self.assertNotIn('wage', self.Studio._pbfs_portal_hidden('pb.form.sample'))
+
     # ------------------------------------------------------------------ 10
     def test_10_silent_install(self):
         self.env.cr.execute("SELECT count(*) FROM pb_form_audit WHERE create_date < now()")
