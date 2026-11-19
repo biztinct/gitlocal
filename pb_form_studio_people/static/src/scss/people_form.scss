@@ -1,0 +1,117 @@
+// =====================================================================
+//  Form builder on the employee screens (pb_form_studio_people, FS-2).
+//  Classes .pbfp-* (".pbfs" belongs to Formula Studio, ".pbfb" to the
+//  engine — FS1-2). Tokens: the engine's --pbim-* / --pbfb-*. No gradients,
+//  no emoji, Lucide only. Widths with max-width, never min() (FS1-3).
+// =====================================================================
+
+// ------------------------------------------------------------ side panel
+.pev {
+    // the wand in the header: same box as Contract / Full details, brand ink
+    .pev-head-side .pbfp-wand { color: var(--pbim-primary, #5A4BB0); padding-left: 9px; padding-right: 9px; }
+    .pev-head-side .pbfp-wand:hover { background: var(--pbim-soft, #EDEAF8); }
+
+    .pbfp-tabbtn { position: relative; }
+    .pbfp-tabbtn svg { color: var(--pbim-primary, #5A4BB0); }
+    .pbfp-dot {
+        width: 7px; height: 7px; border-radius: 50%; background: var(--pbim-primary, #5A4BB0);
+        box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); animation: pbfp-pulse 1.6s ease-in-out infinite;
+    }
+
+    // the tab body is the engine's grid, one card per row in a 640px panel
+    .pbfp {
+        animation: pbfp-rise .22s cubic-bezier(.22, .61, .36, 1);
+        .pbfb-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 12px; }
+        .pbfb-card { box-shadow: none; }
+    }
+}
+
+.pbfb.pbfp {
+    .pbfp-head {
+        display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px;
+        background: var(--pbfb-wash); border: 1px solid var(--pbim-soft);
+        .tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 180px; }
+        .tx b { font-size: 14px; font-weight: 800; color: var(--pbim-text); }
+        .tx > span:not(.pbfp-bar) { font-size: 12.5px; color: var(--pbim-muted); font-weight: 600; }
+        flex-wrap: wrap;
+    }
+    .pbfp-badge {
+        width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex: none;
+        background: #fff; color: var(--pbim-primary); border: 1px solid var(--pbim-soft);
+    }
+    .pbfp-bar {
+        display: block; height: 4px; border-radius: 999px; background: #fff; margin-top: 6px; overflow: hidden;
+        max-width: 260px;
+        i { display: block; height: 100%; border-radius: inherit; background: var(--pbim-primary);
+            width: calc(var(--pbfp-pct, 0) * 1%); transition: width .45s cubic-bezier(.22, .61, .36, 1); }
+    }
+    .pbfp-ro { margin-top: 10px; }
+
+    // ---- the administrator's first step
+    .pbfp-empty {
+        display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
+        padding: 34px 22px 30px; border-radius: 16px; border: 1.5px dashed var(--pbim-primary-light);
+        background: var(--pbfb-wash);
+        h3 { margin: 6px 0 0; font-size: 17px; font-weight: 800; color: var(--pbim-text); }
+        p { margin: 0; max-width: 430px; color: var(--pbim-muted); font-weight: 600; font-size: 13px; line-height: 1.55; }
+        p.sub { font-size: 12.5px; font-weight: 500; }
+        button.pbfb-btn { margin-top: 10px; }
+    }
+    .pbfp-empty-ic {
+        width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center;
+        background: #fff; color: var(--pbim-primary); border: 1px solid var(--pbim-soft);
+        box-shadow: var(--pbfb-sh); animation: pbfp-float 3.2s ease-in-out infinite;
+    }
+
+    // ---- one Save for the whole tab (R8)
+    .pbfp-savebar {
+        position: sticky; bottom: -24px; z-index: 2; margin: 14px -4px -24px;
+        display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 14px 14px 0 0;
+        background: #fff; border: 1px solid var(--pbim-line); border-bottom: 0;
+        box-shadow: 0 -10px 30px -18px rgba(30, 27, 46, .35);
+        animation: pbfp-up .2s cubic-bezier(.22, .61, .36, 1);
+        .tx { font-weight: 800; font-size: 13px; color: var(--pbim-primary); }
+    }
+    .pbfp-savebar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pbim-primary); flex: none; }
+
+    // ---- leaving with unsaved changes
+    .pbfp-leave {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 12px;
+        border-radius: 14px; background: var(--pbim-amber-soft); color: #92400E;
+        animation: pbfp-rise .2s ease-out;
+        .tx { display: flex; flex-direction: column; gap: 2px; flex: 1 1 200px; min-width: 0; font-size: 12.5px; font-weight: 600; }
+        .tx b { font-size: 13.5px; font-weight: 800; }
+    }
+    .pbfp-leave-ic { flex: none; display: grid; place-items: center; }
+    .pbfp-leave-b { display: flex; gap: 6px; flex-wrap: wrap; }
+}
+
+// ------------------------------------------------------------ full page
+.pbfp-full {
+    .pbim-panel-h .pbim-chip { display: inline-flex; align-items: center; gap: 6px; }
+    .pbfb.pbfp .pbfb-grid { margin-top: 4px; }
+}
+
+// ------------------------------------------------------------ publish sheet
+.pbfb .pbfp-typenote { margin: 0 20px 14px; }
+
+// ------------------------------------------------------------ phone
+@media (max-width: 620px) {
+    .pbfb.pbfp {
+        .pbfb-fields { grid-template-columns: minmax(0, 1fr); }
+        .pbfp-head button.pbfb-btn { width: 100%; justify-content: center; }
+        .pbfp-leave-b { width: 100%; }
+        .pbfp-leave-b button.pbfb-btn { flex: 1 1 auto; justify-content: center; }
+        .pbfp-savebar { margin-left: -2px; margin-right: -2px; }
+    }
+    .pbfp-full .pbfb.pbfp .pbfb-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@keyframes pbfp-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pbfp-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pbfp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes pbfp-pulse { 0%, 100% { box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); } 50% { box-shadow: 0 0 0 5px var(--pbim-soft, #EDEAF8); } }
+
+@media (prefers-reduced-motion: reduce) {
+    .pev .pbfp, .pbfb.pbfp .pbfp-empty-ic, .pbfb.pbfp .pbfp-savebar, .pbfb.pbfp .pbfp-leave, .pev .pbfp-dot { animation: none; }
+}
