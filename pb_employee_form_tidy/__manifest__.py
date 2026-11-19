@@ -28,6 +28,7 @@ this module.
         'hr',
         'pb_hr_payroll_base',      # Country of Work (payroll_country)
         'pb_hr_payroll_formula',   # Date of Joining, the pay data file import
+        'pb_people',               # the People list and its Payroll-ready figure
     ],
     'data': [
         'views/hr_employee_views.xml',
