@@ -23,10 +23,10 @@ Every seam is reached from OUTSIDE pb_contracts (FS_HOST_FACTS §B.2):
 """
 import logging
 
-from odoo import api, models
+from odoo import api, fields, models
 
 from odoo.addons.pb_contracts.models.contract_approval import CONTRACT_WRITE, MONEY_TERMS
-from odoo.addons.pb_contracts.models.pb_contract_360 import _M2O_WHITELIST
+from odoo.addons.pb_contracts.models.pb_contract_360 import _M2O_WHITELIST, _dlabel
 
 from .form_studio_host import HOST, MODEL
 from .hr_contract import is_custom, snap_value
@@ -74,6 +74,9 @@ class PbContracts(models.AbstractModel):
     def _fs3_entry(self, f, can_write):
         kind = KIND.get(f.get('kind'), 'text')
         display = f.get('display')
+        if kind == 'date' and f.get('value'):
+            # The panel writes every date one way ("01 Dec 2026").
+            display = _dlabel(fields.Date.to_date(f['value']))
         entry = {
             'name': f['name'],
             'label': f.get('label') or f['name'],

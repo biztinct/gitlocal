@@ -66,10 +66,23 @@
     .pbc-head-side .pbfb-wand.compact { height: 34px; padding: 0 9px; }
 
     @media (max-width: 640px) {
+        // On a phone the header's name column was already narrow and the
+        // wand would squeeze it to one word per line: while the wand is
+        // there (administrator only), the wage, wand and close button take
+        // a row of their own under the name. Nobody else's header changes.
+        .pbc-head:has(.pbfb-wand) {
+            flex-wrap: wrap; row-gap: 10px;
+            .pbc-head-id { flex: 1 1 100%; min-width: 0; }
+            .pbc-head-side { flex: 1 1 100%; justify-content: flex-end; }
+            .pbc-wage { margin-right: auto; text-align: left; }
+        }
         .pbc-sec.pbfs3-sec { margin-left: -6px; margin-right: -6px; padding: 10px 6px 2px; }
         button.pbfs3-prompt { flex-wrap: wrap; .go { margin-left: 50px; } }
     }
 }
+
+// ---- the contract page: the wand as tall as the buttons beside it ----
+.ppl-d-top .pbfb-wand { padding-top: 9px; padding-bottom: 9px; }
 
 // ---- the contract page: one wide card, three columns of values ----
 .pbfb.pbfs3-page {
