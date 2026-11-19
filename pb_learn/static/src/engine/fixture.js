@@ -2123,6 +2123,28 @@ const PRACTICE = {
     handover: { to: ROUTE.steps[0].who, until: "21/08/2026" },
   },
 
+  /* ----------------------------------------------- Settings › Form builder
+     pb_form_studio's Field library (field_library.xml): the fields this
+     company added itself. Four of them, one on the contract; Site days feeds
+     a pay formula, so it shows Used by 1 and cannot be deleted. The numbers
+     line is the library's own four (field_library.js kpis). */
+  formbuilder: {
+    rows: [
+      { label: B("Uniform size", "Cỡ đồng phục"), code: "x_uniform_size", rt: "emp",
+        kind: B("Choice", "Lựa chọn"), opts: "S, M, L", where: ["screen", "lists"],
+        filled: 41, of: 52, who: "hr", countries: null, portal: B("Shown", "Đã hiện"), used: 0 },
+      { label: B("Locker number", "Số tủ đồ"), code: "x_locker_number", rt: "emp",
+        kind: B("Text", "Văn bản"), opts: "", where: ["screen"],
+        filled: 12, of: 52, who: "hr", countries: B("Vietnam", "Việt Nam"), portal: null, used: 0 },
+      { label: B("Site days", "Ngày công trường"), code: "x_site_days", rt: "emp",
+        kind: B("Number", "Số"), opts: "", where: ["screen", "formulas"],
+        filled: 30, of: 52, who: "hr", countries: null, portal: null, used: 1 },
+      { label: B("Parking bay", "Chỗ đỗ xe"), code: "x_parking_bay", rt: "contract",
+        kind: B("Text", "Văn bản"), opts: "", where: ["screen", "lists"],
+        filled: 8, of: 50, who: "hr", countries: null, portal: null, used: 0 },
+    ],
+  },
+
   /* ----------------------------------------------- Compliance › Bank / Young workers / Audit */
   compliance: {
     bank: [[B("Draft", "Nháp"), 1], [B("HR Review", "Nhân sự xét duyệt"), 1], [B("Finance Review", "Tài chính xét duyệt"), 0],
@@ -2358,6 +2380,9 @@ const MENU = [
       { key: "system", label: B("System", "Hệ thống"), cats: [
         { key: "guided_setup", label: B("Guided setup", "Thiết lập có hướng dẫn"),
           card: B("New configuration", "Cấu hình mới"), screen: "blueprint" },
+        /* FORM STUDIO (2026-11-20): the Form builder card (pb_form_studio
+           settings_card.js, group "system"; administrators only). */
+        { key: "form_builder", label: B("Form builder", "Trình tạo biểu mẫu"), screen: "formbuilder" },
         { key: "about", label: B("About Payobook", "Về Payobook") },
         { key: "demo_data", label: B("Demo data", "Dữ liệu mẫu") },
       ] },

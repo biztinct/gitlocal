@@ -417,8 +417,18 @@ ANCHOR_RE = re.compile(
     # LEARN REFRESH step 3 (setup) and step 4 (the wider app).
     r'|bp|mp|tr|am|rd|gp|ai|pp|dr|hi|nj|ex2|pr|gw|cl|wf|ac|cp'
     # ORG CHART (2026-11-05): People › Org chart (pb_orgchart).
-    r'|oc)'
+    r'|oc'
+    # FORM STUDIO (2026-11-20): Settings › Form builder (pb_form_studio's
+    # Field library; anchors laid from outside by pb_form_studio_reach).
+    r'|fb)'
     r'-[a-z0-9][a-z0-9-]*)"')
+
+# A bridge module lays an anchor on a template it does not own with a
+# t-inherit attribute (`<attribute name="data-coach">fb-head</attribute>`):
+# that is a literal attribute too, written the only way an inheriting
+# template can write one. The FORMSTUDIO ledger requires bridges to reach
+# other modules' screens this way instead of editing them.
+INHERITED_ANCHOR_RE = re.compile(r'<attribute name="data-coach">([^<"{}#]+)</attribute>')
 
 
 def anchor_lint(cfg, res, quiet):
@@ -459,6 +469,7 @@ def anchor_lint(cfg, res, quiet):
             gone.append(rel)
             continue
         present |= set(re.findall(r'data-coach="([^"]+)"', text))
+        present |= set(INHERITED_ANCHOR_RE.findall(text))
     # Practice-only anchors have no product template by definition; they are
     # declared in the registry and drawn by the replica, and the module's own
     # test checks that side.

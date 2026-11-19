@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
   <!-- Learn anchors on the Field library (lesson L42 "Add your own fields").
-       Laid from outside so pb_form_studio is not edited. -->
+       Laid from outside so pb_form_studio is not edited. Registered in
+       pb_learn/static/src/anchors.json (product block, fb-*) and pinned by
+       docs/tutorial_poc/author/contract.json (formbuilder-lesson-anchors). -->
   <t t-inherit="pb_form_studio.FieldLibrary" t-inherit-mode="extension">
     <xpath expr="//div[hasclass('pbfb-libtop')]" position="attributes">
       <attribute name="data-coach">fb-head</attribute>
@@ -9,8 +11,14 @@
     <xpath expr="//div[hasclass('pbfb-kpis')]" position="attributes">
       <attribute name="data-coach">fb-kpis</attribute>
     </xpath>
+    <xpath expr="//div[hasclass('pbfb-listtop')]" position="attributes">
+      <attribute name="data-coach">fb-filters</attribute>
+    </xpath>
     <xpath expr="//div[hasclass('pbfb-tbl')]" position="attributes">
       <attribute name="data-coach">fb-table</attribute>
+    </xpath>
+    <xpath expr="//p[hasclass('pbfb-foot')]" position="attributes">
+      <attribute name="data-coach">fb-foot</attribute>
     </xpath>
   </t>
 </templates>

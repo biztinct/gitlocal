@@ -2178,10 +2178,20 @@
       "file": "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
       "desc": "The Field library numbers line."
     },
+    "fb-filters": {
+      "screen": "formbuilder",
+      "file": "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
+      "desc": "The Field library's record-type chips (All, Employee, Contract) and Search fields."
+    },
     "fb-table": {
       "screen": "formbuilder",
       "file": "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
       "desc": "The Field library table, one row per custom field."
+    },
+    "fb-foot": {
+      "screen": "formbuilder",
+      "file": "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
+      "desc": "The line under the Field library: payslips, payslip lines and government returns cannot take custom fields."
     }
   },
   "pattern": {

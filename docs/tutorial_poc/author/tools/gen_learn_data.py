@@ -140,6 +140,11 @@ SCREEN_ACTION_TAGS = {
     # (pb_people_hub:orgchart); the tag covers the standalone door
     # pb_orgchart.action_pb_orgchart, which the sidebar does not carry.
     'orgchart': 'pb_orgchart',
+    # FORM STUDIO (2026-11-20): Settings › Form builder (the Field library)
+    # opens full-page from its Settings card; it has no sidebar leaf and no
+    # hub place, so its client action tag is how the helper knows it is on
+    # screen (pb_form_studio field_library.js registers "pb_form_library").
+    'formbuilder': 'pb_form_library',
     # LEARN REFRESH step 3 — the setup cockpits a Settings card opens. None of
     # them has a sidebar leaf (they live behind Settings), so the action tag is
     # how the helper knows one is on screen. The Records Desk is also a tab

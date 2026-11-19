@@ -23238,7 +23238,7 @@
       ]
     },
     {
-      "action_tags": "",
+      "action_tags": "pb_form_library",
       "blurb": {
         "en": "Form builder: every field your company added, where it appears, who can see it and what uses it.",
         "vi": "Trình tạo biểu mẫu: mọi trường công ty bạn đã thêm, nó xuất hiện ở đâu, ai được xem và cái gì đang dùng nó."
@@ -40941,12 +40941,12 @@
               },
               "lines": [],
               "look": {
-                "en": "The numbers line at the top of the list.",
-                "vi": "Dòng con số ở đầu danh sách."
+                "en": "The four numbers: Custom fields 4, Feed pay formulas 1, Shown in lists 2, Not on any screen 0.",
+                "vi": "Bốn con số: Trường tuỳ chỉnh 4, Dùng trong công thức lương 1, Hiện trong danh sách 2, Không có trên màn hình nào 0."
               },
               "means": {
-                "en": "Grey numbers are zero. A number in colour is something worth a look, such as a field nobody has filled.",
-                "vi": "Con số màu xám là bằng không. Con số có màu là điều nên xem, ví dụ một trường chưa ai điền."
+                "en": "A field on no screen is kept but nobody can fill it in. Here every field is on a screen.",
+                "vi": "Trường không có trên màn hình nào vẫn được giữ nhưng không ai điền được. Ở đây trường nào cũng có trên màn hình."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -40955,15 +40955,48 @@
               "screen": "formbuilder",
               "tip": "",
               "title": {
-                "en": "How many, and how filled",
-                "vi": "Bao nhiêu, và điền đến đâu"
+                "en": "How many, and where they reach",
+                "vi": "Bao nhiêu, và đi tới đâu"
               },
               "visual": "none"
             },
             {
               "affects": {
-                "en": "A field that something uses cannot be deleted until that is changed, so no formula or sheet loses its input without warning.",
-                "vi": "Một trường đang được dùng thì không xoá được cho tới khi chỗ dùng nó được sửa, nên không công thức hay bảng tính nào mất dữ liệu đầu vào mà không báo."
+                "en": "The chips and the search only narrow this list.",
+                "vi": "Các nút và ô tìm kiếm chỉ thu hẹp danh sách này."
+              },
+              "anchor": "fb-filters",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Find a field",
+                "vi": "Tìm một trường"
+              },
+              "lines": [],
+              "look": {
+                "en": "The chips All, Employee and Contract, and Search fields.",
+                "vi": "Các nút Tất cả, Nhân viên và Hợp đồng, và ô Tìm trường."
+              },
+              "means": {
+                "en": "A field belongs to one record type. Parking bay is on the contract; the other three are on the employee.",
+                "vi": "Mỗi trường thuộc một loại hồ sơ. Chỗ đỗ xe nằm trên hợp đồng; ba trường còn lại nằm trên nhân viên."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "formbuilder",
+              "tip": "",
+              "title": {
+                "en": "Employee or contract",
+                "vi": "Nhân viên hay hợp đồng"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Edit changes its name or who can see it. A field in use cannot be deleted until that use is changed.",
+                "vi": "Sửa đổi tên hoặc người được xem. Một trường đang được dùng thì không xoá được cho tới khi chỗ dùng nó được sửa."
               },
               "anchor": "fb-table",
               "body": "",
@@ -40974,12 +41007,12 @@
               },
               "lines": [],
               "look": {
-                "en": "A row: the field, its record type, its type, where it appears, how filled it is, who can see it, its countries and Used by.",
-                "vi": "Một dòng: tên trường, loại hồ sơ, kiểu, nơi xuất hiện, mức điền, ai được xem, các quốc gia và Được dùng bởi."
+                "en": "The Site days row: a number on the employee, used by 1. Locker number shows only for Vietnam.",
+                "vi": "Dòng Ngày công trường: một con số trên nhân viên, được dùng bởi 1. Số tủ đồ chỉ hiện cho Việt Nam."
               },
               "means": {
-                "en": "Used by names the pay formulas, mappings, saved views and changes waiting on My Payobook that read this field.",
-                "vi": "Được dùng bởi liệt kê các công thức tính lương, ánh xạ, chế độ xem đã lưu và các thay đổi đang chờ trên My Payobook có đọc trường này."
+                "en": "Used by counts the pay formulas, mappings, saved views and waiting My Payobook changes that read the field.",
+                "vi": "Được dùng bởi đếm các công thức tính lương, ánh xạ, chế độ xem đã lưu và thay đổi đang chờ trên My Payobook có đọc trường này."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -40990,6 +41023,39 @@
               "title": {
                 "en": "Where it appears, who sees it, what uses it",
                 "vi": "Xuất hiện ở đâu, ai thấy, cái gì dùng nó"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "A pay formula can still read a ticked field, so its value reaches the payslip as an amount.",
+                "vi": "Công thức tính lương vẫn đọc được một trường đã đánh dấu, nên giá trị của nó tới phiếu lương dưới dạng một khoản tiền."
+              },
+              "anchor": "fb-foot",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "The limit",
+                "vi": "Giới hạn"
+              },
+              "lines": [],
+              "look": {
+                "en": "The line under the list: payslips, payslip lines and government returns cannot take custom fields.",
+                "vi": "Dòng dưới danh sách: phiếu lương, dòng phiếu lương và tờ khai nộp cơ quan nhà nước không nhận trường tuỳ chỉnh."
+              },
+              "means": {
+                "en": "Their shape is fixed by the pay scheme and the official file formats.",
+                "vi": "Hình dạng của chúng do chương trình lương và mẫu tệp chính thức quy định."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "formbuilder",
+              "tip": "",
+              "title": {
+                "en": "What cannot take a field",
+                "vi": "Cái gì không nhận trường"
               },
               "visual": "none"
             }
@@ -42040,5 +42106,5 @@
       }
     }
   ],
-  "version": "98820b422d39"
+  "version": "f5156e131902"
 }

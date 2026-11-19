@@ -36,6 +36,8 @@ from .common import load_content, lesson_steps, mission_steps, scenario_steps
 
 DATA_COACH_RE = re.compile(r'data-coach="([^"{}#]+)"')
 ATTF_RE = re.compile(r't-attf-data-coach="([^"]*)"')
+# `<attribute name="data-coach">fb-head</attribute>` inside a t-inherit.
+INHERITED_RE = re.compile(r'<attribute name="data-coach">([^<"{}#]+)</attribute>')
 # Comments describe anchors as often as code declares them — this file's own
 # header says data-coach="…". Strip commentary before scanning, or the lint
 # fails on prose about itself.
@@ -123,8 +125,13 @@ class TestAnchorRegistry(TransactionCase):
             # The shared filter panel (pb_filter_kit) draws the anchor itself
             # from its `coach` prop: `<PbFilterLayout coach="'pe-filters'">`
             # renders data-coach="pe-filters" on the panel's bar (FILTER W2).
+            # A bridge module lays one on a template it does not own with a
+            # t-inherit attribute (FORM STUDIO: pb_form_studio_reach on the
+            # Field library) — the same attribute, written the only way an
+            # inheriting template can write it.
             return ('data-coach="%s"' % key in text
-                    or "coach=\"'%s'\"" % key in text)
+                    or "coach=\"'%s'\"" % key in text
+                    or key in INHERITED_RE.findall(text))
 
         for key, spec in self.product.items():
             text = _read(spec['file'])
@@ -229,7 +236,7 @@ class TestAnchorRegistry(TransactionCase):
             if text is None:
                 continue
             text = XML_COMMENT_RE.sub('', JS_COMMENT_RE.sub('', text))
-            for key in DATA_COACH_RE.findall(text):
+            for key in DATA_COACH_RE.findall(text) + INHERITED_RE.findall(text):
                 # Skip the replica's template-literal interpolations — those
                 # are fixture-driven and land as pattern keys at runtime.
                 if '$' in key:
