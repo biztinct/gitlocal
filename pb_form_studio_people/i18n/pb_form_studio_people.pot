@@ -74,6 +74,12 @@ msgstr ""
 
 #. module: pb_form_studio_people
 #. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/full_form_button.xml:0
+msgid "Add or move fields on this screen"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "Add your own fields"
 msgstr ""
@@ -181,6 +187,7 @@ msgstr ""
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+#: code:addons/pb_form_studio_people/static/src/xml/full_form_button.xml:0
 #: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
 msgid "Form builder"
 msgstr ""

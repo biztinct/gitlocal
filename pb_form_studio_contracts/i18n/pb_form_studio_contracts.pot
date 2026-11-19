@@ -47,6 +47,12 @@ msgstr ""
 
 #. module: pb_form_studio_contracts
 #. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
+msgid "Add or move fields on this screen"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
 #: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
 msgid "Add your own fields"
 msgstr ""
@@ -110,6 +116,7 @@ msgstr ""
 #. module: pb_form_studio_contracts
 #. odoo-javascript
 #: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
 #: model:ir.model,name:pb_form_studio_contracts.model_pb_form_studio
 msgid "Form builder"
 msgstr ""

@@ -88,3 +88,20 @@ class PbFormStudio(models.AbstractModel):
         if model == MODEL:
             self._fs3_ensure_native()
         return super()._pbfs_resync_native(model, exclude=exclude)
+
+    @api.model
+    def fs3_full_form(self, view_id=False):
+        """R22: may this person see the "Form builder" button on the form view
+        `view_id`? Yes only for THE full contract form (`NATIVE_VIEW`) and only
+        through the contract panel wand's own gate (`can_edit`, R2 — the
+        administrator). Never raises: the button is simply not drawn. Opening
+        the Form builder stays refused by the engine for anybody else
+        (`get_studio` / `publish` → `_pbfs_check_admin`)."""
+        if not self.can_edit(HOST):
+            return False
+        try:
+            view_id = int(view_id or 0)
+        except (TypeError, ValueError):
+            return False
+        view = self.env.ref(NATIVE_VIEW, raise_if_not_found=False)
+        return bool(view and view_id and view.id == view_id)

@@ -95,3 +95,12 @@
 @media (prefers-reduced-motion: reduce) {
     .pbc button.pbfs3-prompt { transition: none; }
 }
+
+// ---- R22: the "Form builder" button on the full form, beside "Set up workflow" ----
+// Same Bootstrap button as its neighbour; only the Lucide wand needs a gap.
+// On a phone the label folds away and the wand stays (title + aria-label).
+.o_control_panel .pbfs-fullbtn {
+    display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+    .pbfb-ic { flex: none; }
+    @media (max-width: 575.98px) { .pbfs-fullbtn-t { display: none; } }
+}

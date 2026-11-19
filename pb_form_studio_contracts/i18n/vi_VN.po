@@ -47,6 +47,12 @@ msgstr "Một tệp mới"
 
 #. module: pb_form_studio_contracts
 #. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
+msgid "Add or move fields on this screen"
+msgstr "Thêm hoặc di chuyển trường trên màn hình này"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
 #: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
 msgid "Add your own fields"
 msgstr "Thêm trường của riêng bạn"
@@ -110,6 +116,7 @@ msgstr "Hợp đồng nhân viên"
 #. module: pb_form_studio_contracts
 #. odoo-javascript
 #: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
 #: model:ir.model,name:pb_form_studio_contracts.model_pb_form_studio
 msgid "Form builder"
 msgstr "Trình tạo biểu mẫu"

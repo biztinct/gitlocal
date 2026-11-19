@@ -75,6 +75,12 @@ msgstr "Tambah atau pindahkan kolom"
 
 #. module: pb_form_studio_people
 #. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/full_form_button.xml:0
+msgid "Add or move fields on this screen"
+msgstr "Tambah atau pindahkan kolom di layar ini"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "Add your own fields"
 msgstr "Tambahkan kolom Anda sendiri"
@@ -184,6 +190,7 @@ msgstr "Cari kolom standar"
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+#: code:addons/pb_form_studio_people/static/src/xml/full_form_button.xml:0
 #: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
 msgid "Form builder"
 msgstr "Pembuat formulir"

@@ -13,6 +13,8 @@ Form builder on the employee record (FORM STUDIO programme, phase FS-2).
     read but not change the employee. The administrator opens the Form builder
     from the panel header.
   * The employee full page shows the same sections, look-only.
+  * Full details has a "Form builder" button in its top bar for the
+    administrator (R22), next to "Set up workflow".
   * Full details gets a "Company details" page, kept in step with every
     publish by the engine.
   * The People list offers custom choice, yes/no, link and date fields as
@@ -21,7 +23,7 @@ Form builder on the employee record (FORM STUDIO programme, phase FS-2).
 Bridge module: it reaches the People screens from outside (inheritance and
 patches only) and creates nothing at install.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -37,6 +39,9 @@ patches only) and creates nothing at install.
             'pb_form_studio_people/static/src/scss/people_form.scss',
             'pb_form_studio_people/static/src/js/people_form_patches.js',
             'pb_form_studio_people/static/src/xml/people_form_patches.xml',
+            # R22: the "Form builder" button on Full details.
+            'pb_form_studio_people/static/src/js/full_form_button.js',
+            'pb_form_studio_people/static/src/xml/full_form_button.xml',
         ],
     },
     'installable': True,
