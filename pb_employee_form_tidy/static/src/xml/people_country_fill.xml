@@ -6,7 +6,7 @@
   <t t-inherit="pb_people.PbPeople" t-inherit-mode="extension">
     <xpath expr="//div[hasclass('ppl-head-actions')]/button[hasclass('primary')]" position="before">
       <button t-if="cowFillShown" class="pbim-btn outline o_pb_cow_fill" t-on-click="openCountryFill"
-              title="Fill empty Country of Work from each person's pay set-up">
+              title="Fill empty Country of Work from each person's pay set-up or company">
         <t t-out="ic('globe',15)"/> Fill Country of Work
         <span class="o_pb_cow_count" t-esc="cowEmpty"/>
       </button>
