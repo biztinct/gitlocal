@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================= toolbar: the tools
+       Cards | Table, then (table only) Columns and the Excel download. -->
+  <t t-name="pb_filter_kit.TableTools">
+    <div t-if="cols.available" class="pbf-tt">
+      <div class="pbf-seg pbf-vsw" role="group" aria-label="Show the list as">
+        <button type="button" class="pbf-seg-b" t-att-aria-pressed="cols.mode === 'cards' ? 'true' : 'false'"
+                title="Show as cards" t-on-click="() => this.setMode('cards')">
+          <t t-out="icon('layoutGrid', 14)"/><span class="pbf-seg-t">Cards</span>
+        </button>
+        <button type="button" class="pbf-seg-b" t-att-aria-pressed="cols.mode === 'table' ? 'true' : 'false'"
+                title="Show as a table with columns you choose" t-on-click="() => this.setMode('table')">
+          <t t-out="icon('table', 14)"/><span class="pbf-seg-t">Table</span>
+        </button>
+      </div>
+      <t t-if="cols.table and cols.loaded">
+        <PbColumnsButton cols="cols"/>
+        <button type="button" class="pbf-btn pbf-btn--ghost pbf-tt-dl" t-att-disabled="cols.ui.exporting"
+                title="Download these columns, for every row the filters match, as an Excel file"
+                t-on-click="download">
+          <t t-out="icon(cols.ui.exporting ? 'loader' : 'fileSpreadsheet', 14)"/>
+          <span class="pbf-tt-t">Excel</span>
+        </button>
+      </t>
+    </div>
+  </t>
+
+  <!-- ===================================================== the chooser -->
+  <t t-name="pb_filter_kit.ColumnsButton">
+    <div class="pbf-cols" t-ref="root">
+      <button type="button" class="pbf-btn pbf-btn--ghost" t-att-class="{ on: cols.ui.open }"
+              t-att-aria-expanded="cols.ui.open ? 'true' : 'false'" t-att-title="title" t-on-click="toggle">
+        <t t-out="icon('columns', 14)"/>
+        <span class="pbf-tt-t">Columns</span>
+        <span class="pbf-cols-n" t-esc="cols.shownCount"/>
+      </button>
+      <t t-if="cols.ui.open">
+        <div class="pbf-cols-scrim" t-on-click="() => cols.companyDirty ? null : cols.close()"/>
+        <div class="pbf-cols-pop" role="dialog" aria-label="Columns"
+             t-att-class="{ 'is-company': cols.ui.scope === 'company' }">
+          <div class="pbf-cols-hd">
+            <div class="pbf-cols-ti">
+              <b>Columns</b>
+              <span t-if="cols.ui.scope === 'company'" class="pbf-cols-tag">
+                <t t-out="icon('users', 12)"/> For everyone
+              </span>
+            </div>
+            <button type="button" class="pbf-x" title="Close" t-on-click="() => cols.close()">
+              <t t-out="icon('x', 14)"/>
+            </button>
+          </div>
+          <div t-if="cols.canCompany" class="pbf-seg pbf-cols-scope" role="group" aria-label="Who these columns are for">
+            <button type="button" class="pbf-seg-b" t-att-aria-pressed="cols.ui.scope === 'me' ? 'true' : 'false'"
+                    t-on-click="() => cols.setScope('me')">
+              <t t-out="icon('user', 13)"/> Just me
+            </button>
+            <button type="button" class="pbf-seg-b" t-att-aria-pressed="cols.ui.scope === 'company' ? 'true' : 'false'"
+                    t-on-click="() => cols.setScope('company')">
+              <t t-out="icon('users', 13)"/> For everyone
+            </button>
+          </div>
+          <p t-if="cols.ui.scope === 'company'" class="pbf-cols-note">
+            The columns everyone in this company starts with. People who chose their own keep them.
+          </p>
+          <p t-else="" class="pbf-cols-note">
+            Only you see these choices. Drag a column, or use the arrows, to change the order.
+          </p>
+
+          <ul class="pbf-cols-list" t-on-dragover="(ev) => ev.preventDefault()">
+            <li t-foreach="cols.chooser" t-as="c" t-key="c.key" class="pbf-cols-i"
+                t-att-class="{ off: !c.on, pin: c.pin, over: cols.ui.over === c.key, dragging: cols.ui.drag === c.key, flash: cols.ui.flash === c.key }"
+                t-att-draggable="c.pin ? 'false' : 'true'"
+                t-on-dragstart="(ev) => this.onDragStart(ev, c)" t-on-dragover="(ev) => this.onDragOver(ev, c)"
+                t-on-drop="(ev) => this.onDrop(ev, c)" t-on-dragend="onDragEnd">
+              <span class="pbf-cols-grip" aria-hidden="true">
+                <t t-if="c.pin" t-out="icon('lock', 13)"/>
+                <t t-else="" t-out="icon('grip', 14)"/>
+              </span>
+              <span class="pbf-cols-lab">
+                <span class="pbf-cols-name">
+                  <t t-if="c.custom" t-out="icon('sparkles', 12)"/><t t-esc="c.label"/>
+                </span>
+                <small t-if="sub(c)" t-esc="sub(c)"/>
+              </span>
+              <span t-if="!c.pin" class="pbf-cols-mv">
+                <button type="button" class="pbf-cols-arrow" t-att-disabled="!cols.canMove(c.key, -1)"
+                        t-att-aria-label="moveLabel(c, -1)" title="Move up"
+                        t-on-click="() => cols.moveBy(c.key, -1)"><t t-out="icon('chevronUp', 13)"/></button>
+                <button type="button" class="pbf-cols-arrow" t-att-disabled="!cols.canMove(c.key, 1)"
+                        t-att-aria-label="moveLabel(c, 1)" title="Move down"
+                        t-on-click="() => cols.moveBy(c.key, 1)"><t t-out="icon('chevronDown', 13)"/></button>
+              </span>
+              <button t-if="!c.pin" type="button" class="pbf-sw" role="switch"
+                      t-att-aria-checked="c.on ? 'true' : 'false'" t-att-aria-label="c.label"
+                      t-on-click="() => cols.toggle(c.key)"/>
+            </li>
+            <li class="pbf-cols-end" t-att-class="{ live: cols.ui.drag !== null }"
+                t-on-dragover="(ev) => ev.preventDefault()" t-on-drop="onDropEnd">Drop here to move it to the end</li>
+          </ul>
+
+          <div class="pbf-cols-ft" t-if="cols.ui.scope === 'company'">
+            <button type="button" class="pbf-btn pbf-btn--ghost" t-att-disabled="cols.draftIsStandard"
+                    t-on-click="() => cols.standardDraft()">
+              <t t-out="icon('rotate', 13)"/> Standard set
+            </button>
+            <span class="pbf-cols-sp"/>
+            <button type="button" class="pbf-btn" t-on-click="() => cols.close()">Cancel</button>
+            <button type="button" class="pbf-btn pbf-btn--primary" t-att-disabled="!cols.companyDirty or cols.ui.saving"
+                    t-on-click="() => cols.saveCompany()">
+              <t t-out="icon('users', 13)"/> Save for everyone
+            </button>
+          </div>
+          <div class="pbf-cols-ft" t-else="">
+            <button type="button" class="pbf-btn pbf-btn--ghost" t-att-disabled="!cols.mine"
+                    title="Forget your own choice and use the company's columns"
+                    t-on-click="() => cols.resetMine()">
+              <t t-out="icon('rotate', 13)"/> Reset
+            </button>
+            <span class="pbf-cols-sp"/>
+            <span class="pbf-cols-state" aria-live="polite">
+              <t t-if="cols.ui.saving"><t t-out="icon('loader', 12)"/> Saving…</t>
+              <t t-elif="cols.ui.saved"><t t-out="icon('check', 12)"/> Saved for you</t>
+              <t t-elif="cols.mine">Your own columns</t>
+              <t t-elif="cols.company">The company's columns</t>
+              <t t-else="">The standard columns</t>
+            </span>
+          </div>
+        </div>
+      </t>
+    </div>
+  </t>
+
+  <!-- ========================================================= the table
+       Rows, sort, paging and the click are the board's; this draws them.
+       The table scrolls sideways inside its own box, never the page. -->
+  <t t-name="pb_filter_kit.ListTable">
+    <div class="pbf-lt" t-att-class="{ 'pbf-lt--l': st.left, 'pbf-lt--r': st.right, 'pbf-lt--cb': props.selectable }"
+         t-att-data-coach="props.coach or undefined">
+      <div class="pbf-lt-scroll" t-ref="scroll" t-on-scroll="measure">
+        <table class="pbf-lt-table">
+          <thead>
+            <tr>
+              <th t-if="props.selectable" class="pbf-lt-cb">
+                <input type="checkbox" t-att-checked="allTicked" aria-label="Tick every row shown"
+                       t-on-click.stop="onTickAll"/>
+              </th>
+              <th t-foreach="cols.columns" t-as="c" t-key="c.key" t-att-class="thClass(c)"
+                  t-att-aria-sort="ariaSort(c)" t-att-title="c.custom ? c.help or c.label : c.help or undefined"
+                  t-on-click="() => this.sortBy(c)">
+                <span class="pbf-lt-th">
+                  <t t-if="c.custom" t-out="icon('sparkles', 11)"/>
+                  <span t-esc="c.label"/>
+                  <t t-if="sortDir(c)" t-out="icon(sortDir(c) === 'asc' ? 'arrowUp' : 'arrowDown', 12)"/>
+                </span>
+              </th>
+              <th t-if="hasActions" class="pbf-lt-act"/>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="props.rows" t-as="row" t-key="row[rowKey]" tabindex="0"
+                t-att-class="{ sel: props.selectable and isTicked(row) }"
+                t-on-click="() => this.onRow(row)" t-on-keydown="(ev) => this.onRowKey(ev, row)">
+              <td t-if="props.selectable" class="pbf-lt-cb">
+                <input type="checkbox" t-att-checked="isTicked(row)" t-att-aria-label="row.name or ''"
+                       t-on-click.stop="() => this.onTick(row)"/>
+              </td>
+              <td t-foreach="cols.columns" t-as="c" t-key="c.key" t-att-class="tdClass(c)">
+                <t t-if="c.kind === 'person'">
+                  <span class="pbf-lt-person">
+                    <span class="pbf-lt-av" t-attf-style="background-image:url({{ row.avatar or '' }})">
+                      <span t-if="!row.avatar" t-esc="row.initials or ''"/>
+                    </span>
+                    <span class="pbf-lt-pn">
+                      <span class="nm" t-esc="row[c.field or c.key] or '—'"/>
+                      <span t-if="sub(row, c)" class="sb" t-esc="sub(row, c)"/>
+                    </span>
+                  </span>
+                </t>
+                <t t-else="">
+                  <t t-set="v" t-value="cell(row, c)"/>
+                  <span t-if="v.empty and !v.chip" class="pbf-lt-none">—</span>
+                  <span t-elif="v.pill" t-attf-class="pbf-lt-pill t-{{ v.tone or 'slate' }}">
+                    <i/><t t-esc="v.text"/>
+                  </span>
+                  <span t-elif="v.icon" t-attf-class="pbf-lt-flag t-{{ v.tone or 'slate' }}" t-att-title="v.title or v.text">
+                    <t t-out="icon(v.icon, 15)"/><span t-esc="v.text"/>
+                  </span>
+                  <span t-else="" t-att-class="{ 'pbf-lt-money': c.kind === 'money' }" t-att-title="v.title or undefined"
+                        t-esc="v.text"/>
+                  <span t-if="v.chip" t-attf-class="pbf-lt-chip t-{{ v.chipTone or 'amber' }}" t-att-title="v.chipTitle or undefined">
+                    <t t-if="v.chipIcon" t-out="icon(v.chipIcon, 11)"/><t t-esc="v.chip"/>
+                  </span>
+                </t>
+              </td>
+              <td t-if="hasActions" class="pbf-lt-act" t-on-click.stop="">
+                <t t-slot="actions" row="row"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </t>
+
+</templates>

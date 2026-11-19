@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- People list › Table (FS-4). Extension of pb_people.PbPeople: the
+       Cards | Table switch, Columns and Excel sit in the filter bar's tool
+       slot; the cards' block is untouched except that it steps aside while
+       the table shows. The table carries the roster's Learn anchor
+       (pe-roster), so a step pointing at "the list" finds either view. -->
+  <t t-inherit="pb_people.PbPeople" t-inherit-mode="extension">
+    <xpath expr="//PbFilterLayout" position="inside">
+      <t t-set-slot="toolbar">
+        <PbTableTools cols="pbfl" kit="kit"/>
+      </t>
+    </xpath>
+    <xpath expr="//div[@data-coach='pe-roster']" position="attributes">
+      <attribute name="t-if">filteredPeople.length and !pbfl.table</attribute>
+    </xpath>
+    <xpath expr="//div[@data-coach='pe-roster']" position="after">
+      <t t-elif="filteredPeople.length">
+        <PbListTable cols="pbfl" kit="kit" rows="filteredPeople" coach="'pe-roster'"
+                     cell.bind="pbflCell" money.bind="money"
+                     selectable="state.selectMode" isSelected.bind="isSelected"
+                     onToggle.bind="toggleSelect" onToggleAll.bind="pbflToggleAll"
+                     onRowClick.bind="onCard">
+          <t t-set-slot="actions" t-slot-scope="s">
+            <button t-if="state.canContracts and s.row.contract_id and !state.selectMode"
+                    class="pbim-btn ghost pbim-btn-sm ppl-contract" title="Open their contract"
+                    t-on-click.stop="() => this.openContract(s.row)">
+              <t t-out="ic('fileText', 13)"/> Contract
+            </button>
+          </t>
+        </PbListTable>
+      </t>
+    </xpath>
+  </t>
+
+</templates>
