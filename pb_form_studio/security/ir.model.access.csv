@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_form_field_meta_admin,pb.form.field.meta admin,model_pb_form_field_meta,base.group_system,1,1,1,1
+access_pb_form_layout_admin,pb.form.layout admin,model_pb_form_layout,base.group_system,1,1,1,1
+access_pb_form_layout_draft_admin,pb.form.layout.draft admin,model_pb_form_layout_draft,base.group_system,1,1,1,1
+access_pb_form_audit_admin,pb.form.audit admin,model_pb_form_audit,base.group_system,1,0,1,0
+access_pb_form_native_view_admin,pb.form.native.view admin,model_pb_form_native_view,base.group_system,1,1,1,1
+access_pb_form_sample_user,pb.form.sample user,model_pb_form_sample,base.group_user,1,0,0,0
+access_pb_form_sample_hr,pb.form.sample hr,model_pb_form_sample,hr.group_hr_user,1,1,1,0
+access_pb_form_sample_admin,pb.form.sample admin,model_pb_form_sample,base.group_system,1,1,1,1
