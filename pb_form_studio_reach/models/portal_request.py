@@ -77,15 +77,18 @@ class PbMeDetailRequestFormBuilder(models.Model):
     def _pbfr_check(self, employee, vals):
         """The engine's verdict on a proposal: `{'instant': {}, 'approve': {}}`.
         Raises in plain words on anything not changeable for this record."""
-        out = self.env['pb.form.studio'].portal_check(EMP, employee.sudo(), dict(vals or {}))
-        out = out or {}
+        out = self.env['pb.form.studio'].portal_check(EMP, employee.sudo(), dict(vals or {})) or {}
+        errors = out.get('errors') or {}
+        if errors:
+            # The engine's rule: refuse the whole submission (nothing saved).
+            raise UserError('; '.join(sorted(set(errors.values()))))
         return {'instant': dict(out.get('instant') or {}),
                 'approve': dict(out.get('approve') or {})}
 
     @api.model
     def _pbfr_specs(self, employee):
         return {s['name']: s for s in
-                self.env['pb.form.studio'].fields_for(EMP, 'portal', employee.sudo())}
+                self.env['pb.form.studio'].fields_for(EMP, 'portal', record=employee.sudo())}
 
     def _pbfr_label(self, name, specs=None):
         specs = specs if specs is not None else self._pbfr_specs(self.employee_id)
@@ -199,8 +202,7 @@ class PbMeDetailRequestFormBuilder(models.Model):
         rec = self.sudo()
         vals = rec._pbfr_values()
         if vals:
-            origin = {'kind': 'approved', 'request': rec.name, 'request_id': rec.id,
-                      'proposed_by': rec.employee_id.user_id.id, 'approved_by': self.env.uid}
+            origin = {'proposed_by': rec.employee_id.user_id.id, 'approved_by': self.env.uid}
             self.env['pb.form.studio'].portal_apply(EMP, rec.employee_id.sudo(), vals, origin)
         rec.message_post(body=self.env._("Approved and written to the employee record."))
         return True

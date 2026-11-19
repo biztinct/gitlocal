@@ -24,11 +24,11 @@ class TestReachPortal(ReachCase, HttpCase):
         if not hasattr(cls.env['pb.form.studio'], 'portal_check'):
             return
         seat(cls.env, cls.company, 'hr_lead', cls.hr)
-        Meta = cls.env['pb.form.field.meta'].sudo()
+        S = cls.env['pb.form.studio'].with_user(cls.admin)
 
         def tick(name, show=True, edit=False, mode='approve'):
-            Meta.search([('model', '=', 'hr.employee'), ('name', '=', name)]).write(
-                {'portal_show': show, 'portal_edit': edit, 'portal_mode': mode})
+            S.update_portal('hr.employee', name,
+                            {'portal_show': show, 'portal_edit': edit, 'portal_mode': mode})
         tick(cls.f_all)                                      # shown only
         tick(cls.f_num)                                      # HR-only field, shown to its owner
         tick(cls.f_sel, edit=True)                           # changes after HR approves
@@ -146,9 +146,8 @@ class TestReachPortal(ReachCase, HttpCase):
         self._send(**{self.f_sel: 'opt_1'})
         req = self._open()
         self.assertTrue(req)
-        meta = self.env['pb.form.field.meta'].sudo().search(
-            [('model', '=', 'hr.employee'), ('name', '=', self.f_sel)])
-        meta.write({'portal_edit': False})
+        self.env['pb.form.studio'].with_user(self.admin).update_portal(
+            'hr.employee', self.f_sel, {'portal_edit': False})
         req.invalidate_recordset()
         self.assertEqual(req.state, 'refused')
         self.assertIn('no longer takes changes', req.decision_note)

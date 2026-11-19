@@ -25,7 +25,7 @@ from odoo.http import request
 
 from odoo.addons.pb_me_details.controllers.portal import PbMeDetailsPortal
 
-from ..models.portal_request import FB_KIND, OPEN_STATES
+from ..models.portal_request import FB_KIND
 
 _logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class PbFormBuilderMyDetails(PbMeDetailsPortal):
 
     # ------------------------------------------------------------ reading
     def _pbfr_fields(self, emp):
-        return request.env['pb.form.studio'].fields_for(EMP, 'portal', emp.sudo()) or []
+        return request.env['pb.form.studio'].fields_for(EMP, 'portal', record=emp.sudo()) or []
 
     def _pbfr_current(self, emp):
         """`{name: {'value', 'display'}}` from the engine (either shape)."""
@@ -100,10 +100,8 @@ class PbFormBuilderMyDetails(PbMeDetailsPortal):
         return [sections[t] for t in order]
 
     def _pbfr_section_title(self, spec):
-        section = spec.get('section')
-        if isinstance(section, dict):
-            return section.get('title') or request.env._('Company details')
-        return section or request.env._('Company details')
+        """The published layout's section title (engine `section_title`)."""
+        return spec.get('section_title') or request.env._('Company details')
 
     def _pbmd_overview(self, emp):
         values = super()._pbmd_overview(emp)
@@ -226,7 +224,7 @@ class PbFormBuilderMyDetails(PbMeDetailsPortal):
             parts = Req._pbfr_check(emp, vals)
             if parts['instant']:
                 Studio.portal_apply(EMP, emp.sudo(), parts['instant'],
-                                    {'kind': 'instant', 'proposed_by': request.env.uid})
+                                    {'proposed_by': request.env.uid, 'approved_by': False})
             if parts['approve']:
                 Req.pbfr_portal_send(emp, parts['approve'])
         except (UserError, ValidationError, AccessError) as exc:
@@ -235,6 +233,3 @@ class PbFormBuilderMyDetails(PbMeDetailsPortal):
             return self._pbfr_form(emp, error=message, posted=post)
         done = 'sent' if parts['approve'] else 'saved'
         return request.redirect('/my/details?done=%s' % done)
-
-
-__all__ = ['PbFormBuilderMyDetails', 'OPEN_STATES']
