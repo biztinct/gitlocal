@@ -276,9 +276,26 @@ class PbFormStudio(models.AbstractModel):
             out.update(can_edit=False, edit_reason=_('Money and files can be shown, not changed by the employee.'))
         elif field.type == 'many2one' and field.comodel_name not in self._pbfs_link_targets():
             out.update(can_edit=False, edit_reason=_('This link can be shown, not changed by the employee.'))
-        elif not field.store or (field.compute and not field.inverse) or field.readonly:
+        elif not self._pbfs_portal_writes_through(field) and (
+                not field.store or (field.compute and not field.inverse) or field.readonly):
             out.update(can_edit=False, edit_reason=_('This value is worked out by the system.'))
         return out
+
+    @api.model
+    def _pbfs_portal_writes_through(self, field):
+        """R19: a box the record holds through its `_inherits` parent (on the
+        employee: the personal boxes Odoo 19 keeps on `hr.version`) is a plain
+        stored value one hop away — writing it on the record writes it there,
+        exactly as the HR form does. It is changeable when the box it stands
+        for is a plain stored, non-computed, editable one. Every other
+        unstored or computed field stays "worked out by the system"."""
+        if not getattr(field, 'inherited', False) or field.readonly:
+            return False
+        origin = getattr(field, 'inherited_field', None)
+        if origin is None:
+            return False
+        return bool(origin.store and not origin.readonly
+                    and not (origin.compute and not origin.inverse))
 
     @api.model
     def _pbfs_portal_desc(self, model, name, meta):

@@ -476,3 +476,39 @@ msgstr ""
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "You can look at these details but not change them."
 msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Government forms are filled from the home address, so only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Social security numbers are set by HR."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "The legal name must match the ID papers, so only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "This is HR's own note about the person."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Children who count for tax are added on My details, under Family, where the pay team confirms them."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "The time zone follows the place of work and is used to count working time, so only HR changes it."
+msgstr ""

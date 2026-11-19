@@ -81,6 +81,19 @@ MY_DETAILS_PAPERS = ('identification_id', 'passport_id', 'passport_expiration_da
                      'permit_no', 'work_permit_expiration_date', 'marital', 'image_1920')
 MY_DETAILS_PROFILE = ('private_phone', 'private_email', 'private_street',
                       'emergency_contact', 'emergency_phone')
+#: R19 (2026-11-20) — boxes that became reachable when the engine learned to
+#: write the personal boxes Odoo 19 keeps on `hr.version` (`_pbfs_portal_
+#: writes_through`), and that must STILL stay HR's. Checked against every
+#: reader in the repository (FS_FOLLOWUP1B_REPORT.md §R19):
+#: * the rest of the home address — `pb_hr_govt/models/report_base.py:175-261`
+#:   (Vietnamese social-insurance files) and `pb_form_lines/models/reader.py:
+#:   214-282`, `render_sg.py:183` (government tax forms) print it; its first
+#:   line is already the My details profile request's (`MY_DETAILS_PROFILE`).
+PORTAL_ADDRESS = ('private_street2', 'private_city', 'private_zip', 'private_state_id',
+                  'private_country_id')
+#: * `ssnid`, `legal_name`, `additional_note`, `children`, `tz` — one plain
+#:   reason each, in `_pbfs_portal_locked` (time zone: read by
+#:   `pb_hr_payroll_formula/models/employee_work_timezone.py:76-106`).
 
 
 def page_titles():
@@ -165,7 +178,10 @@ class PbFormStudio(models.AbstractModel):
         if 'hr.formula.config' in self.env:
             try:
                 from odoo.addons.pb_hr_payroll_formula.models import application_domain_sources as ads
-                names |= set(ads.EMPLOYEE_FIELDS)
+                # R19: boxes the catalogue lists but never hands to a payslip
+                # (`PAYROLL_EXCLUDED_FIELDS`, application_domain_sources.py:38,
+                # refused at :274) are not "read by a pay formula".
+                names |= set(ads.EMPLOYEE_FIELDS) - set(getattr(ads, 'PAYROLL_EXCLUDED_FIELDS', ()))
                 names |= {hops[0] for hops in ads.RELATED_FIELDS.values()}
             except ImportError:
                 pass
@@ -222,6 +238,17 @@ class PbFormStudio(models.AbstractModel):
              _('A pay formula reads it, so only HR changes it.')),
             (PORTAL_ORG, _('Company, team, manager and job are set by HR.')),
             (PORTAL_ACCESS, _('Login and access details are set by HR.')),
+            # R19: still HR's (reasons and readers: PORTAL_ADDRESS above).
+            (PORTAL_ADDRESS, _('Government forms are filled from the home address, so only HR '
+                               'changes it.')),
+            (('ssnid',), _('Social security numbers are set by HR.')),
+            (('legal_name',), _('The legal name must match the ID papers, so only HR changes '
+                                'it.')),
+            (('additional_note',), _("This is HR's own note about the person.")),
+            (('children',), _('Children who count for tax are added on My details, under '
+                              'Family, where the pay team confirms them.')),
+            (('tz',), _('The time zone follows the place of work and is used to count '
+                        'working time, so only HR changes it.')),
         ]
         for names, reason in rows:
             for name in names:

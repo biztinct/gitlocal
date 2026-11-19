@@ -21,7 +21,7 @@ Form builder on the employee record (FORM STUDIO programme, phase FS-2).
 Bridge module: it reaches the People screens from outside (inheritance and
 patches only) and creates nothing at install.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
