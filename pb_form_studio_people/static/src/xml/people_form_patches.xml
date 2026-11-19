@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Form builder on the employee screens (FS-2): template inheritance
+       only, no edit of the vault or People files. W22: no double hyphen in
+       an XML comment. W23: one class attribute per element. PRD-3: every
+       sentence on one line.
+       ==================================================================== -->
+
+  <t t-name="pb_form_studio_people.Employee360Drawer" t-inherit="pb_employee_vault.Employee360Drawer" t-inherit-mode="extension">
+
+    <!-- Every way out asks first while Company details has unsaved changes. -->
+    <xpath expr="//div[hasclass('pev-scrim')]" position="attributes">
+      <attribute name="t-on-click">pbfsRequestClose</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pev-head-side')]/button[hasclass('pev-x')]" position="attributes">
+      <attribute name="t-on-click">pbfsRequestClose</attribute>
+    </xpath>
+
+    <!-- The Form builder wand, administrator only. -->
+    <xpath expr="//div[hasclass('pev-head-side')]/button[hasclass('pev-x')]" position="before">
+      <button t-if="pbfsStudio.state.canEdit" type="button" class="pev-full pbfp-wand" t-on-click="pbfsOpenStudio" title="Form builder: add your own fields to this panel, or move them" aria-label="Form builder">
+        <t t-out="pbfsIc('wand', 15)"/>
+      </button>
+    </xpath>
+
+    <!-- The tab, right after Pay & tax. -->
+    <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'pay'&quot;)]" position="after">
+      <button t-if="pbfsShowTab" type="button" class="pev-tab pbfp-tabbtn" t-att-class="pbfsTabClass" t-on-click="() => this.setTab('company')">
+        <t t-out="pbfsIc('sparkles', 15)"/> Company details
+        <span class="pev-tab-c" t-if="pbfsHasFields" t-esc="pbfsData.total"/>
+        <span class="pbfp-dot" t-if="pbfsDirtyCount" title="Unsaved changes"/>
+      </button>
+    </xpath>
+
+    <!-- The tab's body, before the "Something missing?" line. -->
+    <xpath expr="//div[hasclass('pev-body')]/div[hasclass('pev-more')]" position="before">
+      <t t-if="state.tab === 'company'">
+        <div class="pbfb pbfp">
+
+          <div t-if="pbfs.leaving and pbfsDirtyCount" class="pbfp-leave" role="alert">
+            <span class="pbfp-leave-ic" t-out="pbfsIc('alert', 18)"/>
+            <div class="tx">
+              <b t-esc="pbfsDirtyText"/>
+              <span>Save them before you leave, or leave without saving.</span>
+            </div>
+            <div class="pbfp-leave-b">
+              <button type="button" class="pbfb-btn sm ghost-dark" t-on-click="pbfsStay">Keep editing</button>
+              <button type="button" class="pbfb-btn sm danger" t-on-click="pbfsLeaveWithout">Leave without saving</button>
+              <button type="button" class="pbfb-btn sm primary" t-att-disabled="pbfs.saving" t-on-click="pbfsSaveAndGo"><t t-out="pbfsIc('check', 14)"/> <span>Save and go</span></button>
+            </div>
+          </div>
+
+          <t t-if="pbfsHasFields">
+            <div class="pbfp-head">
+              <span class="pbfp-badge" aria-hidden="true" t-out="pbfsIc('sparkles', 16)"/>
+              <div class="tx">
+                <b t-esc="pbfsFilledText"/>
+                <span>Details your company keeps for this person.</span>
+                <span class="pbfp-bar" t-att-style="pbfsMeterStyle" aria-hidden="true"><i/></span>
+              </div>
+              <span class="pbfb-spacer"/>
+              <button t-if="pbfsIsAdmin" type="button" class="pbfb-btn sm outline" t-on-click="pbfsOpenStudio"><t t-out="pbfsIc('wand', 14)"/> <span>Add or move fields</span></button>
+            </div>
+            <div t-if="pbfsReadOnly" class="pbfb-note lock pbfp-ro"><t t-out="pbfsIc('lock', 14)"/> <span>You can look at these details but not change them.</span></div>
+            <PbFieldGrid sections="pbfsSections" mode="pbfsMode" model="'hr.employee'" currency="pbfsData.currency or ''"
+                         staged="pbfs.staged" errors="pbfs.errors" onChange.bind="pbfsOnChange"/>
+          </t>
+
+          <div t-elif="pbfsIsAdmin" class="pbfp-empty">
+            <span class="pbfp-empty-ic" t-out="pbfsIc('wand', 26)"/>
+            <t t-if="pbfsNoneYet">
+              <h3>Add your own fields</h3>
+              <p>Keep the details your company tracks for every employee, such as a uniform size, a locker number or a union membership, right here.</p>
+              <p class="sub">HR fills them in on this tab. You decide who can see each one and in which countries it applies.</p>
+            </t>
+            <t t-else="">
+              <h3>Nothing to show for this person</h3>
+              <p t-esc="pbfsCountryText"/>
+            </t>
+            <button type="button" class="pbfb-btn primary" t-on-click="pbfsOpenStudio"><t t-out="pbfsIc('wand', 15)"/> <span>Open the Form builder</span></button>
+          </div>
+
+          <div t-if="pbfsDirtyCount" class="pbfp-savebar">
+            <span class="pbfp-savebar-dot"/>
+            <span class="tx" t-esc="pbfsDirtyText"/>
+            <span class="pbfb-spacer"/>
+            <button type="button" class="pbfb-btn sm ghost-dark" t-att-disabled="pbfs.saving" t-on-click="pbfsDiscard">Discard</button>
+            <button type="button" class="pbfb-btn sm primary" t-att-disabled="pbfs.saving" t-on-click="pbfsSave"><t t-out="pbfsIc('check', 14)"/> <span>Save</span></button>
+          </div>
+        </div>
+      </t>
+    </xpath>
+  </t>
+
+  <!-- The employee full page: the same sections, look-only. -->
+  <t t-name="pb_form_studio_people.PbEmployeeDetail" t-inherit="pb_people.PbEmployeeDetail" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('ppl-d-cols')]" position="after">
+      <div t-if="pbfsHas" class="pbim-panel pbfp-full">
+        <div class="pbim-panel-h">
+          <h2 class="pbim-h2">Company details</h2>
+          <span class="pbim-chip"><t t-out="pbfsIc('sparkles', 13)"/> <t t-esc="pbfsFilledText"/></span>
+        </div>
+        <div class="pbfb pbfp">
+          <PbFieldGrid sections="pbfsFull.sections" mode="'read'" model="'hr.employee'" currency="pbfsFull.currency or ''"/>
+        </div>
+      </div>
+    </xpath>
+  </t>
+
+  <!-- The publish sheet: one plain line when new fields are being made. -->
+  <t t-name="pb_form_studio_people.Overlay" t-inherit="pb_form_studio.Overlay" t-inherit-mode="extension">
+    <xpath expr="//t[@t-if=&quot;state.sheet === 'publish'&quot;]/div[hasclass('bd')]" position="after">
+      <div t-if="pbfpHasNewFields" class="pbfb-note lock pbfp-typenote"><t t-out="ic('lock', 14)"/> <span>A field's type cannot be changed after it is published.</span></div>
+    </xpath>
+
+    <!-- R14: "Standard fields" — the My Payobook ticks of the standard boxes,
+         without placing them on this screen. -->
+    <xpath expr="//aside[hasclass('pbfb-left')]/div[hasclass('pbfb-ptabs')]" position="inside">
+      <button t-if="pbfpHasStd" type="button" role="tab" t-att-class="palClass('std')" t-on-click="() => this.setPal('std')">Standard fields</button>
+    </xpath>
+    <xpath expr="//aside[hasclass('pbfb-left')]/t[@t-else]" position="attributes">
+      <attribute name="t-else"/>
+      <attribute name="t-elif">state.pal !== 'std'</attribute>
+    </xpath>
+    <xpath expr="//aside[hasclass('pbfb-left')]/t[@t-elif]" position="after">
+      <t t-else="">
+        <h4>Show on My Payobook</h4>
+        <p class="pbfb-hint">Pick a standard field to tick it for the employee's own My Payobook page. It stays where it is on this screen.</p>
+        <div class="pbfp-std-s">
+          <span class="ic" t-out="ic('search', 14)"/>
+          <input type="text" placeholder="Find a field…" t-att-value="pbfp.term" t-on-input="pbfpOnTerm" aria-label="Find a standard field"/>
+        </div>
+        <p class="pbfp-std-n" t-esc="pbfpStdCountText"/>
+        <div class="pbfp-std-l">
+          <button t-foreach="pbfpStdFields" t-as="f" t-key="f.name" type="button" class="pbfp-std-it" t-att-class="pbfpStdClass(f)"
+                  t-att-title="pbfpStdLocked(f)" t-on-click="() => this.pbfpPick(f)">
+            <span class="ck" t-out="pbfpStdIcon(f)"/>
+            <span class="tx"><b t-esc="f.label"/><small t-if="pbfpStdState(f)" t-esc="pbfpStdState(f)"/><small t-elif="pbfpStdLocked(f)" t-esc="pbfpStdLocked(f)"/></span>
+          </button>
+          <p t-if="!pbfpStdFields.length" class="pbfb-hint">Nothing matches.</p>
+        </div>
+      </t>
+    </xpath>
+  </t>
+
+</templates>
