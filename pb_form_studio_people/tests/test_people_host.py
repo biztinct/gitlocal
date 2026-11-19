@@ -219,18 +219,24 @@ class TestPeopleHost(TransactionCase):
         res = self.People.with_user(self.reader).pbfs_save_employee(self.emp_vn.id, {note: 'm'})
         self.assertFalse(res['ok'])
         self.assertEqual(self.emp_vn[note], 'n')
-        # Money: masked for HR who is not a payroll manager, like the wage.
+        # R15: a CUSTOM amount follows its own "who can see it" only — HR who
+        # is not a payroll manager sees and changes it (no wage-style mask).
         f = self.field_of(self.panel(self.emp_vn), pay)
-        self.assertTrue(f['masked'])
-        self.assertFalse(f['value'])
-        self.assertFalse(f['writable'])
-        self.assertNotIn('150', str(self.panel(self.emp_vn)))
-        res = self.People.with_user(self.hr).pbfs_save_employee(self.emp_vn.id, {pay: '1'})
-        self.assertFalse(res['ok'])
-        self.assertEqual(self.emp_vn[pay], 150000)
-        f = self.field_of(self.panel(self.emp_vn, self.payroll), pay)
+        self.assertFalse(f.get('masked'))
         self.assertEqual(f['value'], 150000)
         self.assertTrue(f['writable'])
+        self.assertEqual(self.field_of(self.full_page(self.emp_vn), pay)['value'], 150000)
+        self.assertIn(pay, self.native_arch(self.hr))
+        res = self.People.with_user(self.hr).pbfs_save_employee(self.emp_vn.id, {pay: '175,000'})
+        self.assertTrue(res['ok'], res)
+        self.assertEqual(self.emp_vn[pay], 175000)
+        # ...and an "Administrators only" amount stays hidden from HR, by its own setting.
+        secret = self.add('money', 'DEMO Retention bonus', vis='admin')
+        self.assertIsNone(self.field_of(self.panel(self.emp_vn), secret))
+        self.assertIsNotNone(self.field_of(self.panel(self.emp_vn, self.admin), secret))
+        # The panel's own wage mask is untouched (Profile tab payload).
+        d360 = self.People.with_user(self.hr).get_employee_360(self.emp_vn.id)
+        self.assertFalse(d360['unmask_wage'])
         # A line manager, an employee and a portal user reach nothing.
         for user in (self.boss, self.staff, self.portal):
             for call in (lambda u: self.People.with_user(u).get_employee_360(self.emp_vn.id),
@@ -383,7 +389,8 @@ class TestPeopleHost(TransactionCase):
         hidden = self.Studio._pbfs_portal_hidden(MODEL)
         locked = self.Studio._pbfs_portal_locked(MODEL)
         self.assertIn('wage', hidden)
-        self.assertIn(money, hidden, 'a pay figure is never shown')
+        self.assertNotIn(money, hidden, 'R16: a custom amount may be shown')
+        self.assertIn('hourly_cost', hidden, 'standard pay figures never')
         for name in ('payroll_country', 'company_id', 'parent_id', 'department_id', 'job_id',
                      'user_id', 'contract_date_start', 'bank_name', formula):
             self.assertIn(name, locked, name)
@@ -428,6 +435,13 @@ class TestPeopleHost(TransactionCase):
         self.assertTrue(rows[box]['edit'])
         self.assertFalse(rows['payroll_country']['edit'])
         self.assertNotIn('wage', rows)
+        # R16: a custom amount may be shown, never changed by the employee
+        money = self.add('money', 'DEMO Shoe allowance')
+        d = St.update_portal(MODEL, money, {'portal_show': True})
+        self.assertTrue(d['portal']['show'])
+        with self.assertRaises(UserError):
+            St.update_portal(MODEL, money, {'portal_edit': True})
+        self.assertIn(money, {r['name'] for r in St.fields_for(MODEL, 'portal', record=self.emp_vn)})
         # a forged change of a locked box from My Payobook is refused by the engine
         res = St.portal_check(MODEL, self.emp_vn, {'payroll_country': 'IN'})
         self.assertIn('payroll_country', res.get('errors') or {})

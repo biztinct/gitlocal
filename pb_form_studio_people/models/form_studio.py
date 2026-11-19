@@ -181,13 +181,18 @@ class PbFormStudio(models.AbstractModel):
 
     @api.model
     def _pbfs_portal_hidden(self, model):
-        """R14: never shown on My Payobook — the wage and every pay figure."""
+        """R14 / R16: never shown on My Payobook — the wage and every STANDARD
+        pay figure. A custom money field may be shown (R16); the engine never
+        lets the employee change an amount."""
         out = dict(super()._pbfs_portal_hidden(model) or {})
         if model != MODEL:
             return out
         reason = self.env._('Pay figures are never shown on My Payobook.')
         Model = self.env[MODEL]
+        custom = set(self._pbfs_custom_names(MODEL))
         for name, field in Model._fields.items():
+            if name in custom:
+                continue
             if field.type == 'monetary' or name in ('wage', 'hourly_cost', 'contract_wage'):
                 out.setdefault(name, reason)
         return out

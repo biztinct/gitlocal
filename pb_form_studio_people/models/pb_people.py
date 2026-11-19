@@ -12,8 +12,10 @@
   People list filters, in their own "Company details" group.
 
 Visibility is the ENGINE's (FS1-1): values come from `render` only, never
-from a plain read. Money is masked here exactly as the panel masks the wage
-(`_vault_unmask_wage`, `pb_people_360.py:38`): a reader who is not a payroll
+from a plain read. STANDARD amounts (the wage, hourly cost — when an
+administrator places one on the tab) are masked exactly as the panel masks the
+wage (`_vault_unmask_wage`, `pb_people_360.py:38`); a CUSTOM money field follows
+its own "who can see it" only (owner ruling R15). A reader who is not a payroll
 manager gets neither the number nor a way to change it.
 """
 import logging
@@ -58,7 +60,8 @@ class PbPeople(models.AbstractModel):
             if sec.get('kind') != 'open':
                 continue            # the panel draws its own tabs
             for f in sec.get('fields') or []:
-                if f.get('kind') == 'money' and not unmask:
+                # R15: only standard amounts get the wage's mask
+                if f.get('kind') == 'money' and not f.get('custom') and not unmask:
                     # drawn as a locked line (lock icon, quiet ink), not as money
                     f.update(value=False, display=masked, writable=False, masked=True,
                              kind='readonly')
@@ -112,12 +115,6 @@ class PbPeople(models.AbstractModel):
         if not emp:
             return {'ok': False, 'error': _('This employee no longer exists.'), 'errors': {}}
         vals = dict(vals or {})
-        if not self._vault_unmask_wage():
-            Model = self.env[MODEL]
-            money = [n for n in vals if n in Model._fields and Model._fields[n].type == 'monetary']
-            if money:
-                return {'ok': False, 'errors': {n: _('Only payroll managers can change amounts.')
-                                                for n in money}}
         res = self.env['pb.form.studio'].write_values(MODEL, emp.id, vals)
         if not res.get('ok'):
             return res

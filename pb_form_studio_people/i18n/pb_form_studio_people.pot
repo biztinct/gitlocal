@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 09:59+0000\n"
-"PO-Revision-Date: 2026-11-19 09:59+0000\n"
+"POT-Creation-Date: 2026-11-19 12:07+0000\n"
+"PO-Revision-Date: 2026-11-19 12:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,6 +27,12 @@ msgstr ""
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s standard fields are on My Payobook"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "%s unsaved changes"
 msgstr ""
 
@@ -34,6 +40,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "1 detail needs a look before it can be saved."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 standard field is on My Payobook"
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -157,6 +169,18 @@ msgstr ""
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Find a field…"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Find a standard field"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 #: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
 msgid "Form builder"
 msgstr ""
@@ -254,6 +278,12 @@ msgstr ""
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Nothing matches."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "Nothing to show for this person"
 msgstr ""
 
@@ -261,12 +291,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Only HR can see these details."
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/pb_people.py:0
-msgid "Only payroll managers can change amounts."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -305,6 +329,14 @@ msgid "Personal"
 msgstr ""
 
 #. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"Pick a standard field to tick it for the employee's own My Payobook page. It"
+" stays where it is on this screen."
+msgstr ""
+
+#. module: pb_form_studio_people
 #. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Position, team and place of work. %s"
@@ -338,6 +370,36 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "Saving did not work. Nothing was changed."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Show on My Payobook"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown · can change, HR approves"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown · can change, saves at once"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Standard fields"
 msgstr ""
 
 #. module: pb_form_studio_people

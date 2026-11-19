@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 09:59+0000\n"
-"PO-Revision-Date: 2026-11-19 09:59+0000\n"
+"POT-Creation-Date: 2026-11-19 12:07+0000\n"
+"PO-Revision-Date: 2026-11-19 12:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "Language: id_ID\n"
@@ -28,6 +28,12 @@ msgstr "%s detail perlu diperiksa sebelum bisa disimpan."
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s standard fields are on My Payobook"
+msgstr "%s kolom standar ada di My Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "%s unsaved changes"
 msgstr "%s perubahan belum disimpan"
 
@@ -36,6 +42,12 @@ msgstr "%s perubahan belum disimpan"
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "1 detail needs a look before it can be saved."
 msgstr "1 detail perlu diperiksa sebelum bisa disimpan."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 standard field is on My Payobook"
+msgstr "1 kolom standar ada di My Payobook"
 
 #. module: pb_form_studio_people
 #. odoo-javascript
@@ -160,6 +172,18 @@ msgstr "Setiap perubahan untuk orang ini, terbaru dulu. %s"
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Find a field…"
+msgstr "Cari kolom…"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Find a standard field"
+msgstr "Cari kolom standar"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 #: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
 msgid "Form builder"
 msgstr "Pembuat formulir"
@@ -262,6 +286,12 @@ msgstr "Belum diisi"
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Nothing matches."
+msgstr "Tidak ada yang cocok."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "Nothing to show for this person"
 msgstr "Tidak ada yang ditampilkan untuk orang ini"
 
@@ -270,12 +300,6 @@ msgstr "Tidak ada yang ditampilkan untuk orang ini"
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Only HR can see these details."
 msgstr "Hanya HR yang bisa melihat detail ini."
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/pb_people.py:0
-msgid "Only payroll managers can change amounts."
-msgstr "Hanya manajer penggajian yang bisa mengubah jumlah uang."
 
 #. module: pb_form_studio_people
 #. odoo-javascript
@@ -313,6 +337,16 @@ msgid "Personal"
 msgstr "Pribadi"
 
 #. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"Pick a standard field to tick it for the employee's own My Payobook page. It"
+" stays where it is on this screen."
+msgstr ""
+"Pilih kolom standar untuk dicentang bagi halaman My Payobook milik karyawan."
+" Kolom tetap di tempatnya di layar ini."
+
+#. module: pb_form_studio_people
 #. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Position, team and place of work. %s"
@@ -347,6 +381,36 @@ msgstr "Simpan sebelum keluar, atau keluar tanpa menyimpan."
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "Saving did not work. Nothing was changed."
 msgstr "Gagal menyimpan. Tidak ada yang berubah."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Show on My Payobook"
+msgstr "Tampilkan di My Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown"
+msgstr "Ditampilkan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown · can change, HR approves"
+msgstr "Ditampilkan · bisa diubah, HR menyetujui"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown · can change, saves at once"
+msgstr "Ditampilkan · bisa diubah, langsung tersimpan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Standard fields"
+msgstr "Kolom standar"
 
 #. module: pb_form_studio_people
 #. odoo-python

@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 09:59+0000\n"
-"PO-Revision-Date: 2026-11-19 09:59+0000\n"
+"POT-Creation-Date: 2026-11-19 12:07+0000\n"
+"PO-Revision-Date: 2026-11-19 12:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -28,6 +28,12 @@ msgstr "%s thông tin cần xem lại trước khi lưu."
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s standard fields are on My Payobook"
+msgstr "%s trường chuẩn đang hiện trên My Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "%s unsaved changes"
 msgstr "%s thay đổi chưa lưu"
 
@@ -36,6 +42,12 @@ msgstr "%s thay đổi chưa lưu"
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "1 detail needs a look before it can be saved."
 msgstr "1 thông tin cần xem lại trước khi lưu."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 standard field is on My Payobook"
+msgstr "1 trường chuẩn đang hiện trên My Payobook"
 
 #. module: pb_form_studio_people
 #. odoo-javascript
@@ -160,6 +172,18 @@ msgstr "Mọi thay đổi của người này, mới nhất trước. %s"
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Find a field…"
+msgstr "Tìm trường…"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Find a standard field"
+msgstr "Tìm trường chuẩn"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 #: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
 msgid "Form builder"
 msgstr "Trình tạo biểu mẫu"
@@ -263,6 +287,12 @@ msgstr "Chưa điền"
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Nothing matches."
+msgstr "Không có kết quả phù hợp."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "Nothing to show for this person"
 msgstr "Không có gì để hiển thị cho người này"
 
@@ -271,12 +301,6 @@ msgstr "Không có gì để hiển thị cho người này"
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Only HR can see these details."
 msgstr "Chỉ bộ phận nhân sự được xem các thông tin này."
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/pb_people.py:0
-msgid "Only payroll managers can change amounts."
-msgstr "Chỉ quản lý lương được đổi số tiền."
 
 #. module: pb_form_studio_people
 #. odoo-javascript
@@ -314,6 +338,16 @@ msgid "Personal"
 msgstr "Cá nhân"
 
 #. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"Pick a standard field to tick it for the employee's own My Payobook page. It"
+" stays where it is on this screen."
+msgstr ""
+"Chọn một trường chuẩn để đánh dấu cho trang My Payobook của chính nhân viên."
+" Trường vẫn ở nguyên chỗ trên màn hình này."
+
+#. module: pb_form_studio_people
 #. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Position, team and place of work. %s"
@@ -348,6 +382,36 @@ msgstr "Hãy lưu trước khi rời đi, hoặc rời đi mà không lưu."
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "Saving did not work. Nothing was changed."
 msgstr "Lưu không thành công. Không có gì thay đổi."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Show on My Payobook"
+msgstr "Hiện trên My Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown"
+msgstr "Đang hiện"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown · can change, HR approves"
+msgstr "Đang hiện · được đổi, nhân sự duyệt"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown · can change, saves at once"
+msgstr "Đang hiện · được đổi, lưu ngay"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Standard fields"
+msgstr "Trường chuẩn"
 
 #. module: pb_form_studio_people
 #. odoo-python
