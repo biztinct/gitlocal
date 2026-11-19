@@ -71,7 +71,7 @@ for weekdays,rows in sorted(groups.items()):
   assert len(people)==len(rows) and all(e.active and e.company_id==company for e in people)
   # Calendars remain unchanged until client reviews the suggested pattern.
   # Store the matching calendar in the pattern note, editable through Working Schedules.
-  note='PROVISIONAL - review before publishing. '+report['source']+'. Working calendar prepared: '+calname+'. Assign it to the employee and contract after review. Absences may be leave, not rest.\n'
+  note='PROVISIONAL - review before publishing. '+report['source']+'. Working calendar prepared: '+calname+'. Assign it to the employee and contract after review. Absences may be leave, not rest. Day-like first/last boundaries do not prove punch direction; review overnight rotations.\n'
   for r in rows:
    note+='Employee %s: %s complete days; weekday observations %s; median first %.2f / last %.2f local hour.\n'%(r['employee_id'],r['paired_days'],r['weekday_counts'],r['median_first'],r['median_last'])
   pattern=Pattern.create({'name':name,'company_id':company.id,'cycle_days':7,'start_date':date(2026,11,16),'note':note,

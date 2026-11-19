@@ -24,10 +24,12 @@ for eid,ds in by.items():
  counts=collections.Counter(datetime.date(2026,10,i).weekday() for i in range(1,32))
  selected=[wd for wd in range(7) if weekdays[wd]/counts[wd]>=.6]
  if not selected:held.append([eid,'No consistent weekdays']);continue
+ if any(.2 < weekdays[wd]/counts[wd] < .6 for wd in range(7)) or sum(weekdays[wd] for wd in selected)/len(regular)<.85:
+  held.append([eid,'Incomplete or varying weekday pattern; do not infer rest days from absences']);continue
  res.append({'employee_id':eid,'weekdays':selected,'paired_days':len(ds), 'day_start_share':round(len(regular)/len(ds),3),
   'median_first':round(statistics.median(d[1] for d in ds),2),'median_last':round(statistics.median(d[2] for d in ds),2),
-  'weekday_counts':dict(weekdays),'note':'Suggested from October 2026 first/last punch pairs; absence cannot distinguish leave from rest. Normal 07:30-16:30 / 8 hours uses the documented day shift, not the long observed finish. Review before publishing.'})
-report={'source':'October 2026 synced punches as exported 19 November; Ngoc source only currently has October history','suggestions':res,'held':held,
+  'weekday_counts':dict(weekdays),'note':'Day-like first/last pattern does not prove punch direction; review any overnight rotation. Suggested from October 2026 first/last punch pairs; absence cannot distinguish leave from rest. Normal 07:30-16:30 / 8 hours uses the documented day shift, not the long observed finish. Review before publishing.'})
+report={'source':'October 2026 synced punches, using all available non-test client sources in the supplied export','suggestions':res,'held':held,
  'coverage':{'eligible':len(res),'with_paired_data':len(by),'active_employees':sum(e['active'] for e in x['employees'])}}
 Path(os.environ['SUDIMA_SUGGESTIONS']).write_text(json.dumps(report,indent=2))
 print(report['coverage']);print(collections.Counter(tuple(r['weekdays']) for r in res));print('held',len(held))
