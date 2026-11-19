@@ -18,6 +18,41 @@ export const CHANGE_ICON = {
     deleted: "trash", changed: "pencil",
 };
 
+/**
+ * R24 — text folded for searching: no accents, no case, "đ" as "d", so
+ * "ngay sinh" finds "Ngày sinh" and "nhom mau" finds "Nhóm máu".
+ */
+export function fold(text) {
+    return String(text || "")
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D")
+        .toLowerCase()
+        .trim();
+}
+
+/** Does folded `term` occur in any of `texts`? An empty term matches all. */
+export function foldMatch(term, ...texts) {
+    const t = fold(term);
+    if (!t) { return true; }
+    return texts.some((x) => fold(x).includes(t));
+}
+
+/** R24 — the type filter of "Add existing": kind → group key. */
+export const KIND_GROUP = {
+    text: "text", longtext: "text", integer: "number", number: "number", money: "number",
+    date: "date", select: "choice", bool: "bool", m2o: "link", readonly: "link", file: "text",
+};
+
+/** Is the key a "search here" key pressed outside any box a person types in? */
+export function isSlashKey(ev) {
+    if (ev.key !== "/" || ev.ctrlKey || ev.metaKey || ev.altKey) { return false; }
+    const t = ev.target;
+    const tag = (t && t.tagName) || "";
+    return !(tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (t && t.isContentEditable));
+}
+
 /** True for a value the grid should show as "—". */
 export function isEmptyDisplay(display) {
     return display === undefined || display === null || display === "";

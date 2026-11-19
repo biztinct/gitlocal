@@ -42,6 +42,27 @@ class PbFormStudioLists(models.AbstractModel):
         return out
 
     @api.model
+    def _pbfl_std_columns(self, model, cols, colmap):
+        """R23: a standard column follows its field's screen rule — its own
+        label in the heading, the picker and the Excel file; a field hidden
+        for everyone leaves the column picker. A field hidden only for some
+        Countries of Work keeps its column (other rows still show it): the
+        table's header and picker are what change, never a cell (FS-7 spec).
+        `colmap` = `{column key: field name}`."""
+        rules = self.env['pb.form.studio']._pbfs_std_rules(model)
+        if not rules:
+            return cols
+        out = []
+        for col in cols:
+            rule = rules.get(colmap.get(col.get('key')) or '')
+            if rule and rule.get('all') and not col.get('pin'):
+                continue
+            if rule and rule.get('label'):
+                col = dict(col, label=rule['label'])
+            out.append(col)
+        return out
+
+    @api.model
     def _pbfl_prefetch(self, records, specs):
         """Read every custom column of `records` in ONE query.
 

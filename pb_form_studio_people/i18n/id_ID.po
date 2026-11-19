@@ -533,3 +533,81 @@ msgstr "Anak yang dihitung untuk pajak ditambahkan di Data saya, bagian Keluarga
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "The time zone follows the place of work and is used to count working time, so only HR changes it."
 msgstr "Zona waktu mengikuti tempat kerja dan dipakai untuk menghitung waktu kerja, jadi hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr "File data gaji mengisinya, jadi gaji bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
+msgstr "Rumus gaji membacanya, jadi gaji bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
+msgstr "Persetujuan, akses, dan pengaturan gaji mengikuti kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Bank files depend on this field."
+msgstr "File bank bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Government forms and statutory files print this field."
+msgstr "Formulir pemerintah dan file wajib mencetak kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "It names the person on every payslip and file."
+msgstr "Kolom ini menamai orangnya di setiap slip gaji dan file."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Logins, approvals and the time clock follow this field."
+msgstr "Login, persetujuan, dan absensi mengikuti kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
+msgstr "Gaji atau file wajib bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Pay or statutory files of that country depend on this field."
+msgstr "Gaji atau file wajib negara itu bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Job"
+msgstr "Panel samping: Pekerjaan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Pay & tax"
+msgstr "Panel samping: Gaji & pajak"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Personal"
+msgstr "Panel samping: Pribadi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Tax and social insurance files depend on this field."
+msgstr "File pajak dan jaminan sosial bergantung pada kolom ini."

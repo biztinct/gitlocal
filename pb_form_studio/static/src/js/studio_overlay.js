@@ -16,14 +16,17 @@
  * Every refusal comes from the server in screen words; the client only adds
  * the typed confirmation in front of a delete (the server re-checks it).
  */
-import { Component, useState, onWillStart, onWillUnmount, useExternalListener } from "@odoo/owl";
+import { Component, useState, useRef, onWillStart, onWillUnmount, useExternalListener } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { rpcBus } from "@web/core/network/rpc";
 import { fsIc, KIND_ICON } from "./fs_icons";
-import { FACADE, toneClass, CHANGE_ICON, isEmptyDisplay } from "./fs_words";
+import { FACADE, toneClass, CHANGE_ICON, isEmptyDisplay, fold, foldMatch, KIND_GROUP, isSlashKey } from "./fs_words";
 
 const DRAFT_MS = 800;
-const LANG_NAMES = { vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
+const LANG_NAMES = { en_US: "English", vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
+/** R23 — a standard field's screen rule travels in these keys. */
+const STD_KEYS = ["std_hidden", "std_country_ids", "std_labels"];
 
 function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
@@ -46,13 +49,25 @@ export class FormStudioOverlay extends Component {
             baseVersion: 0, sel: this.props.focusField || null, pal: "new", sheet: null,
             stale: null, draftNote: "", preview: {}, del: null, saving: false,
             over: null, overField: null, countryTerm: "", langsOpen: false, publishing: false,
+            // R24 — the filters of the left column (client-side only)
+            exTerm: "", exType: "all", stdTerm: "", stdChip: "all", stdCountry: 0,
+            // R23 — "Hidden in some countries" picked, no country chosen yet
+            someOpen: null,
         });
+        this.exSearch = useRef("exSearch");
+        this.stdSearch = useRef("stdSearch");
         this._seq = 1;
         this._timer = null;
         onWillStart(() => this.load());
         onWillUnmount(() => this._timer && clearTimeout(this._timer));
         useExternalListener(window, "keydown", (ev) => {
-            if (ev.key === "Escape" && this.state.sheet) { this.state.sheet = null; }
+            if (ev.key === "Escape" && this.state.sheet) { this.state.sheet = null; return; }
+            // R24 — "/" jumps to the search of the list on the left.
+            if (isSlashKey(ev) && !this.state.sheet) {
+                const ref = this.state.pal === "std" ? this.stdSearch
+                    : (this.state.pal === "existing" ? this.exSearch : null);
+                if (ref && ref.el) { ev.preventDefault(); ref.el.focus(); ref.el.select(); }
+            }
         });
     }
 
@@ -134,9 +149,240 @@ export class FormStudioOverlay extends Component {
     get placedNames() {
         return new Set(this.state.sections.flatMap((s) => s.fields || []));
     }
+    /** Fields that can be placed on this screen but are not, A to Z. A
+     *  standard field listed only for its screen rule (R23) is not
+     *  placeable and never shows here. */
     get hiddenFields() {
         const placed = this.placedNames;
-        return Object.values(this.state.fields).filter((f) => !placed.has(f.name) && !f.deleted);
+        return Object.values(this.state.fields)
+            .filter((f) => !placed.has(f.name) && !f.deleted && f.placeable !== false)
+            .sort((a, b) => String(a.label).localeCompare(String(b.label), undefined, { sensitivity: "base" }));
+    }
+
+    // --------------------------------------------- R24: "Add existing" filter
+    get typeChips() {
+        return [
+            { key: "all", label: _t("All") }, { key: "text", label: _t("Text") },
+            { key: "number", label: _t("Number") }, { key: "date", label: _t("Date") },
+            { key: "choice", label: _t("Choice") }, { key: "bool", label: _t("Yes / No") },
+            { key: "link", label: _t("Link") },
+        ];
+    }
+    typeChipClass(c) { return { on: this.state.exType === c.key }; }
+    setExType(key) { this.state.exType = key; }
+    get exFields() {
+        const type = this.state.exType;
+        return this.hiddenFields.filter((f) => (type === "all" || KIND_GROUP[f.kind] === type)
+            && foldMatch(this.state.exTerm, f.label));
+    }
+    get exFiltered() { return Boolean(fold(this.state.exTerm)) || this.state.exType !== "all"; }
+    get exCountText() {
+        const n = this.exFields.length;
+        const total = this.hiddenFields.length;
+        if (this.exFiltered) { return _t("%(n)s of %(total)s", { n, total }); }
+        return total === 1 ? _t("1 field") : _t("%s fields", total);
+    }
+    onExTerm(ev) { this.state.exTerm = ev.target.value; }
+    clearEx() {
+        this.state.exTerm = "";
+        this.state.exType = "all";
+        if (this.exSearch.el) { this.exSearch.el.focus(); }
+    }
+    /** Esc in a search box clears it and stays in the Form builder. */
+    onFindKey(which, ev) {
+        if (ev.key !== "Escape") { return; }
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (which === "ex") { this.state.exTerm = ""; } else { this.state.stdTerm = ""; }
+    }
+
+    // --------------------------------------------- R23: "Standard fields" tab
+    get lang() { return this.data.lang || "en_US"; }
+    get portalHost() { return Boolean((this.data.host || {}).portal); }
+    get stdAll() {
+        // A field with no screen rule of its own (only its My Payobook ticks)
+        // goes last, under "Other fields".
+        const order = (f) => (f.stdbox ? f.stdbox.order || 0 : 1e6);
+        const seq = (f) => (f.stdbox ? f.stdbox.seq || 0 : 0);
+        return Object.values(this.state.fields || {})
+            .filter((f) => !f.custom && !f.deleted && (f.stdbox || f.portal))
+            .sort((a, b) => order(a) - order(b) || seq(a) - seq(b)
+                || String(this.stdLabel(a)).localeCompare(String(this.stdLabel(b))));
+    }
+    /** The label a person sees on screen: own label, else the built-in one. */
+    stdLabel(f) {
+        const s = f.stdbox;
+        if (!s) { return f.label; }
+        return (s.labels || {})[this.lang] || s.builtin || f.label;
+    }
+    get hasStd() { return this.stdAll.length > 0; }
+    get stdChips() {
+        const out = [{ key: "all", label: _t("All") }, { key: "hidden", label: _t("Hidden") },
+                     { key: "renamed", label: _t("Renamed") }];
+        if (this.portalHost) { out.push({ key: "portal", label: _t("On My Payobook") }); }
+        return out;
+    }
+    stdChipClass(c) { return { on: this.state.stdChip === c.key }; }
+    setStdChip(key) { this.state.stdChip = key; }
+    stdIsHidden(f) { const s = f.stdbox; return Boolean(s && (s.hidden || (s.countries || []).length)); }
+    stdIsRenamed(f) { return Boolean(f.stdbox && Object.keys(f.stdbox.labels || {}).length); }
+    /** Does the field show for people of this Country of Work? */
+    stdApplies(f, countryId) {
+        const s = f.stdbox;
+        if (!s || !countryId) { return true; }
+        if (s.hidden && !s.lock) { return false; }
+        if (!s.lock && (s.countries || []).some((c) => c.id === countryId)) { return false; }
+        if (s.rule && s.rule.country_id && s.rule.country_id !== countryId) { return false; }
+        return true;
+    }
+    get stdFields() {
+        const chip = this.state.stdChip;
+        const cid = Number(this.state.stdCountry) || 0;
+        return this.stdAll.filter((f) => {
+            if (chip === "hidden" && !this.stdIsHidden(f)) { return false; }
+            if (chip === "renamed" && !this.stdIsRenamed(f)) { return false; }
+            if (chip === "portal" && !(f.portal && f.portal.show)) { return false; }
+            if (cid && !this.stdApplies(f, cid)) { return false; }
+            return foldMatch(this.state.stdTerm, this.stdLabel(f), (f.stdbox || {}).builtin, f.label);
+        });
+    }
+    get stdGroups() {
+        const out = [];
+        for (const f of this.stdFields) {
+            const tab = (f.stdbox && f.stdbox.tab) || _t("Other fields");
+            let g = out[out.length - 1];
+            if (!g || g.tab !== tab) { g = { tab, items: [] }; out.push(g); }
+            g.items.push(f);
+        }
+        return out;
+    }
+    get stdFiltered() {
+        return Boolean(fold(this.state.stdTerm)) || this.state.stdChip !== "all" || Boolean(Number(this.state.stdCountry));
+    }
+    get stdCountText() {
+        const n = this.stdFields.length;
+        const total = this.stdAll.length;
+        if (this.stdFiltered) { return _t("%(n)s of %(total)s", { n, total }); }
+        return total === 1 ? _t("1 field") : _t("%s fields", total);
+    }
+    get countryOptions() {
+        return [...(this.data.countries || [])].sort((a, b) => a.name.localeCompare(b.name));
+    }
+    onStdTerm(ev) { this.state.stdTerm = ev.target.value; }
+    onStdCountry(ev) { this.state.stdCountry = Number(ev.target.value) || 0; }
+    clearStd() {
+        this.state.stdTerm = "";
+        this.state.stdChip = "all";
+        this.state.stdCountry = 0;
+        if (this.stdSearch.el) { this.stdSearch.el.focus(); }
+    }
+    isSelectedCountry(c) { return Number(this.state.stdCountry) === c.id; }
+    stdState(f) {
+        const s = f.stdbox || {};
+        const parts = [];
+        if (s.ignored) { parts.push(_t("Locked now, shown again")); }
+        else if (s.hidden) { parts.push(_t("Hidden for everyone")); }
+        else if ((s.countries || []).length) { parts.push(_t("Hidden in %s", s.countries.map((c) => c.name).join(", "))); }
+        if (this.stdIsRenamed(f)) {
+            parts.push(this.stdLabel(f) !== s.builtin ? _t("Built-in label: %s", s.builtin) : _t("Own label"));
+        }
+        if (s.rule) { parts.push(_t("Only where Country of Work is %s", s.rule.country)); }
+        const p = f.portal || {};
+        if (p.show) {
+            parts.push(!p.edit ? _t("On My Payobook")
+                : (p.mode === "instant" ? _t("My Payobook, saves at once") : _t("My Payobook, HR approves")));
+        }
+        return parts.join(" · ");
+    }
+    stdItemClass(f) {
+        const s = f.stdbox || {};
+        return { hid: this.stdIsHidden(f) && !s.ignored, sel: this.state.sel === f.name,
+                 on: Boolean(f.portal && f.portal.show), renamed: this.stdIsRenamed(f) };
+    }
+    stdIcon(f) {
+        const s = f.stdbox || {};
+        if (this.stdIsHidden(f) && !s.ignored) { return this.ic("eyeOff", 15); }
+        if (s.lock) { return this.ic("lock", 15); }
+        if (f.portal && f.portal.show) { return this.ic("smartphone", 15); }
+        if (this.stdIsRenamed(f)) { return this.ic("pencil", 15); }
+        return this.ic("eye", 15);
+    }
+    // properties panel of a standard field
+    isStd(f) { return Boolean(f && !f.custom && f.stdbox); }
+    get allLangs() { return this.data.langs || ["en_US"]; }
+    stdMode(f) {
+        const s = f.stdbox || {};
+        if (s.hidden) { return "all"; }
+        if ((s.countries || []).length || this.state.someOpen === f.name) { return "some"; }
+        return "shown";
+    }
+    stdModeClass(f, mode) { return { on: this.stdMode(f) === mode }; }
+    setStdMode(f, mode) {
+        const s = f.stdbox;
+        if (!s || (mode !== "shown" && s.lock)) { return; }
+        if (mode === "shown") {
+            this.state.someOpen = null;
+            if (s.hidden || (s.countries || []).length) {
+                this.editStd(f, { std_hidden: false, std_country_ids: [] }, _t("shown"));
+            }
+        } else if (mode === "all") {
+            this.state.someOpen = null;
+            if (!s.hidden) { this.editStd(f, { std_hidden: true, std_country_ids: [] }, _t("hidden for everyone")); }
+        } else {
+            this.state.someOpen = f.name;
+            if (s.hidden) { this.editStd(f, { std_hidden: false, std_country_ids: [] }, _t("hidden in some countries")); }
+        }
+    }
+    stdCountryMatches(f) {
+        const t = fold(this.state.countryTerm);
+        if (!t) { return []; }
+        const chosen = new Set(((f.stdbox || {}).countries || []).map((c) => c.id));
+        const rank = (c) => (fold(c.name).startsWith(t) || fold(c.code) === t ? 0 : 1);
+        return (this.data.countries || []).filter((c) => !chosen.has(c.id)
+            && (fold(c.name).includes(t) || fold(c.code) === t))
+            .sort((a, b) => rank(a) - rank(b)).slice(0, 6);
+    }
+    /** "Not used in <country>": the product already hides it there (rule 6). */
+    stdNotUsed(f, c) {
+        const r = (f.stdbox || {}).rule;
+        return Boolean(r && r.country_id && r.country_id !== c.id);
+    }
+    stdMatchLabel(f, c) { return this.stdNotUsed(f, c) ? _t("%s (not used there)", c.name) : c.name; }
+    addStdCountry(f, c) {
+        if ((f.stdbox || {}).lock) { return; }
+        const ids = [...((f.stdbox || {}).countries || []).map((x) => x.id), c.id];
+        this.state.countryTerm = "";
+        this.editStd(f, { std_hidden: false, std_country_ids: ids }, _t("hidden in some countries"));
+    }
+    removeStdCountry(f, c) {
+        const ids = ((f.stdbox || {}).countries || []).map((x) => x.id).filter((id) => id !== c.id);
+        this.editStd(f, { std_hidden: false, std_country_ids: ids }, _t("hidden in some countries"));
+    }
+    ruleText(f) {
+        const r = (f.stdbox || {}).rule;
+        return r ? _t("Shown only where Country of Work is %s: not used in other countries. That rule comes with the product and cannot be changed here.", r.country) : "";
+    }
+    stdLabelValue(f, lang) { return ((f.stdbox || {}).labels || {})[lang] || ""; }
+    stdBuiltin(f, lang) { return ((f.stdbox || {}).builtins || {})[lang] || (f.stdbox || {}).builtin || ""; }
+    onStdLabel(f, lang, ev) {
+        const s = f.stdbox;
+        if (!s || s.label_lock) { return; }
+        const v = ev.target.value.trim();
+        const labels = { ...(s.labels || {}) };
+        if (v && v !== this.stdBuiltin(f, lang)) { labels[lang] = v; } else { delete labels[lang]; ev.target.value = ""; }
+        if (JSON.stringify(labels) === JSON.stringify(s.labels || {})) { return; }
+        this.editStd(f, { std_labels: labels }, _t("label"));
+    }
+    resetStdLabel(f) { this.editStd(f, { std_labels: {} }, _t("built-in label put back")); }
+    /** One change line per field and per kind of change, however many clicks. */
+    editStd(f, vals, what) {
+        this.state.updates[f.name] = { ...(this.state.updates[f.name] || {}), ...vals };
+        const was = this.stdLabel(f);
+        this.mergeIntoDesc(f, vals);
+        const key = String(what);
+        this.state.changes = this.state.changes.filter((c) => !(c.ref === f.name && c.std === key));
+        this.state.changes.push({ kind: "changed", what: _t("%(label)s: %(what)s", { label: was, what }), ref: f.name, std: key });
+        this.scheduleDraft();
     }
     get openSections() { return this.state.sections.filter((s) => s.kind === "open"); }
     get customSectionId() {
@@ -242,7 +488,7 @@ export class FormStudioOverlay extends Component {
     }
     countryById(id) {
         const c = (this.data.countries || []).find((x) => x.id === id);
-        return c ? { id: c.id, name: c.name } : null;
+        return c ? { id: c.id, name: c.name, code: c.code } : null;
     }
     /** R14 rules for a field that does not exist yet (the server decides for
      *  existing ones, and re-checks everything on Publish). */
@@ -256,6 +502,20 @@ export class FormStudioOverlay extends Component {
         };
     }
     mergeIntoDesc(desc, vals) {
+        if (desc.stdbox && STD_KEYS.some((k) => k in vals)) {
+            const s = { ...desc.stdbox };
+            if ("std_hidden" in vals) { s.hidden = Boolean(vals.std_hidden); }
+            if ("std_country_ids" in vals) {
+                s.countries = (vals.std_country_ids || []).map((id) => this.countryById(id)).filter(Boolean);
+            }
+            if (s.hidden) { s.countries = []; }
+            if (!s.hidden && !(s.countries || []).length) { s.ignored = false; }
+            if ("std_labels" in vals) { s.labels = { ...(vals.std_labels || {}) }; }
+            desc.stdbox = s;
+            // own label, else the label this list always used for the field
+            desc.label = (s.labels || {})[this.lang]
+                || (desc.placeable !== false && desc.field_label) || s.builtin || desc.label;
+        }
         if (desc.portal && ["portal_show", "portal_edit", "portal_mode"].some((k) => k in vals)) {
             const p = { ...desc.portal };
             if ("portal_show" in vals) { p.show = vals.portal_show; }
@@ -627,6 +887,9 @@ export class FormStudioOverlay extends Component {
             clearTimeout(this._timer);
             this.notification.add(n === 1 ? _t("Published. 1 change is now live for everyone.")
                 : _t("Published. %s changes are now live for everyone.", n), { type: "success" });
+            // R23: this browser reads the screen designs again (other people's
+            // follow through the bus, form_studio_service.js).
+            rpcBus.trigger("CLEAR-CACHES", "get_views");
             this.state.sheet = null;
             if (this.props.onPublished) { await this.props.onPublished(res); }
             this.props.onClose();

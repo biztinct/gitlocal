@@ -20,7 +20,7 @@ Lists and columns (FORM STUDIO programme, phase FS-4).
 
 Silent install: no field, view content, job or mail is created.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

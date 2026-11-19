@@ -33,6 +33,26 @@ class IrModelFields(models.Model):
         help='Technical: the permission list the Form builder applies to '
              'this field. Empty means everyone who may open the record.')
 
+    def unlink(self):
+        # R23: a standard field an upgrade removes takes its Form builder
+        # settings row with it (the database cascades). Leave a history line
+        # first, so the administrator can see why a screen rule went away.
+        if 'pb.form.field.meta' not in self.env or 'pb.form.audit' not in self.env \
+                or 'std_labels' not in self.env['pb.form.field.meta']._fields:
+            return super().unlink()
+        Meta = self.env['pb.form.field.meta'].sudo()
+        metas = Meta.search([('field_id', 'in', self.ids), ('custom', '=', False)])
+        for meta in metas:
+            if meta.std_hidden or meta.std_country_ids or meta.std_labels:
+                self.env['pb.form.audit'].sudo().create({
+                    'action': 'update_field', 'model': meta.model, 'field_name': meta.name,
+                    'summary': self.env._('%s no longer exists: its screen rule was removed.',
+                                          meta.name),
+                    'company_id': self.env.company.id, 'user_id': self.env.uid,
+                    'detail': {'standard': True, 'removed': True},
+                })
+        return super().unlink()
+
     @api.model
     def _instanciate_attrs(self, field_data):
         attrs = super()._instanciate_attrs(field_data)

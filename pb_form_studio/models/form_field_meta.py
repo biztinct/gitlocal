@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """What the Form builder knows about one field beyond the field itself.
 
-One row per custom field the engine made (and, later, per standard field a
-host lets the administrator relabel). The ORM-facing visibility lives on the
+One row per custom field the engine made, and one per standard field the
+administrator ticked for My Payobook (R14) or hid / relabelled (R23). The ORM-facing visibility lives on the
 field row (`ir.model.fields.pbfs_groups`, see ir_model_fields.py); `vis` here
 is the administrator's choice in screen words, and the two are written
 together by the facade only.
@@ -44,6 +44,20 @@ class PbFormFieldMeta(models.Model):
                                     ('instant', 'Saves at once')],
                                    string='When the employee changes it',
                                    default='approve', required=True)
+
+    # R23 (FS-7) — a STANDARD field's screen rule, set by the administrator
+    # (`pb.form.studio.update_standard`). A SCREEN rule only: the field, its
+    # values and every reader (formulas, imports, Mapping, reports) are
+    # untouched; nothing is written on `ir.model.fields` (its label would leak
+    # into Mapping, Updates sheets and exports, and be reset by upgrades).
+    std_hidden = fields.Boolean(string='Hidden for everyone')
+    std_country_ids = fields.Many2many(
+        'res.country', 'pb_form_field_meta_std_country_rel', 'meta_id', 'country_id',
+        string='Hidden for these Countries of Work')
+    # {lang code: label}. A language with no entry shows the built-in label —
+    # deliberately not a translated field, which would show the English text
+    # in Vietnamese until somebody typed a Vietnamese one.
+    std_labels = fields.Json(string='Own labels')
 
     _field_uniq = models.Constraint('UNIQUE (field_id)',
                                     'A field has one set of Form builder settings.')

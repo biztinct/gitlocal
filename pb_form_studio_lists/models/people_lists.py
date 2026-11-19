@@ -12,6 +12,11 @@ from odoo import api, models
 from .list_columns import money_format, to_date
 
 MODEL = 'hr.employee'
+#: R23 — the field behind each standard column (its heading follows the
+#: field's own label; `state` and `ready` are worked out, not one field).
+COLUMN_FIELDS = {'name': 'name', 'dept': 'department_id', 'date_end': 'contract_date_end',
+                 'wage': 'wage', 'job': 'job_id', 'manager': 'parent_id', 'email': 'work_email',
+                 'join_date': 'date_of_joining', 'date_start': 'contract_date_start'}
 
 
 class PbPeopleLists(models.AbstractModel):
@@ -39,7 +44,8 @@ class PbPeopleLists(models.AbstractModel):
              'sort': {'asc': 'longest', 'desc': 'newest'}},
             {'key': 'date_start', 'label': _('Contract start'), 'kind': 'date', 'default': False},
         ]
-        return cols + self.env['pb.form.studio.lists']._pbfl_columns(MODEL)
+        Lists = self.env['pb.form.studio.lists']
+        return Lists._pbfl_std_columns(MODEL, cols, COLUMN_FIELDS) + Lists._pbfl_columns(MODEL)
 
     def _pbf_export_name(self):
         return self.env._('Employees')

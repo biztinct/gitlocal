@@ -11,11 +11,44 @@ direct many2one for the "Full details" page (`country_view_field`). This
 non-stored field is that bridge: no column, nothing written, recomputed
 whenever the box changes.
 """
+import logging
+
 from odoo import api, fields, models
+
+from odoo.addons.pb_form_studio.models.form_standard import STD_RAW
+
+_logger = logging.getLogger(__name__)
 
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
+
+    # ------------------------------------------------- R23 screen rule
+    @api.model
+    def _get_view_cache_key(self, view_id=None, view_type='form', **options):
+        key = super()._get_view_cache_key(view_id, view_type, **options)
+        return key + (bool(self.env.context.get(STD_RAW)),)
+
+    @api.model
+    def _get_view(self, view_id=None, view_type='form', **options):
+        """Every employee form ("Full details" and the others) follows the
+        administrator's screen rule for standard fields (R23): hidden ones get
+        `invisible` joined with the product's own rule, renamed ones their
+        own label — on the COMBINED form, so a field an upgrade removed
+        simply matches nothing (TIDY-E's seam, `pb_employee_form_tidy/models/
+        hr_employee.py`). Never costs the form: on any error it is shown as
+        the modules draw it."""
+        arch, view = super()._get_view(view_id, view_type, **options)
+        if view_type != 'form' or self.env.context.get(STD_RAW):
+            return arch, view
+        try:
+            self.env['pb.form.studio']._pbfs_std_apply_arch(
+                arch, self._name, 'pbfs_country_of_work_id')
+        except Exception:                               # noqa: BLE001
+            _logger.exception('Form builder: the screen rule of standard fields could not be '
+                              'applied to the employee form; it is shown as the modules draw it.')
+            arch, view = super()._get_view(view_id, view_type, **options)
+        return arch, view
 
     pbfs_country_of_work_id = fields.Many2one(
         'res.country', string='Country of Work',

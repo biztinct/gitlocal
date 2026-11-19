@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 10:00+0000\n"
-"PO-Revision-Date: 2026-11-19 10:00+0000\n"
+"POT-Creation-Date: 2026-11-19 23:52+0000\n"
+"PO-Revision-Date: 2026-11-19 23:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -46,6 +46,18 @@ msgid "A new file"
 msgstr ""
 
 #. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
+msgstr ""
+
+#. module: pb_form_studio_contracts
 #. odoo-javascript
 #: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
 msgid "Add or move fields on this screen"
@@ -55,6 +67,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
 msgid "Add your own fields"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
 msgstr ""
 
 #. module: pb_form_studio_contracts
@@ -80,6 +98,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
 msgid "Contract change · %s"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Contract panel: %s"
 msgstr ""
 
 #. module: pb_form_studio_contracts
@@ -132,6 +156,18 @@ msgstr ""
 
 #. module: pb_form_studio_contracts
 #. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It names the contract on every payslip and file."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It says whose contract this is."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
 #: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
 #: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
 msgid "No"
@@ -147,6 +183,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
 msgid "PDF or image, up to 10 MB"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
 msgstr ""
 
 #. module: pb_form_studio_contracts
