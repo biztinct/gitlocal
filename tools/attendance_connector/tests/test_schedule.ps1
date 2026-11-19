@@ -27,3 +27,24 @@ $script:missing=$true
 try {Enable-PayobookSchedule $root 'DOMAIN\HR' 'S-1-5-21-1';throw 'MISSING_RUNTIME_NOT_BLOCKED'} catch {if ($_.Exception.Message -notmatch 'Windowless Python is missing') {throw}}
 if ($script:updated) {throw 'Rejected task was modified'}
 'PASS: quiet new action, action-only update, preserved arguments/working directory, wrong account/custom action/missing runtime refused'
+# Repair-only mode must never register a new task or touch a quiet task.
+$script:missing=$false; $script:task=$null; $script:registered=$null
+try {Enable-PayobookSchedule $root 'DOMAIN\HR' 'S-1-5-21-1' -ExistingOnly;throw 'MISSING_TASK_NOT_BLOCKED'} catch {if ($_.Exception.Message -notmatch 'No Payobook scheduled task') {throw}}
+if ($script:registered) {throw 'Patch created a task'}
+$script:task=[pscustomobject]@{TaskName='Payobook Attendance Connector';TaskPath='\';Principal=[pscustomobject]@{UserId='DOMAIN\HR'};Actions=@([pscustomobject]@{Execute=(Join-Path $root 'runtime\python.exe');Arguments=('"' + (Join-Path $root 'connector.py') + '" sync --home "' + (Join-Path $root 'data') + '"');WorkingDirectory='custom working folder'})}
+$script:backupFails=$false; $script:exported=$false
+function Export-ScheduledTask {param($TaskName,$TaskPath,$ErrorAction) $script:exported=$true; if ($script:backupFails) {throw 'Backup failed'}; return '<Task>original</Task>'}
+$backup=Join-Path ([IO.Path]::GetTempPath()) ('quiet-patch-test-'+[guid]::NewGuid()+'.xml')
+try {
+    $script:backupFails=$true; $script:updated=$null
+    try {Enable-PayobookSchedule $root 'DOMAIN\HR' 'S-1-5-21-1' -ExistingOnly -BackupPath $backup;throw 'BACKUP_FAILURE_NOT_BLOCKED'} catch {if ($_.Exception.Message -ne 'Backup failed') {throw}}
+    if ($script:updated) {throw 'Updated without backup'}
+    $script:backupFails=$false
+    Enable-PayobookSchedule $root 'DOMAIN\HR' 'S-1-5-21-1' -ExistingOnly -BackupPath $backup | Out-Null
+    if (-not $script:exported -or (Get-Content -LiteralPath $backup -Raw).Trim() -ne '<Task>original</Task>') {throw 'Backup not saved'}
+    if ($script:updated.Execute -ne (Join-Path $root 'runtime\pythonw.exe')) {throw 'Patch did not select quiet runtime'}
+    $script:task.Actions=@($script:updated); $script:updated=$null; $script:exported=$false
+    Enable-PayobookSchedule $root 'DOMAIN\HR' 'S-1-5-21-1' -ExistingOnly -BackupPath $backup | Out-Null
+    if ($script:updated -or $script:exported) {throw 'Repeated patch changed quiet task'}
+} finally {if ([IO.File]::Exists($backup)) {[IO.File]::Delete($backup)}}
+'PASS: repair-only missing task, backup failure, saved backup, and repeat application'

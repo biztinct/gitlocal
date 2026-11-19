@@ -1,6 +1,6 @@
 # Update the action only on an existing installation. Preserve IT's account,
 # triggers, conditions, logon mode and stored task credentials.
-function Enable-PayobookSchedule([string]$InstallPath, [string]$AccountName, [string]$AccountSid) {
+function Enable-PayobookSchedule([string]$InstallPath, [string]$AccountName, [string]$AccountSid, [switch]$ExistingOnly, [string]$BackupPath) {
     $quietPython = Join-Path $InstallPath 'runtime\pythonw.exe'
     $consolePython = Join-Path $InstallPath 'runtime\python.exe'
     $workerPath = Join-Path $InstallPath 'connector.py'
@@ -17,11 +17,19 @@ function Enable-PayobookSchedule([string]$InstallPath, [string]$AccountName, [st
         if ($actions.Count -ne 1 -or $actions[0].Execute -notin @($consolePython, $quietPython) -or $actions[0].Arguments -ne $arguments) {
             throw 'IT has customised this task action. Ask IT to change only python.exe to pythonw.exe in its existing action.'
         }
+        if ($ExistingOnly -and $actions[0].Execute -eq $quietPython) {
+            return 'This PC already uses quiet scheduled sync. No change was needed.'
+        }
+        if ($BackupPath) {
+            Export-ScheduledTask -TaskName $existing.TaskName -TaskPath $existing.TaskPath -ErrorAction Stop |
+                Set-Content -LiteralPath $BackupPath -Encoding Unicode -ErrorAction Stop
+        }
         # Keep the existing arguments and working directory exactly as configured.
         $action = New-ScheduledTaskAction -Execute $quietPython -Argument $actions[0].Arguments -WorkingDirectory $actions[0].WorkingDirectory
         Set-ScheduledTask -TaskName $existing.TaskName -TaskPath $existing.TaskPath -Action $action -ErrorAction Stop | Out-Null
         return 'Existing schedule updated to run without a command window. Its account, timings, logon mode and enabled/disabled state are unchanged. Check Windows task settings and run the task once to verify.'
     }
+    if ($ExistingOnly) { throw 'No Payobook scheduled task was found. Open the connector and enable scheduled sync first.' }
     $action = New-ScheduledTaskAction -Execute $quietPython -Argument $arguments -WorkingDirectory $InstallPath
     $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 5)
     $principal = New-ScheduledTaskPrincipal -UserId $AccountName -LogonType Interactive -RunLevel Limited
