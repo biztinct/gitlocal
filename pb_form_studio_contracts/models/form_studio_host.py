@@ -57,6 +57,8 @@ class PbFormStudio(models.AbstractModel):
             # R7: custom contract fields are carried to the new contract, always.
             'copy_custom': True,
             'native_views': [NATIVE_VIEW],
+            # R14 (ADDENDUM 2): contracts are not on My Payobook.
+            'portal': False,
         }
         return hosts
 

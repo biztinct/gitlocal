@@ -54,8 +54,17 @@ class PbContracts(models.AbstractModel):
         """The engine's published sections for this contract, as THIS reader
         may see them. Empty on any failure: a custom field may never cost
         anybody their contract panel."""
+        Studio = self.env['pb.form.studio']
+        # The layout is the CONTRACT's company's (layouts are per company).
+        # An approval is carried out by the system in the main company's
+        # context, where the contract's own company's layout would not be
+        # found and every custom field would be refused.
+        company = contract.company_id
+        if company and company != self.env.company and (
+                self.env.su or company in self.env.user.company_ids):
+            Studio = Studio.with_company(company)
         try:
-            return self.env['pb.form.studio'].render(HOST, contract.id)
+            return Studio.render(HOST, contract.id)
         except Exception:                               # noqa: BLE001
             _logger.info('Form builder: contract %s could not be drawn', contract.id,
                          exc_info=True)
