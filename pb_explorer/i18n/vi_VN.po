@@ -237,7 +237,9 @@ msgid "Basic salary"
 msgstr "Lương cơ bản"
 
 #. module: pb_explorer
+#. odoo-python
 #. odoo-javascript
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__basis
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__basis
@@ -522,7 +524,9 @@ msgid "Emp"
 msgstr "NV"
 
 #. module: pb_explorer
+#. odoo-python
 #. odoo-javascript
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__employee_id
 msgid "Employee"
@@ -1413,7 +1417,9 @@ msgid "Where"
 msgstr "Ở đâu"
 
 #. module: pb_explorer
+#. odoo-python
 #. odoo-javascript
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Where they work"
 msgstr "Nơi họ làm việc"
@@ -2767,3 +2773,27 @@ msgstr "“%s” giờ chỉ mình bạn xem được."
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "“%s” now shows what is on screen."
 msgstr "“%s” giờ hiển thị đúng như trên màn hình."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Filter"
+msgstr "Bộ lọc"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "This breakdown is not available right now. Open the board again."
+msgstr "Cách chia này hiện không dùng được. Hãy mở lại bảng."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "This view was split or filtered by a field that is not available to you any more, so it opened without it."
+msgstr "Bản xem này được chia hoặc lọc theo một trường mà bạn không còn dùng được, nên đã mở mà không có trường đó."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "“%(measure)s” cannot be split or filtered by “%(dim)s”. That field belongs to a person, while component-level figures are counted per pay component — one person appears in many components. Pick another measure, or take the component off the filters."
+msgstr "“%(measure)s” không thể chia hoặc lọc theo “%(dim)s”. Trường đó thuộc về một người, còn số liệu theo khoản lương được tính theo từng khoản — một người có mặt trong nhiều khoản. Hãy chọn thước đo khác, hoặc bỏ khoản lương khỏi bộ lọc."

@@ -1,0 +1,41 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_explorer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-20 06:38+0000\n"
+"PO-Revision-Date: 2026-11-20 06:38+0000\n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Filter"
+msgstr "Filter"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "This breakdown is not available right now. Open the board again."
+msgstr "Pembagian ini sedang tidak tersedia. Buka papan ini lagi."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "This view was split or filtered by a field that is not available to you any more, so it opened without it."
+msgstr "Tampilan ini dibagi atau disaring menurut kolom yang tidak lagi tersedia untuk Anda, jadi dibuka tanpa kolom itu."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "“%(measure)s” cannot be split or filtered by “%(dim)s”. That field belongs to a person, while component-level figures are counted per pay component — one person appears in many components. Pick another measure, or take the component off the filters."
+msgstr "“%(measure)s” tidak bisa dibagi atau disaring menurut “%(dim)s”. Kolom itu milik seseorang, sedangkan angka per komponen dihitung per komponen gaji — satu orang ada di banyak komponen. Pilih ukuran lain, atau keluarkan komponen dari saringan."

@@ -293,6 +293,22 @@ export class PbExplorer extends Component {
                 this.state.spec.date_from = period.date_from || null;
                 this.state.spec.date_to = period.date_to || null;
             }
+            // FS-8 — the same rule for a split or a filter the server could
+            // not keep (a field that was removed, or one this reader may not
+            // see): the chips show what the answer IS, never a raw key.
+            const clean = this.state.data && this.state.data.spec;
+            if (clean && clean.dimension
+                    && clean.dimension !== this.state.spec.dimension) {
+                this.state.spec.dimension = clean.dimension;
+            }
+            if (clean && clean.filters) {
+                const kept = {};
+                let dropped = false;
+                for (const [key, vals] of Object.entries(this.state.spec.filters || {})) {
+                    if (key in clean.filters) { kept[key] = vals; } else { dropped = true; }
+                }
+                if (dropped) { this.state.spec.filters = kept; }
+            }
             this.writeHash();
         } catch (e) {
             this.state.error = this._msg(e);
@@ -1290,7 +1306,7 @@ export class PbExplorer extends Component {
                 out.push({
                     key,
                     value: v,
-                    keyLabel: FILTER_META[key] || key,
+                    keyLabel: this.filterLabel(key),
                     label: found ? found.label : String(v),
                 });
             }
@@ -1301,6 +1317,32 @@ export class PbExplorer extends Component {
     get filterFields() {
         const opts = this.state.schema?.options || {};
         return Object.keys(FILTER_META).filter((k) => (opts[k] || []).length);
+    }
+
+    /* FS-8 — breakdowns the server offers THIS reader at run time (their own
+     * fields made in the Form builder). They come with the schema, never from
+     * a list written here, and only when there is at least one. */
+    get extraFilters() {
+        return this.state.schema?.extra_filters || [];
+    }
+
+    get extraGroup() {
+        return this.state.schema?.extra_group || null;
+    }
+
+    get builtInDimensions() {
+        return (this.state.schema?.dimensions || []).filter((d) => !d.group);
+    }
+
+    get extraDimensions() {
+        return (this.state.schema?.dimensions || []).filter((d) => d.group === "extra");
+    }
+
+    /** A filter's name in screen words — never its key. */
+    filterLabel(key) {
+        if (FILTER_META[key]) { return FILTER_META[key]; }
+        const hit = this.extraFilters.find((f) => f.key === key);
+        return hit ? hit.label : _t("Filter");
     }
 
     labelOf(list, value) {

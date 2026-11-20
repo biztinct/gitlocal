@@ -313,14 +313,38 @@
                 <span t-esc="labelOf('dimensions', state.spec.dimension)"/>
                 <t t-out="ic('chevronDown', 13)"/>
               </button>
-              <div t-if="state.openPicker === 'dimension'" class="pbex-menu">
-                <button t-foreach="state.schema.dimensions" t-as="opt" t-key="opt.value"
-                        class="pbex-menu-item"
-                        t-att-class="{ active: opt.value === state.spec.dimension }"
-                        t-on-click="() => this.pick('dimension', opt.value)">
-                  <span t-esc="opt.label"/>
-                  <t t-if="opt.value === state.spec.dimension" t-out="ic('check', 14)"/>
-                </button>
+              <div t-if="state.openPicker === 'dimension'" class="pbex-menu"
+                   t-att-class="{ wide: extraDimensions.length }">
+                  <button t-foreach="builtInDimensions" t-as="opt" t-key="opt.value"
+                          class="pbex-menu-item"
+                          t-att-class="{ active: opt.value === state.spec.dimension }"
+                          t-on-click="() => this.pick('dimension', opt.value)">
+                    <span t-esc="opt.label"/>
+                    <t t-if="opt.value === state.spec.dimension" t-out="ic('check', 14)"/>
+                  </button>
+                  <!-- FS-8 — the reader's own fields, offered by the server
+                       at run time (only those this reader may see). -->
+                  <t t-if="extraDimensions.length">
+                    <div class="pbex-menu-group">
+                      <t t-out="ic('sparkles', 12)"/>
+                      <span t-esc="extraGroup and extraGroup.title"/>
+                    </div>
+                    <button t-foreach="extraDimensions" t-as="opt" t-key="opt.value"
+                            class="pbex-menu-item pbex-menu-own"
+                            t-att-class="{ active: opt.value === state.spec.dimension }"
+                            t-on-click="() => this.pick('dimension', opt.value)">
+                      <span class="pw-l">
+                        <b t-esc="opt.label"/>
+                        <i t-if="opt.sub" t-esc="opt.sub"/>
+                      </span>
+                      <t t-if="opt.value === state.spec.dimension" t-out="ic('check', 14)"/>
+                    </button>
+                  </t>
+                <div t-if="extraDimensions.length and extraGroup and extraGroup.note"
+                     class="pbex-menu-note">
+                  <t t-out="ic('info', 13)"/>
+                  <span t-esc="extraGroup.note"/>
+                </div>
               </div>
             </div>
           </div>
@@ -473,15 +497,31 @@
                     <button t-foreach="filterFields" t-as="fkey" t-key="fkey"
                             class="pbex-menu-item"
                             t-on-click="() => { state.filterKey = fkey; }">
-                      <span t-esc="filterMeta[fkey]"/>
+                      <span t-esc="filterLabel(fkey)"/>
                       <t t-out="ic('arrowRight', 13)"/>
                     </button>
+                    <!-- FS-8 — the reader's own fields, as filters. -->
+                    <t t-if="extraFilters.length">
+                      <div class="pbex-menu-group">
+                        <t t-out="ic('sparkles', 12)"/>
+                        <span t-esc="extraGroup and extraGroup.title"/>
+                      </div>
+                      <button t-foreach="extraFilters" t-as="ef" t-key="ef.key"
+                              class="pbex-menu-item pbex-menu-own"
+                              t-on-click="() => { state.filterKey = ef.key; }">
+                        <span class="pw-l">
+                          <b t-esc="ef.label"/>
+                          <i t-if="ef.sub" t-esc="ef.sub"/>
+                        </span>
+                        <t t-out="ic('arrowRight', 13)"/>
+                      </button>
+                    </t>
                   </div>
                   <div t-else="">
                     <button class="pbex-menu-back"
                             t-on-click="() => { state.filterKey = ''; }">
                       <t t-out="ic('chevronDown', 13)"/>
-                      <span t-esc="filterMeta[state.filterKey]"/>
+                      <span t-esc="filterLabel(state.filterKey)"/>
                     </button>
                     <div class="pbex-menu-scroll">
                       <button t-foreach="state.schema.options[state.filterKey]"
