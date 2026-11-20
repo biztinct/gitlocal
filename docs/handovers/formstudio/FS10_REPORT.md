@@ -1,7 +1,10 @@
 # FS-10 — Form builder fix batch: R27 labels on My Payobook, phone width, lesson wording, locked-list gap
 
 **Status: BUILT, NOT LIVE.** Branch `fs-10` from `origin/19.1` @ `e69bebcc4` (FS-7 live). No deploy, no
-server touched. Go-live is batched later on the owner's word.
+server change (only read-only counts, §1). Go-live is batched later on the owner's word.
+Round 2 applies the architect's FS-10 decisions: (1) lock a box only while something on that database
+really reads it, name the reader, show a hidden box again the moment it becomes used; (2) My Profile
+and "Marital status" follow the administrator's label (smallest hook inside those pages).
 
 Read: `FORMSTUDIO_LEDGER.md` (R1–R28), `FS7_HANDOVER.md`, `FS_DEPLOY_HANDOVER.md` (non-negotiables);
 `FS7_REPORT.md`, `FS_FOLLOWUP1_REPORT.md`, `FS_DEPLOY_REPORT.md` gotchas.
@@ -10,100 +13,100 @@ Read: `FORMSTUDIO_LEDGER.md` (R1–R28), `FS7_HANDOVER.md`, `FS_DEPLOY_HANDOVER.
 
 | Module | Version | Why |
 |---|---|---|
-| `pb_form_studio` | 19.0.1.3.0 → **19.0.1.4.0** | R27 label on the My Payobook field list; phone sheet / pinned bar (JS, XML, SCSS); `_pbfs_std_unhide_locked`; 2 msgids (vi/id) |
-| `pb_form_studio_people` | 19.0.1.3.0 → **19.0.1.4.0** | locked list = formula catalogue (`_pbfs_people_pay_reads`); upgrade step `migrations/19.0.1.4.0/end-fs10_unhide_formula_read.py` |
-| `pb_form_studio_contracts` | 19.0.1.2.0 → **19.0.1.3.0** | same rule on the contract; upgrade step `migrations/19.0.1.3.0/end-fs10_unhide_formula_read.py` |
-| `pb_form_studio_reach` | 19.0.1.1.0 → **19.0.1.2.0** | R27 in the "field withdrawn" note; new tests |
-| `pb_learn` | 19.0.20.8.9 → **19.0.20.8.10** | lesson L42 wording + practice copy (static assets: purge `/web/assets/%` + restart) |
+| `pb_form_studio` | 19.0.1.3.0 → **19.0.1.4.0** | R27 label on the My Payobook field list; "really used" engine (`_pbfs_std_readers` / `_pbfs_std_used` cached / `_pbfs_std_readers_changed` shared helper / notice); phone sheet + pinned bar (JS, XML, SCSS); vi/id |
+| `pb_form_studio_people` | 19.0.1.3.0 → **19.0.1.4.0** | employee readers (formula bindings incl. `tax.*`, pay data files); My Payobook note names the reader; upgrade step `migrations/19.0.1.4.0/end-fs10_unhide_formula_read.py` |
+| `pb_form_studio_contracts` | 19.0.1.2.0 → **19.0.1.3.0** | contract readers; upgrade step `migrations/19.0.1.3.0/end-fs10_unhide_formula_read.py` |
+| `pb_form_studio_reach` | 19.0.1.1.0 → **19.0.1.2.0** | the readers' SAVE POINTS (`models/std_readers.py`); R27 note; fills the My Profile / My details label hook (`controllers/portal.py` `_ess_field_labels`); tests |
+| `pb_me_portal` | 19.0.3.8.0 → **19.0.3.8.1** | label hook on My Profile (architect-authorised, lines in §2) |
+| `pb_me_details` | 19.0.1.0.1 → **19.0.1.0.2** | label hook on "Marital status" (lines in §2) |
+| `pb_learn` | 19.0.20.8.9 → **19.0.20.8.10** | lesson L42 wording + practice copy (static assets) |
 
-`-u` order: `pb_form_studio, pb_form_studio_people, pb_form_studio_contracts, pb_form_studio_reach,
-pb_learn` (one command is fine). `pb_form_studio_lists` unchanged. JS/SCSS changed → asset purge per
-database. Not edited: `pb_me_portal`, `pb_me_details`, `pb_lifecycle/`, `pb_pack_*`, any standard addon,
-`pb_explorer` (FS-8), `pb_employee_form_tidy` / side-panel bank files (FS-9). No file shared with
-`fs-8` / `fs-9`.
+`-u pb_form_studio,pb_form_studio_people,pb_form_studio_contracts,pb_form_studio_reach,pb_me_portal,
+pb_me_details,pb_learn` (one command). `pb_form_studio_lists` unchanged. JS/SCSS changed → purge
+`/web/assets/%` per database + restart. `pb_me_portal` / `pb_me_details` are shipped by other streams:
+check the deploy notes for an open START on them first. Not edited: `pb_lifecycle/`, `pb_pack_*`, any
+standard addon, `pb_explorer` (FS-8), `pb_employee_form_tidy` / side-panel bank files (FS-9). No file
+shared with `fs-8` / `fs-9`.
 
 ## 1. Item 4 — "Place of Birth" says a pay formula reads it, yet could be hidden
 
 ### Why (verified facts, file:line at `e69bebcc4`)
 | # | Fact | Where |
 |---|---|---|
-| F1 | The My Payobook lock ("A pay formula reads it, so only HR changes it.") uses the formula **catalogue**: every field a formula can be bound to | `pb_form_studio_people/models/form_studio.py:177-202` (`_pbfs_people_formula_names`), used at :258 |
-| F2 | The hide lock used only **live bindings** (`employee.<field>` keys of this database) — FS-7 deviation 4 | `pb_form_studio_people/models/standard_fields.py` `_pbfs_people_formula_used` (before) |
-| F3 | So a catalogue field nobody had bound yet (Place of Birth on every database) carried the note AND could be hidden. Same split on the contract: `CONTRACT_FIELDS` partly locked by hand, Location / Cost center / Signed on left free | `pb_hr_payroll_formula/models/application_domain_sources.py:19-48`; `pb_form_studio_contracts/models/standard_fields.py:16-24` (before) |
-| F4 | Second, smaller gap: a formula bound through a tax source (`tax.in_pan_number` …, `pb_me_tax`) was not seen by the live check (only `employee.%` keys) | `pb_me_tax/models/formula_sources.py:34-45` |
+| F1 | The My Payobook note "A pay formula reads it, so only HR changes it." was given to every field of the formula **catalogue** (fields a formula CAN be bound to) | `pb_form_studio_people/models/form_studio.py:177-202, 258` |
+| F2 | The hide lock used only **live bindings** of this database | `pb_form_studio_people/models/standard_fields.py` `_pbfs_people_formula_used` (before) |
+| F3 | So Place of Birth (a catalogue field nobody had bound on that database) carried "a pay formula reads it" and could be hidden | — |
+| F4 | The live check also missed formulas bound through a tax source (`tax.*`, `pb_me_tax`) | `pb_me_tax/models/formula_sources.py:34-45` |
+| F5 | Locks were worked out with two searches on every form open (no cache) | `standard_fields.py` (before) |
 
-### Fix (general, not just this field)
-* `_pbfs_people_pay_reads()` — ONE answer: catalogue (F1) + live `employee.*` / related / **`tax.*`**
-  bindings + pay data file targets. The hide lock uses it; the My Payobook lock already used the
-  catalogue, so the two can no longer disagree (test L2 checks every field).
-* Contract: `_pbfs_contract_formula_used()` adds `CONTRACT_FIELDS` (same rule).
-* Renaming stays allowed (R23). Blood type / Religion stay free (payroll never reads them,
-  `PAYROLL_EXCLUDED_FIELDS`).
-* Upgrade step (both hosts): a hide rule saved on a now-locked field is cleared, own label kept, one
-  history line each, count in the log. The screens already ignored such rules (FS-7: a locked field is
-  never hidden), so nothing on screen moves. **Expected on every live database: 0** (FS-7 went live
-  today under an owner hold; nobody has hidden a field). Local proof: 3 seeded → 3 cleared, then 0.
-* Direct call refused (browser walk): `update_standard('hr.employee','place_of_birth',{std_hidden:true})`
-  → "A pay formula reads it, so pay depends on this field. It cannot be hidden."
+### Fix — architect ruling: lock only what is REALLY read on that database
+* **Always locked (unchanged FS-7 hard list):** required to save, name, company, Country of Work,
+  wage and contract/pay set-up, org/approval routing, logins, statutory boxes, tax, bank.
+* **Locked only while really used:** a pay scheme component bound to the field (`employee.<f>`,
+  related source, `tax.*`; `contract.<f>`) in a scheme that is not archived, or a pay data file column
+  that fills it. Reason names it: **"Used by pay formula: <scheme>"** / **"Filled by pay data file:
+  <scheme>"** (two names, then "and n more").
+* Other readers checked: bank layouts read only account / holder / bank / employee code / name / work
+  email (`pb_pay_delivery/models/bank_file_layout.py:36-58`, `bank_export_wizard.py:157`,
+  `pb_pay_delivery.py:402`) — all always locked; government form lines map PAY ITEMS, not fields
+  (`pb_form_lines/models/form_map.py:53-75`), so a field reaches a form only through a pay item, which
+  the formula check sees; statutory readers are code (always-locked list); approval routing follows
+  department / manager / job / company (always locked). Not covered: conditions inside Workflow Studio
+  workflows (`pb_lifecycle`, may not be edited or depended on) — a follow-up if wanted.
+* **My Payobook note now tells the truth:** really used → "Used by pay formula: <scheme> Only HR
+  changes it."; only in the catalogue → "A pay formula can read it, so only HR changes it." (still not
+  employee-changeable, but hideable). Test L2 walks every field.
+* **Cached per database** (`_pbfs_std_used`, `templates` cache, key = record type + language): no
+  reader query on a form open (test L7).
+* **Later use → shown again at that moment** (`_pbfs_std_readers_changed`, ONE helper, called from the
+  save points in `pb_form_studio_reach/models/std_readers.py`: component create / write of its source,
+  scheme, kind / delete; scheme archived or restored / deleted; pay data file column create / write of
+  its target / delete). It clears the cache (the registry tells every worker), and if a hidden field
+  is now used: rule cleared (own label kept), one history line, one notice to the tenant
+  administrators — "<box> is shown again because the pay formula <scheme> now uses it." — in the inbox
+  of administrators who read notices in the app, and as a pop-up for those online (nobody is e-mailed:
+  tenant e-mail is off on purpose), and every open Form builder is told (bus). Nothing hidden → only
+  the cache is cleared.
+* **Upgrade step** (both hosts): clears only rules on fields that are really used (local: School,
+  bound by a seeded scheme → cleared; Place of Birth hidden, nothing reads it → kept).
+* Direct call refused (two-worker run): `update_standard(..., {std_hidden: True})` → "Used by pay
+  formula: DEMO FS10 Workers study_field (Vietnam) It cannot be hidden."
 
-### Every field whose status changes (local copy of the live state; same code on every database)
-Employee: 82 → **102 locked** of 148 (66 → 46 hideable). Contract: 29 → **32 locked** of 34.
+### Per site — how many of the 23 boxes are really used (read-only counts, live, 2026-11-20)
+Read-only SELECTs (`BEGIN READ ONLY … ROLLBACK`), field names and counts only.
 
-| Record | Field (as on screen) | Tab | Field code |
+| Site | Really used (of 23) | Which | Hidden standard fields now |
 |---|---|---|---|
-| Employee | Certificate Level | Personal | `certificate` |
-| Employee | Contact (emergency) | Personal | `emergency_contact` |
-| Employee | Phone (emergency) | Personal | `emergency_phone` |
-| Employee | Email (private) | Personal | `private_email` |
-| Employee | Phone (private) | Personal | `private_phone` |
-| Employee | Field of Study | Personal | `study_field` |
-| Employee | Place of Birth | Personal | `place_of_birth` |
-| Employee | Work Phone | Top of the page | `work_phone` |
-| Employee | Indonesia family card number | Employment profile | `pb_family_card_number` |
-| Employee | Job level | Employment profile | `pb_job_level` |
-| Employee | Legal given name / Legal family name | Employment profile | `pb_legal_first_name`, `pb_legal_last_name` |
-| Employee | Permanent address | Employment profile | `pb_permanent_address` |
-| Employee | Visa status | Employment profile | `pb_visa_status` |
-| Employee | Emergency contact name / phone, Relationship | Side panel: Personal | `vietnam_emergency_contact_*` (3) |
-| Employee | School | Side panel: Personal | `study_school` |
-| Employee | Temporary address | Side panel: Personal | `vietnam_temporary_address` |
-| Employee | Work permit number | Side panel: Personal | `vietnam_work_permit_number` |
-| Contract | Location | Salary Information | `location` |
-| Contract | Cost center | Salary Information | `costcenter` |
-| Contract | Contract signed on | Below the tabs | `pb_signed_date` |
+| payobook | **0** | — | 0 |
+| payobook_template | **0** | — | 0 |
+| p0clone | **0** | — | 0 |
+| rize | **22** | every one except Permanent address: 19 employee boxes read by 2–8 scheme components each AND filled by 1–4 pay data file columns; contract Location, Cost center (3 components, 2 columns), Signed on (8 / 4) | 0 |
+| sudima | **0** | — | 0 |
 
-Reason shown for all of them: "A pay formula reads it, so pay depends on this field." Still free on the
-contract: HR Responsible, Notes (R28 said five — see owner question 1).
+So on rize those 22 boxes are locked (with the scheme named) the moment this goes live; everywhere
+else all 23 stay hideable. Upgrade step expected count: **0 on every site** (nothing hidden).
 
 ## 2. Item 1 — R27: My Payobook shows the administrator's label
 
-* Engine `_pbfs_portal_fields` (`pb_form_studio/models/form_studio.py`, the ONE list every My Payobook
-  surface of the Form builder reads): a renamed standard field carries the own label in the reader's
-  language; no label in that language → built-in; Reset → built-in again.
-* Reaches: My details › **Company details** card, **Change company details** form, the waiting change
-  (**My requests** title and the approver's rows — `portal_request.py` reads the same list), and the
-  "no longer takes changes to …" note (`portal_request.py` `PbFormFieldMetaPortalWatch.write`).
-* Hint under the label boxes now says: "Mapping, Updates sheets and pay data files keep the built-in
-  name. My Payobook shows your label for the fields you show there." (overlay + Field library; vi/id).
-* Browser (390 px, employee login): renamed Place of Birth → "DEMO Born in" (en), "DEMO Sinh tại" (vi):
-  card read "DEMO Born in" in English and "DEMO Sinh tại" on `/vi/my/details`; after Reset "Place of
-  Birth"; console clean.
-
-### STOPPED part (needs a hook — owner/architect question 2)
-My Payobook also shows some standard fields on pages the Form builder does not draw, with the words
-written into their templates and no hook that can carry a label:
-* `pb_me_portal` **My Profile** (`views/portal_templates.xml` `portal_my_profile`, the `pbme-kv` rows
-  and the change form): Work Email, Work Phone, Private Phone, Private Email, Address, Emergency
-  Contact, Emergency Phone. `_profile_card` (controllers/portal.py:174) carries values only.
-* `pb_me_details` **My details** card: "Marital status" (`views/portal_templates.xml:102`).
-
-Smallest hook (not built): `_profile_card` returns `'labels': {}` (1 line), and each of those `<span>`s
-becomes `<span t-out="profile['labels'].get('work_email')">Work Email</span>` (QWeb shows the body when
-the value is empty, so nothing changes and the existing translations stay until a label is filled);
-same for `person['labels']` in `pb_me_details._pbmd_overview`. `pb_form_studio_reach` would then fill
-`labels` from `_pbfs_std_rules('hr.employee')` in its existing controller subclass. An xpath from
-outside was rejected: it must locate those rows by position (no names on them), so an edit to the
-template would either break the upgrade of `pb_me_portal` or put a label on the wrong row.
+* Engine `_pbfs_portal_fields` (the ONE list every Form builder surface on My Payobook reads): own label
+  in the reader's language; none in that language → built-in; Reset → built-in.
+* Reaches: My details › Company details card, Change company details form, the waiting change (My
+  requests title, approver rows), the "no longer takes changes to …" note.
+* **My Profile and "Marital status" (architect-authorised hook, smallest edit):**
+  * `pb_me_portal/controllers/portal.py:66-72` — new `_ess_field_labels(emp)` → `{}` (the one helper;
+    empty = built-in words); `:194` — `_profile_card` adds `'labels': self._ess_field_labels(emp)`.
+  * `pb_me_portal/views/portal_templates.xml:696-702` (the seven My Profile rows) and `:713, 715, 717,
+    719, 721` (the five change-form labels): `<span>Work Phone</span>` →
+    `<span t-out="profile['labels'].get('work_phone')">Work Phone</span>` — QWeb prints the body when the
+    value is empty, so the built-in words and their translations are untouched.
+  * `pb_me_details/controllers/portal.py:123` — `person['labels'] = self._ess_field_labels(emp)`;
+    `pb_me_details/views/portal_templates.xml:102` — the "Marital status" `<dt>` the same way.
+  * `pb_form_studio_reach/controllers/portal.py` `_ess_field_labels` fills it from
+    `_pbfs_std_rules('hr.employee')` (reader's language). Nothing else changed in those pages (the
+    marital change FORM keeps its own label — not asked).
+* Browser (390 px, employee): Work Phone renamed "DEMO Office line" → My Profile row reads it, others
+  unchanged; Marital Status renamed "DEMO Family status" → My details line reads it; earlier walk: Place
+  of Birth "DEMO Born in" / "DEMO Sinh tại" on `/vi/my/details`, Reset → built-in.
 
 ## 3. Item 2 — Form builder at phone width (≈390 px)
 
@@ -149,58 +152,70 @@ template would either break the upgrade of `pb_me_portal` or put a label on the 
 
 ## 5. Tests
 
-### Numbered (new)
-| # | Case | Where | Result |
-|---|---|---|---|
-| L1 | Place of Birth locked with the pay reason; hide refused by direct call (all / by country) and by Publish; rename allowed; value untouched | `pb_form_studio_people/tests/test_fs10_locked.py` | PASS |
-| L2 | No field says "a pay formula reads it" on My Payobook yet can be hidden; every catalogue field on screen is locked | same | PASS |
-| L3 | A formula bound through `tax.*` locks its employee field | same | PASS |
-| L4 | Upgrade step: clears the hide of a now-locked field, keeps its label, one history line, leaves free fields alone, second run nothing | same | PASS |
-| L5 | Blood type / Religion stay hideable | same | PASS |
-| C4c | Contract: every catalogue field locked (Location, Cost center, Signed on included), renamable; HR Responsible / Notes free | `pb_form_studio_contracts/tests/test_fs7_standard.py` | PASS |
-| R1/R4 | Own label on the Company details card and the change form; Reset → built-in (HTTP, portal login) | `pb_form_studio_reach/tests/test_fs10_r27.py` | PASS |
-| R2 | Reader's language: vi typed → vi; id not typed → built-in; request label in vi | same | PASS |
-| R3 | Waiting change named by the own label (My requests title, approver rows) | same | PASS |
-| R5 | Silent: nothing renamed → built-in labels | same | PASS |
-| R6 | Custom field label unchanged | same | PASS |
-| P | **Three payslips** (two schemes, two people; one formula bound to Place of Birth) recomputed **identical** after hiding 5 free standard fields, renaming 5, and after the upgrade step on both record types | same | PASS |
-FS-7 tests moved off fields that are locked now: test 2 / 4b / 12 use Visa No instead of Job level;
-test 5 picks the first still-free one-country box (Safety training group / Internal Committee member)
-instead of the Indonesian family card.
+### Numbered (new) — all PASS on the branch
+| # | Case | Where |
+|---|---|---|
+| L1 | Place of Birth free while nothing reads it; a live scheme component bound to it → locked, reason "Used by pay formula: <scheme>"; hide refused by direct call (all / by country) and by Publish; rename allowed; scheme archived → free again; value untouched | `pb_form_studio_people/tests/test_fs10_locked.py` |
+| L2 | Every field whose My Payobook note says "Used by …" is locked; a field a formula merely could read says "can read" and stays free | same |
+| L3 | A component bound through `tax.*` locks its employee field | same |
+| L4 | **Later use:** a hidden field is shown again at the save of a component that reads it — rule cleared, own label kept, one history line, ONE notice ("… is shown again because the pay formula … now uses it"), a second save sends nothing more | same |
+| L5 | A pay data file column locks the field it fills ("Filled by pay data file: <scheme>"); column deleted → free | same |
+| L6 | Upgrade step clears only really used fields; free fields keep their rule; second run nothing | same |
+| L7 | Cached: no reader query on repeated form opens; the save clears the cache, next read sees the lock | same |
+| L8 | Blood type / Religion stay hideable | same |
+| C4c | Contract: Location / Cost center / Signed on / HR Responsible / Notes free while unused; `contract.location` bound → locked with the scheme named, renamable; scheme archived → free | `pb_form_studio_contracts/tests/test_fs7_standard.py` |
+| R1/R4 | Own label on the Company details card and the change form; Reset → built-in (HTTP, portal login) | `pb_form_studio_reach/tests/test_fs10_r27.py` |
+| R2 | Reader's language: vi typed → vi; id not typed → built-in; request label in vi | same |
+| R3 | Waiting change named by the own label (My requests title, approver rows) | same |
+| R5 / R6 | Silent: nothing renamed → built-in; custom field label unchanged | same |
+| R7 | **My Profile** row and **"Marital status"** follow the own label; other rows keep their words; Reset → built-in (HTTP) | same |
+| P | **Three payslips** (two schemes, two people; one formula reads Place of Birth) recomputed **identical** after hiding 5 free fields, renaming 5, after a later formula save showed a hidden field again, and after the upgrade step on both record types (real employee screen) | same |
+FS-7 tests moved off fields whose state depends on use: test 2 / 4b / 12 use Visa No; test 5 picks the
+first free one-country box.
 
-### Silent upgrade (local copy, old code → new code, `snap.py` before/after)
-Seeded with the OLD code first: Blood type hidden, Place of Birth hidden, School hidden for Vietnam,
-Department renamed "DEMO Team", Work Mobile ticked for My Payobook, contract Location hidden.
-After `-u`: employee + contract forms (en, vi), side panel, People table columns, My Payobook field list
-and the rules compared:
-* identical: table columns, My Payobook list, Blood type still hidden, "DEMO Team" label kept, Work
-  Mobile tick kept;
-* changed ONLY where intended: Place of Birth (form + its label + side panel) and contract Location
-  shown again, School's Vietnam rule cleared — the three rules the upgrade step cleared (log:
-  employee 2, contract 1).
-Nothing was hidden, renamed or ticked by the upgrade itself.
+### Two workers (`t_workers.sh` / `workers.py`, local server `--workers=2`, JSON-RPC, fresh connection per call)
+Field of Study hidden → **12/12** form reads hidden on both workers; a pay scheme component reading it
+saved through RPC (the save point) → **0/12** hidden, answered by both worker processes; hiding it again
+refused: "Used by pay formula: DEMO FS10 Workers study_field (Vietnam) It cannot be hidden." History
+line written; the notice went as a pop-up only (that administrator reads notices by e-mail — no mail is
+sent by design; L4 proves the inbox notice).
 
-### 5b. Suites (`--test-tags` of the six touched modules, fresh copy of the live-state database)
-Baseline on `origin/19.1` (pristine export of the tree, same database copy, same tags):
-**560 tests, 4 failed, 1 error — all `pb_learn`**: `test_anchor_registry.test_05`,
-`test_composer.test_03b` (error), `test_guide_truth.test_02`, `test_02b` (govreports replica "Tax
-returns"), `test_learnrev_p4.test_c1`. Stats: engine 41, contracts 30, lists 13, people 33, reach 51,
-Learn 494.
+### Silent upgrade (local copy of the 19.1 state, old code → new code, `snap.py` before / after)
+Seeded with the OLD code: Blood type hidden, Place of Birth hidden, School hidden for Vietnam AND a
+live scheme reading School, Department renamed "DEMO Team", Work Mobile ticked for My Payobook,
+contract Location hidden. After `-u` of the seven modules: employee + contract forms (en, vi), side
+panel, People table columns and My Payobook list **byte-identical**; lock counts identical (employee
+89 / 155, contract 28 / 33); stored rules identical except School's Vietnam rule, cleared by the
+upgrade step (log: employee 1, contract 0) — it was already ignored on screen because a scheme reads
+School. Place of Birth, Blood type and contract Location stay hidden (nothing reads them). Nothing was
+hidden, renamed or ticked by the upgrade itself.
 
-Branch `fs-10` (fresh copy, `-u` of the six): **572 tests, 4 failed, 1 error — the same five `pb_learn`
-tests, same messages (none about the Form builder lesson)**. Stats: engine 41, contracts 31, lists 13,
-people 40, reach 61, Learn 494. **Form builder suites: 0 failed.** Failure set = baseline.
-Learn's own tools: `gen_learn_data.py --check` clean, `test_step_shape.py` 0 failed,
-`check_contract.py` 2 known failures (was 3 on 19.1 — the Form builder pin is fixed).
-White-label: no "Odoo" in any new string, template or .po msgstr (engine / people PO tests pass);
-no "Payobook" in a `biz_*` module (none touched).
+### 5b. Suites (`--test-tags`)
+First round (fresh copy of the earlier base, six modules): baseline `origin/19.1` 560 tests, 4 failed,
+1 error (all `pb_learn`); branch 572, the same five. Second round (decisions applied; new local base
+built from `wf2p6_base` + the Form builder installed with the 19.1 code — the earlier base was gone):
+branch, eight modules: **695 tests**; Form builder suites engine 41, contracts 31, lists 13, people 43,
+reach 62 (+ 7 re-run after the payslip test fix, 0 failed) — **all FS-10 tests pass**. Failures, all
+present with the 19.1 code on the same base (baseline runs `baseline2.sh` / `baseline3.sh`):
+`pb_me_portal` 8 (home cards ×3, home source ×2, profile change flow, portal-only doors ×2 — identical
+list before and after the hook), `pb_learn` (anchor registry, composer, guide truth, learnrev p4 as in
+round one, plus guide truth 03 and reachability 02/03/04/07 on this base), and people
+`test_13` (`hourly_cost` — this base has no hourly-cost module). Learn's own tools: `--check` clean,
+`test_step_shape.py` 0 failed, `check_contract.py` 2 known failures.
+White-label: no "Odoo" in any new string, template or .po msgstr; no "Payobook" in a `biz_*` module
+(none touched).
 
 ## 6. Gotchas (ledger rows)
 * FS10-1 The scratchpad path holds "git" and the worktree guard refuses compound shell lines with it
   (FSD-6 again) — even `mkdir && psql`; keep every step its own command or a script file.
-* FS10-2 Two answers to one question: the My Payobook lock and the hide lock each worked out "does a
-  pay formula read it" their own way. One helper per question; a test that walks every field and
-  compares the two notes.
+* FS10-2 Two answers to one question: the My Payobook note and the hide lock each worked out "does a
+  pay formula read it" their own way. One cached helper (`_pbfs_std_used`) per question; a test walks
+  every field and compares the two notes.
+* FS10-6 `ReachCase` (reach tests) patches `_pbfs_hosts` with a copy of the ENGINE's method taken at
+  import, so the real employee / contract screens are absent there: a test that needs them must be a
+  plain `TransactionCase` (the first payslip test silently skipped for this reason).
+* FS10-7 A cache of "what reads this field" must be cleared at the readers' save points, not on a timer:
+  `registry.clear_cache('templates')` is what every worker follows (two-worker run: 12/12 → 0/12).
 * FS10-3 An upgrade step that calls `_pbfs_standard_locked` reads the forms (required-on-form check),
   which makes the registry print its "inconsistent compute" UserWarnings with stacks in the log (only
   warnings, 0 ERROR). Expect them in the go-live log; they are not failures.
@@ -210,15 +225,9 @@ no "Payobook" in a `biz_*` module (none touched).
   build (stopped upstream); do not rely on Escape for a phone control.
 
 ## 7. Owner questions (plain words)
-1. **Contract boxes you can hide:** with the rule "a pay formula can read it, so it cannot be hidden",
-   Location, Cost center and Contract signed on can no longer be hidden (they can still be renamed).
-   That leaves two (HR Responsible, Notes) instead of the five you accepted. Keep it strict, or keep
-   those three hideable on contracts?
-2. **My Profile page and "Marital status":** your own label now shows on My details › Company details
-   and in the change requests. The My Profile page (work email, phones, address, emergency contact) and
-   the "Marital status" line still show the built-in names, because those pages have their words
-   written in. Making them follow needs a small change inside those two pages (about ten lines, no
-   look change). Shall we make it?
-3. **Employee boxes now locked:** 20 more boxes (list in §1, e.g. Work Phone, private email and
-   phone, emergency contact, Place of Birth, School) can only be renamed, not hidden, because a pay
-   formula can read them. Is that what you want, or only when a formula really uses them?
+1. **Workflow Studio conditions:** a box used only inside a workflow's condition (not a pay formula or
+   pay data file) can still be hidden from the screens; the workflow keeps reading it. Should those
+   count as "really used" too (a follow-up inside the workflow module)?
+2. **Notices by e-mail:** the "shown again" notice goes to administrators' in-app inbox and as a
+   pop-up; administrators who chose e-mail notifications get only the pop-up and the Form builder
+   history (no mail is sent, because tenant e-mail is off on purpose). Fine?
