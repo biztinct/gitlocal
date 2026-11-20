@@ -11453,7 +11453,7 @@ msgstr "Cara baris dijalankan"
 #. odoo-javascript
 #: code:addons/pb_lifecycle/static/workflow/repeat.js:0
 msgid "The next %(line)s starts when the one before it is done."
-msgstr "%(line)s berikutnya dimulai saat yang sebelumnya selesai."
+msgstr "Setiap %(line)s berikutnya dimulai saat yang sebelumnya selesai."
 
 #. module: pb_lifecycle
 #. odoo-javascript
@@ -11501,7 +11501,7 @@ msgstr "Hingga %(cap)s. Jika lebih dari ini, tidak ada yang dimulai dan alasanny
 #. odoo-javascript
 #: code:addons/pb_lifecycle/static/workflow/repeat.js:0
 msgid "The %(lines)s are read when the repeat starts. One added later is not picked up."
-msgstr "%(lines)s dibaca saat pengulangan dimulai. Yang ditambahkan kemudian tidak ikut."
+msgstr "Daftar %(lines)s dibaca saat pengulangan dimulai. Yang ditambahkan kemudian tidak ikut."
 
 #. module: pb_lifecycle
 #. odoo-javascript
@@ -11567,7 +11567,7 @@ msgstr "jumlah “%(answer)s”"
 #. odoo-javascript
 #: code:addons/pb_lifecycle/static/workflow/repeat.js:0
 msgid "The %(lines)s come in when the question is answered, so there is no example yet."
-msgstr "%(lines)s masuk saat pertanyaan dijawab, jadi belum ada contoh."
+msgstr "Daftar %(lines)s masuk saat pertanyaan dijawab, jadi belum ada contoh."
 
 #. module: pb_lifecycle
 #. odoo-javascript
