@@ -110,7 +110,9 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
         Model = self.env[MODEL]
         pay = _('Pay or statutory files depend on this field.')
         rows = [
-            (STD_IDENTITY, _('It names the person on every payslip and file.'), True),
+            (('name',), _('It names the person on every payslip and file.'), True),
+            (STD_IDENTITY, _('Pay rules, statutory files and the fields each person sees follow '
+                             'this field.'), True),
             (STD_PAY, pay, False),
             (STD_ORG, _('Approvals, access and the pay set-up follow this field.'), False),
             (STD_ACCESS, _('Logins, approvals and the time clock follow this field.'), False),
