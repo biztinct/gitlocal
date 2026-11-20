@@ -18,8 +18,10 @@ if os.environ.get('APPLY_PLATFORM_NAVIGATION') == '1':
     user.write({'group_ids': [(4, group.id)]})
     menus = env['ir.ui.menu'].with_user(user).load_web_menus(True)
     assert env.ref('base.menu_administration').id in menus['root']['children']
-    assert env.ref('base.menu_custom').id in menus
-    assert env.ref('mail.menu_email_templates').id in menus
+    # In a shell there is no HTTP session; test debug visibility directly.
+    visible = env['ir.ui.menu'].with_user(user)._visible_menu_ids(debug=True)
+    assert env.ref('base.menu_custom').id in visible
+    assert env.ref('mail.menu_email_templates').id in visible
     assert before == {u.id: sorted(u.group_ids.ids) for u in others}
     env.cr.commit()
     result.update(applied=True, other_users_unchanged=True)

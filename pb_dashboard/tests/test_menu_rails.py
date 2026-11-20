@@ -2,6 +2,8 @@
 """Only platform administrators receive Odoo's full application launcher."""
 
 from odoo.tests import TransactionCase, tagged
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from odoo.addons.pb_dashboard.models.menu_rails import (
     PAYROLL_HOME_XMLID, PAYROLL_MENU_XMLID, RECOVERY_LOGIN_DEFAULT,
@@ -119,6 +121,8 @@ class TestPayrollOnlyMenuRail(TransactionCase):
         menu = self.env['ir.ui.menu'].with_user(admin)
         self.assertGreater(len(menu.get_user_roots()), 1)
 
+    @patch('odoo.addons.base.models.ir_ui_menu.request',
+           SimpleNamespace(session=SimpleNamespace(debug=True)))
     def test_designated_platform_admin_has_native_menus_and_revocation(self):
         self.env['ir.config_parameter'].sudo().set_param(TENANT_SLUG_PARAM, 'nav-test')
         user = self.env['res.users'].with_context(no_reset_password=True).create({
