@@ -21,6 +21,9 @@
                         <field name="enabled"/>
                     </group>
                 </group>
+                <group string="Password reset emails">
+                    <field name="reset_template_id" options="{'no_create': True}"/>
+                </group>
                 <footer>
                     <button name="action_save" type="object" string="Save" class="btn-primary"/>
                     <button name="action_test" type="object" string="Test connection (no email)" class="btn-secondary"/>

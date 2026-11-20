@@ -34,6 +34,9 @@ class OutgoingEmailSettings(models.TransientModel):
     from_filter = fields.Char('Allowed sender email', required=True)
     enabled = fields.Boolean('Active — allow outgoing email', default=False)
 
+    reset_template_id = fields.Many2one('mail.template', string='Password reset template',
+        domain=[('model', '=', 'res.users')], help='Leave empty to use the standard password reset email.')
+
     def _company(self):
         if not may_manage_email(self.env):
             raise AccessError(_('Only a Tenant Administrator or Platform Administrator can configure outgoing email.'))
@@ -44,7 +47,7 @@ class OutgoingEmailSettings(models.TransientModel):
         result = super().default_get(names)
         company = self._company()
         server = company.pb_outgoing_mail_server_id
-        values = {'company_name':company.name, 'name':company.name+' — outgoing email', 'enabled':False}
+        values = {'company_name':company.name, 'name':company.name+' — outgoing email', 'enabled':False, 'reset_template_id':company.pb_reset_password_template_id.id}
         if server:
             values.update({key:server[key] for key in ('name','smtp_host','smtp_port','smtp_encryption','smtp_user','from_filter')})
             values.update(enabled=server.active, password_saved=bool(server.smtp_pass))
@@ -77,6 +80,7 @@ class OutgoingEmailSettings(models.TransientModel):
         else:
             server = self.env['ir.mail_server'].sudo().create(values)
             company.pb_outgoing_mail_server_id = server
+        company.pb_reset_password_template_id = self.reset_template_id
         self.smtp_pass = False
         return {'type':'ir.actions.act_window_close'}
 
