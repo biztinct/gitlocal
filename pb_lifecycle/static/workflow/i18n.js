@@ -17,6 +17,9 @@ const _t=(()=>{
  const t=(text,values)=>fill(words[text]||text,values);
  t.on=false;t.lang='en_US';
  t.n=(count,one,many,values)=>t(count===1?one:many,Object.assign({n:count},values||{}));
+ /* _t.later('phrase') marks a phrase that is translated where it is used
+    (a table of words handed to _t / _t.n later); it returns it unchanged. */
+ t.later=text=>text;
  t.load=data=>{
   const w=data&&data.words;if(!w||typeof w!=='object')return;
   words=Object.assign(Object.create(null),w);

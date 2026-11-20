@@ -63,13 +63,15 @@ def workbench_words(lang):
     return words
 
 
-def _version():
-    module = request.env['ir.module.module'].sudo().search([('name', '=', MODULE)], limit=1)
+def _version(env):
+    module = env['ir.module.module'].sudo().search([('name', '=', MODULE)], limit=1)
     return module.latest_version or ''
 
 
-def _payload(lang):
-    key = (lang, _version())
+def payload(lang, version):
+    """(script body, ETag) for `lang` at this module version, built once per
+    process: `_t.load({...});` with the words, or an empty dictionary."""
+    key = (lang, version)
     hit = _CACHE.get(key)
     if hit:
         return hit
@@ -94,7 +96,7 @@ class WorkbenchWords(http.Controller):
     @http.route('/pb_lifecycle/workflow/words.js', type='http', auth='user', methods=['GET'], readonly=True)
     def workbench_words(self, **kwargs):
         lang = request.env.lang or request.env.user.lang or 'en_US'
-        body, etag = _payload(lang)
+        body, etag = payload(lang, _version(request.env))
         headers = [
             ('Content-Type', 'application/javascript; charset=utf-8'),
             ('Cache-Control', 'private, no-cache'),
