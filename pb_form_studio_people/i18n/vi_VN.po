@@ -642,3 +642,15 @@ msgstr "Thông tin tiền lương"
 #: code:addons/pb_form_studio_people/models/hr_employee.py:0
 msgid "Tax & Dependents"
 msgstr "Thuế & Người phụ thuộc"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Changed through My details › Family"
+msgstr "Thay đổi qua Thông tin của tôi › Gia đình"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Sensitive detail — HR always approves"
+msgstr "Thông tin nhạy cảm — HR luôn duyệt"

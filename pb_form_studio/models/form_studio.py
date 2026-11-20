@@ -165,6 +165,14 @@ class PbFormStudio(models.AbstractModel):
         return {}
 
     @api.model
+    def _pbfs_portal_sensitive(self, model):
+        """`{field name: reason}` — owner ruling R26: a change the employee
+        makes on My Payobook ALWAYS waits for HR ("Saves at once" is refused
+        on the server and greyed on screen with the reason). Extend with
+        `super()` to add more sensitive fields."""
+        return {}
+
+    @api.model
     def _pbfs_portal_hidden(self, model):
         """`{field name: reason}` — never shown on My Payobook (pay figures).
         Extend with `super()`."""
@@ -305,8 +313,10 @@ class PbFormStudio(models.AbstractModel):
         if not key:
             return None
         rules = self._pbfs_portal_rules(model, name)
+        sensitive = self._pbfs_portal_sensitive(model).get(name) or ''
+        mode = 'approve' if sensitive else ((meta.portal_mode if meta else 'approve') or 'approve')
         return {'show': bool(meta and meta.portal_show), 'edit': bool(meta and meta.portal_edit),
-                'mode': (meta.portal_mode if meta else 'approve') or 'approve', **rules}
+                'mode': mode, 'mode_lock': sensitive, **rules}
 
     @api.model
     def _pbfs_ensure_meta(self, model, name):
@@ -335,6 +345,11 @@ class PbFormStudio(models.AbstractModel):
         mode = vals.get('portal_mode', meta.portal_mode) or 'approve'
         if mode not in ('approve', 'instant'):
             raise UserError(_('Pick how a change by the employee is saved.'))
+        sensitive = self._pbfs_portal_sensitive(model).get(name)
+        if sensitive and mode == 'instant':
+            if vals.get('portal_mode') == 'instant':
+                raise UserError(sensitive)         # R26: HR always approves
+            mode = 'approve'
         if 'portal_show' in vals and not show:
             edit = False                    # unticking "shown" clears "can change"
         elif edit:
@@ -1701,6 +1716,7 @@ class PbFormStudio(models.AbstractModel):
         if not metas:
             return []
         hidden = self._pbfs_portal_hidden(model)
+        sensitive = self._pbfs_portal_sensitive(model)
         order, where = [], {}
         for sec in self._pbfs_effective(key):           # one layout for all companies (R18)
             for name in sec['fields']:
@@ -1731,7 +1747,7 @@ class PbFormStudio(models.AbstractModel):
                 'comodel': field.comodel_name if field.type == 'many2one' else False,
                 'section': where[name][0], 'section_title': where[name][1],
                 'edit': bool(meta.portal_edit and rules['can_edit']),
-                'mode': meta.portal_mode or 'approve',
+                'mode': 'approve' if name in sensitive else (meta.portal_mode or 'approve'),
                 'required': bool(meta.custom and meta.is_required),
             })
         return out
@@ -1802,6 +1818,10 @@ class PbFormStudio(models.AbstractModel):
         Users = self.env['res.users'].sudo()
         proposer = Users.browse(origin.get('proposed_by') or self.env.uid).exists()
         approver = Users.browse(origin.get('approved_by') or 0).exists()
+        # R26: a sensitive field is never saved at once, whatever path asks.
+        sensitive = self._pbfs_portal_sensitive(model)
+        if not approver and any(n in sensitive for n in clean):
+            raise UserError(next(sensitive[n] for n in clean if n in sensitive))
         how = (_('approved by %s', approver.name) if approver else _('saved at once'))
         before = {n: self._pbfs_display(rec.sudo(), rec._fields[n]) for n in clean}
         rec.sudo().write(clean)

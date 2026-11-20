@@ -158,7 +158,7 @@
                 <button type="button" class="pbfb-sw" role="switch" aria-label="Employee can change it" t-att-disabled="!e.portal.can_edit" t-att-aria-checked="switchAttr(e.portal.edit)" t-on-click="() => this.toggleEditPortal('edit')"/></div>
               <div t-if="e.portal.edit" class="pbfb-seg" role="group" aria-label="When the employee changes it">
                 <button type="button" t-att-class="editModeClass('approve')" t-on-click="() => this.setEditMode('approve')"><t t-out="ic('userCheck',13)"/> <span>HR approves the change</span></button>
-                <button type="button" t-att-class="editModeClass('instant')" t-on-click="() => this.setEditMode('instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
+                <button type="button" t-att-class="editModeClass('instant')" t-att-disabled="!!e.portal.mode_lock" t-att-title="e.portal.mode_lock" t-on-click="() => this.setEditMode('instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
               </div>
             </div>
             <div t-if="e.row.used_by.length" class="pbfb-used">
@@ -218,7 +218,7 @@
                 <button type="button" class="pbfb-sw" role="switch" aria-label="Employee can change it" t-att-disabled="!e.portal.can_edit" t-att-aria-checked="switchAttr(e.portal.edit)" t-on-click="() => this.toggleStdPortal('edit')"/></div>
               <div t-if="e.portal.edit" class="pbfb-seg" role="group" aria-label="When the employee changes it">
                 <button type="button" t-att-class="stdPortalModeClass('approve')" t-on-click="() => this.setStdPortalMode('approve')"><t t-out="ic('userCheck',13)"/> <span>HR approves the change</span></button>
-                <button type="button" t-att-class="stdPortalModeClass('instant')" t-on-click="() => this.setStdPortalMode('instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
+                <button type="button" t-att-class="stdPortalModeClass('instant')" t-att-disabled="!!e.portal.mode_lock" t-att-title="e.portal.mode_lock" t-on-click="() => this.setStdPortalMode('instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
               </div>
             </div>
           </div>

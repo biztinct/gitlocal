@@ -224,7 +224,7 @@ export class FieldLibrary extends Component {
             if (p.edit) { p.show = true; }
         }
     }
-    setEditMode(mode) { this.state.edit.portal.mode = mode; }
+    setEditMode(mode) { if (mode === "instant" && this.state.edit.portal.mode_lock) { return; } this.state.edit.portal.mode = mode; }
     editModeClass(mode) { return { on: this.state.edit.portal.mode === mode }; }
     closeEdit() { this.state.edit = null; }
     get langs() { return (this.state.langs || []).filter((l) => l !== "en_US"); }
@@ -346,7 +346,7 @@ export class FieldLibrary extends Component {
             if (p.edit) { p.show = true; }
         }
     }
-    setStdPortalMode(mode) { this.state.stdEdit.portal.mode = mode; }
+    setStdPortalMode(mode) { if (mode === "instant" && this.state.stdEdit.portal.mode_lock) { return; } this.state.stdEdit.portal.mode = mode; }
     stdPortalModeClass(mode) { return { on: this.state.stdEdit.portal.mode === mode }; }
     async saveStdEdit() {
         const e = this.state.stdEdit;

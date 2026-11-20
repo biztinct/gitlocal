@@ -155,6 +155,26 @@ upgraded: see §5a. Baseline at the follow-up (1c report): 126 tests in the five
 * After the rebase on `48a80cb14` (R22 included): **175 tests, 0 failed, 0 errors** — engine 41,
   contracts 30, lists 13, people 33, reach 48, TIDY-E 48, native look 8 (15 of them new, FS-7).
 
+## 5b. Addition (coordinator, 2026-11-20): tab names still English in Vietnamese / Indonesian
+
+Found on the five live databases by reading the stored screen designs (read-only, `fs7_tabs.sh`):
+
+| Tab (screen) | Owner | vi before | id before | Words now (vi / id) |
+|---|---|---|---|---|
+| Payroll Info (Full details) | pb_hr_payroll_formula | ok | **English** | Thông tin tiền lương / Info Penggajian |
+| Insurance (BH) (Full details) | pb_hr_payroll_vietnam | ok | **English** | Bảo hiểm (BH) / Asuransi (BH) |
+| Tax & Dependents (Full details) | pb_hr_payroll_vietnam | ok | **English** | Thuế & Người phụ thuộc / Pajak & Tanggungan |
+| Payroll facts (full contract form, rize only) | pb_payroll_mapping_vn | **English** | **English** | Dữ kiện tính lương / Data penggajian |
+| Employment profile, Payroll facts (Full details) | pb_employee_vault, pb_payroll_mapping_vn | shown translated since FU1 (code terms), stored copy missing | same | stored copy written with FU1's words |
+
+Two fixes, as the ledger asks: (1) **.po** — code terms in `pb_form_studio_people` (employee) and
+`pb_form_studio_contracts` (contract), applied in `_get_view` only while a tab still reads the English
+words (FU1-4 seam: owners are not installed everywhere; an owner translation wins); (2) **stored
+value** — `fs7_tabfix.py` writes the missing languages into the owning screen designs on every
+database at go-live (only a language that is missing or still English; an existing translation is
+never changed; a second run writes nothing — proved locally: 5 written, then 0). "Tham gia BHXH" (a
+box, not a tab) untouched.
+
 ## 6. Deviations (stated, not silent)
 1. **`_get_view` instead of extending the generated inherited view** (`_pbfs_sync_native_view`).
    Reason: a generated `xpath` per box can go dead when an upgrade removes a box — and Odoo does

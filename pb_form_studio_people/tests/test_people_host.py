@@ -396,7 +396,9 @@ class TestPeopleHost(TransactionCase):
             self.assertIn(name, locked, name)
         self.assertNotIn(plain, locked)
         self.assertNotIn(plain, hidden)
-        self.assertNotIn('spouse_complete_name', locked, 'an ordinary box may be offered')
+        self.assertNotIn('distance_home_work', locked, 'an ordinary box may be offered')
+        # R25 (FS-7): the spouse boxes went back to HR
+        self.assertEqual(locked['spouse_complete_name'], 'Changed through My details › Family')
         if 'pb.me.detail.request' in self.env:
             self.assertIn('Already on My details', locked['marital'])
         if 'pb.profile.change.request' in self.env:

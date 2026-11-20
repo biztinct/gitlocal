@@ -313,8 +313,9 @@
                   </div>
                   <div t-if="f.portal.edit" class="pbfb-seg" role="group" aria-label="When the employee changes it">
                     <button type="button" t-att-class="modeClass(f, 'approve')" t-on-click="() => this.setPortalMode(f, 'approve')"><t t-out="ic('userCheck',13)"/> <span>HR approves the change</span></button>
-                    <button type="button" t-att-class="modeClass(f, 'instant')" t-on-click="() => this.setPortalMode(f, 'instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
+                    <button type="button" t-att-class="modeClass(f, 'instant')" t-att-disabled="!!f.portal.mode_lock" t-att-title="f.portal.mode_lock" t-on-click="() => this.setPortalMode(f, 'instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
                   </div>
+                  <div t-if="f.portal.edit and f.portal.mode_lock" class="pbfb-note lock"><t t-out="ic('lock',14)"/> <span t-esc="f.portal.mode_lock"/></div>
                 </div>
 
                 <label t-if="f.placeable !== false">Place in section

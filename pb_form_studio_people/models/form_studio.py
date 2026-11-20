@@ -91,6 +91,12 @@ MY_DETAILS_PROFILE = ('private_phone', 'private_email', 'private_street',
 #:   line is already the My details profile request's (`MY_DETAILS_PROFILE`).
 PORTAL_ADDRESS = ('private_street2', 'private_city', 'private_zip', 'private_state_id',
                   'private_country_id')
+#: R25 (owner, 2026-11-20) — closed again: the spouse is recorded on My
+#: details › Family (a family member the pay team confirms), not here.
+PORTAL_SPOUSE = ('spouse_complete_name', 'spouse_birthdate')
+#: R26 (owner, 2026-11-20) — may be changed on My Payobook, but HR ALWAYS
+#: approves ("Saves at once" refused). Add a box here to make it sensitive.
+PORTAL_SENSITIVE = ('pb_blood_type', 'pb_religion')
 #: * `ssnid`, `legal_name`, `additional_note`, `children`, `tz` — one plain
 #:   reason each, in `_pbfs_portal_locked` (time zone: read by
 #:   `pb_hr_payroll_formula/models/employee_work_timezone.py:76-106`).
@@ -214,6 +220,18 @@ class PbFormStudio(models.AbstractModel):
         return out
 
     @api.model
+    def _pbfs_portal_sensitive(self, model):
+        """R26: blood type and religion — the employee may propose a change,
+        HR always approves it."""
+        out = dict(super()._pbfs_portal_sensitive(model) or {})
+        if model == MODEL:
+            reason = self.env._('Sensitive detail — HR always approves')
+            for name in PORTAL_SENSITIVE:
+                if name in self.env[MODEL]._fields:
+                    out.setdefault(name, reason)
+        return out
+
+    @api.model
     def _pbfs_portal_locked(self, model):
         """R14: may be shown, never changed by the employee. One plain reason
         per field; the first that applies wins."""
@@ -228,6 +246,9 @@ class PbFormStudio(models.AbstractModel):
         if 'pb.profile.change.request' in self.env:
             rows.append((MY_DETAILS_PROFILE, _('Already on My details: the employee changes it there.')))
         rows += [
+            # R25 (owner, 2026-11-20): the spouse boxes go back to HR; the
+            # employee adds a husband or wife on My details › Family.
+            (PORTAL_SPOUSE, _('Changed through My details › Family')),
             (PORTAL_COUNTRY, _('Country of Work decides which rules apply. Only HR changes it.')),
             (PORTAL_TAX, _('Tax numbers and status are changed through Tax details.')),
             (tuple(n for n in Model._fields if 'bank' in n or n in (

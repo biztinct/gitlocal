@@ -639,3 +639,15 @@ msgstr "Info Penggajian"
 #: code:addons/pb_form_studio_people/models/hr_employee.py:0
 msgid "Tax & Dependents"
 msgstr "Pajak & Tanggungan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Changed through My details › Family"
+msgstr "Diubah melalui Data saya › Keluarga"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Sensitive detail — HR always approves"
+msgstr "Data sensitif — HR selalu menyetujui"

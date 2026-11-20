@@ -734,7 +734,10 @@ export class FormStudioOverlay extends Component {
             this.note("changed", what, f.name);
         }
     }
-    setPortalMode(f, mode) { if (f.portal.mode !== mode) { this.editPortal(f, { portal_mode: mode }); } }
+    setPortalMode(f, mode) {
+        if (mode === "instant" && f.portal.mode_lock) { return; }      // R26: HR always approves
+        if (f.portal.mode !== mode) { this.editPortal(f, { portal_mode: mode }); }
+    }
     modeClass(f, mode) { return { on: f.portal.mode === mode }; }
     get requiredWord() { return _t("required"); }
     get listWord() { return _t("show in lists"); }
