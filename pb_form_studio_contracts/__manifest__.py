@@ -17,7 +17,7 @@ Bridge only: reaches pb_contracts and pb_people_advanced by inheritance and
 patches, edits neither. Silent install: no field, layout, page, job or mail is
 created until the administrator publishes.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
