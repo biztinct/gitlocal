@@ -285,18 +285,49 @@ export class PbTimeoff extends Component {
     }
 
     openApply() {
-        this.state.apply = { employee_id: "", employee_name: "", employee_country: "", type_id: "", date_from: "", date_to: "", note: "" };
+        this.state.apply = { employee_id: "", employee_name: "", employee_country: "", type_id: "", date_from: "", date_to: "", note: "", again_of: false };
         this.state.empQuery = "";
         this.state.empResults = [];
         this.state.applyOpen = true;
     }
     closeApply() { this.state.applyOpen = false; }
+    /**
+     * WF2 P6c (D36) — "Ask again" on a sent-back card: the "Apply for" drawer
+     * filled in from that request (person, kind, days, note). Filing it makes
+     * a NEW request through the same door, so every normal rule runs; the
+     * server links the two and refuses a second "ask again".
+     */
+    askAgain(q) {
+        const a = q.again;
+        if (!a) { return; }
+        this.state.apply = {
+            employee_id: a.employee_id, employee_name: a.employee_name,
+            employee_country: a.employee_country || "",
+            type_id: String(a.type_id || ""), date_from: a.date_from, date_to: a.date_to,
+            note: a.note || "", again_of: a.id, reason: a.reason || "",
+            part_label: a.part_label || "", documents_note: a.documents_note || "",
+        };
+        this.state.empQuery = a.employee_name;
+        this.state.empResults = [];
+        this.state.applyOpen = true;
+    }
+    /** The standard time-off form of one request (the two link lines). */
+    openLeave(id) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.leave",
+            res_id: id,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
     onApplyField(f, ev) { this.state.apply[f] = ev.target.value; }
     onEmpQuery(ev) {
         const q = ev.target.value;
         this.state.empQuery = q;
         this.state.apply.employee_id = "";       // clears until a pick
         this.state.apply.type_id = "";           // the types follow the employee
+        this.state.apply.again_of = false;       // "ask again" is for the same person
         if (this._empTimer) { clearTimeout(this._empTimer); }
         this._empTimer = setTimeout(async () => {
             if (!q.trim()) { this.state.empResults = []; return; }
@@ -332,8 +363,12 @@ export class PbTimeoff extends Component {
         this.state.busy = true;
         try {
             await this.orm.call(MODEL, "apply_on_behalf",
-                [Number(a.employee_id), Number(a.type_id), a.date_from, a.date_to, a.note || false]);
-            this.notif.add(_t("Leave filed — pending approval."), { type: "success" });
+                [Number(a.employee_id), Number(a.type_id), a.date_from, a.date_to, a.note || false],
+                { again_of: a.again_of ? Number(a.again_of) : false });
+            this.notif.add(
+                a.again_of ? _t("Asked again — the new request is waiting for approval.")
+                    : _t("Leave filed — pending approval."),
+                { type: "success" });
             this.state.applyOpen = false;
             await Promise.all([this.load(), this.kit.refresh()]);
         } catch (e) {
