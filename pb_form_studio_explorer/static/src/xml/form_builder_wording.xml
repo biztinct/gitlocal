@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FS-8 — the "Show in lists" switch now also offers the field in reports,
+     so the sentence under it says so (R13: what the switch does is on the
+     screen). Extensions of the engine's own templates; no engine file is
+     touched. The xpath anchors on the switch's own label, which is the same
+     on 19.1 and on the FS-7 branch. -->
+<templates xml:space="preserve">
+  <t t-inherit="pb_form_studio.Overlay" t-inherit-mode="extension">
+    <xpath expr="//button[@aria-label='Show in lists']/preceding-sibling::div/div[hasclass('d')]" position="replace">
+      <div class="d">Offered as a column on the lists of these records, and as a split and a filter in reports.</div>
+    </xpath>
+  </t>
+  <t t-inherit="pb_form_studio.FieldLibrary" t-inherit-mode="extension">
+    <xpath expr="//button[@aria-label='Show in lists']/preceding-sibling::div/div[hasclass('t')]" position="after">
+      <div class="d">Also a split and a filter in reports.</div>
+    </xpath>
+  </t>
+</templates>
