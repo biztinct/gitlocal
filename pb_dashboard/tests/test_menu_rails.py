@@ -118,3 +118,31 @@ class TestPayrollOnlyMenuRail(TransactionCase):
         self.assertTrue(admin, 'the database has no active platform administrator')
         menu = self.env['ir.ui.menu'].with_user(admin)
         self.assertGreater(len(menu.get_user_roots()), 1)
+
+    def test_designated_platform_admin_has_native_menus_and_revocation(self):
+        self.env['ir.config_parameter'].sudo().set_param(TENANT_SLUG_PARAM, 'nav-test')
+        user = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'Named platform operator', 'login': 'named.platform.operator',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                                  self.env.ref('base.group_system').id])]})
+        menu = self.env['ir.ui.menu'].with_user(user)
+        group = self.env.ref('pb_dashboard.group_platform_navigation')
+        payroll = self.env.ref(PAYROLL_MENU_XMLID)
+        self.assertEqual(menu.load_web_menus(True)['root']['children'], [payroll.id])
+        user.write({'group_ids': [(4, group.id)]})
+        menus = menu.load_web_menus(True)
+        self.assertIn(self.env.ref('base.menu_administration').id, menus['root']['children'])
+        self.assertIn(self.env.ref('base.menu_custom').id, menus)
+        self.assertIn(self.env.ref('mail.menu_email_templates').id, menus)
+        self.assertEqual(set(menu.get_user_roots().ids), set(menus['root']['children']))
+        user.write({'group_ids': [(3, group.id)]})
+        self.assertEqual(menu.load_web_menus(True)['root']['children'], [payroll.id])
+
+    def test_navigation_entitlement_never_grants_system_access(self):
+        self.env['ir.config_parameter'].sudo().set_param(TENANT_SLUG_PARAM, 'nav-test')
+        group = self.env.ref('pb_dashboard.group_platform_navigation')
+        self.ordinary.write({'group_ids': [(4, group.id)]})
+        self.assertFalse(self.ordinary._is_system())
+        menus = self.env['ir.ui.menu'].with_user(self.ordinary).load_web_menus(True)
+        self.assertEqual(menus['root']['children'], [self.env.ref(PAYROLL_MENU_XMLID).id])
+        self.assertNotIn(self.env.ref('base.menu_custom').id, menus)
