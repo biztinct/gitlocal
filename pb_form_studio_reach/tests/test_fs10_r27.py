@@ -23,7 +23,7 @@ import re
 import secrets
 from unittest.mock import patch
 
-from odoo.tests import HttpCase, new_test_user, tagged
+from odoo.tests import HttpCase, TransactionCase, new_test_user, tagged
 
 from odoo.addons.pb_me_details.tests.common import seat
 
@@ -156,6 +156,30 @@ class TestFs10R27Labels(HttpCase):
         self.assertEqual([row[0] for row in req._pb_rows()], ['DEMO Blood group'])
         self.assertIn('DEMO Blood group', self.page('/my/details'))
 
+    # ------------------------------------------------------------------ R7
+    def test_r7_my_profile_and_marital_status(self):
+        """FS-10 (architect ruling): My Profile and My details' "Marital
+        status" line follow the administrator's label too (the pb_me_portal /
+        pb_me_details label hook); nothing renamed → the built-in words."""
+        self.authenticate('r27_me', PASSWORD)
+        profile = self.page('/my/profile')
+        self.assertIn('Work Phone', profile)
+        self.assertIn('Marital status', self.page('/my/details'))
+        S = self.S()
+        S.update_standard(EMP, 'work_phone', {'std_labels': {'en_US': 'DEMO Office line'}})
+        S.update_standard(EMP, 'marital', {'std_labels': {'en_US': 'DEMO Family status'}})
+        profile = self.page('/my/profile')
+        self.assertIn('DEMO Office line', profile)
+        self.assertNotIn('>Work Phone<', profile)
+        self.assertIn('Work Email', profile, 'others keep their words')
+        details = self.page('/my/details')
+        self.assertIn('DEMO Family status', details)
+        self.assertNotIn('>Marital status<', details)
+        S.update_standard(EMP, 'work_phone', {'std_labels': {}})
+        S.update_standard(EMP, 'marital', {'std_labels': {}})
+        self.assertIn('>Work Phone<', self.page('/my/profile'))
+        self.assertIn('>Marital status<', self.page('/my/details'))
+
     # ------------------------------------------------------------------ R6
     def test_r6_custom_field_unchanged(self):
         S = self.S()
@@ -167,18 +191,44 @@ class TestFs10R27Labels(HttpCase):
 
 
 @tagged('post_install', '-at_install', 'pb_form_studio_reach', 'fs10')
-class TestFs10Payslips(ReachCase):
+class TestFs10Payslips(TransactionCase):
     """P — three payslips (two schemes, two people; one formula reads Place
     of Birth) recomputed identical after hiding 5 standard fields, renaming
-    5, and after the FS-10 upgrade step."""
+    5, after a later formula save shows a hidden one again, and after the
+    FS-10 upgrade step. Real employee screen (no host patched)."""
+
+    scheme = classmethod(ReachCase.scheme.__func__)
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.ready = HOST in cls.env['pb.form.studio']._pbfs_hosts()
+        if not cls.ready:
+            return
+        cls.startClassPatcher(patch.object(type(cls.env['pb.form.studio']), '_pbfs_busy',
+                                           lambda s: ''))
+        cls.company = cls.env.company
+        cls.admin = new_test_user(cls.env, 'fs10p_admin', name='DEMO FS10 Pay Admin',
+                                  groups='base.group_user,base.group_system,hr.group_hr_user')
+        Emp = cls.env['hr.employee'].with_context(tracking_disable=True)
+        cls.emp_vn = Emp.create({'name': 'DEMO FS10 Pay Lan', 'company_id': cls.company.id,
+                                 'payroll_country': 'VN', 'place_of_birth': 'DEMO Hue'})
+        cls.emp_in = Emp.create({'name': 'DEMO FS10 Pay Arjun', 'company_id': cls.company.id,
+                                 'payroll_country': 'IN'})
+        Con = cls.env['hr.contract'].sudo()
+        cls.con_vn = Con.create({'name': 'DEMO FS10 contract Lan', 'employee_id': cls.emp_vn.id,
+                                 'company_id': cls.company.id, 'wage': 12_000_000.0,
+                                 'state': 'open', 'date_start': '2026-01-01'})
+        cls.con_in = Con.create({'name': 'DEMO FS10 contract Arjun', 'employee_id': cls.emp_in.id,
+                                 'company_id': cls.company.id, 'wage': 90_000.0,
+                                 'state': 'open', 'date_start': '2026-01-01'})
 
     def test_p_three_payslips_identical(self):
-        Std = self.env['pb.form.studio']
-        if 'employee_detail' not in Std._pbfs_hosts():
+        if not self.ready:
             self.skipTest('the employee screen is not installed')
+        Std = self.env['pb.form.studio']
         gold = self.scheme('FBP1')
         born = self.scheme('FBP2', rules=[('FBBORN', 'employee.place_of_birth', 'text')])
-        self.emp_vn.sudo().write({'place_of_birth': 'DEMO Hue'})
         Slip = self.env['hr.payslip'].sudo()
         slips = Slip
         for emp, con, cfg in ((self.emp_vn, self.con_vn, gold), (self.emp_in, self.con_in, gold),
@@ -203,17 +253,23 @@ class TestFs10Payslips(ReachCase):
         before = snap()
         self.assertIn('BASIC', before)
         S = Std.with_user(self.admin)
-        free = [n for n in ('pb_blood_type', 'pb_religion', 'visa_no', 'coach_id', 'additional_note')
+        locked = S._pbfs_standard_locked('hr.employee')
+        self.assertIn('place_of_birth', locked, 'really used: locked')
+        free = [n for n in ('pb_blood_type', 'pb_religion', 'visa_no', 'coach_id', 'study_field')
                 if n in self.env['hr.employee']._fields and S._pbfs_std_is_box('hr.employee', n)
-                and n not in S._pbfs_standard_locked('hr.employee')]
+                and n not in locked]
+        self.assertGreaterEqual(len(free), 3)
         for name in free:
             S.update_standard('hr.employee', name, {'std_hidden': True})
         for name in ('place_of_birth', 'department_id', 'job_title', 'wage', 'work_email'):
             if S._pbfs_std_is_box('hr.employee', name):
                 S.update_standard('hr.employee', name, {'std_labels': {'en_US': 'DEMO %s' % name}})
-        self.assertTrue(free)
-        after = snap()
-        self.assertEqual(before, after)
+        self.assertEqual(before, snap())
+        # a later formula save shows a hidden field again (the save point)
+        self.scheme('FBP3', rules=[('FBSTUDY', 'employee.study_field', 'text')])
+        if 'study_field' in free:
+            self.assertFalse(Std._pbfs_std_rules('hr.employee').get('study_field', {}).get('all'))
+        self.assertEqual(before, snap())
         Std._pbfs_std_unhide_locked('hr.employee', 'FS-10.')
         Std._pbfs_std_unhide_locked('hr.contract', 'FS-10.')
         self.assertEqual(before, snap())

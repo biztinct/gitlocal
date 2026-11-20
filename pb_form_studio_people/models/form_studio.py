@@ -255,8 +255,15 @@ class PbFormStudio(models.AbstractModel):
                 'account_number', 'pb_other_name_holder')),
              _('Bank details are changed through the bank change request.')),
             (PORTAL_CONTRACT, _('Part of the contract. Only HR changes it.')),
+        ]
+        # FS-10: say what really reads it ("Used by pay formula: <scheme>"),
+        # the same words as the Form builder's lock; a field a formula merely
+        # could read says so — it may still be hidden from the screens.
+        used = self._pbfs_std_used_reasons(MODEL)
+        rows += [((name,), _('%s Only HR changes it.', reason)) for name, reason in used.items()]
+        rows += [
             (tuple(self._pbfs_people_formula_names()),
-             _('A pay formula reads it, so only HR changes it.')),
+             _('A pay formula can read it, so only HR changes it.')),
             (PORTAL_ORG, _('Company, team, manager and job are set by HR.')),
             (PORTAL_ACCESS, _('Login and access details are set by HR.')),
             # R19: still HR's (reasons and readers: PORTAL_ADDRESS above).

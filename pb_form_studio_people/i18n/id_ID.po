@@ -651,3 +651,15 @@ msgstr "Diubah melalui Data saya › Keluarga"
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Sensitive detail — HR always approves"
 msgstr "Data sensitif — HR selalu menyetujui"
+
+#. module: pb_form_studio_people
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#, python-format
+msgid "%s Only HR changes it."
+msgstr "%s Hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#, python-format
+msgid "A pay formula can read it, so only HR changes it."
+msgstr "Rumus gaji dapat membacanya, jadi hanya HR yang mengubahnya."

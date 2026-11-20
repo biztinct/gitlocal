@@ -2550,3 +2550,51 @@ msgstr ""
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 msgid "Done"
 msgstr "Xong"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(names)s and %(n)s more"
+msgstr "%(names)s và %(n)s mục khác"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Used by pay formula: %s"
+msgstr "Được công thức tính lương dùng: %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Filled by pay data file: %s"
+msgstr "Được tệp dữ liệu lương điền: %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay formula %s"
+msgstr "công thức tính lương %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay data file of %s"
+msgstr "tệp dữ liệu lương của %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again because %(thing)s now uses it."
+msgstr "%(box)s được hiện lại vì %(thing)s nay dùng nó."
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again: %(reason)s"
+msgstr "%(box)s được hiện lại: %(reason)s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "shown again, it cannot be hidden."
+msgstr "được hiện lại, không thể ẩn."

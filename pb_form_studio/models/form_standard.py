@@ -38,7 +38,7 @@ import logging
 
 from lxml import etree
 
-from odoo import api, models, tools
+from odoo import SUPERUSER_ID, api, models, tools
 from odoo.exceptions import UserError
 
 from .ir_model_fields import PREFIX
@@ -100,6 +100,103 @@ class PbFormStudioStandard(models.AbstractModel):
             if row[4]:                      # required on the form itself
                 out.setdefault(row[0], {'reason': reason, 'label': False})
         return out
+
+    # ======================================================= really used (FS-10)
+    @api.model
+    def _pbfs_std_readers(self, model):
+        """`[(field name, kind, what)]` — the things on THIS database that
+        really read a standard field of `model` today: `kind` 'formula' (a
+        pay scheme component bound to it; `what` = the scheme's name) or
+        'datafile' (a pay data file column fills it; `what` = the scheme).
+        Hosts extend. Never called directly: go through `_pbfs_std_used`."""
+        return []
+
+    @api.model
+    def _pbfs_std_datafile_readers(self, model):
+        """`[(field, 'datafile', scheme)]` — pay data file columns (Mapping)
+        that fill a field of `model`, in schemes that are not archived."""
+        if 'hr.payslip.import.mapping' not in self.env:
+            return []
+        Mapping = self.env['hr.payslip.import.mapping'].sudo()
+        out = []
+        for row in Mapping.search([('target_field_id.model', '=', model),
+                                   ('salary_structure_id.active', '=', True)]):
+            out.append((row.target_field_id.name, 'datafile',
+                        row.salary_structure_id.display_name or ''))
+        return out
+
+    @api.model
+    @tools.ormcache('model', 'self.env.lang or "en_US"', cache='templates')
+    def _pbfs_std_used(self, model):
+        """`((field, kind, what), …)` of `_pbfs_std_readers`, cached per
+        database with the screen designs: every save of a reader calls
+        `_pbfs_std_readers_changed`, which clears that cache (the registry
+        tells every worker). A tuple, never mutated."""
+        rows = set()
+        for name, kind, what in self._pbfs_std_readers(model) or []:
+            if name:
+                rows.add((name, kind, what or ''))
+        return tuple(sorted(rows))
+
+    @api.model
+    def _pbfs_std_used_reasons(self, model):
+        """`{field: reason}` in the reader's language, naming what uses it:
+        "Used by pay formula: <scheme>" / "Filled by pay data file: <scheme>"."""
+        _ = self.env._
+        by = {}
+        for name, kind, what in self._pbfs_std_used(model):
+            by.setdefault(name, {}).setdefault(kind, [])
+            if what and what not in by[name][kind]:
+                by[name][kind].append(what)
+
+        def names(items):
+            items = sorted(items)
+            if len(items) > 2:
+                return _('%(names)s and %(n)s more', names=', '.join(items[:2]), n=len(items) - 2)
+            return ', '.join(items)
+        out = {}
+        for name, kinds in by.items():
+            if 'formula' in kinds:
+                out[name] = _('Used by pay formula: %s', names(kinds['formula']))
+            else:
+                out[name] = _('Filled by pay data file: %s', names(kinds.get('datafile') or []))
+        return out
+
+    @api.model
+    def _pbfs_std_used_things(self, model):
+        """`{field: what uses it}` for a sentence: "the pay formula X" /
+        "the pay data file of X" (the first one found)."""
+        _ = self.env._
+        out = {}
+        for name, kind, what in self._pbfs_std_used(model):
+            if name in out and kind != 'formula':
+                continue
+            out[name] = (_('the pay formula %s', what) if kind == 'formula'
+                         else _('the pay data file of %s', what))
+        return out
+
+    @api.model
+    def _pbfs_std_readers_changed(self, models=None, thing=''):
+        """THE shared helper every reader calls at its save point (a pay
+        formula component saved, a pay data file column mapped, a scheme
+        archived or restored): forget the cached answer (every worker), then
+        show again — with a history line and a one-time notice to the
+        administrators — any standard field that was hidden and is now used.
+        `thing` names what changed in screen words ("the pay formula X").
+        Cheap: one query per reader kind, only when a reader is saved."""
+        self.env.registry.clear_cache('templates')
+        shown = {}
+        Meta = self.env['pb.form.field.meta'].sudo()
+        for model in models or self._pbfs_host_models():
+            if model not in self.env or not Meta.search_count(
+                    [('model', '=', model), ('custom', '=', False), '|',
+                     ('std_hidden', '=', True), ('std_country_ids', '!=', False)], limit=1):
+                continue                # nothing hidden: nothing to show again
+            names = self._pbfs_std_unhide_locked(model, '', notice=thing or True)
+            if names:
+                shown[model] = names
+                self._pbfs_std_notify(model)
+        return shown
 
     @api.model
     def _pbfs_std_panel_boxes(self, model):
@@ -571,13 +668,14 @@ class PbFormStudioStandard(models.AbstractModel):
                 self._pbfs_notify(key, layout.version if layout else 0)
 
     @api.model
-    def _pbfs_std_unhide_locked(self, model, why=''):
+    def _pbfs_std_unhide_locked(self, model, why='', notice=False):
         """Clear the hide rule (for everyone or by country) of every standard
         field of `model` the locked list now holds, with one history line
-        each. The screens already ignored those rules (`_pbfs_std_rules`), so
-        no screen changes; own labels are kept. Called by a host's upgrade
-        step when its locked list grows (FS-10). Idempotent.
-        → the field names cleared."""
+        each. The screens already ignore such a rule (`_pbfs_std_rules`); this
+        makes the stored rule say so too. Own labels are kept. Idempotent.
+        Called by the hosts' upgrade steps and by `_pbfs_std_readers_changed`
+        (`notice`: the administrators get one notice per field, "<box> is
+        shown again because <thing> now uses it"). → the names cleared."""
         if model not in self.env:
             return []
         locked = self._pbfs_standard_locked(model)
@@ -585,17 +683,53 @@ class PbFormStudioStandard(models.AbstractModel):
         rows = Meta.search([('model', '=', model), ('custom', '=', False), ('name', 'in', list(locked)),
                             '|', ('std_hidden', '=', True), ('std_country_ids', '!=', False)])
         names = []
+        _ = self.env._
+        things = self._pbfs_std_used_things(model) if notice and rows else {}
         for meta in rows:
             meta.write({'std_hidden': False, 'std_country_ids': [(5,)]})
+            box = self._pbfs_std_screen_label(model, meta.name)
+            reason = locked[meta.name]['reason']
             self._pbfs_audit('update_field', None, model, meta.name,
-                             ('%s: shown again, it cannot be hidden. %s %s' % (
-                                 self._pbfs_std_screen_label(model, meta.name),
-                                 locked[meta.name]['reason'], why or '')).strip(),
+                             ('%s: %s %s %s' % (box, _('shown again, it cannot be hidden.'),
+                                                reason, why or '')).strip(),
                              detail={'standard': True, 'unhidden_locked': True})
+            if notice:
+                thing = things.get(meta.name) or (notice if isinstance(notice, str) else '')
+                self._pbfs_std_notice(box, thing, reason)
             names.append(meta.name)
         if names:
             self.env.registry.clear_cache('templates')
         return names
+
+    @api.model
+    def _pbfs_std_notice(self, box, thing, reason=''):
+        """One notice to the tenant administrators: "<box> is shown again
+        because <thing> now uses it". In the inbox of those who read notices
+        in the app (nobody is mailed for it) and as a pop-up for those online."""
+        _ = self.env._
+        if thing:
+            text = _('%(box)s is shown again because %(thing)s now uses it.', box=box, thing=thing)
+        else:
+            text = _('%(box)s is shown again: %(reason)s', box=box, reason=reason)
+        group = self.env.ref('base.group_system', raise_if_not_found=False)
+        if not group:
+            return
+        users = group.sudo().all_user_ids.filtered(lambda u: u.active and not u.share
+                                                   and u.id != SUPERUSER_ID)
+        inbox = users.filtered(lambda u: getattr(u, 'notification_type', 'inbox') == 'inbox')
+        if inbox and 'mail.thread' in self.env:
+            try:
+                with self.env.cr.savepoint():
+                    self.env['mail.thread'].sudo().message_notify(
+                        partner_ids=inbox.partner_id.ids, body=text, subject=_('Form builder'))
+            except Exception:                           # noqa: BLE001
+                _logger.info('Form builder: the notice could not be posted', exc_info=True)
+        for user in users:
+            try:
+                user._bus_send('simple_notification', {'title': _('Form builder'),
+                                                       'message': text, 'sticky': True})
+            except Exception:                           # noqa: BLE001
+                _logger.debug('Form builder: no pop-up', exc_info=True)
 
     @api.model
     def _pbfs_std_sweep(self):

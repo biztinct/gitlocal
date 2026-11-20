@@ -140,34 +140,36 @@ class TestFs7ContractStandard(TransactionCase):
             self.Studio.with_user(self.hr).update_standard(MODEL, 'notes', {'std_hidden': True})
 
     # ------------------------------------------------------- FS-10 item 4
-    def test_04c_formula_catalogue_locked(self):
-        """FS-10: every contract field a pay formula can read is locked (as on
-        the employee), not only those a formula of this database is bound
-        to — location, cost centre and signed date included. The label may
-        still change."""
-        try:
-            from odoo.addons.pb_hr_payroll_formula.models.application_domain_sources import (
-                CONTRACT_FIELDS)
-        except ImportError:
-            self.skipTest('no pay formula catalogue here')
+    def test_04c_locked_only_when_really_used(self):
+        """FS-10 (architect ruling): Location, Cost center and Contract signed
+        on stay hideable while nothing reads them; a component of a live pay
+        scheme bound to `contract.location` locks Location with a reason that
+        names the scheme; archiving the scheme frees it again."""
+        if 'hr.formula.rule' not in self.env:
+            self.skipTest('no pay formulas here')
         st = self.Studio.with_user(self.admin)
-        data = st.get_studio(HOST)
-        checked = 0
-        for name in CONTRACT_FIELDS:
-            if name not in data['fields'] or not data['fields'][name].get('stdbox'):
-                continue
-            checked += 1
-            self.assertTrue(data['fields'][name]['stdbox']['lock'], name)
-            with self.assertRaises(UserError, msg=name):
-                st.update_standard(MODEL, name, {'std_hidden': True})
-        self.assertTrue(checked)
-        for name in ('location', 'costcenter', 'pb_signed_date'):
-            if name in data['fields'] and data['fields'][name].get('stdbox'):
-                st.update_standard(MODEL, name, {'std_labels': {'en_US': 'DEMO %s' % name}})
-        # the two fields that stay free
-        for name in ('hr_responsible_id', 'notes'):
-            if name in data['fields'] and data['fields'][name].get('stdbox'):
-                self.assertFalse(data['fields'][name]['stdbox']['lock'], name)
+        locked = self.Studio._pbfs_standard_locked(MODEL)
+        for name in ('location', 'costcenter', 'pb_signed_date', 'hr_responsible_id', 'notes'):
+            if name in self.env[MODEL]._fields:
+                self.assertNotIn(name, locked, name)
+        cfg = self.env['hr.formula.config'].sudo().create({
+            'name': 'DEMO FS10 Site', 'code': 'FSCT', 'cycle_type': 'end_cycle',
+            'country_code': 'VN', 'state': 'active', 'company_id': self.env.company.id})
+        self.env['hr.formula.rule'].sudo().create({
+            'config_id': cfg.id, 'name': 'DEMO site', 'code': 'FSCTS', 'column_type': 'input',
+            'sequence': 2, 'value_kind': 'text', 'net_role': 'info', 'default_value': 0.0,
+            'appears_on_payslip': False, 'application_source_key': 'contract.location',
+            'category_id': self.env['hr.salary.rule.category'].search([], limit=1).id})
+        self.env.registry.clear_cache('templates')
+        reason = (self.Studio._pbfs_standard_locked(MODEL).get('location') or {}).get('reason')
+        self.assertIn('Used by pay formula: DEMO FS10 Site', reason or '')
+        with self.assertRaises(UserError):
+            st.update_standard(MODEL, 'location', {'std_hidden': True})
+        st.update_standard(MODEL, 'location', {'std_labels': {'en_US': 'DEMO Site'}})
+        cfg.write({'active': False})
+        self.env.registry.clear_cache('templates')
+        self.assertNotIn('location', self.Studio._pbfs_standard_locked(MODEL))
+        st.update_standard(MODEL, 'location', {'std_hidden': True})
 
     # ------------------------------------------------------------------ 2b
     def test_02b_hide_for_one_country(self):

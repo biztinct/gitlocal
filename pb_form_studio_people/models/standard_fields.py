@@ -21,15 +21,16 @@ from the code at origin/19.1 (FS7_REPORT.md §3 has the plain-words table):
   `STD_COUNTRY_*` below) — the others can be hidden, and the product's
   country rule and the administrator's combine (rule 6);
 * bank — every bank box (`pb_pay_delivery` / `pb_bank_ocr` read them);
-* anything a pay formula can read — FS-10: the SAME answer as the My
-  Payobook lock's "A pay formula reads it" (`_pbfs_people_pay_reads`): every
-  field the formula catalogue offers, plus what a formula of this database is
-  bound to (`employee.<field>`, related and `tax.*` sources) and what a pay
-  data file fills (`hr.payslip.import.mapping.target_field_id`). FS-7 locked
-  catalogue fields only once a formula was bound, so Place of Birth showed
-  "A pay formula reads it" and could still be hidden. A rule saved on a field
-  before it became locked is cleared on upgrade with a history line
-  (`migrations/19.0.1.4.0`).
+* FS-10 (architect ruling): anything that REALLY reads the field on THIS
+  database — a pay scheme component bound to it (`employee.<field>`, a
+  related source, a `tax.*` source of `pb_me_tax`) in a scheme that is not
+  archived, or a pay data file column that fills it — locked with a reason
+  that names it ("Used by pay formula: <scheme>"). A field a formula merely
+  COULD read stays hideable until one does; at that save the field is shown
+  again with a history line and a notice (`_pbfs_std_readers_changed`, called
+  from the readers' save points in `pb_form_studio_reach`). Bank layouts,
+  government form lines and approval routing read only fields that are
+  locked above anyway (`FS10_REPORT.md` §1).
 """
 import logging
 
@@ -59,9 +60,8 @@ STD_STATUTORY = ('birthday', 'sex', 'gender', 'country_id', 'identification_id',
 #: tax and payroll facts (VN social-insurance files, tax returns), Indonesian
 #: NPWP / BPJS / PTKP, Indian PAN / UAN / ESI / regime, Singapore residency /
 #: SHG (`pb_form_lines` readers, fund files). The others (training facts,
-#: the Internal Committee box, the two Vietnamese demo flags) stay hideable
-#: unless a pay formula can read them (FS-10: the Indonesian family card is
-#: in the formula catalogue, so it is locked now).
+#: the Indonesian family card, the two Vietnamese demo flags) stay hideable
+#: unless something on this database really reads them (FS-10).
 STD_COUNTRY_PREFIXES = ('vn_', 'pb_vn_', 'pb_in_', 'pb_id_', 'pb_bpjs_')
 STD_COUNTRY_STATUTORY = ('pb_npwp_number', 'subject_to_pit', 'insurance_code', 'tham_gia_bhxh',
                          'pb_sg_tax_residency', 'pb_sg_shg_fund')
@@ -79,23 +79,13 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
 
     # ------------------------------------------------------------- locked
     @api.model
-    def _pbfs_people_pay_reads(self):
-        """Employee fields pay depends on — `{field: reason}`. ONE answer for
-        "does a pay formula read it", shared with the My Payobook lock (R14,
-        `_pbfs_portal_locked`), so the Form builder never says "A pay formula
-        reads it" about a field it still lets the administrator hide (FS-10):
-
-        * every field the pay formula catalogue offers
-          (`_pbfs_people_formula_names`: `application_domain_sources.
-          EMPLOYEE_FIELDS` minus what payroll never reads, the first hop of
-          each related source, `pb_me_tax`'s tax sources) — a formula author
-          can bind any of them at any time, outside the Form builder;
-        * what a formula of THIS database is bound to (`employee.<field>`, a
-          related source, a `tax.*` source — FS-7 missed the last kind);
-        * what a pay data file fills (`hr.payslip.import.mapping`)."""
-        _ = self.env._
-        reads = _('A pay formula reads it, so pay depends on this field.')
-        out = {name: reads for name in self._pbfs_people_formula_names()}
+    def _pbfs_std_readers(self, model):
+        """Employee fields really read on this database (FS-10): pay scheme
+        components bound to them (live schemes only: an archived scheme reads
+        nothing) and pay data file columns that fill them."""
+        out = list(super()._pbfs_std_readers(model) or [])
+        if model != MODEL or MODEL not in self.env:
+            return out
         if 'hr.formula.rule' in self.env and \
                 'application_source_key' in self.env['hr.formula.rule']._fields:
             related = {}
@@ -110,20 +100,22 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
                 tax = {k: spec[2] for k, spec in TAX_SOURCES.items() if len(spec) > 2}
             except ImportError:
                 pass
-            Rule = self.env['hr.formula.rule'].sudo().with_context(active_test=False)
-            keys = {k.strip() for k in Rule.search([
-                '|', ('application_source_key', '=like', 'employee.%'),
-                ('application_source_key', 'in', list(tax) or ['-'])]).mapped(
-                    'application_source_key') if k}
-            for key in keys:
-                name = related.get(key) or tax.get(key) or key.split('.', 1)[1]
-                out.setdefault(name, reads)
-        if 'hr.payslip.import.mapping' in self.env:
-            Mapping = self.env['hr.payslip.import.mapping'].sudo().with_context(active_test=False)
-            for name in Mapping.search([('target_field_id.model', '=', MODEL)]).mapped(
-                    'target_field_id.name'):
-                out.setdefault(name, _('A pay data file fills it, so pay depends on this field.'))
+            Rule = self.env['hr.formula.rule'].sudo()
+            rules = Rule.search(['|', ('application_source_key', '=like', 'employee.%'),
+                                 ('application_source_key', 'in', list(tax) or ['-']),
+                                 ('config_id.active', '=', True)])
+            for rule in rules:
+                key = (rule.application_source_key or '').strip()
+                field = related.get(key) or tax.get(key) or key.split('.', 1)[-1]
+                if field in self.env[MODEL]._fields:
+                    out.append((field, 'formula', rule.config_id.display_name or ''))
+        out += self._pbfs_std_datafile_readers(MODEL)
         return out
+
+    @api.model
+    def _pbfs_people_pay_reads(self):
+        """`{field: reason}` — what really reads each employee field (FS-10)."""
+        return self._pbfs_std_used_reasons(MODEL)
 
     @api.model
     def _pbfs_standard_locked(self, model):
@@ -161,7 +153,7 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
                         out[name] = {'reason': reason, 'label': label}
                     elif label:
                         cur['label'] = True
-        for name, reason in self._pbfs_people_pay_reads().items():
+        for name, reason in self._pbfs_std_used_reasons(MODEL).items():
             if name in Model._fields:
                 out.setdefault(name, {'reason': reason, 'label': False})
         return out
