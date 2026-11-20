@@ -442,7 +442,7 @@ class PbEssWorkforce(models.AbstractModel):
     #      the leave, tokened links.
 
     @api.model
-    def get_my_leave(self):
+    def get_my_leave(self, again=None):
         """Own balances (allocation-based types), own requests, appliable types.
 
         The balance arithmetic is the Leave Command Center's, restated for ONE
@@ -515,6 +515,11 @@ class PbEssWorkforce(models.AbstractModel):
             df = lv.request_date_from or (lv.date_from.date() if lv.date_from else None)
             dt = lv.request_date_to or (lv.date_to.date() if lv.date_to else df)
             amount, unit = self._leave_amount(lv)
+            # WF2 P6c (D36): sent back to me, not refused — a mark on the
+            # request (still refused underneath); the reason, "Ask again",
+            # and the line linking the two requests
+            sent_back = lv._pb_is_sent_back()
+            lines = lv._pb_again_lines()
             rows.append({
                 'id': lv.id,
                 'type': lv.holiday_status_id.name or _('Leave'),
@@ -524,7 +529,15 @@ class PbEssWorkforce(models.AbstractModel):
                 'length_label': self._leave_length_label(amount, unit),
                 'period_label': lv._pb_day_part_label(),
                 'state': lv.state,
-                'state_label': self._leave_state_label(lv.state),
+                'state_label': (_('Sent back') if sent_back
+                                else self._leave_state_label(lv.state)),
+                'badge': 'sent_back' if sent_back else lv.state,
+                'sent_back': sent_back,
+                'reason': lv._pb_sent_back_note() if sent_back else '',
+                'can_ask_again': sent_back and lv._pb_can_ask_again(),
+                'again_url': '/my/work/leave?again=%s#pbew-ask' % lv.id,
+                'again_of': lines['of'],
+                'again_as': lines['as'],
                 'note': lv.name or '',
                 'can_withdraw': not self._leave_refusal('withdraw', emp, lv),
                 'can_cancel': not self._leave_refusal('cancel', emp, lv,
@@ -534,8 +547,17 @@ class PbEssWorkforce(models.AbstractModel):
             })
 
         appliable = self._my_appliable_types(emp)
+        again_form, again_error = None, ''
+        if again:
+            try:
+                again_form = self._ask_again_prefill(emp, again, appliable)
+            except UserError as exc:
+                again_error = (exc.args and exc.args[0]) or ''
         return {
             'employee': {'id': emp.id, 'name': emp.name or ''},
+            # WF2 P6c: the request form filled in from a sent-back request
+            'again': again_form,
+            'again_error': again_error,
             'balances': balances,
             'requests': rows,
             'types': [{
@@ -550,6 +572,27 @@ class PbEssWorkforce(models.AbstractModel):
             'doc_max': LEAVE_DOC_MAX,
             'pending': sum(1 for r in rows if r['state'] in _OPEN_LEAVE_STATES),
         }
+
+    @api.model
+    def _ask_again_prefill(self, emp, leave_id, appliable=None):
+        """WF2 P6c (D36): what "Ask again" fills the request form with —
+        MY OWN sent-back request, not asked again before (R1: looked up inside
+        my own requests). Documents are not copied (the page says so). A kind
+        that is no longer offered to me leaves the kind to choose."""
+        old = self._own_leave(emp, leave_id)
+        self._leave_guard('again', emp, old)
+        form = old._pb_again_prefill()
+        # the words the system writes when no reason was typed are not a
+        # reason the person gave: the field starts empty then
+        defaults = {'Requested from My Work', _('Requested from My Work'),
+                    'Filed by HR'}
+        if (form.get('note') or '').strip() in defaults:
+            form['note'] = ''
+        offered = appliable if appliable is not None \
+            else self._my_appliable_types(emp)
+        if form['type_id'] not in offered.ids:
+            form['type_id'] = False
+        return form
 
     @api.model
     def _my_appliable_types(self, emp):
@@ -781,6 +824,14 @@ class PbEssWorkforce(models.AbstractModel):
                 return _("Documents can be added while a request is waiting "
                          "or approved.")
             return ''
+        if action == 'again':
+            # WF2 P6c (D36): once, and only for a request that was sent back
+            if not leave._pb_is_sent_back():
+                return _("Only a request that was sent back can be asked "
+                         "again.")
+            if not leave._pb_can_ask_again():
+                return _("This request was already asked again.")
+            return ''
         return _("That cannot be done here.")
 
     @api.model
@@ -866,7 +917,7 @@ class PbEssWorkforce(models.AbstractModel):
     @api.model
     def apply_leave(self, type_id, date_from, date_to, note=False,
                     period_from=None, period_to=None, hour_from=None,
-                    hour_to=None, files=None):
+                    hour_to=None, files=None, again_of=None):
         """Create MY OWN leave, in the normal chain.
 
         The create runs under ``sudo()`` AFTER ``_require_own_employee``
@@ -881,12 +932,20 @@ class PbEssWorkforce(models.AbstractModel):
         QF3: the part of the day (half-day kinds) or the times (hour kinds),
         the documents, and the past-date rule sudo would otherwise skip (R2).
         Nothing is created when any check fails (one savepoint).
+
+        WF2 P6c (D36): ``again_of`` = MY OWN sent-back request this one asks
+        again. It only adds the link: the new request goes through every
+        check above and below, exactly like any other.
         """
         emp = self._require_own_employee()
         vals, leave_type = self._leave_vals(
             emp, type_id, date_from, date_to, note=note,
             period_from=period_from, period_to=period_to,
             hour_from=hour_from, hour_to=hour_to)
+        if again_of:
+            old = self._own_leave(emp, again_of)
+            self._leave_guard('again', emp, old)
+            vals['pb_again_of_id'] = old.id
         self._leave_guard('apply', emp, vals=vals)
         Leave = self.env['hr.leave'].sudo()
         verdict = Leave._pb_backdate_verdict(

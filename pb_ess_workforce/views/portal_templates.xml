@@ -38,6 +38,8 @@
       <t t-elif="icon == 'x'"><path d="M18 6 6 18M6 6l12 12"/></t>
       <t t-elif="icon == 'file-up'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6M15 15l-3-3-3 3"/></t>
       <t t-elif="icon == 'camera'"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></t>
+      <t t-elif="icon == 'rotate-ccw'"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></t>
+      <t t-elif="icon == 'link'"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
   </template>
@@ -382,17 +384,34 @@
               <t t-else="">
                 <p class="pbew-lv-help">To change a request, withdraw or cancel it and ask again.</p>
                 <ul class="pbew-lvlist">
-                  <li t-foreach="lv['requests']" t-as="r" class="pbew-lv" t-att-data-pbew-leave="r['id']">
+                  <li t-foreach="lv['requests']" t-as="r" t-attf-id="pbew-lv-#{r['id']}" t-attf-class="pbew-lv #{r.get('sent_back') and 'pbew-lv--back' or ''}" t-att-data-pbew-leave="r['id']">
                     <div class="pbew-lv-main">
                       <div class="pbew-lv-top">
                         <b class="pbew-lv-type" t-esc="r['type']"/>
-                        <span t-attf-class="pbme-badge pbme-badge--#{r['state']}"><t t-esc="r['state_label']"/></span>
+                        <span t-attf-class="pbme-badge pbme-badge--#{r.get('badge') or r['state']}"><t t-esc="r['state_label']"/></span>
                       </div>
                       <div class="pbew-lv-when">
                         <span t-esc="r['date_from']"/><t t-if="r['date_to'] and r['date_to'] != r['date_from']"> to <span t-esc="r['date_to']"/></t>
                         <span class="pbew-lv-dot">·</span><span t-esc="r['length_label']"/>
                         <t t-if="r['period_label']"><span class="pbew-lv-dot">·</span><span class="pbew-lv-part" t-esc="r['period_label']"/></t>
                       </div>
+                      <!-- WF2 P6c (D36): sent back to me, not refused — why,
+                           and that nothing was taken from my balance -->
+                      <div t-if="r.get('sent_back')" class="pbew-lv-why">
+                        <span class="pbew-lv-why-i"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'undo'"/><t t-set="isz" t-value="14"/></t></span>
+                        <div class="pbew-lv-why-b">
+                          <p class="pbew-lv-why-t">Your approver sent this back to you. It was not refused, and no days were taken.</p>
+                          <p t-if="r.get('reason')" class="pbew-lv-why-r" t-esc="r['reason']"/>
+                        </div>
+                      </div>
+                      <a t-if="r.get('again_of')" class="pbew-lv-link" t-att-href="'#pbew-lv-%s' % r['again_of']['id']">
+                        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'link'"/><t t-set="isz" t-value="13"/></t>
+                        <span t-esc="r['again_of']['label']"/>
+                      </a>
+                      <a t-if="r.get('again_as')" class="pbew-lv-link" t-att-href="'#pbew-lv-%s' % r['again_as']['id']">
+                        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'link'"/><t t-set="isz" t-value="13"/></t>
+                        <span t-esc="r['again_as']['label']"/>
+                      </a>
                       <div t-if="r['files']" class="pbew-lv-files">
                         <a t-foreach="r['files']" t-as="f" class="pbew-doc" t-att-href="f['url']" target="_blank" rel="noopener">
                           <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="13"/></t>
@@ -400,7 +419,12 @@
                         </a>
                       </div>
                     </div>
-                    <div t-if="r['can_withdraw'] or r['can_cancel'] or r['can_add_document']" class="pbew-lv-acts">
+                    <div t-if="r['can_withdraw'] or r['can_cancel'] or r['can_add_document'] or r.get('can_ask_again')" class="pbew-lv-acts">
+                      <!-- WF2 P6c (D36): a NEW request, filled in from this one -->
+                      <a t-if="r.get('can_ask_again')" class="pbme-btn pbme-btn--primary pbew-btn-sm pbew-again-btn" t-att-href="r['again_url']">
+                        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="14"/></t>
+                        <span>Ask again</span>
+                      </a>
                       <form t-if="r['can_withdraw']" t-attf-action="/my/work/leave/#{r['id']}/withdraw" method="post" class="pbew-lv-form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <button type="submit" class="pbme-btn pbme-btn--ghost pbew-btn-sm">
@@ -440,18 +464,34 @@
           </div>
 
           <div class="pbme-detail-side">
-            <div class="pbme-card">
-              <h3 class="pbme-card-title">Request time off</h3>
+            <!-- WF2 P6c (D36): "Ask again" opens THIS form, filled in from the
+                 request that was sent back. The same form, the same checks:
+                 it makes a new request like any other. -->
+            <t t-set="ag" t-value="lv.get('again')"/>
+            <div id="pbew-ask" t-attf-class="pbme-card #{ag and 'pbew-ask--again' or ''}">
+              <h3 class="pbme-card-title"><t t-if="ag">Ask again</t><t t-else="">Request time off</t></h3>
+              <p t-if="lv.get('again_error')" class="pbew-prev-warn pbew-again-err" t-esc="lv['again_error']"/>
+              <div t-if="ag" class="pbew-again">
+                <div class="pbew-again-h">
+                  <span class="pbew-again-i"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="15"/></t></span>
+                  <b>Filled in from your request that was sent back</b>
+                </div>
+                <p t-if="ag.get('reason')" class="pbew-again-r"><span class="pbew-again-k">Why it was sent back</span><span t-esc="ag['reason']"/></p>
+                <p class="pbew-again-s">Change what is needed, then send it. It goes for approval like any new request.</p>
+                <p class="pbew-again-s">Documents are not copied. Add them again below if they are still needed.</p>
+                <a class="pbew-again-x" href="/my/work/leave#pbew-ask">Start an empty request instead</a>
+              </div>
               <form action="/my/work/leave/apply" method="post" enctype="multipart/form-data" class="pbew-lvform" data-pbew-leave-form="">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input t-if="ag" type="hidden" name="again_of" t-att-value="ag['id']"/>
                 <label class="pbme-flabel">Type
                   <select name="type_id" required="required" data-pbew-type="">
-                    <t t-foreach="lv['types']" t-as="t"><option t-att-value="t['id']" t-att-data-unit="t['unit']" t-att-data-doc="'1' if t['needs_document'] else '0'"><t t-esc="t['name']"/></option></t>
+                    <t t-foreach="lv['types']" t-as="t"><option t-att-value="t['id']" t-att-data-unit="t['unit']" t-att-data-doc="'1' if t['needs_document'] else '0'" t-att-selected="'selected' if ag and ag.get('type_id') == t['id'] else None"><t t-esc="t['name']"/></option></t>
                   </select>
                 </label>
                 <div class="pbew-lvform-dates">
-                  <label class="pbme-flabel">First day<input type="date" name="date_from" required="required" data-pbew-from=""/></label>
-                  <label class="pbme-flabel">Last day<input type="date" name="date_to" required="required" data-pbew-to=""/></label>
+                  <label class="pbme-flabel">First day<input type="date" name="date_from" required="required" data-pbew-from="" t-att-value="ag and ag.get('date_from') or None"/></label>
+                  <label class="pbme-flabel">Last day<input type="date" name="date_to" required="required" data-pbew-to="" t-att-value="ag and ag.get('date_to') or None"/></label>
                 </div>
                 <!-- Half days: only for a kind counted in half days. Without
                      scripts both blocks show and the server ignores the one
@@ -462,14 +502,14 @@
                     <label class="pbme-flabel"><span data-pbew-one="">The day</span><span class="d-none" data-pbew-many="">First day</span>
                       <select name="period_from" data-pbew-pfrom="">
                         <option value="full">Full day</option>
-                        <option value="am" data-pbew-oneonly="">Morning</option>
-                        <option value="pm">Afternoon</option>
+                        <option value="am" data-pbew-oneonly="" t-att-selected="'selected' if ag and ag.get('period_from') == 'am' else None">Morning</option>
+                        <option value="pm" t-att-selected="'selected' if ag and ag.get('period_from') == 'pm' else None">Afternoon</option>
                       </select>
                     </label>
                     <label class="pbme-flabel" data-pbew-many="">Last day
                       <select name="period_to" data-pbew-pto="">
                         <option value="full">Full day</option>
-                        <option value="am">Morning only</option>
+                        <option value="am" t-att-selected="'selected' if ag and ag.get('period_to') == 'am' else None">Morning only</option>
                       </select>
                     </label>
                   </div>
@@ -477,11 +517,11 @@
                 <div t-if="lv.get('has_hours')" class="pbew-part" data-pbew-part="hour">
                   <p class="pbew-part-h">For leave counted in hours (one day)</p>
                   <div class="pbew-lvform-dates">
-                    <label class="pbme-flabel">From<input type="time" name="hour_from" data-pbew-hfrom=""/></label>
-                    <label class="pbme-flabel">To<input type="time" name="hour_to" data-pbew-hto=""/></label>
+                    <label class="pbme-flabel">From<input type="time" name="hour_from" data-pbew-hfrom="" t-att-value="ag and ag.get('hour_from') or None"/></label>
+                    <label class="pbme-flabel">To<input type="time" name="hour_to" data-pbew-hto="" t-att-value="ag and ag.get('hour_to') or None"/></label>
                   </div>
                 </div>
-                <label class="pbme-flabel">Reason (optional)<input type="text" name="note"/></label>
+                <label class="pbme-flabel">Reason (optional)<input type="text" name="note" t-att-value="ag and ag.get('note') or None"/></label>
 
                 <div class="pbew-lvdocs" data-pbew-docs="">
                   <p class="pbew-part-h">

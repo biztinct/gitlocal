@@ -48,7 +48,10 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
      double-submit guard is a salted daily hash, and the Today tile refuses to
      render an aggregate below the anonymity floor SERVER-side.
 """,
-    'version': '19.0.1.4.0',
+    # 19.0.1.5.0 — WORKFLOW-2 P6c (D36): My Leave says "Sent back" (with the
+    # reason) for a request sent back to the employee, and "Ask again" opens
+    # the request form filled in from it (a new request, every rule runs).
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
