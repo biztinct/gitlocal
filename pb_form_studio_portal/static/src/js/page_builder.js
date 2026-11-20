@@ -94,6 +94,11 @@ export class PbPageBuilder extends Component {
                     this.state.draftNote = _t("Your unpublished changes from last time are back.");
                 }
             }
+            // a field that cannot be shown any more (deleted, or closed by a
+            // rule since) leaves the canvas; Publish would refuse it
+            for (const spec of this.allSpecs()) {
+                for (const sec of spec.sections) { sec.fields = sec.fields.filter((x) => this.field(x.name)); }
+            }
             this._seq = 1 + Math.max(0, ...this.allSpecs().flatMap((s) => s.sections.map((x) => Number(String(x.id).replace(/\D/g, "")) || 0)));
             const emps = await this.orm.call(FACADE, "page_employees", [""]);
             this.state.emps = emps;

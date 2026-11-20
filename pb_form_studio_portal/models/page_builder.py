@@ -290,6 +290,8 @@ class PbFormStudioPage(models.AbstractModel):
                 name = item.get('name') if isinstance(item, dict) else item
                 if not isinstance(name, str) or name in placed:
                     continue
+                if name not in self.env[EMP]._fields:
+                    continue        # a field deleted since: it simply leaves the page
                 if name not in eligible:
                     raise UserError(_('"%s" cannot be shown on My Payobook.',
                                       self.env[EMP]._fields[name].get_description(
