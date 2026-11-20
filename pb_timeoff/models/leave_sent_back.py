@@ -278,3 +278,46 @@ class PbMeHomeSentBack(models.AbstractModel):
             if row.get('url'):
                 row['url'] = '/my/work/leave#pbew-lv-%s' % row['id']
         return rows
+
+    @api.model
+    def _pbme_needs_extra(self, emp, put):
+        """WF2 P6d: the employee home's "Needs you" row for time off that was
+        sent back and not yet asked again — the same reminder sent-back trips
+        and refused expense claims carry (pb_me_portal's T3a hook, no second
+        mechanism). It goes away the way theirs do: when the person acts
+        (here: asks again, which links the new request to the old one)."""
+        super()._pbme_needs_extra(emp, put)
+        _ = self.env._
+        Leave = self.env['hr.leave'].sudo()
+        back = Leave.search([('employee_id', '=', emp.id),
+                             ('state', '=', 'refuse'),
+                             ('pb_sent_back', '=', True)],
+                            order='request_date_from asc, id asc')
+        if not back:
+            return
+        asked = set(Leave.search([('pb_again_of_id', 'in', back.ids)])
+                    .mapped('pb_again_of_id').ids)
+        back = back.filtered(lambda leave: leave.id not in asked)
+        n = len(back)
+        if not n:
+            return
+        first = back[:1]
+        # the employee's own form lives in pb_ess_workforce (a soft read, as
+        # `_my_requests_sources` does); without it, My requests lists the row
+        has_workforce = 'pb.ess.workforce' in self.env
+        if n == 1:
+            label = _('1 time off request sent back — ask again')
+            sentence = _('Your time off request was sent back to you. '
+                         'Change what is needed and ask again.')
+            url = ('/my/work/leave?again=%s#pbew-ask' % first.id
+                   if has_workforce else '/my/requests')
+        else:
+            label = _('%s time off requests sent back — ask again', n)
+            sentence = _('%s time off requests were sent back to you. '
+                         'Change what is needed and ask again.', n)
+            url = ('/my/work/leave#pbew-lv-%s' % first.id
+                   if has_workforce else '/my/requests')
+        kind = first.holiday_status_id.name or _('Time off')
+        put('leave_sent_back', n, url, label=label,
+            sub='%s · %s' % (kind, first._pb_dates_label()),
+            icon='umbrella', tone='amber', sentence=sentence)

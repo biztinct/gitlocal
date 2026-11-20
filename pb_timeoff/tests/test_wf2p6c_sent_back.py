@@ -20,6 +20,7 @@ import importlib.util
 import os
 from datetime import date, timedelta
 
+from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
 
@@ -383,3 +384,81 @@ class TestWf2p6cSentBack(SingleNoticeMixin, TransactionCase):
         self.env.invalidate_all()
         self.assertTrue(back.pb_sent_back)
         self.assertFalse(turned.pb_sent_back)
+
+    # ======================= 6. P6d: the employee home's "Needs you" row
+    def _needs(self, lang=None, emp=None):
+        Home = self.env['pb.me.home'].with_user(self.staff_user)
+        if lang:
+            Home = Home.with_context(lang=lang)
+        found = {}
+        Home._pbme_needs_extra(emp or self.staff, lambda key, n, url, **kw:
+                               found.update({key: dict(kw, n=n, url=url)}))
+        return found.get('leave_sent_back')
+
+    def test_13_home_needs_you_row(self):
+        """WF2 P6d: a sent-back request shows the "Needs you" row (the same
+        hook trips and expenses use) until it is asked again; a refusal and
+        someone else's sent-back request do not count."""
+        self.assertIsNone(self._needs(), 'nothing sent back, no row')
+        refused = self._leave(weeks=21)
+        self._decide(refused, 'reject', 'P6d: no')
+        self.assertIsNone(self._needs(), 'a real refusal is not "sent back"')
+        other = self._send_back(self._leave(weeks=21, employee=self.other))
+        self.assertTrue(other._pb_is_sent_back())
+        self.assertIsNone(self._needs(), "someone else's does not count")
+
+        back = self._send_back(self._leave(weeks=22))
+        row = self._needs()
+        workforce = 'pb.ess.workforce' in self.env
+        self.assertEqual(row['n'], 1)
+        self.assertEqual(row['label'], '1 time off request sent back — ask again')
+        self.assertEqual(row['url'], '/my/work/leave?again=%s#pbew-ask' % back.id
+                         if workforce else '/my/requests')
+        self.assertEqual((row['tone'], row['icon']), ('amber', 'umbrella'))
+        self.assertEqual(row['sub'], '%s · %s' % (
+            self.ltype.name, back._pb_dates_label()))
+        self.assertIn('ask again', row['sentence'])
+        self.assertEqual(self._needs('vi_VN')['label'],
+                         '1 yêu cầu nghỉ phép bị trả lại — gửi lại')
+        self.assertEqual(self._needs('id_ID')['label'],
+                         '1 permintaan cuti dikembalikan — ajukan lagi')
+
+        later = self._send_back(self._leave(weeks=23))
+        row = self._needs()
+        self.assertEqual(row['n'], 2)
+        self.assertEqual(row['label'], '2 time off requests sent back — ask again')
+        self.assertEqual(row['url'], '/my/work/leave#pbew-lv-%s' % back.id
+                         if workforce else '/my/requests', 'the earliest first')
+        self.assertTrue(self._needs('vi_VN')['sentence'].startswith(
+            '2 yêu cầu nghỉ phép'))
+        self.assertTrue(self._needs('id_ID')['sentence'].startswith(
+            '2 permintaan cuti'))
+
+        # asking again clears that one; the other stays
+        self._cockpit().apply_on_behalf(
+            self.staff.id, self.ltype.id, str(back.request_date_from),
+            str(back.request_date_to), 'again', again_of=back.id)
+        row = self._needs()
+        self.assertEqual(row['n'], 1)
+        self.assertEqual(row['url'], '/my/work/leave?again=%s#pbew-ask' % later.id
+                         if workforce else '/my/requests')
+        self._cockpit().apply_on_behalf(
+            self.staff.id, self.ltype.id, str(later.request_date_from),
+            str(later.request_date_to), 'again', again_of=later.id)
+        self.assertIsNone(self._needs(), 'all asked again: the row is gone')
+
+    def test_14_home_needs_you_through_the_home(self):
+        """The row reaches the home's own list (after the fixed order) and
+        its top sentence when it is the only thing waiting."""
+        back = self._send_back(self._leave(weeks=24))
+        Home = self.env['pb.me.home'].with_user(self.staff_user)
+        today = date.today()
+        monday = today - timedelta(days=today.weekday())
+        needs, _docs = Home._pbme_needs(self.staff, today, monday,
+                                        fields.Datetime.now())
+        rows = [r for r in needs if r['key'] == 'leave_sent_back']
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['n'], 1)
+        if 'pb.ess.workforce' in self.env:
+            self.assertEqual(rows[0]['url'],
+                             '/my/work/leave?again=%s#pbew-ask' % back.id)

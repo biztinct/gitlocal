@@ -275,6 +275,11 @@ class TestWf2p6cAskAgainHttp(_SentBackFixture, HttpCase):
         self.assertIn('P6c: morning please', page.text)
         self.assertIn('/my/work/leave?again=%s#pbew-ask' % back.id, page.text)
         self.assertIn('pbew-lv-%s' % back.id, page.text)
+        # WF2 P6d: the employee home's "Needs you" reminder leads to Ask again
+        home = self.url_open('/my', timeout=60)
+        self.assertEqual(home.status_code, 200)
+        self.assertIn('1 time off request sent back — ask again', home.text)
+        self.assertIn('/my/work/leave?again=%s#pbew-ask' % back.id, home.text)
 
         form = self.url_open('/my/work/leave?again=%s' % back.id, timeout=60)
         self.assertEqual(form.status_code, 200)
@@ -304,3 +309,7 @@ class TestWf2p6cAskAgainHttp(_SentBackFixture, HttpCase):
         self.assertEqual(new.employee_id, self.emp)
         self.assertNotIn('/my/work/leave?again=%s' % back.id, resp.text,
                          'the old one no longer offers "Ask again"')
+        home = self.url_open('/my', timeout=60)
+        self.assertEqual(home.status_code, 200)
+        self.assertNotIn('time off request sent back', home.text,
+                         'asked again: the home reminder is gone (P6d)')

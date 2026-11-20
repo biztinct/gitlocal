@@ -36,7 +36,8 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
     # cockpit's "Sent back" view, the one-line note on the standard form, and
     # "Ask again" (a new request filled in from the old one, linked both
     # ways, once). Post-migrate marks only requests whose approval provably
-    # was sent back.
+    # was sent back. P6d (same version, not yet live): the employee home's
+    # "Needs you" row for a sent-back request until it is asked again.
     'version': '19.0.1.13.0',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',

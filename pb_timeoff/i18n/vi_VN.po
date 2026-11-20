@@ -1265,3 +1265,27 @@ msgstr "Đơn mới được tạo khi đơn này được gửi lại."
 #: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave__pb_sent_back_note
 msgid "Sent back note"
 msgstr "Ghi chú trả lại"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "1 time off request sent back — ask again"
+msgstr "1 yêu cầu nghỉ phép bị trả lại — gửi lại"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "%s time off requests sent back — ask again"
+msgstr "%s yêu cầu nghỉ phép bị trả lại — gửi lại"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Your time off request was sent back to you. Change what is needed and ask again."
+msgstr "Yêu cầu nghỉ phép của bạn đã bị trả lại. Hãy sửa những gì cần thiết và gửi lại."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "%s time off requests were sent back to you. Change what is needed and ask again."
+msgstr "%s yêu cầu nghỉ phép đã bị trả lại cho bạn. Hãy sửa những gì cần thiết và gửi lại."
