@@ -13,12 +13,12 @@
 
 | Commit | What |
 |---|---|
-| `7302d0694` | (17 Nov draft, rebased) `_t` mechanism, words route, 11 files wrapped |
-| `2f8a275f0` | Wrapping finished (`schedule.js`, `repeat.js`, leftovers), English comparisons kept, read calls carry the reader's language, cache function testable; `pb_lifecycle` **19.0.1.21.0** |
-| `4e06b7f97` | Vietnamese + Indonesian `.po` entries (workbench phrases + 51 definition-check sentences), `_definition_words` |
-| `a69822f44` | Studio tests w1–w4, coverage script, golden/screens script, fixture, `.po` merge script, `_t` unit check |
-| `b19321bb7` | "Next 5 starts" / start history days in the reader's language (`_schedule_day`, babel; English unchanged), test w5; three Indonesian sentences reworded |
-| (docs commit) | This report, closeout, ledger, screenshots |
+| `5ba665483` | (17 Nov draft, rebased) `_t` mechanism, words route, 11 files wrapped |
+| `e64d74955` | Wrapping finished (`schedule.js`, `repeat.js`, leftovers), English comparisons kept, read calls carry the reader's language, cache function testable; `pb_lifecycle` **19.0.1.21.0** |
+| `eb55701a0` | Vietnamese + Indonesian `.po` entries (workbench phrases + 51 definition-check sentences), `_definition_words` |
+| `e85d5ec50` | Studio tests w1–w4, coverage script, golden/screens script, fixture, `.po` merge script, `_t` unit check |
+| `143eadb07` | "Next 5 starts" / start history days in the reader's language (`_schedule_day`, babel; English unchanged), test w5; three Indonesian sentences reworded |
+| `e6d85aec4` (+ this hash fix) | This report, closeout, ledger, screenshots |
 
 Cache keys (G11/G17): both `wf2-p6b` (iframe `v=` in `static/src/js/workflow_studio.js`, inbox/strip keys, every `?v=` in `index.html`).
 
