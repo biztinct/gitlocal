@@ -154,6 +154,13 @@ upgraded: see §5a. Baseline at the follow-up (1c report): 126 tests in the five
 * Before the rebase, after the fixes: **167 tests, 0 failed, 0 errors**.
 * After the rebase on `48a80cb14` (R22 included): **175 tests, 0 failed, 0 errors** — engine 41,
   contracts 30, lists 13, people 33, reach 48, TIDY-E 48, native look 8 (15 of them new, FS-7).
+* Final, on `origin/19.1` `8b33b7e0b` (follow-up 1 live + Codex merge) with the tab names, R25 and
+  R26, on a local copy brought to the live state first: **178 tests, 0 failed, 0 errors** (reach 51
+  = 48 + 3 new). Tests 7 and 9 re-run on that tree: 13/13 SAME; rules kept after `-u hr,
+  pb_contracts, pb_employee_form_tidy` (175 s), the only form differences again core's own.
+* Browser (local copy at the live state): R25 — Spouse Legal Name: "Employee can change it" greyed,
+  "Changed through My details › Family"; R26 — Blood type: "Saves at once" greyed, title and note
+  "Sensitive detail — HR always approves", HR approves selected; console clean.
 
 ## 5b. Addition (coordinator, 2026-11-20): tab names still English in Vietnamese / Indonesian
 
@@ -245,4 +252,28 @@ box, not a tab) untouched.
   label too (one more step), or keep the built-in name the employee already knows?
 
 ## 9. Go-live (rize-copy rehearsal + ×5)
-Filled in by the deploy step below.
+
+Deploy method exactly as `FS_DEPLOY_HANDOVER.md` (scripts cloned from the FS go-live: `fs7_prep.sh`,
+`fs7_rehearse.sh`, `fs7_golive.sh` + `fs7_tries.sh`, `fs7_verify.sh`; read-only helpers
+`fs7_probe.py`, `fs7_tabs.sh`, `fs7_ticks.sh`; `fs7_tabfix.py`, `fs7_rules.py` on the copy only).
+Deployed commit `d9afe27a1` (origin/fs-7 = origin/19.1 `8b33b7e0b` + FS-7). START line
+02:13 UTC; no other deployer's START open; shared lock free.
+
+**Prep** (`/odoo/backups/fs7-20261120T021306Z`): five dumps read back (payobook 84 MB,
+payobook_template 31 MB, p0clone 32 MB, rize 46 MB, sudima 35 MB), file folders linked, previous
+trees saved; staged trees = commit, live trees = origin/19.1 for all five modules.
+
+**Rehearsal on a hidden rize copy** (jobs and mail off; dropped after):
+* upgrade 17 s, 0 ERROR, 0 Traceback; data counts restored vs upgraded **identical**;
+* silent: 0 rule rows, the employee and contract forms **byte-identical** old code vs new (same
+  hash), 168 standard fields listed on the employee;
+* **test 8** — runs 2113–2116, 211 payslips / 6,914 lines: old vs new **0 differing**; old vs after
+  hiding 5 and renaming 5 standard fields **0 differing** (180 payslips refused identically both
+  times, as in every earlier rehearsal: closed payslips are not recomputed);
+* **test 12 at Rize size** — Publish of 5 hides + 5 renames **0.56 s**; no column added (208 → 208);
+  the employee form then builds in 0.41 s;
+* tab names: 9 stored translations written (Indonesian for Payroll Info, Insurance (BH), Tax &
+  Dependents; both languages for Employment profile and the two Payroll facts tabs), 3 kept;
+  still English afterwards: 0.
+
+**Go live ×5**: see below (filled in after the window).
