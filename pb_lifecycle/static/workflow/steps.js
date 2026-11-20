@@ -262,7 +262,7 @@ function taskNote(t){return t.kind==='task'?`<div class="task-note"><label for="
 function builtInLabel(b){return b.key==='confirm'&&b.label==='I confirm'||b.key==='done'&&b.label==='Done'?_t(b.label):b.label;}
 function taskButtons(t){
  const rows=t.buttons||[];
- if(t.kind==='input'||t.kind==='task'&&rows.length===1&&rows[0].key==='done'&&rows[0].label==='Done')return null;
+ if(t.kind==='input'||t.kind==='task'&&rows.length===1&&rows[0].key==='done'&&(rows[0].label==='Done'||rows[0].label===_t('Done')))return null;
  return rows.map((b,i)=>btn('complete-outcome',esc(builtInLabel(b)),i===0?'check':'',i===0?'primary':'',`data-id="${esc(b.key)}" ${S.formPreview?'disabled':''}`)).join('');
 }
 function stepHistory(p,step){

@@ -141,7 +141,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#popover')&&!$('
 
 /* ----------------------------------------------------- the "When …" sentence */
 /* "3 days" in the When sentence (the start's offset). */
-const UNIT_WORDS={minutes:['%(n)s minute','%(n)s minutes'],hour:['%(n)s hour','%(n)s hours'],day:['%(n)s day','%(n)s days'],month:['%(n)s month','%(n)s months']};
+const UNIT_WORDS={minutes:[_t.later('%(n)s minute'),_t.later('%(n)s minutes')],hour:[_t.later('%(n)s hour'),_t.later('%(n)s hours')],day:[_t.later('%(n)s day'),_t.later('%(n)s days')],month:[_t.later('%(n)s month'),_t.later('%(n)s months')]};
 function whenWords(){
  const w=S.w,d=w.definition,t=d.trigger||{},fields=w.metadata.fields||[];
  const label=String(contract().label||w.module||_t('record')).split(' ').map(x=>/^[A-Z0-9]{2,}$/.test(x)?x:x.toLowerCase()).join(' ');
