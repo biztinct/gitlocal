@@ -34,7 +34,7 @@ export class Employee360Drawer extends Component {
         this.state = useState({
             loaded: false, shown: false, busy: false,
             tab: "profile", d: null,
-            tlOffset: 0, uploadCatId: null, uploading: false,
+            tlOffset: 0, uploadCatId: null, uploading: false, uploadDraft: null,
         });
         onWillStart(() => this.load());
         onMounted(() => { this.state.shown = true; });
@@ -214,31 +214,66 @@ export class Employee360Drawer extends Component {
         if (input) { input.value = ""; input.click(); }
     }
     onFilePicked(catId, ev) {
-        const file = ev.target.files && ev.target.files[0];
-        if (file) { this.uploadFile(catId, file); }
+        this.stageFiles(catId, Array.from(ev.target.files || []));
+        ev.target.value = "";
     }
     onDrop(catId, ev) {
         ev.preventDefault();
-        const file = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
-        if (file) { this.uploadFile(catId, file); }
+        this.stageFiles(catId, Array.from(ev.dataTransfer?.files || []));
     }
     onDragOver(ev) { ev.preventDefault(); }
 
-    async uploadFile(catId, file) {
+    stageFiles(catId, files) {
+        if (this.state.uploading || !files.length) return;
         const OK = ["image/png", "image/jpeg", "application/pdf"];
-        if (!OK.includes(file.type)) {
-            this.notif.add(_t("Only JPG, PNG or PDF documents are accepted."), { type: "danger" });
+        if (files.some(f => !OK.includes(f.type) || f.size > 10 * 1024 * 1024)) {
+            this.notif.add(_t("Choose JPG, PNG or PDF files, up to 10 MB each."), { type: "danger" });
+            return;
+        }
+        if (this.state.uploadDraft && this.state.uploadDraft.catId !== catId) {
+            this.notif.add(_t("Upload or cancel the selected files before choosing another category."), { type: "warning" });
+            return;
+        }
+        const previous = this.state.uploadDraft?.files || [];
+        if (previous.length + files.length > 20 || [...previous.map(r => r.file), ...files].reduce((n, f) => n + f.size, 0) > 50 * 1024 * 1024) {
+            this.notif.add(_t("Select up to 20 files, totalling at most 50 MB."), { type: "danger" });
+            return;
+        }
+        this._uploadKey = this._uploadKey || 0;
+        this.state.uploadDraft = { catId, files: [...previous, ...files.map(file => ({
+            key: ++this._uploadKey, file, name: file.name, issueDate: "", expiryDate: "",
+        }))] };
+    }
+    removeUploadFile(key) {
+        this.state.uploadDraft.files = this.state.uploadDraft.files.filter(row => row.key !== key);
+        if (!this.state.uploadDraft.files.length) this.state.uploadDraft = null;
+    }
+    async uploadSelected() {
+        const draft = this.state.uploadDraft;
+        if (!draft || this.state.uploading) return;
+        const category = this.state.d.categories.find(c => c.id === draft.catId);
+        if (category?.requires_expiry && draft.files.some(row => !row.expiryDate)) {
+            this.notif.add(_t("Enter an expiry date for every selected file."), { type: "warning" });
+            return;
+        }
+        if (draft.files.some(row => row.issueDate && row.expiryDate && row.expiryDate < row.issueDate)) {
+            this.notif.add(_t("Expiry must be on or after the issue date."), { type: "warning" });
             return;
         }
         this.state.uploading = true;
         try {
-            const dataUrl = await this._readAsDataURL(file);
-            const b64 = String(dataUrl).split(",")[1] || "";
-            const payload = { name: file.name, title: file.name.replace(/\.[^.]+$/, ""), mime: file.type, data: b64 };
-            this.state.d = await this.orm.call(MODEL, "vault_upload", [Number(this.props.empId), catId, payload]);
-            this.notif.add(_t("Document uploaded."), { type: "success" });
+            const documents = [];
+            for (const row of draft.files) {
+                const dataUrl = await this._readAsDataURL(row.file);
+                documents.push({payload: {name: row.name, title: row.name.replace(/\.[^.]+$/, ""),
+                    mime: row.file.type, data: String(dataUrl).split(",")[1] || ""},
+                    issue_date: row.issueDate || false, expiry_date: row.expiryDate || false});
+            }
+            this.state.d = await this.orm.call(MODEL, "vault_upload_batch", [Number(this.props.empId), draft.catId, documents]);
+            this.state.uploadDraft = null;
+            this.notif.add(_t("Documents uploaded."), { type: "success" });
         } catch (e) {
-            this.notif.add(this._err(e, _t("Upload failed.")), { type: "danger" });
+            this.notif.add(this._err(e, _t("Upload failed. Your selected files are still available to retry.")), { type: "danger" });
         } finally {
             this.state.uploading = false;
         }

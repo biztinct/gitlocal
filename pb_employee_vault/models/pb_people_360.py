@@ -8,10 +8,12 @@ document rules are ALSO enforced at the ORM layer (C18.32) — this facade is th
 convenience gate, not the only one.
 """
 
+import base64
+import binascii
 from datetime import date
 
-from odoo import api, models, _
-from odoo.exceptions import AccessError
+from odoo import api, fields, models, _
+from odoo.exceptions import AccessError, ValidationError
 
 _HR_GROUP = 'om_hr_payroll.group_hr_payroll_user'
 _HR_CORE_GROUP = 'hr.group_hr_user'
@@ -172,32 +174,64 @@ class PbPeople(models.AbstractModel):
     @api.model
     def vault_upload(self, employee_id, category_id, payload,
                      issue_date=False, expiry_date=False, note=False):
-        """C18.25 attachment order: attachment first (no res binding), then the
-        document, then bind res_model/res_id back."""
+        return self.vault_upload_batch(employee_id, category_id, [{
+            'payload': payload, 'issue_date': issue_date,
+            'expiry_date': expiry_date, 'note': note}])
+
+    @api.model
+    def vault_upload_batch(self, employee_id, category_id, documents):
+        """One transaction per selection, with individual dates and private files."""
         self._require_hr()
         emp = self._emp(employee_id)
         if not emp:
             raise AccessError(_("Employee not found."))
-        payload = payload or {}
-        mime = payload.get('mime')
-        if mime not in _MIME_OK:
-            raise AccessError(_("Only JPG, PNG or PDF documents are accepted."))
-        att = self.env['ir.attachment'].create({
-            'name': payload.get('name') or _('document'),
-            'datas': payload.get('data') or '',
-            'mimetype': mime,
-        })
-        doc = self.env['pb.employee.document'].create({
-            'employee_id': emp.id,
-            'category_id': int(category_id),
-            'name': payload.get('title') or payload.get('name') or _('Document'),
-            'attachment_id': att.id,
-            'issue_date': issue_date or False,
-            'expiry_date': expiry_date or False,
-            'note': note or False,
-            'company_id': emp.company_id.id or self.env.company.id,
-        })
-        att.write({'res_model': doc._name, 'res_id': doc.id})
+        category = self.env['pb.employee.document.category'].browse(int(category_id)).exists()
+        if not category or not category.active:
+            raise ValidationError(_("Choose an active document category."))
+        category.check_access('read')
+        if not isinstance(documents, list) or not 1 <= len(documents) <= 20:
+            raise ValidationError(_("Select between 1 and 20 files."))
+        total = 0
+        prepared = []
+        for row in documents:
+            payload = row.get('payload') or {}
+            if payload.get('mime') not in _MIME_OK:
+                raise AccessError(_("Only JPG, PNG or PDF documents are accepted."))
+            data = payload.get('data') or ''
+            if len(data) > 14 * 1024 * 1024:
+                raise ValidationError(_("Each file must be 10 MB or smaller."))
+            try:
+                raw = base64.b64decode(data, validate=True)
+            except (ValueError, TypeError, binascii.Error):
+                raise ValidationError(_("The selected file could not be read."))
+            if not raw or len(raw) > 10 * 1024 * 1024:
+                raise ValidationError(_("Choose a non-empty file up to 10 MB."))
+            total += len(raw)
+            if total > 50 * 1024 * 1024:
+                raise ValidationError(_("The selected files must total 50 MB or less."))
+            issued = fields.Date.to_date(row.get('issue_date') or False)
+            expires = fields.Date.to_date(row.get('expiry_date') or False)
+            if category.requires_expiry and not expires:
+                raise ValidationError(_("An expiry date is required for every '%s' file.", category.name))
+            if issued and expires and expires < issued:
+                raise ValidationError(_("Expiry must be on or after the issue date."))
+            prepared.append((payload, issued, expires, row.get('note') or False))
+        # All rows are validated before any file is saved; a later access/ORM
+        # failure also rolls the entire batch back, including attachments.
+        with self.env.cr.savepoint():
+            for payload, issued, expires, note in prepared:
+                att = self.env['ir.attachment'].create({
+                    'name': payload.get('name') or _('document'),
+                    'datas': payload['data'], 'mimetype': payload['mime'],
+                })
+                doc = self.env['pb.employee.document'].create({
+                    'employee_id': emp.id, 'category_id': category.id,
+                    'name': payload.get('title') or payload.get('name') or _('Document'),
+                    'attachment_id': att.id, 'issue_date': issued,
+                    'expiry_date': expires, 'note': note,
+                    'company_id': emp.company_id.id or self.env.company.id,
+                })
+                att.write({'res_model': doc._name, 'res_id': doc.id})
         return self.get_employee_360(emp.id)
 
     @api.model

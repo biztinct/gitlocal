@@ -241,6 +241,16 @@ export const CATEGORIES = [
               sub: _t("The details that print on payslips, filings and letters — and a preview of each one.") },
         ],
     },
+    {
+        key: "email", icon: "mail", label: _t("Outgoing email"),
+        blurb: _t("Configure the server used to send email from this site."),
+        groups: ADMIN,
+        cards: [
+            { id: "outgoing_email", xmlid: "pb_settings.action_outgoing_email",
+              icon: "mail", label: _t("Outgoing email server"),
+              sub: _t("Edit your company’s server, test the connection, and activate it when ready. New servers start inactive.") },
+        ],
+    },
 ];
 
 /**
@@ -305,7 +315,7 @@ export const GROUP_OF_CATEGORY = {
     hiring: "hr", announcements: "hr", journeys: "hr",
     approvals: "workflows",
     guided_setup: "system", about: "system", payai_can_act: "system",
-    demo_data: "system",
+    demo_data: "system", email: "system",
 };
 
 /** The rail group a category belongs to. */

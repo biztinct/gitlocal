@@ -1,0 +1,38 @@
+<odoo>
+    <record id="view_company_mail_settings" model="ir.ui.view">
+        <field name="name">pb.company.mail.settings.form</field>
+        <field name="model">pb.company.mail.settings</field>
+        <field name="arch" type="xml">
+            <form string="Outgoing email server">
+                <div class="alert alert-info" invisible="enabled">Inactive: this server will not send automatic email. Activate it only when you are ready.</div>
+                <group>
+                    <group>
+                        <field name="company_name"/>
+                        <field name="name"/>
+                        <field name="smtp_host"/>
+                        <field name="smtp_port"/>
+                        <field name="smtp_encryption"/>
+                    </group>
+                    <group>
+                        <field name="smtp_user"/>
+                        <field name="smtp_pass" password="True" placeholder="Leave blank to keep the saved password"/>
+                        <field name="password_saved"/>
+                        <field name="from_filter" string="Sender email"/>
+                        <field name="enabled"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_save" type="object" string="Save" class="btn-primary"/>
+                    <button name="action_test" type="object" string="Test connection (no email)" class="btn-secondary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_outgoing_email" model="ir.actions.act_window">
+        <field name="name">Outgoing email server</field>
+        <field name="res_model">pb.company.mail.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

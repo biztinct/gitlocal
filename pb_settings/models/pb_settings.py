@@ -15,6 +15,7 @@ logs nothing — five of exactly that shape survived in `hr.flow.wizard` until P
 went looking. So the hub asks, and hides what is not there.
 """
 import logging
+from .outgoing_email import may_manage_email
 
 from odoo import api, models
 
@@ -168,6 +169,8 @@ class PbSettings(models.AbstractModel):
 
     def _gate_category(self, key, descriptor):
         """Rule 2 then rule 3, for one category. Never called for an administrator."""
+        if key == 'email':
+            return may_manage_email(self.env)
         if key in PLATFORM_ONLY_CATEGORIES:
             return False
         groups = [g for g in (descriptor.get('groups') or [])
@@ -219,6 +222,8 @@ class PbSettings(models.AbstractModel):
         if isinstance(tag, str) and tag in PLATFORM_ONLY_TAGS:
             return False
         xmlid = card.get('xmlid')
+        if xmlid == 'pb_settings.action_outgoing_email':
+            return may_manage_email(self.env)
         if isinstance(xmlid, str) and xmlid in PLATFORM_ONLY_ACTIONS:
             return False
         return True

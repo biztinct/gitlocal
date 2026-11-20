@@ -133,7 +133,7 @@ class TestSettingsDescriptor(TransactionCase):
         self.assertEqual(
             keys,
             ['formula', 'structures', 'statutory', 'integrations',
-             'payroll', 'org', 'nav', 'company'],
+             'payroll', 'org', 'nav', 'company', 'email'],
             "the category order is the mockup's plus P9's appended one; the "
             "localStorage key pbst.cat.v1 also remembers one of these by name")
         self.assertEqual(len(set(keys)), len(keys))

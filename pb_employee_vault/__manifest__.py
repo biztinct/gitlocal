@@ -28,7 +28,7 @@ a document repository and an employment-history timeline surfaced in People.
 Binding non-goals this phase: NO OCR on vault documents, NO audit console (Phase
 J), NO employee self-service upload (Phase I), NO history backfill.
 """,
-    'version': '19.0.1.6.3',
+    'version': '19.0.1.6.4',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -53,6 +53,7 @@ J), NO employee self-service upload (Phase I), NO history backfill.
         'views/employee_vault_config_views.xml',
         'views/payroll_profile_views.xml',
         'views/employee_profile_tools.xml',
+        'views/weekday_location.xml',
     ],
     'assets': {
         'web.assets_backend': [
