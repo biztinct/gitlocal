@@ -1,6 +1,9 @@
 # FS-8 facts pass — reports split and filtered by the customer's own fields
 
 Read at `origin/19.1` = `df98e07cd` (fetched 2026-11-20). All `file:line` are at that commit.
+During the build `origin/19.1` moved to `e69bebcc4` (FS-7 merged and live); the branch was
+rebased onto it. Nothing in `pb_explorer` changed between the two; the `pb_form_studio` line
+numbers in §4/§6 moved (FS-7 added ~80 lines to `form_studio.py`) but no method used here changed.
 Engineering readers only. Written BEFORE any code (handover FS-8 "Facts pass first").
 
 ## 1. How the Explorer's fact tables are built — stored rows, rebuilt from payslips
