@@ -3,7 +3,12 @@
 Builder, tester, self-reviewer and deployer, 2026-11-20 (UTC). Handover `FS11_FS12_HANDOVER.md` (main
 checkout, untracked). Branch `fs-11-12` from `origin/19.1` @ `9ac8b8fae`.
 
-**Result:** see §6 (go-live).
+**Result: BUILT, TESTED, REHEARSED — HELD, NOT LIVE.** Another deployer's START ("Claude WORKFLOW-2
+P6e", 11:04 UTC, its evidence folder unchanged since 11:16) stayed open through 240 minutes of retries
+(13:42–17:32 UTC). The rule is never to go over another deployer's open START, so nothing was changed on
+the server (no START of ours, no stop, no file copied into the addons folder). Everything is staged and a
+single command resumes (§6). The code is on `origin/fs-11-12` only — NOT merged into `19.1`, so no other
+deployer ships it by accident.
 
 ## 1. What was built
 
@@ -159,7 +164,29 @@ sudima with the final commit (`fs12_bytecheck.sh`, final stage `7edc89990`):
 
 The administrator's own My Profile differs as designed: "Edit this page" in the header.
 
-## 6. Go-live
+## 6. Go-live — held
+* 13:42 the retry loop started (`fs12_tries.sh`, every 10 minutes, 24 tries). While any other START of the
+  day is open it writes nothing and changes nothing (writing our START then would block the other
+  deployer's own check). Each try: "waiting, open START of Claude WORKFLOW-2 P6e". 17:32 finished:
+  WAITING-OTHER. Two NOTE lines in `/opt/deploy-notes.md` say so (15:44 ready/waiting, 17:32 held).
+* Rize/payobook also had signed-in activity during the afternoon (30 requests in the 15 minutes before
+  13:58), so the 15-quiet-minutes rule would have held it at those moments too.
+* **To resume** (once the P6e START has its DONE, or the owner closes it):
+  `sudo systemd-run --collect --unit=fs12-tries /bin/bash /tmp/fs12_tries.sh 20261120T124830Z 24` — then
+  `bash /tmp/fs12_after.sh 20261120T124830Z` (verification ×5, payobook.com showcase page, pages opened
+  for three demo employees), DONE line, merge `fs-11-12` into `19.1` (fast-forward is not possible if 19.1
+  moved: merge, re-run the FS-11/12 tags), push, this report's §6 completed. The go-live script refuses by
+  itself if the live trees moved since prep (re-run `fs12_prep.sh` then), takes fresh backups ×5 right
+  before the stop, upgrades `-u pb_form_studio,pb_form_studio_people,pb_form_studio_contracts
+  -i pb_form_studio_portal` in the order template, p0clone, sudima, rize, payobook (16–21 s each on the
+  copies), purges the assets and bumps `web.assets.version`, switches back off any job an upgrade
+  re-activates, and puts everything back if an upgrade fails.
+* Staged on the server: `/tmp/deployFS12/addons` = `7edc89990` (hash-checked), evidence and backups
+  `/tmp/fs12-20261120T124830Z/`, `/odoo/backups/fs12-20261120T124830Z/`.
+* Not done because of the hold: the go-live itself, the payobook.com showcase page (DEMO section with
+  "DEMO Shirt size" + two standard fields + a banner — `fs12_publish.py` with `PUBLISH_DEMO=1`), the
+  checks on the five live sites. The browser cannot be used on payobook.com without typing a password
+  into a production site, which is not allowed; the after-script opens the pages server-side instead.
 ## 7. Candidates for the next pages
 My details (family, ID papers, photo, bank — its own flows, so only arrangement, not new fields), the
 My Payobook home tiles (order, which tiles show), My Leave (the request form's optional boxes), Payslips
@@ -186,4 +213,11 @@ builder are ready to take them.
   `ssnid` …) — FS7-6 again; take only real sentences into the .po.
 
 ## 9. Owner questions
-(see the final message)
+1. The other go-live from this afternoon (the Workflow Studio language fix) has been "started" since 11:04
+   and has not moved since 11:16, which blocks every other go-live. Should that one be finished or called
+   off, so this release can go live?
+2. With a page published, My details shows one link "Company details — see them on My Profile" instead
+   of a second copy of the same fields. Keep it like that, or show the fields in both places?
+3. The personal boxes today's My Profile offers (private phone, e-mail, address, emergency contact) are
+   always changeable through today's change request (HR approves). Do you want a switch to make any of
+   them look-only?
