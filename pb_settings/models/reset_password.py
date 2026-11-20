@@ -37,8 +37,9 @@ class Users(models.Model):
             if not template:
                 super(Users, user)._action_reset_password(signup_type=signup_type)
                 continue
+            # Native reset delivery rolls back transient mail rows, not the reset state.
+            user.partner_id.signup_prepare(signup_type=signup_type)
             with contextlib.closing(self.env.cr.savepoint()):
-                user.partner_id.signup_prepare(signup_type=signup_type)
                 template.with_context(lang=user.lang or self.env.lang or 'en_US').send_mail(
                     user.id, force_send=True, raise_exception=True, email_values={
                         'email_to': user.email, 'email_cc': False, 'recipient_ids': [],
