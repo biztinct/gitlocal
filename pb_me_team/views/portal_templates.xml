@@ -231,7 +231,7 @@
                 <span class="pbmt-row-d">Joined <t t-out="r['start']" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/><t t-if="r['buddy']"> · buddy <t t-out="r['buddy']"/></t></span>
               </span>
               <span t-if="r['total']" class="pbmt-progress" t-att-aria-label="'%s / %s' % (r['done'] or 0, r['total'])">
-                <span class="pbmt-progress-bar"><i t-att-style="'width: %s%%' % int(100 * (r['done'] or 0) / r['total'])"/></span>
+                <span class="pbmt-progress-bar"><i t-attf-style="width: {{ int(100 * (r['done'] or 0) / r['total']) }}%"/></span>
                 <span class="pbmt-progress-t"><t t-out="r['done'] or 0"/> of <t t-out="r['total']"/> first-weeks steps</span>
               </span>
             </li>
@@ -273,7 +273,7 @@
                 <t t-set="h" t-value="r[k]"/>
                 <span t-att-class="'pbmt-hrs-cell is-%s' % h['state']">
                   <span class="pbmt-hrs-n"><b t-out="'{:g}'.format(h['worked'])"/> of <t t-out="'{:g}'.format(h['planned'])"/> h<span t-if="k == 'month' and r['ot']" class="pbmt-hrs-ot"> · <t t-out="'{:g}'.format(r['ot'])"/> h overtime</span></span>
-                  <span class="pbmt-hrs-bar"><i t-att-style="'width: %s%%' % h['share']"/><em t-if="h['planned']" t-att-style="'left: %s%%' % h['mark']"/></span>
+                  <span class="pbmt-hrs-bar"><i t-attf-style="width: {{ h['share'] }}%"/><em t-if="h['planned']" t-attf-style="left: {{ h['mark'] }}%"/></span>
                   <span t-if="h['state'] == 'short'" class="pbmt-hrs-s"><t t-out="'{:g}'.format(round(h['so_far'] - h['worked'], 1))"/> h behind</span>
                   <span t-elif="h['state'] == 'over'" class="pbmt-hrs-s"><t t-out="'{:g}'.format(round(h['worked'] - h['so_far'], 1))"/> h ahead</span>
                   <span t-else="" class="pbmt-hrs-s">On track</span>
@@ -297,7 +297,7 @@
               <span class="pbmt-row-body">
                 <b t-out="r['name']"/>
                 <span class="pbmt-row-d"><t t-out="'{:g}'.format(r['approved'])"/> h approved<t t-if="r['asked']"> · <t t-out="'{:g}'.format(r['asked'])"/> h asked</t></span>
-                <span t-if="overtime['cap']" t-att-class="'pbmt-meter%s' % (' is-over' if r['over'] else ' is-near' if r['near'] else '')"><i t-att-style="'width: %s%%' % r['share']"/></span>
+                <span t-if="overtime['cap']" t-att-class="'pbmt-meter%s' % (' is-over' if r['over'] else ' is-near' if r['near'] else '')"><i t-attf-style="width: {{ r['share'] }}%"/></span>
               </span>
               <span t-att-class="'pbmt-chip %s' % ('pbmt-chip--rose' if r['over'] else 'pbmt-chip--amber' if r['near'] else 'pbmt-chip--slate')"><t t-out="'{:g}'.format(r['total'])"/><t t-if="overtime['cap']"> / <t t-out="'{:g}'.format(overtime['cap'])"/></t> h</span>
             </li>
