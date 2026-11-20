@@ -30,7 +30,10 @@ Chart.js comes from the platform's own lazy ``web.chartjs_lib`` bundle, never a 
     # C2/C18.86: bump on EVERY asset change — the bundle URL hash is keyed on
     # module versions, so without this browsers keep serving the stale CSS/JS.
     # WDGAP QF2 (2.7.0): saved views + share, Excel download, regular email.
-    'version': '19.0.2.7.0',
+    # FORM STUDIO FS-8 (2.8.0): run-time breakdown hooks (`_pbx_extra_*`) so
+    # another module can offer splits and filters with no upgrade; download
+    # names and the workbook's filter line in screen words.
+    'version': '19.0.2.8.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

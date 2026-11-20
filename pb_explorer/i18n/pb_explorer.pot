@@ -387,7 +387,9 @@ msgid "Basic salary"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
 #. odoo-javascript
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__basis
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__basis
@@ -832,7 +834,9 @@ msgid "Emp"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
 #. odoo-javascript
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__employee_id
 msgid "Employee"
@@ -2474,7 +2478,9 @@ msgid "Where"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
 #. odoo-javascript
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Where they work"
 msgstr ""
@@ -2836,4 +2842,34 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "“%s” stopped being paid"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Filter"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "This breakdown is not available right now. Open the board again."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "This view was split or filtered by a field that is not available to you any more, so it opened without it."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "“%(measure)s” cannot be split or filtered by “%(dim)s”. That field belongs to a person, while component-level figures are counted per pay component — one person appears in many components. Pick another measure, or take the component off the filters."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "This view was split or filtered by “%s”, which was removed, so it opened without it."
 msgstr ""

@@ -22,6 +22,8 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
+from .pb_explorer import _is_extra_key
+
 _logger = logging.getLogger(__name__)
 
 NAME_MAX = 80
@@ -107,6 +109,56 @@ class PbExplorerView(models.Model):
             stored.get('filters'), dict) else {}
         return any(k not in clean['filters'] for k in raw_filters
                    if raw_filters.get(k))
+
+    def _pbx_lost_extra(self, clean):
+        """The run-time keys (FS-8) the stored question uses that the cleaned
+        one — the question as THIS reader may ask it — no longer carries."""
+        self.ensure_one()
+        stored = self.spec if isinstance(self.spec, dict) else {}
+        keys = set()
+        if _is_extra_key(stored.get('dimension')) \
+                and stored.get('dimension') != clean.get('dimension'):
+            keys.add(stored['dimension'])
+        raw = stored.get('filters') if isinstance(stored.get('filters'), dict) else {}
+        keys.update(k for k in raw if _is_extra_key(k)
+                    and k not in (clean.get('filters') or {}))
+        return sorted(keys)
+
+    def _pbx_gone_names(self):
+        """Names of deleted fields this view used (`_lost`, written by the
+        module that deleted them). Never part of the question itself:
+        `SPEC_KEYS` keeps it out of every query and of a re-save."""
+        self.ensure_one()
+        spec = self.spec if isinstance(self.spec, dict) else {}
+        return [str(n)[:80] for n in (spec.get('_lost') or [])
+                if isinstance(n, str) and n][:10]
+
+    def _pbx_clear_gone(self):
+        self.ensure_one()
+        if self.user_id.id != self.env.uid:
+            return False
+        spec = dict(self.spec) if isinstance(self.spec, dict) else {}
+        spec.pop('_lost', None)
+        self.write({'spec': spec})
+        return True
+
+    def _pbx_forget_extra(self, keys):
+        """Say it ONCE: when the field behind a lost key is gone for good
+        (deleted — not merely hidden from this reader), its owner's view
+        stops carrying it, so the note is not repeated on every open. A
+        shared view opened by somebody else is never changed."""
+        self.ensure_one()
+        gone = set(self.env['pb.explorer']._pbx_extra_gone(keys) or [])
+        if not gone or self.user_id.id != self.env.uid:
+            return False
+        spec = dict(self.spec) if isinstance(self.spec, dict) else {}
+        if spec.get('dimension') in gone:
+            spec['dimension'] = 'none'
+        if isinstance(spec.get('filters'), dict):
+            spec['filters'] = {k: v for k, v in spec['filters'].items()
+                               if k not in gone}
+        self.write({'spec': spec})
+        return True
 
     def _pbx_period_label(self):
         """What the saved period MEANS, in words: a moving starting point
@@ -233,11 +285,28 @@ class PbExplorerViews(models.AbstractModel):
         except Exception:                                  # noqa: BLE001
             _logger.exception('pb_explorer: saved view %s did not open', view.id)
             spec, drift = self._clean_spec({}), True
+        note = (_("Part of this saved view no longer exists here, so it "
+                  "opened with the closest match. Save it again to keep "
+                  "this version.") if drift else '')
+        gone = view._pbx_gone_names()
+        lost = view._pbx_lost_extra(spec) if drift else []
+        if gone:
+            # A field this view used was deleted; the module that deleted it
+            # already took it off the question and left its name here. Said
+            # ONCE: the mark is cleared when the view's owner has seen it.
+            note = _("This view was split or filtered by “%s”, which was "
+                     "removed, so it opened without it.", ', '.join(gone))
+            view._pbx_clear_gone()
+        elif lost:
+            # FS-8 — a split or filter by a field that is no longer offered to
+            # this reader (removed, unmarked, or one they may not see). The
+            # view opens WITHOUT it and says so in one sentence.
+            note = _("This view was split or filtered by a field that is not "
+                     "available to you any more, so it opened without it.")
+            view._pbx_forget_extra(lost)
         return {
             'ok': True,
             'spec': spec,
             'view': view._pbx_payload(),
-            'note': (_("Part of this saved view no longer exists here, so it "
-                       "opened with the closest match. Save it again to keep "
-                       "this version.") if drift else ''),
+            'note': note,
         }
