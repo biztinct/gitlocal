@@ -66,6 +66,8 @@ patch(FormController.prototype, {
             this._fs3FullRemove = this._fs3FullOverlay.add(FormStudioOverlay, {
                 hostKey: FS3_HOST,
                 recordId: this.model.root.resId || false,
+                // FS-11: this page's own tabs are the fixed sections.
+                surface: "full",
                 onClose: () => this.fs3FullClose(true),
                 onPublished: () => { this._fs3FullDirty = true; },
             });

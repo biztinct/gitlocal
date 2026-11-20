@@ -137,7 +137,17 @@
           </aside>
 
           <!-- CENTER: the screen -->
-          <section class="pbfb-screen" aria-label="The screen being changed">
+          <section class="pbfb-screen" aria-label="The screen being changed" t-ref="canvas">
+            <!-- FS-11: find any field on this screen, in an open or a fixed section. -->
+            <div class="pbfb-canvas-find">
+              <div class="pbfb-find">
+                <span class="ic" t-out="ic('search', 14)"/>
+                <input type="text" placeholder="Find a field on this screen" aria-label="Find a field on this screen"
+                       t-att-value="state.findTerm" t-on-input="onFindTerm" t-on-keydown="onFindKeydown"/>
+                <button t-if="state.findTerm" type="button" class="pbfb-find-x" title="Clear the search" aria-label="Clear the search" t-on-click="clearFind"><t t-out="ic('x', 13)"/></button>
+              </div>
+              <span class="pbfb-count" aria-live="polite" t-esc="findText"/>
+            </div>
             <div class="pbfb-cards">
               <t t-foreach="state.sections" t-as="sec" t-key="sec.id">
                 <div class="pbfb-scard" t-att-class="cardClass(sec)"
@@ -147,12 +157,14 @@
                     <span class="pbfb-card-ic" t-att-class="toneCls(sec)" t-out="ic(sec.icon or 'layers', 15)"/>
                     <h3 t-esc="sec.title"/>
                     <span t-if="sec.kind === 'open'" class="pbfb-zone open"><t t-out="ic('unlock',12)"/> <span>Open section</span></span>
-                    <span t-else="" class="pbfb-zone locked"><t t-out="ic('lock',12)"/> <span>Drawn by the screen</span></span>
+                    <button t-else="" type="button" class="pbfb-zone locked pbfb-fx-toggle" t-att-aria-expanded="isCollapsed(sec) ? 'false' : 'true'" t-on-click="() => this.toggleFixed(sec)">
+                      <t t-out="ic('lock',12)"/> <span t-esc="zoneText"/> <span class="n" t-esc="fixedCountText(sec)"/> <t t-out="ic(isCollapsed(sec) ? 'chevronDown' : 'chevronUp', 12)"/>
+                    </button>
                   </div>
                   <t t-if="sec.kind === 'open'">
                     <div class="pbfb-tiles">
                       <t t-foreach="tilesOf(sec)" t-as="f" t-key="f.name">
-                        <div class="pbfb-tile" t-att-class="tileClass(f)" role="button" tabindex="0" draggable="true"
+                        <div class="pbfb-tile" t-att-class="tileClass(f)" role="button" tabindex="0" draggable="true" t-att-data-fs-key="tileKey(f)"
                              t-on-click="() => this.select(f)" t-on-keydown="(ev) => this.onTileKey(ev, f)"
                              t-on-dragstart="(ev) => this.onTileDragStart(ev, f)"
                              t-on-dragover="(ev) => this.onTileOver(ev, f)" t-on-dragleave="() => this.onTileLeave(f)"
@@ -168,13 +180,32 @@
                     </div>
                     <div class="pbfb-drop"><t t-out="ic('plus',13)"/> <span>Drop a field here</span></div>
                   </t>
-                  <p t-else="" class="pbfb-lockednote"><t t-out="ic('info',14)"/> <span t-esc="sec.note"/></p>
+                  <t t-else="">
+                    <p class="pbfb-lockednote"><t t-out="ic('info',14)"/> <span t-esc="sec.note"/></p>
+                    <!-- FS-11 (R29): the fields this fixed section really shows. -->
+                    <div t-if="!isCollapsed(sec)" class="pbfb-fx">
+                      <p t-if="!fixedCount(sec)" class="pbfb-hint flush">No fields here: this part of the screen lists records, not fields.</p>
+                      <t t-foreach="fixedGroups(sec)" t-as="g" t-key="g_index">
+                        <div t-if="g.group" class="pbfb-fx-g" t-esc="g.group"/>
+                        <t t-foreach="g.items" t-as="it" t-key="it.key">
+                          <button type="button" class="pbfb-fx-it" t-att-class="fixedItemClass(it)" t-att-data-fs-key="fixedKey(sec, it)"
+                                  t-att-disabled="!fixedField(it)" t-on-click="() => this.onFixedClick(it)">
+                            <span class="ki" t-out="fixedIcon(it)"/>
+                            <span class="lb" t-esc="fixedLabel(it)"/>
+                            <span class="chips">
+                              <span t-foreach="fixedChips(it)" t-as="c" t-key="c_index" t-att-class="fixedChipClass(c)" t-att-title="c.title or c.text"><t t-out="ic(c.icon, 11)"/> <span t-esc="c.text"/></span>
+                            </span>
+                          </button>
+                        </t>
+                      </t>
+                    </div>
+                  </t>
                 </div>
               </t>
             </div>
             <div class="pbfb-legend">
               <span><i class="o"/> <span>Open section: fields can be added, moved, hidden</span></span>
-              <span><i class="l"/> <span>Drawn by the screen: no fields can be placed</span></span>
+              <span><i class="l"/> <span>Fixed layout: its fields can be hidden or renamed, not moved</span></span>
               <span><i class="c"/> <span>Custom field</span></span>
               <span><t t-out="ic('lock',13)"/> <span>Locked field: identity or pay depends on it</span></span>
             </div>

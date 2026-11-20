@@ -587,3 +587,237 @@ msgstr ""
 #, python-format
 msgid "A pay formula can read it, so only HR changes it."
 msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "%s (recorded boxes)"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Account holder"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Account number"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Bank"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Bank on file"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Contract dates"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Cost centre"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Deduction per registered dependent"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Department"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent deduction from saved payroll count"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records needing verification"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records saved"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Email"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Health insurance (HI)"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "How relief is applied"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Insurance"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Insurance salary basis"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Joined"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Manager"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Monthly wage"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "On record"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "One line per dependent record"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "PIT calculation method"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "PIT number"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Payroll scheme"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Personal deduction — scheme rate"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Phone"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Registered dependents — payroll count"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "SI number"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Salary before insurance caps"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Saved payroll treatment"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Settings as of"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Social insurance (SI)"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Status"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Structure"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Summary"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Tax"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Unemployment insurance (UI)"
+msgstr ""

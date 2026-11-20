@@ -66,6 +66,8 @@ patch(FormController.prototype, {
             this._pbfsFullRemove = this._pbfsFullOverlay.add(FormStudioOverlay, {
                 hostKey: PBFS_PEOPLE_HOST,
                 recordId: this.model.root.resId || false,
+                // FS-11: this page's own tabs are the fixed sections.
+                surface: "full",
                 onClose: () => this.pbfsFullClose(true),
                 onPublished: () => { this._pbfsFullDirty = true; },
             });

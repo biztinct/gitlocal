@@ -2732,3 +2732,63 @@ msgstr ""
 #, python-format
 msgid "shown again, it cannot be hidden."
 msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(at)s of %(n)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 match"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A tab of this page. Its fields can be hidden or renamed, not moved."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field on this screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Fixed layout — fields can be hidden or renamed"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fixed layout: its fields can be hidden or renamed, not moved"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden for %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No fields here: this part of the screen lists records, not fields."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Worked out by the screen"
+msgstr ""

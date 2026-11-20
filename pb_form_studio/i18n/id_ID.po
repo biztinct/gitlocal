@@ -2600,3 +2600,63 @@ msgstr "%(box)s ditampilkan lagi: %(reason)s"
 #, python-format
 msgid "shown again, it cannot be hidden."
 msgstr "ditampilkan lagi, tidak bisa disembunyikan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(at)s of %(n)s"
+msgstr "%(at)s dari %(n)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 match"
+msgstr "1 hasil"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A tab of this page. Its fields can be hidden or renamed, not moved."
+msgstr "Tab di halaman ini. Kolomnya bisa disembunyikan atau diganti namanya, tidak dipindahkan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field on this screen"
+msgstr "Cari kolom di layar ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Fixed layout — fields can be hidden or renamed"
+msgstr "Tata letak tetap — kolom bisa disembunyikan atau diganti namanya"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fixed layout: its fields can be hidden or renamed, not moved"
+msgstr "Tata letak tetap: kolom bisa disembunyikan atau diganti namanya, tidak dipindahkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden for %s"
+msgstr "Disembunyikan untuk %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked: %s"
+msgstr "Terkunci: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No fields here: this part of the screen lists records, not fields."
+msgstr "Tidak ada kolom di sini: bagian layar ini berisi daftar catatan, bukan kolom."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Worked out by the screen"
+msgstr "Dihitung oleh layar"

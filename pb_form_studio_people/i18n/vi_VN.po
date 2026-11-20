@@ -666,3 +666,237 @@ msgstr "%s Chỉ nhân sự thay đổi được."
 #, python-format
 msgid "A pay formula can read it, so only HR changes it."
 msgstr "Công thức tính lương có thể đọc trường này, nên chỉ nhân sự thay đổi được."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "%s (recorded boxes)"
+msgstr "%s (các ô đã ghi)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Account holder"
+msgstr "Chủ tài khoản"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Account number"
+msgstr "Số tài khoản"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Bank on file"
+msgstr "Đã có ngân hàng"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Contract dates"
+msgstr "Ngày hợp đồng"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Cost centre"
+msgstr "Trung tâm chi phí"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Deduction per registered dependent"
+msgstr "Giảm trừ mỗi người phụ thuộc đã đăng ký"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent deduction from saved payroll count"
+msgstr "Giảm trừ người phụ thuộc theo số đã lưu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records"
+msgstr "Hồ sơ người phụ thuộc"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records needing verification"
+msgstr "Hồ sơ người phụ thuộc cần xác minh"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records saved"
+msgstr "Hồ sơ người phụ thuộc đã lưu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Health insurance (HI)"
+msgstr "Bảo hiểm y tế (BHYT)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "How relief is applied"
+msgstr "Cách áp dụng giảm trừ"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Insurance"
+msgstr "Bảo hiểm"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Insurance salary basis"
+msgstr "Cơ sở lương đóng bảo hiểm"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Joined"
+msgstr "Ngày vào làm"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Monthly wage"
+msgstr "Lương tháng"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "On record"
+msgstr "Đã lưu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "One line per dependent record"
+msgstr "Một dòng cho mỗi hồ sơ người phụ thuộc"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "PIT calculation method"
+msgstr "Cách tính thuế TNCN"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "PIT number"
+msgstr "Mã số thuế TNCN"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Payroll scheme"
+msgstr "Chương trình lương"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Personal deduction — scheme rate"
+msgstr "Giảm trừ bản thân — mức của chương trình"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Registered dependents — payroll count"
+msgstr "Người phụ thuộc đã đăng ký — số tính lương"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "SI number"
+msgstr "Số BHXH"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Salary before insurance caps"
+msgstr "Lương trước mức trần bảo hiểm"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Saved payroll treatment"
+msgstr "Cách tính lương đã lưu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Settings as of"
+msgstr "Thiết lập tính đến"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Social insurance (SI)"
+msgstr "Bảo hiểm xã hội (BHXH)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Structure"
+msgstr "Cơ cấu"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Summary"
+msgstr "Tóm tắt"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Tax"
+msgstr "Thuế"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Unemployment insurance (UI)"
+msgstr "Bảo hiểm thất nghiệp (BHTN)"

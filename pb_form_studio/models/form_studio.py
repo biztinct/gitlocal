@@ -834,11 +834,16 @@ class PbFormStudio(models.AbstractModel):
                 flds[n] = self._pbfs_std_light(Model, n, sd)
             flds[n]['stdbox'] = sd
         targets = self._pbfs_link_targets()
+        # FS-11 (R29): what each fixed section really shows, field by field.
+        surface = self.env.context.get('pbfs_surface') or 'panel'
+        sections = self._pbfs_surface_sections(host_key, sections, surface)
+        fixed = self._pbfs_fixed_lists(host_key, sections, surface, flds)
         return {
             'host': {'key': host_key, 'model': model, 'title': host['title'],
                      'icon': host.get('icon') or 'fileText',
                      'custom_section': host.get('custom_section'),
-                     'portal': bool(host.get('portal'))},
+                     'portal': bool(host.get('portal')), 'surface': surface},
+            'fixed': fixed,
             'version': version,
             'published_by': layout.published_by.name if layout and layout.published_by else '',
             'published_at': fields.Datetime.to_string(layout.published_at)
@@ -861,6 +866,108 @@ class PbFormStudio(models.AbstractModel):
             'langs': self._pbfs_langs(),
             'lang': self.env.lang or 'en_US',
         }
+
+    # ======================================================= FS-11 (R29)
+    @api.model
+    def _pbfs_fixed_items(self, host_key, surface='panel'):
+        """`{locked section id: [item]}` — the fields a FIXED ("drawn by the
+        screen") section really shows, in on-screen order. Hosts extend with
+        `super()` for their own screen (`surface` 'panel'); the full pages
+        ('full') are read from the form itself (`_pbfs_full_sections`).
+
+        item: `{key, name (a field of the host's record type, or False for a
+        line the screen works out itself), label, group (sub-heading or ''),
+        country (ISO code when the screen shows it only for that Country of
+        Work, else '')}`. A host keeps its map beside the code that draws the
+        screen and proves it with a test (map = screen, both ways)."""
+        return {}
+
+    @api.model
+    def _pbfs_full_sections(self, host_key):
+        """The full page's tabs as fixed sections (R29 item 4), read from the
+        combined form exactly as the modules draw it (`_pbfs_std_scan`):
+        `[(section dict, [item])]` in tab order. The Company details page the
+        Form builder writes itself is left out — its fields are the open
+        sections."""
+        host = self._pbfs_host(host_key)
+        model = host['model']
+        _ = self.env._
+        tabs, order = {}, []
+        from .form_standard import STD_SKIP_TTYPES
+        skip = self._pbfs_std_exclude(model)
+        Model = self.env[model]
+        for name, label, tab, _n, _req in self._pbfs_std_scan(model):
+            # the Form builder's own fields are the open sections; status
+            # widgets, pictures and helpers the form draws are not fields
+            # anybody fills in (the Standard fields tab leaves them out too)
+            if name.startswith(PREFIX) or name in skip or Model._fields[name].type in STD_SKIP_TTYPES:
+                continue
+            if tab not in tabs:
+                tabs[tab] = []
+                order.append(tab)
+            tabs[tab].append({'key': name, 'name': name, 'label': label, 'group': '',
+                              'country': ''})
+        out = []
+        for i, tab in enumerate(order):
+            sec = {'id': 'full_%s' % i, 'title': tab or _('Top of the page'), 'icon': 'layers',
+                   'tone': 'slate', 'kind': 'locked', 'fields': [],
+                   'note': _('A tab of this page. Its fields can be hidden or renamed, not moved.')}
+            out.append((sec, tabs[tab]))
+        return out
+
+    @api.model
+    def _pbfs_surface_sections(self, host_key, sections, surface):
+        """The canvas sections for one surface. 'panel' = the host's own;
+        'full' = the full page's tabs (fixed) followed by the open sections
+        (they make up the Company details page there)."""
+        if surface != 'full':
+            return sections
+        host = self._pbfs_host(host_key)
+        if not host.get('native_views'):
+            return sections
+        tabs = [sec for sec, _items in self._pbfs_full_sections(host_key)]
+        return tabs + [s for s in sections if s.get('kind') == 'open']
+
+    @api.model
+    def _pbfs_fixed_lists(self, host_key, sections, surface, flds):
+        """`{section id: [item]}` for the canvas, each item enriched with
+        `ref` (the field the settings column opens, or False when the screen
+        works the line out itself). A standard box the Field library knows is
+        added to `flds` (in place) so a click opens its settings."""
+        host = self._pbfs_host(host_key)
+        Model = self.env[host['model']]
+        if surface == 'full' and host.get('native_views'):
+            raw = {sec['id']: items for sec, items in self._pbfs_full_sections(host_key)}
+        else:
+            raw = self._pbfs_fixed_items(host_key, surface) or {}
+        ids = {s['id'] for s in sections if s.get('kind') == 'locked'}
+        out = {}
+        sd_all = None
+        for sid, items in raw.items():
+            if sid not in ids:
+                continue
+            rows = []
+            for item in items or []:
+                name = item.get('name') or False
+                ref = False
+                if name and name in Model._fields and not name.startswith(PREFIX):
+                    if name not in flds and self._pbfs_std_is_box(host['model'], name):
+                        if sd_all is None:
+                            sd_all = self._pbfs_std_all(host['model'])
+                        sd = sd_all.get(name)
+                        if sd:
+                            flds[name] = self._pbfs_std_light(Model, name, sd)
+                            flds[name]['stdbox'] = sd
+                    if name in flds and flds[name].get('stdbox'):
+                        ref = name
+                rows.append({'key': str(item.get('key') or name or len(rows)),
+                             'name': name, 'ref': ref,
+                             'label': str(item.get('label') or ''),
+                             'group': str(item.get('group') or ''),
+                             'country': item.get('country') or '',
+                             'kind': (flds[ref]['kind'] if ref else 'readonly')})
+            out[sid] = rows
+        return out
 
     @api.model
     def _pbfs_currency_field(self, model):

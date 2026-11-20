@@ -663,3 +663,237 @@ msgstr "%s Hanya HR yang mengubahnya."
 #, python-format
 msgid "A pay formula can read it, so only HR changes it."
 msgstr "Rumus gaji dapat membacanya, jadi hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "%s (recorded boxes)"
+msgstr "%s (kotak yang tercatat)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Account holder"
+msgstr "Pemilik rekening"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Account number"
+msgstr "Nomor rekening"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Bank"
+msgstr "Bank"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Bank on file"
+msgstr "Bank tercatat"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Contract dates"
+msgstr "Tanggal kontrak"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Cost centre"
+msgstr "Pusat biaya"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Deduction per registered dependent"
+msgstr "Potongan per tanggungan terdaftar"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent deduction from saved payroll count"
+msgstr "Potongan tanggungan dari jumlah penggajian tersimpan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records"
+msgstr "Catatan tanggungan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records needing verification"
+msgstr "Catatan tanggungan yang perlu diverifikasi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records saved"
+msgstr "Catatan tanggungan tersimpan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Health insurance (HI)"
+msgstr "Asuransi kesehatan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "How relief is applied"
+msgstr "Cara keringanan diterapkan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Insurance"
+msgstr "Asuransi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Insurance salary basis"
+msgstr "Dasar gaji asuransi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Joined"
+msgstr "Bergabung"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Manager"
+msgstr "Manajer"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Monthly wage"
+msgstr "Gaji bulanan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "On record"
+msgstr "Tercatat"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "One line per dependent record"
+msgstr "Satu baris per catatan tanggungan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "PIT calculation method"
+msgstr "Metode perhitungan pajak penghasilan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "PIT number"
+msgstr "Nomor pajak penghasilan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Payroll scheme"
+msgstr "Skema penggajian"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Personal deduction — scheme rate"
+msgstr "Potongan pribadi — tarif skema"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Phone"
+msgstr "Telepon"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Registered dependents — payroll count"
+msgstr "Tanggungan terdaftar — jumlah penggajian"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "SI number"
+msgstr "Nomor jaminan sosial"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Salary before insurance caps"
+msgstr "Gaji sebelum batas asuransi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Saved payroll treatment"
+msgstr "Perlakuan penggajian tersimpan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Settings as of"
+msgstr "Pengaturan per"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Social insurance (SI)"
+msgstr "Jaminan sosial"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Structure"
+msgstr "Struktur"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Summary"
+msgstr "Ringkasan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Tax"
+msgstr "Pajak"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Unemployment insurance (UI)"
+msgstr "Asuransi pengangguran"

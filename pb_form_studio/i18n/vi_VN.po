@@ -2598,3 +2598,63 @@ msgstr "%(box)s được hiện lại: %(reason)s"
 #, python-format
 msgid "shown again, it cannot be hidden."
 msgstr "được hiện lại, không thể ẩn."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(at)s of %(n)s"
+msgstr "%(at)s / %(n)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 match"
+msgstr "1 kết quả"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A tab of this page. Its fields can be hidden or renamed, not moved."
+msgstr "Một thẻ của trang này. Có thể ẩn hoặc đổi tên các trường, không thể di chuyển."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field on this screen"
+msgstr "Tìm một trường trên màn hình này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Fixed layout — fields can be hidden or renamed"
+msgstr "Bố cục cố định — có thể ẩn hoặc đổi tên trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fixed layout: its fields can be hidden or renamed, not moved"
+msgstr "Bố cục cố định: có thể ẩn hoặc đổi tên trường, không thể di chuyển"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden for %s"
+msgstr "Ẩn với %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked: %s"
+msgstr "Đã khóa: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No fields here: this part of the screen lists records, not fields."
+msgstr "Không có trường ở đây: phần này của màn hình liệt kê bản ghi, không phải trường."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Worked out by the screen"
+msgstr "Do màn hình tự tính"

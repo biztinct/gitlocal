@@ -42,6 +42,9 @@ export class FormStudioOverlay extends Component {
         hostKey: { type: String },
         recordId: { type: [Number, Boolean], optional: true },
         focusField: { type: String, optional: true },
+        // FS-11: "full" when opened from a full page (its tabs are the
+        // fixed sections); the side panels leave it out.
+        surface: { type: String, optional: true },
         onClose: { type: Function },
         onPublished: { type: Function, optional: true },
     };
@@ -59,7 +62,10 @@ export class FormStudioOverlay extends Component {
             exTerm: "", exType: "all", stdTerm: "", stdChip: "all", stdCountry: 0,
             // R23 — "Hidden in some countries" picked, no country chosen yet
             someOpen: null,
+            // FS-11 (R29) — fixed sections list their fields; the canvas search
+            findTerm: "", findAt: 0, collapsed: {},
         });
+        this.canvas = useRef("canvas");
         this.exSearch = useRef("exSearch");
         this.stdSearch = useRef("stdSearch");
         this.propPanel = useRef("propPanel");
@@ -97,8 +103,14 @@ export class FormStudioOverlay extends Component {
     async load() {
         this.state.loading = true;
         try {
-            const data = await this.orm.call(FACADE, "get_studio", [this.props.hostKey]);
+            // FS-11: opened from a full page, the canvas shows that page's tabs.
+            const context = this.props.surface ? { pbfs_surface: this.props.surface } : {};
+            const data = await this.orm.call(FACADE, "get_studio", [this.props.hostKey], { context });
             this.state.data = data;
+            // Fixed sections: open on a desktop, folded on a phone (R29).
+            const fold = isOneColumn();
+            this.state.collapsed = Object.fromEntries((data.sections || [])
+                .filter((s) => s.kind !== "open").map((s) => [s.id, fold]));
             this.state.fields = clone(data.fields);
             this.state.sections = clone(data.sections).map((s) => ({ ...s, fields: [...(s.fields || [])] }));
             this.state.baseVersion = data.version;
@@ -427,11 +439,140 @@ export class FormStudioOverlay extends Component {
     tilesOf(sec) { return (sec.fields || []).map((n) => this.state.fields[n]).filter((f) => f && !f.deleted); }
     tileClass(f) {
         return { custom: f.custom, locked: f.locked, sel: this.state.sel === f.name,
-                 over: this.state.overField === f.name, pending: f.pending };
+                 over: this.state.overField === f.name, pending: f.pending,
+                 found: this.isFound(f.label) };
     }
     cardClass(sec) {
         return { open: sec.kind === "open", lockedzone: sec.kind === "locked", over: this.state.over === sec.id };
     }
+    // ------------------------------------------- FS-11 (R29): fixed sections
+    /** The fields a fixed section really shows, by sub-heading. */
+    fixedGroups(sec) {
+        const items = ((this.data.fixed || {})[sec.id]) || [];
+        const out = [];
+        for (const it of items) {
+            let g = out[out.length - 1];
+            if (!g || g.group !== it.group) { g = { group: it.group, items: [] }; out.push(g); }
+            g.items.push(it);
+        }
+        return out;
+    }
+    fixedCount(sec) { return (((this.data.fixed || {})[sec.id]) || []).length; }
+    fixedCountText(sec) {
+        const n = this.fixedCount(sec);
+        return n === 1 ? _t("1 field") : _t("%s fields", n);
+    }
+    fixedField(it) { return it.ref ? this.state.fields[it.ref] : null; }
+    fixedLabel(it) {
+        const f = this.fixedField(it);
+        // A renamed box shows its own label, as every screen does (R23).
+        return f && this.stdIsRenamed(f) ? this.stdLabel(f) : it.label;
+    }
+    fixedIcon(it) {
+        const f = this.fixedField(it);
+        return fsIc(f ? (KIND_ICON[f.kind] || "type") : "sigma", 14);
+    }
+    countryName(code) {
+        const c = (this.data.countries || []).find((x) => x.code === code);
+        return c ? c.name : code;
+    }
+    /** Small state chips: hidden, renamed, country, My Payobook, locked. */
+    fixedChips(it) {
+        const out = [];
+        const f = this.fixedField(it);
+        const s = (f && f.stdbox) || {};
+        if (it.country) { out.push({ k: "cty", text: _t("Only %s", this.countryName(it.country)), icon: "globe" }); }
+        else if (s.rule && s.rule.country) { out.push({ k: "cty", text: _t("Only %s", s.rule.country), icon: "globe" }); }
+        if (!f) {
+            out.push({ k: "auto", text: _t("Worked out by the screen"), icon: "sigma" });
+            return out;
+        }
+        if (s.hidden && !s.ignored) { out.push({ k: "hid", text: _t("Hidden"), icon: "eyeOff" }); }
+        else if ((s.countries || []).length && !s.ignored) {
+            out.push({ k: "hid", text: _t("Hidden for %s", s.countries.map((c) => c.name).join(", ")), icon: "eyeOff" });
+        }
+        if (this.stdIsRenamed(f)) { out.push({ k: "ren", text: _t("Renamed"), icon: "pencil" }); }
+        if (f.portal && f.portal.show) { out.push({ k: "portal", text: _t("On My Payobook"), icon: "smartphone" }); }
+        // the reason in full on hover and in the settings column
+        if (s.lock) { out.push({ k: "lock", text: _t("Locked"), title: _t("Locked: %s", s.lock), icon: "lock" }); }
+        return out;
+    }
+    fixedChipClass(c) { return "pbfb-fx-chip " + c.k; }
+    fixedItemClass(it) {
+        const f = this.fixedField(it);
+        const s = (f && f.stdbox) || {};
+        return { auto: !f, sel: Boolean(f) && this.state.sel === f.name,
+                 hid: Boolean(f) && (s.hidden || (s.countries || []).length) && !s.ignored,
+                 found: this.isFound(this.fixedLabel(it), it.label) };
+    }
+    onFixedClick(it) {
+        const f = this.fixedField(it);
+        if (f) { this.select(f); }
+    }
+    isCollapsed(sec) { return Boolean(this.state.collapsed[sec.id]); }
+    toggleFixed(sec) { this.state.collapsed[sec.id] = !this.state.collapsed[sec.id]; }
+    get zoneText() { return _t("Fixed layout — fields can be hidden or renamed"); }
+
+    // ------------------------------------- FS-11: "Find a field on this screen"
+    isFound(...labels) {
+        const t = fold(this.state.findTerm);
+        return Boolean(t) && labels.some((l) => fold(l).includes(t));
+    }
+    get findHits() {
+        if (!fold(this.state.findTerm)) { return []; }
+        const out = [];
+        for (const sec of this.state.sections) {
+            if (sec.kind === "open") {
+                for (const f of this.tilesOf(sec)) { if (this.isFound(f.label)) { out.push({ sec: sec.id, key: "t:" + f.name }); } }
+            } else {
+                for (const it of ((this.data.fixed || {})[sec.id]) || []) {
+                    if (this.isFound(this.fixedLabel(it), it.label)) { out.push({ sec: sec.id, key: "x:" + sec.id + ":" + it.key }); }
+                }
+            }
+        }
+        return out;
+    }
+    get findText() {
+        const n = this.findHits.length;
+        if (!fold(this.state.findTerm)) { return ""; }
+        if (!n) { return _t("No field matches"); }
+        return n === 1 ? _t("1 match") : _t("%(at)s of %(n)s", { at: (this.state.findAt % n) + 1, n });
+    }
+    onFindTerm(ev) {
+        this.state.findTerm = ev.target.value;
+        this.state.findAt = 0;
+        this.revealFind();
+    }
+    onFindKeydown(ev) {
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            this.state.findAt = this.state.findAt + (ev.shiftKey ? -1 : 1) + this.findHits.length;
+            this.revealFind();
+        } else if (ev.key === "Escape") {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.clearFind();
+        }
+    }
+    clearFind() { this.state.findTerm = ""; this.state.findAt = 0; }
+    /** Unfold the section of the current match and bring it into view. */
+    revealFind() {
+        const hits = this.findHits;
+        if (!hits.length) { return; }
+        const hit = hits[this.state.findAt % hits.length];
+        if (this.state.collapsed[hit.sec]) { this.state.collapsed[hit.sec] = false; }
+        setTimeout(() => {
+            const root = this.canvas.el;
+            const el = root && root.querySelector(`[data-fs-key="${CSS.escape(hit.key)}"]`);
+            if (!el) { return; }
+            for (const x of root.querySelectorAll(".pbfb-current")) { x.classList.remove("pbfb-current"); }
+            el.classList.add("pbfb-current");
+            el.scrollIntoView({ block: "center", behavior: "smooth" });
+        }, 0);
+    }
+    tileKey(f) { return "t:" + f.name; }
+    fixedKey(sec, it) { return "x:" + sec.id + ":" + it.key; }
+
     previewOf(f) {
         const v = this.state.preview[f.name];
         return isEmptyDisplay(v) ? "—" : v;
