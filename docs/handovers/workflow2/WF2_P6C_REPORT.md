@@ -1,6 +1,6 @@
 # WORKFLOW-2 · Phase 6c report — time off "Sent back" and "Ask again" (D36)
 
-**Status: BUILT, NOT LIVE.** Local only (worktree `wf2-p6`, branch `wf2-p6`). Nothing deployed, nothing pushed, no server touched.
+**Status: BUILT, NOT LIVE.** Branch `wf2-p6` (pushed 20 Nov, not merged into 19.1). Nothing deployed, no server touched. Hashes are after the rebase onto `origin/19.1` on 20 Nov.
 
 ## 0. In plain words (for the owner)
 
@@ -15,9 +15,9 @@
 
 | Commit | What |
 |---|---|
-| `516de61d1` | `pb_timeoff`: the mark, Ask again (staff), cockpit card/filter/view, form note, My requests row, post-migrate, vi/id, 12 tests |
-| `a674327bd` | `pb_ess_workforce`: My Leave chip + reason + Ask again + filled-in form, vi/id (first `id_ID.po`), 6 tests |
-| `2fa1cf293` | Browser proof: `tools/workflow_studio/ui_fixture_p6c.py`, `chrome_test_p6c.cjs`, 27 screenshots in `p6c_screens/` |
+| `4a0eab5e8` | `pb_timeoff`: the mark, Ask again (staff), cockpit card/filter/view, form note, My requests row, post-migrate, vi/id, 12 tests |
+| `0ae1126cb` | `pb_ess_workforce`: My Leave chip + reason + Ask again + filled-in form, vi/id (first `id_ID.po`), 6 tests |
+| `1b2c09960` | Browser proof: `tools/workflow_studio/ui_fixture_p6c.py`, `chrome_test_p6c.cjs`, 27 screenshots in `p6c_screens/` |
 | (this file) | Report |
 
 Versions: `pb_timeoff` 19.0.1.12.0 → **19.0.1.13.0** (new columns + migration); `pb_ess_workforce` 19.0.1.4.0 → **19.0.1.5.0** (views). No other module changed. `pb_me_portal` untouched (extended by inheritance from `pb_timeoff`, ledger G76).
@@ -65,7 +65,7 @@ WHERE l.state='refuse' AND latest.state='returned';
 
 Same database copy (`wf2p6c_before` = `wf2p6_base` + `pb_ess_workforce` installed, which the base lacked), `-u pb_timeoff,pb_ess_workforce --test-tags /pb_timeoff,/pb_ess_workforce`:
 
-| | Before (HEAD `7302d0694`, `wf2p6c_bt`) | After (`wf2p6c_at`) |
+| | Before (HEAD `5ba665483`, `wf2p6c_bt`) | After (`wf2p6c_at`) |
 |---|---|---|
 | pb_timeoff | 101 run, 0 failed, **6 errors** (all `TestLeaveRules`, G60) | 113 run, 0 failed, **same 6 errors** |
 | pb_ess_workforce | 126 run, 0 failed, 0 errors | 132 run, 0 failed, 0 errors |
