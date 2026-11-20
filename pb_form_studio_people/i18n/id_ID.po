@@ -621,3 +621,21 @@ msgid ""
 msgstr ""
 "Aturan gaji, file wajib, dan kolom yang dilihat setiap orang mengikuti kolom"
 " ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Insurance (BH)"
+msgstr "Asuransi (BH)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Payroll Info"
+msgstr "Info Penggajian"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Tax & Dependents"
+msgstr "Pajak & Tanggungan"

@@ -370,6 +370,20 @@ class PbFormStudioStandard(models.AbstractModel):
         walk(arch)
         return changed
 
+    @api.model
+    def _pbfs_translate_pages(self, arch, words):
+        """Give a tab (`<page string>`) still carrying its English words the
+        host's own words in the reader's language (`words` = {English: text}).
+        → number of tabs renamed. Never touches a tab that already reads
+        differently (an owner translation wins)."""
+        n = 0
+        for page in arch.iter('page'):
+            text = words.get(page.get('string'))
+            if text and text != page.get('string'):
+                page.set('string', text)
+                n += 1
+        return n
+
     # ======================================================= administrator
     @api.model
     def _pbfs_std_context(self, model):

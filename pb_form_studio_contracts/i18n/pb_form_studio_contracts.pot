@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 23:52+0000\n"
-"PO-Revision-Date: 2026-11-19 23:52+0000\n"
+"POT-Creation-Date: 2026-11-20 01:40+0000\n"
+"PO-Revision-Date: 2026-11-20 01:40+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -199,6 +199,12 @@ msgstr ""
 #. module: pb_form_studio_contracts
 #: model:ir.model,name:pb_form_studio_contracts.model_pb_people_contract_wizard
 msgid "Payobook guided contract creation"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Payroll facts"
 msgstr ""
 
 #. module: pb_form_studio_contracts

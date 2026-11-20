@@ -30,6 +30,26 @@ class HrEmployee(models.Model):
         return key + (bool(self.env.context.get(STD_RAW)),)
 
     @api.model
+    def _pbfs_tab_names(self, arch):
+        """FS-7 addition (coordinator, 2026-11-20): the tab names of Full
+        details still English for Indonesian readers — "Payroll Info"
+        (pb_hr_payroll_formula), "Insurance (BH)" and "Tax & Dependents"
+        (pb_hr_payroll_vietnam) have no Indonesian text of their own. The same
+        seam as FS follow-up 1 (`pb_employee_form_tidy` `_pb_tidy_tab_names`,
+        gotcha FU1-4): a page still carrying the English words gets this
+        module's words (code terms of this module's .po); the stored copy is
+        fixed on each database by the go-live too. An owner translation, once
+        it exists, wins (the English words are then gone)."""
+        if (self.env.lang or 'en_US') == 'en_US':
+            return
+        words = {
+            'Payroll Info': self.env._("Payroll Info"),
+            'Insurance (BH)': self.env._("Insurance (BH)"),
+            'Tax & Dependents': self.env._("Tax & Dependents"),
+        }
+        self.env['pb.form.studio']._pbfs_translate_pages(arch, words)
+
+    @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
         """Every employee form ("Full details" and the others) follows the
         administrator's screen rule for standard fields (R23): hidden ones get
@@ -39,7 +59,10 @@ class HrEmployee(models.Model):
         hr_employee.py`). Never costs the form: on any error it is shown as
         the modules draw it."""
         arch, view = super()._get_view(view_id, view_type, **options)
-        if view_type != 'form' or self.env.context.get(STD_RAW):
+        if view_type != 'form':
+            return arch, view
+        self._pbfs_tab_names(arch)
+        if self.env.context.get(STD_RAW):
             return arch, view
         try:
             self.env['pb.form.studio']._pbfs_std_apply_arch(

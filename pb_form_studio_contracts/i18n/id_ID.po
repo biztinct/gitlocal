@@ -245,3 +245,9 @@ msgstr "Kolom ini menunjukkan kontrak milik siapa."
 #: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
 msgid "Pay or statutory files depend on this field."
 msgstr "Gaji atau file wajib bergantung pada kolom ini."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Payroll facts"
+msgstr "Data penggajian"

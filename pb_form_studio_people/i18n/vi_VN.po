@@ -624,3 +624,21 @@ msgid ""
 msgstr ""
 "Quy tắc lương, hồ sơ pháp định và các trường mỗi người thấy đều dựa vào "
 "trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Insurance (BH)"
+msgstr "Bảo hiểm (BH)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Payroll Info"
+msgstr "Thông tin tiền lương"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Tax & Dependents"
+msgstr "Thuế & Người phụ thuộc"

@@ -247,3 +247,9 @@ msgstr "Trường này cho biết hợp đồng của ai."
 #: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
 msgid "Pay or statutory files depend on this field."
 msgstr "Lương hoặc hồ sơ pháp định phụ thuộc vào trường này."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Payroll facts"
+msgstr "Dữ kiện tính lương"

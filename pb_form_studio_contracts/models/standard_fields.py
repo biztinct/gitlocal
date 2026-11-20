@@ -137,7 +137,15 @@ class HrContractStandard(models.Model):
         standard fields (R23) — see the employee's twin in
         pb_form_studio_people/models/hr_employee.py."""
         arch, view = super()._get_view(view_id, view_type, **options)
-        if view_type != 'form' or self.env.context.get(STD_RAW):
+        if view_type != 'form':
+            return arch, view
+        if (self.env.lang or 'en_US') != 'en_US':
+            # FS-7 addition: the rize-only "Payroll facts" tab
+            # (pb_payroll_mapping_vn) has no Vietnamese or Indonesian text; the
+            # employee's twin is pb_employee_form_tidy `_pb_tidy_tab_names`.
+            self.env['pb.form.studio']._pbfs_translate_pages(
+                arch, {'Payroll facts': self.env._("Payroll facts")})
+        if self.env.context.get(STD_RAW):
             return arch, view
         try:
             self.env['pb.form.studio']._pbfs_std_apply_arch(arch, self._name, 'pb_country_of_work_id')
