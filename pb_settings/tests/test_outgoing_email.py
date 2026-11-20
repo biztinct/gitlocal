@@ -1,5 +1,7 @@
 from odoo.tests import TransactionCase, tagged
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, UserError
+from unittest.mock import patch
+import smtplib
 
 
 @tagged('post_install', '-at_install')
@@ -59,3 +61,19 @@ class TestOutgoingEmail(TransactionCase):
             {'key':'email','groups':[], 'cards':[{'id':'email','xmlid':'pb_settings.action_outgoing_email'}]}])
         self.assertFalse(result['categories']['email'])
         self.assertFalse(result['cards']['email:email'])
+
+    def test_connection_feedback_does_not_send_or_activate(self):
+        wizard = self.env['pb.company.mail.settings'].create({
+            'name':'Connection test','smtp_host':'smtp.example.invalid','smtp_port':465,
+            'smtp_encryption':'ssl','smtp_user':'support@example.invalid','smtp_pass':'test-only',
+            'from_filter':'support@example.invalid'})
+        with patch('odoo.addons.pb_settings.models.outgoing_email.smtplib.SMTP_SSL') as smtp:
+            response = wizard.action_test()
+            self.assertEqual(response['params']['type'], 'success')
+            smtp.return_value.sendmail.assert_not_called()
+            smtp.return_value.send_message.assert_not_called()
+        self.assertFalse(wizard.enabled)
+        with patch('odoo.addons.pb_settings.models.outgoing_email.smtplib.SMTP_SSL',
+                   side_effect=smtplib.SMTPAuthenticationError(535, b'No')):
+            with self.assertRaises(UserError):
+                wizard.action_test()

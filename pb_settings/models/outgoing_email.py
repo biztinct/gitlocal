@@ -83,13 +83,13 @@ class OutgoingEmailSettings(models.TransientModel):
     def action_test(self):
         values = self._values()
         try:
-            context = ssl.create_default_context()
+            tls_context = ssl.create_default_context()
             if values['smtp_encryption'] == 'ssl':
-                connection = smtplib.SMTP_SSL(values['smtp_host'], values['smtp_port'], timeout=15, context=context)
+                connection = smtplib.SMTP_SSL(values['smtp_host'], values['smtp_port'], timeout=15, context=tls_context)
             else:
                 connection = smtplib.SMTP(values['smtp_host'], values['smtp_port'], timeout=15)
                 connection.ehlo()
-                connection.starttls(context=context)
+                connection.starttls(context=tls_context)
             with connection:
                 connection.ehlo()
                 connection.login(values['smtp_user'], values['smtp_pass'])
