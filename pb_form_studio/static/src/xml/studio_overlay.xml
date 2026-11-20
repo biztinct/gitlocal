@@ -269,8 +269,8 @@
                       <div class="pbfb-stdblock-h"><t t-out="ic('eye',14)"/> <span>On screen</span></div>
                       <div class="pbfb-seg three" role="group" aria-label="On screen">
                         <button type="button" t-att-class="stdModeClass(f, 'shown')" t-on-click="() => this.setStdMode(f, 'shown')"><t t-out="ic('eye',13)"/> <span>Shown</span></button>
-                        <button type="button" t-att-class="stdModeClass(f, 'all')" t-att-disabled="Boolean(f.stdbox.lock)" t-on-click="() => this.setStdMode(f, 'all')"><t t-out="ic('eyeOff',13)"/> <span>Hidden for everyone</span></button>
-                        <button type="button" t-att-class="stdModeClass(f, 'some')" t-att-disabled="Boolean(f.stdbox.lock)" t-on-click="() => this.setStdMode(f, 'some')"><t t-out="ic('globe',13)"/> <span>Hidden in some countries</span></button>
+                        <button type="button" t-att-class="stdModeClass(f, 'all')" t-att-disabled="!!f.stdbox.lock" t-on-click="() => this.setStdMode(f, 'all')"><t t-out="ic('eyeOff',13)"/> <span>Hidden for everyone</span></button>
+                        <button type="button" t-att-class="stdModeClass(f, 'some')" t-att-disabled="!!f.stdbox.lock" t-on-click="() => this.setStdMode(f, 'some')"><t t-out="ic('globe',13)"/> <span>Hidden in some countries</span></button>
                       </div>
                       <div t-if="stdMode(f) === 'some'" class="pbfb-countries">
                         <div class="d">Hidden for people whose Country of Work is one of these. Their values are kept.</div>
@@ -280,7 +280,7 @@
                             <button type="button" t-att-title="c.name" aria-label="Remove" t-on-click="() => this.removeStdCountry(f, c)"><t t-out="ic('x',11)"/></button>
                           </span>
                         </div>
-                        <input type="text" class="pbfb-csearch" placeholder="Add a country…" t-att-disabled="Boolean(f.stdbox.lock)" t-att-value="state.countryTerm" t-on-input="onCountryTerm"/>
+                        <input type="text" class="pbfb-csearch" placeholder="Add a country…" t-att-disabled="!!f.stdbox.lock" t-att-value="state.countryTerm" t-on-input="onCountryTerm"/>
                         <div class="pbfb-cmatch" t-if="stdCountryMatches(f).length">
                           <button t-foreach="stdCountryMatches(f)" t-as="c" t-key="c.id" type="button" t-on-click="() => this.addStdCountry(f, c)" t-esc="stdMatchLabel(f, c)"/>
                         </div>
@@ -292,7 +292,7 @@
                       <div class="pbfb-stdblock-h"><t t-out="ic('pencil',14)"/> <span>Label</span></div>
                       <div t-if="f.stdbox.label_lock" class="pbfb-note lock"><t t-out="ic('lock',15)"/> <div><b>The label cannot be changed.</b> <span t-esc="f.stdbox.label_lock"/></div></div>
                       <label t-foreach="allLangs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
-                        <input type="text" maxlength="60" t-att-value="stdLabelValue(f, lang)" t-att-placeholder="stdBuiltin(f, lang)" t-att-disabled="Boolean(f.stdbox.label_lock)" t-on-change="(ev) => this.onStdLabel(f, lang, ev)"/>
+                        <input type="text" maxlength="60" t-att-value="stdLabelValue(f, lang)" t-att-placeholder="stdBuiltin(f, lang)" t-att-disabled="!!f.stdbox.label_lock" t-on-change="(ev) => this.onStdLabel(f, lang, ev)"/>
                       </label>
                       <p class="pbfb-hint flush">Leave a language empty to keep the built-in label there. Mapping, Updates sheets, pay data files and My Payobook keep the built-in name.</p>
                       <button t-if="stdIsRenamed(f)" type="button" class="pbfb-btn sm outline" t-on-click="() => this.resetStdLabel(f)"><t t-out="ic('rotate',13)"/> <span>Reset to the built-in label</span></button>

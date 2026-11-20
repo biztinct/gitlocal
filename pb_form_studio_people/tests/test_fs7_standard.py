@@ -132,6 +132,15 @@ class TestFs7EmployeeStandard(TransactionCase):
         self.assertFalse(any(self.hidden_for(n, self.emp_vn) for n in nodes))
         self.assertNotIn('pb_job_level', self.panel_rows(self.emp_in))
         self.assertIn('pb_job_level', self.panel_rows(self.emp_vn))
+        # a card left with no box is hidden with it, never shown empty
+        # (Employment profile › Position holds only Job level once TIDY-E
+        # has removed Position reference)
+        group = self.nodes(self.arch(), 'pb_job_level')[0].getparent()
+        if group.tag == 'group' and not [n for n in group.iter('field')
+                                         if n.get('name') != 'pb_job_level'
+                                         and not self.hidden_for(n, self.emp_in)]:
+            self.assertTrue(self.hidden_for(group, self.emp_in))
+            self.assertFalse(self.hidden_for(group, self.emp_vn))
         # a country limit never clears a value
         self.emp_in.invalidate_recordset()
         self.assertEqual(self.emp_in.pb_job_level, 'L4')

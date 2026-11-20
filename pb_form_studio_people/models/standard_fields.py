@@ -58,8 +58,9 @@ STD_STATUTORY = ('birthday', 'sex', 'gender', 'country_id', 'identification_id',
 #: SHG (`pb_form_lines` readers, fund files). The others (training facts,
 #: the Indonesian family card, the two Vietnamese demo flags) stay
 #: hideable unless this database's pay set-up reads them (worked out live).
-STD_COUNTRY_PREFIXES = ('vn_', 'pb_vn_', 'pb_in_', 'pb_sg_', 'pb_id_', 'pb_bpjs_')
-STD_COUNTRY_STATUTORY = ('pb_npwp_number', 'subject_to_pit', 'insurance_code', 'tham_gia_bhxh')
+STD_COUNTRY_PREFIXES = ('vn_', 'pb_vn_', 'pb_in_', 'pb_id_', 'pb_bpjs_')
+STD_COUNTRY_STATUTORY = ('pb_npwp_number', 'subject_to_pit', 'insurance_code', 'tham_gia_bhxh',
+                         'pb_sg_tax_residency', 'pb_sg_shg_fund')
 #: Not offered: status widgets, summaries and helpers the form draws as boxes.
 STD_EXCLUDE = ('hr_icon_display', 'show_hr_icon_display', 'employee_properties', 'version_id',
                'pb_profile_contract_pay', 'pb_work_timezone_note', 'image_1920', 'active',

@@ -306,6 +306,9 @@ class PbFormStudioStandard(models.AbstractModel):
         Model = self.env[model]
         cvf = country_field if country_field and country_field in Model._fields else None
         changed = []
+        # Boxes the product's own rule removes from the screen (whatever order
+        # the two `_get_view` overrides run in).
+        removed = {n for n in Model._fields if self._pbfs_std_builtin_rule(model, n) == 'remove'}
 
         def expr_of(rule):
             if rule['all']:
@@ -317,24 +320,52 @@ class PbFormStudioStandard(models.AbstractModel):
         def touch(node, name):
             rule = rules.get(name)
             if not rule:
-                return
+                return None
             if rule['label'] and not _static_hidden(node):
                 node.set('string', rule['label'])
             expr = expr_of(rule)
             if expr:
                 node.set('invisible', _or(node.get('invisible'), expr))
             changed.append(name)
+            return expr
 
         def walk(node):
+            """→ the hide expressions of the boxes under `node`: a set of
+            expressions, or None when something there stays shown (an
+            untouched box, a button). A group or page whose every box this
+            rule hides is hidden with them, so no empty card is left
+            (TIDY-E does the same for its own rules)."""
+            exprs, open_ = set(), False
             for child in node:
                 tag = child.tag if isinstance(child.tag, str) else ''
+                if not tag or _static_hidden(child):
+                    continue
+                if tag == 'field' and child.get('name') in removed:
+                    continue        # the product takes it off the screen anyway
                 if tag == 'field':
-                    touch(child, child.get('name'))
-                    continue                    # never into a sub-view
+                    expr = touch(child, child.get('name'))   # never into a sub-view
+                    if expr:
+                        exprs.add(expr)
+                    else:
+                        open_ = True
+                    continue
                 if tag == 'label' and child.get('for'):
                     touch(child, child.get('for'))
                     continue
-                walk(child)
+                if tag in ('button', 'widget'):
+                    open_ = True
+                    continue
+                sub = walk(child)
+                if sub is None:
+                    open_ = True
+                else:
+                    exprs |= sub
+            result = None if open_ or not exprs else exprs
+            if result and node.tag in ('group', 'page'):
+                inner = sorted(e for e in result if e != 'True')
+                both = 'True' if not inner else ' and '.join('(%s)' % e for e in inner)
+                node.set('invisible', _or(node.get('invisible'), both))
+            return result
 
         walk(arch)
         return changed
@@ -481,9 +512,9 @@ class PbFormStudioStandard(models.AbstractModel):
         if portal:
             changes += self._pbfs_set_portal(model, name, portal)
         std = {k: vals[k] for k in STD_KEYS if k in vals}
-        if std:
-            changes += self._pbfs_set_standard(model, name, std)
-            self.env.registry.clear_cache('templates')
+        publishing = self.env.context.get('pbfs_publishing')
+        std_changes = self._pbfs_set_standard(model, name, std) if std else []
+        changes += std_changes
         if changes:
             self._pbfs_audit('update_field', None, model, name,
                              _('Changed %(label)s: %(what)s', label=before,
@@ -491,8 +522,13 @@ class PbFormStudioStandard(models.AbstractModel):
                              detail={'standard': True, 'vals': {
                                  k: v for k, v in vals.items()
                                  if k in STD_KEYS or k in portal}})
-        if std and not self.env.context.get('pbfs_publishing'):
-            self._pbfs_std_notify(model)        # Publish sends its own, once
+        if publishing:
+            # Publish clears the screen designs and tells everybody ONCE,
+            # after the last field; nobody reads the answer.
+            return {}
+        if std_changes:
+            self.env.registry.clear_cache('templates')
+            self._pbfs_std_notify(model)
         desc = self._pbfs_describe(self.env[model], name)
         if self._pbfs_std_is_box(model, name):
             desc['stdbox'] = self._pbfs_std_desc(model, name)

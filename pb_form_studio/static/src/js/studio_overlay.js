@@ -197,7 +197,7 @@ export class FormStudioOverlay extends Component {
     }
 
     // --------------------------------------------- R23: "Standard fields" tab
-    get lang() { return this.data.lang || "en_US"; }
+    get userLang() { return this.data.lang || "en_US"; }
     get portalHost() { return Boolean((this.data.host || {}).portal); }
     get stdAll() {
         // A field with no screen rule of its own (only its My Payobook ticks)
@@ -213,7 +213,7 @@ export class FormStudioOverlay extends Component {
     stdLabel(f) {
         const s = f.stdbox;
         if (!s) { return f.label; }
-        return (s.labels || {})[this.lang] || s.builtin || f.label;
+        return (s.labels || {})[this.userLang] || s.builtin || f.label;
     }
     get hasStd() { return this.stdAll.length > 0; }
     get stdChips() {
@@ -513,7 +513,7 @@ export class FormStudioOverlay extends Component {
             if ("std_labels" in vals) { s.labels = { ...(vals.std_labels || {}) }; }
             desc.stdbox = s;
             // own label, else the label this list always used for the field
-            desc.label = (s.labels || {})[this.lang]
+            desc.label = (s.labels || {})[this.userLang]
                 || (desc.placeable !== false && desc.field_label) || s.builtin || desc.label;
         }
         if (desc.portal && ["portal_show", "portal_edit", "portal_mode"].some((k) => k in vals)) {
