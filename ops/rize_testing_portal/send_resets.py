@@ -48,7 +48,7 @@ for row in report['records']:
     if env['ir.config_parameter'].sudo().get_param(key) or last.get(email, {}).get('status') == 'sent':
         print('ALREADY_SENT', email, flush=True)
         continue
-    assert last.get(email, {}).get('status') != 'sending', ('Review uncertain SMTP outcome before retry', email)
+    assert last.get(email, {}).get('status') not in ('sending', 'review_required'), ('Review uncertain SMTP outcome before retry', email)
     subject = template._render_field('subject', user.ids)[user.id]
     assert subject == 'Rize HRMS - Password reset'
     log({'email': email, 'user_id': user.id, 'status': 'sending'})
