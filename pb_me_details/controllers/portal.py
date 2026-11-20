@@ -120,6 +120,7 @@ class PbMeDetailsPortal(PbMePortal):
                                           emp.marital) if 'marital' in emp._fields else '',
                 'photo_waiting': ('photo', False) in open_kinds,
                 'marital_waiting': ('marital', False) in open_kinds,
+                'labels': self._ess_field_labels(emp),
             },
             'papers': papers,
             'family': [{

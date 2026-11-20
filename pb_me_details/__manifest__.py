@@ -25,7 +25,7 @@ person who proposed it (the Updates sheet's bank approvers).
 ID PAPERS are approved with their scan: the number is written to the
 employee record and the scan is filed in their documents as verified.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
