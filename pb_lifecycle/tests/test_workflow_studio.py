@@ -4462,3 +4462,42 @@ class TestWorkflowStudio(TransactionCase):
         self.assertNotEqual(_schedule_day(moment, 'vi_VN'), 'Mon 23 Nov 2026')
         self.assertIn('2026', _schedule_day(moment, 'id_ID'))
         self.assertEqual(_schedule_day(moment, 'xx_XX'), 'Mon 23 Nov 2026')
+
+    def test_wf2p6e_w6_words_address_follows_the_language_change(self):
+        """WF2 P6e (G103/G104): the Studio asks for its words at an address the
+        web server does not cache for days (no `.js`/`.css`/image ending), the
+        answer is `no-cache` with an ETag that changes with the language, so
+        en → vi → id → en each gets its own words at the next normal page load;
+        the iframe openers carry the same new key as index.html, so browsers
+        holding the old index.html (cached 10 days under /static/) fetch the
+        new one."""
+        from odoo.addons.pb_lifecycle.controllers import workbench_words as WW
+        cached = re.compile(r'(?i)\.(js|css|png|jpe?g|gif|ico)$')
+        routes = WW.WorkbenchWords.workbench_words
+        routing = getattr(routes, 'original_routing', None) or getattr(routes, 'routing', {})
+        self.assertIn('/pb_lifecycle/workflow/words', routing.get('routes') or WW.ROUTES)
+        self.assertIn('/pb_lifecycle/workflow/words', WW.ROUTES)
+        self.assertIn('/pb_lifecycle/workflow/words.js', WW.ROUTES, 'old index.html copies keep working')
+        base = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+        html = open(os.path.join(base, 'workflow', 'index.html'), encoding='utf-8').read()
+        src = re.findall(r'<script src="(/pb_lifecycle/workflow/words[^"]*)"', html)
+        self.assertEqual(len(src), 1, src)
+        path, _, query = src[0].partition('?')
+        self.assertEqual(path, '/pb_lifecycle/workflow/words')
+        self.assertFalse(cached.search(path), path)
+        key = dict(p.split('=', 1) for p in query.split('&') if '=' in p).get('v')
+        self.assertTrue(key)
+        openers = {
+            'workflow_studio.js': r'\{v: "([^"]+)"',
+            'workflow_strip.js': r'STRIP_CACHE_KEY = "([^"]+)"',
+            'workflow_inbox.js': r'const CACHE_KEY = "([^"]+)"',
+        }
+        for name, pattern in openers.items():
+            text = open(os.path.join(base, 'src', 'js', name), encoding='utf-8').read()
+            self.assertEqual(re.findall(pattern, text), [key], name)
+        # one person, three language changes: every answer differs from the last
+        WW._CACHE.clear()
+        tags = [WW.payload(lang, '19.0.test')[1] for lang in ('en_US', 'vi_VN', 'id_ID', 'en_US')]
+        self.assertEqual(tags[0], tags[3])
+        self.assertEqual(len(set(tags[:3])), 3)
+        WW._CACHE.clear()

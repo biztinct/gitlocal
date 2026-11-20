@@ -91,9 +91,19 @@ def payload(lang, version):
         return _CACHE[key]
 
 
+# The address must not end in `.js` (or .css/.png/…): the apex site's web
+# server gives every such address 2 days in the browser's cache and overrides
+# the `no-cache` below, so a person who changed their language kept the old
+# words (WF2 P6e, ledger G103/G104). Without the ending the browser keeps its
+# copy but asks each time; the ETag carries the language, the module version
+# and the words, so the same language answers 304 and a new one gets its words.
+# The old `.js` address stays for index.html copies already in browsers.
+ROUTES = ['/pb_lifecycle/workflow/words', '/pb_lifecycle/workflow/words.js']
+
+
 class WorkbenchWords(http.Controller):
 
-    @http.route('/pb_lifecycle/workflow/words.js', type='http', auth='user', methods=['GET'], readonly=True)
+    @http.route(ROUTES, type='http', auth='user', methods=['GET'], readonly=True)
     def workbench_words(self, **kwargs):
         lang = request.env.lang or request.env.user.lang or 'en_US'
         body, etag = payload(lang, _version(request.env))

@@ -9,7 +9,7 @@
    (English grammar) and fills %(n)s with the count.
    _t.on is true when a translated dictionary is in use; the few English
    grammar helpers (a / an, ’s, 1st 2nd 3rd) only apply when it is false.
-   The dictionary comes from /pb_lifecycle/workflow/words.js, the next
+   The dictionary comes from /pb_lifecycle/workflow/words, the next
    script in index.html, before any screen is drawn. */
 const _t=(()=>{
  let words=Object.create(null);
