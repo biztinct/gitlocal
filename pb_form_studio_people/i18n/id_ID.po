@@ -611,3 +611,13 @@ msgstr "Panel samping: Pribadi"
 #: code:addons/pb_form_studio_people/models/standard_fields.py:0
 msgid "Tax and social insurance files depend on this field."
 msgstr "File pajak dan jaminan sosial bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid ""
+"Pay rules, statutory files and the fields each person sees follow this "
+"field."
+msgstr ""
+"Aturan gaji, file wajib, dan kolom yang dilihat setiap orang mengikuti kolom"
+" ini."

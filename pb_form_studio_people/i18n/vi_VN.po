@@ -614,3 +614,13 @@ msgstr "Bảng bên: Cá nhân"
 #: code:addons/pb_form_studio_people/models/standard_fields.py:0
 msgid "Tax and social insurance files depend on this field."
 msgstr "Hồ sơ thuế và bảo hiểm xã hội phụ thuộc vào trường này."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid ""
+"Pay rules, statutory files and the fields each person sees follow this "
+"field."
+msgstr ""
+"Quy tắc lương, hồ sơ pháp định và các trường mỗi người thấy đều dựa vào "
+"trường này."

@@ -1,10 +1,13 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_form_studio_people
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 12:07+0000\n"
-"PO-Revision-Date: 2026-11-19 12:07+0000\n"
+"POT-Creation-Date: 2026-11-20 00:22+0000\n"
+"PO-Revision-Date: 2026-11-20 00:22+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,12 +30,6 @@ msgstr ""
 #. module: pb_form_studio_people
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
-msgid "%s standard fields are on My Payobook"
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "%s unsaved changes"
 msgstr ""
 
@@ -40,12 +37,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
 msgid "1 detail needs a look before it can be saved."
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
-msgid "1 standard field is on My Payobook"
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -62,8 +53,20 @@ msgstr ""
 
 #. module: pb_form_studio_people
 #. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "A pay formula reads it, so only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -92,8 +95,28 @@ msgstr ""
 
 #. module: pb_form_studio_people
 #. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Bank details are changed through the bank change request."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Bank files depend on this field."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid ""
+"Children who count for tax are added on My details, under Family, where the "
+"pay team confirms them."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -174,20 +197,8 @@ msgstr ""
 
 #. module: pb_form_studio_people
 #. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
-msgid "Find a field…"
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
-msgid "Find a standard field"
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 #: code:addons/pb_form_studio_people/static/src/xml/full_form_button.xml:0
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 #: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
 msgid "Form builder"
 msgstr ""
@@ -196,6 +207,19 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "Form builder: add your own fields to this panel, or move them"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Government forms and statutory files print this field."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid ""
+"Government forms are filled from the home address, so only HR changes it."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -217,6 +241,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Identity, contact and family details. %s"
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "It names the person on every payslip and file."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -253,6 +283,12 @@ msgstr ""
 
 #. module: pb_form_studio_people
 #. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Logins, approvals and the time clock follow this field."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "More about the job"
 msgstr ""
@@ -280,12 +316,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_form_studio_people/models/pb_people.py:0
 msgid "Not filled in"
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
-msgid "Nothing matches."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -325,6 +355,26 @@ msgid "Pay figures are never shown on My Payobook."
 msgstr ""
 
 #. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Pay or statutory files of that country depend on this field."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid ""
+"Pay rules, statutory files and the fields each person sees follow this "
+"field."
+msgstr ""
+
+#. module: pb_form_studio_people
 #: model:ir.model,name:pb_form_studio_people.model_pb_people
 msgid "Payobook People cockpit data"
 msgstr ""
@@ -333,14 +383,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_form_studio_people/models/form_studio.py:0
 msgid "Personal"
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
-msgid ""
-"Pick a standard field to tick it for the employee's own My Payobook page. It"
-" stays where it is on this screen."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -380,33 +422,33 @@ msgid "Saving did not work. Nothing was changed."
 msgstr ""
 
 #. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
-msgid "Show on My Payobook"
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Job"
 msgstr ""
 
 #. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
-msgid "Shown"
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Pay & tax"
 msgstr ""
 
 #. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
-msgid "Shown · can change, HR approves"
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Personal"
 msgstr ""
 
 #. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
-msgid "Shown · can change, saves at once"
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Social security numbers are set by HR."
 msgstr ""
 
 #. module: pb_form_studio_people
-#. odoo-javascript
-#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
-msgid "Standard fields"
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Tax and social insurance files depend on this field."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -430,8 +472,28 @@ msgstr ""
 
 #. module: pb_form_studio_people
 #. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "The legal name must match the ID papers, so only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid ""
+"The time zone follows the place of work and is used to count working time, "
+"so only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
 #: code:addons/pb_form_studio_people/models/pb_people.py:0
 msgid "This employee no longer exists."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "This is HR's own note about the person."
 msgstr ""
 
 #. module: pb_form_studio_people
@@ -482,40 +544,4 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "You can look at these details but not change them."
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/form_studio.py:0
-msgid "Government forms are filled from the home address, so only HR changes it."
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/form_studio.py:0
-msgid "Social security numbers are set by HR."
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/form_studio.py:0
-msgid "The legal name must match the ID papers, so only HR changes it."
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/form_studio.py:0
-msgid "This is HR's own note about the person."
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/form_studio.py:0
-msgid "Children who count for tax are added on My details, under Family, where the pay team confirms them."
-msgstr ""
-
-#. module: pb_form_studio_people
-#. odoo-python
-#: code:addons/pb_form_studio_people/models/form_studio.py:0
-msgid "The time zone follows the place of work and is used to count working time, so only HR changes it."
 msgstr ""
