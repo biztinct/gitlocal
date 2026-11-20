@@ -120,7 +120,7 @@ bd_phsk,REMOVE FROM SCREEN,VN
 deduction_of_funeral_money,REMOVE FROM SCREEN,VN
 different_subjects,REMOVE FROM SCREEN,VN
 legal_entity_pays_salary,REMOVE FROM SCREEN,VN
-bank_name,KEEP,general
+bank_name,REMOVE FROM SCREEN,general
 account_number,REMOVE FROM SCREEN,general
 pb_legal_first_name,KEEP,general
 pb_legal_last_name,KEEP,general

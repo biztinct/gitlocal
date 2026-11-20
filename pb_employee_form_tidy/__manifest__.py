@@ -11,7 +11,9 @@ FORM STUDIO, phase TIDY-E (owner rulings R11-R13, 2026-11-19).
   values stay where they are); the country boxes still in use show only for
   people whose Country of Work is that country; empty sections and tabs close.
 * Country of Work has one name everywhere and sits at the top of the record.
-* Payroll-ready and the Bank details filter read the approved bank account.
+* Payroll-ready and the Bank details filter read the approved bank account;
+  the old free-text Bank and Account Number boxes leave the form (FS-9: their
+  values stay).
 * Country of Work can be filled from a pay data file (any spelling of a
   country), from the Updates sheets, and - where it is empty - from each
   person's pay set-up with one button on the People list (preview first).
@@ -19,7 +21,7 @@ FORM STUDIO, phase TIDY-E (owner rulings R11-R13, 2026-11-19).
 Screen-only: no field is removed and no stored value is changed by installing
 this module.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
