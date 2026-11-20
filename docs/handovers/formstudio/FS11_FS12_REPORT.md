@@ -3,12 +3,13 @@
 Builder, tester, self-reviewer and deployer, 2026-11-20 (UTC). Handover `FS11_FS12_HANDOVER.md` (main
 checkout, untracked). Branch `fs-11-12` from `origin/19.1` @ `9ac8b8fae`.
 
-**Result: BUILT, TESTED, REHEARSED — HELD, NOT LIVE.** Another deployer's START ("Claude WORKFLOW-2
-P6e", 11:04 UTC, its evidence folder unchanged since 11:16) stayed open through 240 minutes of retries
-(13:42–17:32 UTC). The rule is never to go over another deployer's open START, so nothing was changed on
-the server (no START of ours, no stop, no file copied into the addons folder). Everything is staged and a
-single command resumes (§6). The code is on `origin/fs-11-12` only — NOT merged into `19.1`, so no other
-deployer ships it by accident.
+**Result: LIVE on all five databases** (payobook, payobook_template, p0clone, rize, sudima; abm untouched) at
+`e23380c24` (`origin/fs-11-12` → fast-forwarded into `19.1`), **192 s down** (17:39:37–17:42:49 UTC).
+The first attempt was held 13:42–17:32 UTC behind the open START of "Claude WORKFLOW-2 P6e" (11:04); the
+coordinator called that START off at 17:34 (nothing of it had been deployed) and its change — **`pb_lifecycle`
+files only, commit `9ac8b8fae`, Workflow Studio words follow a language change without a hard refresh** —
+**shipped inside this go-live** (scoped rsync, no `-u`, version 19.0.1.21.0 unchanged, covered by the asset
+purge, the `web.assets.version` bump and the restart). Deploy notes START 17:37, DONE after the checks.
 
 ## 1. What was built
 
@@ -164,29 +165,54 @@ sudima with the final commit (`fs12_bytecheck.sh`, final stage `7edc89990`):
 
 The administrator's own My Profile differs as designed: "Edit this page" in the header.
 
-## 6. Go-live — held
-* 13:42 the retry loop started (`fs12_tries.sh`, every 10 minutes, 24 tries). While any other START of the
-  day is open it writes nothing and changes nothing (writing our START then would block the other
-  deployer's own check). Each try: "waiting, open START of Claude WORKFLOW-2 P6e". 17:32 finished:
-  WAITING-OTHER. Two NOTE lines in `/opt/deploy-notes.md` say so (15:44 ready/waiting, 17:32 held).
-* Rize/payobook also had signed-in activity during the afternoon (30 requests in the 15 minutes before
-  13:58), so the 15-quiet-minutes rule would have held it at those moments too.
-* **To resume** (once the P6e START has its DONE, or the owner closes it):
-  `sudo systemd-run --collect --unit=fs12-tries /bin/bash /tmp/fs12_tries.sh 20261120T124830Z 24` — then
-  `bash /tmp/fs12_after.sh 20261120T124830Z` (verification ×5, payobook.com showcase page, pages opened
-  for three demo employees), DONE line, merge `fs-11-12` into `19.1` (fast-forward is not possible if 19.1
-  moved: merge, re-run the FS-11/12 tags), push, this report's §6 completed. The go-live script refuses by
-  itself if the live trees moved since prep (re-run `fs12_prep.sh` then), takes fresh backups ×5 right
-  before the stop, upgrades `-u pb_form_studio,pb_form_studio_people,pb_form_studio_contracts
-  -i pb_form_studio_portal` in the order template, p0clone, sudima, rize, payobook (16–21 s each on the
-  copies), purges the assets and bumps `web.assets.version`, switches back off any job an upgrade
-  re-activates, and puts everything back if an upgrade fails.
-* Staged on the server: `/tmp/deployFS12/addons` = `7edc89990` (hash-checked), evidence and backups
-  `/tmp/fs12-20261120T124830Z/`, `/odoo/backups/fs12-20261120T124830Z/`.
-* Not done because of the hold: the go-live itself, the payobook.com showcase page (DEMO section with
-  "DEMO Shirt size" + two standard fields + a banner — `fs12_publish.py` with `PUBLISH_DEMO=1`), the
-  checks on the five live sites. The browser cannot be used on payobook.com without typing a password
-  into a production site, which is not allowed; the after-script opens the pages server-side instead.
+## 6. Go-live
+* Held first: 13:42–17:32 UTC the retry loop waited behind the open START of WORKFLOW-2 P6e (24 tries,
+  nothing written). 17:34 the coordinator closed it ("CALLED OFF"); the scripts were taught that a
+  "CALLED OFF" line closes a START, and to judge a line by WHO wrote it (the called-off line mentions this
+  go-live by name, which the inherited check had read as our own line — and the inherited HOLD check would
+  have ignored a HOLD that named us; both fixed and tested on a copy of the notes).
+* P6e added (`fs12_reprep.sh`): staging = 5 trees = commit; live `pb_lifecycle` = `bf2dba174` (hash);
+  previous trees saved again; its PO file parses (2,122 entries); live version 19.0.1.21.0 = shipped (no
+  roll-back).
+* 17:37 START; no signed-in activity on rize/payobook since 17:22; fresh backups ×5 (template 31 MB,
+  p0clone 32, sudima 36, rize 46, payobook 84 MB, read back); notes re-read right before the stop: no HOLD,
+  no open START; lock taken.
+* 17:39:37 stop → 5 trees rsynced (= staged) → `-u pb_form_studio,pb_form_studio_people,
+  pb_form_studio_contracts -i pb_form_studio_portal`: template 20 s, p0clone 18, sudima 19, rize 18,
+  payobook 21 — all exit 0, 0 ERROR → asset purge + `web.assets.version` per database → 17:42:49 port
+  listening; five sites 200.
+
+| Check (after) | Result |
+|---|---|
+| Trees | all 5 = commit |
+| Versions | manifest = installed version on all 25 rows (engine 1.5.0, people 1.5.0, contracts 1.4.0, page builder 1.0.0, lifecycle 1.21.0) |
+| Jobs | = snapshot ×5 (111/58, 99/40, 99/48, 99/91, 100/91); none re-activated; payobook job 156 off |
+| Data before the stop vs after | identical ×5 |
+| Silent install | no page on any site; no tick added (payobook's 1 existing tick unchanged) |
+| Server log since the stop | 3,986 lines, 0 ERROR, 0 Traceback, 0 asset errors; one service process |
+| Screens as the administrator ×5 | My Payobook home and My Profile open (p0clone/sudima: the administrator has no employee there → back to /my, as before); employee builder fixed lists 126–131 lines; Full details 14–15 tabs; contract builder 21 lines, contract form 4–5 tabs; Field library 3 screens; page builder 81–82 fields; side panel and employee page open |
+| WF2 P6e ×5 | Workflow Studio opens (its start-up call answers); its words at the new address 200 with `private, no-cache` and an ETag; the Studio's page asks for the new address |
+| My Leave + employee home ×5 | opened server side for the newest employees with a login (5/1/5/5/1): 0 failed |
+| Time off ×5 | its list and form open; rows read |
+
+**payobook.com (demo):** the showcase page is published and KEPT: today's fields, the existing company
+details, and a section "DEMO About me" (Vietnamese/Indonesian names too) with **DEMO Shirt size**, Work
+mobile and Date of birth, a banner picture (purple) and a purple header. With it in place, My Payobook home,
+My Profile, My details and My Leave open (200) for three demo employees and the administrator.
+**Language follows (P6e):** the QA login switched en → vi → en; after each switch a fresh page load got the
+words of the new language at once (the reply says `"lang": "vi_VN"` with Vietnamese words, then English
+again), with a new ETag each time and `Cache-Control: private, no-cache` THROUGH the web server (no
+two-day cache any more); the language was put back to what it was. Not done: a click-through in the
+browser on payobook.com — signing in there would mean typing a password into a live site, which this
+agent may not do; every page above was opened over the real web stack instead.
+
+**The `KeyError: 'active'` of 10:47:55 UTC on payobook:** not a screen. It is a hand-made data call —
+`hr.leave` `search_read` asking for the field `active` (time off has no "active" field in this version),
+sent by the QA login seconds after the P6c check cancelled its demo time off, in the same burst as
+`res.users.write`, `hr.employee.write` and the deletion of its timesheet lines: the WORKFLOW-2 P6 checker's
+own clean-up (archiving the throwaway DEMO employee). It does not come from the time off "Sent back" work
+and no person met it; nothing to fix.
+
 ## 7. Candidates for the next pages
 My details (family, ID papers, photo, bank — its own flows, so only arrangement, not new fields), the
 My Payobook home tiles (order, which tiles show), My Leave (the request form's optional boxes), Payslips
@@ -212,12 +238,17 @@ builder are ready to take them.
 * FS11-7 `odoo-bin i18n export` lists tuple items next to translated calls as words (`VNSIJOIN`,
   `ssnid` …) — FS7-6 again; take only real sentences into the .po.
 
-## 9. Owner questions
-1. The other go-live from this afternoon (the Workflow Studio language fix) has been "started" since 11:04
-   and has not moved since 11:16, which blocks every other go-live. Should that one be finished or called
-   off, so this release can go live?
-2. With a page published, My details shows one link "Company details — see them on My Profile" instead
-   of a second copy of the same fields. Keep it like that, or show the fields in both places?
-3. The personal boxes today's My Profile offers (private phone, e-mail, address, emergency contact) are
-   always changeable through today's change request (HR approves). Do you want a switch to make any of
-   them look-only?
+* FS11-8 The deploy-notes check must read WHO wrote a line (the second column), not whether a line
+  mentions us: a closing line naming our go-live was taken for our own line (the other START looked open
+  for ever), and a HOLD naming us would have been ignored. A START may also be closed by "CALLED OFF".
+* FS11-9 Page comparisons before/after an install must leave out the bundle addresses and the
+  `registry_hash` of the page's session script (both change with any install); an internal user's page
+  carries more session data that differs between two runs of the same code — compare employee logins.
+
+## 9. Owner questions and answers
+* Answered by the architect (owner's standing approval): the link from My details to My Profile stays once
+  a page is published; a look-only switch for private phone / e-mail / address / emergency contact is NOT
+  built — today those boxes go through the profile change request, which has no per-box switch; adding one
+  needs a stored setting, the builder's toggle and a change to which boxes the request form offers. Left for
+  a follow-up.
+* No new owner question.
