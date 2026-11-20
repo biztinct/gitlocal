@@ -2120,23 +2120,29 @@ const PRACTICE = {
 
   /* ----------------------------------------------- Settings › Form builder
      pb_form_studio's Field library (field_library.xml): the fields this
-     company added itself. Four of them, one on the contract; Site days feeds
-     a pay formula, so it shows Used by 1 and cannot be deleted. The numbers
-     line is the library's own four (field_library.js kpis). */
+     company added itself, then the standard ones. FS-10: the two own fields
+     are the ones the payobook demo keeps (DEMO Shirt size on the employee,
+     DEMO Parking bay on the contract); nothing feeds a pay formula, nothing
+     is hidden or renamed. A few standard rows stand for the full list; two
+     of them are locked (a pay formula reads Place of Birth). The numbers
+     line is the library's own six (field_library.js kpis); the lesson
+     quotes none of them, because they differ from company to company. */
   formbuilder: {
     rows: [
-      { label: B("Uniform size", "Cỡ đồng phục"), code: "x_uniform_size", rt: "emp",
-        kind: B("Choice", "Lựa chọn"), opts: "S, M, L", where: ["screen", "lists"],
-        filled: 41, of: 52, who: "hr", countries: null, portal: B("Shown", "Đã hiện"), used: 0 },
-      { label: B("Locker number", "Số tủ đồ"), code: "x_locker_number", rt: "emp",
-        kind: B("Text", "Văn bản"), opts: "", where: ["screen"],
-        filled: 12, of: 52, who: "hr", countries: B("Vietnam", "Việt Nam"), portal: null, used: 0 },
-      { label: B("Site days", "Ngày công trường"), code: "x_site_days", rt: "emp",
-        kind: B("Number", "Số"), opts: "", where: ["screen", "formulas"],
-        filled: 30, of: 52, who: "hr", countries: null, portal: null, used: 1 },
-      { label: B("Parking bay", "Chỗ đỗ xe"), code: "x_parking_bay", rt: "contract",
+      { label: B("DEMO Shirt size", "DEMO Shirt size"), code: "x_pbfs_demo_shirt_size", rt: "emp",
+        kind: B("Choice", "Lựa chọn"), opts: "S · M · L", where: ["screen", "lists"],
+        filled: 1, of: 52, who: "hr", countries: null, portal: B("Shown", "Đã hiện"), used: 0 },
+      { label: B("DEMO Parking bay", "DEMO Parking bay"), code: "x_pbfs_demo_parking_bay", rt: "contract",
         kind: B("Text", "Văn bản"), opts: "", where: ["screen", "lists"],
-        filled: 8, of: 50, who: "hr", countries: null, portal: null, used: 0 },
+        filled: 1, of: 50, who: "hr", countries: null, portal: null, used: 0 },
+    ],
+    std: [
+      { label: B("Employee Name", "Tên nhân viên"), code: "name", rt: "emp", kind: B("Text", "Văn bản"),
+        tab: B("Top of the page", "Đầu trang"), locked: true, hidden: false, renamed: false },
+      { label: B("Place of Birth", "Nơi sinh"), code: "place_of_birth", rt: "emp", kind: B("Text", "Văn bản"),
+        tab: B("Private Information", "Thông tin cá nhân"), locked: true, hidden: false, renamed: false },
+      { label: B("Blood type", "Nhóm máu"), code: "pb_blood_type", rt: "emp", kind: B("Choice", "Lựa chọn"),
+        tab: B("Private Information", "Thông tin cá nhân"), locked: false, hidden: false, renamed: false },
     ],
   },
 
