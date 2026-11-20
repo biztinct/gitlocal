@@ -1170,15 +1170,6 @@ msgstr ""
 
 #. module: pb_form_studio
 #. odoo-javascript
-#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
-#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
-msgid ""
-"Leave a language empty to keep the built-in label there. Mapping, Updates "
-"sheets, pay data files and My Payobook keep the built-in name."
-msgstr ""
-
-#. module: pb_form_studio
-#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_grid.js:0
 msgid "Leave empty"
 msgstr ""
@@ -2676,4 +2667,20 @@ msgstr ""
 #: code:addons/pb_form_studio/models/form_studio.py:0
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "who can see it"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Leave a language empty to keep the built-in label there. Mapping, Updates "
+"sheets and pay data files keep the built-in name. My Payobook shows your "
+"label for the fields you show there."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Done"
 msgstr ""

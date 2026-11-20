@@ -2257,18 +2257,6 @@ msgstr "Jenis kolom"
 
 #. module: pb_form_studio
 #. odoo-javascript
-#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
-#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
-msgid ""
-"Leave a language empty to keep the built-in label there. Mapping, Updates "
-"sheets, pay data files and My Payobook keep the built-in name."
-msgstr ""
-"Kosongkan sebuah bahasa untuk tetap memakai label bawaan di bahasa itu. "
-"Mapping, lembar Pembaruan, file data gaji, dan My Payobook tetap memakai "
-"nama bawaan."
-
-#. module: pb_form_studio
-#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "Link"
 msgstr "Tautan"
@@ -2545,3 +2533,22 @@ msgstr "tampil"
 #: code:addons/pb_form_studio/models/form_standard.py:0
 msgid "shown again"
 msgstr "tampil lagi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Leave a language empty to keep the built-in label there. Mapping, Updates "
+"sheets and pay data files keep the built-in name. My Payobook shows your "
+"label for the fields you show there."
+msgstr ""
+"Kosongkan sebuah bahasa untuk tetap memakai label bawaan di bahasa itu. "
+"Mapping, lembar Pembaruan, dan file data gaji tetap memakai nama bawaan. My "
+"Payobook menampilkan label Anda untuk kolom yang Anda tampilkan di sana."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Done"
+msgstr "Selesai"

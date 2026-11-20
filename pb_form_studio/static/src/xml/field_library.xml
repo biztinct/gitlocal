@@ -207,7 +207,7 @@
               <label t-foreach="allLangs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
                 <input type="text" maxlength="60" t-att-value="e.labels[lang] or ''" t-att-placeholder="stdBuiltin(lang)" t-att-disabled="!!e.row.stdbox.label_lock" t-on-change="(ev) => this.onStdLabel(lang, ev)"/>
               </label>
-              <p class="pbfb-hint flush">Leave a language empty to keep the built-in label there. Mapping, Updates sheets, pay data files and My Payobook keep the built-in name.</p>
+              <p class="pbfb-hint flush">Leave a language empty to keep the built-in label there. Mapping, Updates sheets and pay data files keep the built-in name. My Payobook shows your label for the fields you show there.</p>
               <button t-if="stdHasLabels" type="button" class="pbfb-btn sm outline" t-on-click="resetStdLabels"><t t-out="ic('rotate',13)"/> <span>Reset to the built-in label</span></button>
             </div>
             <div t-if="e.portal" class="pbfb-portal">
