@@ -33,7 +33,7 @@ import base64
 import logging
 import re
 
-from odoo import api, fields, models
+from odoo import api, fields, models, tools
 from odoo.exceptions import UserError
 
 from odoo.addons.pb_form_studio.models.ir_model_fields import PREFIX
@@ -93,17 +93,14 @@ class PbFormStudioPage(models.AbstractModel):
             return hosts
         _ = self.env._
         emp_host = hosts[EMP_HOST]
-        layout = self._pbfs_layout(PAGE_HOST)
         # Never `_pbfp_default_spec` here: it asks `fields_for`, which asks
         # the hosts — the standard page is one section until a page exists.
-        stored = (layout.sections or []) if layout else [
-            {'id': 'details', 'title': {self.env.lang or 'en_US': _('Your details')}}]
+        # Cached: the hosts are asked on every screen; no query per call.
+        stored = self._pbfp_host_sections() or (('details', (('en_US', 'Your details'),)),)
         sections = []
-        for sec in stored:
-            if isinstance(sec, dict) and sec.get('id'):
-                sections.append({'id': sec['id'], 'kind': 'open', 'icon': 'layers',
-                                 'tone': 'brand', 'title': self._pbfp_text(sec.get('title'))
-                                 or _('Section')})
+        for sid, titles in stored:
+            sections.append({'id': sid, 'kind': 'open', 'icon': 'layers', 'tone': 'brand',
+                             'title': self._pbfp_text(dict(titles)) or _('Section')})
         hosts[PAGE_HOST] = {
             'model': EMP,
             'title': _('My Payobook page'),
@@ -123,6 +120,20 @@ class PbFormStudioPage(models.AbstractModel):
             'portal': False,
         }
         return hosts
+
+    @api.model
+    @tools.ormcache()
+    def _pbfp_host_sections(self):
+        """`((section id, ((lang, title), …)), …)` of the published page —
+        cached per database; every publish and reset clears it (the registry
+        tells every worker)."""
+        layout = self._pbfs_layout(PAGE_HOST)
+        out = []
+        for sec in (layout.sections or []) if layout else []:
+            if isinstance(sec, dict) and sec.get('id'):
+                titles = sec.get('title') if isinstance(sec.get('title'), dict) else {}
+                out.append((sec['id'], tuple(sorted((k, str(v)) for k, v in titles.items()))))
+        return tuple(out)
 
     # ================================================================ words
     @api.model
@@ -524,6 +535,7 @@ class PbFormStudioPage(models.AbstractModel):
                          detail={'changes': changes, 'version': layout.version,
                                  'page': {'spec': spec, 'companies': companies}})
         self.env.registry.clear_cache('templates')       # R27 labels on every screen
+        self.env.registry.clear_cache()                  # the page's sections (every worker)
         self._pbfs_notify(PAGE_HOST, layout.version)
         return {'ok': True, 'version': layout.version}
 
@@ -596,6 +608,7 @@ class PbFormStudioPage(models.AbstractModel):
                                  _('%s: My Payobook tick put back as before the page', label))
         version = layout.version
         layout.unlink()
+        self.env.registry.clear_cache()
         self._pbfs_drafts(PAGE_HOST).unlink()
         self._pbfs_audit('publish', PAGE_HOST, EMP, None,
                          _('Reset the My Payobook page to the standard page'),
