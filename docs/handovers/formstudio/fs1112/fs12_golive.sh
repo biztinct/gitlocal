@@ -29,19 +29,19 @@ start = max((i for i, l in enumerate(lines) if tag in l and '| START |' in l), d
 if start is None:
     print('NO-START'); raise SystemExit
 after = lines[start + 1:]
-hold = [l for l in after if re.search(r'\bHOLD\b', l, re.I) and tag not in l]
+hold = [l for l in after if re.search(r'\bHOLD\b', l, re.I) and tag not in (l.split('|') + ['', ''])[1]]
 opens = {}
 base = lambda s: s.split('(')[0].strip().lower()
 # another deployer's START still open TODAY blocks too, before or after ours
 today = lines[start][:10]
 for l in [x for x in lines if x[:10] == today]:
     parts = [p.strip() for p in l.split('|')]
-    if len(parts) < 3 or tag in l:
+    if len(parts) < 3 or tag in parts[1]:
         continue
     who, what = parts[1], parts[2].upper()
     if what == 'START':
         opens[who] = l
-    elif what in ('DONE', 'FAILED', 'VERIFIED', 'ABORTED', 'CANCELLED', 'COMPLETE'):
+    elif what.startswith(('DONE', 'FAILED', 'VERIFIED', 'ABORTED', 'CANCELLED', 'COMPLETE', 'CALLED OFF')):
         for k in list(opens):
             if k == who or base(k) == base(who):
                 opens.pop(k)

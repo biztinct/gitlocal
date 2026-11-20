@@ -102,6 +102,14 @@ try:
             p = S.page_studio()
             res.append('page builder fields %s ticked %s published %s' % (
                 len(p['fields']), len(p['ticked']), bool(p['published'])))
+        # WF2 P6e ships inside this go-live: the Workflow Studio opens, and Time off
+        if 'pb.workflow.studio' in e:
+            b = e['pb.workflow.studio'].bootstrap()
+            res.append('workflow studio ok (%s workflows)' % len(b.get('workflows') or [])
+                       if isinstance(b, dict) else 'workflow studio ok')
+        if 'hr.leave' in e:
+            e['hr.leave'].get_views([(False, 'list'), (False, 'form')])
+            res.append('time off ok (%s rows read)' % len(e['hr.leave'].search_read([], ['name', 'state'], limit=5)))
         emp = e['hr.employee'].search([], limit=1)
         if emp:
             r = e['pb.people'].get_employee_360(emp.id)
@@ -111,4 +119,36 @@ try:
 except Exception as exc:                                # noqa: BLE001
     res.append('ERROR %s: %s' % (type(exc).__name__, str(exc)[:160]))
 print('PROBE screens %s' % '; '.join(res))
+
+# Workflow Studio's words over the web stack, as the administrator (status + caching headers)
+if 'pb.workflow.studio' in env:
+    s = session_for(admin)
+    c = Client(http.root, Response)
+    c.set_cookie('session_id', s.sid, domain=host)
+    try:
+        r = c.get('/pb_lifecycle/workflow/words', headers={'Host': host})
+        r2 = c.get('/pb_lifecycle/static/workflow/index.html', headers={'Host': host})
+        print('PROBE studio words %s cache=%s etag=%s; index %s new-address %s' % (
+            r.status_code, r.headers.get('Cache-Control'), bool(r.headers.get('ETag')), r2.status_code,
+            b'/pb_lifecycle/workflow/words?v=wf2-p6e' in r2.get_data()))
+    finally:
+        http.root.session_store.delete(s)
+
+# My Leave and the employee home for the newest employees with a login (server side, read-only,
+# rolled back — the WF2 P6 check; no page is opened as a customer's employee on live)
+if 'pb.ess.workforce' in env:
+    ok = bad = 0
+    errs = []
+    for emp in Emp.search([('user_id', '!=', False), ('active', '=', True)], limit=5, order='id desc'):
+        try:
+            with env.cr.savepoint():
+                d = env['pb.ess.workforce'].with_user(emp.user_id).with_company(emp.company_id).get_my_leave(again=None)
+                assert 'requests' in d
+                env['pb.me.home'].with_user(emp.user_id).get_home_data(emp)
+            ok += 1
+        except Exception as exc:                        # noqa: BLE001
+            bad += 1
+            errs.append('%s: %s' % (type(exc).__name__, str(exc)[:80]))
+    print('PROBE my-leave+home ok %s failed %s %s' % (ok, bad, ' | '.join(errs[:2])))
+env.cr.rollback()
 env.cr.rollback()
