@@ -16,7 +16,7 @@
  * Every refusal comes from the server in screen words; the client only adds
  * the typed confirmation in front of a delete (the server re-checks it).
  */
-import { Component, useState, useRef, onWillStart, onWillUnmount, useExternalListener } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillStart, onWillUnmount, useExternalListener } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { rpcBus } from "@web/core/network/rpc";
@@ -27,6 +27,12 @@ const DRAFT_MS = 800;
 const LANG_NAMES = { en_US: "English", vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
 /** R23 — a standard field's screen rule travels in these keys. */
 const STD_KEYS = ["std_hidden", "std_country_ids", "std_labels"];
+/** FS-10 — the one-column layout (phone, tablet): the same breakpoint as
+ * the stylesheet's `@media (max-width: 1100px)`. There the field's settings
+ * are a sheet at the bottom and the studio bar stays at the top. */
+function isOneColumn() {
+    return Boolean(window.matchMedia && window.matchMedia("(max-width: 1100px)").matches);
+}
 
 function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
@@ -56,10 +62,24 @@ export class FormStudioOverlay extends Component {
         });
         this.exSearch = useRef("exSearch");
         this.stdSearch = useRef("stdSearch");
+        this.propPanel = useRef("propPanel");
+        this.studioBar = useRef("studioBar");
         this._seq = 1;
         this._timer = null;
         onWillStart(() => this.load());
         onWillUnmount(() => this._timer && clearTimeout(this._timer));
+        // FS-10 — on a phone the studio bar stays at the top; the sticky
+        // filter of the left column sits just under it, whatever its height.
+        onMounted(() => {
+            const bar = this.studioBar.el;
+            if (!bar || !window.ResizeObserver) { return; }
+            this._barObs = new ResizeObserver(() => {
+                const root = bar.parentElement;
+                if (root) { root.style.setProperty("--pbfb-bar-h", bar.offsetHeight + "px"); }
+            });
+            this._barObs.observe(bar);
+        });
+        onWillUnmount(() => this._barObs && this._barObs.disconnect());
         useExternalListener(window, "keydown", (ev) => {
             if (ev.key === "Escape" && this.state.sheet) { this.state.sheet = null; return; }
             // R24 — "/" jumps to the search of the list on the left.
@@ -630,16 +650,28 @@ export class FormStudioOverlay extends Component {
         this.dropInto(this.customSectionId, "new:" + kind, null);
         this.revealProps();
     }
-    /** On a phone the panels stack: bring the new field's settings into view. */
+    /** FS-10 — on a phone or tablet the field's settings are a sheet at the
+     * bottom of the screen (stylesheet, `.pbfb-right.has-sel`): it opens in
+     * view by itself; start it at its top for every newly picked field. */
     revealProps() {
-        if (window.innerWidth > 1100) { return; }
+        if (!isOneColumn()) { return; }
         setTimeout(() => {
-            const el = document.querySelector(".pbfb-overlay .pbfb-right");
-            if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
-        }, 60);
+            const el = this.propPanel.el;
+            if (el) { el.scrollTop = 0; }
+        }, 0);
     }
-    addExisting(f) { this.dropInto(this.customSectionId, "existing:" + f.name, null); }
-    select(f) { this.state.sel = f.name; this.state.del = null; }
+    addExisting(f) {
+        this.dropInto(this.customSectionId, "existing:" + f.name, null);
+        this.revealProps();
+    }
+    select(f) {
+        const changed = this.state.sel !== f.name;
+        this.state.sel = f.name;
+        this.state.del = null;
+        if (changed) { this.revealProps(); }
+    }
+    /** FS-10 — "Done" on the settings sheet (phone): back to the screen. */
+    deselect() { this.state.sel = null; this.state.del = null; }
     onTileKey(ev, f) {
         if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); this.select(f); }
     }
