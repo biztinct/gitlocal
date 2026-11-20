@@ -1268,6 +1268,30 @@ export class PbExplorer extends Component {
 
     togglePicker(name) {
         this.state.openPicker = this.state.openPicker === name ? "" : name;
+        // FS-8 — on a phone a menu opened from a chip near the right edge ran
+        // off the screen (the wider "By" menu made it obvious). Once drawn, a
+        // menu that would overflow is moved left to stay 8 px inside.
+        if (this.state.openPicker) {
+            // After OWL has drawn the menu (renders land on the next frame).
+            requestAnimationFrame(() => requestAnimationFrame(
+                () => this.keepMenuOnScreen()));
+        }
+    }
+
+    keepMenuOnScreen() {
+        for (const menu of document.querySelectorAll(".pbex-menu")) {
+            menu.style.left = "";
+            const room = window.innerWidth - 8;
+            const box = menu.getBoundingClientRect();
+            if (box.right > room) {
+                const parent = menu.offsetParent?.getBoundingClientRect();
+                const want = Math.max(8, room - box.width);
+                menu.style.left = `${want - (parent ? parent.left : 0)}px`;
+            }
+            if (menu.getBoundingClientRect().width > window.innerWidth - 16) {
+                menu.style.maxWidth = `${window.innerWidth - 16}px`;
+            }
+        }
     }
 
     addFilter(key, value) {
