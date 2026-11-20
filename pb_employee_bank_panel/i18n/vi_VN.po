@@ -77,6 +77,11 @@ msgid "Change waiting for approval"
 msgstr "Thay đổi đang chờ duyệt"
 
 #. module: pb_employee_bank_panel
+#: model:ir.model.fields,help:pb_employee_bank_panel.field_hr_employee__pb_profile_waiting
+msgid "Details this person has sent that are waiting for HR to approve."
+msgstr "Thông tin người này đã gửi và đang chờ HR duyệt."
+
+#. module: pb_employee_bank_panel
 #. odoo-python
 #: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
 msgid "Employee not found."
@@ -129,6 +134,12 @@ msgstr "Chưa có tài khoản ngân hàng nào được duyệt."
 
 #. module: pb_employee_bank_panel
 #. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid "No longer shown — use Bank account"
+msgstr "Không còn hiển thị — hãy dùng Tài khoản ngân hàng"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
 #: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
 msgid "None"
 msgstr "Chưa có"
@@ -159,6 +170,26 @@ msgstr "Mở yêu cầu"
 
 #. module: pb_employee_bank_panel
 #. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid "Send bank details to the Bank lane instead."
+msgstr "Hãy chuyển thông tin ngân hàng sang làn Ngân hàng."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/onboarding_board.xml:0
+#: model:ir.model.fields,field_description:pb_employee_bank_panel.field_hr_employee__pb_profile_waiting
+#: model_terms:ir.ui.view,arch_db:pb_employee_bank_panel.portal_my_journey_waiting
+msgid "Sent, waiting for HR"
+msgstr "Đã gửi, chờ HR duyệt"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/onboarding_board.xml:0
+msgid "Sent, waiting for HR:"
+msgstr "Đã gửi, chờ HR duyệt:"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
 #: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
 msgid "Status"
 msgstr "Trạng thái"
@@ -176,6 +207,15 @@ msgid ""
 "The payment list pays the account above; the Vietnamese bank file pays this "
 "one."
 msgstr "Danh sách chi trả trả vào tài khoản ở trên; tệp ngân hàng Việt Nam trả vào tài khoản này."
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid ""
+"This box is no longer on any screen and nothing is paid from it. The mapping"
+" saved here keeps working; for bank details, send the column to the Bank "
+"lane (the employee's bank account) instead."
+msgstr "Ô này không còn trên màn hình nào và không dùng để trả lương. Liên kết đã lưu ở đây vẫn hoạt động; với thông tin ngân hàng, hãy chuyển cột sang làn Ngân hàng (tài khoản ngân hàng của nhân viên)."
 
 #. module: pb_employee_bank_panel
 #. odoo-javascript

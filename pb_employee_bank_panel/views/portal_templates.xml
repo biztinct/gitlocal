@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- FS-9 follow-on A: My Journey says what the person SENT and is waiting
+         for HR, apart from "Still to fill in". `employee` is the page's own
+         (sudo) record; the line names details only, never a number. -->
+    <template id="portal_my_journey_waiting" inherit_id="pb_onboarding.portal_my_journey"
+              name="My Journey: sent, waiting for HR">
+        <xpath expr="//div[hasclass('pbob-side')]/div[@t-if='missing']" position="after">
+            <div t-if="employee and employee.pb_profile_waiting" class="pbme-card">
+                <div class="pbme-card-title">Sent, waiting for HR</div>
+                <p class="pbme-muted" t-esc="employee.pb_profile_waiting"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

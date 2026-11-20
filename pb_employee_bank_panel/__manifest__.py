@@ -15,8 +15,12 @@ bank'").
   name" notice with its existing "Mark as seen".
 * Home's "people have no bank account" figure reads the same approved
   account as Payroll-ready (one rule).
-* The old free-text Bank box is no longer read by these screens; it leaves
-  Full details through the employee form clean-up module. Its values stay.
+* The joining checklist's "Bank account" reads the same approved account; a
+  change waiting for approval reads "Sent, waiting for HR", not missing.
+* The old free-text Bank and Account Number boxes are no longer read by these
+  screens nor offered as Mapping destinations (a saved mapping keeps
+  working); they leave Full details through the employee form clean-up
+  module. Their values stay.
 
 Bridge module: it reaches the side panel and Home from outside (inheritance
 and patches only) and writes nothing at install.
@@ -31,13 +35,18 @@ and patches only) and writes nothing at install.
         'pb_employee_vault',       # the side panel (Employee360Drawer)
         'pb_pay_delivery',         # "another person's name" + the waiting-change rule
         'pb_dashboard',            # Home
+        'pb_onboarding',           # the joining checklist (follow-on A)
+        'pb_formula_studio',       # Mapping destinations (follow-on C)
     ],
-    'data': [],
+    'data': [
+        'views/portal_templates.xml',
+    ],
     'assets': {
         'web.assets_backend': [
             'pb_employee_bank_panel/static/src/scss/bank_panel.scss',
             'pb_employee_bank_panel/static/src/js/bank_panel.js',
             'pb_employee_bank_panel/static/src/xml/bank_panel.xml',
+            'pb_employee_bank_panel/static/src/xml/onboarding_board.xml',
         ],
     },
     'installable': True,

@@ -13,6 +13,7 @@ from dateutil.relativedelta import relativedelta
 from pytz import timezone, utc
 
 from odoo import api, fields, models
+from odoo.addons.base.models.res_bank import sanitize_account_number
 
 from . import demo_catalog as cat
 from .demo_history import _HISTORY_YEAR, _OPEN_MONTH
@@ -114,6 +115,117 @@ class PbDemoGenerator(models.TransientModel):
         _logger.info('pb_demo: bank details copied for %s demo employees.', count)
         return count
 
+    # ------------------------------------------- FS-9 follow-on B: one number
+    # A demo person used to carry TWO account numbers: the Vietnamese bank
+    # file's (copied from the generator's old box, above) and, since a one-off
+    # on 2026-11-18, a linked bank account with a DIFFERENT random number (the
+    # one the payment list and the side panel read). The side panel now says
+    # so on every demo person. Both steps below are DEMO-ONLY:
+    #   guard 1 — the code lives in pb_demo, which is installed on the demo
+    #             site only (payobook; uninstalled on payobook_template, p0clone,
+    #             rize, sudima);
+    #   guard 2 — only employees carrying the generator's own world marker
+    #             `hr_employee.is_demo = TRUE`;
+    #   guard 3 — an account also linked to a non-demo employee is never
+    #             touched, nor one whose new number would collide on the same
+    #             contact.
+    # Direction: the bank ACCOUNT takes the Vietnamese bank file's number, so
+    # the Vietnamese bank file (which reads only the four vietnam_bank_*
+    # fields) builds byte for byte as before. Nothing is deleted; no approval
+    # request, no message, no mail (plain SQL on the account row, the same way
+    # ensure_demo_bank_details writes the employee).
+
+    def _demo_bank_mismatches(self):
+        """[(account id, new number)] — demo people whose first bank account
+        (the one every reader pays, `bank_account_ids[:1]`) differs from their
+        Vietnamese bank file number."""
+        Employee = self.env['hr.employee']
+        if 'vietnam_bank_account_number' not in Employee._fields \
+                or 'bank_account_ids' not in Employee._fields:
+            return []
+        self.env.flush_all()
+        self.env.cr.execute("""
+            WITH firsts AS (
+                SELECT DISTINCT ON (r.employee_id) r.employee_id, b.id AS account_id,
+                       b.partner_id, b.acc_number
+                  FROM employee_bank_account_rel r
+                  JOIN res_partner_bank b ON b.id = r.bank_account_id
+                 ORDER BY r.employee_id, b.sequence, b.id
+            )
+            SELECT f.account_id, e.vietnam_bank_account_number, f.partner_id
+              FROM hr_employee e
+              JOIN firsts f ON f.employee_id = e.id
+             WHERE e.is_demo
+               AND COALESCE(e.vietnam_bank_account_number, '') <> ''
+               AND regexp_replace(f.acc_number, '\\D', '', 'g')
+                   <> regexp_replace(e.vietnam_bank_account_number, '\\D', '', 'g')
+               AND NOT EXISTS (
+                   SELECT 1 FROM employee_bank_account_rel r2
+                     JOIN hr_employee e2 ON e2.id = r2.employee_id
+                    WHERE r2.bank_account_id = f.account_id
+                      AND NOT COALESCE(e2.is_demo, FALSE))
+        """)
+        out = []
+        for account_id, number, partner_id in self.env.cr.fetchall():
+            sanitized = sanitize_account_number(number)
+            self.env.cr.execute(
+                "SELECT 1 FROM res_partner_bank WHERE partner_id = %s AND id <> %s "
+                "AND sanitized_acc_number = %s LIMIT 1", (partner_id, account_id, sanitized))
+            if self.env.cr.fetchone():
+                continue                    # guard 3: would collide on the contact
+            out.append((account_id, number, sanitized))
+        return out
+
+    def ensure_demo_bank_accounts_agree(self):
+        """One-off, idempotent: the demo bank ACCOUNT takes the Vietnamese bank
+        file's number where the two differ (guards above). Returns how many
+        accounts were brought into agreement; a second run returns 0."""
+        rows = self._demo_bank_mismatches()
+        for account_id, number, sanitized in rows:
+            self.env.cr.execute(
+                "UPDATE res_partner_bank SET acc_number = %s, sanitized_acc_number = %s "
+                "WHERE id = %s", (number, sanitized, account_id))
+        self.env['res.partner.bank'].invalidate_model(['acc_number', 'sanitized_acc_number'])
+        _logger.info('pb_demo: %s demo bank accounts now carry the bank file number.', len(rows))
+        return len(rows)
+
+    def ensure_demo_bank_accounts(self):
+        """Generator: every demo person with a Vietnamese bank file account and
+        no linked bank account gets ONE, with the SAME number, bank and holder —
+        so a regenerated world never carries two numbers per person. Adds only;
+        idempotent; demo people only."""
+        Employee = self.env['hr.employee'].sudo()
+        if 'vietnam_bank_account_number' not in Employee._fields \
+                or 'bank_account_ids' not in Employee._fields:
+            return 0
+        Bank = self.env['res.bank'].sudo()
+        PartnerBank = self.env['res.partner.bank'].sudo().with_context(**self._GEN_CTX)
+        made = 0
+        for emp in Employee.search([('is_demo', '=', True),
+                                    ('vietnam_bank_account_number', 'not in', (False, '')),
+                                    ('bank_account_ids', '=', False)]):
+            partner = emp.work_contact_id
+            if not partner:
+                continue
+            number = emp.vietnam_bank_account_number
+            if PartnerBank.search_count([('partner_id', '=', partner.id),
+                                         ('sanitized_acc_number', '=',
+                                          sanitize_account_number(number))]):
+                continue
+            bank = Bank.browse()
+            if emp.vietnam_bank_name:
+                bank = Bank.search([('name', '=ilike', emp.vietnam_bank_name)], limit=1) \
+                    or Bank.create({'name': emp.vietnam_bank_name})
+            account = PartnerBank.create({
+                'acc_number': number, 'partner_id': partner.id,
+                'bank_id': bank.id or False,
+                'acc_holder_name': emp.vietnam_bank_account_name or emp.name,
+            })
+            emp.with_context(**self._GEN_CTX).bank_account_ids = [(4, account.id)]
+            made += 1
+        _logger.info('pb_demo: %s demo bank accounts made from the bank file number.', made)
+        return made
+
     # -------------------------------------------------------------- generation
     def generate_employees(self):
         self = self.with_context(**self._GEN_CTX)
@@ -198,6 +310,9 @@ class PbDemoGenerator(models.TransientModel):
 
         self.ensure_young_worker_demos()
         self.ensure_demo_bank_details()
+        # FS-9 follow-on B: one number per person (bank file = bank account)
+        self.ensure_demo_bank_accounts()
+        self.ensure_demo_bank_accounts_agree()
 
         _logger.info('pb_demo: total ~%s employees generated.', total)
         return total

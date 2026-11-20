@@ -34,8 +34,8 @@ def _bank_group(details):
     return next((g for g in details.get('pay') or [] if g.get('key') == 'bank'), None)
 
 
-@tagged('post_install', '-at_install', 'fs9_bank_panel')
-class TestBankPanel(TransactionCase):
+class BankFixture(TransactionCase):
+    """DEMO people for every FS-9 test class (no tests of its own)."""
 
     @classmethod
     def setUpClass(cls):
@@ -99,6 +99,10 @@ class TestBankPanel(TransactionCase):
                     'x_account_number': FULL_NEW, 'company_id': cls.company.id})
                 req.sudo().write({'state': 'hr_review'})
                 cls.reqs[emp.id] = req
+
+
+@tagged('post_install', '-at_install', 'fs9_bank_panel')
+class TestBankPanel(BankFixture):
 
     # ----------------------------------------------------------- helpers
     def panel(self, emp, user=None):
@@ -337,10 +341,17 @@ class TestBankPanel(TransactionCase):
         fields = self.env['ir.model.fields'].sudo().browse(Data.search([
             ('module', '=', 'pb_employee_bank_panel'),
             ('model', '=', 'ir.model.fields')]).mapped('res_id'))
-        # only the two abstract screen models it extends (no table, no column)
-        self.assertLessEqual(set(fields.mapped('model')), {'pb.people', 'pb.dashboard'})
-        for name in ('pb.people', 'pb.dashboard'):
-            self.assertTrue(self.env[name]._abstract)
+        # no column anywhere: every field it adds is computed when read, or
+        # belongs to an abstract screen model (no table)
+        for fld in fields:
+            field = self.env[fld.model]._fields.get(fld.name)
+            if field is None or self.env[fld.model]._abstract:
+                continue
+            if fld.name in ('id', 'display_name'):
+                continue
+            self.assertFalse(field.store, 'the module stores %s.%s' % (fld.model, fld.name))
+        self.assertIn('pb_profile_waiting', self.env['hr.employee']._fields)
+        self.assertFalse(self.env['hr.employee']._fields['pb_profile_waiting'].store)
         data = Data.search([
             ('module', '=', 'pb_employee_bank_panel'),
             ('model', 'not in', ('ir.module.module', 'ir.module.module.dependency',
@@ -350,11 +361,13 @@ class TestBankPanel(TransactionCase):
 
     # ----------------------------------------------------------- test 10
     def test_10_vi_and_id_entries_and_no_vendor_word(self):
+        wanted = set()
         sources = {
             'models/bank_panel.py': re.compile(r"_\(['\"](.+?)['\"]\)"),
             'static/src/js/bank_panel.js': re.compile(r'_t\("(.+?)"'),
+            'models/mapping_retired.py': re.compile(r"_\(['\"](.+?)['\"][,)]"),
         }
-        wanted = set()
+        wanted.add('Sent, waiting for HR')
         for rel, rx in sources.items():
             with open(os.path.join(HERE, rel), encoding='utf-8') as fh:
                 wanted |= set(rx.findall(fh.read()))
@@ -382,5 +395,5 @@ class TestBankPanel(TransactionCase):
                     with open(os.path.join(root, name), encoding='utf-8') as fh:
                         for line in fh:
                             if re.search(r'(?i)odoo', line) and not re.search(
-                                    r"from odoo|import odoo|@odoo|odoo\.|odoo-(python|javascript)|odoo-module", line):
+                                    r"from odoo|import odoo|@odoo|odoo\.|odoo-(python|javascript)|odoo-module|^\s*</?odoo>\s*$", line):
                                 self.fail('vendor word in %s: %s' % (name, line.strip()))

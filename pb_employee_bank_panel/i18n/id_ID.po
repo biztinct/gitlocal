@@ -77,6 +77,11 @@ msgid "Change waiting for approval"
 msgstr "Perubahan menunggu persetujuan"
 
 #. module: pb_employee_bank_panel
+#: model:ir.model.fields,help:pb_employee_bank_panel.field_hr_employee__pb_profile_waiting
+msgid "Details this person has sent that are waiting for HR to approve."
+msgstr "Data yang sudah dikirim orang ini dan menunggu persetujuan HR."
+
+#. module: pb_employee_bank_panel
 #. odoo-python
 #: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
 msgid "Employee not found."
@@ -129,6 +134,12 @@ msgstr "Belum ada rekening bank yang disetujui."
 
 #. module: pb_employee_bank_panel
 #. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid "No longer shown — use Bank account"
+msgstr "Tidak ditampilkan lagi — gunakan Rekening bank"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
 #: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
 msgid "None"
 msgstr "Tidak ada"
@@ -159,6 +170,26 @@ msgstr "Buka permintaan"
 
 #. module: pb_employee_bank_panel
 #. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid "Send bank details to the Bank lane instead."
+msgstr "Kirim data bank ke jalur Bank."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/onboarding_board.xml:0
+#: model:ir.model.fields,field_description:pb_employee_bank_panel.field_hr_employee__pb_profile_waiting
+#: model_terms:ir.ui.view,arch_db:pb_employee_bank_panel.portal_my_journey_waiting
+msgid "Sent, waiting for HR"
+msgstr "Terkirim, menunggu HR"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/onboarding_board.xml:0
+msgid "Sent, waiting for HR:"
+msgstr "Terkirim, menunggu HR:"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
 #: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
 msgid "Status"
 msgstr "Status"
@@ -176,6 +207,15 @@ msgid ""
 "The payment list pays the account above; the Vietnamese bank file pays this "
 "one."
 msgstr "Daftar pembayaran membayar ke rekening di atas; file bank Vietnam membayar ke rekening ini."
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid ""
+"This box is no longer on any screen and nothing is paid from it. The mapping"
+" saved here keeps working; for bank details, send the column to the Bank "
+"lane (the employee's bank account) instead."
+msgstr "Kotak ini tidak ada lagi di layar mana pun dan tidak dipakai untuk membayar. Pemetaan yang tersimpan di sini tetap berjalan; untuk data bank, kirim kolom ke jalur Bank (rekening bank karyawan)."
 
 #. module: pb_employee_bank_panel
 #. odoo-javascript
