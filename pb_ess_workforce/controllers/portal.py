@@ -53,6 +53,8 @@ class PbEssWorkforcePortal(CustomerPortal):
             'leave_withdrawn': _("Request withdrawn. It stays in your list as cancelled."),
             'leave_cancelled': _("Leave cancelled. Your manager has been told."),
             'doc_added': _("Document added. Your approver can see it."),
+            # WF2 P6c (D36)
+            'leave_again': _("Asked again. Your new request is waiting for approval."),
             'pulse': _("Thanks — your rating was recorded anonymously."),
         }.get(key, '')
 
@@ -130,9 +132,9 @@ class PbEssWorkforcePortal(CustomerPortal):
 
     # ===================================================== My Leave
     @http.route(['/my/work/leave'], type='http', auth='user', website=True)
-    def portal_my_work_leave(self, **kw):
+    def portal_my_work_leave(self, again=None, **kw):
         try:
-            data = self._ess().get_my_leave()
+            data = self._ess().get_my_leave(again=again)
         except UserError:
             return self._no_employee_page('work_leave')
         return request.render('pb_ess_workforce.portal_my_work_leave', {
@@ -170,9 +172,12 @@ class PbEssWorkforcePortal(CustomerPortal):
                 period_to=post.get('period_to'),
                 hour_from=post.get('hour_from'),
                 hour_to=post.get('hour_to'),
-                files=self._leave_files())
+                files=self._leave_files(),
+                again_of=post.get('again_of') or None)
         except _ERRORS as e:
             return self._error_page('work_leave', e, '/my/work/leave')
+        if post.get('again_of'):
+            return request.redirect('/my/work/leave?done=leave_again')
         return request.redirect('/my/work/leave?done=leave_sent')
 
     # WDGAP QF3 — the live "after this request" line. Read-only: the facade

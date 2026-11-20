@@ -1523,3 +1523,92 @@ msgstr ""
 #: code:addons/pb_ess_workforce/models/ess_workforce.py:0
 msgid "After this request: %s more than you have"
 msgstr "Sau đơn này: vượt %s so với số bạn có"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Sent back"
+msgstr "Đã bị trả lại"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Only a request that was sent back can be asked again."
+msgstr "Chỉ có thể gửi lại đơn đã bị trả lại."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "This request was already asked again."
+msgstr "Đơn này đã được gửi lại rồi."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Asked again. Your new request is waiting for approval."
+msgstr "Đã gửi lại. Đơn mới của bạn đang chờ phê duyệt."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Your approver sent this back to you. It was not refused, and no days were taken."
+msgstr "Người phê duyệt đã trả lại đơn này cho bạn. Đơn không bị từ chối và không ngày nghỉ nào bị trừ."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<span>Ask again</span>"
+msgstr "<span>Gửi lại</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Ask again"
+msgstr "Gửi lại"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<b>Filled in from your request that was sent back</b>"
+msgstr "<b>Đã điền sẵn từ đơn của bạn bị trả lại</b>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<span class=\"pbew-again-k\">Why it was sent back</span>"
+msgstr "<span class=\"pbew-again-k\">Lý do bị trả lại</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Change what is needed, then send it. It goes for approval like any new request."
+msgstr "Sửa những gì cần, rồi gửi đi. Đơn sẽ được duyệt như mọi đơn mới."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Documents are not copied. Add them again below if they are still needed."
+msgstr "Tài liệu không được sao chép. Hãy thêm lại bên dưới nếu vẫn cần."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Start an empty request instead"
+msgstr "Tạo đơn trống thay vào đó"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<span data-pbew-one=\"\">The day</span><span class=\"d-none\" data-pbew-many=\"\">First day</span>"
+msgstr "<span data-pbew-one=\"\">Ngày nghỉ</span><span class=\"d-none\" data-pbew-many=\"\">Ngày đầu</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<option value=\"full\">Full day</option>"
+msgstr "<option value=\"full\">Cả ngày</option>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Morning"
+msgstr "Buổi sáng"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Afternoon"
+msgstr "Buổi chiều"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Morning only"
+msgstr "Chỉ buổi sáng"

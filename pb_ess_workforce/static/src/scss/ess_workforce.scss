@@ -200,6 +200,54 @@
     .pbew-prev-warn { margin: 6px 0 0; font-size: 12.5px; color: var(--pbim-amber); font-weight: 600; }
     .pbew-prev-err { margin: 6px 0 0 !important; font-size: 12.5px; color: var(--pbim-rose); font-weight: 600; }
 
+    // ---------- WF2 P6c (D36): sent back, and "Ask again" ----------
+    // the Approvals inbox's own "Sent back" amber — something to act on,
+    // never the rose of a refusal
+    .pbew-lv .pbme-badge--sent_back { background: var(--pbim-amber-soft); color: var(--pbim-amber); box-shadow: inset 0 0 0 1px rgba(217, 119, 6, .28); }
+    .pbew-lv { scroll-margin-top: 90px; border-radius: var(--pbim-r-sm); transition: background .4s, box-shadow .4s; }
+    .pbew-lv:target { background: var(--pbim-soft); box-shadow: 0 0 0 2px var(--pbim-primary-light); }
+    .pbew-lv-why {
+        display: flex; align-items: flex-start; gap: 9px; margin-top: 9px; padding: 10px 12px;
+        border-radius: var(--pbim-r-sm); background: var(--pbim-amber-soft);
+        border: 1px solid rgba(217, 119, 6, .22);
+        p { margin: 0; }
+    }
+    .pbew-lv-why-i {
+        display: inline-grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 8px;
+        background: var(--pbim-surface); color: var(--pbim-amber);
+    }
+    .pbew-lv-why-b { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .pbew-lv-why-t { font-size: 12.5px; font-weight: 700; color: var(--pbim-ink); line-height: 1.4; }
+    .pbew-lv-why-r { font-size: 13px; color: var(--pbim-text); line-height: 1.45; overflow-wrap: anywhere;
+        &::before { content: "\201C"; } &::after { content: "\201D"; } }
+    .pbew-lv-link {
+        display: inline-flex; align-items: center; gap: 5px; margin-top: 7px; margin-right: 12px;
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-primary-strong); text-decoration: none;
+        &:hover span { text-decoration: underline; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; border-radius: 4px; }
+    }
+    .pbew-again-btn { box-shadow: 0 6px 16px -8px rgba(90, 75, 176, .7); }
+    #pbew-ask { scroll-margin-top: 90px; }
+    .pbew-ask--again { box-shadow: 0 0 0 2px var(--pbim-primary-light), 0 18px 40px -24px rgba(90, 75, 176, .55); }
+    .pbew-again {
+        margin: 0 0 14px; padding: 12px 14px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-soft); border: 1px solid var(--pbim-primary-light);
+        p { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--pbim-text); }
+    }
+    .pbew-again-h { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--pbim-ink); line-height: 1.3; }
+    .pbew-again-i {
+        display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 9px;
+        background: var(--pbim-primary); color: #fff;
+    }
+    .pbew-again-r {
+        display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line-2); overflow-wrap: anywhere;
+    }
+    .pbew-again-k { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--pbim-muted); }
+    .pbew-again-x { display: inline-block; margin-top: 8px; font-size: 12.5px; font-weight: 700; color: var(--pbim-primary-strong); }
+    .pbew-again-err { margin: 0 0 10px !important; }
+    @media (prefers-reduced-motion: reduce) { .pbew-lv { transition: none; } }
+
     // ---------- phone ----------
     @media (max-width: 900px) {
         .pbew-days { grid-template-columns: repeat(2, 1fr); }
