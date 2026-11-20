@@ -4450,3 +4450,15 @@ class TestWorkflowStudio(TransactionCase):
             missing = sorted(m for m in fixed if not words.get(m))
             self.assertFalse(missing, '%s: %s' % (lang, missing[:5]))
             self.assertFalse([m for m in fixed if re.search(r'(?i)odoo', words[m])])
+
+    def test_wf2p6b_w5_next_start_days_in_the_readers_language(self):
+        """"Next 5 starts" and the start history name the day as before in
+        English and in the reader's own words otherwise."""
+        from datetime import datetime
+        from odoo.addons.pb_lifecycle.models.workflow_schedule_run import _schedule_day
+        moment = datetime(2026, 11, 23, 9, 0)
+        self.assertEqual(_schedule_day(moment), 'Mon 23 Nov 2026')
+        self.assertEqual(_schedule_day(moment, 'en_US'), 'Mon 23 Nov 2026')
+        self.assertNotEqual(_schedule_day(moment, 'vi_VN'), 'Mon 23 Nov 2026')
+        self.assertIn('2026', _schedule_day(moment, 'id_ID'))
+        self.assertEqual(_schedule_day(moment, 'xx_XX'), 'Mon 23 Nov 2026')

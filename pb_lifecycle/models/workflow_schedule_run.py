@@ -42,6 +42,20 @@ _logger = logging.getLogger(__name__)
 LOG_KEEP = 20
 
 
+
+def _schedule_day(local, lang=None):
+    """"Mon 23 Nov 2026" in English (exactly as before); the reader's own
+    short weekday and month otherwise ("Th 2 23 thg 11 2026", "Sen 23 Nov
+    2026") — WF2 P6b, for the editor's "Next 5 starts" and history."""
+    if not lang or lang == 'en_US':
+        return local.strftime('%a %-d %b %Y')
+    try:
+        from babel.dates import format_date
+        from odoo.tools.misc import babel_locale_parse
+        return format_date(local.date(), 'EEE d MMM y', locale=babel_locale_parse(lang))
+    except Exception:  # an unknown locale: keep the English day
+        return local.strftime('%a %-d %b %Y')
+
 class WorkflowScheduleOutbox(models.Model):
     _inherit = 'biz.approval.outbox'
 
@@ -263,7 +277,7 @@ class WorkflowScheduleStudio(models.AbstractModel):
         for moment in WS.next_ticks(schedule, tzname, now, 5, working):
             local = fields.Datetime.context_timestamp(self.with_context(tz=tzname), moment)
             result['next'].append({'at': fields.Datetime.to_string(moment),
-                                   'day': local.strftime('%a %-d %b %Y'),
+                                   'day': _schedule_day(local, self.env.lang),
                                    'time': '%d:%02d' % (local.hour, local.minute)})
         if w.source_model:
             try:
@@ -311,7 +325,7 @@ class WorkflowScheduleStudio(models.AbstractModel):
                                if row['missed'] == 1 else
                                _('%s earlier starts were missed while the system was off; it started once.',
                                  row['missed']))
-            rows.append({'day': local.strftime('%a %-d %b %Y'), 'time': '%d:%02d' % (local.hour, local.minute),
+            rows.append({'day': _schedule_day(local, self.env.lang), 'time': '%d:%02d' % (local.hour, local.minute),
                          'text': text, 'problem': reason == 'over_cap'})
         return {'rows': rows, 'clock_on': self._schedule_clock_on()}
 
