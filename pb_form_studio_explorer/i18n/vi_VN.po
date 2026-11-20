@@ -29,12 +29,6 @@ msgid "(removed)"
 msgstr "(đã xoá)"
 
 #. module: pb_form_studio_explorer
-#. odoo-javascript
-#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
-msgid "Also a split and a filter in reports."
-msgstr "Cũng dùng để chia và lọc trong báo cáo."
-
-#. module: pb_form_studio_explorer
 #. odoo-python
 #: code:addons/pb_form_studio_explorer/models/explorer.py:0
 msgid "Contract · as on each payslip"
@@ -53,6 +47,24 @@ msgid "Employee · as it is today"
 msgstr "Nhân viên · giá trị hiện tại"
 
 #. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "In reports"
+msgstr "Trong báo cáo"
+
+#. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "Lists and reports."
+msgstr "Danh sách và báo cáo."
+
+#. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "Lists and reports: a column on the lists of these records, and a split and a filter in reports."
+msgstr "Danh sách và báo cáo: một cột trong danh sách các hồ sơ này, và dùng để chia và lọc trong báo cáo."
+
+#. module: pb_form_studio_explorer
 #. odoo-python
 #: code:addons/pb_form_studio_explorer/models/explorer.py:0
 msgid "No"
@@ -65,10 +77,10 @@ msgid "Not filled in"
 msgstr "Chưa điền"
 
 #. module: pb_form_studio_explorer
-#. odoo-javascript
-#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
-msgid "Offered as a column on the lists of these records, and as a split and a filter in reports."
-msgstr "Có thể chọn làm cột trong danh sách các hồ sơ này, và dùng để chia và lọc trong báo cáo."
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/form_studio.py:0
+msgid "Private reports of other people: %s"
+msgstr "Báo cáo riêng của người khác: %s"
 
 #. module: pb_form_studio_explorer
 #. odoo-python
@@ -79,8 +91,14 @@ msgstr "Quý %(n)s %(year)s"
 #. module: pb_form_studio_explorer
 #. odoo-python
 #: code:addons/pb_form_studio_explorer/models/form_studio.py:0
-msgid "Saved report views"
-msgstr "Bản xem báo cáo đã lưu"
+msgid "Saved reports"
+msgstr "Báo cáo đã lưu"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/form_studio.py:0
+msgid "Saved reports that use this field: %s. Deleting it takes it off them: they open without this split or filter and say so once."
+msgstr "Báo cáo đã lưu dùng trường này: %s. Xoá trường sẽ gỡ nó khỏi các báo cáo đó: chúng mở ra không có cách chia hoặc bộ lọc này và báo một lần."
 
 #. module: pb_form_studio_explorer
 #. odoo-python

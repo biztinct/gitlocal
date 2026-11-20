@@ -19,8 +19,9 @@ person or per payslip. Example: people by shirt size.
 * Only people who may see a field are offered it — checked on the server for
   every question, not only in the picker. A field limited to some Countries
   of Work shows "—" for people elsewhere.
-* A saved report view that uses a field stops the field being deleted; if a
-  field becomes unavailable, the view opens without it and says so once.
+* The Form builder shows which saved reports use a field and warns before a
+  delete (other people's private reports only as a count); the delete goes
+  through and those reports open without the field and say so once.
 
 Silent install: creates no field, column, job, mail or setting. Nothing new
 appears in the reports until such a field exists.
@@ -37,6 +38,7 @@ appears in the reports until such a field exists.
     'data': [],
     'assets': {
         'web.assets_backend': [
+            'pb_form_studio_explorer/static/src/scss/form_builder_reports.scss',
             'pb_form_studio_explorer/static/src/xml/form_builder_wording.xml',
         ],
     },

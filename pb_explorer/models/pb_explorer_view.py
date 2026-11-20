@@ -124,6 +124,24 @@ class PbExplorerView(models.Model):
                     and k not in (clean.get('filters') or {}))
         return sorted(keys)
 
+    def _pbx_gone_names(self):
+        """Names of deleted fields this view used (`_lost`, written by the
+        module that deleted them). Never part of the question itself:
+        `SPEC_KEYS` keeps it out of every query and of a re-save."""
+        self.ensure_one()
+        spec = self.spec if isinstance(self.spec, dict) else {}
+        return [str(n)[:80] for n in (spec.get('_lost') or [])
+                if isinstance(n, str) and n][:10]
+
+    def _pbx_clear_gone(self):
+        self.ensure_one()
+        if self.user_id.id != self.env.uid:
+            return False
+        spec = dict(self.spec) if isinstance(self.spec, dict) else {}
+        spec.pop('_lost', None)
+        self.write({'spec': spec})
+        return True
+
     def _pbx_forget_extra(self, keys):
         """Say it ONCE: when the field behind a lost key is gone for good
         (deleted — not merely hidden from this reader), its owner's view
@@ -270,8 +288,16 @@ class PbExplorerViews(models.AbstractModel):
         note = (_("Part of this saved view no longer exists here, so it "
                   "opened with the closest match. Save it again to keep "
                   "this version.") if drift else '')
+        gone = view._pbx_gone_names()
         lost = view._pbx_lost_extra(spec) if drift else []
-        if lost:
+        if gone:
+            # A field this view used was deleted; the module that deleted it
+            # already took it off the question and left its name here. Said
+            # ONCE: the mark is cleared when the view's owner has seen it.
+            note = _("This view was split or filtered by “%s”, which was "
+                     "removed, so it opened without it.", ', '.join(gone))
+            view._pbx_clear_gone()
+        elif lost:
             # FS-8 — a split or filter by a field that is no longer offered to
             # this reader (removed, unmarked, or one they may not see). The
             # view opens WITHOUT it and says so in one sentence.

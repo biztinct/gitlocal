@@ -29,12 +29,6 @@ msgid "(removed)"
 msgstr "(dihapus)"
 
 #. module: pb_form_studio_explorer
-#. odoo-javascript
-#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
-msgid "Also a split and a filter in reports."
-msgstr "Juga untuk membagi dan menyaring laporan."
-
-#. module: pb_form_studio_explorer
 #. odoo-python
 #: code:addons/pb_form_studio_explorer/models/explorer.py:0
 msgid "Contract · as on each payslip"
@@ -53,6 +47,24 @@ msgid "Employee · as it is today"
 msgstr "Karyawan · nilai saat ini"
 
 #. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "In reports"
+msgstr "Di laporan"
+
+#. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "Lists and reports."
+msgstr "Daftar dan laporan."
+
+#. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "Lists and reports: a column on the lists of these records, and a split and a filter in reports."
+msgstr "Daftar dan laporan: kolom di daftar data ini, serta untuk membagi dan menyaring laporan."
+
+#. module: pb_form_studio_explorer
 #. odoo-python
 #: code:addons/pb_form_studio_explorer/models/explorer.py:0
 msgid "No"
@@ -65,10 +77,10 @@ msgid "Not filled in"
 msgstr "Belum diisi"
 
 #. module: pb_form_studio_explorer
-#. odoo-javascript
-#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
-msgid "Offered as a column on the lists of these records, and as a split and a filter in reports."
-msgstr "Ditawarkan sebagai kolom di daftar data ini, dan untuk membagi serta menyaring laporan."
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/form_studio.py:0
+msgid "Private reports of other people: %s"
+msgstr "Laporan pribadi orang lain: %s"
 
 #. module: pb_form_studio_explorer
 #. odoo-python
@@ -79,8 +91,14 @@ msgstr "K%(n)s %(year)s"
 #. module: pb_form_studio_explorer
 #. odoo-python
 #: code:addons/pb_form_studio_explorer/models/form_studio.py:0
-msgid "Saved report views"
-msgstr "Tampilan laporan tersimpan"
+msgid "Saved reports"
+msgstr "Laporan tersimpan"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/form_studio.py:0
+msgid "Saved reports that use this field: %s. Deleting it takes it off them: they open without this split or filter and say so once."
+msgstr "Laporan tersimpan yang memakai kolom ini: %s. Menghapusnya akan melepasnya dari laporan itu: laporan dibuka tanpa pembagian atau saringan ini dan memberi tahu sekali."
 
 #. module: pb_form_studio_explorer
 #. odoo-python

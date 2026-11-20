@@ -2797,3 +2797,9 @@ msgstr "Bản xem này được chia hoặc lọc theo một trường mà bạn
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "“%(measure)s” cannot be split or filtered by “%(dim)s”. That field belongs to a person, while component-level figures are counted per pay component — one person appears in many components. Pick another measure, or take the component off the filters."
 msgstr "“%(measure)s” không thể chia hoặc lọc theo “%(dim)s”. Trường đó thuộc về một người, còn số liệu theo khoản lương được tính theo từng khoản — một người có mặt trong nhiều khoản. Hãy chọn thước đo khác, hoặc bỏ khoản lương khỏi bộ lọc."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "This view was split or filtered by “%s”, which was removed, so it opened without it."
+msgstr "Bản xem này được chia hoặc lọc theo “%s”, trường này đã bị xoá, nên đã mở mà không có nó."

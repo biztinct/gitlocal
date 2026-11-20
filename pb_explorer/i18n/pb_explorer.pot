@@ -2867,3 +2867,9 @@ msgstr ""
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "“%(measure)s” cannot be split or filtered by “%(dim)s”. That field belongs to a person, while component-level figures are counted per pay component — one person appears in many components. Pick another measure, or take the component off the filters."
 msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "This view was split or filtered by “%s”, which was removed, so it opened without it."
+msgstr ""

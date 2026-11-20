@@ -285,7 +285,11 @@ class TestFs8(TestFactEngine):
         self.assertEqual(self.emp3[self.f_vn], 'opt_1')
 
     # ================================================================== 7
-    def test_07_delete_while_a_saved_view_uses_it(self):
+    def test_07_delete_while_saved_reports_use_it(self):
+        """A saved report never stops the delete (owner default): the screens
+        show and warn — shared and own reports by name, other people's private
+        ones only as a count — and after the delete every affected report opens
+        without the field and says so ONCE."""
         View = self._as(self.admin, 'pb.explorer.view')
         S = self.env['pb.form.studio'].with_user(self.admin)
         tmp = S.create_field('employee_detail', {'type': 'select', 'label': 'DEMO Canteen shift',
@@ -295,38 +299,67 @@ class TestFs8(TestFactEngine):
         k = key('hr.employee', tmp)
         mine = View.pbx_save('DEMO people by canteen shift',
                              {'measure': 'headcount', 'dimension': k, 'grain': 'none'})
-        other = self._as(self.analyst, 'pb.explorer.view').pbx_save(
-            'DEMO filtered by canteen shift',
+        shared = self._as(self.hr_analyst, 'pb.explorer.view').pbx_save(
+            'DEMO shared canteen view', {'measure': 'net', 'dimension': k}, True)
+        private = self._as(self.analyst, 'pb.explorer.view').pbx_save(
+            'DEMO secret canteen musings',
             {'measure': 'net', 'dimension': 'department_id', 'filters': {k: ['opt_1']}})
-        refs = S.field_references('hr.employee', tmp)
-        ref = next(r for r in refs if r['kind'] == 'report_view')
-        self.assertEqual(ref['label'], 'Saved report views')
-        self.assertEqual(ref['count'], 2)
-        self.assertIn('DEMO people by canteen shift (DEMO FS8 Admin)', ref['names'])
-        # Used by shows it before anyone tries; the delete is refused, in words.
-        with self.assertRaisesRegex(UserError, 'Saved report views'):
-            S.delete_field('hr.employee', tmp, 'DEMO Canteen shift')
-        # An unrelated field with a longer name that STARTS the same is not caught.
-        self.assertFalse([r for r in S.field_references('hr.employee', self.f_shirt)
-                          if r['kind'] == 'report_view'])
+        # Not a blocker any more.
+        self.assertFalse([r for r in S.field_references('hr.employee', tmp)
+                          if 'report' in (r.get('kind') or '')])
+        # The Field library and the Studio carry the report use, in words.
+        lib = S.library()
+        row = next(r for r in lib['fields'] if r['name'] == tmp)
+        uses = row['report_uses']
+        self.assertEqual(uses['count'], 3)
+        self.assertIn('DEMO people by canteen shift', uses['lines'])
+        self.assertIn('DEMO shared canteen view', uses['lines'])
+        self.assertIn('Private reports of other people: 1', uses['lines'])
+        text = json.dumps(lib, default=str)
+        self.assertNotIn('DEMO secret canteen musings', text)
+        self.assertNotIn('DEMO FS8 Analyst', json.dumps(uses))
+        studio = S.get_studio('employee_detail')
+        self.assertEqual(studio['fields'][tmp]['report_uses']['count'], 3)
+        self.assertNotIn('DEMO secret canteen musings', json.dumps(studio, default=str))
+        # A field whose name STARTS the same is not caught.
+        self.assertFalse(next(r for r in lib['fields'] if r['name'] == self.f_shirt)
+                         .get('report_uses'))
 
-        # The field goes another way (here: straight from the field list).
+        # The delete goes through.
+        S.delete_field('hr.employee', tmp, 'DEMO Canteen shift')
+        self.assertNotIn(tmp, self.env['hr.employee']._fields)
+        for saved in (mine, shared, private):
+            spec = self.env['pb.explorer.view'].browse(saved['id']).spec
+            self.assertNotIn(tmp, json.dumps(spec))
+        # Each owner is told once.
+        for user, saved in ((self.admin, mine), (self.hr_analyst, shared),
+                            (self.analyst, private)):
+            opened = self._as(user).open_view(saved['id'])
+            self.assertTrue(opened['ok'])
+            self.assertNotIn(tmp, json.dumps(opened['spec']))
+            self.assertIn('DEMO Canteen shift', opened['note'])
+            self.assertIn('opened without it', opened['note'])
+            again = self._as(user).open_view(saved['id'])
+            self.assertEqual(again['note'], '', user.login)
+            res = self._as(user).query(again['spec'])
+            self.assertTrue(res['ok'])
+        self.assertEqual(self._as(self.admin).open_view(mine['id'])['spec']['dimension'], 'none')
+
+    def test_07c_field_removed_another_way(self):
+        """Removed outside the Form builder: the view still opens without it
+        and says so once (the stored key is noticed and dropped)."""
+        View = self._as(self.admin, 'pb.explorer.view')
+        tmp = self.env['pb.form.studio'].with_user(self.admin).create_field(
+            'employee_detail', {'type': 'bool', 'label': 'DEMO Night shift', 'vis': 'all',
+                                'list_ok': True})['name']
+        saved = View.pbx_save('DEMO night view', {'measure': 'headcount',
+                                                  'dimension': key('hr.employee', tmp)})
         self.env['ir.model.fields'].sudo().search(
             [('model', '=', 'hr.employee'), ('name', '=', tmp)]).unlink()
-        opened = self._as(self.admin).open_view(mine['id'])
-        self.assertTrue(opened['ok'])
+        opened = self._as(self.admin).open_view(saved['id'])
         self.assertEqual(opened['spec']['dimension'], 'none')
         self.assertIn('not available to you any more', opened['note'])
-        # Said ONCE: the owner's view no longer carries the field.
-        again = self._as(self.admin).open_view(mine['id'])
-        self.assertEqual(again['note'], '')
-        # The other person's view opens without the filter, and the board
-        # answers the whole question rather than a raw key.
-        theirs = self._as(self.analyst).open_view(other['id'])
-        self.assertEqual(theirs['spec']['filters'], {})
-        self.assertTrue(theirs['note'])
-        res = self._as(self.analyst).query(theirs['spec'])
-        self.assertTrue(res['ok'])
+        self.assertEqual(self._as(self.admin).open_view(saved['id'])['note'], '')
 
     def test_07b_unmarked_field_drops_out_of_a_shared_view(self):
         View = self._as(self.admin, 'pb.explorer.view')
@@ -437,7 +470,7 @@ class TestFs8(TestFactEngine):
         with open(os.path.join(HERE, 'i18n', 'pb_form_studio_explorer.pot'),
                   encoding='utf-8') as fh:
             pot = fh.read()
-        for word in ('Your own fields', 'Not filled in', 'Saved report views',
+        for word in ('Your own fields', 'Not filled in', 'Saved reports',
                      'Employee · as it is today', 'Contract · as on each payslip'):
             self.assertIn('msgid "%s"' % word, pot)
         for rel in ('models/explorer.py', 'models/form_studio.py', '__manifest__.py',

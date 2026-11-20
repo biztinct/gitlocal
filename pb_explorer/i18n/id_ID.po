@@ -39,3 +39,9 @@ msgstr "Tampilan ini dibagi atau disaring menurut kolom yang tidak lagi tersedia
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "“%(measure)s” cannot be split or filtered by “%(dim)s”. That field belongs to a person, while component-level figures are counted per pay component — one person appears in many components. Pick another measure, or take the component off the filters."
 msgstr "“%(measure)s” tidak bisa dibagi atau disaring menurut “%(dim)s”. Kolom itu milik seseorang, sedangkan angka per komponen dihitung per komponen gaji — satu orang ada di banyak komponen. Pilih ukuran lain, atau keluarkan komponen dari saringan."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "This view was split or filtered by “%s”, which was removed, so it opened without it."
+msgstr "Tampilan ini dibagi atau disaring menurut “%s”, yang sudah dihapus, jadi dibuka tanpanya."

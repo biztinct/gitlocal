@@ -11,7 +11,7 @@ No server was touched. Facts pass: `FS8_FACTS.md` (same folder, written before t
 | Download names + filter line | same | File names use screen words (`payobook_net_pay_by_department_….xlsx`, was `…_net_by_department_id_…`); the workbook's "Filters" line names Basis / Where they work / Employee / Kind of run in words with value labels (it printed `basis: approved`). |
 | Pickers | same (JS/XML/SCSS) | "By" and "Add filter" show a "Your own fields" group (two-line rows: field, then "Employee · as it is today" / "Contract · as on each payslip") and ONE sticky help line. Filter names come from the server (`filterLabel`), never a raw key. The board adopts the server's cleaned split and drops filters the server dropped. Menus near the right edge on a phone are moved back on screen (pre-existing clipping, made worse by the wider menu). |
 | Saved views | `pb_explorer_view.py` | A view whose split/filter is no longer offered opens without it with one sentence ("…a field that is not available to you any more, so it opened without it."). If the field is DELETED, the owner's view stops carrying it on that first open → the note appears once. A shared view opened by someone else is never changed. |
-| New bridge | **`pb_form_studio_explorer` 19.0.1.0.0** (depends `pb_form_studio`, `pb_explorer`) | Answers the hooks from the engine: `fields_for(model, 'list')` as the real reader (custom fields marked "Show in lists" that this person may see) on employee and contract; kinds choice / yes-no / short text / link / date (three splits: by month, quarter, year). Employee value = today's; contract value = the contract of each payslip of the run (`hr_payslip.contract_id`, newest if two). Country of Work (R10) → "—"; no country recorded → "—" for a limited field (same rule as `_pbfs_applies`). Reference finder "Saved report views" (anybody's view, name + owner) → shows under "Used by" and blocks the delete. "Show in lists" sentence now says "…and as a split and a filter in reports" (template extension, no engine file touched). vi + id. |
+| New bridge | **`pb_form_studio_explorer` 19.0.1.0.0** (depends `pb_form_studio`, `pb_explorer`) | Answers the hooks from the engine: `fields_for(model, 'list')` as the real reader (custom fields marked "Show in lists" that this person may see) on employee and contract; kinds choice / yes-no / short text / link / date (three splits: by month, quarter, year). Employee value = today's; contract value = the contract of each payslip of the run (`hr_payslip.contract_id`, newest if two). Country of Work (R10) → "—"; no country recorded → "—" for a limited field (same rule as `_pbfs_applies`). Saved reports that use a field are shown as "In reports" / a count chip in the Field library and WARN in both delete confirmations (shared and own reports named, other people's private reports only counted) — they never block the delete (follow-on, §10). On delete the field is taken off every affected saved report and its name is left in `_lost`, so the report opens without it and says so once. "Show in lists" help now reads "Lists and reports: …" (template extension, no engine file touched). vi + id. |
 
 Not touched: `pb_form_studio` engine files, any forbidden module, any standard addon. `pb_form_studio_reach`
 test 05 (no custom field in the Explorer schema) still passes unchanged: its fields are not marked
@@ -44,7 +44,8 @@ final re-run after the last change: see §3a.
 | 4 | Contract field on a payslip report: April money under the OLD contract's value, May under the NEW one; empty contract → "Not filled in" | PASS (test_04) |
 | 5 | Visibility: payroll manager without HR sees neither the HR-only nor the admin-only field — picker, filter list, schema text — and a direct call with either (split, filter, drill, Excel, link) gets no split, no filter, no label, no value; HR+payroll sees the HR one only; administrator sees both | PASS (test_05); also on screen (walk) |
 | 6 | Field limited to Vietnam: India person "—", Vietnam people their value, no Country of Work "—"; the India value is kept | PASS (test_06) |
-| 7 | Saved report view uses a field → "Used by: Saved report views (2)" with view names + owners, delete refused in words; a field whose name starts the same is not caught; field removed another way → owner's view opens without it with the note, second open no note; another person's view opens without the filter and answers | PASS (test_07); delete sheet seen on screen |
+| 7 | (follow-on rule) Saved reports never block: library + Studio carry `report_uses` (3 = own + shared named, "Private reports of other people: 1" — that report's name and owner appear nowhere in the payload); delete goes through; every affected report's stored question loses the field; each owner's next open: no split / no filter, note naming the field; second open: no note; the board answers | PASS (test_07); on screen: warning sheet with Delete enabled, deleted, saved view opened with the note, then without |
+| 7c | Field removed another way (straight from the field list): view opens without it, note once | PASS (test_07c) |
 | 7b | "Show in lists" switched off → a shared view opens without the split, note shown, owner's stored question kept | PASS (test_07b) |
 | 8 | Excel/CSV names in screen words (`…_net_pay_by_department_…`, `…_people_by_job_position_…`, `…_by_demo_shirt_size_…`), no `department_id`, no field code, no colon, no vendor word; workbook "Split by" and "Filters" in words (`DEMO Shirt size: Medium, Large`, `Basis: Approved`), no raw key/choice code | PASS (test_08); walk download name `payobook_people_by_demo_shirt_size_2026-11-20.xlsx` |
 | 9 | New field usable without restart: same process (test_09) AND **two workers** (`--workers 2`, demo copy): before 0/6 fresh connections, after creating the field through one request **12/12** fresh connections offered it, answered by both worker processes; after delete 0/6 | PASS |
@@ -81,8 +82,8 @@ Making the field: 0.4–0.8 s each on the demo copy.
   waterfall itself does.
 - A text field with many different answers shows the 24 largest, the rest counted as "more" (as
   every split does); a filter offers up to 200 values.
-- Saved report views that use a field stop the field being deleted, including private views of
-  other people — they have to change their view first (same as People/Contracts saved views).
+- A shared saved report opened by someone other than its owner shows the "field was removed"
+  note until the owner has opened it once (the note is cleared by the owner's first look).
 - The Indonesian screen of the reports is still mostly English (pre-existing: the module had no
   Indonesian file; only the 4 new sentences are translated).
 
@@ -105,20 +106,65 @@ Making the field: 0.4–0.8 s each on the demo copy.
 - No merge-time task. No engine file changed. Nothing created on any customer database.
 
 ## 7. Owner questions
-1. A private saved report that uses one of your own fields stops that field being deleted until
-   its owner changes the report. Is that right, or should the administrator be able to delete the
-   field anyway and the report simply loses that split (it already says so once when opened)?
-2. Employee fields are counted with each person's value as it is today (a person who changed shirt
-   size counts under the new size for last year too). Is that good enough, or do you need "as it
-   was in that month" (that needs a history of every change and is a bigger piece of work)?
-3. The switch is still called "Show in lists"; its sentence now says it also puts the field in
-   reports. Do you want a separate switch so a field can be in reports but not in lists?
+All three earlier questions were answered by the architect's defaults under the owner's standing
+approval (§10): saved reports warn but never block a delete; "value as it is today" stays; one
+switch ("Show in lists", help text now "lists and reports"). No open question.
 
 ## 8. Files
 `pb_explorer/__manifest__.py`, `pb_explorer/models/pb_explorer.py`, `pb_explorer/models/pb_explorer_view.py`,
 `pb_explorer/static/src/js/explorer.js`, `pb_explorer/static/src/xml/explorer.xml`,
 `pb_explorer/static/src/scss/explorer.scss`, `pb_explorer/i18n/{pb_explorer.pot,vi_VN.po,id_ID.po}`,
-`pb_form_studio_explorer/**`, `docs/handovers/formstudio/FS8_FACTS.md`, this report.
+`pb_form_studio_explorer/**` (incl. `static/src/scss/form_builder_reports.scss`), `docs/handovers/formstudio/FS8_FACTS.md`, this report.
 
 ## 9. Final run
 After the last code change (contract lookup, phone menus): `/pb_explorer, /pb_form_studio_explorer` on a fresh copy with the bridge — **0 failed, 0 errors** (explorer 101 + bridge 13 test methods). Local databases `fs_8_*` dropped at the end.
+
+## 10. Follow-on (2026-11-20, architect defaults under the owner's standing approval)
+Branch already on current `origin/19.1` (`e69bebcc4`, FS-7 live) — nothing to rebase.
+
+1. **Delete rule changed — a saved report never blocks a delete.** The report use is no longer an
+   engine reference finder (a finder blocks). The bridge adds `report_uses` to each own field in
+   the Studio and Field library payloads (`get_studio` / `library` overrides): shared reports and
+   the administrator's own are named, other people's private reports only counted ("Private
+   reports of other people: N" — never their names or owners). Shown as a count chip in the Field
+   library's "Used by" column, an "In reports" block in the properties panel, and a warning in both
+   delete confirmations ("Saved reports that use this field: N. Deleting it takes it off them: they
+   open without this split or filter and say so once."). `delete_field` override: the engine's own
+   delete first (its checks and real blockers unchanged), then every affected saved report's stored
+   question loses the field (split → none, filter removed) and keeps the field's name under
+   `_lost`; `pb.explorer.open_view` says "This view was split or filtered by “X”, which was
+   removed, so it opened without it." and clears the mark at the owner's first open. Proactive
+   clean-up also means a later field that happens to get the same code can never be picked up by
+   an old report.
+2. **One switch.** "Show in lists" stays the only switch; its help now reads "Lists and reports: a
+   column on the lists of these records, and a split and a filter in reports." (Field library:
+   "Lists and reports."). vi + id. "Value as it is today" unchanged.
+3. **Speed.** Re-measured (machine load ≈ 8–10; median of 7; whole question):
+
+   | Net pay split | ms | vs department | vs job position (same per-person table) |
+   |---|---|---|---|
+   | department (built-in) | 252 | 1.00× | — |
+   | job position (built-in) | 293 | 1.16× | 1.00× |
+   | own employee choice | 306 | **1.21×** | 1.04× |
+   | own employee date by quarter | 349 | **1.39×** | 1.19× |
+   | own contract choice | 454 | **1.80×** | 1.55× |
+   | own-field filter (split by department) | 335 | 1.33× | 1.14× |
+
+   People-count splits: 1.19–1.35× department. 21-person company: 1.00–1.02× everywhere.
+   Employee fields are under the 1.5× target; a **contract** field on money is not (1.80×): the
+   extra cost is finding the contract each payslip used across all 34,322 payslips of the 53 runs
+   in scope (already a hash-grouped read). Further speed would need a stored "contract per payslip
+   per run" in the report tables (a fact-table change + rebuild) — not attempted (not short or
+   safe). Results unchanged by any of this.
+
+Re-run after the follow-on:
+- Test 7 (new rule) + 7c, all bridge tests: `/pb_explorer, /pb_form_studio_reach,
+  /pb_form_studio_explorer` on a fresh template copy — **142 tests, 0 failed** (explorer 101,
+  reach 51, bridge 14 methods).
+- Test 10 + totals at demo size, on a NEW copy: silent-install counts and the per-person report
+  checksum identical before/after; five shipped reports byte-identical before/after (and identical
+  to the first run's snapshot).
+- Screen (administrator, demo copy): Field library chip "2", delete sheet shows the warning with
+  "DEMO People by shirt size, Private reports of other people: 1" and an enabled Delete; delete
+  done; the saved report opened with the note, the second time without it.
+- Engine suite with the bridge installed: `/pb_form_studio, /pb_form_studio_explorer` — **0 failed** (engine 41 = baseline). Local databases `fs_8_*` dropped.
