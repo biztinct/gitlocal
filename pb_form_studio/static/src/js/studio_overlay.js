@@ -21,7 +21,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { rpcBus } from "@web/core/network/rpc";
 import { fsIc, KIND_ICON } from "./fs_icons";
-import { FACADE, toneClass, CHANGE_ICON, isEmptyDisplay, fold, foldMatch, KIND_GROUP, isSlashKey } from "./fs_words";
+import { FACADE, toneClass, CHANGE_ICON, isEmptyDisplay, fold, foldMatch, KIND_GROUP, isSlashKey, sameLabels } from "./fs_words";
 
 const DRAFT_MS = 800;
 const LANG_NAMES = { en_US: "English", vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
@@ -309,9 +309,13 @@ export class FormStudioOverlay extends Component {
         if (this.stdSearch.el) { this.stdSearch.el.focus(); }
     }
     isSelectedCountry(c) { return Number(this.state.stdCountry) === c.id; }
-    stdState(f) {
+    /** FS-13: labels two different fields of the list share (folded). */
+    get stdSameLabels() { return sameLabels(this.stdAll, (f) => this.stdLabel(f)); }
+    stdState(f, same) {
         const s = f.stdbox || {};
         const parts = [];
+        // two fields with one label: the field code tells them apart
+        if (same && same.has(fold(this.stdLabel(f)))) { parts.push(_t("Field code: %s", f.name)); }
         if (s.ignored) { parts.push(_t("Locked now, shown again")); }
         else if (s.hidden) { parts.push(_t("Hidden for everyone")); }
         else if ((s.countries || []).length) { parts.push(_t("Hidden in %s", s.countries.map((c) => c.name).join(", "))); }
@@ -456,6 +460,15 @@ export class FormStudioOverlay extends Component {
             g.items.push(it);
         }
         return out;
+    }
+    /** FS-13: in one fixed section, the labels two different fields share. */
+    fixedSameLabels(sec) {
+        const items = (((this.data.fixed || {})[sec.id]) || []).filter((it) => this.fixedField(it));
+        return sameLabels(items.map((it) => ({ name: it.ref, it })), (x) => this.fixedLabel(x.it));
+    }
+    fixedCode(it, same) {
+        const f = this.fixedField(it);
+        return f && same && same.has(fold(this.fixedLabel(it))) ? _t("Field code: %s", f.name) : "";
     }
     fixedCount(sec) { return (((this.data.fixed || {})[sec.id]) || []).length; }
     fixedCountText(sec) {

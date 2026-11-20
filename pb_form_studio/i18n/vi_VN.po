@@ -2658,3 +2658,10 @@ msgstr "Không có trường ở đây: phần này của màn hình liệt kê 
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "Worked out by the screen"
 msgstr "Do màn hình tự tính"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Field code: %s"
+msgstr "Mã trường: %s"
+

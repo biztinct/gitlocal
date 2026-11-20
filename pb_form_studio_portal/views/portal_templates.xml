@@ -145,6 +145,27 @@
     </div>
   </template>
 
+  <!-- FS-13: an administrator with no employee record opens My Profile.
+       My Profile is always somebody's own page, so a short note and the way
+       into the page builder, where the page can be previewed as anybody. -->
+  <!-- name = the browser tab's title (the website layout reads it) -->
+  <template id="my_profile_no_employee" name="My Profile">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbfp">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My Profile</t>
+        </t>
+        <div class="pbme-empty pbfp-noemp">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Your login has no employee record</h3>
+          <p>My Profile shows a person's own details, so there is nothing to show for you here.</p>
+          <p>You can still arrange this page for your employees and preview it as any of them.</p>
+          <a class="pbme-btn pbme-btn--primary pbfp-edit" t-att-href="pbfp_builder_url"><t t-call="pb_form_studio_portal.ic_pencil"/>Edit this page</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
   <!-- My details: with a page published, the company details live on My
        Profile; one door there instead of a second copy of them. -->
   <template id="portal_my_details_page_door" name="My details: door to My Profile (Form builder page)"

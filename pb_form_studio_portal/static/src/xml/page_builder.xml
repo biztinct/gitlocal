@@ -14,7 +14,8 @@
       <div class="pbfb-studiobar">
         <span class="pbfb-tag"><t t-out="ic('wand',15)"/> <span>Form builder</span></span>
         <span class="pbfb-tag pbfb-tag-target"><t t-out="ic('smartphone',14)"/> <span>My Payobook page</span></span>
-        <span class="pbfb-changes" t-esc="changeText"/>
+        <span class="pbfb-changes pbpb-chg-long" t-esc="changeText"/>
+        <span t-if="changeShort" class="pbpb-chg-short" t-att-title="changeText" t-esc="changeShort"/>
         <span class="pbfb-spacer"/>
         <div class="pbpb-views" role="group" aria-label="Build or preview">
           <button type="button" t-att-class="viewClass('build')" t-on-click="() => this.setView('build')"><t t-out="ic('layers',14)"/> <span>Build</span></button>
@@ -76,10 +77,11 @@
               </div>
               <p class="pbfb-hint">Drag a field onto a section, or tap it to add it to the section you picked. Every field the employee may see is here; pay figures never are.</p>
               <div class="pbpb-flist">
+                <t t-set="same" t-value="sameLabels"/>
                 <button t-foreach="fieldList" t-as="f" t-key="f.name" type="button" class="pbpb-fit" t-att-class="rowClass(f)"
                         draggable="true" t-on-dragstart="(ev) => this.onDragStart(ev, f.name)" t-on-click="() => this.addField(f)">
                   <span class="ki" t-out="kindIcon(f)"/>
-                  <span class="tx"><b t-esc="label(f)"/><small t-esc="rowSub(f)"/></span>
+                  <span class="tx"><b t-esc="label(f)"/><small t-esc="rowSub(f, same)"/></span>
                   <span class="st" t-if="placed.has(f.name)" t-out="ic('check', 14)"/>
                   <span class="st add" t-else="" t-out="ic('plus', 14)"/>
                 </button>
@@ -136,7 +138,7 @@
                   <button type="button" t-att-class="sizeClass('phone')" t-on-click="() => this.setSize('phone')"><t t-out="ic('smartphone',14)"/> <span>Phone</span></button>
                 </div>
               </div>
-              <p t-if="!state.emps.length" class="pbfb-hint flush">Nobody with a My Payobook login was found to preview as.</p>
+              <p t-if="!state.emps.length" class="pbfb-hint flush">No employee was found to preview as.</p>
               <iframe t-else="" t-att-class="frameClass()" t-att-src="previewUrl" title="Preview of My Profile"/>
             </t>
             <t t-else="">

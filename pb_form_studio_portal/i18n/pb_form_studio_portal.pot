@@ -374,6 +374,7 @@ msgstr ""
 #. module: pb_form_studio_portal
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_profile_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
 msgid "Edit this page"
 msgstr ""
 
@@ -581,6 +582,7 @@ msgstr ""
 #: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
 #: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
 msgid "My Profile"
 msgstr ""
 
@@ -1289,3 +1291,49 @@ msgstr ""
 #: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
 msgid "two columns"
 msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s to publish"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "no login yet"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Field code: %s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "No employee was found to preview as."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "There is no page to preview."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "Your login has no employee record"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "My Profile shows a person's own details, so there is nothing to show for you here."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "You can still arrange this page for your employees and preview it as any of them."
+msgstr ""
+

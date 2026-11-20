@@ -119,11 +119,12 @@
               <p t-if="portalHost" class="pbfb-hint">Pick a field to hide it, give it your own label or tick it for My Payobook. It stays where the product draws it.</p>
               <p t-else="" class="pbfb-hint">Pick a field to hide it or give it your own label. It stays where the product draws it.</p>
               <div class="pbfb-std-l">
+                <t t-set="stdSame" t-value="stdSameLabels"/>
                 <t t-foreach="stdGroups" t-as="g" t-key="g.tab">
                   <div class="pbfb-std-g" t-esc="g.tab"/>
                   <button t-foreach="g.items" t-as="f" t-key="f.name" type="button" class="pbfb-std-it" t-att-class="stdItemClass(f)" t-on-click="() => this.select(f)">
                     <span class="ck" t-out="stdIcon(f)"/>
-                    <span class="tx"><b t-esc="stdLabel(f)"/><small t-if="stdState(f)" t-esc="stdState(f)"/></span>
+                    <span class="tx"><b t-esc="stdLabel(f)"/><small t-if="stdState(f, stdSame)" t-esc="stdState(f, stdSame)"/></span>
                     <span t-if="f.stdbox and f.stdbox.lock" class="lk" t-att-title="f.stdbox.lock" t-out="ic('lock', 12)"/>
                   </button>
                 </t>
@@ -185,13 +186,14 @@
                     <!-- FS-11 (R29): the fields this fixed section really shows. -->
                     <div t-if="!isCollapsed(sec)" class="pbfb-fx">
                       <p t-if="!fixedCount(sec)" class="pbfb-hint flush">No fields here: this part of the screen lists records, not fields.</p>
+                      <t t-set="fxSame" t-value="fixedSameLabels(sec)"/>
                       <t t-foreach="fixedGroups(sec)" t-as="g" t-key="g_index">
                         <div t-if="g.group" class="pbfb-fx-g" t-esc="g.group"/>
                         <t t-foreach="g.items" t-as="it" t-key="it.key">
                           <button type="button" class="pbfb-fx-it" t-att-class="fixedItemClass(it)" t-att-data-fs-key="fixedKey(sec, it)"
                                   t-att-disabled="!fixedField(it)" t-on-click="() => this.onFixedClick(it)">
                             <span class="ki" t-out="fixedIcon(it)"/>
-                            <span class="lb" t-esc="fixedLabel(it)"/>
+                            <span class="lb"><t t-esc="fixedLabel(it)"/><small t-if="fixedCode(it, fxSame)" class="pbfb-fx-code" t-esc="fixedCode(it, fxSame)"/></span>
                             <span class="chips">
                               <span t-foreach="fixedChips(it)" t-as="c" t-key="c_index" t-att-class="fixedChipClass(c)" t-att-title="c.title or c.text"><t t-out="ic(c.icon, 11)"/> <span t-esc="c.text"/></span>
                             </span>

@@ -12,6 +12,11 @@
         button.on { background: #fff; color: var(--pbfb-studio); }
         &.light { background: var(--pbim-bg); button { color: var(--pbim-muted); } button.on { background: #fff; color: var(--pbim-primary); box-shadow: var(--pbfb-sh); } } }
 
+    // FS-13: the bar's status — the full sentence on a wide screen, a short
+    // pill ("3 to publish") at phone width, nothing when there is nothing
+    .pbpb-chg-short { display: none; font-size: 12px; font-weight: 700; white-space: nowrap; flex: none;
+        background: rgba(255, 255, 255, .16); padding: 3px 9px; border-radius: 999px; }
+
     // left list
     .pbpb-flist { display: grid; gap: 4px; padding: 0 12px 12px; }
     button.pbpb-fit { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; cursor: grab; padding: 8px 10px;
@@ -117,5 +122,10 @@
     .pbfb.pbfb-overlay.pbpb {
         .pbpb-grid.two { grid-template-columns: 1fr; }
         .pbpb-views span { display: none; }
+        // FS-13: never a sentence cut mid-word ("N."): the short pill instead,
+        // and the spacer pushes the buttons right again
+        .pbfb-studiobar > .pbpb-chg-long { display: none; }
+        .pbfb-studiobar > .pbpb-chg-short { display: inline-flex; }
+        .pbfb-studiobar > .pbfb-spacer { display: block; flex: 1 1 0; min-width: 0; }
     }
 }

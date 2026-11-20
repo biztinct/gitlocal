@@ -2660,3 +2660,10 @@ msgstr "Tidak ada kolom di sini: bagian layar ini berisi daftar catatan, bukan k
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "Worked out by the screen"
 msgstr "Dihitung oleh layar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Field code: %s"
+msgstr "Kode field: %s"
+

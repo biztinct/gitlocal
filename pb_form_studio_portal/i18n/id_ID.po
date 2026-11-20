@@ -373,6 +373,7 @@ msgstr "Setiap bagian butuh penanda sendiri. Mulai lagi dari halaman yang diterb
 #. module: pb_form_studio_portal
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_profile_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
 msgid "Edit this page"
 msgstr "Ubah halaman ini"
 
@@ -580,6 +581,7 @@ msgstr "Halaman My Payobook"
 #: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
 #: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
 msgid "My Profile"
 msgstr "Profil Saya"
 
@@ -1288,3 +1290,49 @@ msgstr "langsung tersimpan"
 #: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
 msgid "two columns"
 msgstr "dua kolom"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s to publish"
+msgstr "%s belum diterbitkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "no login yet"
+msgstr "belum punya login"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Field code: %s"
+msgstr "Kode field: %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "No employee was found to preview as."
+msgstr "Tidak ada karyawan untuk dipratinjau."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "There is no page to preview."
+msgstr "Tidak ada halaman untuk dipratinjau."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "Your login has no employee record"
+msgstr "Login Anda belum terhubung ke data karyawan"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "My Profile shows a person's own details, so there is nothing to show for you here."
+msgstr "Profil Saya menampilkan data milik orang itu sendiri, jadi tidak ada yang bisa ditampilkan untuk Anda di sini."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "You can still arrange this page for your employees and preview it as any of them."
+msgstr "Anda tetap bisa menata halaman ini untuk karyawan dan mempratinjaunya sebagai siapa pun dari mereka."
+

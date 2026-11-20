@@ -40,6 +40,11 @@
     .pbfp-alert { background: var(--pbim-rose-soft); color: var(--pbim-ink); border: 1px solid var(--pbim-rose); }
     .pbfp-toast { background: var(--pbim-green-soft); color: var(--pbim-ink); border: 1px solid var(--pbim-green); }
 
+    // FS-13: an administrator with no employee record
+    .pbfp-noemp { max-width: 640px; margin: 8px auto 24px;
+        p { margin-top: 6px; }
+        .pbme-btn { display: inline-flex; align-items: center; gap: 7px; } }
+
     // look only: links and buttons of a preview lead nowhere
     &.is-preview .pbme-detail a, &.is-preview .pbme-detail button { pointer-events: none; }
     &.is-preview .pbme-detail { user-select: none; }

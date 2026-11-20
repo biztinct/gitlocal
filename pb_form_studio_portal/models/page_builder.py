@@ -313,7 +313,14 @@ class PbFormStudioPage(models.AbstractModel):
 
     @api.model
     def _pbfp_companies(self):
-        return self.env['res.company'].sudo().search([], order='sequence, name')
+        """The companies a page may be made for (FS-13): active ones the
+        administrator works in — the companies switched on in their company
+        switcher, which are always among the ones their login may open. An
+        archived company (or one they cannot open) is not offered; a page made
+        for it earlier is kept as it is (`page_publish` carries it over)."""
+        allowed = self.env.companies & self.env.user.company_ids
+        return self.env['res.company'].sudo().search(
+            [('id', 'in', allowed.ids), ('active', '=', True)], order='sequence, name')
 
     # ============================================================ studio
     @api.model
@@ -396,15 +403,20 @@ class PbFormStudioPage(models.AbstractModel):
 
     @api.model
     def page_employees(self, term=''):
-        """People to preview the page as (administrator only)."""
+        """People to preview the page as (administrator only): any employee
+        the administrator may see, the ones with a My Payobook login first
+        (FS-13: a site where nobody has a login yet can still be previewed)."""
         self._pbfs_check_admin()
-        dom = [('user_id', '!=', False)]
-        if term:
-            dom.append(('name', 'ilike', term))
-        emps = self.env[EMP].search(dom, limit=20, order='name')
+        limit = 20
+        dom = [('name', 'ilike', term)] if term else []
+        emps = self.env[EMP].search(dom + [('user_id', '!=', False)], limit=limit, order='name')
+        if len(emps) < limit:
+            emps |= self.env[EMP].search(dom + [('user_id', '=', False)],
+                                         limit=limit - len(emps), order='name')
         countries = self._pbfs_record_countries(emps)
         Country = self.env['res.country']
         return [{'id': e.id, 'name': e.name, 'company': e.company_id.name or '',
+                 'login': bool(e.user_id),
                  'country': Country.browse(countries.get(e.id) or []).name or ''} for e in emps]
 
     # ----------------------------------------------------------- banner
@@ -492,6 +504,18 @@ class PbFormStudioPage(models.AbstractModel):
             clean, more = self._pbfp_clean_spec(cspec, eligible, layout)
             companies[str(cid)] = clean
             placed |= more
+        # FS-13: a company's own page for a company not offered here (archived
+        # since, or outside this administrator's companies) stays exactly as
+        # it is, and its fields stay shown.
+        for cid, kept in ((layout.page or {}).get('companies') or {}).items() if layout else []:
+            if str(cid) in valid or not isinstance(kept, dict):
+                continue
+            companies[str(cid)] = kept
+            for sec in kept.get('sections') or []:
+                for item in (sec or {}).get('fields') or []:
+                    name = item.get('name') if isinstance(item, dict) else item
+                    if name in eligible:
+                        placed.add(name)
         # 1. each field's own settings (the engine refuses what R14 forbids)
         for name, vals in (payload.get('updates') or {}).items():
             if name not in eligible or not isinstance(vals, dict):
@@ -620,7 +644,7 @@ class PbFormStudioPage(models.AbstractModel):
 
     # ============================================================ render
     @api.model
-    def portal_page_render(self, employee, spec=None, company=None):
+    def portal_page_render(self, employee, spec=None, company=None, preview=None):
         """The published page for ONE employee, or None when the standard
         page is in use. Built only from `fields_for(…, 'portal')` and
         `portal_values` (safe around the sudo record the portal hands over;
@@ -628,16 +652,30 @@ class PbFormStudioPage(models.AbstractModel):
 
         `spec`: a page to draw instead of the published one (the
         administrator's preview of a draft). → `{header, sections, side}`;
-        a section with nothing to show for this person is left out."""
+        a section with nothing to show for this person is left out.
+
+        `preview` (FS-13, administrator only): a dict of the draft's field
+        settings (`updates`, may be empty) — the page is drawn EXACTLY as
+        Publish would make it: every eligible field the spec places (ticked
+        or not yet), with the draft's labels and change settings, and nothing
+        the spec does not place. Nothing is written: the "Show on My
+        Payobook" tick changes only at Publish."""
         rec = self._pbfs_portal_record(EMP, employee)
+        if preview is not None:
+            self._pbfs_check_admin()
+            if spec is None:
+                raise UserError(self.env._('There is no page to preview.'))
         if spec is None:
             published = self._pbfp_published()
             if not published:
                 return None
             cid = str((company or rec.company_id).id or '')
             spec = (published.get('companies') or {}).get(cid) or published['default']
-        specs = {s['name']: s for s in self.fields_for(EMP, 'portal', record=rec)}
-        values = self.portal_values(EMP, rec)
+        if preview is not None:
+            specs, values = self._pbfp_preview_fields(rec, spec, preview)
+        else:
+            specs = {s['name']: s for s in self.fields_for(EMP, 'portal', record=rec)}
+            values = self.portal_values(EMP, rec)
         sections, placed = [], set()
         for sec in spec.get('sections') or []:
             items = []
@@ -654,7 +692,7 @@ class PbFormStudioPage(models.AbstractModel):
                              'cols': 1 if sec.get('cols') == 1 else 2, 'fields': items})
         # ticked in the employee Form builder but not placed yet: the end of
         # the first section (one truth: shown = on the page)
-        extra = [n for n in specs if n not in placed]
+        extra = [n for n in specs if n not in placed] if preview is None else []
         if extra and sections:
             for name in extra:
                 sections[0]['fields'].append(self._pbfp_item(specs[name], values.get(name) or {},
@@ -670,6 +708,64 @@ class PbFormStudioPage(models.AbstractModel):
             'sections': [s for s in sections if s['fields']],
             'side': [b for b in (spec.get('side') or SIDE_BLOCKS) if b in SIDE_BLOCKS],
         }
+
+    @api.model
+    def _pbfp_preview_fields(self, rec, spec, updates):
+        """FS-13 — the field specs and values of a page as Publish would
+        make it, for the administrator's preview: the fields `spec` places
+        that the page may show (`_pbfp_eligible`, the engine's R14 rules),
+        Country of Work honoured as on the real page, the draft's own labels
+        and change settings (`updates`) over the stored ones. Same item shape
+        as `fields_for(…, 'portal')`. Reads only; writes nothing."""
+        Model = self.env[EMP]
+        updates = updates if isinstance(updates, dict) else {}
+        eligible = self._pbfp_eligible()
+        metas = self._pbfs_meta(EMP)
+        sensitive = self._pbfs_portal_sensitive(EMP)
+        country = self._pbfs_record_countries(rec)[rec.id]
+        lang = self.env.lang or 'en_US'
+        specs, values = {}, {}
+        for sec in spec.get('sections') or []:
+            for item in (sec or {}).get('fields') or []:
+                name = item.get('name') if isinstance(item, dict) else item
+                if not isinstance(name, str) or name in specs or name not in eligible:
+                    continue
+                field = Model._fields.get(name)
+                if not field:
+                    continue
+                meta = metas.get(name)
+                custom = name.startswith(PREFIX) and bool(meta and meta.custom)
+                if name.startswith(PREFIX) and not self._pbfs_applies(meta, country):
+                    continue
+                rules = self._pbfs_portal_rules(EMP, name)
+                if not rules['can_show']:
+                    continue
+                upd = updates.get(name) if isinstance(updates.get(name), dict) else {}
+                desc = field.get_description(self.env, ['string', 'help'])
+                if custom:
+                    own = ((upd.get('labels') or {}) if isinstance(upd.get('labels'), dict)
+                           else {}).get(lang)
+                elif 'std_labels' in upd:
+                    labels = upd['std_labels'] if isinstance(upd['std_labels'], dict) else {}
+                    own = labels.get(lang)
+                else:
+                    own = self._pbfs_std_label_of(meta)
+                own = own.strip() if isinstance(own, str) else ''
+                edit = upd['portal_edit'] if 'portal_edit' in upd else bool(meta and meta.portal_edit)
+                mode = upd.get('portal_mode') or (meta.portal_mode if meta else '') or 'approve'
+                specs[name] = {
+                    'name': name, 'label': own or desc.get('string') or name,
+                    'help': desc.get('help') or '', 'type': field.type,
+                    'options': self._pbfs_options(field),
+                    'comodel': field.comodel_name if field.type == 'many2one' else False,
+                    'edit': bool(edit and rules['can_edit']),
+                    'mode': 'approve' if name in sensitive else (
+                        mode if mode in ('instant', 'approve') else 'approve'),
+                    'required': bool(custom and meta.is_required),
+                }
+                values[name] = {'value': self._pbfs_raw(rec, field),
+                                'display': self._pbfs_display(rec, field)}
+        return specs, values
 
     @api.model
     def _pbfp_item(self, spec, cell, width):

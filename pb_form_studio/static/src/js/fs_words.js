@@ -39,6 +39,24 @@ export function foldMatch(term, ...texts) {
     return texts.some((x) => fold(x).includes(t));
 }
 
+/**
+ * FS-13 — the labels two or more DIFFERENT fields of one list share
+ * (folded), so the list can tell them apart (e.g. "Work permit number" of
+ * the standard ID papers and of the Vietnamese payroll details). Items with
+ * no field name (lines the screen works out itself) are left out.
+ */
+export function sameLabels(items, labelOf) {
+    const seen = new Map();
+    for (const it of items || []) {
+        if (!it || !it.name) { continue; }
+        const key = fold(labelOf(it));
+        if (!key) { continue; }
+        if (!seen.has(key)) { seen.set(key, new Set()); }
+        seen.get(key).add(it.name);
+    }
+    return new Set([...seen].filter(([, names]) => names.size > 1).map(([key]) => key));
+}
+
 /** R24 — the type filter of "Add existing": kind → group key. */
 export const KIND_GROUP = {
     text: "text", longtext: "text", integer: "number", number: "number", money: "number",

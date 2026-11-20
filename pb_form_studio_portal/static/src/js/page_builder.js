@@ -27,7 +27,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { fsIc, KIND_ICON } from "@pb_form_studio/js/fs_icons";
-import { fold, foldMatch } from "@pb_form_studio/js/fs_words";
+import { fold, foldMatch, sameLabels } from "@pb_form_studio/js/fs_words";
 
 const FACADE = "pb.form.studio";
 const DRAFT_MS = 800;
@@ -140,6 +140,11 @@ export class PbPageBuilder extends Component {
         if (!n) { return _t("No changes yet"); }
         return n === 1 ? _t("1 change not yet published") : _t("%s changes not yet published", n);
     }
+    /** FS-13 — the short form a phone-width bar shows: "3 to publish". */
+    get changeShort() {
+        const n = this.changeCount;
+        return n ? _t("%s to publish", n) : "";
+    }
     text(texts) {
         if (!texts || typeof texts !== "object") { return texts || ""; }
         return texts[this.userLang] || texts.en_US || Object.values(texts).find(Boolean) || "";
@@ -219,8 +224,12 @@ export class PbPageBuilder extends Component {
     get countryOptions() { return [...(this.data.countries || [])].sort((a, b) => a.name.localeCompare(b.name)); }
     isCountry(c) { return Number(this.state.country) === c.id; }
     rowClass(f) { return { on: this.placed.has(f.name), custom: f.custom, sel: this.isSelField(f.name) }; }
-    rowSub(f) {
+    /** FS-13: labels two different fields of the list share (folded). */
+    get sameLabels() { return sameLabels(Object.values(this.data.fields || {}), (f) => this.label(f)); }
+    rowSub(f, same) {
         const parts = [f.custom ? _t("Own field") : _t("Standard field"), f.type_label];
+        // two fields with one label: the field code tells them apart
+        if (same && same.has(fold(this.label(f)))) { parts.push(_t("Field code: %s", f.name)); }
         if ((f.countries || []).length) { parts.push(_t("Only %s", f.countries.map((c) => c.name).join(", "))); }
         if (this.placed.has(f.name)) {
             parts.push(this.canChange(f) ? _t("On the page, employee can change") : _t("On the page"));
@@ -524,7 +533,9 @@ export class PbPageBuilder extends Component {
     setSize(s) { this.state.previewSize = s; }
     sizeClass(s) { return { on: this.state.previewSize === s }; }
     frameClass() { return "pbpb-frame " + this.state.previewSize; }
-    empLabel(e) { return [e.name, e.company, e.country].filter(Boolean).join(" · "); }
+    empLabel(e) {
+        return [e.name, e.company, e.country, e.login === false ? _t("no login yet") : ""].filter(Boolean).join(" · ");
+    }
 
     // ----------------------------------------------------------- history
     get history() { return this.data.history || []; }

@@ -327,3 +327,119 @@ class TestFs12Page(HttpCase):
         html = self.html()
         self.assertNotIn('pbfp', html.replace('pbfp-edit', ''))
         self.assertIn('Request a change', html)
+
+    # ======================================================== FS-13 fixes
+    def _draft(self, spec, updates=None):
+        self.S().save_draft(PAGE, {'spec': spec, 'companies': {}, 'updates': updates or {},
+                                   'changes': ['DEMO change'], 'base_version': 0})
+
+    def test_21_preview_shows_a_new_field_of_the_draft(self):
+        """FS-13 item 1: the draft as Publish would make it — a field newly
+        placed (not ticked yet) is drawn with the person's value or the empty
+        state, with the draft's label; nothing is written; no employee sees it."""
+        self.publish(self.spec([{'name': 'work_email', 'width': 'half'}]))
+        self.assertFalse(self.meta(self.shirt).portal_show)
+        self.assertFalse(self.meta('mobile_phone').portal_show)
+        self._draft(self.spec([{'name': self.shirt, 'width': 'half'},
+                               {'name': 'mobile_phone', 'width': 'half'}]),
+                    updates={'mobile_phone': {'std_labels': {'en_US': 'DEMO Work cell'}}})
+        audits = self.env['pb.form.audit'].sudo().search_count([])
+        url = '/my/profile/preview?employee_id=%s&source=draft' % self.emp.id
+        html = self.html(url, login='fs12_admin')
+        self.assertIn('DEMO Shirt size', html, 'the newly placed field is drawn')
+        self.assertIn('DEMO Work cell', html, "with the draft's own label")
+        main = html[html.index('pbfp-person'):html.index('pbme-detail-side')]
+        self.assertNotIn('lan.demo@example.com', main, 'a field taken off in the draft is left out')
+        self.assertIn('<b>—</b>', main, 'an empty value shows the empty state')
+        # look-only, nothing written
+        self.assertFalse(self.meta(self.shirt).portal_show, 'the tick changes only at Publish')
+        self.assertFalse(self.meta('mobile_phone').portal_show)
+        self.assertFalse(self.meta('mobile_phone').std_labels)
+        self.assertEqual(self.env['pb.form.audit'].sudo().search_count([]), audits)
+        # the real employee still gets the published page only
+        mine = self.html()
+        self.assertNotIn('DEMO Shirt size', mine)
+        self.assertNotIn('DEMO Work cell', mine)
+        self.assertIn('lan.demo@example.com', mine)
+        # the same through the model, and the call is the administrator's only
+        page = self.S().portal_page_render(self.emp.sudo(), spec=self.spec(
+            [{'name': self.shirt, 'width': 'half'}, {'name': self.pan, 'width': 'half'}]), preview={})
+        self.assertEqual([f['name'] for f in page['sections'][0]['fields']], [self.shirt],
+                         'Country of Work honoured: the India-only field is not drawn for Vietnam')
+        with self.assertRaises(AccessError):
+            self.S(self.hr).portal_page_render(self.emp.sudo(), spec=self.spec([]), preview={})
+
+    def test_22_preview_of_the_standard_page_before_any_publish(self):
+        """No page yet: the preview shows today's seven fields (none ticked)."""
+        url = '/my/profile/preview?employee_id=%s&source=live' % self.emp.id
+        html = self.html(url, login='fs12_admin')
+        self.assertIn('lan.demo@example.com', html)
+        self.assertIn('+84 1', html)
+        self.assertFalse(self.env['pb.form.layout'].sudo().search([('host_key', '=', PAGE)]))
+
+    def test_23_preview_photo(self):
+        """FS-13 item 2: the preview's photo comes from its own route, which
+        answers the administrator (no employee record of their own) only."""
+        url = '/my/profile/preview?employee_id=%s&source=live' % self.emp.id
+        html = self.html(url, login='fs12_admin')
+        src = '/my/profile/preview/photo/%s' % self.emp.id
+        self.assertIn('src="%s"' % src, html)
+        img = self.url_open(src)
+        self.assertEqual(img.status_code, 200)
+        self.assertTrue(img.headers.get('Content-Type', '').startswith('image/'))
+        for login in ('fs12_me', 'fs12_hr'):
+            self.authenticate(login, PASSWORD)
+            self.assertEqual(self.url_open(src).status_code, 404, login)
+        # the employee's own page keeps its own photo route
+        self.assertIn('/my/photo/%s/avatar_256' % self.emp.id, self.html())
+
+    def test_24_page_for_offers_active_companies_only(self):
+        """FS-13 item 5: archived companies are not offered; a page made for
+        a company archived later is kept as it is by the next Publish."""
+        Company = self.env['res.company'].sudo()
+        c2 = Company.create({'name': 'DEMO FS13 Branch'})
+        c3 = Company.create({'name': 'DEMO FS13 Closed'})
+        self.admin.sudo().write({'company_ids': [(4, c2.id), (4, c3.id)]})
+        names = [c['name'] for c in self.S().page_studio()['companies']]
+        self.assertIn('DEMO FS13 Closed', names)
+        own = self.spec([{'name': self.shirt, 'width': 'half'}])
+        own['header']['title'] = {'en_US': 'DEMO Closed page'}
+        self.publish(self.spec([{'name': 'work_email', 'width': 'half'}]), companies={str(c3.id): own})
+        c3.active = False
+        names = [c['name'] for c in self.S().page_studio()['companies']]
+        self.assertNotIn('DEMO FS13 Closed', names)
+        self.assertIn('DEMO FS13 Branch', names)
+        # switched off in the company switcher: not offered either
+        names = [c['name'] for c in self.S().with_context(
+            allowed_company_ids=[self.company.id, c2.id]).page_studio()['companies']]
+        self.assertEqual(sorted(names), sorted([self.company.name, 'DEMO FS13 Branch']))
+        # the next Publish (which cannot send that company's page) keeps it
+        self.publish(self.spec([{'name': 'work_email', 'width': 'half'}]))
+        kept = self.S()._pbfp_published()['companies'].get(str(c3.id))
+        self.assertTrue(kept)
+        self.assertEqual(kept['header']['title'], {'en_US': 'DEMO Closed page'})
+        self.assertTrue(self.meta(self.shirt).portal_show, 'its field stays shown')
+
+    def test_25_administrator_without_employee_record(self):
+        """FS-13 item 6: /my/profile → a short note with the way in; the
+        builder's preview list offers employees with no login too."""
+        html = self.html('/my/profile', login='fs12_admin')
+        self.assertIn('Your login has no employee record', html)
+        self.assertIn('action-pb_form_studio_portal.action_page_builder', html)
+        self.assertNotIn('Odoo', html.replace('odoo', ''))
+        # everybody else as before: an employee gets the page, nobody gets /my
+        self.assertNotIn('Your login has no employee record', self.html())
+        self.authenticate('fs12_nobody', PASSWORD)
+        res = self.url_open('/my/profile', allow_redirects=False)
+        self.assertIn(res.status_code, (302, 303))
+        # preview as anybody the administrator may see, logins first
+        loose = self.env[EMP].sudo().create({'name': 'DEMO FS13 No login',
+                                             'company_id': self.company.id})
+        emps = self.S().page_employees('DEMO FS1')
+        ids = [e['id'] for e in emps]
+        self.assertIn(loose.id, ids)
+        self.assertIn(self.emp.id, ids)
+        self.assertLess(ids.index(self.emp.id), ids.index(loose.id), 'logins first')
+        self.assertFalse(next(e for e in emps if e['id'] == loose.id)['login'])
+        url = '/my/profile/preview?employee_id=%s&source=live' % loose.id
+        self.assertIn('DEMO FS13 No login', self.html(url, login='fs12_admin'))

@@ -373,6 +373,7 @@ msgstr "Mỗi phần cần một mã riêng. Hãy bắt đầu lại từ trang 
 #. module: pb_form_studio_portal
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_profile_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
 msgid "Edit this page"
 msgstr "Sửa trang này"
 
@@ -580,6 +581,7 @@ msgstr "Trang My Payobook"
 #: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
 #: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
 msgid "My Profile"
 msgstr "Hồ sơ của tôi"
 
@@ -1288,3 +1290,49 @@ msgstr "lưu ngay"
 #: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
 msgid "two columns"
 msgstr "hai cột"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s to publish"
+msgstr "%s chờ đăng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "no login yet"
+msgstr "chưa có tài khoản"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Field code: %s"
+msgstr "Mã trường: %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "No employee was found to preview as."
+msgstr "Không tìm thấy nhân viên nào để xem trước."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "There is no page to preview."
+msgstr "Không có trang nào để xem trước."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "Your login has no employee record"
+msgstr "Tài khoản của bạn chưa gắn với hồ sơ nhân viên nào"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "My Profile shows a person's own details, so there is nothing to show for you here."
+msgstr "Hồ sơ của tôi hiển thị thông tin của chính mỗi người, nên ở đây không có gì để hiển thị cho bạn."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "You can still arrange this page for your employees and preview it as any of them."
+msgstr "Bạn vẫn có thể sắp xếp trang này cho nhân viên và xem trước dưới tên bất kỳ ai trong số họ."
+

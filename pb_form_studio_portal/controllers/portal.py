@@ -50,11 +50,12 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
         branded = Mod.search_count([('name', '=', 'biz_deroute'), ('state', '=', 'installed')])
         return '%s/%s' % ('/bizapp' if branded else '/odoo', BUILDER_ACTION)
 
-    def _pbfp_page(self, emp, spec=None, company=None):
+    def _pbfp_page(self, emp, spec=None, company=None, preview=None):
         """The page for one person, or None (today's page). Never raises: a
         broken page must never cost anybody My Profile."""
         try:
-            page = self._pbfp_studio().portal_page_render(emp.sudo(), spec=spec, company=company)
+            page = self._pbfp_studio().portal_page_render(emp.sudo(), spec=spec, company=company,
+                                                          preview=preview)
         except Exception:                               # noqa: BLE001
             _logger.exception('pb_form_studio_portal: the My Payobook page could not be drawn '
                               'for employee %s', emp.id)
@@ -213,13 +214,16 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
         only; the draft shown is the administrator's own."""
         if not self._pbfp_is_admin():
             return request.not_found()
-        Studio = self._pbfp_studio()
-        try:
-            emp = Studio._pbfs_portal_record(EMP, int(employee_id or 0))
-        except (UserError, AccessError, ValueError, TypeError):
+        emp = self._pbfp_preview_employee(employee_id)
+        if not emp:
             return request.not_found()
+        Studio = self._pbfp_studio()
         spec = None
         company = None
+        # FS-13: the draft is drawn exactly as Publish would make it — fields
+        # newly placed in it included (with the draft's own labels), fields
+        # taken off it left out — and nothing is written.
+        preview = {}
         if company_id and str(company_id).isdigit():
             company = request.env['res.company'].sudo().browse(int(company_id)).exists() or None
         if source == 'draft':
@@ -227,14 +231,59 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
             payload = (draft.payload or {}) if draft else {}
             cspec = (payload.get('companies') or {}).get(str(company.id)) if company else None
             spec = cspec or payload.get('spec') or None
+            if spec is not None and isinstance(payload.get('updates'), dict):
+                preview = payload['updates']
         if spec is None:
             published = Studio._pbfp_published()
             if published:
                 cid = str((company or emp.company_id).id)
                 spec = (published.get('companies') or {}).get(cid) or published['default']
+                preview = None          # the live page, exactly as employees get it
             else:
                 # no draft and no page yet: today's page, as the builder starts it
                 spec = Studio._pbfp_default_spec()
-        page = self._pbfp_page(emp, spec=spec)
-        return request.render('pb_me_portal.portal_my_profile',
-                              self._pbfp_values(emp, page=page, preview=emp.name))
+        page = self._pbfp_page(emp, spec=spec, preview=preview)
+        values = self._pbfp_values(emp, page=page, preview=emp.name)
+        # FS-13: the person's photo through the preview's own route (the
+        # employee photo route only serves a person's own and colleagues'
+        # faces, so the administrator's preview drew a broken picture)
+        values['profile']['avatar_url'] = '/my/profile/preview/photo/%s' % emp.id
+        return request.render('pb_me_portal.portal_my_profile', values)
+
+    def _pbfp_preview_employee(self, employee_id):
+        """The employee a preview is drawn for: any the administrator may
+        read in any of their companies (not only the website's), or None."""
+        try:
+            emp_id = int(employee_id or 0)
+        except (ValueError, TypeError):
+            return None
+        Studio = self._pbfp_studio().with_context(
+            allowed_company_ids=request.env.user.company_ids.ids)
+        try:
+            return Studio._pbfs_portal_record(EMP, emp_id)
+        except (UserError, AccessError):
+            return None
+
+    @http.route(['/my/profile/preview/photo/<int:employee_id>'], type='http', auth='user',
+                methods=['GET'])
+    def pbfp_preview_photo(self, employee_id, **kw):
+        """The photo on the preview's person card. Administrator only, for an
+        employee they may read (the same check as the preview itself)."""
+        if not self._pbfp_is_admin():
+            return request.not_found()
+        emp = self._pbfp_preview_employee(employee_id)
+        if not emp:
+            return request.not_found()
+        stream = request.env['ir.binary']._get_image_stream_from(emp[:1], field_name='avatar_256')
+        return stream.get_response()
+
+    # ------------------------------------------------------------ no employee
+    @http.route(['/my/profile'], type='http', auth='user', website=True)
+    def portal_my_profile(self, **kw):
+        """FS-13: an administrator with no employee record of their own gets
+        a short note with the way into the page builder (My Profile is always
+        somebody's own page); everybody else exactly as before."""
+        if not self._ess_employee() and self._pbfp_is_admin():
+            return request.render('pb_form_studio_portal.my_profile_no_employee', {
+                'page_name': 'profile', 'pbfp_builder_url': self._pbfp_builder_url()})
+        return super().portal_my_profile(**kw)
