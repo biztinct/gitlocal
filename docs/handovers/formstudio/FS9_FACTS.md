@@ -124,3 +124,53 @@ the panel had no hook inside its bank section).
   `context.pb_focus = "request:<id>"` (`pb_approval_config/static/src/js/inbox.js:61,235`;
   the server's `locate_request` picks the pile).
 - Full details: `pb_employee_form_tidy` `FORM_RULES` REMOVE (the TIDY-E mechanism).
+
+## 9. Follow-on facts (coordinator items A–C, 2026-11-20)
+
+`origin/19.1` was re-fetched before the follow-on: still `e69bebcc4` (FS-7 already in it) —
+no rebase needed.
+
+**A — joining checklist.** Lives in `pb_onboarding` (not `pb_me_portal`):
+`pb_onboarding/models/hr_employee.py:31-42` `PROFILE_FIELDS` (`('account_number', 'Bank
+account')`), `_compute_profile_complete` :104-131 → `profile_complete_pct` / `profile_missing`;
+shown on the staff New joiners board (`pb_onboarding/models/pb_onboarding.py:325` `_row` →
+`static/src/xml/onboarding_board.xml:195-199` "Their record", drawer :274-278) and on My
+Payobook › My Journey (`controllers/portal.py:146-147` → `views/portal_templates.xml:191-197`
+"Still to fill in"). Reached from the bridge by `_inherit` (compute override, `_row`
+override), OWL `t-inherit` and a QWeb view inherit — **no edit of pb_onboarding or
+pb_me_portal**.
+
+Live, active people, "Bank account" line (read-only):
+
+| Site | Scope | People | Missing before | Missing after | Sent, waiting for HR after |
+|---|---|---|---|---|---|
+| payobook | all active | 4,581 | 81 | 81 | 0 |
+| payobook | with a joining checklist | 12 | 11 | 11 | 0 |
+| payobook | checklist still open | 11 | 10 | 10 | 0 |
+| payobook_template | all active (no checklist) | 1 | 1 | 1 | 0 |
+| p0clone | all active (no checklist) | 12 | 12 | 12 | 0 |
+| rize | all active (no checklist) | 230 | **230** | **36** | 0 |
+| sudima | all active (no checklist) | 651 | **651** | **9** | 0 |
+
+(Sudima's 358 people with a change waiting all already have an approved account → "done".)
+
+**B — demo bank numbers (payobook only).** Read-only on payobook: 4,498 demo people have one
+linked bank account, made on 2026-11-18 by a one-off (uid 1, 12 digits, same bank name as the
+bank-file fields); their Vietnamese bank-file number (12 digits) was copied from the old box by
+`pb_demo` `ensure_demo_bank_details` (`demo_employees.py:87`); 4,497 differ (0 match; nobody
+has two accounts; 0 accounts shared with a non-demo person; 0 would collide on the same
+contact; 0 non-demo people with both stores). Stored files today: **0 bank files, 0 payment
+lists, 0 bank export logs** on payobook. Generator: `generate_employees` writes the old box
+(`demo_employees.py:159-160`), copies to the bank-file fields, and makes **no** bank account.
+Demo world marker: `hr_employee.is_demo` (set by the generator); `pb_demo` is installed on
+payobook only (uninstalled on the other four, §4).
+
+**C — Mapping.** Catalogue seams: `pb_formula_studio/models/pb_formula_studio.py`
+`_ec_right_items` :10851, `ec_model_fields` :11222, `ec_search_fields` :11212,
+`_ec_field_item` :10779 (the one card builder, also used for wired-but-not-offered cards in
+`employee_mapping_data` :11076-11085), create guard `employee_mapping_create` :11271
+(MAPFIX F3 "CREATE only, never READ"). Saved mappings into the old boxes
+(`hr_payslip_import_mapping.target_field_id` → `hr.employee.bank_name|account_number`):
+**0 / 0 / 0 / 0 / 0** (payobook, payobook_template, p0clone, rize, sudima). No other store maps
+to employee fields (`git grep "Many2one('ir.model.fields'"` in pb_* models: only the Form
+builder's own meta).
