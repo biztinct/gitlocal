@@ -124,7 +124,8 @@ class TestPayrollOnlyMenuRail(TransactionCase):
         user = self.env['res.users'].with_context(no_reset_password=True).create({
             'name': 'Named platform operator', 'login': 'named.platform.operator',
             'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
-                                  self.env.ref('base.group_system').id])]})
+                                  self.env.ref('base.group_system').id,
+                                  self.env.ref('base.group_no_one').id])]})
         menu = self.env['ir.ui.menu'].with_user(user)
         group = self.env.ref('pb_dashboard.group_platform_navigation')
         payroll = self.env.ref(PAYROLL_MENU_XMLID)
