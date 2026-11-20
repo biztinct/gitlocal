@@ -17,11 +17,12 @@ THE LOCKED LIST for the contract (the engine's one hook,
   salary basis, payroll contract type, nationality status, trial start),
   the accounting boxes (journal, analytic distribution);
 * department and job — approvals and access follow them;
-* anything a pay formula of THIS database reads (`contract.<field>` sources)
-  or a pay data file fills — worked out live.
+* anything a pay formula can read (FS-10, as on the employee: every field
+  of the formula catalogue, not only those a formula of this database is
+  bound to — so location, cost centre and signed date are locked too) or a
+  pay data file fills.
 
-Free to hide: HR responsible, location and cost centre (unless a formula
-reads them), notes, signed date and the like.
+Free to hide: HR responsible, notes and the like.
 """
 import logging
 
@@ -56,8 +57,20 @@ class PbFormStudioContractStandard(models.AbstractModel):
 
     @api.model
     def _pbfs_contract_formula_used(self):
+        """Contract fields pay depends on — `{field: reason}`: every field the
+        pay formula catalogue offers (`application_domain_sources.
+        CONTRACT_FIELDS`; a formula author can bind any of them at any time,
+        FS-10 — the employee side's rule), what a formula of this database is
+        bound to (`contract.<field>`) and what a pay data file fills."""
         _ = self.env._
+        reads = _('A pay formula reads it, so pay depends on this field.')
         out = {}
+        if 'hr.formula.config' in self.env:
+            try:
+                from odoo.addons.pb_hr_payroll_formula.models import application_domain_sources as ads
+                out.update({name: reads for name in ads.CONTRACT_FIELDS})
+            except ImportError:
+                pass
         if 'hr.formula.rule' in self.env and \
                 'application_source_key' in self.env['hr.formula.rule']._fields:
             Rule = self.env['hr.formula.rule'].sudo().with_context(active_test=False)

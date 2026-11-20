@@ -571,6 +571,33 @@ class PbFormStudioStandard(models.AbstractModel):
                 self._pbfs_notify(key, layout.version if layout else 0)
 
     @api.model
+    def _pbfs_std_unhide_locked(self, model, why=''):
+        """Clear the hide rule (for everyone or by country) of every standard
+        field of `model` the locked list now holds, with one history line
+        each. The screens already ignored those rules (`_pbfs_std_rules`), so
+        no screen changes; own labels are kept. Called by a host's upgrade
+        step when its locked list grows (FS-10). Idempotent.
+        → the field names cleared."""
+        if model not in self.env:
+            return []
+        locked = self._pbfs_standard_locked(model)
+        Meta = self.env['pb.form.field.meta'].sudo()
+        rows = Meta.search([('model', '=', model), ('custom', '=', False), ('name', 'in', list(locked)),
+                            '|', ('std_hidden', '=', True), ('std_country_ids', '!=', False)])
+        names = []
+        for meta in rows:
+            meta.write({'std_hidden': False, 'std_country_ids': [(5,)]})
+            self._pbfs_audit('update_field', None, model, meta.name,
+                             ('%s: shown again, it cannot be hidden. %s %s' % (
+                                 self._pbfs_std_screen_label(model, meta.name),
+                                 locked[meta.name]['reason'], why or '')).strip(),
+                             detail={'standard': True, 'unhidden_locked': True})
+            names.append(meta.name)
+        if names:
+            self.env.registry.clear_cache('templates')
+        return names
+
+    @api.model
     def _pbfs_std_sweep(self):
         """Drop the screen rule of a standard field that no longer exists
         (an upgrade removed it), with a history line. The settings row is

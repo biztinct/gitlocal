@@ -139,6 +139,36 @@ class TestFs7ContractStandard(TransactionCase):
         with self.assertRaises(AccessError):
             self.Studio.with_user(self.hr).update_standard(MODEL, 'notes', {'std_hidden': True})
 
+    # ------------------------------------------------------- FS-10 item 4
+    def test_04c_formula_catalogue_locked(self):
+        """FS-10: every contract field a pay formula can read is locked (as on
+        the employee), not only those a formula of this database is bound
+        to — location, cost centre and signed date included. The label may
+        still change."""
+        try:
+            from odoo.addons.pb_hr_payroll_formula.models.application_domain_sources import (
+                CONTRACT_FIELDS)
+        except ImportError:
+            self.skipTest('no pay formula catalogue here')
+        st = self.Studio.with_user(self.admin)
+        data = st.get_studio(HOST)
+        checked = 0
+        for name in CONTRACT_FIELDS:
+            if name not in data['fields'] or not data['fields'][name].get('stdbox'):
+                continue
+            checked += 1
+            self.assertTrue(data['fields'][name]['stdbox']['lock'], name)
+            with self.assertRaises(UserError, msg=name):
+                st.update_standard(MODEL, name, {'std_hidden': True})
+        self.assertTrue(checked)
+        for name in ('location', 'costcenter', 'pb_signed_date'):
+            if name in data['fields'] and data['fields'][name].get('stdbox'):
+                st.update_standard(MODEL, name, {'std_labels': {'en_US': 'DEMO %s' % name}})
+        # the two fields that stay free
+        for name in ('hr_responsible_id', 'notes'):
+            if name in data['fields'] and data['fields'][name].get('stdbox'):
+                self.assertFalse(data['fields'][name]['stdbox']['lock'], name)
+
     # ------------------------------------------------------------------ 2b
     def test_02b_hide_for_one_country(self):
         self.publish_std({'hr_responsible_id': {'std_country_ids': [self.india.id]}})
