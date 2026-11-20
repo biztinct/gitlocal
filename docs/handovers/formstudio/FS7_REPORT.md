@@ -1,6 +1,9 @@
 # FS-7 — Standard fields: hide and rename per Country of Work (R23) + the left-column filter (R24)
 
-Status: **BUILT, TESTED** — go-live state in §9 (filled in by the deploy step).
+Status: **LIVE ×5 (2026-11-20 06:00–06:03 UTC, 152 s down)** — see §9. The go-live retry found its
+15 quiet minutes and stopped the service at 06:00:14 UTC; the owner's HOLD (Rize testing all day)
+reached this session only after the run had finished. Nothing was half-done: all five databases
+upgraded, verified, service up, DONE line written. No demo change on payobook.com was made (hold).
 Branch `fs-7`, rebased on `origin/fs-followup-1` = `48a80cb14` (follow-up 1 + 1b + 1c/R22, the
 code the follow-up go-live ships), which itself sits on `origin/19.1`.
 Handover: `FS7_HANDOVER.md` (main checkout). Coordinator rulings during the build:
@@ -276,4 +279,28 @@ trees saved; staged trees = commit, live trees = origin/19.1 for all five module
   Dependents; both languages for Employment profile and the two Payroll facts tabs), 3 kept;
   still English afterwards: 0.
 
-**Go live ×5**: see below (filled in after the window).
+**Waiting for the window**: tries every 10 min from 02:37 UTC — refused while Codex held the shared
+lock (02:28–03:21, 04:37–) and while rize had signed-in activity (Rize testers); the 23rd check at
+05:58 found rize and payobook quiet since 05:43.
+
+**Go live ×5** (`fs7_golive.sh`, order payobook_template, p0clone, sudima, rize, payobook):
+* service stopped 06:00:14, started 06:02:46 — **152 s down**; addons = staged for all five trees;
+* `-u pb_form_studio, pb_form_studio_people, pb_form_studio_contracts, pb_form_studio_lists`: 17–19 s
+  each, all exit 0, 0 ERROR; `pb_form_studio_reach` files only (tests);
+* verification (`fs7_verify.sh`): 5 trees = commit; manifest = installed version on every database
+  (25 rows); jobs = snapshot ×5 (none re-activated); data counts before the stop = after ×5;
+  **silent ×5**: 0 screen rules, employee and contract forms identical to the modules' own;
+  R25/R26 upgrade step: 0 unticked, 0 set back (no tick existed) ×5; tab names written into the
+  stored screen designs (5 per database, 9 on rize), **0 still English** ×5; server log since the
+  stop: 2 lines = a websocket presence update cut by the stop, 0 asset errors, 0 upgrade errors;
+  all five sites 200;
+* not done because of the owner hold: the payobook.com check that renames one demo-safe box and
+  hides one (§ handover "Deploy"). Nothing was changed on any customer database by us.
+
+Backups: `/odoo/backups/fs7-20261120T021306Z/` (five dumps + file folders + previous trees).
+Rollback is never by module version; if ever needed, the screen rules are switched off by
+"Shown" / "Reset" in the Form builder (no data was changed).
+
+Deployed commit `d9afe27a1`; `fs-7` then merged with the newer `origin/19.1` (Codex commits in
+biz_access, pb_dashboard, pb_me_team, pb_settings, ops/tools only — none of the five shipped trees
+changed, so tests 7–9 needed no re-run) and pushed; `origin/19.1` fast-forwarded to it.
