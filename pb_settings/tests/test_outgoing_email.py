@@ -12,7 +12,8 @@ class TestOutgoingEmail(TransactionCase):
         user = self.env['res.users'].with_context(no_reset_password=True).create({
             'name':'Tenant mail test','login':'tenant_mail_test','company_id':company.id,
             'company_ids':[(6,0,[company.id,self.env.company.id])],
-            'group_ids':[(6,0,[self.env.ref('base.group_user').id,role.membership_group_id.id])]})
+            'group_ids':[(6,0,[self.env.ref('base.group_user').id])]})
+        self.env['pb.role.assignment'].create({'user_id':user.id,'profile_id':role.id})
         model = self.env['pb.company.mail.settings'].with_user(user).with_context(allowed_company_ids=[self.env.company.id])
         defaults = model.default_get(['company_name','enabled','smtp_pass'])
         self.assertEqual(defaults['company_name'],company.name)
