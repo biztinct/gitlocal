@@ -22,6 +22,8 @@ from odoo import http
 from odoo.service import security
 
 TOKENS = re.compile(rb'[0-9a-f]{40}o[0-9]+')
+#: the bundles' addresses change with every module that ships a stylesheet or script
+ASSETS = re.compile(rb'/web/assets/[^"\' ]+|"registry_hash": "[0-9a-f]+"|data-server-now-ms="[0-9]+"')
 host = os.environ.get('PROBE_HOST') or 'localhost'
 admin_only = os.environ.get('PROBE_ADMIN_ONLY') == '1'
 db = env.cr.dbname
@@ -46,7 +48,10 @@ def open_pages(user, paths):
     try:
         for p in paths:
             r = c.get(p, headers={'Host': host})
-            body = TOKENS.sub(b'', r.get_data())
+            body = ASSETS.sub(b'', TOKENS.sub(b'', r.get_data()))
+            if os.environ.get('PROBE_SAVE'):
+                with open('%s/%s%s.html' % (os.environ['PROBE_SAVE'], user.id, p.replace('/', '_')), 'wb') as f:
+                    f.write(body)
             out.append('%s %s %s%s' % (p, r.status_code, hashlib.md5(body).hexdigest()[:10],
                                        ' VENDOR' if b'Odoo' in body.replace(b'odoo', b'') else ''))
     finally:
