@@ -68,6 +68,54 @@ class HrEmployee(models.Model):
         ids = self.sudo().with_context(active_test=False)._search(self._pb_bank_domain())
         return [('id', 'in' if positive else 'not in', ids)]
 
+    def _pb_bank_on_record_facts(self):
+        """FS-9 — WHICH approved account `pb_bank_on_record` found, as facts a
+        screen may show: never the whole number, only its last four digits.
+
+        Same two stores and the same order as the helper above (and as the
+        payment list, `_pb_build_rows`, and the "another person's name" flag,
+        `_pb_other_name_account`): the employee's FIRST bank account, else the
+        Vietnamese bank file's account. Read under sudo, for one person.
+
+        Returns ``{'on_record', 'store' ('account' | 'vn_file' | ''), 'bank',
+        'holder', 'last4', 'vn_file_last4'}`` — ``vn_file_last4`` is set only
+        when the Vietnamese bank file holds a DIFFERENT number from the
+        account shown (the two stores disagree; S6-A lists such people for the
+        owner and changes nothing).
+        """
+        self.ensure_one()
+        person = self.sudo()
+        out = {'on_record': bool(person.pb_bank_on_record), 'store': '', 'bank': '',
+               'holder': '', 'last4': '', 'vn_file_last4': ''}
+        vn_number = ''
+        if 'vietnam_bank_account_number' in person._fields:
+            vn_number = (person.vietnam_bank_account_number or '').strip()
+        account = person.bank_account_ids[:1] if 'bank_account_ids' in person._fields \
+            else person.env['res.partner.bank']
+        if account:
+            out.update(store='account', bank=(account.bank_id.name or '').strip(),
+                       holder=(account.acc_holder_name or '').strip(),
+                       last4=_last4(account.acc_number))
+            if vn_number and _digits(vn_number) != _digits(account.acc_number):
+                out['vn_file_last4'] = _last4(vn_number)
+        elif vn_number:
+            out.update(store='vn_file',
+                       bank=(getattr(person, 'vietnam_bank_name', '') or '').strip(),
+                       holder=(getattr(person, 'vietnam_bank_account_name', '') or '').strip(),
+                       last4=_last4(vn_number))
+        return out
+
+
+def _digits(text):
+    return ''.join(ch for ch in str(text or '') if ch.isdigit())
+
+
+def _last4(number):
+    """The last four digits only — never the whole number. A number of four
+    digits or fewer shows none of them (it would be the whole number)."""
+    digits = _digits(number)
+    return digits[-4:] if len(digits) > 4 else ''
+
 
 def _swap(domain):
     """The same domain with the old box's test replaced by the approved one."""
@@ -158,5 +206,9 @@ class PbPeople(models.AbstractModel):
         res = super().get_employee_detail(emp_id)
         if isinstance(res, dict) and res.get('statutory') is not None:
             e = self.env['hr.employee'].browse(int(emp_id))
-            res['statutory'] = dict(res['statutory'], bank=bool(e.pb_bank_on_record))
+            # FS-9: the full page's bank badge names the APPROVED account's
+            # bank, not the old free-text Bank box (now off the screens).
+            facts = e._pb_bank_on_record_facts()
+            res['statutory'] = dict(res['statutory'], bank=facts['on_record'],
+                                    bank_name=facts['bank'] if facts['on_record'] else '')
         return res

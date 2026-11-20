@@ -8,7 +8,9 @@ The table below is the FIELD AUDIT's verdict per box (2026-11-19,
 * ``REMOVE`` — the box leaves the employee form for everyone. The FIELD stays
   (column, values, import mappings, formula sources): this is screen-only.
   The 26 unused boxes, the 5 the audit was unsure about, and the old
-  "Account Number" box (Payroll-ready now reads the approved bank account).
+  "Account Number" box (Payroll-ready now reads the approved bank account);
+  since FS-9 also the old "Bank" box (the side panel, the full page and Home
+  read the approved account).
 * a country code — the box shows only when the person's Country of Work
   (`hr.employee.payroll_country`) is that country. A person with no Country of
   Work sees no country box at all.
@@ -58,6 +60,9 @@ FORM_RULES = {
     'legal_entity_pays_salary': REMOVE,
     # R12: Payroll-ready reads the approved bank account; this box is not it.
     'account_number': REMOVE,
+    # FS-9: the side panel, the full page and Home read the approved account
+    # too, so the old free-text "Bank" box has no reader left on the screens.
+    'bank_name': REMOVE,
 
     # ---- Payroll tab (core hr, the employee's version record) — FS follow-up 1
     # (owner, 2026-11-20). Like the Contract / Wage rows pb_form_native_look
