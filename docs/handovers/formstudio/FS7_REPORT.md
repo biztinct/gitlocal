@@ -175,6 +175,30 @@ database at go-live (only a language that is missing or still English; an existi
 never changed; a second run writes nothing — proved locally: 5 written, then 0). "Tham gia BHXH" (a
 box, not a tab) untouched.
 
+## 5c. Owner rulings R25 / R26 (2026-11-20), shipped with FS-7
+
+* **R25** — Spouse Legal Name and Spouse Birthdate go back to HR: they may still be shown on My
+  Payobook, but "Employee can change it" is greyed with "Changed through My details › Family" and
+  refused on the server (`pb_form_studio_people` `PORTAL_SPOUSE` in `_pbfs_portal_locked`).
+* **R26** — Blood type and Religion stay changeable by the employee, but **HR always approves**:
+  a new engine hook `_pbfs_portal_sensitive(model)` (`{field: reason}`; the employee host lists the
+  two in `PORTAL_SENSITIVE` — add a name there to make more fields sensitive). "Saves at once" is
+  greyed with "Sensitive detail — HR always approves" (Form builder panel and both Field library
+  sheets) and refused on the server by `update_portal`, by Publish, and by `portal_apply` without an
+  approver (every saved-at-once path); a mode stored before the ruling is read as "HR approves".
+* Upgrade step `pb_form_studio_people/migrations/19.0.1.3.0/end-r25_r26_portal.py`: unticks a spouse
+  box left changeable and sets a sensitive box left "Saves at once" back to "HR approves", one
+  history line each, counts in the log; idempotent.
+* Ticks found before the go-live (read-only, ×5): **0 rows on every database** (payobook,
+  payobook_template, p0clone, rize, sudima: no spouse / blood type / religion tick at all) — nothing
+  to untick.
+* Tests (`pb_form_studio_reach/tests/test_r19_boxes.py`, tree shipped as files only — no version
+  change): R19's B1–B8 adapted (spouse now in the closed list; "saves at once" only for the two
+  distance boxes) + `test_r25_spouse_back_to_hr` (screen data, direct call, forged My Payobook post),
+  `test_r26_sensitive_always_hr` (screen data, direct call, Publish, saved-at-once write refused;
+  the employee's blood-type change lands in the approver's inbox, value unchanged until approved,
+  approval writes it), `test_r25_r26_saved_ticks_corrected_on_upgrade`.
+
 ## 6. Deviations (stated, not silent)
 1. **`_get_view` instead of extending the generated inherited view** (`_pbfs_sync_native_view`).
    Reason: a generated `xpath` per box can go dead when an upgrade removes a box — and Odoo does
