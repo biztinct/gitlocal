@@ -107,7 +107,7 @@
                   <div class="r2">
                     <span class="span"><t t-esc="q.date_from"/> → <t t-esc="q.date_to"/></span>
                     <span class="dur"><t t-esc="fmtDays(q.duration)"/> d</span>
-                    <span t-attf-class="st {{ q.state === 'validate1' ? 'two' : '' }} {{ q.state === 'validate' ? 'ok' : '' }} {{ q.state === 'refuse' ? 'no' : '' }}" t-esc="q.state_label"/>
+                    <span t-attf-class="st {{ q.state === 'validate1' ? 'two' : '' }} {{ q.state === 'validate' ? 'ok' : '' }} {{ q.state === 'refuse' and !q.sent_back ? 'no' : '' }} {{ q.sent_back ? 'back' : '' }}" t-esc="q.state_label"/>
                     <!-- D1: asked for after the days had gone. Worth seeing
                          before approving — the pay for that period may
                          already have been worked out. -->
@@ -123,6 +123,18 @@
                     </t>
                   </div>
                   <div t-if="q.note" class="note" t-esc="q.note"/>
+                  <!-- WF2 P6c (D36): sent back to the employee, not refused.
+                       The reason under the chip; the two link lines. -->
+                  <div t-if="q.sent_back_note" class="why">
+                    <span class="i" t-out="ic('undo',13)"/>
+                    <span><b>Sent back:</b> <t t-esc="q.sent_back_note"/></span>
+                  </div>
+                  <button t-if="q.again_of" type="button" class="again" t-on-click="() => this.openLeave(q.again_of.id)">
+                    <span t-out="ic('link',12)"/><span t-esc="q.again_of.label"/>
+                  </button>
+                  <button t-if="q.again_as" type="button" class="again" t-on-click="() => this.openLeave(q.again_as.id)">
+                    <span t-out="ic('link',12)"/><span t-esc="q.again_as.label"/>
+                  </button>
                 </div>
                 <div class="acts" t-if="q.in_queue">
                   <button class="pbto-btn tiny primary" t-att-disabled="state.busy" t-on-click="() => this.approve(q.id)" title="Approve">
@@ -130,6 +142,11 @@
                   </button>
                   <button class="pbto-btn tiny bad ghost" t-att-disabled="state.busy" t-on-click="() => this.openRefuse(q.id)" title="Refuse">
                     <span t-out="ic('x',14)"/>
+                  </button>
+                </div>
+                <div class="acts" t-elif="q.again">
+                  <button class="pbto-btn tiny ghost again-btn" t-att-disabled="state.busy" t-on-click="() => this.askAgain(q)" title="Fill in a new request from this one">
+                    <span t-out="ic('rotateCcw',14)"/><span>Ask again</span>
                   </button>
                 </div>
               </div>
@@ -249,8 +266,20 @@
       <!-- ============================ apply drawer ======================= -->
       <div t-if="state.applyOpen" class="pbto-scrim" t-on-click="closeApply">
         <div class="pbto-modal wide" t-on-click="(ev) => ev.stopPropagation()">
-          <div class="m-h">Apply for</div>
+          <div class="m-h"><t t-if="state.apply.again_of">Ask again</t><t t-else="">Apply for</t></div>
           <div class="m-b">
+            <!-- WF2 P6c (D36): a NEW request filled in from the one that was
+                 sent back; every normal rule runs when it is filed -->
+            <div t-if="state.apply.again_of" class="again-box">
+              <span class="i" t-out="ic('rotateCcw',16)"/>
+              <div class="tx">
+                <div class="t">Filled in from the request that was sent back</div>
+                <div t-if="state.apply.reason" class="s"><b>Sent back:</b> <t t-esc="state.apply.reason"/></div>
+                <div t-if="state.apply.part_label" class="s"><b>Part of the day:</b> <t t-esc="state.apply.part_label"/></div>
+                <div t-if="state.apply.part_label" class="s">Kept as before while the kind and the days stay the same.</div>
+                <div class="s" t-esc="state.apply.documents_note"/>
+              </div>
+            </div>
             <label class="fld emp-pick">
               <span>Employee</span>
               <input type="text" placeholder="Search name…" t-att-value="state.empQuery" t-on-input="onEmpQuery"/>
@@ -266,7 +295,7 @@
               <select t-att-disabled="!state.apply.employee_id" t-on-change="(ev) => this.onApplyField('type_id', ev)">
                 <option t-if="state.apply.employee_id" value="" t-att-selected="!state.apply.type_id">Choose…</option>
                 <option t-else="" value="" selected="selected">Choose the employee first</option>
-                <option t-foreach="applyTypes" t-as="lvt" t-key="lvt.id" t-att-value="lvt.id" t-esc="lvt.name"/>
+                <option t-foreach="applyTypes" t-as="lvt" t-key="lvt.id" t-att-value="lvt.id" t-att-selected="'' + lvt.id === '' + state.apply.type_id" t-esc="lvt.name"/>
               </select>
             </label>
             <div class="fld-row">
@@ -277,7 +306,7 @@
           </div>
           <div class="m-f">
             <button class="pbto-btn ghost" t-on-click="closeApply">Cancel</button>
-            <button class="pbto-btn primary" t-att-disabled="!canApply" t-on-click="submitApply">File leave</button>
+            <button class="pbto-btn primary" t-att-disabled="!canApply" t-on-click="submitApply"><t t-if="state.apply.again_of">Send for approval</t><t t-else="">File leave</t></button>
           </div>
         </div>
       </div>

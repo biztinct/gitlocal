@@ -25,3 +25,8 @@ from . import leave_messages
 
 # WF2 P6a: a request's days, for "Repeat for each…".
 from . import workflow_lines
+
+# WF2 P6c (D36): the "Sent back" mark and "Ask again". LAST on purpose: its
+# `create` checks the request being asked again before every other create
+# override runs (the last class loaded sits first in the MRO).
+from . import leave_sent_back

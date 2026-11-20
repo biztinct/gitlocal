@@ -15,3 +15,5 @@ from . import test_wf2p2b_timeoff
 from . import test_wf2p5a_timeoff
 # WDGAP QF3: withdraw cancels the leave; part-day + document facts
 from . import test_wdgap_qf3_withdraw
+# WF2 P6c (D36): time off "Sent back" and "Ask again"
+from . import test_wf2p6c_sent_back

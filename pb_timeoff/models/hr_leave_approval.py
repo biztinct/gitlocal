@@ -447,6 +447,12 @@ class HrLeaveApproval(models.Model):
         self.ensure_one()
         if self.state not in ('refuse', 'cancel'):
             self.with_context(**{ENGINE_APPLY: True}).sudo().action_refuse()
+            # WF2 P6c (D36): the mark, not a status — the request stays
+            # refused underneath (no day is held); our own screens read the
+            # mark and say "Sent back" (`leave_sent_back.py`). Never cleared.
+            if self.state == 'refuse':
+                self.sudo().with_context(**{ENGINE_APPLY: True}).write(
+                    {'pb_sent_back': True})
             self.sudo().message_post(
                 body=_("Sent back: %s", reason or _('no reason given')),
                 subtype_xmlid='mail.mt_note')

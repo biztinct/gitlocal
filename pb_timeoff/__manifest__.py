@@ -31,7 +31,13 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
     # 19.0.1.12.0 — WDGAP S5-A: the balance board ignores days that have run
     # out (and the days taken from them), and lists only the companies' own
     # kinds and the shared ones.
-    'version': '19.0.1.12.0',
+    # 19.0.1.13.0 — WORKFLOW-2 P6c (D36): time off "Sent back" — a stored
+    # mark on the request (not a status; still refused underneath), the
+    # cockpit's "Sent back" view, the one-line note on the standard form, and
+    # "Ask again" (a new request filled in from the old one, linked both
+    # ways, once). Post-migrate marks only requests whose approval provably
+    # was sent back.
+    'version': '19.0.1.13.0',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -60,6 +66,7 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
         'views/hr_leave_type_views.xml',
         'views/portal_holidays.xml',
         'views/hr_leave_kanban_words.xml',
+        'views/hr_leave_sent_back_views.xml',
         'data/pb_sidebar.xml',
         'data/mail_template.xml',
         'data/pb_timeoff_config.xml',

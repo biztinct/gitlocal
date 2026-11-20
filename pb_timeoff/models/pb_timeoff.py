@@ -216,6 +216,20 @@ class PbTimeoff(models.AbstractModel):
                        'validate1': _('Second approval'),
                        'validate': _('Approved'),
                        'refuse': _('Refused')}.get(lv.state, lv.state)
+        # WF2 P6c (D36): sent back, not refused — a mark on the request; it
+        # is still refused underneath (`leave_sent_back.py`)
+        sent_back = lv._pb_is_sent_back()
+        if sent_back:
+            state_label = _('Sent back')
+        lines = lv._pb_again_lines()
+        again = None
+        if sent_back and lv._pb_can_ask_again():
+            again = lv._pb_again_prefill()
+            again['employee_country'] = self._emp_country(lv.employee_id)
+            # what the drawer cannot change, said once: "as before"
+            again['documents_note'] = _(
+                "Documents are not copied. Add them on the new request if "
+                "they are still needed.")
         return {
             'id': lv.id,
             'employee': self._emp_card(lv.employee_id),
@@ -234,6 +248,13 @@ class PbTimeoff(models.AbstractModel):
             # when the request was made, so an ordinary request does not
             # become backdated by getting old.
             'backdated': bool(getattr(lv, 'pb_backdated', False)),
+            # WF2 P6c: the mark, the reason under it, the two link lines and
+            # what "Ask again" fills the "Apply for" drawer with
+            'sent_back': sent_back,
+            'sent_back_note': lv._pb_sent_back_note() if sent_back else '',
+            'again_of': lines['of'],
+            'again_as': lines['as'],
+            'again': again,
             # …and the certificate, if one came with it. Names only: this
             # card is a queue, and an officer who wants the file opens the
             # request.
@@ -489,8 +510,15 @@ class PbTimeoff(models.AbstractModel):
                   'domain': [('state', '=', 'validate1')]},
                  {'value': 'validate', 'label': _('Approved'), 'tone': 'green',
                   'domain': [('state', '=', 'validate')]},
+                 # WF2 P6c (D36): "Refused" is a real refusal only; a
+                 # request sent back to the employee has its own value
+                 {'value': 'sent_back', 'label': _('Sent back'),
+                  'tone': 'amber',
+                  'domain': [('state', '=', 'refuse'),
+                             ('pb_sent_back', '=', True)]},
                  {'value': 'refuse', 'label': _('Refused'), 'tone': 'rose',
-                  'domain': [('state', '=', 'refuse')]},
+                  'domain': [('state', '=', 'refuse'),
+                             ('pb_sent_back', '=', False)]},
              ]},
             {'key': 'type', 'label': _('Leave type'), 'icon': 'umbrella',
              'group': 'other', 'type': 'many2one', 'path': 'holiday_status_id',
@@ -549,6 +577,10 @@ class PbTimeoff(models.AbstractModel):
              'filters': {'status': waiting + ['validate'], 'from': {'preset': 'this_week'}}},
             {'key': 'approved', 'label': _('Approved this month'), 'icon': 'checkCircle',
              'filters': {'status': ['validate'], 'from': {'preset': 'this_month'}}},
+            # WF2 P6c (D36): beside "Refused", which now shows only real
+            # refusals
+            {'key': 'sent_back', 'label': _('Sent back'), 'icon': 'undo',
+             'filters': {'status': ['sent_back']}},
             {'key': 'refused', 'label': _('Refused'), 'icon': 'xCircle',
              'filters': {'status': ['refuse']}},
         ]
@@ -612,11 +644,19 @@ class PbTimeoff(models.AbstractModel):
         return {'ok': True, 'id': leave.id, 'state': leave.state}
 
     @api.model
-    def apply_on_behalf(self, employee_id, type_id, date_from, date_to, note=False):
+    def apply_on_behalf(self, employee_id, type_id, date_from, date_to, note=False,
+                        again_of=False):
         """Create a leave for an employee AS THE REAL USER (no sudo). Core
         validation (overlap, balance, calendar) surfaces verbatim; the created
         leave defaults to 'confirm' (To Approve) — the installed hr_holidays has
-        no separate action_confirm."""
+        no separate action_confirm.
+
+        WF2 P6c (D36): ``again_of`` = the sent-back request this one asks
+        again ("Ask again" on a card). The new request names it; hr.leave's
+        own ``create`` refuses anything but a sent-back request of the same
+        person, once. The part of the day / the times are kept as before when
+        the kind and the days are unchanged (the drawer has no control for
+        them)."""
         self._require_officer()
         emp = self.env['hr.employee'].browse(int(employee_id)).exists()
         if not emp:
@@ -629,13 +669,21 @@ class PbTimeoff(models.AbstractModel):
         type_country = self._type_country(lt) if lt else ''
         if type_country and type_country != self._emp_country(emp.sudo()):
             raise UserError(_("This leave type is for employees in another country."))
-        leave = self.env['hr.leave'].create({
+        vals = {
             'employee_id': emp.id,
             'holiday_status_id': int(type_id),
             'request_date_from': date_from,
             'request_date_to': date_to,
             'name': note or _('Filed by HR'),
-        })
+        }
+        if again_of:
+            old = self.env['hr.leave'].sudo().browse(int(again_of)).exists()
+            if not old:
+                raise UserError(_(
+                    "Only a request that was sent back can be asked again."))
+            vals['pb_again_of_id'] = old.id
+            old._pb_again_carry(vals)
+        leave = self.env['hr.leave'].create(vals)
         # belt-and-braces: the installed core creates at 'confirm', but honour an
         # action_confirm if a future core adds one.
         if hasattr(leave, 'action_confirm'):
