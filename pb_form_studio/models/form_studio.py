@@ -1378,6 +1378,7 @@ class PbFormStudio(models.AbstractModel):
         for spec in payload.get('creates') or []:
             desc = self.create_field(host_key, spec)
             created[str(spec.get('tmp'))] = desc['name']
+        std_changed = False
         for name, vals in (payload.get('updates') or {}).items():
             real = created.get(name.split(':', 1)[1], name) if name.startswith('new:') else name
             if real not in self.env[model]._fields:
@@ -1389,6 +1390,10 @@ class PbFormStudio(models.AbstractModel):
                 # rule — hidden / own label (R23). No column is added or
                 # dropped, so the pay-run guard does not apply to it.
                 self.with_context(pbfs_publishing=True).update_standard(model, real, vals)
+                std_changed = std_changed or any(k in (vals or {}) for k in
+                                                 ('std_hidden', 'std_country_ids', 'std_labels'))
+        if std_changed:
+            self.env.registry.clear_cache('templates')    # every worker follows
         sections = []
         for sec in payload.get('sections') or []:
             names = []
@@ -1955,7 +1960,7 @@ class PbFormStudio(models.AbstractModel):
         # rule and (where offered) their My Payobook ticks.
         self._pbfs_std_sweep()
         std_rows = []
-        for model in models_seen:
+        for model in sorted(models_seen, key=lambda m: m != 'hr.employee'):   # people first
             if any(h.get('dev') for h in hosts.values() if h['model'] == model):
                 continue
             Model = self.env[model]
