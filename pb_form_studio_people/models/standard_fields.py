@@ -21,12 +21,16 @@ from the code at origin/19.1 (FS7_REPORT.md §3 has the plain-words table):
   `STD_COUNTRY_*` below) — the others can be hidden, and the product's
   country rule and the administrator's combine (rule 6);
 * bank — every bank box (`pb_pay_delivery` / `pb_bank_ocr` read them);
-* anything a pay formula of THIS database reads (`hr.formula.rule.
-  application_source_key` = `employee.<field>`, or a related source whose
-  first hop is the field) or a pay data file fills
-  (`hr.payslip.import.mapping.target_field_id`) — worked out live, so a
-  field nobody's pay set-up uses (e.g. Job level on most databases) stays
-  hideable, and one that becomes used is shown again at once.
+* FS-10 (architect ruling): anything that REALLY reads the field on THIS
+  database — a pay scheme component bound to it (`employee.<field>`, a
+  related source, a `tax.*` source of `pb_me_tax`) in a scheme that is not
+  archived, or a pay data file column that fills it — locked with a reason
+  that names it ("Used by pay formula: <scheme>"). A field a formula merely
+  COULD read stays hideable until one does; at that save the field is shown
+  again with a history line and a notice (`_pbfs_std_readers_changed`, called
+  from the readers' save points in `pb_form_studio_reach`). Bank layouts,
+  government form lines and approval routing read only fields that are
+  locked above anyway (`FS10_REPORT.md` §1).
 """
 import logging
 
@@ -56,8 +60,8 @@ STD_STATUTORY = ('birthday', 'sex', 'gender', 'country_id', 'identification_id',
 #: tax and payroll facts (VN social-insurance files, tax returns), Indonesian
 #: NPWP / BPJS / PTKP, Indian PAN / UAN / ESI / regime, Singapore residency /
 #: SHG (`pb_form_lines` readers, fund files). The others (training facts,
-#: the Indonesian family card, the two Vietnamese demo flags) stay
-#: hideable unless this database's pay set-up reads them (worked out live).
+#: the Indonesian family card, the two Vietnamese demo flags) stay hideable
+#: unless something on this database really reads them (FS-10).
 STD_COUNTRY_PREFIXES = ('vn_', 'pb_vn_', 'pb_in_', 'pb_id_', 'pb_bpjs_')
 STD_COUNTRY_STATUTORY = ('pb_npwp_number', 'subject_to_pit', 'insurance_code', 'tham_gia_bhxh',
                          'pb_sg_tax_residency', 'pb_sg_shg_fund')
@@ -75,11 +79,13 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
 
     # ------------------------------------------------------------- locked
     @api.model
-    def _pbfs_people_formula_used(self):
-        """Employee fields a pay formula of THIS database reads, or a pay
-        data file fills — `{field: reason}`."""
-        _ = self.env._
-        out = {}
+    def _pbfs_std_readers(self, model):
+        """Employee fields really read on this database (FS-10): pay scheme
+        components bound to them (live schemes only: an archived scheme reads
+        nothing) and pay data file columns that fill them."""
+        out = list(super()._pbfs_std_readers(model) or [])
+        if model != MODEL or MODEL not in self.env:
+            return out
         if 'hr.formula.rule' in self.env and \
                 'application_source_key' in self.env['hr.formula.rule']._fields:
             related = {}
@@ -88,18 +94,28 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
                 related = {k: hops[0] for k, hops in ads.RELATED_FIELDS.items()}
             except ImportError:
                 pass
-            Rule = self.env['hr.formula.rule'].sudo().with_context(active_test=False)
-            keys = {k for k in Rule.search([('application_source_key', '=like', 'employee.%')])
-                    .mapped('application_source_key') if k}
-            for key in keys:
-                name = related.get(key) or key.split('.', 1)[1]
-                out.setdefault(name, _('A pay formula reads it, so pay depends on this field.'))
-        if 'hr.payslip.import.mapping' in self.env:
-            Mapping = self.env['hr.payslip.import.mapping'].sudo().with_context(active_test=False)
-            for name in Mapping.search([('target_field_id.model', '=', MODEL)]).mapped(
-                    'target_field_id.name'):
-                out.setdefault(name, _('A pay data file fills it, so pay depends on this field.'))
+            tax = {}
+            try:
+                from odoo.addons.pb_me_tax.models.formula_sources import TAX_SOURCES
+                tax = {k: spec[2] for k, spec in TAX_SOURCES.items() if len(spec) > 2}
+            except ImportError:
+                pass
+            Rule = self.env['hr.formula.rule'].sudo()
+            rules = Rule.search(['|', ('application_source_key', '=like', 'employee.%'),
+                                 ('application_source_key', 'in', list(tax) or ['-']),
+                                 ('config_id.active', '=', True)])
+            for rule in rules:
+                key = (rule.application_source_key or '').strip()
+                field = related.get(key) or tax.get(key) or key.split('.', 1)[-1]
+                if field in self.env[MODEL]._fields:
+                    out.append((field, 'formula', rule.config_id.display_name or ''))
+        out += self._pbfs_std_datafile_readers(MODEL)
         return out
+
+    @api.model
+    def _pbfs_people_pay_reads(self):
+        """`{field: reason}` — what really reads each employee field (FS-10)."""
+        return self._pbfs_std_used_reasons(MODEL)
 
     @api.model
     def _pbfs_standard_locked(self, model):
@@ -137,7 +153,7 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
                         out[name] = {'reason': reason, 'label': label}
                     elif label:
                         cur['label'] = True
-        for name, reason in self._pbfs_people_formula_used().items():
+        for name, reason in self._pbfs_std_used_reasons(MODEL).items():
             if name in Model._fields:
                 out.setdefault(name, {'reason': reason, 'label': False})
         return out

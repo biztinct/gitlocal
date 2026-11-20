@@ -2554,29 +2554,37 @@ export const SCREENS = {
     },
 
     /* ------------------------------------------ Settings › Form builder
-       FORM STUDIO (2026-11-20) — pb_form_studio's Field library as
-       field_library.xml draws it: the title and its line, the four numbers
-       (grey at zero), the record-type chips and the search, one row a field
+       FORM STUDIO (2026-11-20; FS-10 caught up with FS-7) — pb_form_studio's
+       Field library as field_library.xml draws it: the title and its line,
+       the six numbers (grey at zero; field_library.js kpis), the one filter
+       bar (Find a field; All / Own fields / Standard fields / Hidden / On My
+       Payobook; All record types / Employee / Contract; Any Country of Work;
+       the count), one row a field — own fields first, then the standard ones
        (Field, Record type, Type, Appears in, Filled, Who can see, Countries,
-       My Payobook, Used by, Edit / Delete), and the line on what cannot take
-       a field. The anchors are the product's own (fb-*), laid on the real
-       template by pb_form_studio_reach. */
+       My Payobook, Used by, Edit / Delete) — and the line on what cannot take
+       a field. The two own fields are the payobook demo's kept ones (DEMO
+       Shirt size, DEMO Parking bay). The anchors are the product's own
+       (fb-*), laid on the real template by pb_form_studio_reach. */
     formbuilder() {
         const f = PRACTICE.formbuilder;
         const rt = (r) => r.rt === "contract" ? B("Contract", "Hợp đồng") : B("Employee", "Nhân viên");
         const WHERE = { screen: B("Screen", "Màn hình"), lists: B("Lists", "Danh sách"),
                         formulas: B("Formulas", "Công thức"), portal: B("My Payobook", "My Payobook") };
+        const std = f.std || [];
         const kpis = [
             ["sparkles", f.rows.length, B("Custom fields", "Trường tuỳ chỉnh")],
             ["calculator", f.rows.filter((r) => r.where.includes("formulas")).length, B("Feed pay formulas", "Dùng trong công thức lương")],
             ["table", f.rows.filter((r) => r.where.includes("lists")).length, B("Shown in lists", "Hiện trong danh sách")],
             ["eye", f.rows.filter((r) => !r.where.length).length, B("Not on any screen", "Không có trên màn hình nào")],
+            ["eye", std.filter((r) => r.hidden).length, B("Standard fields hidden", "Trường chuẩn đã ẩn")],
+            ["file-signature", std.filter((r) => r.renamed).length, B("Standard fields renamed", "Trường chuẩn đã đổi tên")],
         ].map(([icon, v, l]) => kpiTile(icon, "", N(v), l)).join("");
         const head = [B("Field", "Trường"), B("Record type", "Loại hồ sơ"), B("Type", "Kiểu"), B("Appears in", "Xuất hiện ở"),
                       B("Filled", "Đã điền"), B("Who can see", "Ai được xem"), B("Countries", "Quốc gia"),
                       B("My Payobook", "My Payobook"), B("Used by", "Được dùng bởi"), ""]
             .map((h) => `<th>${esc(tx(h))}</th>`).join("");
-        const rows = f.rows.map((r) => {
+        const edit = `<button class="lrn-btn sm ghost">${esc(tx(B("Edit", "Sửa")))}</button>`;
+        const own = f.rows.map((r) => {
             const where = r.where.concat(r.portal ? ["portal"] : [])
                 .map((w) => `<span class="lrn-chip ok">${esc(tx(WHERE[w]))}</span>`).join("");
             return `<tr>
@@ -2589,26 +2597,46 @@ export const SCREENS = {
                 <td>${esc(r.countries ? tx(r.countries) : tx(B("All countries", "Mọi quốc gia")))}</td>
                 <td>${esc(tx(r.portal || B("Not shown", "Không hiển thị")))}</td>
                 <td>${r.used ? `<b>${esc(N(r.used))}</b>` : "—"}</td>
-                <td><button class="lrn-btn sm ghost">${esc(tx(B("Edit", "Sửa")))}</button>
+                <td>${edit}
                     <button class="lrn-btn sm ghost" aria-label="${esc(tx(B("Delete", "Xoá")))}">${ic("trash-2")}</button></td>
             </tr>`;
         }).join("");
+        const stdRows = std.map((r) => `<tr>
+                <td><b>${esc(tx(r.label))}</b><br><span class="lrn-sub2">${esc(tx(B("Field code", "Mã trường")))}${SP}<code>${esc(r.code)}</code></span></td>
+                <td>${esc(tx(rt(r)))}</td>
+                <td>${esc(tx(r.kind))}</td>
+                <td><span class="lrn-chip ok">${esc(tx(B("Standard field", "Trường chuẩn")))}</span><br><span class="lrn-sub2">${esc(tx(r.tab))}</span></td>
+                <td>—</td>
+                <td>${esc(tx(B("As the product decides", "Theo mặc định")))}</td>
+                <td>${esc(tx(B("All countries", "Mọi quốc gia")))}</td>
+                <td>${esc(tx(B("Not shown", "Không hiển thị")))}</td>
+                <td>${r.locked ? `<span class="lrn-chip">${ic("lock")}${esc(tx(B("Locked", "Đã khoá")))}</span>` : "—"}</td>
+                <td>${edit}</td>
+            </tr>`).join("");
+        const count = f.rows.length + std.length;
         return `
             <div class="lrn-zhead" data-coach="fb-head">
                 <div><h3>${ic("sparkles")}${esc(tx(B("Form builder", "Trình tạo biểu mẫu")))}</h3>
-                <p class="lrn-note">${esc(tx(B("Every custom field in this company, where it appears, how filled it is and what uses it.",
-                    "Mọi trường tuỳ chỉnh của công ty: xuất hiện ở đâu, đã điền bao nhiêu và đang được dùng ở đâu.")))}</p></div>
+                <p class="lrn-note">${esc(tx(B("Your own fields and the standard ones: where they appear, how filled they are, what uses them, and which standard fields are hidden or renamed.",
+                    "Trường riêng và trường chuẩn: hiện ở đâu, đã điền bao nhiêu, cái gì dùng chúng, và trường chuẩn nào đã ẩn hoặc đổi tên.")))}</p></div>
             </div>
-            <div class="lrn-grid g4" data-coach="fb-kpis">${kpis}</div>
+            <div class="lrn-grid g6" data-coach="fb-kpis">${kpis}</div>
             <div class="lrn-strip" data-coach="fb-filters">
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a field", "Tìm trường")))}</span>
                 <span class="lrn-chip b">${esc(tx(B("All", "Tất cả")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Own fields", "Trường riêng")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Standard fields", "Trường chuẩn")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Hidden", "Đã ẩn")))}</span>
+                <span class="lrn-chip">${esc(tx(B("On My Payobook", "Trên My Payobook")))}</span>
+                <span class="lrn-chip b">${esc(tx(B("All record types", "Mọi loại hồ sơ")))}</span>
                 <span class="lrn-chip">${esc(tx(B("Employee", "Nhân viên")))}</span>
                 <span class="lrn-chip">${esc(tx(B("Contract", "Hợp đồng")))}</span>
+                <span class="lrn-chip">${ic("globe")}${esc(tx(B("Any Country of Work", "Mọi quốc gia làm việc")))}</span>
                 <span class="lrn-push"></span>
-                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search fields", "Tìm trường")))}</span>
+                <span class="lrn-sub2">${esc(tx(B(count + " fields", count + " trường")))}</span>
             </div>
             <div class="lrn-panel" data-coach="fb-table">
-                <div class="lrn-ztablewrap"><table class="lrn-ztable"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+                <div class="lrn-ztablewrap"><table class="lrn-ztable"><thead><tr>${head}</tr></thead><tbody>${own}${stdRows}</tbody></table></div>
             </div>
             <p class="lrn-note" data-coach="fb-foot"><b>${esc(tx(B("Payslips, payslip lines and government returns cannot take custom fields:",
                 "Phiếu lương, dòng phiếu lương và tờ khai nộp cơ quan nhà nước không nhận trường tuỳ chỉnh:")))}</b>${SP}${

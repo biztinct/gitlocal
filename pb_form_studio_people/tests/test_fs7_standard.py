@@ -37,9 +37,11 @@ class TestFs7EmployeeStandard(TransactionCase):
                                       'om_hr_payroll.group_hr_payroll_manager')
         Emp = cls.env[MODEL]
         cls.emp_vn = Emp.create({'name': 'DEMO Lan Nguyen', 'payroll_country': 'VN',
-                                 'pb_blood_type': 'O+', 'pb_job_level': 'L3'})
+                                 'pb_blood_type': 'O+', 'pb_job_level': 'L3',
+                                 'visa_no': 'DEMO-V-VN'})
         cls.emp_in = Emp.create({'name': 'DEMO Arjun Rao', 'payroll_country': 'IN',
-                                 'pb_blood_type': 'B+', 'pb_job_level': 'L4'})
+                                 'pb_blood_type': 'B+', 'pb_job_level': 'L4',
+                                 'visa_no': 'DEMO-V-IN'})
         cls.emp_id = Emp.create({'name': 'DEMO Siti Rahma', 'payroll_country': 'ID',
                                  'pb_job_level': 'L2', 'pb_family_card_number': 'DEMO-KK-1'})
 
@@ -125,25 +127,24 @@ class TestFs7EmployeeStandard(TransactionCase):
 
     # ------------------------------------------------------------------- 2
     def test_02_hide_for_india_only(self):
-        self.publish_std({'pb_job_level': {'std_country_ids': [self.india.id]}})
-        nodes = self.nodes(self.arch(), 'pb_job_level')
+        self.publish_std({'visa_no': {'std_country_ids': [self.india.id]}})
+        nodes = self.nodes(self.arch(), 'visa_no')
         self.assertTrue(nodes)
         self.assertTrue(all(self.hidden_for(n, self.emp_in) for n in nodes))
         self.assertFalse(any(self.hidden_for(n, self.emp_vn) for n in nodes))
-        self.assertNotIn('pb_job_level', self.panel_rows(self.emp_in))
-        self.assertIn('pb_job_level', self.panel_rows(self.emp_vn))
+        self.assertNotIn('visa_no', self.panel_rows(self.emp_in))
+        self.assertIn('visa_no', self.panel_rows(self.emp_vn))
         # a card left with no box is hidden with it, never shown empty
-        # (Employment profile › Position holds only Job level once TIDY-E
-        # has removed Position reference)
-        group = self.nodes(self.arch(), 'pb_job_level')[0].getparent()
+        # (FS-10: Job level is read by pay formulas now, so Visa No stands in)
+        group = self.nodes(self.arch(), 'visa_no')[0].getparent()
         if group.tag == 'group' and not [n for n in group.iter('field')
-                                         if n.get('name') != 'pb_job_level'
+                                         if n.get('name') != 'visa_no'
                                          and not self.hidden_for(n, self.emp_in)]:
             self.assertTrue(self.hidden_for(group, self.emp_in))
             self.assertFalse(self.hidden_for(group, self.emp_vn))
         # a country limit never clears a value
         self.emp_in.invalidate_recordset()
-        self.assertEqual(self.emp_in.pb_job_level, 'L4')
+        self.assertEqual(self.emp_in.visa_no, 'DEMO-V-IN')
 
     # ---------------------------------------------------------- 3 (employee half)
     def test_03_rename_per_language(self):
@@ -194,54 +195,73 @@ class TestFs7EmployeeStandard(TransactionCase):
     def test_04b_lock_after_hide(self):
         """A field hidden before it became locked is shown again at once."""
         st = self.Studio.with_user(self.admin)
-        st.update_standard(MODEL, 'pb_job_level', {'std_hidden': True})
-        self.assertTrue(self.Studio._pbfs_std_rules(MODEL)['pb_job_level']['all'])
+        st.update_standard(MODEL, 'visa_no', {'std_hidden': True})
+        self.assertTrue(self.Studio._pbfs_std_rules(MODEL)['visa_no']['all'])
         orig = type(self.Studio)._pbfs_standard_locked
 
         def locked(this, model):
             out = orig(this, model)
             if model == MODEL:
-                out['pb_job_level'] = {'reason': 'DEMO now read by a formula.', 'label': False}
+                out['visa_no'] = {'reason': 'DEMO now read by a formula.', 'label': False}
             return out
         self.patch(type(self.Studio), '_pbfs_standard_locked', locked)
         self.env.registry.clear_cache('templates')
-        self.assertFalse(self.Studio._pbfs_std_rules(MODEL).get('pb_job_level'))
-        self.assertFalse(any(self.hidden_for(n, self.emp_vn) for n in self.nodes(self.arch(), 'pb_job_level')))
-        desc = st.get_studio(HOST)['fields']['pb_job_level']['stdbox']
+        self.assertFalse(self.Studio._pbfs_std_rules(MODEL).get('visa_no'))
+        self.assertFalse(any(self.hidden_for(n, self.emp_vn) for n in self.nodes(self.arch(), 'visa_no')))
+        desc = st.get_studio(HOST)['fields']['visa_no']['stdbox']
         self.assertTrue(desc['ignored'])
         # it can be cleared (shown), never hidden more
-        st.update_standard(MODEL, 'pb_job_level', {'std_hidden': False, 'std_country_ids': []})
+        st.update_standard(MODEL, 'visa_no', {'std_hidden': False, 'std_country_ids': []})
         with self.assertRaises(UserError):
-            st.update_standard(MODEL, 'pb_job_level', {'std_hidden': True})
+            st.update_standard(MODEL, 'visa_no', {'std_hidden': True})
 
     # ------------------------------------------------------------------- 5
     def test_05_product_country_rule(self):
-        """TIDY-E shows the family card only where Country of Work is
-        Indonesia. The administrator hides it for Vietnam too: hidden if
-        either says hidden; never shown where the product hides it."""
+        """TIDY-E shows some boxes only where Country of Work is one country.
+        The administrator hides such a box for another country too: hidden if
+        either says hidden; never shown where the product hides it.
+
+        FS-10: the Indonesian family card is in the pay formula catalogue, so
+        it is locked now — the test takes a one-country box that is still
+        free (first one in TIDY-E's table, whose country has a test person)."""
         if not hasattr(self.env[MODEL], '_pb_tidy_tab_names'):
             self.skipTest('pb_employee_form_tidy is not installed')
         st = self.Studio.with_user(self.admin)
-        desc = st.get_studio(HOST)['fields']['pb_family_card_number']['stdbox']
-        self.assertEqual(desc['rule']['code'], 'ID')
-        self.assertFalse(desc['lock'])
-        nodes = self.nodes(self.arch(), 'pb_family_card_number')
-        self.assertTrue(all(self.hidden_for(n, self.emp_vn) for n in nodes))       # product
-        self.assertFalse(any(self.hidden_for(n, self.emp_id) for n in nodes))
-        self.publish_std({'pb_family_card_number': {'std_country_ids': [self.vn.id]}})
-        nodes = self.nodes(self.arch(), 'pb_family_card_number')
-        self.assertTrue(all(self.hidden_for(n, self.emp_vn) for n in nodes))
-        self.assertFalse(any(self.hidden_for(n, self.emp_id) for n in nodes))
+        fields_ = st.get_studio(HOST)['fields']
+        people = {'VN': self.emp_vn, 'IN': self.emp_in, 'ID': self.emp_id}
+        pick = None
+        for name, rule in self.Studio._pbfs_people_tidy_rules().items():
+            desc = (fields_.get(name) or {}).get('stdbox')
+            if desc and rule in people and not desc['lock'] and self.nodes(self.arch(), name):
+                pick = (name, rule)
+                break
+        if not pick:
+            self.skipTest('no free one-country box on this database')
+        name, code = pick
+        home = people[code]
+        away_code = 'VN' if code != 'VN' else 'IN'
+        away = people[away_code]
+        away_country = self.env.ref('base.%s' % away_code.lower())
+        home_country = self.env.ref('base.%s' % code.lower())
+        desc = fields_[name]['stdbox']
+        self.assertEqual(desc['rule']['code'], code)
+        nodes = self.nodes(self.arch(), name)
+        self.assertTrue(all(self.hidden_for(n, away) for n in nodes))       # product
+        self.assertFalse(any(self.hidden_for(n, home) for n in nodes))
+        self.publish_std({name: {'std_country_ids': [away_country.id]}})
+        nodes = self.nodes(self.arch(), name)
+        self.assertTrue(all(self.hidden_for(n, away) for n in nodes))
+        self.assertFalse(any(self.hidden_for(n, home) for n in nodes))
         self.assertIn(' or ', nodes[0].get('invisible'))
-        # hidden for Indonesia too → nowhere
-        self.publish_std({'pb_family_card_number': {'std_country_ids': [self.vn.id, self.idn.id]}})
-        nodes = self.nodes(self.arch(), 'pb_family_card_number')
-        self.assertTrue(all(self.hidden_for(n, self.emp_id) for n in nodes))
-        # Showing it again never shows it outside Indonesia
-        self.publish_std({'pb_family_card_number': {'std_country_ids': []}})
-        nodes = self.nodes(self.arch(), 'pb_family_card_number')
-        self.assertTrue(all(self.hidden_for(n, self.emp_vn) for n in nodes))
-        self.assertFalse(any(self.hidden_for(n, self.emp_id) for n in nodes))
+        # hidden for its own country too → nowhere
+        self.publish_std({name: {'std_country_ids': [away_country.id, home_country.id]}})
+        nodes = self.nodes(self.arch(), name)
+        self.assertTrue(all(self.hidden_for(n, home) for n in nodes))
+        # Showing it again never shows it outside its country
+        self.publish_std({name: {'std_country_ids': []}})
+        nodes = self.nodes(self.arch(), name)
+        self.assertTrue(all(self.hidden_for(n, away) for n in nodes))
+        self.assertFalse(any(self.hidden_for(n, home) for n in nodes))
 
     # ------------------------------------------------------------------- 6
     def test_06_only_the_administrator(self):
@@ -309,7 +329,8 @@ class TestFs7EmployeeStandard(TransactionCase):
         cols = self.env.cr.fetchone()[0]
         took = self.publish_std({
             'pb_blood_type': {'std_hidden': True}, 'pb_religion': {'std_hidden': True},
-            'pb_job_level': {'std_country_ids': [self.india.id], 'std_labels': {'en_US': 'DEMO Grade'}},
+            'visa_no': {'std_country_ids': [self.india.id]},
+            'pb_job_level': {'std_labels': {'en_US': 'DEMO Grade'}},
             'pb_visa_status': {'std_labels': {'en_US': 'DEMO Visa'}},
             'additional_note': {'std_labels': {'en_US': 'DEMO HR note'}}})
         self.assertLess(took, 2.0)

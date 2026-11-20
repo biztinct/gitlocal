@@ -575,3 +575,15 @@ msgstr ""
 #: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
 msgid "You can look at these details but not change them."
 msgstr ""
+
+#. module: pb_form_studio_people
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#, python-format
+msgid "%s Only HR changes it."
+msgstr ""
+
+#. module: pb_form_studio_people
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#, python-format
+msgid "A pay formula can read it, so only HR changes it."
+msgstr ""

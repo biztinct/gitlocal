@@ -289,7 +289,10 @@ class PbFormFieldMetaPortalWatch(models.Model):
                 if before.get(meta.id) and not self._pbfr_offered(meta):
                     field = self.env[meta.model]._fields.get(meta.name) \
                         if meta.model in self.env else None
-                    label = field._description_string(self.env) if field else meta.name
+                    # R27: the employee reads the administrator's own label.
+                    own = None if meta.custom else \
+                        self.env['pb.form.studio']._pbfs_std_label_of(meta)
+                    label = own or (field._description_string(self.env) if field else meta.name)
                     Req._pbfr_drop_field(meta.model, meta.name, label)
         return res
 

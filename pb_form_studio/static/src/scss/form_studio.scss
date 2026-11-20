@@ -140,6 +140,7 @@
 }
 
 @keyframes pbfb-spin { to { transform: rotate(360deg); } }
+@keyframes pbfb-sheet-up { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
 
 // =====================================================================
 //  The overlay (Studio mode)
@@ -228,7 +229,11 @@
             .ck { color: var(--pbim-amber); } }
         &.sel { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-soft); } }
 
-    // properties
+    // properties. FS-10: the head row and its Done button only take shape on
+    // a phone / tablet (the settings sheet, below); here they are the plain
+    // panel title, exactly as before.
+    .pbfb-prophead { display: contents; }
+    .pbfb-propdone { display: none; }
     .pbfb-empty-prop { padding: 28px 18px; color: var(--pbim-muted); text-align: center; font-weight: 600; line-height: 1.5;
         svg { color: var(--pbim-primary-light); } p { margin: 8px 0 0; } }
     .pbfb-stdname { display: grid; gap: 2px; b { font-size: 15px; } span { color: var(--pbim-muted); font-size: 12.5px; font-weight: 600; } }
@@ -414,6 +419,35 @@
         .pbfb-work { grid-template-columns: 1fr; overflow: visible; flex: none; min-height: auto; }
         .pbfb-panel { overflow: visible; min-height: auto; }
         .pbfb-screen { overflow: visible; }
+        // FS-10 — Publish and close never scroll away: the studio bar stays
+        // at the top of the overlay (the overlay itself is what scrolls).
+        .pbfb-studiobar { position: sticky; top: 0; z-index: 5; }
+        // the left column's filter sticks just under it (height set by the
+        // overlay itself, the bar may wrap)
+        .pbfb-findbar { top: var(--pbfb-bar-h, 0px); }
+        // FS-10 — the picked field's settings open in view, as a sheet at
+        // the bottom of the screen; with nothing picked there is nothing to
+        // show down there.
+        .pbfb-right { display: none; }
+        .pbfb-right.has-sel {
+            display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+            max-height: 72vh; max-height: 72dvh; overflow: auto; overscroll-behavior: contain;
+            border-radius: 18px 18px 0 0; border-bottom: 0;
+            box-shadow: 0 -18px 40px -14px rgba(30, 27, 46, .38);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+            animation: pbfb-sheet-up .18s ease-out;
+        }
+        .pbfb-prophead {
+            display: flex; align-items: center; gap: 8px; position: sticky; top: 0; z-index: 1;
+            background: #fff; border-bottom: 1px solid var(--pbim-line-2); padding: 10px 12px 0 0;
+            h4 { flex: 1; padding-top: 10px; }
+            // the grab handle every phone sheet has
+            &::before { content: ""; position: absolute; top: 6px; left: 50%; width: 36px; height: 4px;
+                margin-left: -18px; border-radius: 2px; background: var(--pbim-line); }
+        }
+        .pbfb-propdone { display: inline-flex; }
+        // the screen and the lists can still be scrolled clear of the sheet
+        .pbfb-work.sheet-open { padding-bottom: calc(72vh + 16px); }
     }
     .pbfb.pbfb-lib .pbfb-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -424,9 +458,14 @@
     }
     .pbfb.pbfb-overlay {
         .pbfb-cards, .pbfb-tiles { grid-template-columns: 1fr; }
-        .pbfb-studiobar { padding: 8px 12px; }
+        .pbfb-studiobar { padding: 8px 12px; gap: 6px 8px; }
         .pbfb-work { padding: 12px; }
         .pbfb-tag-target { display: none; }
+        // FS-10 — one line at phone width: Discard keeps its icon (and its
+        // name for screen readers and on hover); Publish and close stay big.
+        button.pbfb-btn.pbfb-discard { padding: 6px; span { display: none; } }
+        .pbfb-changes { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .pbfb-studiobar > .pbfb-spacer { display: none; }
     }
     .pbfb.pbfb-lib .pbfb-kpis { grid-template-columns: 1fr 1fr; }
     .pbfb.pbfb-lib, .pbfb.pbfb-dev { .pbfb-hero { padding: 14px; } }

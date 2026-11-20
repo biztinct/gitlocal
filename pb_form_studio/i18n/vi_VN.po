@@ -2257,17 +2257,6 @@ msgstr "Loại trường"
 
 #. module: pb_form_studio
 #. odoo-javascript
-#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
-#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
-msgid ""
-"Leave a language empty to keep the built-in label there. Mapping, Updates "
-"sheets, pay data files and My Payobook keep the built-in name."
-msgstr ""
-"Để trống một ngôn ngữ để giữ nhãn mặc định ở ngôn ngữ đó. Mapping, bảng Cập "
-"nhật, tệp dữ liệu lương và My Payobook vẫn dùng tên mặc định."
-
-#. module: pb_form_studio
-#. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
 msgid "Link"
 msgstr "Liên kết"
@@ -2542,3 +2531,70 @@ msgstr "hiện"
 #: code:addons/pb_form_studio/models/form_standard.py:0
 msgid "shown again"
 msgstr "hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Leave a language empty to keep the built-in label there. Mapping, Updates "
+"sheets and pay data files keep the built-in name. My Payobook shows your "
+"label for the fields you show there."
+msgstr ""
+"Để trống một ngôn ngữ để giữ nhãn mặc định ở ngôn ngữ đó. Mapping, bảng Cập "
+"nhật và tệp dữ liệu lương vẫn dùng tên mặc định. My Payobook hiện nhãn của "
+"bạn cho các trường bạn cho hiện ở đó."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(names)s and %(n)s more"
+msgstr "%(names)s và %(n)s mục khác"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Used by pay formula: %s"
+msgstr "Được công thức tính lương dùng: %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Filled by pay data file: %s"
+msgstr "Được tệp dữ liệu lương điền: %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay formula %s"
+msgstr "công thức tính lương %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay data file of %s"
+msgstr "tệp dữ liệu lương của %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again because %(thing)s now uses it."
+msgstr "%(box)s được hiện lại vì %(thing)s nay dùng nó."
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again: %(reason)s"
+msgstr "%(box)s được hiện lại: %(reason)s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "shown again, it cannot be hidden."
+msgstr "được hiện lại, không thể ẩn."

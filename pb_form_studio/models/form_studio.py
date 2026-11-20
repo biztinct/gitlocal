@@ -1741,8 +1741,13 @@ class PbFormStudio(models.AbstractModel):
                 continue
             desc = field.get_description(self.env, ['string', 'help'])
             kind = TTYPE_KIND.get(field.type, 'text')
+            # R27 (owner, 2026-11-20): a standard field the administrator
+            # renamed shows that label on My Payobook too, in the reader's
+            # language; no label there = the built-in one (Reset restores it).
+            own = None if meta.custom else self._pbfs_std_label_of(meta)
             out.append({
-                'name': name, 'label': desc.get('string') or name, 'help': desc.get('help') or '',
+                'name': name, 'label': own or desc.get('string') or name,
+                'help': desc.get('help') or '',
                 'type': field.type, 'kind': kind, 'options': self._pbfs_options(field),
                 'comodel': field.comodel_name if field.type == 'many2one' else False,
                 'section': where[name][0], 'section_title': where[name][1],

@@ -7,3 +7,4 @@ from . import mapping
 from . import access
 from . import audit
 from . import portal_request
+from . import std_readers

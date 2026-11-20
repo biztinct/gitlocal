@@ -99,7 +99,7 @@
               </div>
             </div>
             <dl class="pbmd-kv">
-              <div><dt>Marital status</dt><dd><t t-esc="person['marital'] or '—'"/><span t-if="person['marital_waiting']" class="pbmd-wait">change waiting for HR</span></dd></div>
+              <div><dt t-out="person['labels'].get('marital')">Marital status</dt><dd><t t-esc="person['marital'] or '—'"/><span t-if="person['marital_waiting']" class="pbmd-wait">change waiting for HR</span></dd></div>
               <div><dt>Photo</dt><dd><t t-if="person['photo_waiting']"><span class="pbmd-wait">new photo waiting for HR</span></t><t t-else="">The one on your record</t></dd></div>
             </dl>
             <div class="pbmd-actions">

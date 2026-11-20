@@ -139,6 +139,38 @@ class TestFs7ContractStandard(TransactionCase):
         with self.assertRaises(AccessError):
             self.Studio.with_user(self.hr).update_standard(MODEL, 'notes', {'std_hidden': True})
 
+    # ------------------------------------------------------- FS-10 item 4
+    def test_04c_locked_only_when_really_used(self):
+        """FS-10 (architect ruling): Location, Cost center and Contract signed
+        on stay hideable while nothing reads them; a component of a live pay
+        scheme bound to `contract.location` locks Location with a reason that
+        names the scheme; archiving the scheme frees it again."""
+        if 'hr.formula.rule' not in self.env:
+            self.skipTest('no pay formulas here')
+        st = self.Studio.with_user(self.admin)
+        locked = self.Studio._pbfs_standard_locked(MODEL)
+        for name in ('location', 'costcenter', 'pb_signed_date', 'hr_responsible_id', 'notes'):
+            if name in self.env[MODEL]._fields:
+                self.assertNotIn(name, locked, name)
+        cfg = self.env['hr.formula.config'].sudo().create({
+            'name': 'DEMO FS10 Site', 'code': 'FSCT', 'cycle_type': 'end_cycle',
+            'country_code': 'VN', 'state': 'active', 'company_id': self.env.company.id})
+        self.env['hr.formula.rule'].sudo().create({
+            'config_id': cfg.id, 'name': 'DEMO site', 'code': 'FSCTS', 'column_type': 'input',
+            'sequence': 2, 'value_kind': 'text', 'net_role': 'info', 'default_value': 0.0,
+            'appears_on_payslip': False, 'application_source_key': 'contract.location',
+            'category_id': self.env['hr.salary.rule.category'].search([], limit=1).id})
+        self.env.registry.clear_cache('templates')
+        reason = (self.Studio._pbfs_standard_locked(MODEL).get('location') or {}).get('reason')
+        self.assertIn('Used by pay formula: DEMO FS10 Site', reason or '')
+        with self.assertRaises(UserError):
+            st.update_standard(MODEL, 'location', {'std_hidden': True})
+        st.update_standard(MODEL, 'location', {'std_labels': {'en_US': 'DEMO Site'}})
+        cfg.write({'active': False})
+        self.env.registry.clear_cache('templates')
+        self.assertNotIn('location', self.Studio._pbfs_standard_locked(MODEL))
+        st.update_standard(MODEL, 'location', {'std_hidden': True})
+
     # ------------------------------------------------------------------ 2b
     def test_02b_hide_for_one_country(self):
         self.publish_std({'hr_responsible_id': {'std_country_ids': [self.india.id]}})

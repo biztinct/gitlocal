@@ -40888,8 +40888,8 @@
                 }
               ],
               "prompt": {
-                "en": "A pay formula reads the field Site days. You want to delete the field. What happens?",
-                "vi": "Một công thức tính lương đọc trường Ngày công trường. Bạn muốn xoá trường này. Điều gì xảy ra?"
+                "en": "A pay formula reads one of your own fields. You want to delete that field. What happens?",
+                "vi": "Một công thức tính lương đọc một trường riêng của bạn. Bạn muốn xoá trường đó. Điều gì xảy ra?"
               }
             }
           ],
@@ -40912,8 +40912,8 @@
                 "vi": "Trang Trình tạo biểu mẫu trong Cài đặt: tiêu đề và dòng chữ bên dưới."
               },
               "means": {
-                "en": "Fields are added on the record screens with the Form builder button. This page lists all of them in one place.",
-                "vi": "Trường được thêm trên màn hình hồ sơ bằng nút Trình tạo biểu mẫu. Trang này liệt kê tất cả ở một chỗ."
+                "en": "Your own fields are added on the record screens with the Form builder button. This page lists them, and the standard fields, in one place.",
+                "vi": "Trường riêng được thêm trên màn hình hồ sơ bằng nút Trình tạo biểu mẫu. Trang này liệt kê chúng, cùng các trường chuẩn, ở một chỗ."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -40922,8 +40922,8 @@
               "screen": "formbuilder",
               "tip": "",
               "title": {
-                "en": "One list of every field you added",
-                "vi": "Một danh sách mọi trường bạn đã thêm"
+                "en": "One list of your fields and the standard ones",
+                "vi": "Một danh sách trường riêng và trường chuẩn"
               },
               "visual": "none"
             },
@@ -40941,12 +40941,12 @@
               },
               "lines": [],
               "look": {
-                "en": "The four numbers: Custom fields 4, Feed pay formulas 1, Shown in lists 2, Not on any screen 0.",
-                "vi": "Bốn con số: Trường tuỳ chỉnh 4, Dùng trong công thức lương 1, Hiện trong danh sách 2, Không có trên màn hình nào 0."
+                "en": "The numbers line: Custom fields, Feed pay formulas, Shown in lists, Not on any screen, Standard fields hidden and Standard fields renamed.",
+                "vi": "Dòng con số: Trường tuỳ chỉnh, Dùng trong công thức lương, Hiện trong danh sách, Không có trên màn hình nào, Trường chuẩn đã ẩn và Trường chuẩn đã đổi tên."
               },
               "means": {
-                "en": "A field on no screen is kept but nobody can fill it in. Here every field is on a screen.",
-                "vi": "Trường không có trên màn hình nào vẫn được giữ nhưng không ai điền được. Ở đây trường nào cũng có trên màn hình."
+                "en": "Each counts your company's fields, so yours will differ. A grey number is zero. A field on no screen is kept, but nobody can fill it in.",
+                "vi": "Mỗi con số đếm các trường của công ty bạn, nên số của bạn sẽ khác. Số màu xám là số 0. Trường không có trên màn hình nào vẫn được giữ, nhưng không ai điền được."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -40974,12 +40974,12 @@
               },
               "lines": [],
               "look": {
-                "en": "The chips All, Employee and Contract, and Search fields.",
-                "vi": "Các nút Tất cả, Nhân viên và Hợp đồng, và ô Tìm trường."
+                "en": "Find a field, the chips All, Own fields, Standard fields, Hidden and On My Payobook, the record types, and Any Country of Work.",
+                "vi": "Ô Tìm trường, các nút Tất cả, Trường riêng, Trường chuẩn, Đã ẩn và Trên My Payobook, các loại hồ sơ, và Mọi quốc gia làm việc."
               },
               "means": {
-                "en": "A field belongs to one record type. Parking bay is on the contract; the other three are on the employee.",
-                "vi": "Mỗi trường thuộc một loại hồ sơ. Chỗ đỗ xe nằm trên hợp đồng; ba trường còn lại nằm trên nhân viên."
+                "en": "A field belongs to one record type: DEMO Parking bay is on the contract, DEMO Shirt size on the employee.",
+                "vi": "Mỗi trường thuộc một loại hồ sơ: DEMO Parking bay nằm trên hợp đồng, DEMO Shirt size nằm trên nhân viên."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -40988,8 +40988,8 @@
               "screen": "formbuilder",
               "tip": "",
               "title": {
-                "en": "Employee or contract",
-                "vi": "Nhân viên hay hợp đồng"
+                "en": "Your own, standard, employee or contract",
+                "vi": "Trường riêng, trường chuẩn, nhân viên hay hợp đồng"
               },
               "visual": "none"
             },
@@ -41007,12 +41007,12 @@
               },
               "lines": [],
               "look": {
-                "en": "The Site days row: a number on the employee, used by 1. Locker number shows only for Vietnam.",
-                "vi": "Dòng Ngày công trường: một con số trên nhân viên, được dùng bởi 1. Số tủ đồ chỉ hiện cho Việt Nam."
+                "en": "The DEMO Shirt size row: a choice on the employee, and where it appears. Below your own fields come the standard ones; a lock means it cannot be hidden.",
+                "vi": "Dòng DEMO Shirt size: một lựa chọn trên nhân viên, và nơi nó xuất hiện. Dưới các trường riêng là các trường chuẩn; biểu tượng khoá nghĩa là không ẩn được."
               },
               "means": {
-                "en": "Used by counts the pay formulas, mappings, saved views and waiting My Payobook changes that read the field.",
-                "vi": "Được dùng bởi đếm các công thức tính lương, ánh xạ, chế độ xem đã lưu và thay đổi đang chờ trên My Payobook có đọc trường này."
+                "en": "Used by counts the pay formulas, mappings, saved views and waiting My Payobook changes that read a field. A standard field a pay formula reads can be renamed, never hidden.",
+                "vi": "Được dùng bởi đếm các công thức tính lương, ánh xạ, chế độ xem đã lưu và thay đổi đang chờ trên My Payobook có đọc trường đó. Trường chuẩn mà công thức tính lương đọc thì đổi tên được, không bao giờ ẩn được."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -41087,8 +41087,8 @@
           "vi": "Chỉ quản trị viên mới thêm, sửa hoặc xoá được trường. Ai được xem từng trường được chọn riêng cho mỗi trường."
         },
         "what": {
-          "en": "Settings › Form builder lists every field your company added, where it appears, how many records fill it and what uses it. Fields are added on the record screens themselves, with the Form builder button.",
-          "vi": "Cài đặt › Trình tạo biểu mẫu liệt kê mọi trường công ty bạn đã thêm, nó xuất hiện ở đâu, bao nhiêu hồ sơ đã điền và cái gì đang dùng nó. Trường được thêm ngay trên màn hình hồ sơ, bằng nút Trình tạo biểu mẫu."
+          "en": "Settings › Form builder lists every field your company added, where it appears, how many records fill it and what uses it. Below them come the standard fields, with any you hid or renamed. Fields are added on the record screens themselves, with the Form builder button.",
+          "vi": "Cài đặt › Trình tạo biểu mẫu liệt kê mọi trường công ty bạn đã thêm, nó xuất hiện ở đâu, bao nhiêu hồ sơ đã điền và cái gì đang dùng nó. Bên dưới là các trường chuẩn, cùng những trường bạn đã ẩn hoặc đổi tên. Trường được thêm ngay trên màn hình hồ sơ, bằng nút Trình tạo biểu mẫu."
         },
         "when": {
           "en": "When HR keeps a detail in a spreadsheet beside Payobook. When a pay formula needs a fact that is not on the record. When employees should see or update a detail themselves.",
@@ -42106,5 +42106,5 @@
       }
     }
   ],
-  "version": "f5156e131902"
+  "version": "cf927ef9da8c"
 }

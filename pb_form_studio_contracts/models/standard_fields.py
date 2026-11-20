@@ -17,11 +17,13 @@ THE LOCKED LIST for the contract (the engine's one hook,
   salary basis, payroll contract type, nationality status, trial start),
   the accounting boxes (journal, analytic distribution);
 * department and job — approvals and access follow them;
-* anything a pay formula of THIS database reads (`contract.<field>` sources)
-  or a pay data file fills — worked out live.
+* anything that REALLY reads the field on this database (FS-10): a pay
+  scheme component bound to `contract.<field>` in a scheme that is not
+  archived, or a pay data file column — the reason names the scheme; a field
+  that becomes used is shown again at that save (`_pbfs_std_readers_changed`).
 
-Free to hide: HR responsible, location and cost centre (unless a formula
-reads them), notes, signed date and the like.
+Free to hide: HR responsible, location and cost centre, notes, signed date
+(unless something really reads them).
 """
 import logging
 
@@ -55,23 +57,28 @@ class PbFormStudioContractStandard(models.AbstractModel):
     _inherit = 'pb.form.studio'
 
     @api.model
-    def _pbfs_contract_formula_used(self):
-        _ = self.env._
-        out = {}
+    def _pbfs_std_readers(self, model):
+        """Contract fields really read on this database (FS-10): pay scheme
+        components bound to `contract.<field>` in schemes that are not
+        archived, and pay data file columns that fill them."""
+        out = list(super()._pbfs_std_readers(model) or [])
+        if model != MODEL or MODEL not in self.env:
+            return out
         if 'hr.formula.rule' in self.env and \
                 'application_source_key' in self.env['hr.formula.rule']._fields:
-            Rule = self.env['hr.formula.rule'].sudo().with_context(active_test=False)
-            for key in Rule.search([('application_source_key', '=like', 'contract.%')]).mapped(
-                    'application_source_key'):
-                if key:
-                    out.setdefault(key.split('.', 1)[1],
-                                   _('A pay formula reads it, so pay depends on this field.'))
-        if 'hr.payslip.import.mapping' in self.env:
-            Mapping = self.env['hr.payslip.import.mapping'].sudo().with_context(active_test=False)
-            for name in Mapping.search([('target_field_id.model', '=', MODEL)]).mapped(
-                    'target_field_id.name'):
-                out.setdefault(name, _('A pay data file fills it, so pay depends on this field.'))
+            Rule = self.env['hr.formula.rule'].sudo()
+            for rule in Rule.search([('application_source_key', '=like', 'contract.%'),
+                                     ('config_id.active', '=', True)]):
+                field = (rule.application_source_key or '').strip().split('.', 1)[-1]
+                if field in self.env[MODEL]._fields:
+                    out.append((field, 'formula', rule.config_id.display_name or ''))
+        out += self._pbfs_std_datafile_readers(MODEL)
         return out
+
+    @api.model
+    def _pbfs_contract_formula_used(self):
+        """`{field: reason}` — what really reads each contract field (FS-10)."""
+        return self._pbfs_std_used_reasons(MODEL)
 
     @api.model
     def _pbfs_standard_locked(self, model):

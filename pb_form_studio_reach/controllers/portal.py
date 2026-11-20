@@ -103,6 +103,21 @@ class PbFormBuilderMyDetails(PbMeDetailsPortal):
         """The published layout's section title (engine `section_title`)."""
         return spec.get('section_title') or request.env._('Company details')
 
+    def _ess_field_labels(self, emp):
+        """R27 (FS-10): the administrator's own label of each renamed standard
+        employee field, in the reader's language — My Profile and My details
+        show it instead of their built-in words (`pb_me_portal` hook)."""
+        labels = dict(super()._ess_field_labels(emp) or {})
+        try:
+            rules = request.env['pb.form.studio'].sudo()._pbfs_std_rules(EMP)
+        except Exception:                               # noqa: BLE001
+            _logger.exception('pb_form_studio_reach: own labels for My Payobook failed')
+            return labels
+        for name, rule in rules.items():
+            if rule.get('label'):
+                labels[name] = rule['label']
+        return labels
+
     def _pbmd_overview(self, emp):
         values = super()._pbmd_overview(emp)
         try:

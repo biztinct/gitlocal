@@ -63,6 +63,13 @@ class PbMePortal(CustomerPortal):
         return emp or Emp.search(
             [('user_id', '=', request.env.user.id)], limit=1)
 
+    def _ess_field_labels(self, emp):
+        """`{employee field: label}` — a company's own name for a standard
+        box (set in the Form builder, R27), in the reader's language. Empty
+        here; the Form builder fills it. A box with no entry shows its
+        built-in words (the template's own text)."""
+        return {}
+
     def _ess_own_employees(self):
         """EVERY employee record of the session user (one per company), sudo.
 
@@ -184,6 +191,7 @@ class PbMePortal(CustomerPortal):
             'emergency_contact': emp.emergency_contact or '',
             'emergency_phone': emp.emergency_phone or '',
             'avatar_url': request.env['pb.me.home']._photo_url(emp, 'avatar_256'),
+            'labels': self._ess_field_labels(emp),
         }
 
     def _request_payload(self, r):
