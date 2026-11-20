@@ -1,0 +1,1291 @@
+# Translation of Payobook Server.
+# This file contains the translation of the following modules:
+#	* pb_form_studio_portal
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "\"%s\" cannot be shown on My Payobook."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s in %(s)s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s: %(w)s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s: %(what)s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(label)s: \"Employee can change it\" switched off: %(why)s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(n)s of %(total)s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(s)s: %(n)s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(what)s can be at most %(n)s characters."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(who)s published this page after you started your changes. Publishing now would replace their page with yours."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s changes not yet published"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s fields"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s gets its own page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s moved"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s removed"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s taken off the page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s uses the page for all companies again"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: My Payobook tick put back as before the page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: placed on the My Payobook page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: taken off the My Payobook page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid ". Look only: nothing here can be changed or sent."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "1 change not yet published"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<option value=\"\">Choose…</option>"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_details_page_door
+msgid "<span class=\"pbmd-door-tx\"><b>Company details</b><span>See them and ask for a change on My Profile</span></span>"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<span class=\"pbmd-door-tx\"><b>Family, ID papers, photo and bank account</b><span>See them all and ask for a change</span></span>"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<span>Note to HR (optional)</span>"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "A change is already waiting for HR; sending again replaces it."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A page can have at most %s sections."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A section can hold at most %s fields."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A section name"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Add a picture"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Add a section"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "All"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "All companies"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always first on the page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always on the page; the order can change"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always shown"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Amber"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Another administrator published this page after you started your changes."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Any Country of Work"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/settings_card.js:0
+msgid "Arrange the employee's My Profile page: sections, fields, headings and a banner picture."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Banner picture"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Banner picture removed"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Blue"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Build"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Build or preview"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Change the picture"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Change what is wrong and send it. Some details are saved at once; the others change on your record once HR approves them."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Changes discarded. Nothing was published."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Changes once HR approves it."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Clear the filter"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Close the page builder"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Colour"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Columns"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Company details"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Country of Work"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Desktop"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Discard"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Done"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Drag a field onto a section, or tap it to add it to the section you picked. Every field the employee may see is here; pay figures never are."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Drop a field here"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Each section needs its own name tag. Start again from the published page."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_profile_page
+msgid "Edit this page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Employee can change"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Employee can change it"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Employees see the standard page again at once. Fields go back to how they were shown on My Payobook before the page was first published. The history is kept, so you can restore this page later."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Every employee sees it the next time they open My Profile."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Family, ID papers, photo and bank account"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Fields"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Fields and page settings"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Find a field"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Find a person"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.model,name:pb_form_studio_portal.model_pb_form_studio
+msgid "Form builder"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Full"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Give this company its own page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Green"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Grey"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "HR approves"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "HR approves the change"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Half"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Header"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Header colour: %s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Heading"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "History"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "JPG, PNG or WebP, at most 2 MB. It is cut to the width of the header."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep editing"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep going"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep this page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Label"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Leave a language empty to keep the standard words."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Line under the heading"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Move down"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Move up"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "My %s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/settings_card.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.actions.client,name:pb_form_studio_portal.action_page_builder
+msgid "My Payobook page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "My Profile"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "My Profile is the standard page again."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "My requests"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Name"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "New section"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "No"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "No change requests yet."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "No changes yet"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "No field matches"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Nobody with a My Payobook login was found to preview as."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Not on the page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Nothing published yet: employees see the standard page."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+msgid "Nothing was changed."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Offered in \"Request a change\" on the page."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "On the page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "On the page means shown on My Payobook: the same tick as in the employee Form builder. Taking a field off never deletes what is stored."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "On the page, employee can change"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "One column"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Only %s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Only an empty section can be removed, and the page keeps at least one."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Open my own My Profile"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Opening the page builder…"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Order in %s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Own"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Own field"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio_portal.field_pb_form_layout__page
+msgid "Page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Page for"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Phone"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Photo, name and department"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Pick a header colour from the list."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Pick the header, a section or a field on the page to change it."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Picture description"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Preview"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Preview as"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Preview of My Profile"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish for everyone"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish mine over it"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish this page for every employee?"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Published the My Payobook page, version %s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Published. %s changes are now live for every employee."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Published. 1 change is now live for every employee."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Publishing did not work. Nothing was changed."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Purple"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Put it on the page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Remove"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Remove this section"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Request a change"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Reset My Profile to the standard page?"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Reset the My Payobook page to the standard page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Reset to the standard page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Restore"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Restored the page published %s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Rose"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Saved at once."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Saved."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Saves at once"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Screen size"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Section"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Section name: %s"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Send"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Sent to HR. Nothing changes on your record until it is approved."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Settings"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Show"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Shown only to people whose Country of Work is"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Shown when a field on the page can be changed by the employee"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Someone published first"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Standard"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Standard field"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again from the published page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again from their page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Take it off the page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Teal"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That did not work. Nothing was changed."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That file could not be read."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "That file is empty."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That version is loaded. Publish to make it live again."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The banner image could not be found. Upload it again."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee can change it"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee changes it with \"Request a change\"; HR approves every change."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The heading"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The label is the field's own: it changes on every screen, as in the Form builder."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The line under the heading"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The page being changed"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "The page builder could not open."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The page needs at least one section."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The picture description"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "The picture is too big: at most 2 MB."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+msgid "This change could not be sent."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "This company shows the page for all companies."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "This version cannot be restored."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Two columns"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Undo the last publish"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Untitled section"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Uploaded a banner picture for My Payobook (%s KB)"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Use a JPG, PNG or WebP picture."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Use the page for all companies again"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "What the picture shows (for screen readers)"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "When the employee changes it"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "White"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Width"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Yes"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Your details"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Your details on file. Bank changes go through a separate secure flow."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Your unpublished changes from last time are back."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "another administrator"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "changeable fields, in page order"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "employee can change it"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "full width"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "half width"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "label"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "look only"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "one column"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "saves at once"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "two columns"
+msgstr ""
