@@ -37,6 +37,16 @@ class TestPortalFacade(LeaveSetupCase):
         # HR still enters it from the Leave Command Center
         self.assertIn(self.hr_kind.id, [t['id'] for t in self.env['pb.timeoff'].sudo()._apply_types()])
 
+    def test_p1b_my_leave_takes_ask_again(self):
+        """WF2 P6c calls get_my_leave(again=…) from the page: this override
+        must pass it through (it once dropped it, and My Leave failed for
+        everybody where both modules are installed)."""
+        ess = self.env['pb.ess.workforce'].with_user(self.portal_user)
+        plain = [t['name'] for t in ess.get_my_leave()['types']]
+        self.assertEqual([t['name'] for t in ess.get_my_leave(again=None)['types']], plain)
+        res = ess.get_my_leave(again='0')
+        self.assertFalse(res.get('again'))
+
     def test_p2_earned_so_far(self):
         today = date.today()
         first = today.replace(day=1)

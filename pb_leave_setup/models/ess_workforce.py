@@ -29,8 +29,10 @@ class PbEssWorkforce(models.AbstractModel):
         return types.filtered(lambda t: not t.pb_ls_hr_only)
 
     @api.model
-    def get_my_leave(self):
-        res = super().get_my_leave()
+    def get_my_leave(self, *args, **kwargs):
+        # pass every argument through (WF2 P6c added ``again``): an override
+        # that drops them breaks My Leave for everybody
+        res = super().get_my_leave(*args, **kwargs)
         balances = res.get('balances') or []
         if not balances:
             return res
