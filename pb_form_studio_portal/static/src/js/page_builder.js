@@ -31,6 +31,7 @@ import { fold, foldMatch, sameLabels } from "@pb_form_studio/js/fs_words";
 
 const FACADE = "pb.form.studio";
 const DRAFT_MS = 800;
+const FIND_MS = 250;
 const LANG_NAMES = { en_US: "English", vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
 const SIDE_LABEL = () => ({ requests: _t("My requests"), door: _t("Family, ID papers, photo and bank account") });
 
@@ -54,9 +55,14 @@ export class PbPageBuilder extends Component {
         });
         this.fileInput = useRef("fileInput");
         this._timer = null;
+        this._findTimer = null;
+        this._findSeq = 0;
         this._seq = 1;
         onWillStart(() => this.load());
-        onWillUnmount(() => this._timer && clearTimeout(this._timer));
+        onWillUnmount(() => {
+            clearTimeout(this._timer);
+            clearTimeout(this._findTimer);
+        });
     }
 
     ic(n, s = 16) { return fsIc(n, s); }
@@ -184,8 +190,19 @@ export class PbPageBuilder extends Component {
         if ("portal_mode" in u) { p.mode = u.portal_mode; }
         return p;
     }
+    /** FS-14 — today's personal boxes (private phone, private e-mail,
+     *  address, emergency contact and phone): changed through today's change
+     *  request, HR approves; the switch makes a box look-only. */
+    profileEdit(f) {
+        const u = this.state.updates[f.name] || {};
+        return "profile_edit" in u ? Boolean(u.profile_edit) : Boolean(f.request_edit);
+    }
+    toggleProfile(f) {
+        const on = !this.profileEdit(f);
+        this.upd(f, { profile_edit: on }, on ? _t("employee can change it") : _t("look only"));
+    }
     canChange(f) {
-        if (f.request) { return true; }        // today's change request (HR approves)
+        if (f.request) { return this.profileEdit(f); }
         const p = this.portal(f);
         return Boolean(p.can_edit && p.edit);
     }
@@ -524,11 +541,37 @@ export class PbPageBuilder extends Component {
         if (this.state.scope !== "default") { q.set("company_id", this.state.scope); }
         return "/my/profile/preview?" + q.toString();
     }
-    onPreviewEmp(ev) { this.state.previewEmp = Number(ev.target.value) || 0; this.state.previewKey++; }
+    onPreviewEmp(ev) { this.pickPreviewEmp(Number(ev.target.value) || 0); }
+    pickPreviewEmp(id) {
+        if (this.state.previewEmp === id) { return; }
+        this.state.previewEmp = id;
+        this.state.previewKey++;
+    }
     isPreviewEmp(e) { return this.state.previewEmp === e.id; }
-    async onEmpTerm(ev) {
+    /** FS-14 — "Find a person" searches as you type (and at once on Enter).
+     *  The list and the preview never disagree: when the person shown is not
+     *  in the new list, the first person of the list is previewed. */
+    onEmpInput(ev) {
         this.state.empTerm = ev.target.value;
-        this.state.emps = await this.orm.call(FACADE, "page_employees", [this.state.empTerm]);
+        clearTimeout(this._findTimer);
+        this._findTimer = setTimeout(() => this.findEmps(), FIND_MS);
+    }
+    onEmpKey(ev) {
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            this.state.empTerm = ev.target.value;
+            clearTimeout(this._findTimer);
+            this.findEmps();
+        }
+    }
+    async findEmps() {
+        const seq = ++this._findSeq;
+        const emps = await this.orm.call(FACADE, "page_employees", [this.state.empTerm]);
+        if (seq !== this._findSeq) { return; }      // an older answer: a newer search runs
+        this.state.emps = emps;
+        if (emps.length && !emps.some((e) => e.id === this.state.previewEmp)) {
+            this.pickPreviewEmp(emps[0].id);
+        }
     }
     setSize(s) { this.state.previewSize = s; }
     sizeClass(s) { return { on: this.state.previewSize === s }; }

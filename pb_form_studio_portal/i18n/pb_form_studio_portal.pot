@@ -1337,3 +1337,33 @@ msgstr ""
 msgid "You can still arrange this page for your employees and preview it as any of them."
 msgstr ""
 
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: the employee can change it (HR approves)"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: look only for the employee; only HR changes it"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Personal details: \"Employee can change it\" put back as before the page"
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+#: code:addons/pb_form_studio_portal/models/res_users.py:0
+msgid "Some of these details can only be changed by HR. Nothing was sent."
+msgstr ""
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Look only: the employee sees it; only HR changes it."
+msgstr ""

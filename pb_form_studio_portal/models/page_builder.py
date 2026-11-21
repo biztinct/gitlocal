@@ -53,6 +53,13 @@ TODAY_FIELDS = ('work_email', 'work_phone', 'private_phone', 'private_email', 'p
 PROFILE_REQUEST = {'private_phone': 'x_phone', 'private_email': 'x_private_email',
                    'private_street': 'x_address', 'emergency_contact': 'x_emergency_contact',
                    'emergency_phone': 'x_emergency_phone'}
+#: FS-14 — which of those boxes the employee may change: pb_me_portal's own
+#: whitelist (`pb_profile_change_request.py:36-37,110-116`), enforced by that
+#: model at create/write/diff/apply. The page builder's "Employee can change
+#: it" switch of these five fields writes THIS parameter (one stored fact; no
+#: second store). Unset = all five (pb_me_portal's default).
+PROFILE_PARAM = 'pb_me_portal.editable_fields'
+PROFILE_BOXES = tuple(PROFILE_REQUEST.values())
 #: The locked palette's light tints (design system: light-tint hero, no gradients).
 TINTS = ('plain', 'brand', 'teal', 'sky', 'green', 'amber', 'rose', 'slate')
 #: Fixed blocks of the side column; their order may change, they stay.
@@ -178,6 +185,7 @@ class PbFormStudioPage(models.AbstractModel):
         names = [n for n in STANDARD_FIELDS if n in Model._fields and n not in PORTAL_SPOUSE]
         names += [n for n in self._pbfs_custom_names(EMP) if n not in names]
         hidden = self._pbfs_portal_hidden(EMP)
+        profile_edit = self._pbfp_profile_editable()
         out = {}
         for name in names:
             if name in hidden:
@@ -200,9 +208,59 @@ class PbFormStudioPage(models.AbstractModel):
                 else {},
                 'today': name in TODAY_FIELDS,
                 'request': name in PROFILE_REQUEST,
+                # FS-14: the "Employee can change it" switch of a personal box
+                'request_edit': name in profile_edit,
                 'options': desc['options'],
             }
         return dict(sorted(out.items(), key=lambda kv: (kv[1]['label'] or '').lower()))
+
+    # ================================================ FS-14 personal boxes
+    @api.model
+    def _pbfp_profile_editable(self, updates=None):
+        """The employee fields among today's five personal boxes (private
+        phone, private e-mail, address, emergency contact and phone) the
+        employee may change through "Request a change" — read from
+        pb_me_portal's own whitelist. `updates` (a draft's field settings)
+        lays its `profile_edit` switches over it, for the preview."""
+        boxes = self.env['pb.profile.change.request'].sudo()._editable_fields()
+        out = {name for name, box in PROFILE_REQUEST.items() if box in boxes}
+        for name, upd in (updates or {}).items() if isinstance(updates, dict) else []:
+            if name in PROFILE_REQUEST and isinstance(upd, dict) and 'profile_edit' in upd:
+                if upd['profile_edit']:
+                    out.add(name)
+                else:
+                    out.discard(name)
+        return out
+
+    @api.model
+    def _pbfp_set_profile_editable(self, wanted, eligible):
+        """Write the personal-box switches (`{field: bool}`) into the
+        whitelist; one history line per box that changes. → the parameter's
+        raw value BEFORE the change (False when it was unset), or None when
+        nothing changed."""
+        _ = self.env._
+        current = self._pbfp_profile_editable()
+        new = set(current)
+        for name, on in wanted.items():
+            if on:
+                new.add(name)
+            else:
+                new.discard(name)
+        if new == current:
+            return None
+        Param = self.env['ir.config_parameter'].sudo()
+        before = Param.get_param(PROFILE_PARAM)
+        Param.set_param(PROFILE_PARAM, ','.join(
+            box for name, box in PROFILE_REQUEST.items() if name in new))
+        for name in PROFILE_REQUEST:
+            if (name in new) == (name in current):
+                continue
+            label = (eligible.get(name) or {}).get('label') or name
+            self._pbfs_audit('update_field', PAGE_HOST, EMP, name,
+                             (_('%s: the employee can change it (HR approves)', label)
+                              if name in new else
+                              _('%s: look only for the employee; only HR changes it', label)))
+        return before
 
     # ============================================================ the spec
     @api.model
@@ -517,9 +575,13 @@ class PbFormStudioPage(models.AbstractModel):
                     if name in eligible:
                         placed.add(name)
         # 1. each field's own settings (the engine refuses what R14 forbids)
+        profile_wanted = {}
         for name, vals in (payload.get('updates') or {}).items():
             if name not in eligible or not isinstance(vals, dict):
                 continue
+            if name in PROFILE_REQUEST and 'profile_edit' in vals:
+                # FS-14: today's personal boxes — pb_me_portal's whitelist
+                profile_wanted[name] = bool(vals['profile_edit'])
             vals = {k: v for k, v in vals.items()
                     if k in ('portal_edit', 'portal_mode', 'labels', 'std_labels')}
             portal = {k: vals[k] for k in ('portal_edit', 'portal_mode') if k in vals}
@@ -547,6 +609,15 @@ class PbFormStudioPage(models.AbstractModel):
             stored_page['ticks_before'] = before
         else:
             stored_page['ticks_before'] = (layout.page or {}).get('ticks_before') or {}
+        # FS-14: the personal boxes' switches; the whitelist as it was before
+        # the builder first changed it is kept for "Reset to the standard page"
+        old_page = (layout.page or {}) if layout else {}
+        if 'profile_before' in old_page:
+            stored_page['profile_before'] = old_page['profile_before']
+        if profile_wanted:
+            raw_before = self._pbfp_set_profile_editable(profile_wanted, eligible)
+            if raw_before is not None and 'profile_before' not in stored_page:
+                stored_page['profile_before'] = raw_before or False
         vals = {'sections': spec['sections'], 'page': stored_page, 'version': current + 1,
                 'published_by': self.env.uid, 'published_at': fields.Datetime.now()}
         if layout:
@@ -632,6 +703,15 @@ class PbFormStudioPage(models.AbstractModel):
                 label = (eligible.get(meta.name) or {}).get('label') or meta.name
                 self._pbfs_audit('update_field', PAGE_HOST, EMP, meta.name,
                                  _('%s: My Payobook tick put back as before the page', label))
+        # FS-14: the personal boxes' switches as before the builder changed them
+        if 'profile_before' in (layout.page or {}):
+            raw = layout.page['profile_before']
+            Param = self.env['ir.config_parameter'].sudo()
+            if (Param.get_param(PROFILE_PARAM) or False) != (raw or False):
+                Param.set_param(PROFILE_PARAM, raw or False)
+                self._pbfs_audit('update_field', PAGE_HOST, EMP, None,
+                                 _('Personal details: "Employee can change it" put back as '
+                                   'before the page'))
         version = layout.version
         layout.unlink()
         self.env.registry.clear_cache()
@@ -697,6 +777,12 @@ class PbFormStudioPage(models.AbstractModel):
             for name in extra:
                 sections[0]['fields'].append(self._pbfp_item(specs[name], values.get(name) or {},
                                                              'half'))
+        # FS-14: may the employee change this personal box? (the draft's
+        # switches in a preview, the stored whitelist otherwise)
+        profile_edit = self._pbfp_profile_editable(preview)
+        for sec in sections:
+            for item in sec['fields']:
+                item['request_edit'] = bool(item['request']) and item['name'] in profile_edit
         head = spec.get('header') or {}
         banner = head.get('banner') or False
         return {
