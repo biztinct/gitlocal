@@ -33,9 +33,9 @@ sudo -u odoo env PROBE_HOST=$COPY.payobook.com IBB_MODE=pages IBB_SAVE=$OUT/new 
 mkdir -p $OUT/new2; chown odoo:odoo $OUT/new2
 sudo -u odoo env PROBE_HOST=$COPY.payobook.com IBB_MODE=pages IBB_SAVE=$OUT/new2 python3 /odoo/odoo-server/odoo-bin shell -c $OUT/new.conf -d $COPY --no-http --max-cron-threads=0 < /tmp/ibb_probe.py > $OUT/p-new2.out 2>&1
 for f in $(ls $OUT/old); do
-  sed -E 's/[0-9a-f]{40}o[0-9]+//g; s#/web/assets/[^"'"'"' ]+##g; s/data-server-now-ms="[0-9]+"//g' $OUT/old/$f > $OUT/o.tmp
-  sed -E 's/[0-9a-f]{40}o[0-9]+//g; s#/web/assets/[^"'"'"' ]+##g; s/data-server-now-ms="[0-9]+"//g' $OUT/new/$f > $OUT/n.tmp
-  sed -E 's/[0-9a-f]{40}o[0-9]+//g; s#/web/assets/[^"'"'"' ]+##g; s/data-server-now-ms="[0-9]+"//g' $OUT/new2/$f > $OUT/n2.tmp
+  sed -E 's/[0-9a-f]{40}o[0-9]+//g; s#/web/assets/[^"'"'"' ]+##g; s/data-server-now-ms="[0-9]+"//g; s/odoo\.__session_info__ = .*//' $OUT/old/$f > $OUT/o.tmp
+  sed -E 's/[0-9a-f]{40}o[0-9]+//g; s#/web/assets/[^"'"'"' ]+##g; s/data-server-now-ms="[0-9]+"//g; s/odoo\.__session_info__ = .*//' $OUT/new/$f > $OUT/n.tmp
+  sed -E 's/[0-9a-f]{40}o[0-9]+//g; s#/web/assets/[^"'"'"' ]+##g; s/data-server-now-ms="[0-9]+"//g; s/odoo\.__session_info__ = .*//' $OUT/new2/$f > $OUT/n2.tmp
   echo "== $f old-vs-new $(diff $OUT/o.tmp $OUT/n.tmp | grep -c '^[<>]') lines; new-vs-new2 $(diff $OUT/n.tmp $OUT/n2.tmp | grep -c '^[<>]') lines"
   diff $OUT/o.tmp $OUT/n.tmp | grep '^[<>]' | cut -c1-220 | head -12 > $OUT/$f.diff
 done > $OUT/summary.txt
