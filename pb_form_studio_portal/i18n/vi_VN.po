@@ -1336,3 +1336,33 @@ msgstr "Hồ sơ của tôi hiển thị thông tin của chính mỗi người,
 msgid "You can still arrange this page for your employees and preview it as any of them."
 msgstr "Bạn vẫn có thể sắp xếp trang này cho nhân viên và xem trước dưới tên bất kỳ ai trong số họ."
 
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: the employee can change it (HR approves)"
+msgstr "%s: nhân viên có thể thay đổi (HR duyệt)"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: look only for the employee; only HR changes it"
+msgstr "%s: nhân viên chỉ xem; chỉ HR thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Personal details: \"Employee can change it\" put back as before the page"
+msgstr "Thông tin cá nhân: \"Nhân viên có thể thay đổi\" được đặt lại như trước khi có trang"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+#: code:addons/pb_form_studio_portal/models/res_users.py:0
+msgid "Some of these details can only be changed by HR. Nothing was sent."
+msgstr "Một số thông tin này chỉ HR mới thay đổi được. Chưa có gì được gửi."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Look only: the employee sees it; only HR changes it."
+msgstr "Chỉ xem: nhân viên thấy thông tin này; chỉ HR thay đổi."

@@ -132,7 +132,7 @@
                     <option t-foreach="state.emps" t-as="e" t-key="e.id" t-att-value="e.id" t-att-selected="isPreviewEmp(e)" t-esc="empLabel(e)"/>
                   </select>
                 </label>
-                <input type="text" class="pbpb-empfind" placeholder="Find a person" aria-label="Find a person" t-att-value="state.empTerm" t-on-change="onEmpTerm"/>
+                <input type="text" class="pbpb-empfind" placeholder="Find a person" aria-label="Find a person" t-att-value="state.empTerm" t-on-input="onEmpInput" t-on-keydown="onEmpKey"/>
                 <div class="pbpb-views light" role="group" aria-label="Screen size">
                   <button type="button" t-att-class="sizeClass('desktop')" t-on-click="() => this.setSize('desktop')"><t t-out="ic('monitor',14)"/> <span>Desktop</span></button>
                   <button type="button" t-att-class="sizeClass('phone')" t-on-click="() => this.setSize('phone')"><t t-out="ic('smartphone',14)"/> <span>Phone</span></button>
@@ -291,7 +291,11 @@
                 <div class="pbfb-portal">
                   <div class="pbfb-portal-h"><t t-out="ic('smartphone',14)"/> <span>The employee</span></div>
                   <t t-if="f.request">
-                    <div class="pbfb-note lock"><t t-out="ic('userCheck',15)"/> <span>The employee changes it with "Request a change"; HR approves every change.</span></div>
+                    <div class="pbfb-row">
+                      <div><div class="t">Employee can change it</div><div class="d" t-if="profileEdit(f)">Offered in "Request a change" on the page.</div><div class="d" t-else="">Look only: the employee sees it; only HR changes it.</div></div>
+                      <button type="button" class="pbfb-sw" role="switch" aria-label="Employee can change it" t-att-aria-checked="switchAttr(profileEdit(f))" t-on-click="() => this.toggleProfile(f)"/>
+                    </div>
+                    <div t-if="profileEdit(f)" class="pbfb-note lock"><t t-out="ic('userCheck',15)"/> <span>The employee changes it with "Request a change"; HR approves every change.</span></div>
                   </t>
                   <t t-else="">
                     <t t-set="p" t-value="portal(f)"/>
