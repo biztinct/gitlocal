@@ -1366,3 +1366,9 @@ msgstr "Beberapa detail ini hanya dapat diubah oleh HR. Tidak ada yang dikirim."
 #: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
 msgid "Look only: the employee sees it; only HR changes it."
 msgstr "Hanya dilihat: karyawan melihatnya; hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/res_users.py:0
+msgid "Your details change only through \"Request a change\" on My Profile, where HR approves them. Nothing was saved."
+msgstr "Detail Anda hanya berubah melalui \"Minta perubahan\" di Profil Saya, tempat HR menyetujuinya. Tidak ada yang disimpan."

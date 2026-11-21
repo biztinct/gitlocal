@@ -27,7 +27,7 @@ Bridge module: My Profile is drawn from outside (template inheritance and
 the portal controller); it creates nothing at install, and without a
 published page My Profile is exactly as before.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

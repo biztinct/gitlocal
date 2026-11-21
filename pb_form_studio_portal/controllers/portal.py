@@ -28,6 +28,7 @@ from odoo.http import request
 from odoo.addons.pb_form_studio_reach.controllers.portal import PREFIX, PbFormBuilderMyDetails
 
 from ..models.page_builder import EMP, PAGE_HOST, PROFILE_BOXES
+from ..models.res_users import CONTACT_FIELDS, _is_employee_self, _refusal
 
 _logger = logging.getLogger(__name__)
 
@@ -215,6 +216,23 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
                 return request.render('pb_me_portal.portal_profile_error', {
                     'page_name': 'profile', 'error': self._pbfp_look_only_refusal()})
         return super().portal_my_profile_request(**post)
+
+    def _create_or_update_address(self, partner_sudo, *args, **form_data):
+        """FS-14b: the standard portal address form must not change an
+        employee's work e-mail or work phone (they ARE the e-mail and phone of
+        the employee's own work contact). Refused in the form's own words
+        before anything is written; the model refuses it too (backstop)."""
+        if partner_sudo and _is_employee_self(request.env):
+            mine = request.env['hr.employee'].sudo().with_context(active_test=False).search(
+                [('user_id', '=', request.env.uid), ('work_contact_id', '=', partner_sudo.id)],
+                limit=1)
+            if mine:
+                bad = [f for f in CONTACT_FIELDS if f in form_data
+                       and (form_data.get(f) or '').strip() != (partner_sudo[f] or '').strip()]
+                if bad:
+                    return partner_sudo, {'invalid_fields': bad,
+                                          'messages': [_refusal(request.env)]}
+        return super()._create_or_update_address(partner_sudo, *args, **form_data)
 
     # ------------------------------------------------------------ banner
     @http.route(['/my/profile/banner/<int:att_id>'], type='http', auth='user', methods=['GET'])
