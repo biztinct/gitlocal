@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { rpc } from "@web/core/network/rpc";
 import { user } from "@web/core/user";
@@ -13,7 +13,24 @@ export class PremiumOrgChart extends Component {
     static template = "pb_form_studio_people.PremiumOrgChart";
     static props = { ...standardFieldProps };
     setup() {
-        this.state = useState({ loading: true, error: false, managers: [], children: [], self: null, more: false });
+        this.state = useState({ loading: true, error: false, managers: [], children: [], self: null, more: false,
+            page: 0, pageSize: 1 });
+        this.chart = useRef("chart");
+        onMounted(() => {
+            const fitReports = () => {
+                // Siblings share a single connected level, even on a phone.
+                // Page wider teams instead of wrapping them into false levels.
+                const size = Math.max(1, Math.min(4, Math.floor(this.chart.el.clientWidth / 220)));
+                if (size !== this.state.pageSize) {
+                    const first = this.state.page * this.state.pageSize;
+                    this.state.pageSize = size;
+                    this.state.page = Math.min(Math.floor(first / size), this.lastPage);
+                }
+            };
+            this.resizeObserver = new ResizeObserver(fitReports);
+            this.resizeObserver.observe(this.chart.el);
+            fitReports();
+        });
         this.requestGeneration = 0;
         this.lastRecord = null;
         this.maxLevel = null;
@@ -25,7 +42,7 @@ export class PremiumOrgChart extends Component {
                 return this.load();
             }
         });
-        onWillUnmount(() => { this.requestGeneration++; });
+        onWillUnmount(() => { this.requestGeneration++; this.resizeObserver?.disconnect(); });
     }
     async load() {
         const generation = ++this.requestGeneration;
@@ -40,7 +57,7 @@ export class PremiumOrgChart extends Component {
             }) : {};
             if (generation !== this.requestGeneration) { return; }
             Object.assign(this.state, { managers: data.managers || [], children: data.children || [],
-                self: data.self || null, more: Boolean(data.managers_more && this.maxLevel === null) });
+                self: data.self || null, more: Boolean(data.managers_more && this.maxLevel === null), page: 0 });
         } catch {
             if (generation === this.requestGeneration) { this.state.error = true; }
         } finally {
@@ -48,6 +65,20 @@ export class PremiumOrgChart extends Component {
         }
     }
     showManagers() { this.maxLevel = 100; return this.load(); }
+    get hasFullChart() { return Boolean(this.env.pbEmployeeWorkspace?.workspaceHasOrgChart); }
+    openFullChart() { return this.env.pbEmployeeWorkspace?.openWorkspaceOrgChart(); }
+    get lastPage() { return Math.max(0, Math.ceil(this.state.children.length / this.state.pageSize) - 1); }
+    get visibleReports() {
+        const start = this.state.page * this.state.pageSize;
+        return this.state.children.slice(start, start + this.state.pageSize);
+    }
+    get reportsRange() {
+        const start = this.state.page * this.state.pageSize;
+        return _t("%(first)s–%(last)s of %(total)s", { first: start + 1,
+            last: Math.min(start + this.state.pageSize, this.state.children.length), total: this.state.children.length });
+    }
+    previousReports() { this.state.page = Math.max(0, this.state.page - 1); }
+    nextReports() { this.state.page = Math.min(this.lastPage, this.state.page + 1); }
     openEmployee(id) { return this.env.pbEmployeeWorkspace?.openRelatedEmployee(id); }
     initials(name) {
         const words = (name || "").trim().split(/\s+/).filter(Boolean);

@@ -11,7 +11,7 @@ const COLORS = ["dept", "loc", "type", "tenure"];
  * the chart to show. Pure: ids are kept as numbers and never trusted — an id
  * the reader may not see simply does not focus.
  *
- * @param {string} focus   the hub's `pb_focus` ("me" | "plan" | "suggest" | "")
+ * @param {string} focus   the hub's `pb_focus` ("me" | "plan" | "suggest" | "employee:<id>" | "")
  * @param {string} search  a query string, with or without "?"
  * @returns {object|null} { focus, me, mode, view, color, asOf, plan } or null
  */
@@ -21,6 +21,12 @@ export function parseArrival(focus, search) {
     const f = String(focus || "");
     if (f === "me") { out.me = true; any = true; }
     if (f === "plan" || f === "suggest") { out.mode = f; any = true; }
+    // The compact employee chart opens the existing People > Org chart lens.
+    // Only a numeric id travels; the chart's normal read/reveal checks apply.
+    const employee = /^employee:([1-9]\d*)$/.exec(f);
+    if (employee && Number.isSafeInteger(Number(employee[1]))) {
+        out.focus = Number(employee[1]); out.view = "tree"; any = true;
+    }
     let q = null;
     try { q = new URLSearchParams(String(search || "").replace(/^\?/, "")); } catch { q = null; }
     if (q && q.get("oc")) {

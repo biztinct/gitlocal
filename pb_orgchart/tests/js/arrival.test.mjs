@@ -31,6 +31,11 @@ eq("⌘K: who reports to me", parseArrival("me", ""), { ...base, me: true });
 eq("⌘K: plan", parseArrival("plan", ""), { ...base, mode: "plan" });
 eq("⌘K: suggest", parseArrival("suggest", ""), { ...base, mode: "suggest" });
 eq("⌘K: an unknown focus", parseArrival("queue", ""), null);
+eq("employee workspace: focus employee in tree", parseArrival("employee:5311", ""), { ...base, focus: 5311, view: "tree" });
+eq("employee workspace: another employee", parseArrival("employee:5296", ""), { ...base, focus: 5296, view: "tree" });
+for (const invalid of ["employee:0", "employee:-1", "employee:53text", "employee:Anju", "employee:1.5", "employee:9007199254740993"]) {
+    eq(`employee workspace: reject ${invalid}`, parseArrival(invalid, ""), null);
+}
 eq("link: full view", parseArrival("", "?oc=1&oc_focus=123&oc_view=lr&oc_color=loc"),
    { ...base, focus: 123, view: "lr", color: "loc" });
 eq("link: a day", parseArrival("", "oc=1&oc_as_of=2026-05-01&oc_view=tree&oc_color=dept"),

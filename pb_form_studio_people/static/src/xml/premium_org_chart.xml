@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
   <t t-name="pb_form_studio_people.PremiumOrgPerson">
-    <span class="pb-org-avatar" aria-hidden="true" t-esc="initials(employee.name)"/>
-    <span class="pb-org-person-text">
-      <strong t-esc="employee.name"/>
-      <small t-if="employee.job_name" t-esc="employee.job_name"/>
+    <span class="pb-org-identity">
+      <span class="pb-org-avatar" aria-hidden="true" t-esc="initials(employee.name)"/>
+      <span class="pb-org-person-text">
+        <strong t-esc="employee.name"/>
+        <small t-if="employee.job_name" t-esc="employee.job_name"/>
+      </span>
     </span>
-    <span t-if="employee.indirect_sub_count" class="pb-org-count" title="Direct and indirect reports" t-esc="reportsLabel(employee)"/>
+    <span t-if="employee.indirect_sub_count or employee.id === state.self?.id" class="pb-org-meta">
+      <span t-if="employee.indirect_sub_count" class="pb-org-count" title="Direct and indirect reports" t-esc="reportsLabel(employee)"/>
+      <span t-if="employee.id === state.self?.id" class="pb-org-current-label">This employee</span>
+    </span>
   </t>
   <t t-name="pb_form_studio_people.PremiumOrgChart">
-    <div class="pb-org-mini" aria-label="Organisation chart" t-att-aria-busy="state.loading ? 'true' : 'false'">
+    <div class="pb-org-mini" t-ref="chart" aria-label="Organisation chart" t-att-aria-busy="state.loading ? 'true' : 'false'">
+      <div t-if="hasFullChart" class="pb-org-toolbar">
+        <button type="button" class="pb-org-open" t-on-click="openFullChart" title="Open this employee in the full organisation chart">Open in org chart <span aria-hidden="true">&#8599;</span></button>
+      </div>
       <p t-if="state.loading" class="pb-org-note" role="status">Loading reporting line…</p>
       <div t-elif="state.error" class="pb-org-note" role="status">
         <span>The reporting line could not be loaded.</span>
@@ -29,20 +37,24 @@
             <div class="pb-org-person" aria-current="true">
               <t t-set="employee" t-value="state.self"/>
               <t t-call="pb_form_studio_people.PremiumOrgPerson"/>
-              <span class="pb-org-current-label">This employee</span>
             </div>
           </li>
         </ol>
         <section t-if="state.children.length" class="pb-org-reports" aria-label="Direct reports">
-          <div class="pb-org-caption">Direct reports <span t-esc="state.children.length"/></div>
-          <ul>
-            <li t-foreach="state.children" t-as="employee" t-key="employee.id">
+          <div class="pb-org-caption"><span class="pb-org-caption-label">Direct reports <span t-esc="state.children.length"/></span></div>
+          <ul t-att-style="'--org-branches: ' + visibleReports.length">
+            <li t-foreach="visibleReports" t-as="employee" t-key="employee.id">
               <button type="button" class="pb-org-person" t-att-data-employee-id="employee.id" t-on-click="() => this.openEmployee(employee.id)">
                 <t t-call="pb_form_studio_people.PremiumOrgPerson"/>
                 <span class="pb-org-chevron" aria-hidden="true">&#8250;</span>
               </button>
             </li>
           </ul>
+          <nav t-if="lastPage" class="pb-org-pager" aria-label="Browse direct reports">
+            <button type="button" t-att-disabled="state.page === 0" t-on-click="previousReports"><span aria-hidden="true">&#8592;</span> Previous</button>
+            <span role="status" aria-live="polite" t-esc="reportsRange"/>
+            <button type="button" t-att-disabled="state.page === lastPage" t-on-click="nextReports">Next <span aria-hidden="true">&#8594;</span></button>
+          </nav>
         </section>
         <p t-if="!state.managers.length and !state.children.length" class="pb-org-note">No manager or direct reports recorded.</p>
       </t>
