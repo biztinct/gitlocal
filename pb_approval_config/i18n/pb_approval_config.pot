@@ -5811,3 +5811,311 @@ msgstr ""
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "withdrew it"
 msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "This kind is approved together with others only after the extra check. Press Approve selected again and confirm the check."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, together with %(n)s others, after the extra check."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, after the extra check."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, together with %(n)s others."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Money leaves the company with this kind, so each one is approved on its own."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Only your administrator can change this."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Money leaves the company with \"%s\", so it cannot be approved several at once that way."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Choose one of the three answers."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "One at a time"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Several at once"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Several at once, with an extra confirmation"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s changed \"%(what)s\": %(old)s → %(new)s"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Select the first %s that I can approve"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Select all %s that I can approve"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "The list could not be read. Try again in a moment."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 selected"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s selected"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%(done)s of %(total)s approved"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "· 1 could not be approved"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "· %s could not be approved"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "None of them is in another person's name."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 of them is in another person's name."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s of them are in another person's name."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 of them also changes pay."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s of them also change pay."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 other request is approved the usual way."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s other requests are approved the usual way."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "They are approved %s at a time, and you can stop at any point."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve 1 bank details change?"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve %s bank details changes together?"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "I have checked these bank details"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "I have checked these requests"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approving stopped after %(done)s of %(total)s: %(why)s The rest are still selected."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approving stopped after %(done)s of %(total)s because the connection dropped. Nothing else was changed; press Approve selected to carry on."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Stopped after %(done)s of %(total)s were approved. Nothing else was changed; the rest are still selected."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Stopping after this group…"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Stop"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "An extra check before you approve"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Pay will be sent to these accounts."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Each one is approved in your name, exactly as if you pressed Approve on it, and its history says it was approved together with the others."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Review the list"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Each request is opened and decided on its own."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Approvers may tick several in the Approvals inbox and approve them together."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Approvers may approve them together after a check that counts them and asks them to confirm."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Saved. It applies straight away."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "That could not be saved. Try again in a moment."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Can be approved several at once?"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "These decide where pay is sent, so they are approved together only after the extra check."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "This applies straight away to every request of this kind, in every company. It is not part of the route, so it needs no publish."
+msgstr ""

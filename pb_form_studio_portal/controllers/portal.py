@@ -27,7 +27,8 @@ from odoo.http import request
 
 from odoo.addons.pb_form_studio_reach.controllers.portal import PREFIX, PbFormBuilderMyDetails
 
-from ..models.page_builder import EMP, PAGE_HOST
+from ..models.page_builder import EMP, PAGE_HOST, PROFILE_BOXES
+from ..models.res_users import CONTACT_FIELDS, _is_employee_self, _refusal
 
 _logger = logging.getLogger(__name__)
 
@@ -68,19 +69,21 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
         """The "Request a change" boxes: every changeable field on the page,
         in page order. Links the employee may pick from offer a short list
         (the My details rule); any other link is shown only."""
-        Req = request.env['pb.profile.change.request'].sudo()
-        editable = set(Req._editable_fields())
         waiting = self._pbfr_waiting(emp)
         record = emp.sudo()
         rows = []
         for sec in page['sections']:
             for item in sec['fields']:
                 name = item['name']
-                if item['request'] and item['request'] in editable:
-                    rows.append({'name': name, 'input': item['request'], 'label': item['label'],
-                                 'type': 'char', 'options': [], 'help': item['help'],
-                                 'value': record[name] or '', 'mode': 'approve',
-                                 'kind': 'profile', 'waiting': False})
+                if item['request']:
+                    # FS-14: a personal box is offered only while its "Employee
+                    # can change it" switch is on (look-only otherwise); never
+                    # through the engine path (the engine locks these boxes)
+                    if item.get('request_edit'):
+                        rows.append({'name': name, 'input': item['request'],
+                                     'label': item['label'], 'type': 'char', 'options': [],
+                                     'help': item['help'], 'value': record[name] or '',
+                                     'mode': 'approve', 'kind': 'profile', 'waiting': False})
                     continue
                 if not item['edit']:
                     continue
@@ -102,6 +105,9 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
                              'value': '' if value in (None, False) else value, 'mode': item['mode'],
                              'kind': 'engine', 'waiting': name in waiting})
         return rows
+
+    def _pbfp_look_only_refusal(self):
+        return request.env._('Some of these details can only be changed by HR. Nothing was sent.')
 
     # ------------------------------------------------------------ My Profile
     def _profile_card(self, emp):
@@ -170,6 +176,10 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
                     done = 'sent'
             # 2. today's personal boxes — only those on the page and changed
             offered = {r['input']: r for r in rows if r['kind'] == 'profile'}
+            # FS-14: a look-only box (or one not on the page) sent anyway is
+            # refused, never silently dropped
+            if any((post.get(box) or '').strip() for box in PROFILE_BOXES if box not in offered):
+                raise UserError(self._pbfp_look_only_refusal())
             pvals = {}
             for key, row in offered.items():
                 v = (post.get(key) or '').strip()
@@ -190,6 +200,39 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
             # today's flow: the review page, then "Submit for approval"
             return request.redirect('/my/profile/request/%s' % profile_req.id)
         return request.redirect('/my/profile?done=%s' % done)
+
+    @http.route(['/my/profile/request'], type='http', auth='user', website=True,
+                methods=['POST'])
+    def portal_my_profile_request(self, **post):
+        """FS-14: today's change request refuses a personal box whose
+        "Employee can change it" switch is off (pb_me_portal's whitelist).
+        pb_me_portal itself would silently strip it and leave an empty draft;
+        here the employee is told and nothing is made. Everything else is the
+        parent route, unchanged (with every box changeable — the default — this
+        never answers differently)."""
+        if self._ess_employee():
+            editable = request.env['pb.profile.change.request'].sudo()._editable_fields()
+            if any((post.get(box) or '').strip() for box in PROFILE_BOXES if box not in editable):
+                return request.render('pb_me_portal.portal_profile_error', {
+                    'page_name': 'profile', 'error': self._pbfp_look_only_refusal()})
+        return super().portal_my_profile_request(**post)
+
+    def _create_or_update_address(self, partner_sudo, *args, **form_data):
+        """FS-14b: the standard portal address form must not change an
+        employee's work e-mail or work phone (they ARE the e-mail and phone of
+        the employee's own work contact). Refused in the form's own words
+        before anything is written; the model refuses it too (backstop)."""
+        if partner_sudo and _is_employee_self(request.env):
+            mine = request.env['hr.employee'].sudo().with_context(active_test=False).search(
+                [('user_id', '=', request.env.uid), ('work_contact_id', '=', partner_sudo.id)],
+                limit=1)
+            if mine:
+                bad = [f for f in CONTACT_FIELDS if f in form_data
+                       and (form_data.get(f) or '').strip() != (partner_sudo[f] or '').strip()]
+                if bad:
+                    return partner_sudo, {'invalid_fields': bad,
+                                          'messages': [_refusal(request.env)]}
+        return super()._create_or_update_address(partner_sudo, *args, **form_data)
 
     # ------------------------------------------------------------ banner
     @http.route(['/my/profile/banner/<int:att_id>'], type='http', auth='user', methods=['GET'])

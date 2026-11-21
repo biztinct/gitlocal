@@ -19,12 +19,15 @@ programme, phase FS-12, owner ruling R30).
     restore and "Reset to the standard page".
   * Placing a field on the page is its "Show on My Payobook" tick; values and
     changes go through the Form builder engine's own portal rules.
+  * Private phone, private e-mail, address and emergency contact: an
+    "Employee can change it" switch each (on by default; off = look-only,
+    refused on the server too).
 
 Bridge module: My Profile is drawn from outside (template inheritance and
 the portal controller); it creates nothing at install, and without a
 published page My Profile is exactly as before.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

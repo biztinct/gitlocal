@@ -84,6 +84,7 @@ export class ApprovalBuilder extends Component {
             publishAt: "",
             reason: "",
             published: null,
+            bulkBusy: false,
         });
 
         onWillStart(async () => { await this.load(); });
@@ -459,6 +460,43 @@ export class ApprovalBuilder extends Component {
     async setTierFact(ev) {
         const fact = ev.target.value;
         await this.edit(() => { this.state.definition.tiers.fact = fact; });
+    }
+
+    // ------------------------- INBOX-BULK-BANK — "several at once" (R13 twin)
+    /** The kind's answer to "Can be approved several at once?" — saved at
+     *  once by the server (tenant administrator only), never with the draft. */
+    get bulk() { return (this.state.data || {}).bulk || null; }
+
+    get bulkModes() {
+        const bulk = this.bulk || { allowed: [] };
+        const allowed = new Set(bulk.allowed || []);
+        return [
+            { key: "off", title: _t("One at a time"),
+              sub: _t("Each request is opened and decided on its own.") },
+            { key: "on", title: _t("Several at once"),
+              sub: _t("Approvers may tick several in the Approvals inbox and approve them together.") },
+            { key: "confirm", title: _t("Several at once, with an extra confirmation"),
+              sub: _t("Approvers may approve them together after a check that counts them and asks them to confirm.") },
+        ].map((row) => ({ ...row, allowed: allowed.has(row.key) }));
+    }
+
+    async setBulkMode(mode) {
+        const bulk = this.bulk;
+        if (!bulk || !bulk.can_edit || bulk.mode === mode
+                || !(bulk.allowed || []).includes(mode) || this.state.bulkBusy) {
+            return;
+        }
+        this.state.bulkBusy = true;
+        try {
+            this.state.data.bulk = await this.orm.call(
+                "pb.approval.matrix", "set_bulk_mode", [bulk.process_key, mode]);
+            this.notif.add(_t("Saved. It applies straight away."), { type: "success" });
+        } catch (error) {
+            this.notif.add((error.data && error.data.message)
+                || _t("That could not be saved. Try again in a moment."), { type: "danger" });
+        } finally {
+            this.state.bulkBusy = false;
+        }
     }
 
     // ------------------------------------------------------- the safeguards

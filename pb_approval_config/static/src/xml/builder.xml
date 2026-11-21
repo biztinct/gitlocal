@@ -459,6 +459,36 @@
                 </div>
               </div>
 
+              <!-- INBOX-BULK-BANK (R13 screen twin): "Can be approved several
+                   at once" for this kind. Saved at once for every request of
+                   the kind — it is not part of the route, so no publish. -->
+              <div t-if="bulk" class="pbam-sg pbam-sg-bulk" data-coach="pbam-bulk-switch">
+                <h3><t t-out="ic('checkCheck',18)"/> <span>Can be approved several at once?</span></h3>
+                <div class="pbam-opt" role="radiogroup" aria-label="Can be approved several at once?">
+                  <label t-foreach="bulkModes" t-as="bm" t-key="bm.key" class="pbam-radio"
+                         t-att-class="{ 'is-on': bulk.mode === bm.key, 'pbam-radio--off': !bm.allowed or !bulk.can_edit }"
+                         t-att-aria-disabled="!bm.allowed or !bulk.can_edit ? 'true' : 'false'"
+                         t-on-click="() => this.setBulkMode(bm.key)">
+                    <i/>
+                    <span>
+                      <span class="pbam-mt" t-esc="bm.title"/>
+                      <span class="pbam-ms" t-esc="bm.sub"/>
+                    </span>
+                  </label>
+                </div>
+                <div t-if="bulk.locked" class="pbim-note pbam-note-rose">
+                  <t t-out="ic('banknote',13)"/> <span t-esc="bulk.locked"/>
+                </div>
+                <div t-elif="bulk.confirm_only" class="pbim-note pbam-note-amber">
+                  <t t-out="ic('shieldCheck',13)"/>
+                  <span>These decide where pay is sent, so they are approved together only after the extra check.</span>
+                </div>
+                <div t-if="!bulk.is_admin" class="pbim-note pbam-note">
+                  <t t-out="ic('lock',13)"/> <span>Only your administrator can change this.</span>
+                </div>
+                <p class="pbim-sub">This applies straight away to every request of this kind, in every company. It is not part of the route, so it needs no publish.</p>
+              </div>
+
             </div>
 
             <div class="pbam-bfoot">

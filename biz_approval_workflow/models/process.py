@@ -32,6 +32,26 @@ BULK_DEFAULT_KEYS = frozenset({
 #: The marker that says the existing rows have had their one-time default.
 BULK_SEEDED_PARAM = 'biz_approval_workflow.bulk_ok_seeded'
 
+#: INBOX-BULK-BANK (owner request 2026-11-21) — the middle tier: "several at
+#: once, only after an extra confirmation". A change of BANK DETAILS decides
+#: where pay is sent but releases no payment by itself, so it may be approved
+#: together with others once the approver has counted and confirmed them —
+#: even though its catalogue row is marked `money`. These keys are the only
+#: money rows that may carry the tier; a kind that RELEASES money (fund
+#: payments, loans, back pay, bank files, payment release, expenses …) is never
+#: one of them, and the constraint below refuses it.
+#:   * `records_bank` — bank details from the Records desk, the Updates sheet,
+#:     an import and every bank change since ruling BK1;
+#:   * `bankchange`   — the older bank-document route (requests sent in
+#:     before BK1 keep travelling it).
+BULK_CONFIRM_KEYS = frozenset({'records_bank', 'bankchange'})
+
+#: The marker that says the existing rows have had their one-time tier.
+BULK_CONFIRM_SEEDED_PARAM = 'biz_approval_workflow.bulk_confirm_seeded'
+
+#: The three answers the setup screen offers, in the order it shows them.
+BULK_MODES = ('off', 'on', 'confirm')
+
 
 class BizApprovalProcess(models.Model):
     _name = 'biz.approval.process'
@@ -59,6 +79,13 @@ class BizApprovalProcess(models.Model):
         help='A manager may tick several of these in the Approvals inbox and '
              'approve them together. Never allowed where money leaves the '
              'company.')
+    bulk_confirm = fields.Boolean(
+        string='Several at once, with an extra confirmation',
+        help='A manager may tick several of these in the Approvals inbox and '
+             'approve them together, after a check that counts them and asks '
+             'them to confirm. Allowed for bank-detail changes even though '
+             'they decide where pay is sent; never for a kind that pays money '
+             'out.')
     connected = fields.Boolean(compute='_compute_connected',
                                string='Wired up')
     #: ANOTHER ROW ALREADY ANSWERS THIS ONE.
@@ -101,6 +128,43 @@ class BizApprovalProcess(models.Model):
                     "approved on its own. It cannot be approved several at "
                     "once.", rec.name))
 
+    @api.constrains('bulk_confirm', 'money', 'key')
+    def _check_bulk_confirm_money(self):
+        """INBOX-BULK-BANK — a money row may carry the extra-confirmation tier
+        only when it is a change of bank details (`BULK_CONFIRM_KEYS`)."""
+        for rec in self:
+            if rec.bulk_confirm and rec.money \
+                    and rec.key not in BULK_CONFIRM_KEYS:
+                raise ValidationError(_(
+                    "\"%s\" moves money out of the company, so each one is "
+                    "approved on its own, even with an extra confirmation.",
+                    rec.name))
+
+    def _bulk_mode(self):
+        """'off', 'on' or 'confirm' — what the setup screen shows. The
+        confirmation tier wins when both are set."""
+        self.ensure_one()
+        if self.bulk_confirm:
+            return 'confirm'
+        return 'on' if self.bulk_ok else 'off'
+
+    def _bulk_modes_allowed(self):
+        """The answers this row may be given: every one, only off and the
+        confirmation tier (a bank-detail money row), or only off (money)."""
+        self.ensure_one()
+        if not self.money:
+            return list(BULK_MODES)
+        if self.key in BULK_CONFIRM_KEYS:
+            return ['off', 'confirm']
+        return ['off']
+
+    def _set_bulk_mode(self, mode):
+        """Write one of the three answers. The constraints still decide."""
+        self.ensure_one()
+        if mode not in BULK_MODES:
+            raise ValidationError(_("Choose one of the three answers."))
+        self.write({'bulk_ok': mode == 'on', 'bulk_confirm': mode == 'confirm'})
+
     @api.model_create_multi
     def create(self, vals_list):
         # A row born after the one-time default still gets it: the catalogue
@@ -109,7 +173,29 @@ class BizApprovalProcess(models.Model):
             if 'bulk_ok' not in vals and vals.get('key') in BULK_DEFAULT_KEYS \
                     and not vals.get('money'):
                 vals['bulk_ok'] = True
+            # INBOX-BULK-BANK — the same for the confirmation tier
+            if 'bulk_confirm' not in vals \
+                    and vals.get('key') in BULK_CONFIRM_KEYS \
+                    and not vals.get('bulk_ok'):
+                vals['bulk_confirm'] = True
         return super().create(vals_list)
+
+    @api.model
+    def _seed_bulk_confirm_defaults(self):
+        """INBOX-BULK-BANK — give the bank-detail rows that already exist the
+        confirmation tier, ONCE per database (the marker parameter), so a
+        customer who later switches it off keeps that choice through every
+        upgrade. Only a row still at "one at a time" is touched. Returns the
+        keys it switched on."""
+        params = self.env['ir.config_parameter'].sudo()
+        if params.get_param(BULK_CONFIRM_SEEDED_PARAM):
+            return []
+        rows = self.sudo().search([('key', 'in', sorted(BULK_CONFIRM_KEYS)),
+                                   ('bulk_confirm', '=', False),
+                                   ('bulk_ok', '=', False)])
+        rows.write({'bulk_confirm': True})
+        params.set_param(BULK_CONFIRM_SEEDED_PARAM, '1')
+        return sorted(rows.mapped('key'))
 
     @api.model
     def _seed_bulk_defaults(self):

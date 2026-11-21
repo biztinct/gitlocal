@@ -443,3 +443,242 @@ class TestFs12Page(HttpCase):
         self.assertFalse(next(e for e in emps if e['id'] == loose.id)['login'])
         url = '/my/profile/preview?employee_id=%s&source=live' % loose.id
         self.assertIn('DEMO FS13 No login', self.html(url, login='fs12_admin'))
+
+    # ===================================== FS-14 personal boxes look-only switch
+    BOXES = ('private_phone', 'private_email', 'private_street', 'emergency_contact',
+             'emergency_phone')
+    PARAM = 'pb_me_portal.editable_fields'
+    ALL = 'x_phone,x_private_email,x_address,x_emergency_contact,x_emergency_phone'
+
+    def _profile_spec(self):
+        return self.spec([{'name': n, 'width': 'half'} for n in
+                          ('work_email', 'work_phone') + self.BOXES])
+
+    def _csrf(self, html):
+        return re.search(r'name="csrf_token" value="([^"]+)"', html).group(1)
+
+    def _param(self):
+        return self.env['ir.config_parameter'].sudo().get_param(self.PARAM)
+
+    def _phone(self):
+        emp = self.env[EMP].sudo().browse(self.emp.id)
+        emp.invalidate_recordset()
+        return emp.private_phone
+
+    def test_31_switch_offered_for_the_five_boxes(self):
+        """FS-14 test 1: the five personal boxes carry the switch, ON by
+        default (today: changeable through the change request, HR approves);
+        work e-mail stays locked, as today."""
+        fields_ = self.S().page_studio()['fields']
+        for name in self.BOXES:
+            self.assertTrue(fields_[name]['request'], name)
+            self.assertTrue(fields_[name]['request_edit'], '%s: on by default' % name)
+        self.assertFalse(fields_['work_email']['request'])
+        self.assertFalse(fields_['work_email']['portal']['can_edit'], 'work e-mail stays locked')
+        self.assertFalse(fields_['work_phone']['request'])
+        self.assertEqual(self._param(), self.ALL, 'opening the builder writes nothing')
+
+    def test_32_off_is_look_only_and_refused_on_the_server(self):
+        """FS-14 test 2: off → Publish → value shown, no box, every direct
+        way refused, value unchanged; HR still edits the employee record."""
+        Audit = self.env['pb.form.audit'].sudo()
+        audits = Audit.search_count([('field_name', '=', 'private_phone')])
+        self.publish(self._profile_spec(), updates={'private_phone': {'profile_edit': False}})
+        self.assertEqual(self._param(),
+                         'x_private_email,x_address,x_emergency_contact,x_emergency_phone')
+        self.assertGreater(Audit.search_count([('field_name', '=', 'private_phone')]), audits,
+                           'a history line')
+        self.assertFalse(self.S().page_studio()['fields']['private_phone']['request_edit'])
+        html = self.html()
+        self.assertIn('+84 1', html, 'the value is shown')
+        form = html[html.index('/my/profile/page/send'):]
+        boxes = re.findall(r'name="(pbfr__\w+|x_\w+)"', form)
+        self.assertEqual(boxes, ['x_private_email', 'x_address', 'x_emergency_contact',
+                                 'x_emergency_phone'], '"Request a change" leaves it out')
+        Req = self.env['pb.profile.change.request'].sudo()
+        reqs = Req.search_count([])
+        # a) the page's own form, forged
+        res = self.url_open('/my/profile/page/send',
+                            data={'x_phone': '+84 666', 'csrf_token': self._csrf(html)})
+        self.assertIn('pbfp-alert', res.text)
+        self.assertIn('can only be changed by HR', res.text)
+        # b) today's change request route, forged
+        res = self.url_open('/my/profile/request',
+                            data={'x_phone': '+84 667', 'csrf_token': self._csrf(html)})
+        self.assertIn('can only be changed by HR', res.text)
+        self.assertEqual(Req.search_count([]), reqs, 'no request made')
+        # c) the engine's path (the engine locks the box anyway)
+        res = self.url_open('/my/profile/page/send',
+                            data={'pbfr__private_phone': '+84 668', 'csrf_token': self._csrf(html)})
+        self.assertIn('pbfp-alert', res.text)
+        # d) the platform's own-user write (a direct call around the page)
+        me = self.env['res.users'].with_user(self.me).browse(self.me.id)
+        with self.assertRaises(AccessError):
+            me.write({'private_phone': '+84 669'})
+        me.write({'private_phone': '+84 1'})   # the same value is not a change
+        self.assertEqual(self._phone(), '+84 1', 'value unchanged')
+        # FS-14b: a box that is on is changed through "Request a change" only
+        with self.assertRaises(AccessError):
+            me.write({'private_email': 'demo.lan@example.com'})
+        # HR editing the employee record is unchanged
+        self.env[EMP].with_user(self.hr).browse(self.emp.id).write({'private_phone': '+84 9'})
+        self.assertEqual(self._phone(), '+84 9')
+
+    def test_33_on_again_works_as_before_and_hr_approves(self):
+        """FS-14 tests 3 + 4: back on → offered again; the change waits in
+        HR's inbox and the value changes only once approved."""
+        self.publish(self._profile_spec(), updates={'private_phone': {'profile_edit': False}})
+        self.publish(self._profile_spec(), updates={'private_phone': {'profile_edit': True}})
+        self.assertEqual(self._param(), self.ALL)
+        html = self.html()
+        form = html[html.index('/my/profile/page/send'):]
+        self.assertIn('name="x_phone"', form)
+        res = self.url_open('/my/profile/page/send',
+                            data={'x_phone': '+84 777', 'csrf_token': self._csrf(html)})
+        self.assertIn('/my/profile/request/', res.url)
+        req = self.env['pb.profile.change.request'].sudo().search(
+            [('employee_id', '=', self.emp.id)], limit=1)
+        self.assertEqual(req.x_phone, '+84 777')
+        self.url_open('/my/profile/request/%s/submit' % req.id,
+                      data={'csrf_token': self._csrf(res.text)})
+        req.invalidate_recordset()
+        self.assertEqual(req.state, 'hr_review')
+        self.assertTrue(req.approval_request_id, "in the approver's inbox")
+        self.assertEqual(self._phone(), '+84 1', 'unchanged until approved')
+        decide(self.env, req, 'approve')
+        self.assertEqual(self._phone(), '+84 777')
+
+    def test_34_preview_shows_the_draft_switch(self):
+        """FS-14 test 6: Preview draws the draft's switch; nothing written."""
+        self.publish(self._profile_spec())
+        self._draft(self._profile_spec(), updates={'emergency_phone': {'profile_edit': False}})
+        url = '/my/profile/preview?employee_id=%s&source=draft' % self.emp.id
+        html = self.html(url, login='fs12_admin')
+        form = html[html.index('/my/profile/page/send'):]
+        self.assertNotIn('name="x_emergency_phone"', form)
+        self.assertIn('name="x_phone"', form)
+        self.assertEqual(self._param(), self.ALL, 'only Publish changes it')
+        self.assertIn('name="x_emergency_phone"', self.html(), 'the employee page is unchanged')
+
+    def test_35_reset_puts_the_switches_back(self):
+        """FS-14: "Reset to the standard page" = today's page exactly, the
+        switches included; with all of them on, today's route answers as
+        before."""
+        before = self._param()
+        self.publish(self._profile_spec(), updates={'private_street': {'profile_edit': False}})
+        self.publish(self._profile_spec(), updates={'emergency_contact': {'profile_edit': False}})
+        self.assertNotIn('x_address', self._param())
+        self.S().page_reset()
+        self.assertEqual(self._param(), before)
+        html = self.html()
+        self.assertIn('name="x_address"', html)
+        res = self.url_open('/my/profile/request',
+                            data={'x_phone': '+84 55', 'csrf_token': self._csrf(html)})
+        self.assertIn('/my/profile/request/', res.url, 'today: the review page')
+
+    def test_36_access_matrix(self):
+        """FS-14 test 7: only the administrator switches; HR writing their
+        own record is not stopped; another person's record is unreachable."""
+        with self.assertRaises(AccessError):
+            self.S(self.hr).page_publish({'spec': self._profile_spec(),
+                                          'updates': {'private_phone': {'profile_edit': False}}})
+        with self.assertRaises(AccessError):
+            self.env['ir.config_parameter'].with_user(self.hr).set_param(self.PARAM, 'x_phone')
+        self.assertEqual(self._param(), self.ALL)
+        self.publish(self._profile_spec(), updates={'private_phone': {'profile_edit': False}})
+        self.env[EMP].sudo().create({'name': 'DEMO FS14 HR', 'user_id': self.hr.id,
+                                     'company_id': self.company.id})
+        self.env['res.users'].with_user(self.hr).browse(self.hr.id).write({'private_phone': '+84 3'})
+        with self.assertRaises(AccessError):
+            self.env['res.users'].with_user(self.me).browse(self.other.id).write(
+                {'private_email': 'x@example.com'})
+
+    # ============================ FS-14b no direct change of one's own details
+    DIRECT = {'work_email': 'forged@example.com', 'work_phone': '+84 0001',
+              'mobile_phone': '+84 0002', 'private_street2': 'DEMO Forged 2',
+              'private_city': 'DEMO Forged city', 'private_zip': '99999',
+              'private_phone': '+84 0003', 'private_email': 'forged.private@example.com',
+              'private_street': 'DEMO Forged street', 'emergency_contact': 'DEMO Forged',
+              'emergency_phone': '+84 0004'}
+
+    def _emp_values(self, names):
+        emp = self.env[EMP].sudo().browse(self.emp.id)
+        emp.invalidate_recordset()
+        return {n: emp[n] for n in names}
+
+    def test_41_direct_own_writes_refused(self):
+        """FS-14b test 1: every field of one's own user record that writes the
+        employee is refused for an employee (portal and staff), value
+        unchanged; the address parts too, whichever way the address switch
+        stands."""
+        vn = self.env.ref('base.vn')
+        state = self.env['res.country.state'].sudo().search([], limit=1)
+        direct = dict(self.DIRECT, private_country_id=vn.id)
+        if state:
+            direct['private_state_id'] = state.id
+        before = self._emp_values(direct)
+        me = self.env['res.users'].with_user(self.me).browse(self.me.id)
+        for switch in (True, False):
+            self.publish(self._profile_spec(),
+                         updates={'private_street': {'profile_edit': switch}})
+            for name, value in direct.items():
+                if name not in me._fields:
+                    continue
+                with self.assertRaises(AccessError, msg=name):
+                    me.write({name: value})
+        self.assertEqual(self._emp_values(direct), before, 'values unchanged')
+        # a staff (internal, no HR role) employee: the same
+        staff = new_test_user(self.env, 'fs14_staff', name='DEMO FS14 Staff', password=PASSWORD,
+                              groups='base.group_user')
+        self.env[EMP].sudo().create({'name': 'DEMO FS14 Staff', 'user_id': staff.id,
+                                     'company_id': self.company.id, 'work_phone': '+84 50'})
+        with self.assertRaises(AccessError):
+            self.env['res.users'].with_user(staff).browse(staff.id).write({'work_phone': '+84 51'})
+        # the user record's own non-employee settings still save (language)
+        me.write({'lang': self.me.lang})
+
+    def test_42_work_contact_email_and_phone_refused(self):
+        """FS-14b: work e-mail / work phone are the e-mail and phone of the
+        employee's own work contact — the own-user write and the standard
+        portal address form are refused; the value is unchanged."""
+        emp = self.env[EMP].sudo().browse(self.emp.id)
+        self.assertEqual(emp.work_contact_id, self.me.partner_id, 'the login is the work contact')
+        email = emp.work_email
+        me = self.env['res.users'].with_user(self.me).browse(self.me.id)
+        with self.assertRaises(AccessError):
+            me.write({'email': 'forged.login@example.com'})
+        with self.assertRaises(AccessError):
+            me.write({'phone': '+84 0009'})
+        html = self.html('/my/account')
+        res = self.url_open('/my/address/submit', data={
+            'partner_id': self.me.partner_id.id, 'name': self.me.name,
+            'email': 'forged.form@example.com', 'phone': '+84 0010',
+            'csrf_token': self._csrf(html)})
+        self.assertIn('Request a change', res.text, 'the form says why, in plain words')
+        emp.invalidate_recordset()
+        self.assertEqual(emp.work_email, email, 'unchanged')
+        # another person's contact is out of reach (standard portal rule)
+        res = self.url_open('/my/address/submit', data={
+            'partner_id': self.other.partner_id.id, 'name': 'x', 'email': 'x@example.com',
+            'csrf_token': self._csrf(html)})
+        self.assertNotEqual(self.other.partner_id.sudo().email, 'x@example.com')
+        # HR still edits the work e-mail on the employee record
+        self.env[EMP].with_user(self.hr).browse(self.emp.id).write(
+            {'work_email': 'lan.hr@example.com'})
+        emp.invalidate_recordset()
+        self.assertEqual(emp.work_email, 'lan.hr@example.com')
+
+    def test_43_the_screens_still_work(self):
+        """FS-14b: "Request a change" (HR approves) and a "Saves at once" box
+        of the Form builder still work for the employee."""
+        self.publish(self.spec(
+            [{'name': 'mobile_phone', 'width': 'half'}, {'name': 'private_phone', 'width': 'half'}]),
+            updates={'mobile_phone': {'portal_edit': True, 'portal_mode': 'instant'}})
+        html = self.html()
+        res = self.url_open('/my/profile/page/send', data={
+            'pbfr__mobile_phone': '+84 4242', 'csrf_token': self._csrf(html)})
+        self.assertIn('done=saved', res.url)
+        self.assertEqual(self._emp_values(['mobile_phone'])['mobile_phone'], '+84 4242')
+        res = self.url_open('/my/profile/page/send', data={
+            'x_phone': '+84 4343', 'csrf_token': self._csrf(html)})
+        self.assertIn('/my/profile/request/', res.url)

@@ -21,7 +21,7 @@ FORM STUDIO, phase TIDY-E (owner rulings R11-R13, 2026-11-19).
 Screen-only: no field is removed and no stored value is changed by installing
 this module.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.3.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
