@@ -12,8 +12,8 @@ STAGE=/tmp/deployFS14/addons
 ADD=/odoo/odoo-server/addons
 ORDER="payobook_template p0clone sudima rize payobook"
 MODS=$(cat /tmp/fs14_mods.txt)
-UPD=pb_form_studio_portal
-TAG="Claude FORMSTUDIO FS-14"
+UPD=pb_form_studio_portal,pb_employee_form_tidy
+TAG="Claude FORMSTUDIO FS-14b"
 log() { echo "$(date -u +%T) $*" | tee -a $EV/steps.log; }
 result() { echo "$1" > $EV/golive.result; }
 rm -f $EV/golive.result

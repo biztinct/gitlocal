@@ -11,7 +11,7 @@ EV=/tmp/fs14-$TS
 BK=/odoo/backups/fs14-$TS
 FS=/odoo/.local/share/Odoo/filestore
 STAGE=/tmp/deployFS14/addons
-UPD=pb_form_studio_portal
+UPD=pb_form_studio_portal,pb_employee_form_tidy
 log() { echo "$(date -u +%T) $*" | tee -a $EV/rehearsal.log; }
 pq() { sudo -u postgres psql -X -At -v ON_ERROR_STOP=1 "$@"; }
 rm -f $EV/rehearsal.done
@@ -56,7 +56,7 @@ for SRC in $SRCS; do
   cp $EV/rh-new-odoo.log $EV/rh-$SRC-upgrade.log 2>/dev/null
   log "[$SRC] upgrade exit $UX in $(( $(date +%s) - U0 )) s; ERROR $(grep -cE ' (ERROR|CRITICAL) ' $EV/rh-$SRC-upgrade.log $EV/rh-$SRC-upgrade.out | awk -F: '{s+=$2} END {print s}'), Traceback $(cat $EV/rh-$SRC-upgrade.log $EV/rh-$SRC-upgrade.out 2>/dev/null | grep -c Traceback)"
   grep -hE ' (ERROR|CRITICAL) ' $EV/rh-$SRC-upgrade.log $EV/rh-$SRC-upgrade.out 2>/dev/null | cut -c1-240 | head -5 | sed 's/^/    /' | tee -a $EV/rehearsal.log
-  log "[$SRC] versions: $(pq -d $COPY -c "select string_agg(name||'='||state||':'||coalesce(latest_version,''), ' ' order by name) from ir_module_module where name in ('pb_form_studio','pb_form_studio_portal')")"
+  log "[$SRC] versions: $(pq -d $COPY -c "select string_agg(name||'='||state||':'||coalesce(latest_version,''), ' ' order by name) from ir_module_module where name in ('pb_form_studio_portal','pb_employee_form_tidy','pb_employee_bank_panel')")"
   log "[$SRC] jobs active after upgrade: $(pq -d $COPY -c "select count(*) filter (where active) from ir_cron") (all were off)"
   bash /tmp/fs14_counts.sh $COPY > $EV/rh-$SRC-counts-1.txt
   diff <(grep -vE '^(jobs_)' $EV/rh-$SRC-counts-0.txt) <(grep -vE '^(jobs_)' $EV/rh-$SRC-counts-1.txt) > $EV/rh-$SRC-diff-01.txt

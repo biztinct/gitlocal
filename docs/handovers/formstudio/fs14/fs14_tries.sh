@@ -9,7 +9,7 @@
 # deployer's notes check). Root, in a systemd-run unit:  bash fs14_tries.sh <TS> [N]
 TS=$1; N=${2:-24}
 EV=/tmp/fs14-$TS
-TAG="Claude FORMSTUDIO FS-14"
+TAG="Claude FORMSTUDIO FS-14b"
 COMMIT=$(cat /tmp/fs14_commit.txt)
 note() { echo "$(date -u '+%Y-%m-%d %H:%M UTC') | $TAG | $1" >> /opt/deploy-notes.md; }
 others_open() {
@@ -45,7 +45,7 @@ for i in $(seq 1 $N); do
     continue
   fi
   if [ -z "$STARTED" ]; then
-    note "START | -u pb_form_studio_portal 19.0.1.1.0 | payobook,payobook_template,p0clone,rize,sudima | $COMMIT (origin/fs-14 = origin/19.1 + FS-14; 1 live tree = origin/19.1, nothing newer on the server). My Payobook page builder: "Employee can change it" switch for private phone, private e-mail, address, emergency contact and phone (default on = as today); Preview as follows the search (as you type). Backups x5 (again right before the stop), rehearsal on hidden copies of all five done, go-live only after 15 min with no signed-in activity on rize/payobook/sudima, takes /tmp/payobook-studio-deploy.lock, re-reads these notes for a HOLD line right before the stop. ABM untouched; Codex modules untouched."
+    note "START | -u pb_form_studio_portal 19.0.1.2.0, pb_employee_form_tidy 19.0.1.3.1 (cascade: pb_employee_bank_panel) | payobook,payobook_template,p0clone,rize,sudima | $COMMIT (origin/fs-14 = origin/19.1 + FS-14b; 2 live trees = origin/19.1, nothing newer on the server). Employees can no longer change work e-mail/phone/mobile or home-address parts by a hand-made call (Request a change only); no broken app pictures behind the employee page. Backups x5 (again right before the stop), rehearsal on hidden copies of all five done, go-live only after 15 min with no signed-in activity on rize/payobook/sudima, takes /tmp/payobook-studio-deploy.lock, re-reads these notes for a HOLD line right before the stop. ABM untouched; Codex modules untouched."
     STARTED=1
   fi
   bash /tmp/fs14_golive.sh $TS
@@ -62,7 +62,7 @@ done
 DOWN=$(grep -E '^downtime_seconds' $EV/steps.log 2>/dev/null | tail -1 | awk '{print $2}')
 if [ -n "$STARTED" ]; then
   case "$R" in
-    DONE) note "DONE | -u pb_form_studio_portal 19.0.1.1.0 x5 | payobook,payobook_template,p0clone,rize,sudima | $COMMIT; ${DOWN} s down; $(grep -E 'upgrade .* exit' $EV/steps.log | tail -5 | awk '{print $3"="$5"/"$7"s"}' | paste -sd' ' -); asset purge + web.assets.version x5; verification follows in a NOTE line. Backups /odoo/backups/fs14-$TS/. ABM untouched." ;;
+    DONE) note "DONE | -u pb_form_studio_portal 19.0.1.2.0, pb_employee_form_tidy 19.0.1.3.1 x5 | payobook,payobook_template,p0clone,rize,sudima | $COMMIT; ${DOWN} s down; $(grep -E 'upgrade .* exit' $EV/steps.log | tail -5 | awk '{print $3"="$5"/"$7"s"}' | paste -sd' ' -); asset purge + web.assets.version x5; verification follows in a NOTE line. Backups /odoo/backups/fs14-$TS/. ABM untouched." ;;
     FAILED*) note "FAILED | $R | payobook,payobook_template,p0clone,rize,sudima | $COMMIT; previous trees put back, upgraded databases restored from the dumps taken right before the stop, service started (${DOWN} s down). Evidence $EV." ;;
     *) note "CALLED OFF (HELD, closes the START above) | nothing deployed: $R after $N tries (no 15 quiet minutes on rize/payobook/sudima, a HOLD line, the lock or a newer START) | service untouched, live trees unchanged. Evidence $EV." ;;
   esac

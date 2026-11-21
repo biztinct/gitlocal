@@ -92,6 +92,10 @@ try:
         p = S.page_studio()
         res.append('page builder fields %s ticked %s published %s' % (
             len(p['fields']), len(p['ticked']), bool(p['published'])))
+        act = env.ref('hr.open_view_employee_list_my', raise_if_not_found=False)
+        if act:
+            pics = re.findall(r'src="/([a-z0-9_]+)/static/', str(act._get_action_dict().get('help') or ''))
+            res.append('employees action pictures sent %s' % len(pics))
         boxes = [f for f in p['fields'].values() if f.get('request')]
         res.append('personal boxes %s, employee can change %s' % (
             len(boxes), sum(1 for f in boxes if f.get('request_edit'))))
@@ -185,6 +189,15 @@ if os.environ.get('PROBE_SWITCH') == '1' and not db.startswith(('payobook', 'riz
                 out.append('own-user write ALLOWED')
             except Exception as exc:                    # noqa: BLE001
                 out.append('own-user write refused %s' % type(exc).__name__)
+            # FS-14b: work phone / city by a hand-made call, any switch position
+            for fname in ('work_phone', 'private_city', 'mobile_phone'):
+                try:
+                    with env.cr.savepoint():
+                        env['res.users'].with_user(target.user_id).browse(target.user_id.id).write(
+                            {fname: 'FS14B-probe'})
+                    out.append('%s ALLOWED' % fname)
+                except Exception as exc:                # noqa: BLE001
+                    out.append('%s refused' % fname)
         else:
             out.append('no employee login to check')
         data = S.page_studio()
