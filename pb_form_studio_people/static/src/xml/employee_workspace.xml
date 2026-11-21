@@ -10,7 +10,7 @@
       <button type="button" class="pev-full" t-on-click="toggleWorkspace" t-att-aria-expanded="state.expanded"><t t-out="ic('external',14)"/> <t t-esc="workspaceExpandLabel"/></button>
     </xpath>
     <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'job'&quot;)]" position="replace">
-      <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'job'}" t-on-click="() => this.setTab('job')"><t t-out="ic('briefcase',15)"/> Job &amp; organisation</button>
+      <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'job'}" t-on-click="() => this.setTab('job')"><t t-out="ic('briefcase',15)"/> Job</button>
     </xpath>
     <xpath expr="//t[@t-if=&quot;['personal', 'job', 'pay'].includes(state.tab)&quot;]" position="before">
       <div t-if="state.jobOpened" class="pb-workspace-section" t-att-class="{ 'd-none': state.tab !== 'job' }">

@@ -7,7 +7,8 @@
     &.pb-workspace-expanded { width: 100vw !important; border-radius: 0; }
     .pev-head, .pbc-head { padding: 18px 24px; }
     .pev-head-side, .pbc-head-side { flex-wrap: wrap; }
-    .pev-tabs, .pbc-tabs { flex-wrap: wrap; height: auto; flex-shrink: 0; }
+    .pev-tabs, .pbc-tabs { flex-wrap: nowrap; overflow-x: auto; height: auto; flex-shrink: 0; }
+    .pev-tab, .pbc-tab { flex-shrink: 0; white-space: nowrap; }
     .pbc-tab.on { border-bottom: 2px solid var(--pbim-primary, #5a4bb0); }
     .pev-body, .pbc-body { padding: 18px 24px 28px; }
     .pb-workspace-record { margin: -18px -24px -28px; }
