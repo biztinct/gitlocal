@@ -252,7 +252,9 @@ class TestFs7EmployeeStandard(TransactionCase):
         nodes = self.nodes(self.arch(), name)
         self.assertTrue(all(self.hidden_for(n, away) for n in nodes))
         self.assertFalse(any(self.hidden_for(n, home) for n in nodes))
-        self.assertIn(' or ', nodes[0].get('invisible'))
+        # R31 (FS-15): "hidden in <away>" on top of "only <home>" IS "only
+        # <home>": nothing is stored as a change, the product's rule stays
+        self.assertFalse(self.Studio._pbfs_std_rules(MODEL).get(name))
         # hidden for its own country too → nowhere
         self.publish_std({name: {'std_country_ids': [away_country.id, home_country.id]}})
         nodes = self.nodes(self.arch(), name)
@@ -290,9 +292,19 @@ class TestFs7EmployeeStandard(TransactionCase):
             Emp = self.env[MODEL].with_user(self.hr)
             if lang:
                 Emp = Emp.with_context(lang=lang)
-            raw, _v = Emp.with_context(**{STD_RAW: True})._get_view(view.id, 'form')
+            # R31 (FS-15): the "as the modules draw it" read now also draws the
+            # boxes the product takes off the screens (the Form builder lists
+            # them), so it is no longer the yardstick. Silent = no rule at all
+            # reaches the form: the engine adds nothing and TIDY-E applies its
+            # own table; the byte-identical markup before/after the upgrade is
+            # proven on copies of the five sites (FS15_REPORT §5).
+            self.assertFalse(self.Studio._pbfs_std_rules(MODEL))
             arch, _v = Emp._get_view(view.id, 'form')
-            self.assertEqual(etree.tostring(raw), etree.tostring(arch))
+            self.assertEqual(self.Studio._pbfs_std_apply_arch(arch, MODEL, 'pbfs_country_of_work_id'), [])
+        if hasattr(self.env[MODEL], '_pb_tidy_rules'):
+            from odoo.addons.pb_employee_form_tidy.models.form_rules import FORM_RULES
+            self.assertEqual(self.env[MODEL]._pb_tidy_rules(), FORM_RULES)
+        self.assertFalse(self.Studio._pbfs_std_tidy_overrides(MODEL))
 
     # ------------------------------------------------------------------- 10
     def test_10_draft_publish_history_undo(self):

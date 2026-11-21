@@ -154,7 +154,9 @@ class TestFs11Fixed(TransactionCase):
                    if visible(n) and not any(a.tag in ('field', 'button') for a in n.iterancestors())
                    and n.get('name') in Emp._fields and not n.get('name').startswith(PREFIX)
                    and n.get('name') not in self.Studio._pbfs_std_exclude(Emp._name)
-                   and Emp._fields[n.get('name')].type not in STD_SKIP_TTYPES}
+                   and Emp._fields[n.get('name')].type not in STD_SKIP_TTYPES
+                   # R31: taken off the screens and not shown again → not listed
+                   and self.Studio._pbfs_std_builtin_rule(Emp._name, n.get('name')) != 'remove'}
         self.assertEqual(listed, on_form)
         # the open sections still follow the tabs
         self.assertTrue(any(s['kind'] == 'open' for s in data['sections']))
