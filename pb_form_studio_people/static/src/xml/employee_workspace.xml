@@ -13,11 +13,34 @@
       <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'job'}" t-on-click="() => this.setTab('job')"><t t-out="ic('briefcase',15)"/> Job</button>
     </xpath>
     <xpath expr="//t[@t-if=&quot;['personal', 'job', 'pay'].includes(state.tab)&quot;]" position="before">
-      <div t-if="state.jobOpened" class="pb-workspace-section" t-att-class="{ 'd-none': state.tab !== 'job' }">
-        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'job'" title.translate="Job &amp; organisation" onReady.bind="workspaceReady" onSaved.bind="load"/>
-        <div class="pev-more"><span>Other job details are shown below.</span><button class="pev-btn ghost" t-on-click="openFull">Full details</button></div>
+      <div t-if="state.tab === 'job'" class="pb-workspace-section">
+        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'job'" title.translate="Job &amp; organisation" onReady.bind="workspaceJobReady" t-key="'job'" onSaved.bind="load"/>
+      </div>
+      <div t-if="state.tab === 'personal'" class="pb-workspace-section">
+        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'personal'" title.translate="Personal details" onReady.bind="workspacePersonalReady" t-key="'personal'" onSaved.bind="load"/>
       </div>
     </xpath>
-    <xpath expr="//div[hasclass('pev-more')][@t-if]" position="attributes"><attribute name="t-if">['profile', 'personal', 'pay'].includes(state.tab)</attribute></xpath>
+    <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'timeline'&quot;)]" position="before">
+      <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'resume'}" t-on-click="() => this.setTab('resume')"><t t-out="ic('award',15)"/> Résumé</button>
+      <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'settings'}" t-on-click="() => this.setTab('settings')"><t t-out="ic('settings',15)"/> Settings</button>
+    </xpath>
+    <xpath expr="//div[hasclass('pev-body')]" position="inside">
+      <div t-if="state.tab === 'pay'" class="pb-workspace-section">
+        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'pay'" title.translate="Pay &amp; tax details" onReady.bind="workspacePayReady" t-key="'pay'" onSaved.bind="load"/>
+      </div>
+      <div t-if="state.tab === 'resume'" class="pb-workspace-section">
+        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'resume'" title.translate="Experience &amp; skills" onReady.bind="workspaceResumeReady" t-key="'resume'" onSaved.bind="load"/>
+      </div>
+      <div t-if="state.tab === 'settings'" class="pb-workspace-section">
+        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'settings'" title.translate="Employee settings" onReady.bind="workspaceSettingsReady" t-key="'settings'" onSaved.bind="load"/>
+      </div>
+      <div t-if="state.tab === 'documents'" class="pb-workspace-section">
+        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'documents'" title.translate="Additional document files" onReady.bind="workspaceDocumentsReady" t-key="'documents'" onSaved.bind="load"/>
+      </div>
+    </xpath>
+    <xpath expr="//div[hasclass('pev-more')][@t-if]" position="attributes"><attribute name="t-if">state.tab === 'profile'</attribute></xpath>
+    <xpath expr="//div[@t-if='!groups(state.tab).length']" position="attributes">
+      <attribute name="t-if">!groups(state.tab).length and (!recordForm or recordForm.state.error)</attribute>
+    </xpath>
   </t>
 </templates>

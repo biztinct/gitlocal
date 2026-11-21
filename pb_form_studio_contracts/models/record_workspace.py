@@ -6,11 +6,32 @@ No proposal is approved by this adapter and no new approval route is created.
 """
 from odoo import api, models, _
 from odoo.exceptions import AccessError, ValidationError
+from odoo.addons.pb_form_studio.models.native_section import project_section_form
 from odoo.addons.pb_contracts.models.contract_approval import MONEY_TERMS
+
+
+AGREEMENT_GROUPS = (
+    ('Agreement', ('name', 'employee_id', 'contract_type_id', 'structure_type_id', 'kanban_state')),
+    ('Signed terms', ('pb_trial_date_start', 'pb_signed_date', 'pb_salary_basis', 'pb_payroll_contract_type', 'pb_payroll_nationality_status')),
+    ('How pay is worked out', ('pb_vn_hours_per_day', 'pb_vn_pay_grade', 'pb_vn_annual_days', 'pb_vn_variable_bonus')),
+    ('Worked out from dates', ('pb_vn_contract_months', 'pb_vn_service_days')),
+    ('Tax exemption evidence', ('pb_vn_qual_ot_weekday', 'pb_vn_qual_ot_weekend', 'pb_vn_qual_ot_holiday', 'pb_vn_qual_night', 'pb_vn_qual_transport', 'pb_vn_qual_leave_encash', 'pb_vn_qual_other_exempt')),
+    ('Notes', ('notes',)),
+)
 
 
 class ContractWorkspace(models.Model):
     _inherit = 'hr.contract'
+
+    @api.model
+    def get_view(self, view_id=None, view_type='form', **options):
+        result = super().get_view(view_id, view_type, **options)
+        if view_type == 'form' and options.get('pb_workspace_section') == 'agreement':
+            result = dict(result)
+            result['arch'] = project_section_form(result['arch'],
+                [(self.env._(title), names) for title, names in AGREEMENT_GROUPS],
+                {name: field.get('domain', '') for name, field in self.fields_get(attributes=['domain']).items()})
+        return result
 
     def _workspace_components(self, commands):
         result = {'edits': {}, 'adds': [], 'removes': []}

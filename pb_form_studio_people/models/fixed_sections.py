@@ -22,7 +22,9 @@ fields tab (hide / rename per Country of Work, My Payobook ticks); a line the
 screen works out itself (the summary, the pay scheme's settings, the bank
 block) is listed for truth and opens nothing.
 """
+from lxml import etree
 from odoo import api, models
+from .premium_section import SECTIONS
 from odoo.tools.translate import LazyTranslate
 
 from .form_studio import HOST, MODEL
@@ -84,7 +86,7 @@ class PbFormStudioPeopleFixed(models.AbstractModel):
         _ = self.env._
         Model = self.env[MODEL]
         out = {'profile': [], 'personal': [], 'job': [], 'pay': [], 'documents': [],
-               'timeline': []}
+               'timeline': [], 'resume': [], 'settings': []}
         summary = _('Summary')
         for key, label in PROFILE_ROWS:
             out['profile'].append({'key': 'profile.%s' % key, 'name': False,
@@ -125,6 +127,29 @@ class PbFormStudioPeopleFixed(models.AbstractModel):
                     continue            # the module that carries it is not installed
                 out[tab].append({'key': name, 'name': name, 'label': str(label),
                                  'group': group, 'country': gate or ''})
+        # The premium editors also expose native boxes absent from the old
+        # summary. Read their actual processed section so the builder does not
+        # promise a box removed by permissions or an installed view.
+        labels = Model.fields_get(attributes=['string'])
+        for tab, groups in SECTIONS.items():
+            root = etree.fromstring(Model.get_view(view_type='form', pb_workspace_section=tab)['arch'])
+            fields = {n.get('name'): n for n in root.xpath('.//section//field[not(ancestor::field)]')
+                      if not any(a.get('invisible') in ('1', 'True', 'true') for a in [n, *n.iterancestors()])}
+            existing = {item['name'] for item in out[tab] if item['name']}
+            for title, names in groups:
+                for name in names:
+                    if name in fields and name not in existing:
+                        out[tab].append({'key': name, 'name': name,
+                                         'label': fields[name].get('string') or labels.get(name, {}).get('string') or name,
+                                         'group': _(title), 'country': ''})
+                        existing.add(name)
+            for name, node in fields.items():
+                if name not in existing:
+                    card = next(node.iterancestors('section'))
+                    out[tab].append({'key': name, 'name': name,
+                                     'label': node.get('string') or labels.get(name, {}).get('string') or name,
+                                     'group': card.findtext('h3') or '', 'country': ''})
+                    existing.add(name)
         return out
 
     @api.model

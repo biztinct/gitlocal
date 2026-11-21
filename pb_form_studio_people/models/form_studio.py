@@ -147,6 +147,8 @@ class PbFormStudio(models.AbstractModel):
                 {'id': 'documents', 'title': _('Documents'), 'icon': 'fileText', 'tone': 'brand',
                  'kind': 'locked',
                  'note': _('Uploaded documents, by kind. %s', locked)},
+                {'id': 'resume', 'title': _('Résumé'), 'icon': 'award', 'tone': 'blue', 'kind': 'locked', 'note': _('Experience, skills and certifications.')},
+                {'id': 'settings', 'title': _('Settings'), 'icon': 'settings', 'tone': 'slate', 'kind': 'locked', 'note': _('Account and employee settings.')},
                 {'id': 'timeline', 'title': _('Timeline'), 'icon': 'history', 'tone': 'brand',
                  'kind': 'locked',
                  'note': _('Every change to this person, newest first. %s', locked)},

@@ -8,7 +8,9 @@ panel groups it (`_TERM_GROUPS`: The money · Dates · Where they sit ·
 Payroll rules). A field whose module is not installed is skipped, exactly as
 the panel skips it (`_cd_terms`). `test_fs11_fixed.py` proves map = screen.
 """
+from lxml import etree
 from odoo import api, models
+from .record_workspace import AGREEMENT_GROUPS
 
 from odoo.addons.pb_contracts.models.pb_contract_360 import _TERMS
 
@@ -28,6 +30,12 @@ class PbFormStudioContractFixed(models.AbstractModel):
                 continue
             out.setdefault(group, []).append({
                 'key': name, 'name': name, 'label': str(label), 'group': '', 'country': ''})
+        root = etree.fromstring(Model.get_view(view_type='form', pb_workspace_section='agreement')['arch'])
+        names = {n.get('name') for n in root.xpath('.//section//field[not(ancestor::field)]')}
+        labels = Model.fields_get(attributes=['string'])
+        out['agreement'] = [{'key': name, 'name': name, 'label': labels[name]['string'],
+                             'group': self.env._(title), 'country': ''}
+                            for title, fields in AGREEMENT_GROUPS for name in fields if name in names and name in labels]
         return out
 
     @api.model

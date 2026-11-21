@@ -100,12 +100,12 @@ export class PremiumRecordForm extends Component {
         this.viewService = useService("view");
         this.sectionView = null;
         onWillStart(() => this.loadSection());
+        onMounted(() => this.props.onReady(this));
         this.controller = null;
         this.notebookPages = {};
         // A drawer may originate from any list or dashboard. Its form must
         // never inherit that action's model-specific view ids or pager.
         useSubEnv({ pbRecordWorkspace: this, config: { ...getDefaultConfig(), noBreadcrumbs: true } });
-        this.props.onReady(this);
         onWillUnmount(() => this.props.onReady(null));
     }
     async loadSection() {
@@ -113,12 +113,19 @@ export class PremiumRecordForm extends Component {
         try {
             const result = await this.viewService.loadViews({
                 resModel: this.props.resModel, views: [[false, "form"]], context: {},
-            }, { pb_workspace_section: this.props.section, pb_workspace_revision: 1 });
+            }, { pb_workspace_section: this.props.section, pb_workspace_revision: 3 });
             this.sectionView = { arch: result.views.form.arch, fields: result.fields,
                 relatedModels: result.relatedModels, viewId: result.views.form.id };
         } catch (error) {
             this.state.error = _t("This section could not be loaded. Retry or open Full details.");
         }
+    }
+    get projectedFields() {
+        if (!this.sectionView?.arch || this.state.error) { return []; }
+        const arch = new DOMParser().parseFromString(this.sectionView.arch, "text/xml");
+        return [...arch.querySelectorAll("section field[name]")]
+            .filter(node => !node.parentElement.closest("field"))
+            .map(node => node.getAttribute("name"));
     }
     get viewProps() {
         return {
@@ -131,11 +138,12 @@ export class PremiumRecordForm extends Component {
         };
     }
     async guardLeave() { return this.controller ? this.controller.pbRecordGuard() : true; }
-    async retry() { this.state.error = false; await this.loadSection(); this.state.generation++; }
+    async retry() { this.state.error = false; await this.loadSection(); this.props.onReady(this); this.state.generation++; }
     async reloadDesign() {
         if (this.controller && await this.controller.model.root.isDirty()) { return false; }
         rpcBus.trigger("CLEAR-CACHES", "get_views");
         await this.loadSection();
+        this.props.onReady(this);
         this.state.generation++;
         return true;
     }

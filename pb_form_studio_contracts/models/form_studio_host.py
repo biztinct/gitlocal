@@ -44,6 +44,8 @@ class PbFormStudio(models.AbstractModel):
                  'tone': 'teal', 'kind': 'locked', 'note': note},
                 {'id': 'rules', 'title': term_group_label(env, 'rules'), 'icon': 'shield',
                  'tone': 'amber', 'kind': 'locked', 'note': note},
+                {'id': 'agreement', 'title': _('Agreement details'), 'icon': 'fileText',
+                 'tone': 'blue', 'kind': 'locked', 'note': note},
                 {'id': 'custom', 'title': _('Company details'), 'icon': 'sparkles',
                  'tone': 'brand', 'kind': 'open'},
             ],

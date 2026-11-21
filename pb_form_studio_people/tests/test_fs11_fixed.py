@@ -17,6 +17,7 @@ from odoo.tests import TransactionCase, new_test_user, tagged
 from odoo.addons.pb_form_studio.models.form_standard import STD_SKIP_TTYPES
 from odoo.addons.pb_form_studio.models.ir_model_fields import PREFIX
 from odoo.addons.pb_form_studio_people.models.fixed_sections import VN_DEPENDENT_KEY
+from odoo.addons.pb_form_studio_people.models.premium_section import SECTIONS
 from odoo.addons.pb_form_studio_people.models.form_studio import HOST, MODEL, NATIVE_VIEW
 
 #: A value of each kind, to fill a person in completely.
@@ -40,7 +41,7 @@ class TestFs11Fixed(TransactionCase):
         cls.emp_id = Emp.create({'name': 'DEMO FS11 Siti', 'payroll_country': 'ID'})
         cls.emp_sg = Emp.create({'name': 'DEMO FS11 Wei', 'payroll_country': 'SG'})
         cls.people = (cls.emp_vn, cls.emp_id, cls.emp_sg)
-        cls.map = cls.Studio._pbfs_people_panel_map()
+        cls.map = cls.Studio.with_user(cls.admin)._pbfs_people_panel_map()
         for emp in cls.people:
             cls._fill(emp)
         cls.env.invalidate_all()
@@ -81,6 +82,13 @@ class TestFs11Fixed(TransactionCase):
             for group in tabs.get(tab) or []:
                 for row in group.get('rows') or []:
                     out.add((tab, row['key']))
+        # Native section editors replace the corresponding summary rows and
+        # add the rest of the fields from Full details.
+        for tab in SECTIONS:
+            root = etree.fromstring(self.env[MODEL].with_user(self.admin).get_view(
+                view_type='form', pb_workspace_section=tab)['arch'])
+            out.update((tab, n.get('name')) for n in root.xpath('.//section//field[not(ancestor::field)]')
+                       if not any(a.get('invisible') in ('1', 'True', 'true') for a in [n, *n.iterancestors()]))
         return out
 
     def map_keys(self):
@@ -125,7 +133,7 @@ class TestFs11Fixed(TransactionCase):
         locked = [s['id'] for s in data['sections'] if s['kind'] == 'locked']
         self.assertEqual(sorted(fixed), sorted(locked))
         self.assertTrue(fixed['personal'] and fixed['job'] and fixed['pay'] and fixed['profile'])
-        self.assertEqual(fixed['documents'], [])
+        self.assertTrue({'id_card', 'driving_license'} <= {it['name'] for it in fixed['documents']})
         # a field line opens the settings of that field
         birthday = next(it for it in fixed['personal'] if it['name'] == 'birthday')
         self.assertEqual(birthday['ref'], 'birthday')

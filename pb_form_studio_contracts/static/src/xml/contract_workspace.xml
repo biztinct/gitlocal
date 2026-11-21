@@ -11,5 +11,13 @@
     </xpath>
     <xpath expr="//FormStudioWand[@studio='fs3Studio']" position="replace"><button t-if="fs3Studio.state.canEdit" type="button" class="pbim-btn ghost" t-on-click="workspaceBuilder">Form builder</button></xpath>
     <xpath expr="//FormStudioOverlay" position="attributes"><attribute name="t-props">workspaceStudioProps</attribute></xpath>
+    <xpath expr="//div[hasclass('pbc-tabs')]" position="inside">
+      <button type="button" class="pbc-tab" t-att-class="{ on: state.tab === 'agreement' }" t-on-click="() => this.setTab('agreement')">Agreement details</button>
+    </xpath>
+    <xpath expr="//div[hasclass('pbc-body')]" position="inside">
+      <div t-if="state.tab === 'agreement'" class="pb-workspace-section">
+        <PremiumRecordForm resModel="'hr.contract'" resId="workspaceRecordId" section="'agreement'" title.translate="Agreement details" onReady.bind="workspaceReady" onSaved.bind="load"/>
+      </div>
+    </xpath>
   </t>
 </templates>

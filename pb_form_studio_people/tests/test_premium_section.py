@@ -1,6 +1,6 @@
 from lxml import etree
 from odoo.tests import TransactionCase, tagged, new_test_user, Form
-from odoo.addons.pb_form_studio_people.models.premium_section import project_job_form, JOB_FIELDS
+from odoo.addons.pb_form_studio_people.models.premium_section import project_job_form, project_section_form, JOB_FIELDS, SECTIONS
 
 
 @tagged('post_install', '-at_install')
@@ -61,3 +61,55 @@ class TestPremiumJobSection(TransactionCase):
             form.job_title = 'Premium custom title'
         self.assertEqual(employee.job_title, 'Premium custom title')
         self.assertEqual(employee.job_id, job)
+
+    def test_personal_keeps_native_rules_and_upload_filename_dependency(self):
+        model = self.env['hr.employee']
+        original = etree.fromstring(model.get_view(view_type='form')['arch'])
+        root = etree.fromstring(model.get_view(view_type='form', pb_workspace_section='personal')['arch'])
+        self.assertFalse(root.xpath('//header | //sheet | //notebook | //chatter'))
+        for name in ('private_state_id', 'private_country_id', 'marital', 'spouse_complete_name', 'passport_expiration_date', 'has_work_permit'):
+            native = original.xpath('.//field[@name=$name][not(ancestor::field)]', name=name)
+            projected = root.xpath('.//section//field[@name=$name]', name=name)
+            if native:
+                self.assertEqual(len(projected), 1, name)
+                attrs = dict(projected[0].attrib); attrs.pop('id', None)
+                self.assertIn(attrs, [{k:v for k,v in n.attrib.items() if k != 'id'} for n in native])
+        if root.xpath("//field[@name='has_work_permit']"):
+            self.assertTrue(root.xpath("//field[@name='work_permit_name']"))
+        self.assertFalse(root.xpath("//field[@name='bank_account_ids' or @name='vn_dependent_ids']"))
+
+    def test_personal_hr_save_and_cancel_use_employee_record(self):
+        hr = new_test_user(self.env, 'premium_personal_hr', groups='base.group_user,hr.group_hr_manager')
+        employee = self.env['hr.employee'].create({'name': 'Premium personal regression'})
+        model = self.env['hr.employee'].with_user(hr)
+        arch = model.get_view(view_type='form', pb_workspace_section='personal')['arch']
+        names = set(etree.fromstring(arch).xpath('//field[not(ancestor::field)]/@name'))
+        self.assertTrue(employee.with_user(hr).web_read({name: {} for name in names}))
+        view = self.env['ir.ui.view'].create({'name': 'Premium personal regression section', 'model': 'hr.employee', 'arch': arch})
+        with Form(employee.with_user(hr), view=view) as form:
+            form.private_email = 'premium-test@example.invalid'
+            form.emergency_contact = 'Emergency test contact'
+        self.assertEqual(employee.private_email, 'premium-test@example.invalid')
+        self.assertEqual(employee.emergency_contact, 'Emergency test contact')
+        form = Form(employee.with_user(hr), view=view)
+        form.private_email = 'discarded@example.invalid'
+        # Form edits are virtual until save, like the native relational model.
+        self.assertEqual(employee.private_email, 'premium-test@example.invalid')
+
+    def test_missing_cards_and_forbidden_sections_are_not_synthesised(self):
+        root = etree.fromstring(project_section_form('<form><field name="private_email"/></form>', SECTIONS['personal']))
+        self.assertEqual(len(root.xpath('//section')), 1)
+        self.assertEqual(root.xpath('//section//field/@name'), ['private_email'])
+        model = self.env['hr.employee']
+        self.assertEqual(model.get_view(view_type='form', pb_workspace_section='unknown')['arch'], model.get_view(view_type='form')['arch'])
+
+    def test_pay_keeps_available_fields_without_loading_forbidden_collections(self):
+        hr = new_test_user(self.env, 'premium_pay_hr', groups='base.group_user,hr.group_hr_manager')
+        model = self.env['hr.employee'].with_user(hr)
+        root = etree.fromstring(model.get_view(view_type='form', pb_workspace_section='pay')['arch'])
+        for name in root.xpath('.//field[not(ancestor::field)]/@name'):
+            field = model._fields[name]
+            if field.type in ('one2many', 'many2many'):
+                self.assertTrue(model.env[field.comodel_name].has_access('read'), name)
+        self.assertTrue(root.xpath(".//section//field[@name='payroll_country']"))
+        self.assertFalse(root.xpath(".//field[@name='bank_account_ids']"))

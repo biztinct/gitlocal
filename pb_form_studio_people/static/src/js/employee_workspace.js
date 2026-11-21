@@ -10,13 +10,14 @@ patch(Employee360Drawer.prototype, {
         super.setup(...arguments);
         this.state.expanded = false;
         this.state.tab = this.props.embedded ? "documents" : "profile";
-        this.recordForm = null;
-        this.state.jobOpened = false;
+        this.recordForms = {};
+        this.state.sectionFields = {};
     },
     groups(tab) {
         const groups = super.groups(tab);
-        if (tab !== "job" || this.recordForm?.state.error) { return groups; }
-        const editable = new Set(["department_id", "job_id", "job_title", "parent_id", "work_location_id", "address_id"]);
+        if (!["job", "personal", "pay"].includes(tab) || this.recordForm?.state.error) { return groups; }
+        const editable = new Set(this.state.sectionFields[tab] || []);
+        if (tab === "personal" && editable.has("private_street")) { editable.add("_home_address"); }
         return groups.map(group => {
             const rows = group.rows.filter(row => !editable.has(row.key));
             return { ...group, rows, filled: rows.filter(row => !row.empty).length };
@@ -24,7 +25,20 @@ patch(Employee360Drawer.prototype, {
     },
     get workspaceRecordId() { return Number(this.props.empId); },
     get workspaceExpandLabel() { return this.state.expanded ? _t("Collapse") : _t("Expand"); },
-    workspaceReady(form) { this.recordForm = form; },
+    get recordForm() { return this.recordForms[this.state.tab] || null; },
+    workspaceJobReady(form) { this.workspaceReady("job", form); },
+    workspacePersonalReady(form) { this.workspaceReady("personal", form); },
+    workspacePayReady(form) { this.workspaceReady("pay", form); },
+    workspaceResumeReady(form) { this.workspaceReady("resume", form); },
+    workspaceSettingsReady(form) { this.workspaceReady("settings", form); },
+    workspaceDocumentsReady(form) { this.workspaceReady("documents", form); },
+    workspaceReady(section, form) {
+        this.recordForms[section] = form;
+        const fields = form?.projectedFields || [];
+        if (JSON.stringify(this.state.sectionFields[section] || []) !== JSON.stringify(fields)) {
+            this.state.sectionFields[section] = fields;
+        }
+    },
     toggleWorkspace() { this.state.expanded = !this.state.expanded; },
     async openFull() {
         if (this.recordForm && !(await this.recordForm.guardLeave())) { return; }
@@ -32,7 +46,6 @@ patch(Employee360Drawer.prototype, {
     },
     async setTab(tab) {
         if (tab !== this.state.tab && this.recordForm && !(await this.recordForm.guardLeave())) { return; }
-        if (tab === "job") { this.state.jobOpened = true; }
         return this.pbfsGuard(() => super.setTab(tab));
     },
     async close() {
