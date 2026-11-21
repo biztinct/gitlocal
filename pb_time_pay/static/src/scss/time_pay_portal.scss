@@ -1,0 +1,52 @@
+// WDGAP S5-F (TP3) — My Payobook: the person's own late and early minutes,
+// and the door to them on My Overtime. Prefix `pbmlm-` (checked free).
+// Quiet: grey and indigo only; no colour asks the person to act.
+.pbme {
+    .pbmlm-door {
+        display: flex; align-items: center; gap: 12px; margin: 0 0 14px;
+        padding: 12px 14px; text-decoration: none; color: var(--pbim-text, #0F172A);
+        &:hover, &:focus-visible { border-color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbmlm-door-ic {
+        display: inline-grid; place-items: center; flex: none; width: 34px; height: 34px;
+        border-radius: 10px; background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+    }
+    .pbmlm-door-tx {
+        display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;
+        b { font-size: 14px; }
+        small { color: var(--pbim-muted, #64748B); font-size: 12.5px; }
+    }
+}
+.pbmlm {
+    .pbmlm-back {
+        display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px;
+        color: var(--pbim-muted, #64748B); font-size: 13px; font-weight: 600; text-decoration: none;
+        &:hover { color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbmlm-month { margin-bottom: 14px; padding: 0; overflow: hidden; }
+    .pbmlm-month-head {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+        padding: 12px 14px 0; flex-wrap: wrap;
+        b { font-size: 15px; }
+    }
+    .pbmlm-sum {
+        font-size: 13px; font-weight: 700; color: var(--pbim-primary, #5A4BB0);
+        font-variant-numeric: tabular-nums;
+        &.is-zero { color: var(--pbim-muted, #64748B); font-weight: 600; }
+    }
+    // every month's table lines up with the next one
+    .pbmlm-table {
+        table-layout: fixed; width: 100%;
+        th:nth-child(1) { width: 30%; }
+        th:nth-child(2) { width: 34%; }
+        th:nth-child(3) { width: 14%; }
+        th:nth-child(4) { width: 22%; }
+    }
+    .pbmlm-table tr.is-excused td { color: var(--pbim-muted, #64748B); }
+    .pbmlm-badge {
+        display: inline-block; font-size: 11px; font-weight: 800; padding: 3px 9px;
+        border-radius: 999px; background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+        &.is-excused { background: var(--pbim-slate-soft, #F1F5F9); color: var(--pbim-slate, #475569); }
+    }
+    .pbmlm-foot { margin: 4px 2px 0; color: var(--pbim-muted, #64748B); font-size: 13px; }
+}

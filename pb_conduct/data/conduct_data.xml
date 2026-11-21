@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="seq_conduct_case" model="ir.sequence">
+      <field name="name">Conduct case</field>
+      <field name="code">pb.conduct.case</field>
+      <field name="prefix">CC-</field>
+      <field name="padding">4</field>
+      <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- The finished letter's home in the documents vault. The CODE is read
+         by the global rule in security/conduct_security.xml: never change it. -->
+    <record id="vault_category_conduct" model="pb.employee.document.category">
+      <field name="name">Private HR letters</field>
+      <field name="code">pb_conduct</field>
+      <field name="sequence">90</field>
+    </record>
+
+    <!-- ===================== reasons (HR edits these) ===================== -->
+    <record id="reason_attendance" model="pb.conduct.reason">
+      <field name="name">Attendance or lateness</field>
+      <field name="sequence">10</field>
+    </record>
+    <record id="reason_behaviour" model="pb.conduct.reason">
+      <field name="name">Behaviour towards others</field>
+      <field name="sequence">20</field>
+    </record>
+    <record id="reason_rules" model="pb.conduct.reason">
+      <field name="name">Breaking a company rule</field>
+      <field name="sequence">30</field>
+    </record>
+    <record id="reason_safety" model="pb.conduct.reason">
+      <field name="name">Health and safety</field>
+      <field name="sequence">40</field>
+    </record>
+    <record id="reason_property" model="pb.conduct.reason">
+      <field name="name">Misuse of company property or money</field>
+      <field name="sequence">50</field>
+    </record>
+    <record id="reason_harassment" model="pb.conduct.reason">
+      <field name="name">Harassment or bullying</field>
+      <field name="sequence">60</field>
+    </record>
+    <record id="reason_other" model="pb.conduct.reason">
+      <field name="name">Other</field>
+      <field name="sequence">90</field>
+    </record>
+
+    <!-- ===================== letter wording (a starting point) ===================== -->
+    <record id="tpl_invite" model="pb.conduct.letter.template">
+      <field name="name">Invitation to a hearing</field>
+      <field name="kind">invite</field>
+      <field name="title">Invitation to a meeting</field>
+      <field name="body">Dear ${employee},
+
+We would like to meet you to talk about a concern: ${reason}.
+
+The meeting will take place on ${hearing_date} at ${hearing_place}.
+
+You may bring a colleague or an employee representative with you. You will be able to give your side of what happened before any decision is made.
+
+If you cannot attend at this time, please tell HR as soon as possible.
+
+${signed_by}
+${company}
+${date}</field>
+    </record>
+
+    <record id="tpl_none" model="pb.conduct.letter.template">
+      <field name="name">No further action</field>
+      <field name="kind">none</field>
+      <field name="title">Outcome of our meeting</field>
+      <field name="body">Dear ${employee},
+
+Thank you for meeting us about ${reason}.
+
+${decision}
+
+We have decided to take no further action. This letter is kept on your HR file.
+
+${signed_by}
+${company}
+${date}</field>
+    </record>
+
+    <record id="tpl_verbal" model="pb.conduct.letter.template">
+      <field name="name">Verbal warning confirmed</field>
+      <field name="kind">verbal</field>
+      <field name="title">Confirmation of a verbal warning</field>
+      <field name="body">Dear ${employee},
+
+This letter confirms the verbal warning you were given about ${reason}.
+
+${decision}
+
+The warning stays on your HR file until ${valid_until}. You may reply to this letter if you disagree.
+
+${signed_by}
+${company}
+${date}</field>
+    </record>
+
+    <record id="tpl_written" model="pb.conduct.letter.template">
+      <field name="name">Written warning</field>
+      <field name="kind">written</field>
+      <field name="title">Written warning</field>
+      <field name="body">Dear ${employee},
+
+Following our meeting about ${reason}, we are giving you a written warning.
+
+${decision}
+
+This warning stays on your HR file until ${valid_until}. If the problem happens again, further steps may be taken. You may reply to this letter if you disagree.
+
+${signed_by}
+${company}
+${date}</field>
+    </record>
+
+    <record id="tpl_final" model="pb.conduct.letter.template">
+      <field name="name">Final written warning</field>
+      <field name="kind">final</field>
+      <field name="title">Final written warning</field>
+      <field name="body">Dear ${employee},
+
+Following our meeting about ${reason}, we are giving you a final written warning.
+
+${decision}
+
+This warning stays on your HR file until ${valid_until}. If the problem happens again, your employment may end. You may reply to this letter if you disagree.
+
+${signed_by}
+${company}
+${date}</field>
+    </record>
+
+    <record id="tpl_dismissal" model="pb.conduct.letter.template">
+      <field name="name">Dismissal</field>
+      <field name="kind">dismissal</field>
+      <field name="title">End of your employment</field>
+      <field name="body">Dear ${employee},
+
+Following our meeting about ${reason}, we have decided to end your employment.
+
+${decision}
+
+HR will contact you about your last day, your final pay and returning company property. You may reply to this letter if you disagree.
+
+${signed_by}
+${company}
+${date}</field>
+    </record>
+
+    <!-- ===================== Access screen wording ===================== -->
+    <!-- noupdate: once a role that holds an ability is assigned, Access
+         refuses any write to its permissions (WF2 G80). -->
+    <record id="ability_conduct_hr" model="pb.role.ability">
+      <field name="technical_key">conduct-cases-hr</field>
+      <field name="name">Run conduct cases</field>
+      <field name="area">people</field>
+      <field name="sequence">74</field>
+      <field name="description">Open and run conduct cases: the concern, the hearing notes, the decision and the letters. Highly confidential: give it only to the people who handle these cases.</field>
+      <field name="group_ids" eval="[(4, ref('group_conduct_user'))]"/>
+    </record>
+    <record id="ability_conduct_head" model="pb.role.ability">
+      <field name="technical_key">conduct-cases-head</field>
+      <field name="name">Run conduct cases and their set-up</field>
+      <field name="area">people</field>
+      <field name="sequence">84</field>
+      <field name="description">Everything above, plus the reasons, the letter wording and the country notes.</field>
+      <field name="group_ids" eval="[(4, ref('group_conduct_head'))]"/>
+    </record>
+
+    <!-- Listed only to the heads of HR for conduct cases (and, as for every
+         role, to the access team, who give it). -->
+    <record id="role_conduct_hr" model="pb.role.profile">
+      <field name="name">Conduct cases — HR</field>
+      <field name="area">people</field>
+      <field name="sequence">74</field>
+      <field name="description">Open and run somebody's conduct case: the concern, the hearing notes, the decision and the letters. Highly confidential.</field>
+      <field name="ability_ids" eval="[(6, 0, [ref('ability_conduct_hr')])]"/>
+      <field name="group_id" ref="group_conduct_user"/>
+      <field name="visible_group_id" ref="group_conduct_head"/>
+    </record>
+    <record id="role_conduct_head" model="pb.role.profile">
+      <field name="name">Conduct cases — head of HR</field>
+      <field name="area">people</field>
+      <field name="sequence">84</field>
+      <field name="description">Everything in Conduct cases — HR, plus the reasons, the letter wording and the country notes.</field>
+      <field name="ability_ids" eval="[(6, 0, [ref('ability_conduct_head')])]"/>
+      <field name="group_id" ref="group_conduct_head"/>
+      <field name="visible_group_id" ref="group_conduct_head"/>
+    </record>
+
+  </data>
+</odoo>

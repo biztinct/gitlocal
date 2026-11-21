@@ -1,0 +1,259 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 20:47+0000\n"
+"PO-Revision-Date: 2026-11-15 20:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/checks.py:0
+msgid "%(what)s %(year)s: limit %(limit)s, used %(used)s, left %(left)s, this claim %(asked)s"
+msgstr "%(what)s %(year)s: hạn mức %(limit)s, đã dùng %(used)s, còn lại %(left)s, yêu cầu này %(asked)s"
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "%(who)s works for another company, so their limit cannot be set under %(here)s."
+msgstr "%(who)s làm việc cho công ty khác nên không thể đặt hạn mức dưới %(here)s."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "%s does not look like a year."
+msgstr "%s không giống một năm."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "A yearly limit cannot be below zero. Set it to zero if nobody may claim it."
+msgstr "Hạn mức năm không thể nhỏ hơn 0. Đặt bằng 0 nếu không ai được yêu cầu."
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.actions.act_window,help:pb_expense_allowance.action_pb_expense_allowance
+msgid "Add a limit per kind of expense for everybody, or for one person (it wins over the company figure). With no limit, claims are not checked."
+msgstr "Thêm hạn mức cho từng loại chi phí cho mọi người, hoặc cho một người (ưu tiên hơn mức của công ty). Không có hạn mức thì yêu cầu không bị kiểm tra."
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_pay_setup__allow_over model:ir.model.fields,field_description:pb_expense_allowance.field_res_company__pb_expense_allow_over
+msgid "Claims may go over the yearly limit"
+msgstr "Yêu cầu được phép vượt hạn mức năm"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__display_name model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_claim__display_name model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_pay_setup__display_name model:ir.model.fields,field_description:pb_expense_allowance.field_pb_me_expense__display_name model:ir.model.fields,field_description:pb_expense_allowance.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_allowance_view_list
+msgid "Everybody in the company"
+msgstr "Mọi người trong công ty"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_pb_expense_claim
+msgid "Expense claim"
+msgstr "Yêu cầu hoàn tiền chi phí"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_pb_me_expense
+msgid "Expenses on the employee pages"
+msgstr "Chi phí trên trang của nhân viên"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_allowance_view_search
+msgid "For everybody"
+msgstr "Cho mọi người"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_allowance_view_search
+msgid "For one person"
+msgstr "Cho một người"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_pb_expense_pay_setup
+msgid "How approved expense claims are paid back"
+msgstr "Cách hoàn tiền các yêu cầu đã duyệt"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__id model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_claim__id model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_pay_setup__id model:ir.model.fields,field_description:pb_expense_allowance.field_pb_me_expense__id model:ir.model.fields,field_description:pb_expense_allowance.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__employee_id
+msgid "Just for"
+msgstr "Chỉ cho"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__product_id
+msgid "Kind of expense"
+msgstr "Loại chi phí"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,help:pb_expense_allowance.field_pb_expense_allowance__employee_id
+msgid "Leave it empty and this is the limit for everybody in the company. Name somebody and it is theirs alone, and it wins over the company figure."
+msgstr "Để trống thì đây là hạn mức cho mọi người trong công ty. Chọn một người thì hạn mức chỉ của người đó và ưu tiên hơn mức của công ty."
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Left"
+msgstr "Còn lại"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Limit"
+msgstr "Hạn mức"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.actions.act_window,help:pb_expense_allowance.action_pb_expense_allowance
+msgid "No yearly limits yet"
+msgstr "Chưa có hạn mức năm"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_pay_setup_view_form_allowance
+msgid "Off: a claim over what is left of a yearly limit is refused, and the person sees the limit, what is used and what is left. On: it is sent, and its approvers see that it is over."
+msgstr "Tắt: yêu cầu vượt phần còn lại của hạn mức năm bị từ chối, và nhân viên thấy hạn mức, đã dùng và còn lại. Bật: yêu cầu được gửi, và người duyệt thấy là đã vượt."
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,help:pb_expense_allowance.field_res_company__pb_expense_allow_over
+msgid "Off: a claim over what is left of a yearly limit is refused, with the numbers. On: it is sent, and its approvers see it is over."
+msgstr "Tắt: yêu cầu vượt phần còn lại của hạn mức năm bị từ chối, kèm số liệu. Bật: yêu cầu được gửi, và người duyệt thấy là đã vượt."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/checks.py:0
+msgid "Only an expense manager or a payroll manager can set yearly limits."
+msgstr "Chỉ quản lý chi phí hoặc quản lý lương mới đặt được hạn mức năm."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/checks.py:0
+msgid "Over a yearly limit"
+msgstr "Vượt hạn mức năm"
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/checks.py:0
+msgid "Over the yearly limit"
+msgstr "Vượt hạn mức năm"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_pay_setup_view_form_allowance
+msgid "Set yearly limits"
+msgstr "Đặt hạn mức năm"
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "That is more than is left for %(what)s this year. Your limit for %(year)s is %(limit)s, %(used)s is already approved and %(waiting)s is waiting approval, so %(left)s is left and this comes to %(asked)s."
+msgstr "Số này vượt phần còn lại cho %(what)s năm nay. Hạn mức %(year)s của bạn là %(limit)s, %(used)s đã được duyệt và %(waiting)s đang chờ duyệt, nên còn lại %(left)s, còn yêu cầu này là %(asked)s."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "That is more than is left for %(what)s this year. Your limit for %(year)s is %(limit)s, %(used)s is already approved, so %(left)s is left and this comes to %(asked)s."
+msgstr "Số này vượt phần còn lại cho %(what)s năm nay. Hạn mức %(year)s của bạn là %(limit)s, %(used)s đã được duyệt, nên còn lại %(left)s, còn yêu cầu này là %(asked)s."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "There is already a company limit for %(what)s in %(year)s. Change that one rather than adding a second."
+msgstr "Đã có hạn mức công ty cho %(what)s năm %(year)s. Hãy sửa hạn mức đó thay vì thêm cái thứ hai."
+
+#. module: pb_expense_allowance
+#: model:ir.model.constraint,message:pb_expense_allowance.constraint_pb_expense_allowance_uniq_allowance
+msgid "There is already a limit for that kind of expense, that year and that person. Change the one that is there."
+msgstr "Đã có hạn mức cho loại chi phí, năm và người đó. Hãy sửa hạn mức đang có."
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Used"
+msgstr "Đã dùng"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Waiting"
+msgstr "Đang chờ"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__note
+msgid "Why this figure"
+msgstr "Lý do mức này"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__year
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_pb_expense_allowance
+msgid "Yearly claim limit"
+msgstr "Hạn mức hoàn tiền năm"
+
+#. module: pb_expense_allowance
+#: model:ir.actions.act_window,name:pb_expense_allowance.action_pb_expense_allowance model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_allowance_view_list
+msgid "Yearly claim limits"
+msgstr "Hạn mức hoàn tiền năm"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__amount
+msgid "Yearly limit"
+msgstr "Hạn mức năm"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_pay_setup_view_form_allowance
+msgid "Yearly limits"
+msgstr "Hạn mức năm"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Your yearly limits"
+msgstr "Hạn mức năm của bạn"

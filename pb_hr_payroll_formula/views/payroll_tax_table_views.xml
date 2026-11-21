@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_payroll_tax_table_list" model="ir.ui.view">
+    <field name="name">hr.payroll.tax.table.list</field><field name="model">hr.payroll.tax.table</field>
+    <field name="arch" type="xml"><list>
+      <field name="name"/><field name="country_code"/><field name="code"/><field name="version"/>
+      <field name="method"/><field name="basis"/><field name="effective_from"/><field name="effective_to"/>
+      <field name="state" widget="badge"/><field name="company_id" groups="base.group_multi_company"/>
+    </list></field>
+  </record>
+  <record id="view_payroll_tax_table_search" model="ir.ui.view">
+    <field name="name">hr.payroll.tax.table.search</field><field name="model">hr.payroll.tax.table</field>
+    <field name="arch" type="xml"><search>
+      <field name="name"/><field name="code"/><field name="country_code"/>
+      <filter name="published" string="Published" domain="[('state','=','published')]"/>
+      <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+      <group><filter name="country" string="Country" context="{'group_by':'country_code'}"/></group>
+    </search></field>
+  </record>
+  <record id="view_payroll_tax_table_form" model="ir.ui.view">
+    <field name="name">hr.payroll.tax.table.form</field><field name="model">hr.payroll.tax.table</field>
+    <field name="arch" type="xml"><form string="Country statutory table">
+      <header>
+        <button name="action_publish" type="object" string="Publish for approval" class="btn-primary" invisible="state != 'draft'"/>
+        <button name="action_export_mapping" type="object" string="Export mapped constants"/>
+        <field name="state" widget="statusbar"/>
+      </header>
+      <sheet>
+        <div class="alert alert-info" invisible="state != 'published'">This edition is preserved. Duplicate it with a new version and effective date when statutory values change.</div>
+        <group><group>
+          <field name="name" readonly="state == 'published'"/>
+          <field name="code" readonly="state == 'published' or binding_ids"/>
+          <field name="country_code" readonly="state == 'published' or binding_ids"/>
+          <field name="company_id" readonly="state == 'published' or binding_ids" groups="base.group_multi_company"/>
+          <field name="version" readonly="state == 'published'"/>
+        </group><group>
+          <field name="effective_from" readonly="state == 'published'"/><field name="effective_to" readonly="state == 'published'"/>
+          <field name="method" readonly="state == 'published' or binding_ids"/><field name="basis" readonly="state == 'published' or binding_ids"/>
+          <field name="authority" readonly="state == 'published'"/>
+        </group></group>
+        <notebook>
+          <page string="Tax bands" invisible="method == 'parameters'">
+            <p>Each upper bound includes that amount. “Above” is calculated from the preceding band. Enter 0 for the final unlimited band.</p>
+            <field name="slab_ids" readonly="state == 'published'">
+              <list editable="bottom"><field name="sequence"/><field name="income_from"/><field name="income_to"/>
+                <field name="tax_rate" string="Rate (%)" widget="float_factor" options="{'factor':100}"/>
+              </list>
+            </field>
+          </page>
+          <page string="Statutory values" invisible="method != 'parameters'">
+            <field name="parameter_ids" readonly="state == 'published'"><list editable="bottom">
+              <field name="code"/><field name="name"/><field name="value"/>
+            </list></field>
+          </page>
+          <page string="Payroll mappings">
+            <p>These are explicit links to imported constants. Refresh a draft payroll configuration to apply a newer published edition. Export provides a cell-addressed constants patch for Excel.</p>
+            <field name="binding_ids" readonly="1"><list create="0" delete="0">
+              <field name="config_id"/><field name="name"/><field name="tax_source_sheet"/><field name="tax_source_cell"/>
+              <field name="tax_field"/><field name="tax_band_sequence"/><field name="tax_parameter_code"/>
+              <field name="tax_current_display"/><field name="tax_expected_display"/><field name="tax_aligned"/>
+            </list></field>
+          </page>
+        </notebook>
+      </sheet>
+    </form></field>
+  </record>
+  <record id="action_payroll_tax_tables" model="ir.actions.act_window">
+    <field name="name">Country statutory tables</field><field name="res_model">hr.payroll.tax.table</field>
+    <field name="view_mode">list,form</field><field name="target">current</field>
+  </record>
+  <record id="view_payroll_tax_refresh_form" model="ir.ui.view">
+    <field name="name">hr.payroll.tax.refresh.wizard.form</field><field name="model">hr.payroll.tax.refresh.wizard</field>
+    <field name="arch" type="xml"><form string="Refresh payroll statutory constants">
+      <group><field name="config_id"/><field name="asof"/></group>
+      <field name="preview_html" nolabel="1"/>
+      <footer><button name="action_refresh" type="object" string="Request this refresh" class="btn-primary"/>
+        <button special="cancel" string="Close"/></footer>
+    </form></field>
+  </record>
+  <record id="action_payroll_tax_refresh" model="ir.actions.act_window">
+    <field name="name">Refresh payroll statutory constants</field><field name="res_model">hr.payroll.tax.refresh.wizard</field>
+    <field name="view_mode">form</field><field name="target">new</field>
+  </record>
+  <record id="tax_table_company_rule" model="ir.rule">
+    <field name="name">Country statutory editions: company</field><field name="model_id" ref="model_hr_payroll_tax_table"/>
+    <field name="global" eval="True"/><field name="domain_force">[('company_id','in',company_ids)]</field>
+  </record>
+  <record id="tax_band_company_rule" model="ir.rule">
+    <field name="name">Country tax bands: company</field><field name="model_id" ref="model_hr_payroll_tax_band"/>
+    <field name="global" eval="True"/><field name="domain_force">[('table_id.company_id','in',company_ids)]</field>
+  </record>
+  <record id="tax_parameter_company_rule" model="ir.rule">
+    <field name="name">Country statutory parameters: company</field><field name="model_id" ref="model_hr_payroll_tax_parameter"/>
+    <field name="global" eval="True"/><field name="domain_force">[('table_id.company_id','in',company_ids)]</field>
+  </record>
+</odoo>

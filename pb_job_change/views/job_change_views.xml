@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Change job screen. Named action RECORDS, so a deep link and a
+         breadcrumb back have a name (a bare tag reads "Unnamed"). -->
+    <record id="action_pb_job_change" model="ir.actions.client">
+        <field name="name">Job changes</field>
+        <field name="tag">pb_job_change</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_pb_job_change_new" model="ir.actions.client">
+        <field name="name">Change job</field>
+        <field name="tag">pb_job_change</field>
+        <field name="target">current</field>
+        <field name="params" eval="{'start': True}"/>
+    </record>
+
+    <!-- Native views: an off-menu fallback for administrators. The screen is
+         the board; nothing here can send, apply or take back a change. -->
+    <record id="view_pb_job_change_list" model="ir.ui.view">
+        <field name="name">pb.job.change.list</field>
+        <field name="model">pb.job.change</field>
+        <field name="arch" type="xml">
+            <list string="Job changes" create="0" edit="0">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="reason_kind"/>
+                <field name="effective_date"/>
+                <field name="state" widget="badge"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_job_change_form" model="ir.ui.view">
+        <field name="name">pb.job.change.form</field>
+        <field name="model">pb.job.change</field>
+        <field name="arch" type="xml">
+            <form string="Job change" create="0" edit="0">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,scheduled,applied"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group string="Who and when">
+                            <field name="employee_id" readonly="1"/>
+                            <field name="reason_kind" readonly="1"/>
+                            <field name="effective_date" readonly="1"/>
+                            <field name="reason" readonly="1"/>
+                        </group>
+                        <group string="New">
+                            <field name="new_job_id" readonly="1"/>
+                            <field name="new_job_title" readonly="1"/>
+                            <field name="new_department_id" readonly="1"/>
+                            <field name="new_parent_id" readonly="1"/>
+                            <field name="new_work_location_id" readonly="1"/>
+                            <field name="new_resource_calendar_id" readonly="1"/>
+                            <field name="new_company_id" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+</odoo>

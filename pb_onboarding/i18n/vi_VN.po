@@ -1,0 +1,568 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "%s new joiners"
+msgstr "%s người mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "%s with steps overdue"
+msgstr "%s có bước quá hạn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "1 new joiner"
+msgstr "1 người mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "1 with steps overdue"
+msgstr "1 có bước quá hạn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Already started"
+msgstr "Đã bắt đầu làm việc"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Before their first day"
+msgstr "Trước ngày làm việc đầu tiên"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Checklist done"
+msgstr "Đã xong danh mục"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Everything on the checklist is settled"
+msgstr "Mọi việc trong danh mục đã xong"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Getting ready"
+msgstr "Đang chuẩn bị"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Joining this week"
+msgstr "Vào làm tuần này"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Said they are struggling"
+msgstr "Cho biết đang gặp khó khăn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Settling in"
+msgstr "Đang hòa nhập"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing %s of %s new joiners"
+msgstr "Đang hiển thị %s trên %s người mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing %s of %s new joiners at %s"
+msgstr "Đang hiển thị %s trên %s người mới ở bước %s"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing all %s new joiners · press a step or a number to narrow it"
+msgstr ""
+"Đang hiển thị tất cả %s người mới · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing all 1 new joiner · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 người mới · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing no new joiners yet"
+msgstr "Chưa có người mới nào"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Started, checklist still open"
+msgstr "Đã vào làm, danh mục vẫn còn việc"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Step %s of %s"
+msgstr "Bước %s / %s"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Steps overdue"
+msgstr "Bước quá hạn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Still without a buddy"
+msgstr "Chưa có người đồng hành"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+#: model:ir.actions.client,name:pb_onboarding.action_pb_onboarding_board
+msgid "New joiners"
+msgstr "Nhân viên mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Run today's steps"
+msgstr "Chạy các bước hôm nay"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Choose one"
+msgstr "Chọn một người"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Still to do"
+msgstr "Còn phải làm"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.portal_my_buddy
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.portal_my_journey
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Conversations"
+msgstr "Trao đổi"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "HR contact"
+msgstr "Liên hệ nhân sự"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+#: model:ir.model.fields,field_description:pb_onboarding.field_hr_employee__buddy_id
+msgid "Buddy"
+msgstr "Người đồng hành"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Their record"
+msgstr "Hồ sơ của họ"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+#: model:ir.actions.act_window,name:pb_onboarding.action_pb_orientation_batch
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.view_pb_orientation_batch_list
+msgid "Welcome sessions"
+msgstr "Buổi chào đón"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+#: model:ir.actions.act_window,name:pb_onboarding.action_pb_hrbp_rule
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.view_pb_hrbp_rule_list
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.view_pb_hrbp_rule_search
+msgid "HR partner rules"
+msgstr "Quy tắc đối tác nhân sự"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+msgid "Joiners"
+msgstr "Người mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_orientation_batch__attendee_count
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.view_pb_orientation_batch_list
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "All new joiners"
+msgstr "Tất cả nhân viên mới"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Checklist used"
+msgstr "Danh sách công việc đã dùng"
+
+#. module: pb_onboarding
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_buddy_nomination__company_id
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_hrbp_rule__company_id
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_newhire_pulse__company_id
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_orientation_batch__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_hrbp_rule__country_id
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_hrbp_rule__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Earliest first day first"
+msgstr "Ngày vào làm sớm nhất trước"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "First day"
+msgstr "Ngày đầu tiên"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.view_pb_hrbp_rule_search
+msgid "HR partner"
+msgstr "Đối tác nhân sự"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "How they say it is going"
+msgstr "Họ cho biết mọi việc thế nào"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Latest first day first"
+msgstr "Ngày vào làm gần nhất trước"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Least done first"
+msgstr "Ít hoàn thành nhất trước"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Loading the new joiners"
+msgstr "Đang tải danh sách nhân viên mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/controllers/portal.py:0
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "New joiners are looked after by the HR team"
+msgstr "Nhân viên mới do bộ phận nhân sự phụ trách"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "New joiners are looked after by the HR team."
+msgstr "Nhân viên mới do bộ phận nhân sự phụ trách."
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "No buddy yet"
+msgstr "Chưa có người đồng hành"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "No checklist"
+msgstr "Không có danh sách công việc"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "No first day yet"
+msgstr "Chưa có ngày đầu tiên"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "No manager"
+msgstr "Chưa có quản lý"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "No new joiners match these filters"
+msgstr "Không có nhân viên mới nào khớp với các bộ lọc này"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "No warning sign"
+msgstr "Không có dấu hiệu cảnh báo"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Nobody yet"
+msgstr "Chưa có ai"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Nothing matches “"
+msgstr "Không có kết quả nào khớp với “"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "On time"
+msgstr "Đúng hạn"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Person, A to Z"
+msgstr "Người, A đến Z"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Read the board again"
+msgstr "Đọc lại bảng"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Remove a filter above, or start again from everybody joining."
+msgstr ""
+"Bỏ bớt một bộ lọc phía trên, hoặc bắt đầu lại từ tất cả người mới vào."
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.portal_my_journey
+msgid "Running late"
+msgstr "Đang trễ hạn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Search by name, team, buddy or HR contact…"
+msgstr "Tìm theo tên, nhóm, người đồng hành hoặc liên hệ nhân sự…"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Show all new joiners"
+msgstr "Hiện tất cả nhân viên mới"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Started by"
+msgstr "Bắt đầu bởi"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Started, checklist open"
+msgstr "Đã bắt đầu, danh sách còn mở"
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_buddy_nomination__state
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_newhire_pulse__state
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_orientation_batch__state
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.view_pb_newhire_pulse_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể kết nối đã bị gián đoạn. Bộ lọc của bạn vẫn được giữ nguyên."
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "The new joiners could not load"
+msgstr "Không tải được danh sách nhân viên mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid ""
+"The new joiners could not load. Check your connection, then press Try again."
+msgstr ""
+"Không tải được danh sách nhân viên mới. Hãy kiểm tra kết nối rồi bấm Thử "
+"lại."
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Use \"Pick dates…\" for first days still to come."
+msgstr "Dùng \"Chọn ngày…\" cho những ngày vào làm sắp tới."
+
+#. module: pb_onboarding
+#. odoo-python
+#: code:addons/pb_onboarding/models/pb_onboarding.py:0
+msgid "Where they are"
+msgstr "Đang ở bước nào"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "new joiners"
+msgstr "nhân viên mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.portal_my_journey
+msgid "of"
+msgstr "trên"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "”. Check the spelling, or search by team, buddy or HR contact."
+msgstr ""
+"”. Hãy kiểm tra chính tả, hoặc tìm theo nhóm, người đồng hành hoặc liên hệ "
+"nhân sự."
+
+#. module: pb_onboarding
+#: model:ir.model.fields.selection,name:pb_onboarding.selection__pb_buddy_nomination__state__cancelled
+#: model:ir.model.fields.selection,name:pb_onboarding.selection__pb_newhire_pulse__state__cancelled
+#: model:ir.model.fields.selection,name:pb_onboarding.selection__pb_orientation_batch__state__cancelled
+msgid "Cancelled"
+msgstr "Đã huỷ"
+
+#. module: pb_onboarding
+#: model:ir.model.fields,field_description:pb_onboarding.field_pb_newhire_pulse__red_flag
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.view_pb_newhire_pulse_list
+#: model_terms:ir.ui.view,arch_db:pb_onboarding.view_pb_newhire_pulse_search
+msgid "Needs attention"
+msgstr "Cần chú ý"

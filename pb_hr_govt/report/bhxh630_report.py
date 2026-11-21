@@ -56,6 +56,8 @@ class Bhxh630ReportXlsx(ReportXlsxAbstract):
         employees = base._select_employees(wizard)
         payslips = base._get_payslips_in_range(company, date_from, date_to)
         lines_map = base._payslip_lines_map(payslips)
+        # WDGAP S2-B2: the pay items chosen on Form lines, when there are any
+        items = base._pb_si_items(company, date_from, date_to)
 
         benefit_label = {
             "om_dau_thai_san": "Ốm đau/Thai sản",
@@ -67,27 +69,31 @@ class Bhxh630ReportXlsx(ReportXlsxAbstract):
         row = self.start_row_phatsinh
         for emp in employees:
             emp_lines = lines_map.get(emp.id, {})
-            total_days = emp_lines.get("SICK", 0.0) + emp_lines.get("MAT", 0.0)
-            bank = emp.bank_account_id
-            bank_number = wizard.bhxh630_bank_no or (bank.acc_number if bank and bank.acc_number else "")
-            bank_holder = wizard.bhxh630_bank_holder or (bank.acc_holder_name if bank and bank.acc_holder_name else "")
-            bank_bic = wizard.bhxh630_bank_code or (bank.bank_bic if bank and bank.bank_bic else "")
+            total_days = (base._pb_si_amount(items, emp.id, emp_lines, "SICK")
+                          + base._pb_si_amount(items, emp.id, emp_lines, "MAT"))
+            # Odoo 19 deleted hr.employee.bank_account_id. The account is
+            # resolved exactly the way Pay & Deliver resolves it, so the
+            # account BHXH is told about is the account payroll pays into.
+            emp_account, emp_holder, emp_bank_code = base._bank_details(emp)
+            bank_number = wizard.bhxh630_bank_no or emp_account
+            bank_holder = wizard.bhxh630_bank_holder or emp_holder
+            bank_bic = wizard.bhxh630_bank_code or emp_bank_code
 
             # Keep template headers; only write data columns in the official order.
-            sheet.write(row, 0, emp.identification_id or emp.barcode or "")
+            sheet.write(row, 0, base._insurance_book(emp))
             sheet.write(row, 1, emp.name or "")
             sheet.write(row, 2, _fmt(date_from))
             sheet.write(row, 3, _fmt(date_to))
-            sheet.write(row, 4, wizard.bhxh630_certificate_serial or "SERIAL-001")  # TODO replace with actual chứng từ serial
+            sheet.write(row, 4, wizard.bhxh630_certificate_serial or "")
             sheet.write(row, 5, benefit_label)
             sheet.write(row, 6, emp.identification_id or "")
             sheet.write_number(row, 7, total_days)
             sheet.write(row, 8, wizard.bhxh630_supplement_batch or "")  # TODO Đợt bổ sung if applicable
             sheet.write(row, 9, payment_label)
-            sheet.write(row, 10, bank_number or "0000000000")  # TODO replace with real bank account
+            sheet.write(row, 10, bank_number or "")
             sheet.write(row, 11, bank_holder or company.name or "")
-            sheet.write(row, 12, bank_bic or "BANKXXX")  # TODO replace with real bank code
-            sheet.write(row, 13, emp.barcode or "EMP-CODE")  # TODO replace with actual employee code
+            sheet.write(row, 12, bank_bic or "")
+            sheet.write(row, 13, emp.barcode or "")
             sheet.write(row, 14, _fmt(date_from))  # Từ ngày đơn vị đề nghị
             sheet.write(row, 15, "")  # Nghỉ dưỡng thai
             sheet.write(row, 16, "")  # Ngày sinh con
@@ -98,6 +104,9 @@ class Bhxh630ReportXlsx(ReportXlsxAbstract):
             sheet.write(row, 21, wizard.bhxh630_route_code or "")  # Mã tuyến bệnh viện
             sheet.write(row, 22, wizard.bhxh630_long_illness_code or "")  # Mã bệnh dài ngày
             row += 1
+        note = base._pb_si_note(items, ("SICK", "MAT"))
+        if note:
+            sheet.write(row + 1, 0, note)
 
     def get_filename(self, wizard, record):
         base = self.env["pb.govt.report.base"]

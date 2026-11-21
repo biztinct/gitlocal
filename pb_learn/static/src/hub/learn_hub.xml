@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ========================================================= the Learn hub
+       The whole surface is the kit's shell. Section comments use `=` rules and
+       never a doubled hyphen, because a doubled hyphen inside an XML comment
+       is a parse error that takes every t-name in the file down with it
+       (R35). -->
+  <t t-name="pb_learn.LearnHub">
+    <HubShell config="config" action="props.action or {}"/>
+  </t>
+
+</templates>

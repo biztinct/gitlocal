@@ -1,0 +1,192 @@
+{
+  "evidence_kind": "Recorded deployment verification, not a new test run",
+  "source_archive": "/odoo/archives/rize-workflow-stages-polish-20261110T001328Z/release-evidence",
+  "status": "VERIFIED",
+  "implementation_commit": "f68945ecc39b2845f00f09a77e3fa2941ffe640c",
+  "feature_commit": "801378629a60ba8eb4fcde6f9ffa125fabc9a81a",
+  "module_version": "19.0.1.9.0",
+  "databases": [
+    "p0clone",
+    "payobook",
+    "payobook_template",
+    "rize"
+  ],
+  "combined_custom_trees": 159,
+  "backend_tests": {
+    "tests": 42,
+    "successful": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "chrome": {
+    "passed": true,
+    "results": [
+      "Real expense status is visible above its real approval route; current stage matches record",
+      "Designer creates an inactive draft scoped to this record",
+      "Stage shortcut uses real field/value; fixed statuses cannot be renamed",
+      "Sections are distinct and Designer does not acquire publish permission",
+      "Shared Hiring rename opens premium editor, with shared impact explained; cancel leaves stages unchanged",
+      "A second module can create a workflow from a record with no existing run",
+      "Mobile stage dialog fits viewport"
+    ],
+    "page_errors": []
+  },
+  "cleanup": {
+    "draft_workflows": 5,
+    "users": 1,
+    "contacts": 2,
+    "runs_created": 0,
+    "existing_record_unchanged": true,
+    "native_stages_unchanged": true,
+    "mail_sent": 0
+  },
+  "screenshots": {
+    "removed": [
+      "progress-desktop.png",
+      "record-stages-desktop.png",
+      "stages-mobile.png",
+      "failure.png"
+    ],
+    "remaining_test_pngs": 0
+  },
+  "module_checks": [
+    {
+      "database": "p0clone",
+      "models": {
+        "pb.expense.claim": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        },
+        "hr.applicant": {
+          "setup": true,
+          "stage_fields": [
+            "stage_id"
+          ]
+        },
+        "hr.employee": {
+          "setup": true,
+          "stage_fields": []
+        },
+        "hr.leave": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        },
+        "hr.payslip": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        }
+      }
+    },
+    {
+      "database": "payobook",
+      "models": {
+        "pb.expense.claim": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        },
+        "hr.applicant": {
+          "setup": true,
+          "stage_fields": [
+            "stage_id"
+          ]
+        },
+        "hr.employee": {
+          "setup": true,
+          "stage_fields": []
+        },
+        "hr.leave": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        },
+        "hr.payslip": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        }
+      }
+    },
+    {
+      "database": "payobook_template",
+      "models": {
+        "pb.expense.claim": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        },
+        "hr.applicant": {
+          "setup": true,
+          "stage_fields": [
+            "stage_id"
+          ]
+        },
+        "hr.employee": {
+          "setup": true,
+          "stage_fields": []
+        },
+        "hr.leave": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        },
+        "hr.payslip": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        }
+      }
+    },
+    {
+      "database": "rize",
+      "models": {
+        "pb.expense.claim": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        },
+        "hr.applicant": {
+          "setup": true,
+          "stage_fields": [
+            "stage_id"
+          ]
+        },
+        "hr.employee": {
+          "setup": true,
+          "stage_fields": []
+        },
+        "hr.leave": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        },
+        "hr.payslip": {
+          "setup": true,
+          "stage_fields": [
+            "state"
+          ]
+        }
+      }
+    }
+  ],
+  "installed_versions_verified": {
+    "p0clone": true,
+    "payobook": true,
+    "payobook_template": true,
+    "rize": true
+  }
+}

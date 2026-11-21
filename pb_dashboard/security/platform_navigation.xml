@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Additional navigation entitlement, never an administrator grant.
+         menu_rails also requires base.group_system. No tenant role implies it. -->
+    <record id="group_platform_navigation" model="res.groups">
+        <field name="name">Platform administration menus</field>
+        <field name="comment">Show the native application and Technical menus on tenant sites. Requires Settings administrator permission separately.</field>
+    </record>
+</odoo>

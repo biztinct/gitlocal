@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_pb_loan" model="ir.sequence">
+        <field name="name">Loans and salary advances</field>
+        <field name="code">pb.loan</field>
+        <field name="prefix">LOAN-</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

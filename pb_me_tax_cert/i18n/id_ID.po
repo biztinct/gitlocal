@@ -1,0 +1,82 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-18 06:00+0000\n"
+"PO-Revision-Date: 2026-11-18 06:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "<span>Tax year</span>"
+msgstr "<span>Tahun pajak</span>"
+
+#. module: pb_me_tax_cert
+#: model:ir.model.fields,field_description:pb_me_tax_cert.field_pb_me_home__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_me_tax_cert
+#. odoo-python
+#: code:addons/pb_me_tax_cert/models/pb_me_home.py:0
+msgid "Download it as a PDF"
+msgstr "Unduh sebagai PDF"
+
+#. module: pb_me_tax_cert
+#: model:ir.model,name:pb_me_tax_cert.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Fakta halaman beranda karyawan"
+
+#. module: pb_me_tax_cert
+#: model:ir.model.fields,field_description:pb_me_tax_cert.field_pb_me_home__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "New"
+msgstr "Baru"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "None yet. When payroll releases your year-end tax certificate, it appears here."
+msgstr "Belum ada. Saat bagian penggajian merilis bukti pajak akhir tahun Anda, bukti itu muncul di sini."
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_breadcrumbs_tax_certificates model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_home_tax_certificates model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "Tax certificates"
+msgstr "Bukti pajak"
+
+#. module: pb_me_tax_cert
+#. odoo-python
+#: code:addons/pb_me_tax_cert/models/pb_me_home.py:0
+msgid "Your tax certificate is ready"
+msgstr "Bukti pajak Anda sudah siap"
+
+#. module: pb_me_tax_cert
+#. odoo-python
+#: code:addons/pb_me_tax_cert/models/pb_me_home.py:0
+msgid "Your tax certificate is ready."
+msgstr "Bukti pajak Anda sudah siap."
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_home_tax_certificates
+msgid "Your year-end tax certificates"
+msgstr "Bukti pajak akhir tahun Anda"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "Your year-end tax certificates, as your employer released them. Only you can see and download yours."
+msgstr "Bukti pajak akhir tahun Anda, seperti yang dirilis pemberi kerja. Hanya Anda yang bisa melihat dan mengunduh milik Anda."

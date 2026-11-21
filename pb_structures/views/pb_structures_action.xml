@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_pb_structures" model="ir.actions.client">
+        <field name="name">Salary Structures</field>
+        <field name="tag">pb_structures</field>
+    </record>
+    <record id="action_pb_structure_detail" model="ir.actions.client">
+        <field name="name">Structure</field>
+        <field name="tag">pb_structure_detail</field>
+    </record>
+    <record id="action_pb_structure_wizard" model="ir.actions.client">
+        <field name="name">New Structure</field>
+        <field name="tag">pb_structure_wizard</field>
+    </record>
+    <record id="action_pb_structure_rule_wizard" model="ir.actions.client">
+        <field name="name">Add Rule</field>
+        <field name="tag">pb_structure_rule_wizard</field>
+    </record>
+</odoo>

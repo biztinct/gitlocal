@@ -1,0 +1,18 @@
+Payroll review worksheet implementation — 2026-10-22
+
+One Review pay data action replaces the scattered readiness/adjustment controls.
+A persistent preparation is scoped to the preparer, scheme, period and employees.
+Cell edits autosave with revisions, source evidence, original/corrected values and immutable events.
+Optional ordinary numeric monthly items may remain blank; one signed period review records exact zero cells.
+Pending approvals, conflicting/consumed inputs and protected settlement/statutory sources remain blocked.
+Run-only corrections are default. Eligible stored mappings offer a Records Desk approval proposal for future use.
+Reviewed preparations are sealed to a payroll run and feed the existing frozen source snapshot and approval checks.
+Source records open in employee/period context. Calculated payslip outputs are read-only previews.
+
+Local validation: 67 backend tests passed; mounted OWL tests cover asynchronous source loading, autosave,
+highlighting, restoring values, maximize, review checklist and workbook template inheritance compatibility.
+Local Chrome verified corrected cell persistence and reopening. Deployment acceptance is recorded separately.
+
+Deployment scope: p0clone, payobook, payobook_template, rize. Never ABM.
+Explicit owner exception: preserve pb_training live 19.0.1.8.0 from 2d5040acb while Learning L5 is on HOLD.
+Only committed payroll module changes are copied; all other combined custom content is verified.

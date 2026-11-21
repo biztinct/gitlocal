@@ -1,0 +1,295 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 11:01+0000\n"
+"PO-Revision-Date: 2026-11-19 11:01+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/table_flag.js:0
+msgid "%s days"
+msgstr "%s hari"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/table_flag.js:0
+msgid "1 day"
+msgstr "1 hari"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/contracts_table.xml:0
+msgid "Answers Payobook filled in by itself"
+msgstr "Jawaban yang diisi Payobook sendiri"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Answers Payobook filled in by itself that nobody has checked yet."
+msgstr "Jawaban yang diisi Payobook sendiri dan belum diperiksa siapa pun."
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Answers to check"
+msgstr "Jawaban untuk diperiksa"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/contracts_table.xml:0
+msgid "Change"
+msgstr "Ubah"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+#: code:addons/pb_form_studio_lists/static/src/xml/people_table.xml:0
+msgid "Contract"
+msgstr "Kontrak"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Contract ends"
+msgstr "Kontrak berakhir"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Contract reference"
+msgstr "Nomor kontrak"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Contract start"
+msgstr "Mulai kontrak"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Contracts"
+msgstr "Kontrak"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_form_studio_lists
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_form_studio_lists__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_people__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Employees"
+msgstr "Karyawan"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Ends"
+msgstr "Berakhir"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/contracts_table.js:0
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "Ends within 30 days"
+msgstr "Berakhir dalam 30 hari"
+
+#. module: pb_form_studio_lists
+#: model:ir.model,name:pb_form_studio_lists.model_pb_form_studio_lists
+msgid "Form builder: list columns"
+msgstr "Pembuat formulir: kolom daftar"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/contracts_table.xml:0
+msgid ""
+"From the usual answers of the scheme that pays each person. Confirm the ones"
+" that are right; change the rest."
+msgstr ""
+"Dari jawaban biasa skema yang membayar tiap orang. Konfirmasi yang benar; "
+"ubah sisanya."
+
+#. module: pb_form_studio_lists
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_form_studio_lists__id
+#: model:ir.model.fields,field_description:pb_form_studio_lists.field_pb_people__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Job"
+msgstr "Pekerjaan"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Joined"
+msgstr "Bergabung"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/contracts_table.xml:0
+msgid "Looks right"
+msgstr "Sudah benar"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Manager"
+msgstr "Atasan"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Marked when a contract ends within 30 days."
+msgstr "Ditandai bila kontrak berakhir dalam 30 hari."
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Marked when a running contract ends within 30 days."
+msgstr "Ditandai bila kontrak berjalan berakhir dalam 30 hari."
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Monthly wage"
+msgstr "Gaji bulanan"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "No bank details"
+msgstr "Belum ada data bank"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/contracts_table.js:0
+msgid "No end date"
+msgstr "Tanpa tanggal akhir"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "No running contract"
+msgstr "Tidak ada kontrak berjalan"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/xml/people_table.xml:0
+msgid "Open their contract"
+msgstr "Buka kontrak mereka"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Pay structure"
+msgstr "Struktur gaji"
+
+#. module: pb_form_studio_lists
+#: model:ir.model,name:pb_form_studio_lists.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr ""
+
+#. module: pb_form_studio_lists
+#: model:ir.model,name:pb_form_studio_lists.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr ""
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/contracts_table.js:0
+msgid ""
+"Payobook filled these in from the scheme's usual answers. Open the contract "
+"to check or change them."
+msgstr ""
+"Payobook mengisinya dari jawaban biasa skema. Buka kontrak untuk memeriksa "
+"atau mengubahnya."
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "Payroll ready"
+msgstr "Siap penggajian"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Payroll-ready"
+msgstr "Siap penggajian"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+#: code:addons/pb_form_studio_lists/static/src/js/people_table.js:0
+msgid "Ready"
+msgstr "Siap"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Ready means a running contract and bank details on file."
+msgstr "Siap berarti ada kontrak berjalan dan data bank tersimpan."
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Starts"
+msgstr "Mulai"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/contract_lists.py:0
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_form_studio_lists
+#. odoo-javascript
+#: code:addons/pb_form_studio_lists/static/src/js/table_flag.js:0
+msgid "Today"
+msgstr "Hari ini"
+
+#. module: pb_form_studio_lists
+#. odoo-python
+#: code:addons/pb_form_studio_lists/models/people_lists.py:0
+msgid "Work email"
+msgstr "Email kerja"

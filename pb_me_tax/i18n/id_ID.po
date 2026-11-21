@@ -1,0 +1,824 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-18 04:00+0000\n"
+"PO-Revision-Date: 2026-11-18 04:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "%(what)s: %(value)s"
+msgstr "%(what)s: %(value)s"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "10 characters, for example ABCDE1234F."
+msgstr "10 karakter, misalnya ABCDE1234F."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "10 digits, or the 12-digit number on your chip ID card."
+msgstr "10 digit, atau nomor 12 digit pada kartu identitas chip Anda."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "15 digits, or your 16-digit NIK when it is used as your NPWP."
+msgstr "15 digit, atau NIK 16 digit Anda jika NIK dipakai sebagai NPWP."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<b>HR sent this back.</b>"
+msgstr "<b>HR mengembalikan ini.</b>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "<b>Tax dependants:</b>"
+msgstr "<b>Tanggungan pajak:</b>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "<b>Why:</b>"
+msgstr "<b>Alasan:</b>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<option value=\"\">Choose…</option>"
+msgstr "<option value=\"\">Pilih…</option>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span><b>Use my NIK as my NPWP</b><small>The national ID number on your record is used. Leave the box above empty.</small></span>"
+msgstr "<span><b>Gunakan NIK saya sebagai NPWP</b><small>Nomor identitas di data Anda yang dipakai. Biarkan kotak di atas kosong.</small></span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>New number</span>"
+msgstr "<span>Nomor baru</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>Note to HR (optional)</span>"
+msgstr "<span>Catatan untuk HR (opsional)</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>On your record now:</span>"
+msgstr "<span>Di data Anda sekarang:</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>Paid in</span>"
+msgstr "<span>Digaji di</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>Reason:</span>"
+msgstr "<span>Alasan:</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>Since</span>"
+msgstr "<span>Sejak</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>Tax details for</span>"
+msgstr "<span>Data pajak untuk</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>The fund you give to through your pay</span>"
+msgstr "<span>Dana yang Anda sumbang lewat gaji</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>The tax regime you choose for this tax year</span>"
+msgstr "<span>Rezim pajak yang Anda pilih untuk tahun pajak ini</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "<span>Your PTKP status</span>"
+msgstr "<span>Status PTKP Anda</span>"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "<span>are not on My Payobook yet</span>"
+msgstr "<span>belum ada di My Payobook</span>"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "A PAN has 10 characters: 5 letters, 4 numbers and 1 letter, for example ABCDE1234F."
+msgstr "PAN terdiri dari 10 karakter: 5 huruf, 4 angka dan 1 huruf, misalnya ABCDE1234F."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "A change reaches your pay only where your company's pay rules use it."
+msgstr "Perubahan hanya memengaruhi gaji Anda jika aturan gaji perusahaan Anda memakainya."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "A personal tax code has 10 digits, or 12 when it is the number on your chip ID card."
+msgstr "Kode pajak pribadi Vietnam terdiri dari 10 digit, atau 12 digit jika memakai nomor kartu identitas chip."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "A photo or scan that shows it"
+msgstr "Foto atau pindaian yang menunjukkannya"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "A photo or scan that shows it (optional)"
+msgstr "Foto atau pindaian yang menunjukkannya (opsional)"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Add"
+msgstr "Tambah"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Add a photo or scan that shows it, so HR can check it."
+msgstr "Tambahkan foto atau pindaian yang menunjukkannya, agar HR dapat memeriksanya."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Add or change family members"
+msgstr "Tambah atau ubah anggota keluarga"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Add your tax number"
+msgstr "Tambahkan nomor pajak Anda"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Already added. Choose a file only to replace it."
+msgstr "Sudah ditambahkan. Pilih berkas hanya untuk menggantinya."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "An NPWP has 15 digits, or 16 when your NIK is used as your NPWP."
+msgstr "NPWP terdiri dari 15 digit, atau 16 digit jika NIK Anda dipakai sebagai NPWP."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Approving a tax detail an employee asked for writes it to this record only. A payslip changes only where a pay scheme is set up to read that detail; none reads it when this is first switched on."
+msgstr "Menyetujui data pajak yang diajukan karyawan hanya menuliskannya ke data ini. Slip gaji berubah hanya jika skema gaji diatur untuk membaca data itu; saat pertama dinyalakan, tidak ada skema yang membacanya."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Ask HR if a tax detail needs changing."
+msgstr "Tanyakan HR jika ada data pajak yang perlu diubah."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "BPJS employment number"
+msgstr "Nomor BPJS Ketenagakerjaan"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "BPJS health number"
+msgstr "Nomor BPJS Kesehatan"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Back to my tax details"
+msgstr "Kembali ke data pajak saya"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Being checked"
+msgstr "Sedang diperiksa"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__cdac model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__cdac
+msgid "CDAC (Chinese Development Assistance Council)"
+msgstr "CDAC (Dewan Bantuan Pembangunan Tionghoa)"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_breadcrumbs_tax model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Change"
+msgstr "Ubah"
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_pb_me_detail_request
+msgid "Change to my details"
+msgstr "Perubahan data saya"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Change waiting for HR"
+msgstr "Perubahan menunggu HR"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Changes asked for on My Payobook"
+msgstr "Perubahan yang diajukan di My Payobook"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Changes only if a pay rule reads it"
+msgstr "Berubah hanya jika aturan gaji membacanya"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Choose one of the options."
+msgstr "Pilih salah satu pilihan."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Counted for tax"
+msgstr "Dihitung untuk pajak"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_country
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Dependants are family members you support, up to three."
+msgstr "Tanggungan adalah anggota keluarga yang Anda tanggung, paling banyak tiga orang."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Detail"
+msgstr "Rincian"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__display_name model:ir.model.fields,field_description:pb_me_tax.field_hr_formula_config__display_name model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__display_name model:ir.model.fields,field_description:pb_me_tax.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_me_tax.field_pb_people__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Do not match the contract"
+msgstr "Tidak cocok dengan kontrak"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Does not match: %(confirmed)s confirmed by HR, %(registered)s on the contract. Nothing was changed."
+msgstr "Tidak cocok: %(confirmed)s dikonfirmasi HR, %(registered)s di kontrak. Tidak ada yang diubah."
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__ecf model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__ecf
+msgid "ECF (Eurasian Community Fund)"
+msgstr "ECF (Dana Komunitas Eurasia)"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "ESI number"
+msgstr "Nomor ESI"
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_hr_employee
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_in_esi_number
+msgid "Employee State Insurance (ESI) insurance number. Kept by HR; the employee sees it on My Payobook, masked."
+msgstr "Nomor asuransi ESI (Employee State Insurance, India). Dikelola HR; karyawan melihatnya di My Payobook, tersamarkan."
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data beranda karyawan"
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr "Konfigurasi rumus gaji"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Family members are kept in My details. A dependant changes your tax only after the pay team confirms it."
+msgstr "Anggota keluarga disimpan di Data saya. Tanggungan mengubah pajak Anda hanya setelah tim penggajian mengonfirmasinya."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "HR checks it first. Nothing changes on your record until it is approved."
+msgstr "HR memeriksanya dulu. Data Anda tidak berubah sampai disetujui."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "HR has it. Nothing changes on your record until it is approved."
+msgstr "HR sedang memprosesnya. Data Anda tidak berubah sampai disetujui."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "HR sent %s tax changes back"
+msgstr "HR mengembalikan %s perubahan pajak"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "HR sent a change to your tax details back."
+msgstr "HR mengembalikan satu perubahan data pajak Anda."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "HR sent a tax change back"
+msgstr "HR mengembalikan satu perubahan pajak"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__none model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__none
+msgid "I do not give to a self-help group fund"
+msgstr "Saya tidak menyumbang ke dana kelompok swadaya"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__id model:ir.model.fields,field_description:pb_me_tax.field_hr_formula_config__id model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__id model:ir.model.fields,field_description:pb_me_tax.field_pb_me_home__id model:ir.model.fields,field_description:pb_me_tax.field_pb_people__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "India"
+msgstr "India"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_esi_number
+msgid "India ESI number"
+msgstr "Nomor ESI India"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_pan_number
+msgid "India PAN"
+msgstr "PAN India"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_uan_number
+msgid "India UAN (provident fund)"
+msgstr "UAN dana pensiun India"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_in_tax_regime
+msgid "India tax regime"
+msgstr "Rezim pajak India"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_id_ptkp_status
+msgid "Indonesia PTKP status"
+msgstr "Status PTKP Indonesia"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/0 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/0
+msgid "K/0 · Married, no dependants"
+msgstr "K/0 · Kawin, tanpa tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/1 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/1
+msgid "K/1 · Married, 1 dependant"
+msgstr "K/1 · Kawin, 1 tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/2 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/2
+msgid "K/2 · Married, 2 dependants"
+msgstr "K/2 · Kawin, 2 tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/3 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/3
+msgid "K/3 · Married, 3 dependants"
+msgstr "K/3 · Kawin, 3 tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/i/0 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/i/0
+msgid "K/I/0 · Married, spouse's income added, no dependants"
+msgstr "K/I/0 · Kawin, penghasilan istri digabung, tanpa tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/i/1 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/i/1
+msgid "K/I/1 · Married, spouse's income added, 1 dependant"
+msgstr "K/I/1 · Kawin, penghasilan istri digabung, 1 tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/i/2 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/i/2
+msgid "K/I/2 · Married, spouse's income added, 2 dependants"
+msgstr "K/I/2 · Kawin, penghasilan istri digabung, 2 tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__k/i/3 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__k/i/3
+msgid "K/I/3 · Married, spouse's income added, 3 dependants"
+msgstr "K/I/3 · Kawin, penghasilan istri digabung, 3 tanggungan"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Kept by HR"
+msgstr "Dikelola HR"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__mbmf model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__mbmf
+msgid "MBMF (Mosque Building and Mendaki Fund)"
+msgstr "MBMF (Dana Pembangunan Masjid dan Mendaki)"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Missing"
+msgstr "Belum ada"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "NPWP (tax number)"
+msgstr "NPWP (nomor pajak)"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "NRIC or FIN"
+msgstr "NRIC atau FIN"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_in_tax_regime__new model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_regime__new
+msgid "New tax regime"
+msgstr "Rezim pajak baru"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "No longer counted"
+msgstr "Tidak dihitung lagi"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "No tax dependants on file."
+msgstr "Belum ada tanggungan pajak di data."
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_tax_residency__non_resident
+msgid "Not a tax resident"
+msgstr "Bukan wajib pajak dalam negeri"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Not counted"
+msgstr "Tidak dihitung"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Not on file"
+msgstr "Belum ada di data"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Now"
+msgstr "Sekarang"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Numbers show their last four characters only."
+msgstr "Nomor hanya menampilkan empat karakter terakhir."
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_in_tax_regime__old model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_regime__old
+msgid "Old tax regime"
+msgstr "Rezim pajak lama"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "PAN (tax number)"
+msgstr "PAN (nomor pajak)"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "PDF, JPG or PNG, up to 10 MB"
+msgstr "PDF, JPG atau PNG, maksimal 10 MB"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_ptkp model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__kind__tax_status model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "PTKP status"
+msgstr "Status PTKP"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Pay"
+msgstr "Gaji"
+
+#. module: pb_me_tax
+#: model:ir.model,name:pb_me_tax.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr "Data layar Karyawan"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Personal tax code"
+msgstr "Kode pajak pribadi"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Personal tax code changed to %(number)s: approved change %(ref)s from My Payobook."
+msgstr "Kode pajak pribadi diubah menjadi %(number)s: perubahan %(ref)s dari My Payobook telah disetujui."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_proof_file
+msgid "Proof"
+msgstr "Bukti"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_proof_name
+msgid "Proof file name"
+msgstr "Nama berkas bukti"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Proposed"
+msgstr "Diajukan"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Read why, then change it and send it again"
+msgstr "Baca alasannya, lalu ubah dan kirim lagi"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_shg_fund__sinda model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_fund__sinda
+msgid "SINDA (Singapore Indian Development Association)"
+msgstr "SINDA (Asosiasi Pembangunan India Singapura)"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_fund model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__kind__tax_fund model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Self-help group fund"
+msgstr "Dana kelompok swadaya"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Send to HR"
+msgstr "Kirim ke HR"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_vn_dependants_check
+msgid "Shown only when the tax dependants HR confirmed differ from the registered tax dependants on the running contract. Nothing is changed for you."
+msgstr "Hanya tampil jika tanggungan pajak yang dikonfirmasi HR berbeda dari tanggungan terdaftar di kontrak yang berjalan. Tidak ada yang diubah."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Singapore"
+msgstr "Singapura"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_sg_shg_fund
+msgid "Singapore self-help group fund"
+msgstr "Dana kelompok swadaya Singapura"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_sg_tax_residency
+msgid "Singapore tax residency"
+msgstr "Status pajak Singapura"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__tk/0 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__tk/0
+msgid "TK/0 · Not married, no dependants"
+msgstr "TK/0 · Tidak kawin, tanpa tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__tk/1 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__tk/1
+msgid "TK/1 · Not married, 1 dependant"
+msgstr "TK/1 · Tidak kawin, 1 tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__tk/2 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__tk/2
+msgid "TK/2 · Not married, 2 dependants"
+msgstr "TK/2 · Tidak kawin, 2 tanggungan"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_id_ptkp_status__tk/3 model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__t_ptkp__tk/3
+msgid "TK/3 · Not married, 3 dependants"
+msgstr "TK/3 · Tidak kawin, 3 tanggungan"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Take it back"
+msgstr "Tarik kembali"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0 model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Tax dependants"
+msgstr "Tanggungan pajak"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_vn_dependants_check
+msgid "Tax dependants check"
+msgstr "Cek tanggungan pajak"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.view_pb_me_detail_request_form_tax
+msgid "Tax detail"
+msgstr "Data pajak"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_hr_employee__pb_tax_request_ids
+msgid "Tax detail changes"
+msgstr "Perubahan data pajak"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0 model_terms:ir.ui.view,arch_db:pb_me_tax.portal_breadcrumbs_tax model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_home_tax model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax model_terms:ir.ui.view,arch_db:pb_me_tax.view_employee_form_tax
+msgid "Tax details"
+msgstr "Data pajak"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_number model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__kind__tax_number
+msgid "Tax number"
+msgstr "Nomor pajak"
+
+#. module: pb_me_tax
+#: model:pb.employee.document.category,name:pb_me_tax.cat_tax_paper
+msgid "Tax paper"
+msgstr "Dokumen pajak"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0 model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_regime model:ir.model.fields.selection,name:pb_me_tax.selection__pb_me_detail_request__kind__tax_regime model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_form
+msgid "Tax regime"
+msgstr "Rezim pajak"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Tax residency"
+msgstr "Status pajak"
+
+#. module: pb_me_tax
+#: model:ir.model.fields.selection,name:pb_me_tax.selection__hr_employee__pb_sg_tax_residency__resident
+msgid "Tax resident"
+msgstr "Wajib pajak dalam negeri"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "That is already what your record says."
+msgstr "Data Anda sudah seperti itu."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "That number is already on your record."
+msgstr "Nomor itu sudah ada di data Anda."
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_in_tax_regime
+msgid "The income tax regime the employee chose for this tax year."
+msgstr "Rezim pajak penghasilan yang dipilih karyawan untuk tahun pajak ini."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "The national ID number on your record is not a 16-digit NIK. Type your NPWP instead."
+msgstr "Nomor identitas di data Anda bukan NIK 16 digit. Ketik NPWP Anda."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "The people who reduce the tax on your pay."
+msgstr "Orang-orang yang mengurangi pajak atas gaji Anda."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "The tax details your company keeps for your pay. Ask for a change here: HR checks it first, and your record changes only once it is approved."
+msgstr "Data pajak yang disimpan perusahaan untuk gaji Anda. Ajukan perubahan di sini: HR memeriksanya dulu, dan data Anda baru berubah setelah disetujui."
+
+#. module: pb_me_tax
+#: model:ir.model.fields,help:pb_me_tax.field_hr_employee__pb_id_ptkp_status
+msgid "The tax-free allowance status the employee declared. Changed on My Payobook with HR approval, or by HR here."
+msgstr "Status PTKP yang dilaporkan karyawan. Diubah di My Payobook dengan persetujuan HR, atau oleh HR di sini."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "There is no national ID number (NIK) on your record. Type your NPWP instead."
+msgstr "Belum ada nomor identitas (NIK) di data Anda. Ketik NPWP Anda."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "This change is not offered for the country you are paid in."
+msgstr "Perubahan ini tidak tersedia untuk negara tempat Anda digaji."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "This tax detail cannot be kept for this person."
+msgstr "Data pajak ini tidak dapat disimpan untuk orang ini."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "UAN (provident fund)"
+msgstr "UAN (dana pensiun)"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__t_use_nik
+msgid "Use my NIK as my NPWP"
+msgstr "Gunakan NIK saya sebagai NPWP"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/hr_employee.py:0
+msgid "Waiting for the pay team to confirm"
+msgstr "Menunggu konfirmasi tim penggajian"
+
+#. module: pb_me_tax
+#: model:ir.model.fields,field_description:pb_me_tax.field_pb_me_detail_request__kind
+msgid "What"
+msgstr "Jenis"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "Write your tax number."
+msgstr "Tulis nomor pajak Anda."
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/tax_request.py:0
+msgid "You can only change your own details."
+msgstr "Anda hanya dapat mengubah data Anda sendiri."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_breadcrumbs_tax model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Your change"
+msgstr "Perubahan Anda"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Your changes"
+msgstr "Perubahan Anda"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Your company needs it for your pay"
+msgstr "Perusahaan membutuhkannya untuk gaji Anda"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Your pay set-up does not say yet which country you are paid in. Ask HR if a tax detail needs changing."
+msgstr "Pengaturan gaji Anda belum menyebut negara tempat Anda digaji. Tanyakan HR jika ada data pajak yang perlu diubah."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_tax_request
+msgid "Your record is updated."
+msgstr "Data Anda sudah diperbarui."
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_tax
+msgid "Your tax details cannot be shown yet"
+msgstr "Data pajak Anda belum dapat ditampilkan"
+
+#. module: pb_me_tax
+#: model_terms:ir.ui.view,arch_db:pb_me_tax.portal_my_home_tax
+msgid "Your tax number and tax choices"
+msgstr "Nomor pajak dan pilihan pajak Anda"
+
+#. module: pb_me_tax
+#. odoo-python
+#: code:addons/pb_me_tax/models/pb_me_home.py:0
+msgid "Your tax number is not on file yet."
+msgstr "Nomor pajak Anda belum ada di data."

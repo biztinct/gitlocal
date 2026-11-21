@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Mentorship Matching Wizard Form View -->
+    <record id="view_mentorship_matching_wizard_form" model="ir.ui.view">
+        <field name="name">mentorship.matching.wizard.form</field>
+        <field name="model">mentorship.matching.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Find a Mentor">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>AI Mentor Matching</h1>
+                        <h3>
+                            For: <field name="mentee_id" readonly="1"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group string="What are you looking for?">
+                            <field name="focus_area"/>
+                            <field name="focus_skill_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group string="AI-Recommended Mentors" invisible="not match_ids">
+                        <field name="match_ids" nolabel="1">
+                            <list>
+                                <field name="mentor_id"/>
+                                <field name="match_score" widget="progressbar"/>
+                                <field name="match_reason"/>
+                                <button string="Select" type="object" name="action_select_mentor" class="btn-primary"/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Find Mentors" type="object" name="action_find_matches" class="btn-primary"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Mentorship Matching Wizard Action -->
+    <record id="action_mentorship_matching_wizard" model="ir.actions.act_window">
+        <field name="name">Find a Mentor</field>
+        <field name="res_model">mentorship.matching.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

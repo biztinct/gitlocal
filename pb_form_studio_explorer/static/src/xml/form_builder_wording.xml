@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FS-8 — the Form builder screens, extended (no engine file is touched):
+     * the "Show in lists" switch says it is the switch for lists AND reports;
+     * a field's saved reports are shown ("Saved reports" + names / a count) in
+       the properties panel and the Field library, and the delete WARNS with
+       them — a saved report never stops the delete (owner default, FS-8
+       follow-on). `report_uses` comes from the server, already in words.
+     The xpaths anchor on the switch's own label and on the engine's delete
+     confirmation box, the same on 19.1 before and after FS-7. -->
+<templates xml:space="preserve">
+  <t t-inherit="pb_form_studio.Overlay" t-inherit-mode="extension">
+    <xpath expr="//button[@aria-label='Show in lists']/preceding-sibling::div/div[hasclass('d')]" position="replace">
+      <div class="d">Lists and reports: a column on the lists of these records, and a split and a filter in reports.</div>
+    </xpath>
+    <xpath expr="//div[hasclass('pbfb-actions')]" position="before">
+      <div t-if="f.report_uses and f.report_uses.count" class="pbfb-used pbfx-reports">
+        <div class="pbfb-lab">In reports</div>
+        <div class="pbfb-used-row"><t t-out="ic('barChart',13)"/> <b t-esc="f.report_uses.label"/> <span class="n" t-esc="f.report_uses.count"/>
+          <div class="names" t-esc="f.report_uses.lines.join(', ')"/></div>
+      </div>
+    </xpath>
+    <xpath expr="//div[hasclass('pbfb-confirm')]/div[hasclass('pbfb-note')]" position="after">
+      <div t-if="f.report_uses and f.report_uses.count" class="pbfb-note warn pbfx-warn">
+        <t t-out="ic('alert',15)"/> <div><span t-esc="f.report_uses.warn"/>
+          <div class="names" t-esc="f.report_uses.lines.join(', ')"/></div>
+      </div>
+    </xpath>
+  </t>
+  <t t-inherit="pb_form_studio.FieldLibrary" t-inherit-mode="extension">
+    <xpath expr="//button[@aria-label='Show in lists']/preceding-sibling::div/div[hasclass('t')]" position="after">
+      <div class="d">Lists and reports.</div>
+    </xpath>
+    <xpath expr="//span[hasclass('pbfb-usedn')]/.." position="inside">
+      <span t-if="r.report_uses and r.report_uses.count" class="pbfx-repn"
+            t-att-title="r.report_uses.label"><t t-out="ic('barChart',12)"/> <t t-esc="r.report_uses.count"/></span>
+    </xpath>
+    <xpath expr="//div[hasclass('pbfb-confirm')]/div[hasclass('pbfb-note')]" position="after">
+      <div t-if="d.row.report_uses and d.row.report_uses.count" class="pbfb-note warn pbfx-warn">
+        <t t-out="ic('alert',15)"/> <div><span t-esc="d.row.report_uses.warn"/>
+          <div class="names" t-esc="d.row.report_uses.lines.join(', ')"/></div>
+      </div>
+    </xpath>
+  </t>
+</templates>

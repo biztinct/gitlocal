@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         WHO MAY SEE A PROPOSED BULK CHANGE.
+
+         The engine re-checks `check_access('read')` on the record before it
+         lets anybody decide, and an HR lead for one part of the business may
+         well hold no payroll role at all. The narrow rule gives a person who
+         has been ASKED to decide a proposal the read that seat needs, and
+         nothing else.
+
+         The wide rule is shipped WITH it and never without: `pb.records.apply`
+         had no record rule before this phase, so HR and payroll users saw
+         every row. Rules are OR-ed over the groups a person is in, and both of
+         those people are also plain internal users — the narrow rule on its
+         own would have taken the History tab away from them.
+         ================================================================== -->
+
+    <record id="rule_records_apply_seat" model="ir.rule">
+        <field name="name">Records change: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_records_apply"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_records_apply_hr" model="ir.rule">
+        <field name="name">Records change: HR and payroll</field>
+        <field name="model_id" ref="model_pb_records_apply"/>
+        <field name="groups" eval="[
+            (4, ref('hr.group_hr_user')),
+            (4, ref('pb_hr_payroll_base.group_payroll_base_officer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

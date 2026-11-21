@@ -1,0 +1,6 @@
+docling==2.142.0
+docling-core==2.104.0
+spacy==3.8.16
+fastapi==0.161.1
+uvicorn==0.54.0
+python-multipart==0.0.32

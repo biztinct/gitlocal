@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP QF2 C6. ONE hourly job sends every saved Explorer view that is
+         due. A weekly or monthly send is due at 07:00 in the company's own
+         time; an after-each-pay-run send is marked due by the finished run
+         and goes out on the next tick. With no outgoing mail server on the
+         database it writes "Not sent — email is switched off" and nothing
+         else. noupdate: an administrator who switches it off keeps it off. -->
+    <data noupdate="1">
+        <record id="cron_pb_explorer_schedule_send" model="ir.cron">
+            <field name="name">Payobook: send saved Explorer views</field>
+            <field name="model_id" ref="model_pb_explorer_schedule"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_due()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <!-- Odoo 19 removed ir.cron.numbercall / doall. -->
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

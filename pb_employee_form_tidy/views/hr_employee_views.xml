@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      TIDY-E — the employee "Full details" form.
+
+      Country of Work moves from the Settings tab (where it said "Payroll
+      Country", under "Work timezone") to the top of the form, beside the work
+      email and phones: it now decides which country boxes the record shows,
+      so it belongs where HR looks first. The same field, the same storage —
+      only where it is drawn moves. With no Country of Work, one quiet line
+      says how to see the country boxes.
+
+      The per-box rules (remove for everyone / show for one country) are NOT
+      here: they are applied to the combined form in `hr.employee._get_view`
+      from the table in `models/form_rules.py`, so a box from a module that is
+      not installed on a database never breaks this view.
+
+      Priority 200: after pb_hr_payroll_vietnam (100), pb_payroll_mapping_vn
+      (110) and pb_training (120).
+    -->
+    <record id="view_employee_form_tidy" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb.employee.form.tidy</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">200</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="inside">
+                <h5 class="d-flex align-items-baseline mb-0 o_pb_cow_line" groups="hr.group_hr_user">
+                    <i class="fa fa-globe fa-fw me-1 text-primary" title="Country of Work"/>
+                    <span class="text-muted fw-normal me-2 text-nowrap">Country of Work</span>
+                </h5>
+                <div class="text-muted small o_pb_cow_hint" groups="hr.group_hr_user"
+                     invisible="payroll_country">Set Country of Work to see country details</div>
+            </xpath>
+            <xpath expr="//h5[hasclass('o_pb_cow_line')]" position="inside">
+                <xpath expr="//field[@name='payroll_country']" position="move"/>
+            </xpath>
+            <xpath expr="//h5[hasclass('o_pb_cow_line')]/field[@name='payroll_country']" position="attributes">
+                <attribute name="placeholder">Not set</attribute>
+                <attribute name="class">w-auto</attribute>
+                <attribute name="help">The country this person works and is paid in. It decides which country boxes show on this record, and sets the work timezone unless the work location has its own. It is not nationality.</attribute>
+            </xpath>
+            <!-- The country rules read Country of Work for every viewer, so the
+                 value is on the form even where the box above is not drawn. -->
+            <xpath expr="//sheet" position="inside">
+                <field name="payroll_country" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

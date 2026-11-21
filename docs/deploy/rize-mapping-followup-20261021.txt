@@ -1,0 +1,79 @@
+Rize mapping follow-up — 2026-10-21
+STATUS: DEPLOYED AND VERIFIED.
+
+Release: combined branch 19.1, b515849a6ffb307df5b7afc55e47982dcf5ec705.
+Implementation commits: 97ba269df, c338cb081, ca14c26c1.
+Targets: Payobook19v2; p0clone, payobook, payobook_template, rize.
+ABM excluded. Other sessions' committed NAV changes preserved.
+Shared deploy log START 02:25 UTC; DONE after successful release.
+Runner: /tmp/rize-mapping-release-b515849a6/deploy.py, under
+flock /tmp/payobook-studio-deploy.lock, detached systemd unit.
+Service downtime: 424 seconds (7m04s).
+
+Modules upgraded wherever installed (all four databases):
+pb_hr_payroll_formula 19.0.1.151.0
+pb_formula_studio 19.0.1.204.0
+pb_employee_vault 19.0.1.3.0
+pb_payroll_templates 19.0.1.2.18
+All 151 existing custom module trees match the combined committed release;
+installed versions verified across all four databases. Standard addons preserved.
+Final service active; no upgrade/test jobs running.
+Cron IDs restored exactly: payobook 37, template 0, p0clone 26, rize 69.
+Assets signalled, purged and version bumped. All three public login sites warmed
+and returned HTTP 200 before Chrome verification.
+
+Backups and evidence:
+Rize permanent: /odoo/archives/rize-mapping-repair-20261021T022503Z
+Other three: /odoo/backups/mapping-repair-20261021T022503Z
+Nonproduction retention: seven days, preserve latest usable.
+Rize never auto-delete. Private migration receipts archived under the permanent
+Rize backup's receipts directory. No sensitive employee values in this report.
+
+Migration results:
+- Four native probation-start mappings created on the mainline schemas.
+- 122 unambiguous historical probation dates copied to hr.contract.pb_trial_date_start.
+- No joining date substitution; existing conflict/uniqueness safeguards retained.
+- Rollback rehearsal passed before application; apply committed.
+- Idempotence rerun: zero native mappings created, zero field changes.
+- Business transaction invariants unchanged; no formulas or new rules changed.
+- Existing probation-end mapping remains hr.contract.trial_date_end.
+
+Production mapping verification:
+Country     Spreadsheet bindings   App mapped   App review   Restricted excluded
+Vietnam     135                    99           16           2
+India       114                    89           18           2
+Singapore   101                    74           22           2
+Indonesia   130                    94           25           2
+Application effective date remains 2026-11-01.
+Journey's overall fed count may use an Excel source even when the separate
+application mapping needs review; it does not certify employee data readiness.
+Vietnam's workbook-specific Journey displays 125 relevant inputs, all fed;
+this is distinct from its 139 total inputs and 135 saved spreadsheet bindings.
+
+Tests and Chrome verification:
+- Local release suite: 140 tests, zero failures/errors.
+- Subsequent Connections suite: 14 tests, zero failures/errors.
+- DEPLOYED p0clone suite: 140 tests, zero failures/errors, before other upgrades.
+- Live ORM checks: all four spreadsheet counts preserved, picker excludes merged
+  migration branches, probation start/end bindings and domain records correct.
+- Chrome Journey: all four mainline coverage headers show Excel and application
+  counts separately, pending/restricted counts, readiness/effective-date note.
+- Chrome Connections: application source chips visible; Vietnam probation start
+  explicitly resolves to contract.pb_trial_date_start in the no-spreadsheet panel.
+- Chrome Templates: all four probation start/end cards under saved Contract
+  records, outcome under pb.probation.review; not suggested monthly inputs.
+- Opening Vietnam Templates from its merged migration branch redirects to the
+  mainline with an explicit explanation; only four operational schemas offered.
+- Visual layout inspected in memory. No test screenshot or PNG files retained.
+- No payroll computed or paid during UI verification; no template layout saved.
+
+Remaining review scope, not claimed complete:
+The original 480-input plan has 354 provider bindings, 20 recurring contract
+terms, 21 reviewed payroll controls, 4 legacy spreadsheet inputs and 81 explicitly
+pending metadata mappings. Ten additional application-mode inputs are separate.
+These pending entries and missing employee values are distinct.
+Searchable field-by-field audit: docs/design/rize-payroll-source-audit-20261021.html.
+
+Concurrent work:
+Post-deployment d37e3f512 is documentation only, with no custom-module difference.
+Uncommitted pb_ask_hr changes belong to another session and were not included.

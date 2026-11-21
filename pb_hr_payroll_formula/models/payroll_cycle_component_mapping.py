@@ -39,23 +39,18 @@ class HrPayrollCycleComponentMapping(models.Model):
     )
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        (
-            'cycle_component_unique_pair',
-            'unique(mid_cycle_config_id, end_cycle_config_id, mid_component_id, end_component_id)',
-            'This mid-cycle to end-cycle component mapping already exists.'
-        ),
-        (
-            'cycle_component_unique_mid',
-            'unique(mid_cycle_config_id, end_cycle_config_id, mid_component_id)',
-            'Each mid-cycle component can map to only one end-cycle component.'
-        ),
-        (
-            'cycle_component_unique_end',
-            'unique(mid_cycle_config_id, end_cycle_config_id, end_component_id)',
-            'Each end-cycle component can be mapped from only one mid-cycle component.'
-        ),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _cycle_component_unique_pair = models.Constraint(
+        'unique(mid_cycle_config_id, end_cycle_config_id, mid_component_id, end_component_id)',
+        'This mid-cycle to end-cycle component mapping already exists.')
+    _cycle_component_unique_mid = models.Constraint(
+        'unique(mid_cycle_config_id, end_cycle_config_id, mid_component_id)',
+        'Each mid-cycle component can map to only one end-cycle component.')
+    _cycle_component_unique_end = models.Constraint(
+        'unique(mid_cycle_config_id, end_cycle_config_id, end_component_id)',
+        'Each end-cycle component can be mapped from only one mid-cycle component.')
 
     @api.constrains('mid_cycle_config_id', 'end_cycle_config_id')
     def _check_cycle_types(self):

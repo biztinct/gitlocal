@@ -457,13 +457,11 @@ class PayrollAPIController(http.Controller):
             
             payslip_data = []
             for payslip in payslips:
-                gross_total = sum(payslip.line_ids.filtered(
-                    lambda l: l.category_id.code == 'GROSS'
-                ).mapped('total'))
-                
-                net_total = sum(payslip.line_ids.filtered(
-                    lambda l: l.category_id.code == 'NET'
-                ).mapped('total'))
+                # The scheme's own answer for each line, so these agree with
+                # every other screen that quotes the same payslip.
+                slip_totals = payslip.line_ids.pb_pay_totals()
+                gross_total = slip_totals['gross']
+                net_total = slip_totals['net']
                 
                 payslip_data.append({
                     'id': payslip.id,
@@ -561,9 +559,11 @@ class PayrollAPIController(http.Controller):
             # Generate bank file content
             bank_data = []
             for payslip in payslips:
-                net_amount = sum(payslip.line_ids.filtered(
-                    lambda l: l.category_id.code == 'NET'
-                ).mapped('total'))
+                # THIS FIGURE LEAVES A BANK ACCOUNT — it must be the one
+                # line the scheme calls net pay, not the first in a category
+                # that may hold a running total beside it.
+                net_line = payslip.line_ids.pb_net_line()
+                net_amount = net_line.total if net_line else 0.0
                 
                 if net_amount > 0:
                     bank_data.append({

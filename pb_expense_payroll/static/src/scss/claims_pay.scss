@@ -1,0 +1,15 @@
+// =====================================================================
+// pb_expense_payroll — Expenses › Claims: the line under a row's status.
+// Quiet board: grey at rest, the accent only while it is in a pay run.
+// =====================================================================
+.pbcl .pbcl-row .pbexp-note {
+    display: block;
+    margin-top: 3px;
+    font-size: 11.5px;
+    line-height: 1.3;
+    color: var(--pbim-muted, #64748B);
+    white-space: normal;
+    &.is-run { color: var(--pbim-primary, #5A4BB0); }
+    &.is-held { color: #B45309; }
+}
+.pbcl .pbexp-setup { white-space: nowrap; }

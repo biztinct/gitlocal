@@ -1,0 +1,27 @@
+// =====================================================================
+//  Learning › TESTS (LEARNING L0) — the stock list inside the hub canvas.
+//  A definite height so the list scrolls inside itself rather than growing
+//  the canvas (the hub's W20 rule); the controller fills the box. Same
+//  shape as Expenses › Claims (`pb_expenses_hub`).
+// =====================================================================
+.pbtt {
+    display: flex; flex-direction: column; height: 100%; min-height: 0;
+    width: 100%; overflow: hidden; background: #F5F6FA;
+
+    > .o_view_controller {
+        flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+    }
+    .o_content { flex: 1 1 auto; min-height: 0; overflow: auto; }
+}
+.pbtt-head {
+    flex: 0 0 auto; display: flex; align-items: center;
+    justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    padding: 14px 20px; background: var(--pbim-surface, #FFFFFF);
+    border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+}
+.pbtt-say {
+    display: flex; flex-direction: column; gap: 2px; min-width: 0;
+    b { font-size: 15px; font-weight: 750; color: var(--pbim-ink, #1B1733); }
+    span { font-size: 12.5px; color: var(--pbim-muted, #64748B); max-width: 70ch; }
+}
+.pbtt-act { display: flex; gap: 8px; flex-wrap: wrap; }

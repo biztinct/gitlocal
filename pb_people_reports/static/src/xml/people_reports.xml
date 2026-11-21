@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       People reports. Loop names: views `vw`, companies `co`, departments
+       `dp`, periods `pd`, month rows `mr`, chart ticks `tk`, chart points
+       `pt`, rows `rw`, notes `nt`. Every sentence on one line (PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_people_reports.PbPeopleReports">
+    <div class="pbim pbpr">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the people reports…</span></div>
+
+      <div t-elif="!state.allowed" class="pbim-panel pbpr-locked">
+        <div class="pbpr-locked-ic"><t t-out="icon('lock', 28)"/></div>
+        <h2>This one is for HR</h2>
+        <p t-esc="state.why"/>
+      </div>
+
+      <t t-else="">
+        <div class="pbpr-bar">
+          <div class="pbpr-views" role="tablist">
+            <button t-foreach="views" t-as="vw" t-key="vw.key" role="tab" class="pbpr-view" t-att-class="{ 'is-on': state.view === vw.key }" t-att-aria-selected="state.view === vw.key ? 'true' : 'false'" t-on-click="() => this.pickView(vw.key)" t-esc="vw.label"/>
+          </div>
+          <div class="pbpr-pick">
+            <select t-if="companies.length > 1" class="pbim-input" aria-label="Company" t-on-change="onCompany">
+              <option value="0" t-att-selected="!state.company_id">All my companies</option>
+              <option t-foreach="companies" t-as="co" t-key="co.id" t-att-value="co.id" t-att-selected="state.company_id === co.id" t-esc="co.name"/>
+            </select>
+            <select class="pbim-input" aria-label="Department" t-on-change="onDept">
+              <option value="0" t-att-selected="!state.department_id">Every department</option>
+              <option t-foreach="departments" t-as="dp" t-key="dp.id" t-att-value="dp.id" t-att-selected="state.department_id === dp.id" t-esc="dp.name"/>
+            </select>
+            <select class="pbim-input" aria-label="Period" t-on-change="onPeriod">
+              <option t-foreach="periods" t-as="pd" t-key="pd.key" t-att-value="pd.key" t-att-selected="state.period === pd.key" t-esc="pd.label"/>
+            </select>
+            <button class="pbim-btn ghost" t-att-disabled="state.downloading or !state.data" t-on-click="download"><t t-out="icon('download', 15)"/> <span>Download</span></button>
+          </div>
+        </div>
+
+        <div t-if="state.error" class="pbim-empty pbpr-empty">
+          <h3>The report could not load</h3>
+          <button class="pbim-btn" t-on-click="load"><t t-out="icon('refresh', 14)"/> <span>Try again</span></button>
+        </div>
+
+        <t t-elif="state.data">
+          <t t-set="D" t-value="state.data"/>
+          <div class="pbpr-head">
+            <h2 t-esc="D.title"/>
+            <span class="pbpr-period" t-esc="D.period"/>
+          </div>
+          <p t-if="D.scope_note" class="pbpr-note"><t t-out="icon('info', 13)"/> <span t-esc="D.scope_note"/></p>
+
+          <!-- the tiles -->
+          <div class="pbpr-tiles" t-att-class="{ 'is-busy': state.busy }">
+            <div class="pbpr-tile"><span class="pbpr-k">Headcount at the start</span><b t-esc="num(D.tiles.h0)"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Headcount at the end</span><b t-esc="num(D.tiles.h_end)"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Average headcount</span><b t-esc="num(D.tiles.avg)"/><small>start and end of the period</small></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Joiners</span><b t-esc="num(D.tiles.j)"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Leavers</span><b t-esc="num(D.tiles.l)"/></div>
+            <div class="pbpr-tile"><span class="pbpr-k">Turnover</span><b t-esc="pct(D.tiles.rate)"/><small>leavers ÷ average headcount</small></div>
+          </div>
+
+          <!-- the headcount line (PR2) -->
+          <section t-if="D.view === 'headcount' and chart" class="pbpr-card pbpr-chartcard">
+            <t t-set="CH" t-value="chart"/>
+            <h3>Headcount at each month end</h3>
+            <div class="pbpr-chart" t-on-mouseleave="() => this.onHover(-1)">
+              <svg t-att-viewBox="'0 0 ' + CH.w + ' ' + CH.h" role="img" aria-label="Headcount at each month end">
+                <g class="pbpr-grid">
+                  <t t-foreach="CH.ticks" t-as="tk" t-key="tk_index">
+                    <line t-att-x1="CH.left" t-att-x2="CH.w - CH.right" t-att-y1="tk.y" t-att-y2="tk.y"/>
+                  </t>
+                </g>
+                <path class="pbpr-line" t-att-d="CH.path"/>
+                <circle class="pbpr-start" t-att-cx="CH.start.x" t-att-cy="CH.start.y" r="3"/>
+                <t t-foreach="CH.points" t-as="pt" t-key="pt.key">
+                  <line t-if="state.hover === pt.i" class="pbpr-cross" t-att-x1="pt.x" t-att-x2="pt.x" t-att-y1="CH.base" t-att-y2="pt.y"/>
+                  <circle class="pbpr-dot" t-att-class="{ 'is-on': state.hover === pt.i }" t-att-cx="pt.x" t-att-cy="pt.y" r="4"/>
+                  <rect class="pbpr-hit" t-att-x="pt.hitX" y="0" t-att-width="pt.hitW" t-att-height="CH.h" t-on-mouseenter="() => this.onHover(pt.i)"/>
+                </t>
+              </svg>
+              <div class="pbpr-axis-y">
+                <span t-foreach="CH.ticks" t-as="tk" t-key="tk_index" t-att-style="'top: ' + (tk.y / CH.h * 100) + '%'" t-esc="num(tk.v)"/>
+              </div>
+              <div class="pbpr-axis-x">
+                <span t-foreach="CH.points" t-as="pt" t-key="pt.key" t-att-style="'left: ' + (pt.x / CH.w * 100) + '%'"><t t-if="pt.showLabel" t-esc="pt.label"/></span>
+              </div>
+              <div t-if="hovered" class="pbpr-tip" t-att-style="hovered.style">
+                <b t-esc="hovered.m.label"/>
+                <span><span>Headcount</span> <b t-esc="num(hovered.m.h)"/></span>
+                <span><span>Joiners</span> <b t-esc="num(hovered.m.j)"/> · <span>Leavers</span> <b t-esc="num(hovered.m.l)"/></span>
+              </div>
+            </div>
+            <p class="pbpr-note"><t t-out="icon('info', 13)"/> <span>The line starts at the headcount the day before the period begins.</span></p>
+          </section>
+
+          <!-- month by month, grouped by quarter (PR2) -->
+          <section t-if="D.months and D.months.length" class="pbpr-card">
+            <h3>Month by month</h3>
+            <table class="pbim-table pbpr-table pbpr-months">
+              <thead><tr><th>Month</th><th class="num">Headcount at the month end</th><th class="num">Joiners</th><th class="num">Leavers</th><th class="num">Change</th></tr></thead>
+              <tbody>
+                <tr t-foreach="monthRows" t-as="mr" t-key="mr.key" t-att-class="{ 'is-quarter': mr.kind === 'q', 'is-on': mr.kind === 'm' and state.hover === mr.i }">
+                  <td t-esc="mr.row.label"/>
+                  <td class="num" t-esc="num(mr.row.h)"/>
+                  <td class="num"><span t-if="mr.kind === 'm'" class="pbpr-mini is-in"><i t-att-style="barStyle(mr.row.j, maxMove)"/></span><t t-esc="num(mr.row.j)"/></td>
+                  <td class="num"><span t-if="mr.kind === 'm'" class="pbpr-mini is-out"><i t-att-style="barStyle(mr.row.l, maxMove)"/></span><t t-esc="num(mr.row.l)"/></td>
+                  <td class="num"><span class="pbpr-net" t-att-class="netClass(mr.row.net)" t-esc="netLabel(mr.row.net)"/></td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="pbpr-note"><t t-out="icon('info', 13)"/> <span>Change is the headcount at the month end less the month before. It can differ from joiners less leavers when someone moves between departments.</span></p>
+          </section>
+
+          <!-- by company / department -->
+          <section t-if="D.table and D.table.rows and D.table.rows.length" class="pbpr-card">
+            <h3 t-if="D.table.by === 'company'">By company</h3>
+            <h3 t-else="">By department</h3>
+            <table class="pbim-table pbpr-table">
+              <thead><tr><th t-if="D.table.by === 'company'">Company</th><th t-else="">Department</th><th class="num">Headcount at the start</th><th class="num">Headcount at the end</th><th class="num">Joiners</th><th class="num">Leavers</th><th class="num">Turnover</th></tr></thead>
+              <tbody>
+                <tr t-foreach="D.table.rows" t-as="rw" t-key="rw_index">
+                  <td t-esc="rw.name"/>
+                  <td class="num" t-esc="num(rw.h0)"/>
+                  <td class="num" t-esc="num(rw.h)"/>
+                  <td class="num" t-esc="num(rw.j)"/>
+                  <td class="num" t-esc="num(rw.l)"/>
+                  <td class="num" t-esc="pct(rw.rate)"/>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Total</th>
+                  <th class="num" t-esc="num(D.table.total.h0)"/>
+                  <th class="num" t-esc="num(D.table.total.h)"/>
+                  <th class="num" t-esc="num(D.table.total.j)"/>
+                  <th class="num" t-esc="num(D.table.total.l)"/>
+                  <th class="num" t-esc="pct(D.table.total.rate)"/>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+
+          <t t-foreach="['reasons', 'service_rows', 'genders', 'ages']" t-as="blk" t-key="blk">
+            <section t-if="D[blk] and D[blk].length" class="pbpr-card">
+              <h3 t-if="blk === 'reasons'">Why they left</h3>
+              <h3 t-elif="blk === 'service_rows' and D.view === 'leaving'">How long they had worked here</h3>
+              <h3 t-elif="blk === 'service_rows'">How long people have worked here</h3>
+              <h3 t-elif="blk === 'genders'">Gender</h3>
+              <h3 t-else="">Age</h3>
+              <ul class="pbpr-dist">
+                <li t-foreach="D[blk]" t-as="rw" t-key="rw.key">
+                  <span class="pbpr-dist-l" t-esc="rw.label"/>
+                  <span class="pbpr-dist-bar"><i t-att-style="rowBarStyle(rw.pct)"/></span>
+                  <span class="pbpr-dist-v"><b t-esc="num(rw.n)"/> <small t-if="rw.pct !== null" t-esc="pct(rw.pct)"/></span>
+                </li>
+              </ul>
+              <p t-if="blk === 'reasons' and D.voluntary_note" class="pbpr-note" t-esc="D.voluntary_note"/>
+            </section>
+          </t>
+
+          <p t-if="D.crosscheck" class="pbpr-check"><t t-out="icon('triangleAlert', 14)"/> <span t-esc="D.crosscheck"/></p>
+          <p t-foreach="D.notes" t-as="nt" t-key="nt_index" class="pbpr-note"><t t-out="icon('info', 13)"/> <span t-esc="nt"/></p>
+        </t>
+      </t>
+    </div>
+  </t>
+</templates>

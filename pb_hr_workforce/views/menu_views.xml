@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Workforce Management Menu Structure -->
+    <menuitem id="menu_workforce_root"
+              name="Workforce"
+              web_icon="pb_hr_workforce,static/description/icon.png"
+              groups="hr_attendance.group_hr_attendance_officer"
+              sequence="245"/>
+
+    <!-- The Dashboard, Live Attendance, Timecards and Shift Roster menuitems
+         lived here until P7. Each pointed at a Gen-0 client action whose JS was
+         deleted in the same pass, and a menuitem is not allowed to outlive its
+         action: Odoo resolves `action=` at LOAD time, so a dangling one is not
+         a dead link, it is a module that will not install. Their replacements
+         are on the Workforce rail (Today, Time, Schedule) and in Mission
+         Control. -->
+
+    <!-- Weekly Entry (WOW overtime + regular-hours grid) -->
+    <menuitem id="menu_attendance_weekgrid"
+              name="Weekly Entry"
+              parent="menu_workforce_root"
+              action="action_pb_attendance_weekgrid"
+              sequence="6"/>
+
+    <!-- Payroll Report -->
+    <menuitem id="menu_payroll_report"
+              name="Payroll Report"
+              parent="menu_workforce_root"
+              action="action_payroll_report_dashboard"
+              sequence="7"
+              groups="om_hr_payroll.group_hr_payroll_user"/>
+
+    <!-- Shift Management -->
+    <menuitem id="menu_shift_management"
+              name="Shift Management"
+              parent="menu_workforce_root"
+              sequence="10"/>
+
+    <menuitem id="menu_shift_planning_list"
+              name="Shift List"
+              parent="menu_shift_management"
+              action="action_shift_planning"
+              sequence="2"/>
+
+    <menuitem id="menu_my_shifts"
+              name="My Shifts"
+              parent="menu_shift_management"
+              action="action_my_shifts"
+              sequence="2"/>
+
+    <menuitem id="menu_shift_templates"
+              name="Shift Templates"
+              parent="menu_shift_management"
+              action="action_shift_template"
+              sequence="10"
+              groups="hr_attendance.group_hr_attendance_manager"/>
+
+    <!-- Overtime — native menus RETIRED (Phase K, C18.42): the Overtime Desk
+         cockpit is now the surface for the OT queue, config gallery and Bonus
+         Hours review. The act_window actions (action_overtime_request /
+         action_overtime_to_approve / action_my_overtime / action_overtime_config)
+         are kept off-menu as admin fallbacks; their VU-skinned forms open from
+         the cockpit. Overtime Desk is added via data/pb_sidebar.xml. -->
+
+    <!-- Configuration -->
+    <menuitem id="menu_workforce_config"
+              name="Configuration"
+              parent="menu_workforce_root"
+              sequence="90"
+              groups="hr_attendance.group_hr_attendance_manager"/>
+
+    <menuitem id="menu_shift_templates_config"
+              name="Shift Templates"
+              parent="menu_workforce_config"
+              action="action_shift_template"
+              sequence="2"/>
+
+    <menuitem id="menu_ot_ceiling_config"
+              name="Overtime Ceilings"
+              parent="menu_workforce_config"
+              action="action_pb_ot_ceiling"
+              sequence="3"/>
+
+</odoo>

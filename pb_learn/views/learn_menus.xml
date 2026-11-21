@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_learn_root"
+              name="Training"
+              sequence="180"/>
+
+    <menuitem id="menu_learn_journey"
+              name="Guided Journey"
+              parent="menu_learn_root"
+              action="action_learn_journey"
+              sequence="10"/>
+
+    <!-- Tenant-admin: the override slots. -->
+    <menuitem id="menu_learn_config"
+              name="Configuration"
+              parent="menu_learn_root"
+              sequence="80"/>
+
+    <menuitem id="menu_learn_override"
+              name="Training wording"
+              parent="menu_learn_config"
+              action="action_learn_override"
+              groups="pb_hr_payroll_base.group_payroll_super_admin,pb_learn.group_learn_author"
+              sequence="10"/>
+
+    <!-- LEARNOS Phase 4. The one control that can switch the Coach's composer
+         on.
+
+         groups= lists BOTH gates, so the menu matches what apply() enforces.
+         Odoo ORs a groups= list, so this alone still shows the leaf to an
+         author who is not an administrator — the menu is a hint, not the
+         control, and the AND is re-asked server-side in
+         learn.companion.settings.apply(). Listing both anyway stops the leaf
+         advertising itself to a system administrator who has nothing to do
+         with learning content, and stops the next reader inferring from a
+         one-group menu that one group is the rule. -->
+    <menuitem id="menu_learn_companion"
+              name="Companion settings"
+              parent="menu_learn_config"
+              action="action_learn_companion_settings"
+              groups="pb_learn.group_learn_author,base.group_system"
+              sequence="20"/>
+
+    <!-- Author-only: the measurement surfaces.
+
+         This used to be "Content" and it used to open the station and lesson
+         tables. Phase 1a moved the spine out of the database entirely, so
+         there is nothing here to browse — the content is
+         static/content/learn_content.json, authored in
+         docs/tutorial_poc/author/. What is left is what a person can only
+         learn from a running tenant: who got how far, where the Coach missed,
+         and (opt-in) what they asked. -->
+    <menuitem id="menu_learn_content"
+              name="Measurement"
+              parent="menu_learn_root"
+              groups="pb_learn.group_learn_author"
+              sequence="90"/>
+
+    <menuitem id="menu_learn_progress"
+              name="Learner progress"
+              parent="menu_learn_content"
+              action="action_learn_progress"
+              sequence="30"/>
+
+    <menuitem id="menu_learn_event"
+              name="Learning events"
+              parent="menu_learn_content"
+              action="action_learn_event"
+              sequence="40"/>
+
+    <menuitem id="menu_learn_question"
+              name="Stored questions"
+              parent="menu_learn_content"
+              action="action_learn_question"
+              sequence="50"/>
+
+</odoo>

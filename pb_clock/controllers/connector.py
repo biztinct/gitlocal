@@ -1,0 +1,163 @@
+"""Authenticated desktop collection API. Data issues are handled after intake."""
+import json
+import hashlib
+from pathlib import Path
+
+from odoo import SUPERUSER_ID, http
+from odoo.http import request, Response, content_disposition
+from odoo.modules.module import get_module_path
+
+MAX_BODY = 2 * 1024 * 1024
+
+
+def response(data, status=200):
+    return Response(json.dumps(data), status=status, content_type='application/json', headers={'Cache-Control': 'no-store'})
+
+
+class ClockBridge(http.Controller):
+    @http.route('/clock-bridge/v1/<string:operation>', type='http', auth='none', methods=['POST'],
+                csrf=False, readonly=False, save_session=False)
+    def api(self, operation, **kw):
+        hr = request.httprequest
+        if hr.scheme != 'https':
+            return response({'error': 'HTTPS required'}, 400)
+        if (hr.content_length or 0) > MAX_BODY:
+            return response({'error': 'Batch too large'}, 413)
+        hr.max_content_length = MAX_BODY
+        data = hr.get_data(cache=True)
+        if len(data) > MAX_BODY:
+            return response({'error': 'Batch too large'}, 413)
+        try:
+            payload = json.loads(data)
+            if not isinstance(payload, dict):
+                raise ValueError()
+        except (ValueError, UnicodeDecodeError):
+            return response({'error': 'Expected a JSON object'}, 400)
+        env = request.env(user=SUPERUSER_ID, su=True)
+        Connector = env['pb.clock.connector']
+        if operation == 'pair':
+            code, installation = payload.get('code'), payload.get('installation_id')
+            if not isinstance(code, str) or not 20 <= len(code) <= 100 or not isinstance(installation, str) or not 16 <= len(installation) <= 100:
+                return response({'error': 'Invalid pairing details'}, 400)
+            result = Connector._pair(code, installation)
+            return response(result or {'error': 'Pairing code expired or already used'}, 200 if result else 401)
+        if operation != 'sync':
+            return response({'error': 'Unknown operation'}, 404)
+        auth = hr.headers.get('Authorization', '')
+        connector = Connector._authenticate(auth[7:] if auth.startswith('Bearer ') and len(auth) < 200 else '')
+        if not connector:
+            return response({'error': 'Installation access is not valid. Re-pair from Payobook.'}, 401)
+        env.cr.execute('SELECT id FROM pb_clock_connector WHERE id=%s FOR UPDATE', [connector.id])
+        connector.invalidate_recordset()
+        if connector.state != 'connected' or connector.token_hash != hashlib.sha256(auth[7:].encode()).hexdigest():
+            return response({'error': 'Installation access revoked'}, 401)
+        rows = payload.get('rows')
+        status = payload.get('status', {})
+        if not isinstance(rows, list) or len(rows) > 500 or not isinstance(status, dict):
+            return response({'error': 'Expected at most 500 rows and a status object'}, 400)
+        # Malformed business rows still land in the review inbox. Only wire-level
+        # constraints fail a request; the supplied client always respects these.
+        if any(len(json.dumps(row, ensure_ascii=False)) > 8192 for row in rows):
+            return response({'error': 'A source row exceeds 8192 characters'}, 400)
+        for key in ('pending', 'source_rows'):
+            if key in status and (not isinstance(status[key], int) or isinstance(status[key], bool)):
+                return response({'error': 'Invalid status counters'}, 400)
+        result = connector._receive(payload)
+        # The framework commits the HTTP request before sending the response. No early ack.
+        return response(result)
+
+    @http.route('/clock-bridge/download', type='http', auth='user', methods=['GET'])
+    def download(self, **kw):
+        if not request.env.user.has_group('hr_attendance.group_hr_attendance_manager'):
+            return Response('Attendance manager access required.', status=403)
+        package = Path(get_module_path('pb_clock')) / 'releases' / 'PayobookAttendanceConnector.zip'
+        if not package.is_file():
+            return Response('The Windows package is not installed on this server yet.', status=503)
+        return Response(package.read_bytes(), content_type='application/zip', headers=[
+            ('Content-Disposition', content_disposition(package.name)), ('Cache-Control', 'private, no-store')])
+
+    def _setup_assets(self):
+        # Standalone static files can be cached for a year. Content hashes make
+        # returning setup users receive the deployed code without a hard refresh.
+        root = Path(get_module_path('pb_clock')) / 'static' / 'setup'
+        return {key: '/pb_clock/static/setup/%s?v=%s' % (name, hashlib.sha256((root / name).read_bytes()).hexdigest()[:12])
+                for key, name in [('script_url', 'setup.js'), ('style_url', 'setup.css')]}
+
+    def _setup_headers(self, result):
+        result.headers.update({
+            'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
+            'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY',
+            'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+            'X-Robots-Tag': 'noindex, nofollow',
+        })
+        return result
+
+    def _package(self):
+        package = Path(get_module_path('pb_clock')) / 'releases' / 'PayobookAttendanceConnector.zip'
+        if not package.is_file():
+            return response({'error': 'The Windows package is not available yet. Please contact your Payobook administrator.'}, 503)
+        return Response(package.read_bytes(), content_type='application/zip', headers=[
+            ('Content-Disposition', content_disposition(package.name)), ('Cache-Control', 'no-store')])
+
+    @http.route('/clock-bridge/setup', type='http', auth='none', methods=['GET'], save_session=False)
+    def setup_page(self, **kw):
+        # The fragment credential never travels in a URL, access log or referrer.
+        # This shell has no customer information until a bearer request succeeds.
+        env = request.env(user=SUPERUSER_ID, su=True)
+        html = env['ir.ui.view']._render_template('pb_clock.connector_setup', {
+            'manager_id': '', 'csrf_token': '', 'back_url': '', **self._setup_assets(),
+        })
+        return self._setup_headers(Response(html, content_type='text/html; charset=utf-8'))
+
+    @http.route('/clock-bridge/manage/<int:connector_id>', type='http', auth='user', methods=['GET'])
+    def manage_page(self, connector_id, **kw):
+        connector = request.env['pb.clock.connector'].browse(connector_id).exists()
+        if not connector:
+            return request.not_found()
+        connector._manager()
+        html = request.env['ir.ui.view']._render_template('pb_clock.connector_setup', {
+            'manager_id': connector.id, 'csrf_token': request.csrf_token(), **self._setup_assets(),
+            'back_url': '/bizapp/action-%s/%s' % (request.env.ref('pb_clock.action_clock_connectors').id, connector.id),
+        })
+        return self._setup_headers(Response(html, content_type='text/html; charset=utf-8'))
+
+    @http.route('/clock-bridge/manage/<int:connector_id>/<string:operation>', type='http', auth='user', methods=['POST'])
+    def manage_setup(self, connector_id, operation, **kw):
+        if request.httprequest.scheme != 'https':
+            return response({'error': 'HTTPS required'}, 400)
+        connector = request.env['pb.clock.connector'].browse(connector_id).exists()
+        if not connector:
+            return response({'error': 'Connector not found'}, 404)
+        connector._manager()
+        return self._setup_operation(connector, operation, manager=True)
+
+    @http.route('/clock-bridge/setup/<string:operation>', type='http', auth='none', methods=['POST'],
+                csrf=False, readonly=False, save_session=False)
+    def invited_setup(self, operation, **kw):
+        if request.httprequest.scheme != 'https':
+            return response({'error': 'HTTPS required'}, 400)
+        auth = request.httprequest.headers.get('Authorization', '')
+        token = auth[7:] if auth.startswith('Bearer ') and len(auth) < 200 else ''
+        env = request.env(user=SUPERUSER_ID, su=True)
+        connector = env['pb.clock.connector']._invited(token)
+        if not connector:
+            return response({'error': 'This invitation has expired or been revoked. Ask your Payobook administrator for a new link.'}, 401)
+        return self._setup_operation(connector, operation, manager=False)
+
+    def _setup_operation(self, connector, operation, manager):
+        from odoo.exceptions import UserError
+        if operation == 'status':
+            return self._setup_headers(response(connector._setup_status()))
+        if operation == 'download':
+            return self._setup_headers(self._package())
+        if operation == 'code':
+            try:
+                return self._setup_headers(response({'code': connector._setup_code(invited=not manager)}))
+            except UserError as exc:
+                return response({'error': str(exc)}, 409)
+        if manager and operation == 'invite':
+            return self._setup_headers(response({'invitation': connector._new_invitation(), **connector._setup_status()}))
+        if manager and operation == 'revoke-invite':
+            connector._revoke_invitation()
+            return self._setup_headers(response(connector._setup_status()))
+        return response({'error': 'This action is not available on the setup page'}, 403)

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13), as every hub's own rail record is. -->
+<odoo noupdate="0">
+
+    <!-- OPERATE › Hiring (NAV P2, 2026-10-21). Hiring was the first tab of the
+         Lifecycle entry; the revised menu gives it its own place between
+         People (20) and Workforce (30).
+
+         GATED in the two lanes every hub entry uses (see
+         `pb_payhub/data/pb_sidebar.xml`): the hiring team's group and the HR
+         one. Somebody the board admits WITHOUT either — a talent lead, a line
+         manager who raises requests — still sees it, because
+         `models/sidebar_door.py` asks the board's own question before the
+         entry hides itself.
+
+         `(4, ref(…))` never `(6, 0, …)`: an ADD, so a joined group survives
+         the next upgrade. The icon is in the closed ICONS set of
+         `pb_sidebar/static/src/js/pb_sidebar.js`. -->
+    <record id="item_hiring" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="groups_id"
+               eval="[(4, ref('pb_hiring.group_hiring_user')), (4, ref('hr.group_hr_user'))]"/>
+        <field name="name">Hiring</field>
+        <field name="icon">user-plus</field>
+        <field name="sequence">24</field>
+        <field name="action_xmlid">pb_hiring.action_pb_hiring_hub</field>
+        <field name="action_tag">pb_hiring_hub</field>
+        <field name="match_action_tags">pb_hiring_hub,pb_hiring_board</field>
+        <field name="match_models">hr.applicant,pb.hiring.requisition,pb.hiring.offer,pb.hiring.interview</field>
+    </record>
+
+</odoo>

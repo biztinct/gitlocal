@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class HrEmployeeVietnam(models.Model):
-    _inherit = 'hr.employee'
+    _name = 'hr.employee'
+    _inherit = ['hr.employee']
 
     # Vietnam-specific employee fields
     vietnam_employee_id = fields.Char(string='Vietnam Employee ID')
@@ -309,13 +311,9 @@ class HrEmployeeVietnam(models.Model):
                 and employee.vietnam_work_permit_expiry < fields.Date.today()):
                 raise ValueError(_('Work permit has expired. Please renew before processing payroll.'))
 
-    def action_vietnam_generate_tax_report(self):
-        """Generate Vietnam tax report for employee"""
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Vietnam Tax Report'),
-            'res_model': 'vietnam.tax.report.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_employee_id': self.id}
-        }
+    def action_vietnam_generate_tax_report(self, *args, **kwargs):
+        """WDGAP S2-A (S2F-4): RETIRED. This door used to say a file was
+        made (or data imported) and made none. It now says so and makes
+        no claim. (Vietnam employee tax report button)"""
+        raise UserError(_("This tax report is not available here, so nothing was made. The monthly and quarterly tax declaration is prepared on Compliance › Filings."))
+

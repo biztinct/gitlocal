@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_voice_round_hr,pb.voice.round hr,model_pb_voice_round,hr.group_hr_user,1,1,1,1
+access_pb_voice_round_sys,pb.voice.round system,model_pb_voice_round,base.group_system,1,1,1,1
+access_pb_voice_question_hr,pb.voice.question hr,model_pb_voice_question,hr.group_hr_user,1,1,1,1
+access_pb_voice_question_sys,pb.voice.question system,model_pb_voice_question,base.group_system,1,1,1,1
+access_pb_voice_invite_hr,pb.voice.invite hr,model_pb_voice_invite,hr.group_hr_user,1,0,0,0
+access_pb_voice_invite_sys,pb.voice.invite system,model_pb_voice_invite,base.group_system,1,0,0,0
+access_pb_voice_group_hr,pb.voice.group hr,model_pb_voice_group,hr.group_hr_user,1,0,0,0
+access_pb_voice_group_sys,pb.voice.group system,model_pb_voice_group,base.group_system,1,0,0,0
+access_pb_voice_box_none,pb.voice.box nobody,model_pb_voice_box,base.group_system,0,0,0,0
+access_pb_voice_library_hr,pb.voice.library hr,model_pb_voice_library,hr.group_hr_user,1,1,1,1
+access_pb_voice_library_sys,pb.voice.library system,model_pb_voice_library,base.group_system,1,1,1,1
+access_pb_voice_library_pick_hr,pb.voice.library.pick hr,model_pb_voice_library_pick,hr.group_hr_user,1,1,1,1
+access_pb_voice_library_pick_sys,pb.voice.library.pick system,model_pb_voice_library_pick,base.group_system,1,1,1,1
+access_pb_voice_action_hr,pb.voice.action hr,model_pb_voice_action,hr.group_hr_user,1,1,1,1
+access_pb_voice_action_sys,pb.voice.action system,model_pb_voice_action,base.group_system,1,1,1,1
+access_pb_voice_action_owner,pb.voice.action owner,model_pb_voice_action,base.group_user,1,1,0,0

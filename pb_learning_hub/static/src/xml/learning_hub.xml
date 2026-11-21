@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================ the Learning hub
+       LEARNING L0. The whole surface is the kit's shell. Section comments
+       use `=` rules and never a doubled hyphen (W22/W72). -->
+  <t t-name="pb_learning_hub.PbLearningHub">
+    <HubShell config="config" action="props.action or {}"/>
+  </t>
+
+</templates>

@@ -1,0 +1,72 @@
+// Contracts landing + detail. Shared .ppl-people / .ppl-detail layout + the
+// light-teal theme come from pb_import_kit/static/src/scss/theme_people.scss.
+
+// ---- the roster inside the shared filter panel (pb_filter_kit, FILTER W1) ----
+// The same loading / empty treatment as Employees (pb_people/people.scss),
+// carried here because this module does not depend on pb_people.
+.ppl-contracts {
+    .ppl-skeleton .ppl-card--ghost {
+        height: 66px; cursor: default; box-shadow: none; border-color: #EEF1F6;
+        background: #F4F5FA; animation: ct-pulse 1.2s ease-in-out infinite;
+        &:hover { transform: none; border-color: #EEF1F6; box-shadow: none; }
+    }
+    .ppl-empty {
+        display: grid; justify-items: center; gap: 8px; padding: 44px 24px; text-align: center;
+        color: var(--pbim-muted, #64748B); font-size: 13px;
+        b { color: var(--pbim-text, #1B1733); font-size: 15px; }
+        .pbim-btn { margin-top: 6px; }
+    }
+    .ppl-empty-ic {
+        width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+    }
+    .ppl-foot {
+        display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        b { color: var(--pbim-text, #1B1733); font-weight: 600; }
+    }
+    .ppl-foot-sep { opacity: .5; }
+    .pbim-steps { margin-bottom: 14px; }
+
+    // ---- FILLIN P2 — answers Payobook filled in by itself ----
+    // Amber means "somebody should look": it appears only while an answer is
+    // unchecked, and the card goes back to its quiet self once confirmed.
+    .ct-fill-chip {
+        display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+        font-size: 11px; font-weight: 800; border-radius: 999px; padding: 2px 8px;
+        color: var(--pbim-amber, #D97706); background: var(--pbim-amber-soft, #FEF3C7);
+        svg { flex: none; }
+    }
+    .ppl-card.ct-has-fill { flex-wrap: wrap; row-gap: 10px; }
+    .ct-fill {
+        flex-basis: 100%; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        margin-left: 58px; padding-top: 10px; border-top: 1px dashed var(--pbim-line, #E2E8F0);
+        cursor: default;
+    }
+    .ct-fill-ans { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+    .ct-fill-a {
+        display: inline-flex; align-items: baseline; gap: 6px; font-size: 12px;
+        border: 1px solid var(--pbim-amber-soft, #FEF3C7); background: #FFFBEB;
+        border-radius: 8px; padding: 3px 9px;
+        .l { color: var(--pbim-muted, #64748B); }
+        b { color: var(--pbim-text, #1B1733); font-weight: 700; }
+    }
+    .ct-fill-acts { display: flex; gap: 6px; flex: none; }
+    .ct-fill-done .ppl-empty-ic { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+    .ct-fill-bar {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+        padding: 11px 14px; border-radius: 12px; background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-amber-soft, #FEF3C7);
+        border-left: 3px solid var(--pbim-amber, #D97706);
+        .pbim-btn { flex: none; white-space: nowrap; }
+    }
+    .ct-fill-bar-ic {
+        flex: none; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center;
+        background: var(--pbim-amber-soft, #FEF3C7); color: var(--pbim-amber, #D97706);
+    }
+    .ct-fill-bar-tx {
+        flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+        b { font-size: 13.5px; color: var(--pbim-text, #1B1733); }
+        span { font-size: 12px; color: var(--pbim-muted, #64748B); }
+    }
+}
+@keyframes ct-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }

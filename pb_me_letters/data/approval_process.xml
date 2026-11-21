@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP S6-A: the salary certificate's one HR click. The employment
+         certificate never travels a route (owner ruling E2). -->
+    <record id="process_me_certificate" model="biz.approval.process">
+        <field name="key">me_certificate</field>
+        <field name="name">Salary certificates</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.me.certificate</field>
+        <field name="description">A certificate showing somebody's agreed salary, asked for on My Payobook.</field>
+        <field name="sequence">174</field>
+    </record>
+</odoo>

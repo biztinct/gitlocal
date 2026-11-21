@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="period_input_company_rule" model="ir.rule">
+    <field name="name">Payroll period inputs: allowed companies</field>
+    <field name="model_id" ref="model_hr_payroll_period_input"/>
+    <field name="global" eval="True"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+  <record id="period_input_user_access" model="ir.model.access">
+    <field name="name">Payroll period input user</field>
+    <field name="model_id" ref="model_hr_payroll_period_input"/>
+    <field name="group_id" ref="group_formula_user"/>
+    <field name="perm_read" eval="True"/><field name="perm_write" eval="False"/>
+    <field name="perm_create" eval="False"/><field name="perm_unlink" eval="False"/>
+  </record>
+  <record id="period_input_manager_access" model="ir.model.access">
+    <field name="name">Payroll period input manager</field>
+    <field name="model_id" ref="model_hr_payroll_period_input"/>
+    <field name="group_id" ref="group_formula_manager"/>
+    <field name="perm_read" eval="True"/><field name="perm_write" eval="True"/>
+    <field name="perm_create" eval="True"/><field name="perm_unlink" eval="True"/>
+  </record>
+</odoo>

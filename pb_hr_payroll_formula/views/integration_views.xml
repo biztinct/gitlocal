@@ -9,7 +9,7 @@
         <field name="name">hr.integration.connector.tree</field>
         <field name="model">hr.integration.connector</field>
         <field name="arch" type="xml">
-            <tree string="HR System Connectors">
+            <list string="HR System Connectors">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="connector_type"/>
@@ -21,7 +21,7 @@
                 <field name="last_sync"/>
                 <field name="mapping_count"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -33,18 +33,28 @@
                 <header>
                     <button name="action_test_connection" string="Test Connection" type="object"
                             class="btn-primary"/>
+                    <button name="action_pull_data" string="Pull Data" type="object"
+                            class="btn-secondary"
+                            invisible="connection_status != 'connected' or connector_type == 'excel'"
+                            confirm="Pull data from the external HRIS? This will store new records in the API Data Store."/>
                     <button name="action_sync_now" string="Sync Now" type="object"
-                            attrs="{'invisible': [('connection_status', '!=', 'connected')]}"/>
+                            invisible="connection_status != 'connected'"/>
                     <button name="action_fetch_available_fields" string="Fetch Fields" type="object"
-                            attrs="{'invisible': [('connector_type', '=', 'excel')]}"/>
+                            invisible="connector_type == 'excel'"/>
                     <field name="connection_status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_launch_payroll_import"
                                 icon="fa-upload"
-                                attrs="{'invisible': [('connection_status', '!=', 'connected')]}">
-                            <span class="o_stat_text">Payroll Import</span>
+                                title="Load pay data through this connection — upload or pull, review the matches, then commit."
+                                invisible="connection_status != 'connected'">
+                            <span class="o_stat_text">Load pay data</span>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_data_store"
+                                icon="fa-database"
+                                invisible="connector_type == 'excel'">
+                            <field name="data_store_count" widget="statinfo" string="Data Store"/>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_view_mappings"
                                 icon="fa-exchange">
@@ -53,7 +63,7 @@
                     </div>
 
                     <widget name="web_ribbon" title="Error" bg_color="bg-danger"
-                            attrs="{'invisible': [('connection_status', '!=', 'error')]}"/>
+                            invisible="connection_status != 'error'"/>
 
                     <div class="oe_title">
                         <label for="name"/>
@@ -105,7 +115,7 @@
                     <notebook>
                         <!-- API Settings -->
                         <page string="API Settings" name="api"
-                              attrs="{'invisible': [('connector_type', '=', 'excel')]}">
+                              invisible="connector_type == 'excel'">
                             <group>
                                 <group string="Endpoint">
                                     <field name="api_endpoint"/>
@@ -116,28 +126,29 @@
                                 </group>
                             </group>
                             <group string="OAuth 2.0 Settings"
-                                   attrs="{'invisible': [('auth_type', '!=', 'oauth2')]}">
+                                   invisible="auth_type != 'oauth2'">
                                 <field name="oauth_authorize_url"/>
                                 <field name="oauth_token_url"/>
                                 <field name="oauth_scope"/>
+                                <field name="oauth_redirect_uri"/>
                             </group>
                         </page>
 
                         <!-- Credentials -->
                         <page string="Credentials" name="credentials"
                               groups="base.group_system"
-                              attrs="{'invisible': [('connector_type', '=', 'excel')]}">
+                              invisible="connector_type == 'excel'">
                             <group>
                                 <field name="client_id"/>
                                 <field name="client_secret" password="True"/>
                                 <field name="api_key" password="True"
-                                       attrs="{'invisible': [('auth_type', '!=', 'api_key')]}"/>
+                                       invisible="auth_type != 'api_key'"/>
                                 <field name="username"
-                                       attrs="{'invisible': [('auth_type', '!=', 'basic')]}"/>
+                                       invisible="auth_type != 'basic'"/>
                                 <field name="password" password="True"
-                                       attrs="{'invisible': [('auth_type', '!=', 'basic')]}"/>
+                                       invisible="auth_type != 'basic'"/>
                             </group>
-                            <group string="Tokens" attrs="{'invisible': [('auth_type', '!=', 'oauth2')]}">
+                            <group string="Tokens" invisible="auth_type != 'oauth2'">
                                 <field name="access_token" password="True"/>
                                 <field name="refresh_token" password="True"/>
                                 <field name="token_expiry"/>
@@ -146,7 +157,7 @@
 
                         <!-- Excel Import Settings -->
                         <page string="Excel Settings" name="excel"
-                              attrs="{'invisible': [('connector_type', '!=', 'excel')]}">
+                              invisible="connector_type != 'excel'">
                             <group>
                                 <group string="File Settings">
                                     <field name="file_header_row"/>
@@ -162,26 +173,62 @@
 
                         <!-- Field Mappings -->
                         <page string="Field Mappings" name="mappings"
-                              attrs="{'invisible': [('connector_type', '=', 'excel')]}">
+                              invisible="connector_type == 'excel'">
                             <field name="field_mapping_ids" nolabel="1">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="source_field"/>
+                                    <field name="source_field" widget="source_field_autocomplete"/>
                                     <field name="source_field_label"/>
                                     <field name="source_data_type"/>
                                     <field name="target_rule_id"/>
                                     <field name="transformation_type"/>
                                     <field name="transformation_value"
-                                           attrs="{'invisible': [('transformation_type', 'in', ['direct', 'python'])]}"/>
+                                           invisible="transformation_type in ('direct', 'python')"/>
                                     <field name="is_required"/>
                                     <field name="default_value"/>
-                                </tree>
+                                    <button name="action_open_form" type="object"
+                                            icon="fa-pencil" title="Open"
+                                            class="btn-link"/>
+                                </list>
                             </field>
+                        </page>
+
+                        <!-- Transformation Rules -->
+                        <page string="Transformation Rules" name="transformations"
+                              invisible="connector_type == 'excel'">
+                            <div class="alert alert-info mb-3">
+                                <i class="fa fa-magic"/> Transformation rules derive computed values
+                                from stored API data (e.g., count dependents, calculate tenure).
+                                Results are merged with extracted data at mapping time.
+                            </div>
+                            <field name="transformation_rule_ids" nolabel="1"
+                                   context="{'default_connector_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="output_key"/>
+                                    <field name="rule_type"/>
+                                    <field name="source_data_type"/>
+                                    <field name="aggregate_field"
+                                           invisible="rule_type not in ('sum', 'avg', 'min', 'max')"/>
+                                    <field name="default_value"/>
+                                    <field name="active"/>
+                                    <button name="action_open_form" type="object"
+                                            icon="fa-pencil" title="Open"
+                                            class="btn-link"/>
+                                </list>
+                            </field>
+                            <div class="mt-2">
+                                <button name="action_recompute_transformations"
+                                        string="⟳ Recompute All" type="object"
+                                        class="btn-secondary btn-sm"
+                                        confirm="Recompute all transformation rules for extracted records?"/>
+                            </div>
                         </page>
 
                         <!-- Error Log -->
                         <page string="Error Log" name="errors"
-                              attrs="{'invisible': [('last_error', '=', False)]}">
+                              invisible="not last_error">
                             <field name="last_error" readonly="1"/>
                             <field name="last_sync_message" readonly="1"/>
                         </page>
@@ -189,11 +236,7 @@
 
                     <field name="description"/>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -206,10 +249,10 @@
         <field name="name">hr.integration.field.mapping.tree</field>
         <field name="model">hr.integration.field.mapping</field>
         <field name="arch" type="xml">
-            <tree string="Field Mappings" editable="bottom">
+            <list string="Field Mappings" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="connector_id"/>
-                <field name="source_field"/>
+                <field name="source_field" widget="source_field_autocomplete"/>
                 <field name="source_field_label"/>
                 <field name="source_data_type"/>
                 <field name="target_rule_id"/>
@@ -217,7 +260,7 @@
                 <field name="transformation_type"/>
                 <field name="is_mapped" widget="boolean"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -226,11 +269,15 @@
         <field name="model">hr.integration.field.mapping</field>
         <field name="arch" type="xml">
             <form string="Field Mapping">
+                <header>
+                    <button name="action_test_against_employee" type="object"
+                            string="Test against employee" class="btn-secondary"/>
+                </header>
                 <sheet>
                     <group>
                         <group string="Source">
                             <field name="connector_id"/>
-                            <field name="source_field"/>
+                            <field name="source_field" widget="source_field_autocomplete"/>
                             <field name="source_field_label"/>
                             <field name="source_data_type"/>
                             <field name="source_sample_value"/>
@@ -244,11 +291,11 @@
                     <group string="Transformation">
                         <field name="transformation_type"/>
                         <field name="transformation_value"
-                               attrs="{'invisible': [('transformation_type', 'in', ['direct', 'python'])]}"/>
+                               invisible="transformation_type in ('direct', 'python')"/>
                         <field name="transformation_decimals"
-                               attrs="{'invisible': [('transformation_type', '!=', 'round')]}"/>
+                               invisible="transformation_type != 'round'"/>
                         <field name="transformation_code"
-                               attrs="{'invisible': [('transformation_type', '!=', 'python')]}"/>
+                               invisible="transformation_type != 'python'"/>
                     </group>
                     <group string="Validation">
                         <field name="is_required"/>
@@ -280,59 +327,39 @@
                 <field name="last_sync"/>
                 <field name="mapping_count"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_global_click">
-                            <div class="oe_kanban_content">
-                                <div class="o_kanban_record_top mb-2">
-                                    <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title">
-                                            <field name="name"/>
-                                        </strong>
-                                    </div>
-                                    <span t-attf-class="badge badge-#{record.connection_status.raw_value == 'connected' ? 'success' : record.connection_status.raw_value == 'error' ? 'danger' : 'warning'}">
-                                        <field name="connection_status"/>
-                                    </span>
+                            <div class="o_kanban_record_top mb-2">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
                                 </div>
-                                <div class="o_kanban_record_body">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <span class="text-muted">Type:</span>
-                                            <br/>
-                                            <strong>
-                                                <!-- Connector Type Icons -->
-                                                <t t-if="record.connector_type.raw_value == 'zoho'">
-                                                    <i class="fa fa-cloud text-primary"/> Zoho People
-                                                </t>
-                                                <t t-if="record.connector_type.raw_value == 'excel'">
-                                                    <i class="fa fa-file-excel-o text-success"/> Excel File Import
-                                                </t>
-                                                <t t-if="record.connector_type.raw_value == 'sap'">
-                                                    <i class="fa fa-building text-info"/> SAP SuccessFactors
-                                                </t>
-                                                <t t-if="record.connector_type.raw_value == 'workday'">
-                                                    <i class="fa fa-calendar text-warning"/> Workday
-                                                </t>
-                                                <t t-if="record.connector_type.raw_value == 'oracle'">
-                                                    <i class="fa fa-database text-danger"/> Oracle HCM
-                                                </t>
-                                            </strong>
-                                        </div>
-                                        <div class="col-6">
-                                            <span class="text-muted">Country:</span>
-                                            <br/>
-                                            <strong><field name="country_code"/></strong>
-                                        </div>
+                                <field name="connection_status" widget="badge"
+                                       decoration-success="connection_status == 'connected'"
+                                       decoration-danger="connection_status == 'error'"
+                                       decoration-warning="connection_status == 'disconnected'"/>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <span class="text-muted">Type:</span>
+                                        <br/>
+                                        <strong><field name="connector_type"/></strong>
                                     </div>
-                                    <div class="mt-2">
-                                        <i class="fa fa-exchange"/> <field name="mapping_count"/> mappings
+                                    <div class="col-6">
+                                        <span class="text-muted">Country:</span>
+                                        <br/>
+                                        <strong><field name="country_code"/></strong>
                                     </div>
                                 </div>
-                                <div class="o_kanban_record_bottom mt-3">
-                                    <div class="oe_kanban_bottom_left">
-                                        <t t-if="record.last_sync.raw_value">
-                                            <i class="fa fa-clock-o"/> Last sync: <field name="last_sync"/>
-                                        </t>
-                                    </div>
+                                <div class="mt-2">
+                                    <i class="fa fa-exchange"/> <field name="mapping_count"/> mappings
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom mt-3">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="last_sync"/>
                                 </div>
                             </div>
                         </div>
@@ -349,7 +376,7 @@
     <record id="action_integration_connector" model="ir.actions.act_window">
         <field name="name">HR System Connectors</field>
         <field name="res_model">hr.integration.connector</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Connect to external HR systems
@@ -365,7 +392,7 @@
     <record id="action_integration_connector_kanban" model="ir.actions.act_window">
         <field name="name">HR System Connectors</field>
         <field name="res_model">hr.integration.connector</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="view_integration_connector_kanban"/>
         <field name="context">{}</field>
         <field name="help" type="html">
@@ -382,7 +409,7 @@
     <record id="action_field_mapping" model="ir.actions.act_window">
         <field name="name">Field Mappings</field>
         <field name="res_model">hr.integration.field.mapping</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

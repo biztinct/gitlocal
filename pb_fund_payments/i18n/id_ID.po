@@ -1,0 +1,2354 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 00:14+0000\n"
+"PO-Revision-Date: 2026-11-15 00:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid " · %(amount)s paid on %(day)s"
+msgstr " · %(amount)s dibayar pada %(day)s"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid " · reference %s"
+msgstr " · referensi %s"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%(month)s worked out: %(what)s."
+msgstr "%(month)s sudah dihitung: %(what)s."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"%(paid)s was paid but %(owed)s is owed. Say why the amounts differ, in a few"
+" words."
+msgstr ""
+"Dibayar %(paid)s tetapi yang terutang %(owed)s. Jelaskan singkat mengapa "
+"jumlahnya berbeda."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "%(state)s · %(owed)s owed%(paid)s"
+msgstr "%(state)s · terutang %(owed)s%(paid)s"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s changed since approval"
+msgstr "%s berubah sejak disetujui"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "%s funds added."
+msgstr "%s dana ditambahkan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s new"
+msgstr "%s baru"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s no longer owed"
+msgstr "%s tidak lagi terutang"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "%s payments"
+msgstr "%s pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "%s payments are past their due date"
+msgstr "%s pembayaran sudah lewat jatuh tempo"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "%s payslips"
+msgstr "%s slip gaji"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "%s people"
+msgstr "%s orang"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s updated"
+msgstr "%s diperbarui"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s menunggu persetujuan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "%s worked out again: nothing changed."
+msgstr "%s dihitung ulang: tidak ada yang berubah."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ", so a note is needed."
+msgstr ", jadi perlu catatan."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ". The payslips now add up to"
+msgstr ". Slip gaji sekarang berjumlah"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "1 finished payslip this month"
+msgstr "1 slip gaji selesai bulan ini"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "1 fund added."
+msgstr "1 dana ditambahkan."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "1 payment"
+msgstr "1 pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "1 payment is past its due date"
+msgstr "1 pembayaran sudah lewat jatuh tempo"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "1 person"
+msgstr "1 orang"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 menunggu persetujuan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"; the approved figure was not changed. Reopen it to use the new figure."
+msgstr ""
+"; angka yang disetujui tidak diubah. Buka kembali untuk memakai angka baru."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "A few words the next person will understand."
+msgstr "Beberapa kata yang dapat dipahami orang berikutnya."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "A new fund or office"
+msgstr "Dana atau kantor baru"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"A pay item is not printed on payslips, so there is nothing to add up for it."
+msgstr ""
+"Satu komponen gaji tidak dicetak di slip gaji, jadi tidak ada yang bisa "
+"dijumlahkan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "A receipt is attached once the payment is approved."
+msgstr "Bukti dilampirkan setelah pembayaran disetujui."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_needaction
+msgid "Action Needed"
+msgstr "Perlu tindakan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Add"
+msgstr "Tambah"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Add 1 fund"
+msgstr "Tambah 1 dana"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Add one"
+msgstr "Tambah satu"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Add one myself"
+msgstr "Tambah sendiri"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "All payments"
+msgstr "Semua pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Already paid to"
+msgstr "Sudah dibayarkan ke"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Amount paid ("
+msgstr "Jumlah dibayar ("
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Amounts in %s"
+msgstr "Jumlah dalam %s"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__approval_request_id
+msgid "Approval"
+msgstr "Persetujuan"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_biz_approval_request_seat
+msgid "Approval Request Seat"
+msgstr "Kursi permintaan persetujuan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__approval_state
+msgid "Approval status"
+msgstr "Status persetujuan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Approvals could not be opened."
+msgstr "Persetujuan tidak dapat dibuka."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__approved_on
+msgid "Approved On"
+msgstr "Disetujui pada"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Approved — it can be paid now."
+msgstr "Disetujui — sekarang bisa dibayar."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__approved
+msgid "Approved, not paid"
+msgstr "Disetujui, belum dibayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Approved. Pay it, then record the payment with its receipt."
+msgstr "Disetujui. Bayar, lalu catat pembayarannya beserta buktinya."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Approved: %s may now be paid."
+msgstr "Disetujui: %s sekarang boleh dibayar."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__seat_user_ids
+msgid "Asked to decide"
+msgstr "Diminta memutuskan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Attach the receipt"
+msgstr "Lampirkan bukti"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Attach the receipt or the bank confirmation first — a payment is marked as "
+"paid only with its proof."
+msgstr ""
+"Lampirkan dulu bukti atau konfirmasi bank — pembayaran hanya ditandai lunas "
+"dengan buktinya."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Attach the receipt or the bank confirmation first."
+msgstr "Lampirkan dulu bukti atau konfirmasi bank."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Attaching…"
+msgstr "Melampirkan…"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_attachment_count
+msgid "Attachment Count"
+msgstr "Jumlah lampiran"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Back"
+msgstr "Kembali"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__bank_details
+msgid ""
+"Bank, account and anything else the person making the payment needs. Shown "
+"on the board; no bank file is made from it."
+msgstr ""
+"Bank, rekening dan apa pun yang dibutuhkan orang yang membayar. Ditampilkan "
+"di papan; tidak ada file bank yang dibuat darinya."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Bank, account number, anything the person paying needs"
+msgstr "Bank, nomor rekening, apa pun yang dibutuhkan pembayar"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__breakdown_json
+msgid "Breakdown Json"
+msgstr "Rincian per komponen"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__cancelled
+msgid "Cancelled"
+msgstr "Dibatalkan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Cancelled — nothing is owed on it any more."
+msgstr "Dibatalkan — tidak ada lagi yang terutang."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Cancelled: the finished payslips of %s no longer owe this fund anything."
+msgstr ""
+"Dibatalkan: slip gaji %s yang selesai tidak lagi berutang apa pun ke dana "
+"ini."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Change"
+msgstr "Ubah"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__live_diff
+msgid "Changed since approval"
+msgstr "Berubah sejak disetujui"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__code
+msgid "Code"
+msgstr "Kode"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__company_id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__company_id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__create_uid
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__create_uid
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__create_date
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__create_date
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__paid_difference
+msgid "Difference"
+msgstr "Selisih"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_biz_approval_request_seat__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payments__display_name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Done."
+msgstr "Selesai."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Download this month as an Excel file"
+msgstr "Unduh bulan ini sebagai file Excel"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__due_date
+msgid "Due by"
+msgstr "Jatuh tempo"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__due_day
+msgid "Due by day"
+msgstr "Jatuh tempo pada tanggal"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Due date"
+msgstr "Tanggal jatuh tempo"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Due in the next 7 days"
+msgstr "Jatuh tempo dalam 7 hari ke depan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Due soonest first"
+msgstr "Jatuh tempo terdekat dulu"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Each fund or office has the pay items that belong to it. What is owed is "
+"added up from those items on the month's finished payslips — never typed in."
+msgstr ""
+"Setiap dana atau kantor memiliki komponen gaji miliknya. Yang terutang "
+"dijumlahkan dari komponen itu pada slip gaji bulan itu yang sudah selesai — "
+"tidak pernah diketik."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__amount_employee
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payee_item__share__employee
+msgid "Employee share"
+msgstr "Bagian karyawan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Employer"
+msgstr "Pemberi kerja"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Employer cost"
+msgstr "Biaya pemberi kerja"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__amount_employer
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payee_item__share__employer
+msgid "Employer share"
+msgstr "Bagian pemberi kerja"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Every pay item taken off pay or paid by the employer already belongs to a "
+"fund — or no active pay scheme has one."
+msgstr ""
+"Setiap komponen yang dipotong dari gaji atau dibayar pemberi kerja sudah "
+"milik suatu dana — atau tidak ada skema gaji aktif yang memilikinya."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Excel files cannot be made on this server yet."
+msgstr "File Excel belum bisa dibuat di server ini."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Figures"
+msgstr "Angka"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__figures_changed
+msgid "Figures changed since approval"
+msgstr "Angka berubah sejak disetujui"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Figures changed since approval:"
+msgstr "Angka berubah sejak disetujui:"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Find a fund, an office or a payment reference…"
+msgstr "Cari dana, kantor atau referensi pembayaran…"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Find a pay item by name or code"
+msgstr "Cari komponen gaji menurut nama atau kode"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_follower_ids
+msgid "Followers"
+msgstr "Pengikut"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Pengikut (Mitra)"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "For example Social insurance office"
+msgstr "Misalnya Kantor jaminan sosial"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "For example the company's code at the fund"
+msgstr "Misalnya kode perusahaan di dana"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_palette.js:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:biz.approval.process,name:pb_fund_payments.process_fundpay
+#: model:ir.actions.act_window,name:pb_fund_payments.action_pb_fund_payment
+#: model:ir.actions.client,name:pb_fund_payments.action_pb_fund_payments_board
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_list
+msgid "Fund and tax payments"
+msgstr "Pembayaran dana dan pajak"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Fund and tax payments are changed only from the Fund & tax payments board: "
+"the amount owed comes from the payslips, and an approved or paid payment "
+"changes only by reopening it."
+msgstr ""
+"Pembayaran dana dan pajak hanya diubah dari papan Pembayaran dana dan pajak:"
+" yang terutang berasal dari slip gaji, dan pembayaran yang disetujui atau "
+"dibayar hanya berubah dengan membukanya kembali."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Fund and tax payments are looked after by the pay team. Ask your "
+"administrator for payroll rights to see this screen."
+msgstr ""
+"Pembayaran dana dan pajak diurus tim penggajian. Minta administrator Anda "
+"hak penggajian untuk melihat layar ini."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Fund and tax payments are worked out from finished payslips on the Fund & "
+"tax payments board; they cannot be typed in."
+msgstr ""
+"Pembayaran dana dan pajak dihitung dari slip gaji yang selesai di papan "
+"Pembayaran dana dan pajak; tidak bisa diketik."
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_pb_fund_payments
+msgid "Fund and tax payments board data"
+msgstr "Data papan pembayaran dana dan pajak"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Fund and tax payments · %s"
+msgstr "Pembayaran dana dan pajak · %s"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_pb_fund_payee
+msgid "Fund or office the company pays"
+msgstr "Dana atau kantor yang dibayar perusahaan"
+
+#. module: pb_fund_payments
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_form
+msgid "Fund or tax payment"
+msgstr "Pembayaran dana atau pajak"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Fund payment paid"
+msgstr "Pembayaran dana dibayar"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Fund payment reopened"
+msgstr "Pembayaran dana dibuka kembali"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Fund payments"
+msgstr "Pembayaran dana"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_palette.js:0
+msgid "Funds & tax"
+msgstr "Dana & pajak"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Give the fund or office a name."
+msgstr "Beri nama dana atau kantor itu."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__has_message
+msgid "Has Message"
+msgstr "Ada pesan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__bank_details
+msgid "How to pay them"
+msgstr "Cara membayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "How to pay them (optional)"
+msgstr "Cara membayar (opsional)"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_biz_approval_request_seat__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payments__id
+#: model:ir.model.fields,field_description:pb_fund_payments.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_has_error
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jika dicentang, beberapa pesan gagal terkirim."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_is_follower
+msgid "Is Follower"
+msgstr "Adalah pengikut"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"It goes back to “To pay”, is worked out again from the payslips, and needs a"
+" new approval."
+msgstr ""
+"Pembayaran kembali ke “Harus dibayar”, dihitung ulang dari slip gaji, dan "
+"perlu persetujuan baru."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__item_count
+msgid "Item Count"
+msgstr "Jumlah komponen"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Its own payment"
+msgstr "Pembayaran tersendiri"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Its pay items come from schemes paying in %s. Each currency is worked out as"
+" its own payment."
+msgstr ""
+"Komponen gajinya berasal dari skema yang membayar dalam %s. Setiap mata uang"
+" dihitung sebagai pembayaran tersendiri."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Largest amount first"
+msgstr "Jumlah terbesar dulu"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__write_uid
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__write_uid
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__write_date
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__write_date
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__live_owed
+msgid "Latest reading"
+msgstr "Pembacaan terakhir"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Left to pay"
+msgstr "Sisa yang harus dibayar"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__live_head_count
+msgid "Live Head Count"
+msgstr "Jumlah orang saat ini"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Loading payments"
+msgstr "Memuat pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Made on"
+msgstr "Dibuat pada"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Mark as paid"
+msgstr "Tandai sudah dibayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Marked as paid only with its proof: the receipt or the bank's confirmation."
+msgstr ""
+"Ditandai sudah dibayar hanya dengan buktinya: bukti bayar atau konfirmasi "
+"bank."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Marked as paid. The receipt is kept with it."
+msgstr "Ditandai sudah dibayar. Buktinya disimpan bersamanya."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Marked as paid: %(amount)s on %(day)s%(ref)s."
+msgstr "Ditandai sudah dibayar: %(amount)s pada %(day)s%(ref)s."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_has_error
+msgid "Message Delivery error"
+msgstr "Kesalahan pengiriman pesan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_ids
+msgid "Messages"
+msgstr "Pesan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Name the insurance funds and the tax office once, with the pay items that "
+"belong to each. Payobook can read your pay schemes and suggest them — you "
+"check them before anything is saved."
+msgstr ""
+"Sebutkan sekali dana asuransi dan kantor pajak, beserta komponen gaji milik "
+"masing-masing. Payobook dapat membaca skema gaji Anda dan menyarankannya — "
+"Anda memeriksanya sebelum disimpan."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Needs attention"
+msgstr "Perlu perhatian"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Next month"
+msgstr "Bulan berikutnya"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "No finished payslips this month yet"
+msgstr "Belum ada slip gaji yang selesai bulan ini"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "No pay item found"
+msgstr "Tidak ada komponen gaji ditemukan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "No pay items yet — nothing is owed to it."
+msgstr "Belum ada komponen gaji — tidak ada yang terutang."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "No payments match these filters"
+msgstr "Tidak ada pembayaran yang cocok dengan filter ini"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "No payslips of %s are finished yet, so nothing is owed yet."
+msgstr "Belum ada slip gaji %s yang selesai, jadi belum ada yang terutang."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nobody yet."
+msgstr "Belum ada."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "None yet. Pick them from the list below."
+msgstr "Belum ada. Pilih dari daftar di bawah."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"Not approved: %s. The money is still owed; send it again when it is right."
+msgstr ""
+"Tidak disetujui: %s. Uangnya tetap terutang; kirim lagi bila sudah benar."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Nothing could be suggested just now."
+msgstr "Belum ada yang bisa disarankan saat ini."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Nothing has been worked out for this month yet."
+msgstr "Bulan ini belum dihitung."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Nothing is owed on this payment."
+msgstr "Tidak ada yang terutang pada pembayaran ini."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Nothing is owed to this fund for that month any more."
+msgstr "Tidak ada lagi yang terutang ke dana ini untuk bulan itu."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nothing left to suggest"
+msgstr "Tidak ada lagi yang bisa disarankan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nothing matches “"
+msgstr "Tidak ada yang cocok dengan “"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nothing was found on the payslips for this fund."
+msgstr "Tidak ditemukan apa pun di slip gaji untuk dana ini."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Nothing worked out yet for"
+msgstr "Belum dihitung untuk"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Jumlah tindakan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_has_error_counter
+msgid "Number of errors"
+msgstr "Jumlah kesalahan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Jumlah pesan yang perlu tindakan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Jumlah pesan dengan kesalahan pengiriman"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Only a payment that is still to pay can be sent for approval."
+msgstr "Hanya pembayaran yang masih harus dibayar yang bisa diajukan."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Only a payroll manager or a finance role can change these."
+msgstr "Hanya manajer penggajian atau peran keuangan yang bisa mengubahnya."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Only an approved or paid payment can be reopened."
+msgstr ""
+"Hanya pembayaran yang disetujui atau sudah dibayar yang bisa dibuka kembali."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Only an approved payment can be marked as paid."
+msgstr "Hanya pembayaran yang disetujui yang bisa ditandai sudah dibayar."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Only the people who may prepare a bank file — a payroll manager or a finance"
+" role — can change fund and tax payments."
+msgstr ""
+"Hanya orang yang boleh menyiapkan file bank — manajer penggajian atau peran "
+"keuangan — yang bisa mengubah pembayaran dana dan pajak."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Open in Approvals"
+msgstr "Buka di Persetujuan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__amount_owed
+msgid "Owed"
+msgstr "Terutang"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__paid_amount
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__paid
+msgid "Paid"
+msgstr "Dibayar"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__paid_by
+msgid "Paid By"
+msgstr "Dibayar oleh"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Paid late"
+msgstr "Dibayar terlambat"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__paid_on
+msgid "Paid on"
+msgstr "Dibayar pada"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Past due"
+msgstr "Lewat jatuh tempo"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__is_late
+msgid "Past its due date"
+msgstr "Lewat jatuh tempo"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Past its due date, not paid"
+msgstr "Lewat jatuh tempo, belum dibayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Past its due date."
+msgstr "Lewat jatuh tempo."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Pay %(payee)s · %(month)s"
+msgstr "Bayar %(payee)s · %(month)s"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__rule_id
+msgid "Pay item"
+msgstr "Komponen gaji"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_pb_fund_payee_item
+msgid "Pay item owed to a fund or office"
+msgstr "Komponen gaji yang terutang ke dana atau kantor"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__item_ids
+msgid "Pay items"
+msgstr "Komponen gaji"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Pay items that belong to it"
+msgstr "Komponen gaji miliknya"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__month
+msgid "Pay month"
+msgstr "Bulan gaji"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__config_id
+msgid "Pay scheme"
+msgstr "Skema gaji"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__name
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__payee_id
+msgid "Pay to"
+msgstr "Bayar ke"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Pay to, A to Z"
+msgstr "Bayar ke, A sampai Z"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Pay together with"
+msgstr "Bayar bersama dengan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__payee_id
+msgid "Payee"
+msgstr "Penerima"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Payment"
+msgstr "Pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__payment_reference
+msgid "Payment reference"
+msgstr "Referensi pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Payment reference (optional)"
+msgstr "Referensi pembayaran (opsional)"
+
+#. module: pb_fund_payments
+#: model:ir.model,name:pb_fund_payments.model_pb_fund_payment
+msgid "Payment to a fund or office"
+msgstr "Pembayaran ke dana atau kantor"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_palette.js:0
+msgid "Payroll"
+msgstr "Penggajian"
+
+#. module: pb_fund_payments
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_form
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_line_list
+msgid "Payslip lines"
+msgstr "Baris slip gaji"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Payslip lines behind %s"
+msgstr "Baris slip gaji di balik %s"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__slip_ids
+msgid "Payslips"
+msgstr "Slip gaji"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__head_count
+msgid "People"
+msgstr "Orang"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__breakdown_json
+msgid "Per pay item: scheme, code, share, amount, people."
+msgstr "Per komponen: skema, kode, bagian, jumlah, orang."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Pick a pay month"
+msgstr "Pilih bulan gaji"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Pick the pay month first."
+msgstr "Pilih dulu bulan gajinya."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Press the button to add up what the finished payslips of the month owe each "
+"fund and the tax office."
+msgstr ""
+"Tekan tombol untuk menjumlahkan yang terutang dari slip gaji bulan itu yang "
+"selesai ke setiap dana dan kantor pajak."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Previous month"
+msgstr "Bulan sebelumnya"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__rating_ids
+msgid "Ratings"
+msgstr "Penilaian"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"Read from what each pay item does to net pay: taken off pay is the employee "
+"share, an employer cost is the employer share. Rename them, put two together"
+" if one office collects both, untick anything that is not paid to an outside"
+" office."
+msgstr ""
+"Dibaca dari pengaruh tiap komponen pada gaji bersih: yang dipotong dari gaji"
+" adalah bagian karyawan, biaya pemberi kerja adalah bagian pemberi kerja. "
+"Ganti namanya, gabungkan dua jika satu kantor memungut keduanya, hapus "
+"centang yang tidak dibayar ke kantor luar."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Read the board again"
+msgstr "Muat ulang papan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reading what is owed…"
+msgstr "Membaca yang terutang…"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__evidence_attachment_id
+msgid "Receipt"
+msgstr "Bukti bayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Receipt attached"
+msgstr "Bukti terlampir"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Record the payment"
+msgstr "Catat pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__reference_text
+msgid "Reference to quote"
+msgstr "Referensi yang dicantumkan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reference to quote (optional)"
+msgstr "Referensi yang dicantumkan (opsional)"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reference to quote:"
+msgstr "Referensi yang dicantumkan:"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Remove a filter above, or start again from every payment of the month."
+msgstr ""
+"Hapus filter di atas, atau mulai lagi dari semua pembayaran bulan ini."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Removed. Payments already worked out for it are kept."
+msgstr "Dihapus. Pembayaran yang sudah dihitung untuknya tetap disimpan."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reopen"
+msgstr "Buka kembali"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__reopen_reason
+msgid "Reopen Reason"
+msgstr "Alasan dibuka kembali"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Reopen this payment"
+msgstr "Buka kembali pembayaran ini"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Reopened. It is back to “To pay” and needs a new approval."
+msgstr ""
+"Dibuka kembali. Kembali ke “Harus dibayar” dan perlu persetujuan baru."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Reopened: %(why)s. It was %(before)s; it needs a new approval."
+msgstr ""
+"Dibuka kembali: %(why)s. Sebelumnya %(before)s; perlu persetujuan baru."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Kesalahan pengiriman SMS"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Saved. Work the month out again to see it in the figures."
+msgstr "Disimpan. Hitung ulang bulannya untuk melihatnya di angka."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Say who you pay first: press “Who we pay” and add the funds and offices, or "
+"let Payobook suggest them."
+msgstr ""
+"Sebutkan dulu siapa yang Anda bayar: tekan “Yang kami bayar” dan tambahkan "
+"dana dan kantornya, atau biarkan Payobook menyarankannya."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Say why this payment is being reopened."
+msgstr "Sebutkan mengapa pembayaran ini dibuka kembali."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Say why, in a few words."
+msgstr "Sebutkan alasannya secara singkat."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "See the payslip lines"
+msgstr "Lihat baris slip gaji"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Send for approval"
+msgstr "Ajukan persetujuan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Sent back: %s"
+msgstr "Dikembalikan: %s"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Sent for approval."
+msgstr "Sudah diajukan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Sent for approval: %s owed."
+msgstr "Diajukan: terutang %s."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee_item__share
+msgid "Share"
+msgstr "Bagian"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Show every payment"
+msgstr "Tampilkan semua pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Show them"
+msgstr "Tampilkan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Showing"
+msgstr "Menampilkan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"Some of its pay items are already included in another total. Pick the total "
+"or its parts, not both, or the amount is counted twice."
+msgstr ""
+"Beberapa komponennya sudah termasuk dalam total lain. Pilih totalnya atau "
+"bagian-bagiannya, bukan keduanya, atau jumlahnya terhitung dua kali."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__state
+msgid "State"
+msgstr "Status"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Suggest from my pay schemes"
+msgstr "Sarankan dari skema gaji saya"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Suggested from your pay schemes"
+msgstr "Disarankan dari skema gaji Anda"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Suggested funds"
+msgstr "Dana yang disarankan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Taken off pay"
+msgstr "Dipotong dari gaji"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payee.py:0
+msgid ""
+"Taken off pay, with no employer share. Untick it if it is not paid to an "
+"outside office — a loan repayment or a salary advance, for example."
+msgstr ""
+"Dipotong dari gaji, tanpa bagian pemberi kerja. Hapus centang jika tidak "
+"dibayar ke kantor luar — misalnya cicilan pinjaman atau kasbon."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "That cannot be done here."
+msgstr "Itu tidak bisa dilakukan di sini."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "That could not be done."
+msgstr "Itu tidak bisa dilakukan."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "That could not be removed."
+msgstr "Itu tidak bisa dihapus."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "That could not be saved."
+msgstr "Itu tidak bisa disimpan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "That file could not be read."
+msgstr "File itu tidak bisa dibaca."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "That file is empty."
+msgstr "File itu kosong."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "That file is larger than 15 MB."
+msgstr "File itu lebih dari 15 MB."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The Excel file could not be made."
+msgstr "File Excel tidak bisa dibuat."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The amount paid is not"
+msgstr "Jumlah yang dibayar bukan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The amount paid is not what is owed. Say why, in a few words."
+msgstr ""
+"Jumlah yang dibayar tidak sama dengan yang terutang. Sebutkan alasannya "
+"secara singkat."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "The amount paid must be above zero."
+msgstr "Jumlah yang dibayar harus di atas nol."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Koneksi mungkin terputus. Filter Anda tetap disimpan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payee.py:0
+msgid "The due day is a day of the month, from 1 to 31."
+msgstr "Tanggal jatuh tempo adalah tanggal dalam bulan, dari 1 sampai 31."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid ""
+"The finished payslips of %s hold none of the pay items your funds are set up"
+" with."
+msgstr ""
+"Slip gaji %s yang selesai tidak memuat komponen gaji yang diatur untuk dana "
+"Anda."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__month
+msgid "The first day of the month the payslips' periods end in."
+msgstr "Hari pertama bulan tempat periode slip gaji berakhir."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__name
+msgid ""
+"The fund or office, as the person paying it knows it (for example Social "
+"insurance office, Tax office)."
+msgstr ""
+"Dana atau kantor, sebagaimana dikenal orang yang membayarnya (misalnya "
+"Kantor jaminan sosial, Kantor pajak)."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The funds could not be added."
+msgstr "Dana tidak bisa ditambahkan."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The funds could not be read."
+msgstr "Dana tidak bisa dibaca."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__currency_id
+msgid ""
+"The money this fund is usually paid in. A pay item from a pay scheme in "
+"another currency is worked out as its own payment — two currencies are never"
+" added together."
+msgstr ""
+"Mata uang yang biasa dipakai untuk membayar dana ini. Komponen dari skema "
+"gaji dengan mata uang lain dihitung sebagai pembayaran tersendiri — dua mata"
+" uang tidak pernah dijumlahkan."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The month could not be worked out."
+msgstr "Bulan ini tidak bisa dihitung."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The oldest is from"
+msgstr "Yang paling lama dari"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "The payment date cannot be in the future."
+msgstr "Tanggal pembayaran tidak boleh di masa depan."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__due_day
+msgid "The payment is due by this day of the month after the pay month."
+msgstr "Pembayaran jatuh tempo pada tanggal ini di bulan setelah bulan gaji."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The payments could not be read just now."
+msgstr "Pembayaran belum bisa dibaca saat ini."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The payments could not load"
+msgstr "Pembayaran tidak bisa dimuat"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid ""
+"The payments could not load. Check your connection, then press Try again."
+msgstr ""
+"Pembayaran tidak bisa dimuat. Periksa koneksi Anda, lalu tekan Coba lagi."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The payslip lines could not be opened."
+msgstr "Baris slip gaji tidak bisa dibuka."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The payslips changed after this payment was sent for approval"
+msgstr "Slip gaji berubah setelah pembayaran ini diajukan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid ""
+"The payslips changed after this payment was sent for approval: they now add "
+"up to %(now)s (%(diff)s). The approved figures were not changed."
+msgstr ""
+"Slip gaji berubah setelah pembayaran ini diajukan: sekarang berjumlah "
+"%(now)s (%(diff)s). Angka yang disetujui tidak diubah."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The people behind it"
+msgstr "Orang-orang di baliknya"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "The proof"
+msgstr "Buktinya"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "The receipt could not be attached."
+msgstr "Bukti tidak bisa dilampirkan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "The steps above the table, plus payments that were cancelled."
+msgstr "Langkah di atas tabel, ditambah pembayaran yang dibatalkan."
+
+#. module: pb_fund_payments
+#: model:ir.model.constraint,message:pb_fund_payments.constraint_pb_fund_payment_payee_month_currency_live
+msgid "This fund already has a payment for that month in that currency."
+msgstr "Dana ini sudah punya pembayaran untuk bulan itu dalam mata uang itu."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "This one is for the pay team"
+msgstr "Ini untuk tim penggajian"
+
+#. module: pb_fund_payments
+#: model:ir.model.constraint,message:pb_fund_payments.constraint_pb_fund_payee_item_payee_rule_uniq
+msgid "This pay item is already listed for this payee."
+msgstr "Komponen ini sudah tercantum untuk penerima ini."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "This payee no longer exists."
+msgstr "Penerima ini sudah tidak ada."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "This payment could not be opened."
+msgstr "Pembayaran ini tidak bisa dibuka."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "This payment has already been sent in."
+msgstr "Pembayaran ini sudah diajukan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "This payment is no longer waiting for approval."
+msgstr "Pembayaran ini tidak lagi menunggu persetujuan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "This payment is not waiting for approval."
+msgstr "Pembayaran ini tidak sedang menunggu persetujuan."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "This payment no longer exists."
+msgstr "Pembayaran ini sudah tidak ada."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__to_pay
+msgid "To pay"
+msgstr "Harus dibayar"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_line_list
+msgid "Total"
+msgstr "Total"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Type the amount that was paid as a number."
+msgstr "Ketik jumlah yang dibayar sebagai angka."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee_item__code
+msgid "Unique code for this rule (e.g., BASIC, HRA, PIT)"
+msgstr "Kode unik untuk komponen ini (mis. BASIC, HRA, PIT)"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payee__currency_id
+msgid "Usual currency"
+msgstr "Mata uang biasa"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields.selection,name:pb_fund_payments.selection__pb_fund_payment__state__waiting
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__website_message_ids
+msgid "Website Messages"
+msgstr "Pesan situs web"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payment__website_message_ids
+msgid "Website communication history"
+msgstr "Riwayat komunikasi situs web"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "What happened"
+msgstr "Yang terjadi"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "What is being paid"
+msgstr "Yang dibayarkan"
+
+#. module: pb_fund_payments
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_form
+msgid "What is owed"
+msgstr "Yang terutang"
+
+#. module: pb_fund_payments
+#: model:biz.approval.process,description:pb_fund_payments.process_fundpay
+msgid "What is paid to insurance funds and the tax office after a pay run."
+msgstr ""
+"Yang dibayarkan ke dana asuransi dan kantor pajak setelah proses penggajian."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "What the bank or the fund called the payment"
+msgstr "Sebutan bank atau dana untuk pembayaran itu"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"What the pay runs owe insurance funds and the tax office, what was paid, and"
+" the receipt."
+msgstr ""
+"Yang terutang dari proses penggajian ke dana asuransi dan kantor pajak, yang"
+" sudah dibayar, dan buktinya."
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,help:pb_fund_payments.field_pb_fund_payee__reference_text
+msgid ""
+"What to write in the payment reference, for example the company's code at "
+"the fund."
+msgstr ""
+"Yang ditulis di referensi pembayaran, misalnya kode perusahaan di dana."
+
+#. module: pb_fund_payments
+#: model_terms:ir.ui.view,arch_db:pb_fund_payments.view_pb_fund_payment_form
+msgid "What was paid"
+msgstr "Yang dibayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid ""
+"When the month's payslips are finished, press the button to add up what they"
+" owe."
+msgstr ""
+"Setelah slip gaji bulan itu selesai, tekan tombol untuk menjumlahkan yang "
+"terutang."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Where every payment is"
+msgstr "Posisi setiap pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Where it is"
+msgstr "Posisinya"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Who does the company pay after payroll?"
+msgstr "Siapa yang dibayar perusahaan setelah penggajian?"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Who we pay"
+msgstr "Yang kami bayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__difference_note
+msgid "Why the amount differs"
+msgstr "Mengapa jumlahnya berbeda"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Withdraw"
+msgstr "Tarik kembali"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Withdrawn from the board"
+msgstr "Ditarik dari papan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "Withdrawn. It is back to “To pay”."
+msgstr "Ditarik. Kembali ke “Harus dibayar”."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Withdrawn: %s"
+msgstr "Ditarik: %s"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Work out what we owe for"
+msgstr "Hitung yang terutang untuk"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__worked_out_by
+msgid "Worked Out By"
+msgstr "Dihitung oleh"
+
+#. module: pb_fund_payments
+#: model:ir.model.fields,field_description:pb_fund_payments.field_pb_fund_payment__worked_out_on
+msgid "Worked Out On"
+msgstr "Dihitung pada"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Worked out again: %s owed."
+msgstr "Dihitung ulang: terutang %s."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Worked out from"
+msgstr "Dihitung dari"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Worked out from %(n)s finished payslips: %(amount)s owed."
+msgstr "Dihitung dari %(n)s slip gaji yang selesai: terutang %(amount)s."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Worked out from %s finished payslips of the month."
+msgstr "Dihitung dari %s slip gaji bulan itu yang selesai."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "Worked out from finished payslips"
+msgstr "Dihitung dari slip gaji yang selesai"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "Worked out."
+msgstr "Sudah dihitung."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "Working it out…"
+msgstr "Sedang menghitung…"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "against what was owed."
+msgstr "dibandingkan yang terutang."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "and"
+msgstr "dan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "approved, not paid"
+msgstr "disetujui, belum dibayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "attached"
+msgstr "terlampir"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "attaching a receipt"
+msgstr "melampirkan bukti"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "changed since approval"
+msgstr "berubah sejak disetujui"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "employee,"
+msgstr "karyawan,"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "employer items"
+msgstr "komponen pemberi kerja"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "figures_changed"
+msgstr ""
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "finished payslips"
+msgstr "slip gaji yang selesai"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "finished payslips this month"
+msgstr "slip gaji selesai bulan ini"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "for “"
+msgstr "untuk “"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "funds"
+msgstr "dana"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "marking a fund payment as paid"
+msgstr "menandai pembayaran dana sudah dibayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "more"
+msgstr "lagi"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "more — see the payslip lines for everybody."
+msgstr "lagi — lihat baris slip gaji untuk semua orang."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "no reason given"
+msgstr "tanpa alasan"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "of the month after the pay month"
+msgstr "di bulan setelah bulan gaji"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "of the next month ·"
+msgstr "bulan berikutnya ·"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "on"
+msgstr "pada"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "paid"
+msgstr "dibayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "payments"
+msgstr "pembayaran"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "people"
+msgstr "orang"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "reopening a fund payment"
+msgstr "membuka kembali pembayaran dana"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "sending a fund payment for approval"
+msgstr "mengajukan pembayaran dana"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_board.py:0
+msgid "state"
+msgstr ""
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "to pay"
+msgstr "harus dibayar"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/js/fund_board.js:0
+msgid "waiting for approval"
+msgstr "menunggu persetujuan"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payment.py:0
+msgid "working out what is owed"
+msgstr "menghitung yang terutang"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "· included in another total"
+msgstr "· sudah termasuk dalam total lain"
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "— with"
+msgstr "— pada"
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payee.py:0
+msgid ""
+"“%(item)s” is already paid to %(payee)s. A pay item can belong to one payee "
+"only, or it would be paid twice."
+msgstr ""
+"“%(item)s” sudah dibayarkan ke %(payee)s. Satu komponen hanya boleh milik "
+"satu penerima, atau akan dibayar dua kali."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_payee.py:0
+msgid "“%s” belongs to a pay scheme of another company."
+msgstr "“%s” milik skema gaji perusahaan lain."
+
+#. module: pb_fund_payments
+#. odoo-javascript
+#: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
+msgid "”. Check the spelling, or search by a fund or a payment reference."
+msgstr ""
+"”. Periksa ejaannya, atau cari berdasarkan dana atau referensi pembayaran."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_approval.py:0
+msgid "Head of pay"
+msgstr "Kepala penggajian"

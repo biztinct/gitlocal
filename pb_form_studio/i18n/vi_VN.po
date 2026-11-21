@@ -1,0 +1,3009 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s (%(type)s) in %(section)s"
+msgstr "%(label)s (%(type)s) trong %(section)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s in %(section)s"
+msgstr "%(label)s trong %(section)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s to %(section)s"
+msgstr "%(label)s sang %(section)s"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "%(label)s: %(old)s → %(new)s (changed on My Payobook by %(who)s, %(how)s)"
+msgstr "%(label)s: %(old)s → %(new)s (đổi trên My Payobook bởi %(who)s, %(how)s)"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s: %(what)s"
+msgstr "%(label)s: %(what)s"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "%(n)s records use the choice \"%(choice)s\". Change them first, then remove it."
+msgstr "%(n)s hồ sơ đang dùng lựa chọn \"%(choice)s\". Hãy đổi chúng trước, rồi mới xoá."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "%(who)s published this screen after you started your changes. Publishing now would replace their layout with yours."
+msgstr "%(who)s đã công bố màn hình này sau khi bạn bắt đầu thay đổi. Công bố bây giờ sẽ thay bố cục của họ bằng bố cục của bạn."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s changes not yet published"
+msgstr "%s thay đổi chưa công bố"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s is deleted."
+msgstr "Đã xoá %s."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s is hidden. Find it again under \"Add existing\"."
+msgstr "Đã ẩn %s. Tìm lại trong \"Thêm trường có sẵn\"."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s records"
+msgstr "%s hồ sơ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "%s unsaved changes"
+msgstr "%s thay đổi chưa lưu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 change not yet published"
+msgstr "1 thay đổi chưa công bố"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 record"
+msgstr "1 hồ sơ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "1 unsaved change"
+msgstr "1 thay đổi chưa lưu"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice can be at most %s characters."
+msgstr "Mỗi lựa chọn dài tối đa %s ký tự."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice list can have at most %s choices."
+msgstr "Danh sách lựa chọn có tối đa %s lựa chọn."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice list needs at least one choice."
+msgstr "Danh sách lựa chọn cần ít nhất một lựa chọn."
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_field_meta_field_uniq
+msgid "A field has one set of Form builder settings."
+msgstr "Mỗi trường chỉ có một bộ thiết lập trong Trình tạo biểu mẫu."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A field name can be at most %s characters."
+msgstr "Tên trường dài tối đa %s ký tự."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A field's type cannot be changed. Delete it and add a new one."
+msgstr "Không thể đổi kiểu của trường. Hãy xoá và thêm trường mới."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "A locked field stays in its own section. You can still change its order there."
+msgstr "Trường đã khoá phải ở trong mục của nó. Bạn vẫn có thể đổi thứ tự trong mục đó."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "A new field is made for every record of this kind when you publish."
+msgstr "Trường mới được tạo cho mọi hồ sơ loại này khi bạn công bố."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A pay run is being worked out right now. Try again in a few minutes."
+msgstr "Một kỳ lương đang được tính. Hãy thử lại sau vài phút."
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_layout_host_company_uniq
+msgid "A screen has one published layout per company."
+msgstr "Mỗi màn hình có một bố cục đã công bố cho mỗi công ty."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "About"
+msgstr "Thông tin"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__action
+msgid "Action"
+msgstr "Hành động"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add a choice"
+msgstr "Thêm lựa chọn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add a country…"
+msgstr "Thêm quốc gia…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add existing"
+msgstr "Thêm trường có sẵn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/use_form_studio.js:0
+msgid "Add or move fields on this screen"
+msgstr "Thêm hoặc di chuyển trường trên màn hình này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0
+msgid "Add your own fields to record screens and decide who sees them."
+msgstr "Thêm trường của riêng bạn vào màn hình hồ sơ và chọn ai được xem."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Added"
+msgstr "Đã thêm"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Added %(label)s (%(type)s)"
+msgstr "Đã thêm %(label)s (%(type)s)"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__create_field
+msgid "Added a field"
+msgstr "Đã thêm một trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__admin
+msgid "Administrators only"
+msgstr "Chỉ quản trị viên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__all
+msgid "All countries"
+msgstr "Mọi quốc gia"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Another administrator published this screen after you started your changes."
+msgstr "Một quản trị viên khác đã công bố màn hình này sau khi bạn bắt đầu thay đổi."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Appears in"
+msgstr "Xuất hiện ở"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Automations"
+msgstr "Tự động hoá"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Back to %s"
+msgstr "Quay lại %s"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__base_version
+msgid "Base Version"
+msgstr "Phiên bản gốc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · HR approves"
+msgstr "Được sửa · nhân sự duyệt"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · saves at once"
+msgstr "Được sửa · lưu ngay"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cancel"
+msgstr "Huỷ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cannot delete."
+msgstr "Không thể xoá."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Changed"
+msgstr "Đã đổi"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Changed %(label)s: %(what)s"
+msgstr "Đã đổi %(label)s: %(what)s"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__update_field
+msgid "Changed a field"
+msgstr "Đã đổi một trường"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__portal_change
+msgid "Changed on My Payobook"
+msgstr "Đã đổi trên My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Changes discarded. Nothing was published."
+msgstr "Đã bỏ các thay đổi. Không có gì được công bố."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Choice list"
+msgstr "Danh sách lựa chọn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Choices"
+msgstr "Các lựa chọn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Choose a file"
+msgstr "Chọn tệp"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__city
+msgid "City"
+msgstr "Thành phố"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Click a field on the screen to change it, or drag a type from the left to add one."
+msgstr "Bấm vào một trường trên màn hình để sửa, hoặc kéo một kiểu từ bên trái để thêm."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Close the Form builder"
+msgstr "Đóng Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__company_id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__company_id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__company_id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Company details"
+msgstr "Thông tin công ty"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Contact"
+msgstr "Liên hệ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Countries"
+msgstr "Quốc gia"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__country_ids
+msgid "Countries of work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Country of Work decides which fields apply."
+msgstr "Quốc gia làm việc quyết định trường nào được áp dụng."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__country_id
+msgid "Country of work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__custom
+msgid "Custom"
+msgstr "Tuỳ chỉnh"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Custom field"
+msgstr "Trường tuỳ chỉnh"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Custom fields"
+msgstr "Trường tuỳ chỉnh"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Custom fields cannot be added to this kind of record."
+msgstr "Không thể thêm trường tuỳ chỉnh vào loại hồ sơ này."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Custom fields cannot be saved on this kind of record."
+msgstr "Không thể lưu trường tuỳ chỉnh trên loại hồ sơ này."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Decimal"
+msgstr "Số thập phân"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Delete"
+msgstr "Xoá"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Delete field…"
+msgstr "Xoá trường…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Delete this field?"
+msgstr "Xoá trường này?"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Deleted"
+msgstr "Đã xoá"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Deleted %s"
+msgstr "Đã xoá %s"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__delete_field
+msgid "Deleted a field"
+msgstr "Đã xoá một trường"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__detail
+msgid "Detail"
+msgstr "Chi tiết"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Discard"
+msgstr "Bỏ thay đổi"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_studio__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drag a type onto a section"
+msgstr "Kéo một kiểu vào một mục"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drawn by the screen"
+msgstr "Do màn hình tự vẽ"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Drawn by the screen itself from the contract and the pay scheme. Fields cannot be placed here."
+msgstr "Màn hình tự vẽ từ hợp đồng và chế độ lương. Không thể đặt trường ở đây."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drawn by the screen: no fields can be placed"
+msgstr "Do màn hình tự vẽ: không thể đặt trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drop a field here"
+msgstr "Thả trường vào đây"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Each choice must be different: \"%s\" is there twice."
+msgstr "Mỗi lựa chọn phải khác nhau: \"%s\" bị lặp lại."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Edit"
+msgstr "Sửa"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__email
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_edit
+msgid "Employee can change it"
+msgstr "Nhân viên được sửa"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a date."
+msgstr "Hãy nhập ngày."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a number."
+msgstr "Hãy nhập một số."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a whole number."
+msgstr "Hãy nhập số nguyên."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter an amount."
+msgstr "Hãy nhập số tiền."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Every custom field in this company, where it appears, how filled it is and what uses it."
+msgstr "Mọi trường tuỳ chỉnh của công ty: xuất hiện ở đâu, đã điền bao nhiêu và đang được dùng ở đâu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0
+msgid "Every custom field in this company: where it appears, who can see it and what uses it."
+msgstr "Mọi trường tuỳ chỉnh của công ty: xuất hiện ở đâu, ai được xem và đang được dùng ở đâu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Every field is already on the screen."
+msgstr "Mọi trường đều đã có trên màn hình."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Every record needs its name."
+msgstr "Mọi hồ sơ đều cần có tên."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Everyone"
+msgstr "Mọi người"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Everyone, in every company, sees the new layout the next time the screen loads."
+msgstr "Mọi người, ở mọi công ty, sẽ thấy bố cục mới ở lần mở màn hình tiếp theo."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__all
+msgid "Everyone, including the employee"
+msgstr "Mọi người, kể cả nhân viên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Feed pay formulas"
+msgstr "Dùng trong công thức lương"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__field_id
+msgid "Field"
+msgstr "Trường"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__field_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__name
+msgid "Field Name"
+msgstr "Tên trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Field code"
+msgstr "Mã trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Field settings"
+msgstr "Thiết lập trường"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_ir_model_fields
+msgid "Fields"
+msgstr "Các trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fields to add"
+msgstr "Trường để thêm"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "File"
+msgstr "Tệp"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "File attached"
+msgstr "Đã đính kèm tệp"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Fill this in: it is required."
+msgstr "Hãy điền mục này: bắt buộc."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Filled"
+msgstr "Đã điền"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Filled on %(n)s of %(total)s records."
+msgstr "Đã điền trên %(n)s / %(total)s hồ sơ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.actions.client,name:pb_form_studio.action_pb_form_library model:ir.model,name:pb_form_studio.model_pb_form_studio
+msgid "Form builder"
+msgstr "Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_layout_draft
+msgid "Form builder draft"
+msgstr "Bản nháp Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_field_meta
+msgid "Form builder field settings"
+msgstr "Thiết lập trường của Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_audit
+msgid "Form builder history"
+msgstr "Lịch sử Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_native_view
+msgid "Form builder page on a standard screen"
+msgstr "Trang của Trình tạo biểu mẫu trên màn hình chuẩn"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_layout
+msgid "Form builder published layout"
+msgstr "Bố cục đã công bố của Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_sample
+msgid "Form builder sample record"
+msgstr "Hồ sơ mẫu của Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#: model:ir.actions.client,name:pb_form_studio.action_pb_form_dev_host
+msgid "Form builder test screen"
+msgstr "Màn hình thử của Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__pbfs_groups
+msgid "Form builder visibility"
+msgstr "Quyền xem của Trình tạo biểu mẫu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Formulas"
+msgstr "Công thức"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__name
+msgid "Full name"
+msgstr "Họ và tên"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Give the field a name."
+msgstr "Hãy đặt tên cho trường."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__approve
+msgid "HR approves the change"
+msgstr "Nhân sự duyệt thay đổi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__hr
+msgid "HR staff and administrators"
+msgstr "Nhân sự và quản trị viên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "HR staff and administrators only"
+msgstr "Chỉ nhân sự và quản trị viên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Help text"
+msgstr "Chú thích"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden"
+msgstr "Đã ẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Hide from this screen"
+msgstr "Ẩn khỏi màn hình này"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__host_key model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__host_key model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__host_key model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__host_key model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__host_key
+msgid "Host Key"
+msgstr "Mã màn hình"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_studio__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "It cannot be hidden, moved out of its section or deleted."
+msgstr "Không thể ẩn, chuyển khỏi mục của nó hoặc xoá."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Its type cannot be changed afterwards."
+msgstr "Sau đó không thể đổi kiểu."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Keep editing"
+msgstr "Tiếp tục sửa"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Keep going"
+msgstr "Tiếp tục"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Label"
+msgstr "Nhãn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Label in other languages"
+msgstr "Nhãn bằng ngôn ngữ khác"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lúc"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_layout_draft__base_version
+msgid "Layout version the draft was started from."
+msgstr "Phiên bản bố cục khi bắt đầu bản nháp."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Leave empty"
+msgstr "Để trống"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Leave the Form builder without publishing?"
+msgstr "Rời Trình tạo biểu mẫu mà không công bố?"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Leave, keep the draft"
+msgstr "Rời đi, giữ bản nháp"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Link to a record"
+msgstr "Liên kết tới hồ sơ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Links to"
+msgstr "Liên kết tới"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Lists"
+msgstr "Danh sách"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Loading the Field library…"
+msgstr "Đang tải Thư viện trường…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked"
+msgstr "Đã khoá"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Locked field: identity or pay depends on it"
+msgstr "Trường đã khoá: danh tính hoặc lương phụ thuộc vào nó"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Locked."
+msgstr "Đã khoá."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Long text"
+msgstr "Văn bản dài"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_field_meta__custom
+msgid "Made by the Form builder (can be deleted)."
+msgstr "Do Trình tạo biểu mẫu tạo (có thể xoá)."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__model model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__model model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__model
+msgid "Model"
+msgstr "Loại hồ sơ"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__model
+msgid "Model Name"
+msgstr "Tên loại hồ sơ"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Money"
+msgstr "Tiền"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Money and files can be shown, not changed by the employee."
+msgstr "Tiền và tệp chỉ được hiển thị, nhân viên không thể sửa."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Monthly wage"
+msgstr "Lương tháng"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Moved"
+msgstr "Đã chuyển"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Must be filled in before the record is saved."
+msgstr "Phải điền trước khi lưu hồ sơ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "My Payobook"
+msgstr "My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "New %s"
+msgstr "%s mới"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "New field"
+msgstr "Trường mới"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "New fields are added to every record of this kind (%s), empty until filled."
+msgstr "Trường mới được thêm vào mọi hồ sơ loại này (%s), để trống cho đến khi điền."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "No changes yet"
+msgstr "Chưa có thay đổi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "No custom fields yet"
+msgstr "Chưa có trường tuỳ chỉnh"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Not on any screen"
+msgstr "Không có trên màn hình nào"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Not on this screen"
+msgstr "Không có trên màn hình này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Not shown"
+msgstr "Không hiển thị"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Not shown on this screen"
+msgstr "Không hiển thị trên màn hình này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Nothing matches."
+msgstr "Không có kết quả phù hợp."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Offered as a column on the lists of these records."
+msgstr "Có thể chọn làm cột trong danh sách các hồ sơ này."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Offered as an input when pay rules are written."
+msgstr "Có thể chọn làm đầu vào khi viết quy tắc lương."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "On a phone, tap a type to add it to the last section."
+msgstr "Trên điện thoại, chạm vào một kiểu để thêm vào mục cuối."
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_native_view_parent_uniq
+msgid "One Form builder page per screen design."
+msgstr "Mỗi thiết kế màn hình có một trang của Trình tạo biểu mẫu."
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_layout_draft_draft_uniq
+msgid "One draft per person per screen."
+msgstr "Mỗi người một bản nháp cho mỗi màn hình."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Only fields added with the Form builder can be changed here."
+msgstr "Chỉ có thể sửa ở đây các trường được thêm bằng Trình tạo biểu mẫu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Only numbers, money, yes/no, dates and choice lists can feed a formula."
+msgstr "Chỉ số, tiền, có/không, ngày và danh sách lựa chọn mới dùng được trong công thức."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Only some countries of work"
+msgstr "Chỉ một số quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_layout.py:0 code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Only the administrator can change forms."
+msgstr "Chỉ quản trị viên mới được sửa biểu mẫu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Open a record screen and press Form builder to add the fields your company needs."
+msgstr "Mở một màn hình hồ sơ và bấm Trình tạo biểu mẫu để thêm các trường công ty cần."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Open section"
+msgstr "Mục mở"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Open section: fields can be added, moved, hidden"
+msgstr "Mục mở: có thể thêm, di chuyển, ẩn trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Opening the Form builder…"
+msgstr "Đang mở Trình tạo biểu mẫu…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option %s"
+msgstr "Lựa chọn %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option A"
+msgstr "Lựa chọn A"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option B"
+msgstr "Lựa chọn B"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "PDF, image"
+msgstr "PDF, hình ảnh"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_native_view__titles
+msgid "Page title per language."
+msgstr "Tiêu đề trang theo ngôn ngữ."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__parent_xmlid
+msgid "Parent Xmlid"
+msgstr "Màn hình gốc"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pay data import mappings"
+msgstr "Ánh xạ nhập dữ liệu lương"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Pay formulas"
+msgstr "Công thức lương"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Pay scheme"
+msgstr "Chế độ lương"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__payload
+msgid "Payload"
+msgstr "Nội dung"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Payslips, payslip lines and government returns cannot take custom fields:"
+msgstr "Phiếu lương, dòng phiếu lương và tờ khai nhà nước không thể có trường tuỳ chỉnh:"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__phone
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick how a change by the employee is saved."
+msgstr "Hãy chọn cách lưu thay đổi của nhân viên."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick one of the choices."
+msgstr "Hãy chọn một trong các lựa chọn."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick the type carefully. Once published, a field's type cannot be changed; you would have to delete it and start again."
+msgstr "Hãy chọn kiểu cẩn thận. Sau khi công bố, không thể đổi kiểu của trường; bạn sẽ phải xoá và làm lại."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick what kind of field this is."
+msgstr "Hãy chọn loại trường."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick what this field links to."
+msgstr "Hãy chọn trường này liên kết tới đâu."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick who can see this field."
+msgstr "Hãy chọn ai được xem trường này."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Place in section"
+msgstr "Đặt vào mục"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish"
+msgstr "Công bố"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish for everyone"
+msgstr "Công bố cho mọi người"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish mine over it"
+msgstr "Công bố bản của tôi thay thế"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish this layout for everyone?"
+msgstr "Công bố bố cục này cho mọi người?"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Published %(screen)s, version %(v)s"
+msgstr "Đã công bố %(screen)s, phiên bản %(v)s"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__published_at
+msgid "Published At"
+msgstr "Công bố lúc"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__published_by
+msgid "Published By"
+msgstr "Người công bố"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__publish
+msgid "Published a layout"
+msgstr "Đã công bố một bố cục"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Published. %s changes are now live for everyone."
+msgstr "Đã công bố. %s thay đổi đã áp dụng cho mọi người."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Published. 1 change is now live for everyone."
+msgstr "Đã công bố. 1 thay đổi đã áp dụng cho mọi người."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Publishing did not work. Nothing was changed."
+msgstr "Công bố không thành công. Không có gì thay đổi."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__res_id
+msgid "Record"
+msgstr "Hồ sơ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Record type"
+msgstr "Loại hồ sơ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Remove"
+msgstr "Bỏ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Remove this choice"
+msgstr "Bỏ lựa chọn này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__is_required
+msgid "Required"
+msgstr "Bắt buộc"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Restricted"
+msgstr "Bị giới hạn"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Sample record"
+msgstr "Hồ sơ mẫu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Sample record · nothing here is real"
+msgstr "Hồ sơ mẫu · không có gì ở đây là thật"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved export lists"
+msgstr "Danh sách xuất đã lưu"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved searches"
+msgstr "Tìm kiếm đã lưu"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved views"
+msgstr "Chế độ xem đã lưu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Saved. Everyone sees the change the next time their screen loads."
+msgstr "Đã lưu. Mọi người sẽ thấy thay đổi ở lần mở màn hình tiếp theo."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__instant
+msgid "Saves at once"
+msgstr "Lưu ngay"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Screen"
+msgstr "Màn hình"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Screen designs that show it"
+msgstr "Thiết kế màn hình có hiển thị nó"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Search fields"
+msgstr "Tìm trường"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__sections
+msgid "Sections"
+msgstr "Các mục"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__list_ok
+msgid "Show in lists"
+msgstr "Hiện trong danh sách"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_show
+msgid "Show on My Payobook"
+msgstr "Hiện trên My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Show this field only for people working in these countries."
+msgstr "Chỉ hiện trường này cho người làm việc ở các quốc gia này."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Shown"
+msgstr "Đã hiện"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Shown in lists"
+msgstr "Hiện trong danh sách"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Shown on the employee's own My Payobook page, even when only HR can see it here."
+msgstr "Hiện trên trang My Payobook của chính nhân viên, kể cả khi ở đây chỉ nhân sự được xem."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Shown when someone points at the label"
+msgstr "Hiện khi ai đó trỏ vào nhãn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Someone published first"
+msgstr "Có người đã công bố trước"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Something above still uses this field. Remove it there first."
+msgstr "Mục ở trên vẫn đang dùng trường này. Hãy bỏ nó ở đó trước."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__stamp
+msgid "Stamp"
+msgstr "Thời điểm"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Standard field"
+msgstr "Trường chuẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Standard fields come with the product: they can be placed and ordered, never deleted or retyped."
+msgstr "Trường chuẩn có sẵn trong sản phẩm: có thể đặt chỗ và sắp xếp, không bao giờ xoá hay đổi kiểu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again"
+msgstr "Làm lại từ đầu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again from the published layout"
+msgstr "Làm lại từ bố cục đã công bố"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again from their layout"
+msgstr "Làm lại từ bố cục của họ"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__date_start
+msgid "Start date"
+msgstr "Ngày bắt đầu"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__summary
+msgid "Summary"
+msgstr "Tóm tắt"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_ir_model_fields__pbfs_groups
+msgid "Technical: the permission list the Form builder applies to this field. Empty means everyone who may open the record."
+msgstr "Kỹ thuật: danh sách quyền mà Trình tạo biểu mẫu áp dụng cho trường này. Để trống nghĩa là mọi người được mở hồ sơ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Test screen"
+msgstr "Màn hình thử"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Text"
+msgstr "Văn bản"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "That could not be deleted."
+msgstr "Không xoá được."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "That could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That file could not be read."
+msgstr "Không đọc được tệp đó."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That number is too big."
+msgstr "Số đó quá lớn."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That record no longer exists."
+msgstr "Hồ sơ đó không còn tồn tại."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That value cannot be used here."
+msgstr "Không dùng được giá trị đó ở đây."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "The Field library could not open."
+msgstr "Không mở được Thư viện trường."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "The Form builder could not open."
+msgstr "Không mở được Trình tạo biểu mẫu."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_layout.py:0
+msgid "The Form builder history cannot be changed."
+msgstr "Không thể sửa lịch sử Trình tạo biểu mẫu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "The employee can change it on My Payobook."
+msgstr "Nhân viên có thể sửa trên My Payobook."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "The file is too big (at most 10 MB)."
+msgstr "Tệp quá lớn (tối đa 10 MB)."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_audit__res_id
+msgid "The record a My Payobook change was saved on."
+msgstr "Hồ sơ nhận thay đổi từ My Payobook."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "The record could not be read."
+msgstr "Không đọc được hồ sơ."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "The records are busy right now (a pay run or an import may be working on them). Try again in a few minutes."
+msgstr "Các hồ sơ đang bận (có thể một kỳ lương hoặc một lần nhập đang xử lý). Hãy thử lại sau vài phút."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The screen being changed"
+msgstr "Màn hình đang được sửa"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "The section \"%(sec)s\" can hold at most %(n)s fields."
+msgstr "Mục \"%(sec)s\" chứa tối đa %(n)s trường."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_field_meta__model
+msgid "The technical name of the model this field belongs to"
+msgstr "Tên kỹ thuật của loại hồ sơ chứa trường này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "These still use it. Remove it there first."
+msgstr "Những mục này vẫn đang dùng nó. Hãy bỏ ở đó trước."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This cannot be changed here."
+msgstr "Không thể sửa mục này ở đây."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "This deletes the field and every value in it (%s filled in). A copy of the values is kept in the Form builder history."
+msgstr "Thao tác này xoá trường và mọi giá trị trong đó (%s đã điền). Một bản sao các giá trị được giữ trong lịch sử Trình tạo biểu mẫu."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field cannot be changed here."
+msgstr "Không thể sửa trường này ở đây."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field does not apply to this record's country of work."
+msgstr "Trường này không áp dụng cho quốc gia làm việc của hồ sơ này."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field is not offered on this screen."
+msgstr "Trường này không có trên màn hình này."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field is still used by: %s. Remove it there first."
+msgstr "Trường này vẫn đang được dùng bởi: %s. Hãy bỏ ở đó trước."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This kind of record has no self-service page."
+msgstr "Loại hồ sơ này không có trang tự phục vụ."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This link can be shown, not changed by the employee."
+msgstr "Liên kết này chỉ được hiển thị, nhân viên không thể sửa."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record cannot be shown here."
+msgstr "Không thể hiển thị hồ sơ này ở đây."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record no longer exists."
+msgstr "Hồ sơ này không còn tồn tại."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record type already has %s custom fields, the most it can have. Delete one you no longer use first."
+msgstr "Loại hồ sơ này đã có %s trường tuỳ chỉnh, mức tối đa. Hãy xoá một trường không dùng nữa trước."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "This record type has no money of its own. Use Decimal instead."
+msgstr "Loại hồ sơ này không có tiền tệ riêng. Hãy dùng Số thập phân."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "This screen"
+msgstr "Màn hình này"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This screen cannot take custom fields."
+msgstr "Màn hình này không nhận trường tuỳ chỉnh."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "This test screen is for the administrator, in developer mode."
+msgstr "Màn hình thử này dành cho quản trị viên, ở chế độ nhà phát triển."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This value is worked out by the system."
+msgstr "Giá trị này do hệ thống tự tính."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__titles
+msgid "Titles"
+msgstr "Tiêu đề"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Type"
+msgstr "Kiểu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Type %s to confirm."
+msgstr "Gõ %s để xác nhận."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Type the field name exactly to confirm the delete."
+msgstr "Gõ đúng tên trường để xác nhận xoá."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Type to filter…"
+msgstr "Gõ để lọc…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Type to search…"
+msgstr "Gõ để tìm…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__formula_ok
+msgid "Use in pay formulas"
+msgstr "Dùng trong công thức lương"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Used by"
+msgstr "Được dùng bởi"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__user_id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__user_id
+msgid "User"
+msgstr "Người dùng"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__attachment_id
+msgid "Values saved before deletion"
+msgstr "Giá trị đã lưu trước khi xoá"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__version
+msgid "Version"
+msgstr "Phiên bản"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__view_id
+msgid "View"
+msgstr "Màn hình"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_mode
+msgid "When the employee changes it"
+msgstr "Khi nhân viên sửa"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Where it appears"
+msgstr "Xuất hiện ở đâu"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Where they work"
+msgstr "Nơi làm việc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Who can see"
+msgstr "Ai được xem"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__vis
+msgid "Who can see it"
+msgstr "Ai được xem"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Whole number"
+msgstr "Số nguyên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Yes / No"
+msgstr "Có / Không"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot change this field."
+msgstr "Bạn không được sửa trường này."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot change this record."
+msgstr "Bạn không được sửa hồ sơ này."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot pick that record."
+msgstr "Bạn không được chọn hồ sơ đó."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Your changes are kept as a draft. Nobody else sees them until you publish."
+msgstr "Các thay đổi được giữ dạng bản nháp. Không ai khác thấy cho đến khi bạn công bố."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Your unpublished changes from last time are back."
+msgstr "Các thay đổi chưa công bố từ lần trước đã được khôi phục."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "a day"
+msgstr "một ngày"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "another administrator"
+msgstr "một quản trị viên khác"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "approved by %s"
+msgstr "được %s duyệt"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "choices"
+msgstr "các lựa chọn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "countries"
+msgstr "quốc gia"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "custom"
+msgstr "tuỳ chỉnh"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "employee, department…"
+msgstr "nhân viên, phòng ban…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "field"
+msgstr "trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "help text"
+msgstr "chú thích"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "in the company money"
+msgstr "theo tiền tệ công ty"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "name"
+msgstr "tên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "name in %s"
+msgstr "tên bằng %s"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "notes"
+msgstr "ghi chú"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "pick one"
+msgstr "chọn một"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "required"
+msgstr "bắt buộc"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "saved at once"
+msgstr "lưu ngay"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "short, one line"
+msgstr "ngắn, một dòng"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "show in lists"
+msgstr "hiện trong danh sách"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "their shape is fixed by the pay scheme and the official file formats."
+msgstr "cấu trúc của chúng do chế độ lương và mẫu tệp chính thức quy định."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "tick box"
+msgstr "ô đánh dấu"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "translations"
+msgstr "bản dịch"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "use in pay formulas"
+msgstr "dùng trong công thức lương"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "who can see it"
+msgstr "ai được xem"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(n)s of %(total)s"
+msgstr "%(n)s / %(total)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s (not used there)"
+msgstr "%s (không dùng ở đó)"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s It cannot be hidden."
+msgstr "%s Không thể ẩn trường này."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s Its name cannot be changed either."
+msgstr "%s Cũng không thể đổi tên trường này."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s fields"
+msgstr "%s trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s is back to how the product shows it."
+msgstr "%s đã trở lại như mặc định."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/models/ir_model_fields.py:0
+msgid "%s no longer exists: its screen rule was removed."
+msgstr "%s không còn tồn tại: quy tắc hiển thị của trường đã bị gỡ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 field"
+msgstr "1 trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "All record types"
+msgstr "Mọi loại hồ sơ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Any Country of Work"
+msgstr "Mọi quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "As the product decides"
+msgstr "Theo mặc định"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Back to how the product shows it"
+msgstr "Trở lại như mặc định"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Below the tabs"
+msgstr "Bên dưới các thẻ"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Built-in label: %s"
+msgstr "Nhãn mặc định: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cannot be hidden."
+msgstr "Không thể ẩn."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Choice"
+msgstr "Lựa chọn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Clear the filter"
+msgstr "Xóa bộ lọc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Clear the search"
+msgstr "Xóa tìm kiếm"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Country of Work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field"
+msgstr "Tìm trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field to add"
+msgstr "Tìm trường để thêm"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a standard field"
+msgstr "Tìm trường chuẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_hidden
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__none
+msgid "Hidden for everyone"
+msgstr "Ẩn với mọi người"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Hidden for people whose Country of Work is one of these. Their values are "
+"kept."
+msgstr ""
+"Ẩn với những người có quốc gia làm việc là một trong các nước này. Giá trị "
+"vẫn được giữ."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_country_ids
+msgid "Hidden for these Countries of Work"
+msgstr "Ẩn ở các quốc gia làm việc này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden in %s"
+msgstr "Ẩn ở %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Hidden in some countries"
+msgstr "Ẩn ở một số nước"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "It must be filled in to save the record, so it always stays on screen."
+msgstr ""
+"Phải điền trường này mới lưu được hồ sơ, nên trường luôn hiện trên màn hình."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"It was hidden before it became locked, so every screen shows it again. "
+"Choose Shown to clear the old rule."
+msgstr ""
+"Trường đã bị ẩn trước khi bị khóa, nên mọi màn hình hiện lại trường này. "
+"Chọn Đã hiện để xóa quy tắc cũ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Kind of field"
+msgstr "Loại trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Link"
+msgstr "Liên kết"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "List of records"
+msgstr "Danh sách bản ghi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Locked now, shown"
+msgstr "Đã khóa, đang hiện"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked now, shown again"
+msgstr "Đã khóa, hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "My Payobook, HR approves"
+msgstr "My Payobook, HR duyệt"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "My Payobook, saves at once"
+msgstr "My Payobook, lưu ngay"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "No custom fields yet."
+msgstr "Chưa có trường riêng nào."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No field matches"
+msgstr "Không có trường nào khớp"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Number"
+msgstr "Số"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "On My Payobook"
+msgstr "Trên My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "On screen"
+msgstr "Trên màn hình"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Only %s"
+msgstr "Chỉ %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Only the screens change. The field, its values, pay formulas, imports, "
+"Mapping and reports keep it."
+msgstr ""
+"Chỉ màn hình thay đổi. Trường, giá trị, công thức lương, nhập dữ liệu, "
+"Mapping và báo cáo vẫn giữ nguyên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Only where Country of Work is %s"
+msgstr "Chỉ khi quốc gia làm việc là %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid ""
+"Open a record screen and press Form builder to add the fields your company "
+"needs. The standard fields below can be hidden or renamed already."
+msgstr ""
+"Mở màn hình hồ sơ và bấm Form builder để thêm các trường công ty cần. Các "
+"trường chuẩn bên dưới đã có thể ẩn hoặc đổi tên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Other fields"
+msgstr "Trường khác"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Own fields"
+msgstr "Trường riêng"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Own label"
+msgstr "Nhãn riêng"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_labels
+msgid "Own labels"
+msgstr "Nhãn riêng"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Pick a field to hide it or give it your own label. It stays where the "
+"product draws it."
+msgstr ""
+"Chọn một trường để ẩn hoặc đặt nhãn riêng. Trường vẫn nằm đúng chỗ mặc định."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Pick a field to hide it, give it your own label or tick it for My Payobook. "
+"It stays where the product draws it."
+msgstr ""
+"Chọn một trường để ẩn, đặt nhãn riêng hoặc đánh dấu hiện trên My Payobook. "
+"Trường vẫn nằm đúng chỗ mặc định."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Pick at least one country, or choose Shown."
+msgstr "Chọn ít nhất một nước, hoặc chọn Đã hiện."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Renamed"
+msgstr "Đã đổi tên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Reset to the built-in label"
+msgstr "Đặt lại nhãn mặc định"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"Shown only where Country of Work is %s: not used in other countries. That "
+"rule comes with the product and cannot be changed here."
+msgstr ""
+"Chỉ hiện khi quốc gia làm việc là %s: không dùng ở các nước khác. Quy tắc "
+"này có sẵn và không thể đổi ở đây."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Standard fields"
+msgstr "Trường chuẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Standard fields hidden"
+msgstr "Trường chuẩn đã ẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Standard fields renamed"
+msgstr "Trường chuẩn đã đổi tên"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The label cannot be changed."
+msgstr "Không thể đổi nhãn."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Top of the page"
+msgstr "Đầu trang"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid ""
+"Your own fields and the standard ones: where they appear, how filled they "
+"are, what uses them, and which standard fields are hidden or renamed."
+msgstr ""
+"Trường riêng và trường chuẩn: hiện ở đâu, đã điền bao nhiêu, cái gì dùng "
+"chúng, và trường chuẩn nào đã ẩn hoặc đổi tên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "built-in label put back"
+msgstr "đã trả lại nhãn mặc định"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "hidden for everyone"
+msgstr "ẩn với mọi người"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "hidden in %s"
+msgstr "ẩn ở %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "hidden in some countries"
+msgstr "ẩn ở một số nước"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "label"
+msgstr "nhãn"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "own label"
+msgstr "nhãn riêng"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown"
+msgstr "hiện"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown again"
+msgstr "hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Leave a language empty to keep the built-in label there. Mapping, Updates "
+"sheets and pay data files keep the built-in name. My Payobook shows your "
+"label for the fields you show there."
+msgstr ""
+"Để trống một ngôn ngữ để giữ nhãn mặc định ở ngôn ngữ đó. Mapping, bảng Cập "
+"nhật và tệp dữ liệu lương vẫn dùng tên mặc định. My Payobook hiện nhãn của "
+"bạn cho các trường bạn cho hiện ở đó."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(names)s and %(n)s more"
+msgstr "%(names)s và %(n)s mục khác"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Used by pay formula: %s"
+msgstr "Được công thức tính lương dùng: %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Filled by pay data file: %s"
+msgstr "Được tệp dữ liệu lương điền: %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay formula %s"
+msgstr "công thức tính lương %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay data file of %s"
+msgstr "tệp dữ liệu lương của %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again because %(thing)s now uses it."
+msgstr "%(box)s được hiện lại vì %(thing)s nay dùng nó."
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again: %(reason)s"
+msgstr "%(box)s được hiện lại: %(reason)s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "shown again, it cannot be hidden."
+msgstr "được hiện lại, không thể ẩn."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(at)s of %(n)s"
+msgstr "%(at)s / %(n)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 match"
+msgstr "1 kết quả"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A tab of this page. Its fields can be hidden or renamed, not moved."
+msgstr "Một thẻ của trang này. Có thể ẩn hoặc đổi tên các trường, không thể di chuyển."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field on this screen"
+msgstr "Tìm một trường trên màn hình này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Fixed layout — fields can be hidden or renamed"
+msgstr "Bố cục cố định — có thể ẩn hoặc đổi tên trường"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fixed layout: its fields can be hidden or renamed, not moved"
+msgstr "Bố cục cố định: có thể ẩn hoặc đổi tên trường, không thể di chuyển"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden for %s"
+msgstr "Ẩn với %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked: %s"
+msgstr "Đã khóa: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No fields here: this part of the screen lists records, not fields."
+msgstr "Không có trường ở đây: phần này của màn hình liệt kê bản ghi, không phải trường."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Worked out by the screen"
+msgstr "Do màn hình tự tính"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Field code: %s"
+msgstr "Mã trường: %s"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Choose who sees this field: all countries, only some Countries of Work, or nobody."
+msgstr "Chọn ai thấy trường này: mọi quốc gia, chỉ một số quốc gia làm việc, hoặc không ai."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s It cannot be shown again."
+msgstr "%s Không thể hiện lại."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "built-in setting put back"
+msgstr "đã đặt lại thiết lập mặc định"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown for all countries"
+msgstr "hiện cho mọi quốc gia"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "people with no Country of Work"
+msgstr "người chưa có quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown only for %s"
+msgstr "chỉ hiện cho %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "No Country of Work"
+msgstr "Chưa có quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "No country matches"
+msgstr "Không có quốc gia nào khớp"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "Every Country of Work in use is already chosen"
+msgstr "Mọi quốc gia làm việc đang dùng đã được chọn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "no Country of Work"
+msgstr "chưa có quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%(a)s + %(b)s"
+msgstr "%(a)s + %(b)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%(a)s + %(b)s + %(n)s more"
+msgstr "%(a)s + %(b)s + %(n)s nước khác"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Countries of Work in use"
+msgstr "Quốc gia làm việc đang dùng"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Other countries"
+msgstr "Quốc gia khác"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Type a country's name to find it."
+msgstr "Gõ tên quốc gia để tìm."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Taken off the screens"
+msgstr "Đã gỡ khỏi màn hình"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Was on %s"
+msgstr "Trước ở %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Stays off"
+msgstr "Giữ ẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Can be shown again"
+msgstr "Có thể hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Always shown now: %s"
+msgstr "Nay luôn hiện: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Cannot be hidden. %s"
+msgstr "Không thể ẩn. %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown for"
+msgstr "hiện cho"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown for: %s"
+msgstr "hiện cho: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "built-in setting put back: %s"
+msgstr "đã đặt lại thiết lập mặc định: %s"
+
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "When shown again: Full details, %s tab, and the side panel."
+msgstr "Khi hiện lại: Xem đầy đủ, thẻ %s, và bảng bên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "When shown again: Full details, %s tab, in its old place. Not on the side panel."
+msgstr "Khi hiện lại: Xem đầy đủ, thẻ %s, ở chỗ cũ. Không có trên bảng bên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s You can still rename it."
+msgstr "%s Bạn vẫn có thể đổi tên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Always shown"
+msgstr "Luôn hiện"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Always shown: %s"
+msgstr "Luôn hiện: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Built-in setting"
+msgstr "Thiết lập mặc định"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Changed from: %s"
+msgstr "Đổi từ: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Shown again"
+msgstr "Đã hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Taken off the screens, stays off"
+msgstr "Đã gỡ khỏi màn hình, giữ ẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Pick at least one Country of Work, or choose All countries."
+msgstr "Chọn ít nhất một quốc gia làm việc, hoặc chọn Mọi quốc gia."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick a field to choose the countries it shows for, give it your own label or tick it for My Payobook. It stays where the product draws it."
+msgstr "Chọn một trường để chọn quốc gia mà trường hiện ra, đặt nhãn riêng hoặc đánh dấu cho My Payobook. Trường vẫn ở chỗ sản phẩm vẽ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick a field to choose the countries it shows for or give it your own label. It stays where the product draws it."
+msgstr "Chọn một trường để chọn quốc gia mà trường hiện ra hoặc đặt nhãn riêng. Trường vẫn ở chỗ sản phẩm vẽ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The product took these off the screens. Their values are kept. Most can be shown again."
+msgstr "Sản phẩm đã gỡ các trường này khỏi màn hình. Giá trị vẫn được giữ. Phần lớn có thể hiện lại."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Show again"
+msgstr "Hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Always shown: identity or pay depends on it"
+msgstr "Luôn hiện: danh tính hoặc lương phụ thuộc vào nó"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "It was narrowed before it had to stay on screen, so every screen shows it as the product does. Choose Reset to built-in to clear the old setting."
+msgstr "Trường đã bị thu hẹp trước khi phải luôn hiện, nên mọi màn hình hiện nó như sản phẩm. Chọn Đặt lại mặc định để xoá thiết lập cũ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Stays off the screens."
+msgstr "Giữ ẩn khỏi màn hình."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show
+msgid "Shown for"
+msgstr "Hiện cho"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__only
+msgid "Only these Countries of Work"
+msgstr "Chỉ các quốc gia làm việc này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Shown only for people whose Country of Work is one of these. Removing the last one hides it for everyone. Values are kept."
+msgstr "Chỉ hiện cho người có quốc gia làm việc là một trong số này. Bỏ quốc gia cuối cùng sẽ ẩn với mọi người. Giá trị vẫn được giữ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Always shown here"
+msgstr "Luôn hiện ở đây"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Pick a country below."
+msgstr "Chọn một quốc gia bên dưới."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Built-in setting:"
+msgstr "Thiết lập mặc định:"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Now:"
+msgstr "Hiện tại:"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Reset to built-in"
+msgstr "Đặt lại mặc định"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show_country_ids
+msgid "Shown for these Countries of Work"
+msgstr "Hiện cho các quốc gia làm việc này"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show_unset
+msgid "Also people with no Country of Work"
+msgstr "Cả người chưa có quốc gia làm việc"

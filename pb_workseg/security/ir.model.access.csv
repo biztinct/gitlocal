@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_person_user,person read,model_pb_person,base.group_user,1,0,0,0
+access_pb_person_manager,person manager,model_pb_person,pb_workseg.group_workseg_manager,1,1,1,0
+access_pb_person_system,person system,model_pb_person,base.group_system,1,1,1,1
+access_pb_work_segment_user,work segment read,model_pb_work_segment,base.group_user,1,0,0,0
+access_pb_work_segment_manager,work segment manager,model_pb_work_segment,pb_workseg.group_workseg_manager,1,1,1,1
+access_pb_work_segment_system,work segment system,model_pb_work_segment,base.group_system,1,1,1,1
+access_pb_cost_transfer_user,charge read,model_pb_cost_transfer,base.group_user,1,0,0,0
+access_pb_cost_transfer_manager,charge manager,model_pb_cost_transfer,pb_workseg.group_workseg_manager,1,1,1,1
+access_pb_cost_transfer_system,charge system,model_pb_cost_transfer,base.group_system,1,1,1,1

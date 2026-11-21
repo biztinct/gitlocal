@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         WHO MAY SEE A PAY-DATA FILE THAT IS WAITING FOR THEM.
+
+         The engine re-checks `check_access('read')` on the record before it
+         lets anybody decide, and an HR lead for one part of the business
+         typically holds no Formula Engine role at all — so the route would
+         seat them and the ORM would then refuse them the file the seat is
+         about (ledger AM60).
+
+         The wide rule ships WITH the narrow one and never without: this model
+         had no record rule, so everybody with the model ACL saw every batch.
+         Rules are OR-ed over the groups a person is in, and a Formula user is
+         also a plain internal user — the narrow rule alone would have taken
+         the batch list away from the people whose job it is.
+         ================================================================== -->
+
+    <record id="rule_import_batch_seat" model="ir.rule">
+        <field name="name">Pay data: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_hr_payroll_import_batch"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <record id="rule_import_batch_formula" model="ir.rule">
+        <field name="name">Pay data: the payroll team</field>
+        <field name="model_id" ref="model_hr_payroll_import_batch"/>
+        <field name="groups" eval="[
+            (4, ref('pb_hr_payroll_formula.group_formula_user')),
+            (4, ref('pb_hr_payroll_formula.group_formula_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

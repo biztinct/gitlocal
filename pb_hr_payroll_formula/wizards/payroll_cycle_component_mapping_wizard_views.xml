@@ -10,6 +10,34 @@
                     <field name="mid_cycle_config_id"/>
                     <field name="end_cycle_config_id"/>
                 </group>
+                <div class="text-muted mb-2" data-coach="map-intro"
+                     invisible="not mid_cycle_config_id or not end_cycle_config_id">
+                    Auto-suggest matches components by code, then by name similarity.
+                    Already-mapped components are skipped.
+                </div>
+                <div class="d-flex gap-2 mb-3" data-coach="map-actions"
+                     invisible="not mid_cycle_config_id or not end_cycle_config_id">
+                    <button name="action_suggest_mappings" type="object" string="Suggest Mappings"
+                            class="btn-secondary"/>
+                    <button name="action_accept_all" type="object" string="Accept All (≥90%)"
+                            class="btn-primary" invisible="not suggestion_ids"/>
+                </div>
+                <field name="suggestion_ids" nolabel="1" invisible="not suggestion_ids">
+                    <list create="false" delete="false"
+                          decoration-success="confidence &gt;= 1.0"
+                          decoration-info="confidence &lt; 1.0 and state == 'proposed'"
+                          decoration-muted="state == 'rejected'">
+                        <field name="mid_component_id"/>
+                        <field name="end_component_id"/>
+                        <field name="confidence" widget="percentage"/>
+                        <field name="match_reason"/>
+                        <field name="state"/>
+                        <button name="action_accept" type="object" string="Accept" icon="fa-check"
+                                invisible="state != 'proposed'"/>
+                        <button name="action_reject" type="object" string="Reject" icon="fa-times"
+                                invisible="state != 'proposed'"/>
+                    </list>
+                </field>
                 <footer>
                     <button name="action_open_mappings" type="object" string="Open Mappings"
                             class="btn-primary"/>

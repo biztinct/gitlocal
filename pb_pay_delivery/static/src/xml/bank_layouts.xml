@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <!-- WDGAP S2-C — Settings › Payroll › Bank layouts -->
+  <t t-name="pb_pay_delivery.PbBankLayouts">
+    <div class="pbbl pbim">
+      <div class="pbbl-hero">
+        <span class="pbbl-hero-ico" t-out="icon('landmark',22)"/>
+        <div class="pbbl-hero-txt">
+          <h1>Bank layouts</h1>
+          <p>The payment files each bank takes. Copy a layout Payobook ships and shape your copy to your bank's own template.</p>
+        </div>
+        <div t-if="state.board" class="pbbl-glance">
+          <span class="g"><b t-esc="counts.shipped"/> <span>shipped</span></span>
+          <span t-attf-class="g {{ counts.own ? 'on' : '' }}"><b t-esc="counts.own"/> <span>your copies</span></span>
+          <span t-attf-class="g {{ counts.unconfirmed ? 'warn' : '' }}"><b t-esc="counts.unconfirmed"/> <span>not confirmed by the bank</span></span>
+        </div>
+      </div>
+
+      <div t-if="otherName" class="pbbl-setting">
+        <div class="txt">
+          <div class="h"><span t-out="icon('userX',15)"/> <span>Accounts in another person's name</span></div>
+          <div class="s">For the bank layouts of the payment list (not the Vietnamese bank file). The payment list flags these people either way.</div>
+        </div>
+        <div class="pbbl-seg" role="radiogroup">
+          <button t-foreach="otherName.choices" t-as="c" t-key="c.key"
+                  t-attf-class="seg {{ otherName.value === c.key ? 'on' : '' }}"
+                  role="radio" t-att-aria-checked="otherName.value === c.key ? 'true' : 'false'"
+                  t-att-disabled="state.busy"
+                  t-on-click="() => this.setOtherName(c.key)" t-esc="c.label"/>
+        </div>
+      </div>
+      <div t-if="!state.loaded" class="pbbl-empty">Loading…</div>
+      <div t-elif="state.denied" class="pbbl-empty">
+        <span t-out="icon('lock',22)"/>
+        <div t-esc="state.denied"/>
+      </div>
+      <div t-else="" class="pbbl-body">
+        <!-- the list -->
+        <aside class="pbbl-list">
+          <label class="pbbl-search">
+            <span t-out="icon('search',14)"/>
+            <input type="search" placeholder="Find a layout or a country" t-att-value="state.search" t-on-input="onSearch"/>
+          </label>
+          <div t-foreach="groups" t-as="grp" t-key="grp.country" class="pbbl-group">
+            <div class="pbbl-group-h" t-esc="grp.country"/>
+            <button t-foreach="grp.rows" t-as="row" t-key="row.id"
+                    t-attf-class="pbbl-row {{ state.selectedId === row.id ? 'on' : '' }} {{ row.active ? '' : 'off' }}"
+                    t-on-click="() => this.select(row.id)">
+              <span class="nm" t-esc="row.name"/>
+              <span class="tags">
+                <span t-if="!row.shipped" class="pbbl-chip own">Your copy</span>
+                <span t-if="row.inferred" class="pbbl-chip warn">Not confirmed</span>
+                <span t-if="!row.active" class="pbbl-chip muted">Not offered</span>
+                <span class="pbbl-chip muted" t-esc="row.target_label"/>
+              </span>
+            </button>
+          </div>
+          <div t-if="!groups.length" class="pbbl-none">No layout matches.</div>
+        </aside>
+
+        <!-- the layout -->
+        <section t-if="state.layout and state.draft" class="pbbl-detail">
+          <div class="pbbl-detail-h">
+            <div>
+              <h2 t-esc="state.layout.name"/>
+              <div class="sub">
+                <t t-esc="state.layout.country"/>
+                <span class="dot">•</span>
+                <t t-esc="state.layout.target_label"/>
+                <t t-if="state.layout.copied_from"><span class="dot">•</span> Copied from <t t-esc="state.layout.copied_from"/></t>
+              </div>
+            </div>
+            <div class="acts">
+              <button class="pbim-btn" t-att-disabled="state.busy" t-on-click="makeCopy">
+                <span t-out="icon('copy',14)"/> <span>Make our own copy</span>
+              </button>
+              <t t-if="editable">
+                <button t-if="state.layout.active" class="pbim-btn" t-att-disabled="state.busy" t-on-click="archive">
+                  <span t-out="icon('archive',14)"/> <span>Stop offering it</span>
+                </button>
+                <button t-else="" class="pbim-btn" t-att-disabled="state.busy" t-on-click="restore">
+                  <span t-out="icon('undo',14)"/> <span>Offer it again</span>
+                </button>
+                <button class="pbim-btn" t-att-disabled="state.busy or !state.dirty" t-on-click="discard">Undo changes</button>
+                <button class="pbim-btn primary" t-att-disabled="state.busy or !state.dirty" t-on-click="save">
+                  <span t-out="icon('save',14)"/> <span>Save</span>
+                </button>
+              </t>
+            </div>
+          </div>
+
+          <div t-if="state.layout.inferred" class="pbbl-banner warn">
+            <span t-out="icon('info',16)"/>
+            <div>
+              <b>Not confirmed by the bank.</b>
+              <span> This layout was not taken from the bank's own published specification. Check with your bank before the first upload.</span>
+            </div>
+          </div>
+          <div t-if="state.layout.can_confirm" class="pbbl-banner confirm">
+            <label class="tick">
+              <input type="checkbox" t-att-checked="state.layout.bank_confirmed" t-att-disabled="state.busy"
+                     t-on-change="toggleConfirmed"/>
+              <span>Confirmed with our bank</span>
+            </label>
+            <span t-if="state.layout.bank_confirmed" class="who" t-esc="confirmedLine"/>
+            <span t-else="" class="who">Tick this only after your bank has checked a test file made with this copy.</span>
+          </div>
+          <div t-if="!editable" class="pbbl-banner">
+            <span t-out="icon('lock',16)"/>
+            <span>A layout Payobook ships cannot be changed. Make your own copy to change it — your copy is offered on Pay &amp; deliver beside it.</span>
+          </div>
+          <div t-if="state.draft.note or editable" class="pbbl-note">
+            <div class="lbl">Where this layout comes from</div>
+            <textarea t-if="editable" rows="3" t-att-value="state.draft.note" t-on-input="(ev) => this.setField('note', ev)"/>
+            <p t-else="" t-esc="state.draft.note"/>
+          </div>
+
+          <!-- the shape of the file -->
+          <fieldset class="pbbl-card" t-att-disabled="!editable">
+            <legend>The file</legend>
+            <div class="pbbl-grid">
+              <label><span>Name</span>
+                <input type="text" t-att-value="state.draft.name" t-on-input="(ev) => this.setField('name', ev)"/></label>
+              <label><span>Kind of file</span>
+                <select t-on-change="(ev) => this.setField('file_type', ev)">
+                  <option t-foreach="choices('file_types')" t-as="o" t-key="o.key" t-att-value="o.key"
+                          t-att-selected="state.draft.file_type === o.key" t-esc="o.label"/>
+                </select></label>
+              <label t-if="state.draft.file_type === 'csv'"><span>Separator</span>
+                <input type="text" maxlength="1" t-att-value="state.draft.delimiter" t-on-input="(ev) => this.setField('delimiter', ev)"/></label>
+              <label><span>Text encoding</span>
+                <input type="text" t-att-value="state.draft.encoding" t-on-input="(ev) => this.setField('encoding', ev)"/></label>
+              <label><span>Total written as</span>
+                <select t-on-change="(ev) => this.setField('amount_format', ev)">
+                  <option t-foreach="choices('amount_formats')" t-as="o" t-key="o.key" t-att-value="o.key"
+                          t-att-selected="state.draft.amount_format === o.key" t-esc="o.label"/>
+                </select></label>
+              <label><span>Date written as</span>
+                <input type="text" t-att-value="state.draft.date_format" t-on-input="(ev) => this.setField('date_format', ev)"/></label>
+              <label><span>Line ending</span>
+                <select t-on-change="(ev) => this.setField('line_ending', ev)">
+                  <option t-foreach="choices('line_endings')" t-as="o" t-key="o.key" t-att-value="o.key"
+                          t-att-selected="state.draft.line_ending === o.key" t-esc="o.label"/>
+                </select></label>
+              <label><span>Name of the bank code</span>
+                <input type="text" t-att-value="state.draft.code_label" t-on-input="(ev) => this.setField('code_label', ev)"/></label>
+              <label><span>Form of the bank code</span>
+                <input type="text" t-att-value="state.draft.code_pattern" t-on-input="(ev) => this.setField('code_pattern', ev)"/></label>
+              <label><span>Form of the account number</span>
+                <input type="text" t-att-value="state.draft.account_pattern" t-on-input="(ev) => this.setField('account_pattern', ev)"/></label>
+              <label class="tick"><input type="checkbox" t-att-checked="state.draft.with_header" t-on-change="(ev) => this.setField('with_header', ev)"/>
+                <span>First row holds the column names</span></label>
+              <label class="tick"><input type="checkbox" t-att-checked="state.draft.ascii_only" t-on-change="(ev) => this.setField('ascii_only', ev)"/>
+                <span>Plain letters only (people with accents are left out, never changed)</span></label>
+            </div>
+            <div class="pbbl-grid two">
+              <label><span>Lines before the payments</span>
+                <textarea rows="3" t-att-value="state.draft.header_template" t-on-input="(ev) => this.setField('header_template', ev)"/></label>
+              <label><span>Lines after the payments</span>
+                <textarea rows="3" t-att-value="state.draft.trailer_template" t-on-input="(ev) => this.setField('trailer_template', ev)"/></label>
+            </div>
+            <div class="pbbl-hint">
+              <span>Words filled in:</span>
+              <code t-foreach="choices('tokens')" t-as="tok" t-key="tok" t-esc="tok"/>
+              <span>— the number of payments, the total, the payment date, the company account, the reference and the money.</span>
+            </div>
+          </fieldset>
+
+          <!-- the columns -->
+          <fieldset class="pbbl-card" t-att-disabled="!editable">
+            <legend>Columns, in order</legend>
+            <div class="pbbl-cols">
+              <div class="pbbl-col head">
+                <span>Column name</span><span>Holds</span><span>Fixed text</span><span>Width</span>
+                <span>Number</span><span>Longest</span><span>Must have</span><span/>
+              </div>
+              <div t-foreach="state.draft.column_rows" t-as="col" t-key="col_index" class="pbbl-col">
+                <input type="text" t-att-value="col.header" t-on-input="(ev) => this.setCol(col_index, 'header', ev)" aria-label="Column name"/>
+                <select t-on-change="(ev) => this.setCol(col_index, 'source', ev)" aria-label="Holds">
+                  <option t-foreach="choices('sources')" t-as="o" t-key="o.key" t-att-value="o.key"
+                          t-att-selected="col.source === o.key" t-esc="o.label"/>
+                </select>
+                <input type="text" t-att-value="col.literal_value" t-att-disabled="col.source !== 'literal'"
+                       t-on-input="(ev) => this.setCol(col_index, 'literal_value', ev)" aria-label="Fixed text"/>
+                <input type="number" min="0" t-att-value="col.width" t-on-input="(ev) => this.setCol(col_index, 'width', ev)" aria-label="Width"/>
+                <select t-on-change="(ev) => this.setCol(col_index, 'number_format', ev)" aria-label="Number">
+                  <option t-foreach="choices('number_formats')" t-as="o" t-key="o.key" t-att-value="o.key"
+                          t-att-selected="col.number_format === o.key" t-esc="o.label"/>
+                </select>
+                <input type="number" min="0" t-att-value="col.max_length" t-on-input="(ev) => this.setCol(col_index, 'max_length', ev)" aria-label="Longest"/>
+                <input type="checkbox" t-att-checked="col.required" t-on-change="(ev) => this.setCol(col_index, 'required', ev)" aria-label="Must have"/>
+                <span t-if="editable" class="mv">
+                  <button class="pbbl-ib" title="Move up" t-on-click="() => this.moveColumn(col_index, -1)" t-out="icon('arrowUp',13)"/>
+                  <button class="pbbl-ib" title="Move down" t-on-click="() => this.moveColumn(col_index, 1)" t-out="icon('arrowDown',13)"/>
+                  <button class="pbbl-ib" title="Remove" t-on-click="() => this.removeColumn(col_index)" t-out="icon('trash',13)"/>
+                </span>
+                <span t-else=""/>
+              </div>
+            </div>
+            <button t-if="editable" class="pbim-btn" t-on-click="addColumn">
+              <span t-out="icon('plus',14)"/> <span>Add a column</span>
+            </button>
+          </fieldset>
+
+          <!-- the preview -->
+          <div t-if="state.layout.target === 'payment_list'" class="pbbl-card pbbl-preview">
+            <div class="pbbl-preview-h">
+              <div class="lbl">Preview with three sample people</div>
+              <button class="pbim-btn" t-att-disabled="state.previewBusy" t-on-click="loadPreview">
+                <span t-out="icon('eye',14)"/> <span>Show the preview</span>
+              </button>
+            </div>
+            <t t-if="state.preview">
+              <div class="sum" t-esc="previewLine"/>
+              <pre class="pbbl-pre" t-esc="state.preview.text"/>
+              <div t-if="state.preview.excluded.length" class="pbbl-left">
+                <div t-foreach="state.preview.excluded" t-as="x" t-key="x_index">
+                  <b t-esc="x.employee"/> <span t-esc="reasonList(x.reasons)"/>
+                </div>
+              </div>
+              <div class="pbbl-hint">Made-up people only. The real file is made on Pay &amp; deliver from the approved bank details.</div>
+            </t>
+          </div>
+        </section>
+      </div>
+    </div>
+  </t>
+</templates>

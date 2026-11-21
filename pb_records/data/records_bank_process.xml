@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         UPDATES P3a (D3) — bank details always need a second person.
+
+         Its own row in the approval catalogue, over the same business object
+         as "Records Desk bulk changes" (`pb.records.apply` answers to both,
+         `_approval_process_key_for`), so a company that publishes "No
+         approval needed" for records never reaches bank details by
+         accident. Each company's route is laid once by `pb_records`
+         (`_approval_seed_bank`) and never overwritten afterwards.
+         ================================================================== -->
+    <record id="process_records_bank" model="biz.approval.process">
+        <field name="key">records_bank</field>
+        <field name="name">Bank details from Records and Updates</field>
+        <field name="area">data</field>
+        <field name="model_name">pb.records.apply</field>
+        <field name="money" eval="True"/>
+        <field name="description">Where somebody's pay is sent, changed from a spreadsheet or the Records screen. Always approved by somebody other than the person who proposed it.</field>
+        <field name="sequence">111</field>
+    </record>
+
+</odoo>

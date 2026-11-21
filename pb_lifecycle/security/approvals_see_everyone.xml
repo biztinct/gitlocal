@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  WF2 P5c (owner decision D32) — one narrow right: "See everyone's approvals".
+
+  Until now the Approvals inbox's "Everyone" scope was reachable only through
+  three broad rights (approval set-up, HR manager, payroll manager), each of
+  which gives far more than looking. This group gives exactly the look:
+
+    * the inbox's "Everyone" scope (`pb_lifecycle/models/workflow_inbox.py` adds
+      it to `_can_org`, beside the three rights `ORG_GROUPS` names);
+    * reading any approval request of the companies the person works in
+      (the global company rule `rule_request_company` still applies, so other
+      companies stay hidden). Steps, seats and decisions already have
+      company-only rules, so nothing more is needed for them.
+
+  It gives NO write, create or delete (the rule below is read-only, and the
+  ACL every staff login already has is unchanged), no seat, and no set-up,
+  HR or payroll right: deciding, moving, repairing and cancelling are checked
+  by the approval engine against seats and the set-up / admin groups, which
+  this group does not imply.
+
+  It lives in pb_lifecycle because it needs a data file and pb_lifecycle is
+  the lightest module that already depends on pb_approval_config and is
+  upgraded in this deploy anyway (biz_approval_workflow / pb_approval_config
+  are not bumped, ledger G29). Nobody is given this group by the upgrade.
+-->
+<odoo>
+  <record id="group_approvals_see_everyone" model="res.groups">
+    <field name="name">See everyone's approvals</field>
+    <field name="comment">Read every approval request in your companies, in the Approvals inbox under Everyone. Does not let you decide, move, repair or cancel anything.</field>
+  </record>
+
+  <record id="rule_approvals_see_everyone" model="ir.rule">
+    <field name="name">Request: see everyone's approvals (read only)</field>
+    <field name="model_id" ref="biz_approval_workflow.model_biz_approval_request"/>
+    <field name="groups" eval="[(4, ref('group_approvals_see_everyone'))]"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="perm_read" eval="True"/>
+    <field name="perm_write" eval="False"/>
+    <field name="perm_create" eval="False"/>
+    <field name="perm_unlink" eval="False"/>
+  </record>
+
+  <!-- Granted from the Access screen (audit row), the way every ability is.
+       noupdate, as the other abilities (data/workflow_abilities.xml): once a
+       role that holds it is assigned, Access refuses any write to its
+       groups ("used by assigned roles"), and an upgrade that rewrote this
+       record failed on rize after D32 (ledger G80, WF2 P5b). -->
+  <data noupdate="1">
+  <record id="ability_approvals_see_everyone" model="pb.role.ability">
+    <field name="technical_key">approvals-see-everyone</field>
+    <field name="name">See everyone's approvals</field>
+    <field name="area">system</field>
+    <field name="description">Look at every approval request in the company, under Everyone in the Approvals inbox. Read only: it does not let you decide, move, repair or cancel anything.</field>
+    <field name="group_ids" eval="[(4, ref('group_approvals_see_everyone'))]"/>
+  </record>
+  </data>
+</odoo>

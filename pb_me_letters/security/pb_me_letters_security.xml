@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- No portal row: an employee reaches their own certificates only
+         through /my/certificates, under sudo after the session check. -->
+    <record id="rule_pb_me_certificate_company" model="ir.rule">
+        <field name="name">Certificates: own companies</field>
+        <field name="model_id" ref="model_pb_me_certificate"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_pb_me_certificate_hr" model="ir.rule">
+        <field name="name">Certificates: HR sees all</field>
+        <field name="model_id" ref="model_pb_me_certificate"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user')), (4, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_pb_me_certificate_seat" model="ir.rule">
+        <field name="name">Certificates: the people the route asked</field>
+        <field name="model_id" ref="model_pb_me_certificate"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

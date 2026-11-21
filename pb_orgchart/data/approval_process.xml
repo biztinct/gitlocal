@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- The catalogue row this module owns (engine rule: every row is created
+         by the module that owns the business object). noupdate so a business
+         that rewords it keeps its wording; `model_name` is re-pointed by the
+         seed (ledger AM45). -->
+    <record id="process_orgplan" model="biz.approval.process">
+        <field name="key">orgplan</field>
+        <field name="name">Org chart changes</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.orgchart.plan</field>
+        <field name="description">A plan of who reports to whom — moves, new open roles, dotted lines — before it goes live on the employee records.</field>
+        <field name="sequence">240</field>
+    </record>
+
+</odoo>

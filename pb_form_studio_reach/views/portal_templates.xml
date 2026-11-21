@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- R14 (FS hosts ADDENDUM 2): company details on My details, field by field
+       as the administrator chose in the Form builder ("Show on My Payobook",
+       "Employee can change it", saved at once or after HR approves). Built only
+       from the engine (`pbfr_sections`, see controllers/portal.py). -->
+  <template id="portal_my_details_form_builder" name="My details: company details (Form builder)"
+            inherit_id="pb_me_details.portal_my_details">
+    <xpath expr="//section[hasclass('pbmd-family')]" position="after">
+      <t t-foreach="pbfr_sections or []" t-as="pbfr">
+        <section class="pbme-card pbmd-card pbfr-card">
+          <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'briefcase'"/><t t-set="isz" t-value="17"/></t><t t-esc="pbfr['title']"/></h2>
+          <dl class="pbmd-kv">
+            <div t-foreach="pbfr['rows']" t-as="row">
+              <dt t-esc="row['label']"/>
+              <dd><t t-esc="row['value'] or '—'"/><span t-if="row['waiting']" class="pbmd-wait">change waiting for HR</span></dd>
+            </div>
+          </dl>
+          <div t-if="pbfr['can_change']" class="pbmd-actions">
+            <a class="pbme-btn pbme-btn--ghost" href="/my/details/company"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'route'"/><t t-set="isz" t-value="15"/></t>Change these details</a>
+          </div>
+          <p t-else="" class="pbmd-fine">Kept by your company. If something here is wrong, ask HR to correct it.</p>
+        </section>
+      </t>
+    </xpath>
+  </template>
+
+  <template id="portal_company_form" name="My details: change company details">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Change company details</t>
+          <t t-set="hero_sub">Change what is wrong and send it. Some details are saved at once; the others change on your record once HR approves them.</t>
+        </t>
+        <section class="pbme-card pbmd-card pbmd-form-card pbfr-form-card">
+          <t t-call="pb_me_details.pbmd_alert"/>
+          <p t-if="not rows" class="pbmd-none">There is nothing you can change here right now.</p>
+          <form t-else="" action="/my/details/company/send" method="post" class="pbmd-form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <div class="pbme-form-grid">
+              <label t-foreach="rows" t-as="row" t-att-class="'pbme-form-wide' if row['type'] == 'text' else None">
+                <span><t t-esc="row['label']"/></span>
+                <textarea t-if="row['type'] == 'text'" t-att-name="row['input']" rows="3" maxlength="2000"><t t-esc="row['value']"/></textarea>
+                <select t-elif="row['type'] == 'boolean'" t-att-name="row['input']">
+                  <option value="1" t-att-selected="(row['value'] and row['value'] not in ('0', '')) or None">Yes</option>
+                  <option value="0" t-att-selected="(not row['value'] or row['value'] == '0') or None">No</option>
+                </select>
+                <select t-elif="row['type'] in ('selection', 'many2one')" t-att-name="row['input']">
+                  <option value="">Choose…</option>
+                  <option t-foreach="row['options']" t-as="opt" t-att-value="opt['value']"
+                          t-att-selected="str(opt['value']) == str(row['value']) or None" t-esc="opt['label']"/>
+                </select>
+                <input t-elif="row['type'] == 'date'" type="date" t-att-name="row['input']" t-att-value="row['value']"/>
+                <input t-elif="row['type'] in ('integer', 'float', 'monetary')" type="text" inputmode="decimal" t-att-name="row['input']" t-att-value="row['value']"/>
+                <input t-else="" type="text" t-att-name="row['input']" t-att-value="row['value']" maxlength="200"/>
+                <small class="pbmd-muted"><t t-if="row['help']"><t t-esc="row['help']"/> · </t><t t-if="row['mode'] == 'instant'">Saved at once.</t><t t-else="">Changes once HR approves it.</t><t t-if="row['name'] in waiting"> A change is already waiting for HR; sending again replaces it.</t></small>
+              </label>
+            </div>
+            <div class="pbmd-actions">
+              <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send</button>
+              <a href="/my/details" class="pbme-btn pbme-btn--ghost">Cancel</a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </t>
+  </template>
+</odoo>

@@ -1,0 +1,106 @@
+{
+  "scope": "sudima only; confirmed configuration preparation, not live payroll activation",
+  "sources": [
+    {
+      "file": "Attendance_Machine_Questions_EN_VI (SUDIMA).docx",
+      "sha256": "5169dde44dbcbf90f399e696e736560552c6d73cdc148558ce0f0ec57de48208"
+    },
+    {
+      "file": "Attendance_Machines_Round2_and_Setup_EN_VI (SUDIMA).docx",
+      "sha256": "9e7ca7b14dc3259a7358f0524239d75b547b2a54864f156eefaed33b669ad99a"
+    }
+  ],
+  "confirmed": {
+    "employee_identity": "Q28-31: employee code equals punch number, same across terminals, never reassigned",
+    "shifts": [
+      [
+        "07:30",
+        "16:30"
+      ],
+      [
+        "07:30",
+        "18:30"
+      ],
+      [
+        "07:30",
+        "19:30"
+      ],
+      [
+        "07:30",
+        "20:30"
+      ],
+      [
+        "07:30",
+        "22:00"
+      ],
+      [
+        "07:30",
+        "04:00 +1 day"
+      ],
+      [
+        "16:30",
+        "01:30 +1 day"
+      ],
+      [
+        "16:30",
+        "04:30 +1 day"
+      ],
+      [
+        "19:30",
+        "04:30 +1 day"
+      ],
+      [
+        "19:30",
+        "07:30 +1 day"
+      ]
+    ],
+    "breaks": "Q4: 11:30-12:30 or 11:45-12:45; Q36 unpaid. Do not infer extended/night break duration.",
+    "rounding": "Q41: none",
+    "overtime": "Q39: after shift ends, but normal vs extended shift boundary not specified",
+    "pay_period": "Q42: calendar month",
+    "attendance_close": "Q43: first of following month",
+    "approval": "Q44: General Manager; account not identified",
+    "missing_punch": "Q40: confirmation required; no invented check-out",
+    "late": "Q38: affects excellent attendance bonus; threshold not specified"
+  },
+  "round2": "All seven answer and provider cells are blank; no embedded images or comments supply answers.",
+  "configuration": {
+    "model": "hr.shift.template",
+    "code": "SD-DAY-0730-1630",
+    "name": "Sudima day 07:30-16:30 - pending assignment",
+    "start_hour": 7.5,
+    "end_hour": 16.5,
+    "break_duration": 1.0,
+    "shift_type": "morning",
+    "is_overnight": false,
+    "active": false
+  },
+  "hold_reasons": [
+    "Employee/date shift roster and working/rest days absent",
+    "Long-shift normal vs overtime boundary absent",
+    "Break punches vs fixed deduction unresolved; long/night breaks absent",
+    "GM account and correction approval owner unspecified",
+    "Late bonus threshold and recurring allowance eligibility absent"
+  ],
+  "application_gaps": [
+    "Pairing uses first punch plus maximum elapsed span, not assigned shift; may merge adjacent shifts",
+    "Weekly grid REG is raw span, not net normal hours",
+    "Application payroll rejects attendance spanning local dates without approved daily split",
+    "Shift compliance hardcodes 15-minute grace; client has not confirmed grace",
+    "Automatic OT generation from assigned shifts and breaks is not connected to current templates"
+  ],
+  "proposed_shared_feature": {
+    "adoption": "explicit opt-in; existing tenants retain behavior",
+    "ui": "Attendance calculation policies, existing shift assignment, per-day calculation breakdown, exception review",
+    "behavior": "Use assigned shift windows; exact timestamps; configured breaks without double deduction; normal/OT/night segments with explicit work-date allocation; approval before payroll; issues do not pause connector ingestion",
+    "requires_owner_approval": true
+  },
+  "not_changed": [
+    "Employee assignments",
+    "Existing calendars",
+    "OT rates",
+    "Timesheet approvals",
+    "Payroll formulas or bonus",
+    "Connector ingestion or publication switches"
+  ]
+}

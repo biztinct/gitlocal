@@ -1,0 +1,73 @@
+/* Shared product icons. No external icon/font requests in the standalone preview. */
+const UI_ICONS={
+ horizontal:'<path d="M3 5h15a3 3 0 0 1 0 6H6a3 3 0 0 0 0 6h15m-3-3 3 3-3 3M6 2 3 5l3 3"/>',
+ trigger:'<path d="m13 2-9 12h7l-1 8 10-12h-7z"/>',
+ approval:'<circle cx="9" cy="7" r="3"/><path d="M3 20v-3a6 6 0 0 1 10-4m2 4 2 2 4-5"/>',
+ task:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',
+ branch:'<path d="M12 3v5m0 0-7 6m7-6 7 6M5 14v7m14-7v7"/><circle cx="12" cy="5" r="2"/>',
+ parallel:'<path d="M12 3v4M5 21v-8m14 8v-8M5 13V9a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4m-17 0 3 3 3-3m8 0 3 3 3-3"/>',
+ subprocess:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><path d="M17.5 14v7M14 17.5h7"/>',
+ policy:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M10 4v16"/>',
+ input:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8m-8 5h5m-5 4h3"/>',
+ email:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/>',
+ state:'<path d="M4 17v-2a3 3 0 0 1 3-3h10m-4-4 4 4-4 4"/><circle cx="5" cy="5" r="2"/><circle cx="20" cy="19" r="2"/>',
+ wait:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ webhook:'<path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"/>',
+ back:'<path d="m14 5-7 7 7 7"/>',arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',
+ undo:'<path d="M4 10h9a6 6 0 0 1 0 12M4 10l5-5m-5 5 5 5" transform="translate(0 -3)"/>',
+ redo:'<path d="M20 10h-9a6 6 0 0 0 0 12m9-12-5-5m5 5-5 5" transform="translate(0 -3)"/>',
+ play:'<path d="m9 5 11 7-11 7z"/>',check:'<path d="m5 12 4 4L19 6"/>',
+ download:'<path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/>',
+ history:'<path d="M3 12a9 9 0 1 0 3-7M3 3v5h5m4-1v5l3 2"/>',
+ people:'<circle cx="9" cy="7" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3m2-17a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 5v2"/>',
+ design:'<path d="m15 4 5 5M4 20l1-6L16 3a2 2 0 0 1 3 0l2 2a2 2 0 0 1 0 3L10 19z"/>',
+ activity:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+ journey:'<rect x="3" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M12 5h9m-9 14h9M5 8v8m7-4h6"/>',
+ flow:'<rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="17" width="6" height="5" rx="1"/><rect x="16" y="17" width="6" height="5" rx="1"/><path d="M12 7v5M5 17v-5h14v5"/>',
+ focus:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',
+ panel:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-11-3 3 3 3"/>',
+ search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ templates:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 9v12"/>',
+ settings:'<path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor" stroke="none"/><circle cx="16" cy="17" r="3" fill="currentColor" stroke="none"/>',
+ close:'<path d="m6 6 12 12M6 18 18 6"/>',
+ chevron:'<path d="m8 5 7 7-7 7"/>',
+ grip:'<circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/>',
+ sparkle:'<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/>',
+ shield:'<path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6z"/><path d="m8 12 3 3 5-6"/>',
+ condition:'<path d="m12 2 10 10-10 10L2 12z"/>',
+ /* WF2 P3a: stages, "already happens", the record track. */
+ stage:'<rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/>',
+ lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+ flag:'<path d="M5 21V4m0 0h12l-2.5 4L17 12H5"/>',
+ heading:'<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+ alert:'<path d="M10.3 4 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 4a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4m0 3.2h.01"/>',
+ bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>',
+ stop:'<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/>',
+ minus:'<path d="M6 12h12"/>',
+ external:'<path d="M14 4h6v6m0-6-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/>',
+ trash:'<path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13"/>',
+ up:'<path d="m6 15 6-6 6 6"/>',down:'<path d="m6 9 6 6 6-6"/>',
+ link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+ dot:'<circle cx="12" cy="12" r="5" fill="currentColor"/>',
+ circle:'<circle cx="12" cy="12" r="6"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8.2h.01"/>'
+};
+function svgIcon(name){return `<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI_ICONS[name]||UI_ICONS.task}</svg>`;}
+function hydrateIcons(root=document){root.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=svgIcon(el.dataset.icon);el.removeAttribute('data-icon')});}
+
+UI_ICONS.matrix=UI_ICONS.shield;UI_ICONS.action=UI_ICONS.state;UI_ICONS.reference=UI_ICONS.templates;
+/* WF2 P3b: the eight new steps and their settings (Lucide-style strokes). */
+Object.assign(UI_ICONS,{
+ stage_move:'<path d="M5 21V4m0 0h10l-2 3.5 2 3.5H5"/><path d="M14 17h7m-3-3 3 3-3 3"/>',
+ send_back:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+ update:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+ create:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6m-3-3h6"/>',
+ notify:'<path d="M6 16v-5a6 6 0 0 1 9-5.2"/><path d="M18 11v5l2 2H4"/><path d="M10 21h4"/><circle cx="18.5" cy="5.5" r="2.5"/>',
+ confirm:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9"/>',
+ start:'<rect x="3" y="4" width="8" height="7" rx="2"/><rect x="13" y="13" width="8" height="7" rx="2"/><path d="M7 11v2.5a3 3 0 0 0 3 3h3m-2-2 2 2-2 2"/>',
+ end:'<path d="M8 3h8l5 5v8l-5 5H8l-5-5V8z"/><path d="M9 12h6"/>',
+ copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M15 9V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4"/>',
+ note:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8m-8 4h5"/>',
+ buttons:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/>'
+});

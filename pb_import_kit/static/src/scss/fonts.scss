@@ -1,0 +1,25 @@
+// =====================================================================
+//  Inter, self-hosted (HOME P2, ledger H6).
+//
+//  Every Payobook surface has named "Inter" first in its font stack since the
+//  design system was written (biz_theme's `$font-family-sans-serif`, the kit's
+//  `.pbim` root, every cockpit), and no backend asset ever loaded it — so the
+//  product rendered in whatever the reader's machine had. This file is the
+//  font itself: the upright variable face (weights 100–900, all the scripts
+//  Inter ships, Vietnamese included), served from this module. No CDN: the
+//  pb_insights / pb_explorer manifests forbid third-party hosts, and a font
+//  from somebody else's server is a request the reader did not agree to.
+//
+//  FIRST in the kit's backend bundle so the face exists before any rule
+//  names it. `swap` paints text in the fallback at once and swaps when the
+//  file lands, so a slow network never shows a blank page.
+//
+//  Licence: SIL Open Font License 1.1, `static/fonts/Inter-OFL.txt`.
+// =====================================================================
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("/pb_import_kit/static/fonts/InterVariable.woff2") format("woff2");
+}

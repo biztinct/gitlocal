@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         PHASE 7: the one kind of record the catalogue had never named.
+
+         Everything else Phase 7 connects already had a row. A letter did
+         not: generating one is a draft nobody is bound by, and SENDING it
+         is the act — an offer, a confirmation of pay, a warning. It is its
+         own row because a business answers it differently from a contract
+         and from a pay change.
+         ================================================================== -->
+
+    <record id="process_letters" model="biz.approval.process">
+        <field name="key">letters</field>
+        <field name="name">Letters to people</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.hr.letter</field>
+        <field name="description">Sending somebody a letter in the company's name — an offer, a confirmation, a warning.</field>
+        <field name="sequence">218</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- COMPANY-LESS ON PURPOSE (R8). `company_id` defaults to the loading
+         user's company, so a sequence installed onto whichever company ran
+         the install is then invisible to every other one — and a request
+         raised there gets no reference at all. -->
+    <record id="seq_pb_hiring_requisition" model="ir.sequence">
+        <field name="name">Hiring request</field>
+        <field name="code">pb.hiring.requisition</field>
+        <field name="prefix">HR-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- A3. Its own series and not the request's: an offer is a different
+         document with a different life, and "OF-2026-0007" on a letter is
+         something a candidate can quote back at us. -->
+    <record id="seq_pb_hiring_offer" model="ir.sequence">
+        <field name="name">Offer</field>
+        <field name="code">pb.hiring.offer</field>
+        <field name="prefix">OF-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</data>
+</odoo>

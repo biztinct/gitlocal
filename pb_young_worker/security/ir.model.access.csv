@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_young_worker_rule_user,pb.young.worker.rule user,model_pb_young_worker_rule,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_young_worker_rule_mgr,pb.young.worker.rule mgr,model_pb_young_worker_rule,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_young_worker_rule_system,pb.young.worker.rule system,model_pb_young_worker_rule,base.group_system,1,1,1,1
+access_pb_young_worker_band_user,pb.young.worker.band user,model_pb_young_worker_band,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_young_worker_band_mgr,pb.young.worker.band mgr,model_pb_young_worker_band,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_young_worker_band_system,pb.young.worker.band system,model_pb_young_worker_band,base.group_system,1,1,1,1

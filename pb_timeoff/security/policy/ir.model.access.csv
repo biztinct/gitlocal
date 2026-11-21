@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_leave_policy_edition_user,Published absence policies,model_pb_leave_policy_edition,base.group_user,1,0,0,0
+access_pb_leave_policy_edition_manager,Manage absence policies,model_pb_leave_policy_edition,hr_holidays.group_hr_holidays_manager,1,1,1,1
+access_pb_leave_policy_rule_user,Published absence rules,model_pb_leave_policy_rule,base.group_user,1,0,0,0
+access_pb_leave_policy_rule_manager,Manage absence rules,model_pb_leave_policy_rule,hr_holidays.group_hr_holidays_manager,1,1,1,1
+access_pb_leave_policy_posting_officer,Read entitlement audit,model_pb_leave_policy_posting,hr_holidays.group_hr_holidays_user,1,0,0,0
+access_pb_leave_policy_posting_manager,Post entitlements,model_pb_leave_policy_posting,hr_holidays.group_hr_holidays_manager,1,1,1,0
+access_pb_leave_policy_operation_manager,Policy operations,model_pb_leave_policy_operation,hr_holidays.group_hr_holidays_manager,1,1,1,1
+access_pb_leave_policy_settlement_manager,Read terminal leave settlements,model_pb_leave_policy_settlement,hr_holidays.group_hr_holidays_manager,1,0,1,0

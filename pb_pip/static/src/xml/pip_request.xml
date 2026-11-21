@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The manager's one door. One dialog-shaped page: pick somebody who
+       reports to you, say what you have seen, send it.
+
+       Section comments use `=` rules, never a doubled hyphen (W22/R35), and
+       no `t-as` variable is named lt/gt/lte/gte/and/or/not/in (R1).
+       ==================================================================== -->
+  <t t-name="pb_pip.PbPipRequest">
+    <div class="pbim pbim-page pipr">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Opening…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap pipr-wrap">
+
+        <!-- ============ nobody reports to this person ============
+             A SENTENCE AND NOT AN ERROR. The command-bar row is offered to
+             every internal user because "manages at least one person" is not
+             a group, so the answer lives here where it can be true. -->
+        <div t-if="!state.allowed" class="pbim-panel pipr-empty">
+          <div class="pipr-empty-ic"><t t-out="ic('users',30)"/></div>
+          <h2>This one is for managers</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <!-- ==================== it went ==================== -->
+        <div t-elif="state.done" class="pbim-panel pipr-done">
+          <div class="pipr-done-ic"><t t-out="ic('check',30)"/></div>
+          <h2 t-if="!state.done.existing">HR has it</h2>
+          <h2 t-else="">HR already has this in hand</h2>
+          <p t-if="!state.done.existing">
+            Somebody in HR will read what you wrote about
+            <b t-esc="state.done.who"/> and come back to you. The first thing
+            that happens is a conversation — not a plan and not a letter — and
+            most of the time that is where it ends.
+          </p>
+          <p t-else="">
+            There was already something open for <b t-esc="state.done.who"/>,
+            so what you wrote has been added to it rather than starting a
+            second one. HR will come back to you.
+          </p>
+          <p class="pipr-quiet">
+            Nothing has been written to their record and nothing has been sent
+            to them.
+          </p>
+          <button class="pbim-btn ghost" t-on-click="again">
+            Ask about somebody else
+          </button>
+        </div>
+
+        <!-- ==================== the form ==================== -->
+        <t t-else="">
+          <div class="pipr-head">
+            <h1 class="pbim-h1">Ask HR about someone in your team</h1>
+            <p class="pbim-sub">If somebody's work is not where it needs to be,
+               this is how you get help with it. It is not a warning and it is
+               not a step in anything — HR reads what you write, talks to you,
+               and usually talks to them. Nothing is written to their record by
+               sending this.</p>
+          </div>
+
+          <div class="pbim-panel pipr-panel">
+            <h3 class="pipr-h3">Who is this about?</h3>
+            <div class="pipr-team">
+              <button t-foreach="state.team" t-as="pr" t-key="pr.id"
+                      class="pipr-person"
+                      t-att-class="{ 'is-on': state.employeeId === pr.id }"
+                      t-on-click="() => this.pick(pr.id)">
+                <img class="pipr-av" t-att-src="pr.avatar" t-att-alt="pr.name"/>
+                <span class="pipr-person-tx">
+                  <b t-esc="pr.name"/>
+                  <span t-esc="pr.job"/>
+                </span>
+                <span class="pipr-tick">
+                  <t t-if="state.employeeId === pr.id"><t t-out="ic('check',14)"/></t>
+                </span>
+              </button>
+            </div>
+
+            <h3 class="pipr-h3">What have you seen?</h3>
+            <p class="pipr-note">
+              Specific things, with rough dates if you have them. "Three
+              deadlines missed in July without telling me" is something HR can
+              work with; "attitude" is not, and it is the fastest way to make
+              the conversation defensive.
+            </p>
+            <textarea class="pipr-ta" rows="7" t-att-value="state.reason"
+                      t-on-input="onReason"
+                      placeholder="What you have seen, when, and what you have already tried…"/>
+
+            <t t-if="state.templates.length">
+              <h3 class="pipr-h3">Is it one of these? (optional)</h3>
+              <div class="pipr-tpls">
+                <button t-foreach="state.templates" t-as="tp" t-key="tp.id"
+                        class="pipr-tpl"
+                        t-att-class="{ 'is-on': state.templateId === tp.id }"
+                        t-on-click="() => this.pickTemplate(tp.id)">
+                  <b t-esc="tp.name"/>
+                  <span t-foreach="tp.lines" t-as="fl" t-key="fl_index"
+                        class="pipr-tpl-l" t-esc="fl.name"/>
+                </button>
+              </div>
+            </t>
+
+            <p class="pipr-hint" t-esc="hint"/>
+            <button class="pbim-btn primary pipr-send"
+                    t-att-disabled="!canSend" t-on-click="send">
+              <t t-out="ic('send',15)"/> Send it to HR
+            </button>
+          </div>
+
+          <!-- ==================== what I asked before ==================== -->
+          <div class="pbim-panel pipr-mine" t-if="state.mine.length">
+            <h3 class="pipr-h3">What you have asked before</h3>
+            <div t-foreach="state.mine" t-as="mr" t-key="mr.id" class="pipr-row">
+              <b t-esc="mr.employee"/>
+              <span class="pipr-row-d" t-esc="mr.when"/>
+              <span class="pbim-badge info" t-esc="mr.state_label"/>
+            </div>
+            <p class="pipr-quiet">
+              Where each one has got to, and nothing more. What HR agreed with
+              the person is between them and HR.
+            </p>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

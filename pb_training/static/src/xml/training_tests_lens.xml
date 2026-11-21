@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › TESTS (LEARNING L5). A list of tests and a results drawer
+       (the hero: ring, ten bars, hardest questions), a New test drawer.
+       The Sessions look (`.pbss-*`) plus `.pbcl-*`. `=` rules (R35); text
+       nodes on one line (LN13); scrims direct children of the root (R114).
+       ==================================================================== -->
+  <t t-name="pb_training.PbTrainingTestsLens">
+    <div class="pbim pbss pbss-vars pbcl" t-att-class="{ 'pbss--embedded': props.embedded }">
+      <div class="pbss-wrap">
+
+        <div t-if="!state.loaded" class="pbss-hero pbss-skel" aria-busy="true"><div class="pbss-skel-line"/></div>
+
+        <div t-elif="state.failed" class="pbss-panel pbss-empty">
+          <div class="pbss-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The tests could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
+        <div t-elif="!allowed" class="pbss-panel pbss-empty">
+          <div class="pbss-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>Tests are written by the training team</h2>
+          <p>Your own tests are inside your courses on My learning.</p>
+        </div>
+
+        <t t-else="">
+          <section class="pbss-hero">
+            <div class="pbss-hero-top">
+              <div class="pbss-hero-id">
+                <div class="pbss-eyebrow"><t t-out="ic('fileCheck',13)"/> Tests</div>
+                <p class="pbss-headline" t-esc="data.headline"/>
+                <p class="pbss-note">A test is a set of questions with a pass mark and a limited number of goes. Add it to a course as its last item and nobody can take it until they have finished every lesson.</p>
+              </div>
+              <div class="pbss-hero-act">
+                <button class="pbim-btn ghost" t-on-click="openQuestions" title="Every question you have written, whichever test it was written for"><t t-out="ic('list',15)"/> Question bank</button>
+                <button t-if="data.can_write" class="pbim-btn primary" t-on-click="openNew"><t t-out="ic('plus',15)"/> New test</button>
+              </div>
+            </div>
+          </section>
+
+          <div class="pbss-bar">
+            <label class="pbss-search"><t t-out="ic('search',14)"/><input type="search" placeholder="Find a test or a course" t-att-value="state.q" t-on-input="onSearch"/></label>
+          </div>
+
+          <div t-if="!tests.length and !state.q" class="pbss-panel pbss-empty">
+            <div class="pbss-empty-ic"><t t-out="ic('fileCheck',26)"/></div>
+            <h2>Write your first test</h2>
+            <p>Give it a name, a pass mark and a number of goes. You can ask every question, or have each attempt draw a few from a bigger pool so no two people get the same test.</p>
+            <div t-if="data.can_write" class="pbss-empty-act"><button class="pbim-btn primary" t-on-click="openNew"><t t-out="ic('plus',15)"/> New test</button></div>
+          </div>
+          <div t-elif="!tests.length" class="pbss-panel pbss-empty">
+            <div class="pbss-empty-ic"><t t-out="ic('search',26)"/></div>
+            <h2>No test matches that</h2>
+          </div>
+
+          <section t-else="" class="pbss-panel">
+            <div class="pbss-scroll">
+              <table class="pbss-table pbcl-tests">
+                <thead><tr><th>Test</th><th>Course</th><th>Pass mark</th><th>Goes</th><th>Questions</th><th>People</th><th>Pass rate</th><th class="pbss-th-act"/></tr></thead>
+                <tbody>
+                  <tr t-foreach="tests" t-as="tst" t-key="tst.id" class="pbcl-row" t-on-click="() => this.openResults(tst)">
+                    <td><b class="pbss-who" t-esc="tst.name"/><span t-if="!tst.active" class="pbss-dim">Archived</span></td>
+                    <td t-esc="tst.course or '—'"/>
+                    <td><t t-esc="tst.pass_mark"/>%</td>
+                    <td t-esc="tst.retake_words"/>
+                    <td><span t-if="tst.random" class="pbss-chip is-go"><t t-out="ic('repeat',12)"/> <t t-esc="tst.pool_words"/></span><span t-else="" t-esc="tst.pool_words"/></td>
+                    <td t-att-class="{ 'pbcl-zero': !tst.people }" t-esc="tst.people"/>
+                    <td t-att-class="{ 'pbcl-zero': tst.pass_rate === null }" t-esc="rateWords(tst)"/>
+                    <td class="pbss-act"><button class="pbim-btn ghost" t-on-click.stop="() => this.openResults(tst)"><t t-out="ic('barChart',14)"/> Results</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </t>
+      </div>
+
+      <!-- ================= the results drawer ================= -->
+      <div t-if="state.results" class="pbim-modal-scrim pbss-scrim" t-on-click="closeResults">
+        <div class="pbss-drawer pbcl-drawer-l" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow">Results</div>
+              <h2 class="pbss-drawer-title" t-esc="state.results.name"/>
+              <p t-if="state.results.course" class="pbss-note" t-esc="atEndWords"/>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeResults" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div t-if="state.results.loading" class="pbss-drawer-body"><div class="pbss-skel-line"/></div>
+          <div t-else="" class="pbcl-results">
+            <div class="pbcl-results-top">
+              <div class="pbcl-ring" role="img" t-att-aria-label="rateWords(state.results)">
+                <svg viewBox="0 0 80 80" width="120" height="120">
+                  <circle cx="40" cy="40" r="34" class="pbcl-ring-bg"/>
+                  <circle cx="40" cy="40" r="34" class="pbcl-ring-fg" t-att-stroke-dasharray="ringDash"/>
+                </svg>
+                <div class="pbcl-ring-c"><b t-esc="rateWords(state.results)"/><span>passed</span></div>
+              </div>
+              <div class="pbcl-results-say">
+                <p class="pbcl-results-line" t-esc="resultsWords"/>
+                <p class="pbss-note" t-esc="rulesWords"/>
+                <div t-if="state.results.can_write" class="pbcl-pool">
+                  <label class="pbss-f"><span class="pbss-f-l">Questions drawn per attempt (0 = every question)</span><input class="pbss-in pbss-in--s" type="number" min="0" t-att-value="state.draw" t-on-change="onDraw"/></label>
+                  <button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="savePool"><t t-out="ic('check',14)"/> Save</button>
+                  <button class="pbim-btn ghost" t-on-click="() => this.openEditor(state.results.id)"><t t-out="ic('pencil',14)"/> Open the test editor</button>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="pbss-list-h">How the scores spread</h3>
+            <div t-if="!state.results.attempts" class="pbss-calm"><t t-out="ic('info',14)"/> Nobody has taken it yet.</div>
+            <div t-else="" class="pbcl-hist" role="img" aria-label="Scores in ten bands">
+              <div t-foreach="state.results.histogram" t-as="bk" t-key="bk.bucket" class="pbcl-hist-col">
+                <span class="pbcl-hist-n" t-esc="bk.n || ''"/>
+                <span class="pbcl-hist-bar" t-att-class="barClass(bk, bk_index)" t-attf-style="height: {{ barHeight(bk) }};"/>
+                <span class="pbcl-hist-l" t-esc="bk.bucket"/>
+              </div>
+            </div>
+
+            <h3 class="pbss-list-h">The hardest questions</h3>
+            <div t-if="!state.results.hardest.length" class="pbss-calm"><t t-out="ic('info',14)"/> Nothing to show yet — a question appears here once somebody has been asked it.</div>
+            <div t-else="" class="pbcl-hard">
+              <div t-foreach="state.results.hardest" t-as="hq" t-key="hq.question_id" class="pbcl-hard-row">
+                <span class="pbcl-hard-q" t-esc="hq.question"/>
+                <span class="pbcl-hard-bar"><span t-attf-style="width: {{ hq.pct }}%;"/></span>
+                <span class="pbcl-hard-n" t-esc="hardWords(hq)"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= new test ================= -->
+      <div t-if="state.newTest" class="pbim-modal-scrim pbss-scrim" t-on-click="closeNew">
+        <div class="pbss-drawer pbcl-drawer-s" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow">New test</div>
+              <h2 class="pbss-drawer-title">The rules first, the questions next</h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeNew" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbss-drawer-body">
+            <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">Name</span><input class="pbss-in" type="text" placeholder="For example: Pesticide handling — test" t-att-value="state.form.name" t-on-input="(ev) => this.setForm('name', ev)"/></label>
+            <label class="pbss-f"><span class="pbss-f-l">Pass mark (%)</span><input class="pbss-in pbss-in--s" type="number" min="1" max="100" t-att-value="state.form.pass_mark" t-on-change="(ev) => this.setForm('pass_mark', ev, 'num')"/></label>
+            <label class="pbss-f"><span class="pbss-f-l">Goes allowed (0 = as many as they like)</span><input class="pbss-in pbss-in--s" type="number" min="0" t-att-value="state.form.attempts" t-on-change="(ev) => this.setForm('attempts', ev, 'num')"/></label>
+            <label class="pbss-f pbss-f--wide pbcl-check"><input type="checkbox" t-att-checked="state.form.pool" t-on-change="(ev) => this.setForm('pool', ev)"/> Draw a few questions per attempt from a bigger pool</label>
+            <label t-if="state.form.pool" class="pbss-f"><span class="pbss-f-l">Questions per attempt</span><input class="pbss-in pbss-in--s" type="number" min="1" t-att-value="state.form.draw" t-on-change="(ev) => this.setForm('draw', ev, 'num')"/></label>
+            <p class="pbss-note pbss-f--wide"><t t-if="state.form.pool">The editor opens with one section. Put all the questions under it; each attempt draws the number you set.</t><t t-else="">The editor opens next. Add the questions and mark the right answers.</t></p>
+          </div>
+          <div class="pbss-drawer-foot">
+            <span t-if="newHint" class="pbss-hint" t-esc="newHint"/>
+            <button class="pbim-btn ghost" t-on-click="closeNew">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!!newHint or state.busy" t-on-click="createTest"><t t-out="ic('arrowRight',15)"/> Make it and open the editor</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

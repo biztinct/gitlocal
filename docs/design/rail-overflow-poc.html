@@ -1,0 +1,335 @@
+<title>Payobook Submenu Rail</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a working replica of the Payobook hub frame on the left, the reasoning on the right. */
+:root{
+  --bg:#F5F6FA; --surface:#fff; --ink:#1B1733; --text:#2A2742; --muted:#64748B; --line:#E2E8F0; --line2:#F1F5F9;
+  --primary:#5A4BB0; --soft:#EDEAF8; --dark:#241F52; --side:#1C1842; --amber:#B45309; --amberbg:#FEF3C7; --green:#15803D;
+  --font:"Inter",-apple-system,"Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15132A;--surface:#1F1C3A;--ink:#F3F1FA;--text:#DAD6EA;--muted:#A09CC0;--line:#34305A;--line2:#2A2749;--primary:#A89BF0;--soft:#2E2A5C;--dark:#100E22;--side:#0C0A1C;--amber:#F3B14E;--amberbg:#3A2A0A;--green:#5FD38A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15132A;--surface:#1F1C3A;--ink:#F3F1FA;--text:#DAD6EA;--muted:#A09CC0;--line:#34305A;--line2:#2A2749;--primary:#A89BF0;--soft:#2E2A5C;--dark:#100E22;--side:#0C0A1C;--amber:#F3B14E;--amberbg:#3A2A0A;--green:#5FD38A;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+h1{font-size:24px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:15px;font-weight:800;letter-spacing:.01em;text-transform:uppercase;color:var(--muted);font-size:11.5px}
+p{margin:0 0 10px;max-width:62ch}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:22px}
+.head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.head p{color:var(--muted);margin:4px 0 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.controls label{font-size:12px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+select,button.tg{font:inherit;font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:12.5px;font-weight:600;border:0;background:var(--bg);color:var(--muted);padding:6px 10px;cursor:pointer}
+.seg button.on{background:var(--primary);color:#fff}
+.seg button:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+.stage{display:grid;grid-template-columns:minmax(300px,520px) 1fr;gap:22px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:1fr}}
+
+/* ---- the replica frame ---- */
+.frame{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(27,23,51,.06)}
+.navbar{height:46px;background:var(--side);display:flex;align-items:center;padding:0 14px;gap:10px;color:#fff;font-size:12px}
+.navbar .grid{width:16px;height:16px;border:2px solid rgba(255,255,255,.7);border-radius:3px}
+.navbar .co{margin-left:auto;font-weight:600;opacity:.9}
+.body{display:flex;height:var(--rail-h);min-height:220px}
+.side{width:56px;background:var(--side);display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0;flex:none}
+.side i{width:22px;height:22px;border-radius:7px;background:rgba(255,255,255,.14)}
+.side i.on{background:#fff;opacity:.9}
+.hub{flex:1;display:flex;flex-direction:column;min-width:0}
+.hubbar{height:50px;background:var(--dark);display:flex;align-items:center;gap:10px;padding:0 14px;color:#fff;font-weight:800;font-size:13.5px;flex:none}
+.hubbar .ic{width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.hubbar .ic svg{width:14px;height:14px}
+.hubbar .search{margin-left:8px;height:28px;flex:1;max-width:260px;border-radius:8px;background:rgba(255,255,255,.1);font-weight:500;font-size:12px;opacity:.8;display:flex;align-items:center;padding:0 10px}
+.hubbar .crumb{font-weight:500;opacity:.75;display:none}
+.location{height:45px;display:flex;align-items:center;gap:8px;padding:0 16px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line);flex:none}
+.location b{color:var(--ink);font-weight:600}
+.frame.merged .location{display:none}
+.frame.merged .hubbar .crumb{display:inline}
+.low{flex:1;display:flex;min-height:0}
+.canvas{flex:1;min-width:0;background:var(--bg);padding:14px;display:grid;gap:10px;align-content:start}
+.canvas .ph{height:14px;border-radius:7px;background:var(--line2);border:1px solid var(--line)}
+.canvas .ph.w{width:70%}.canvas .ph.n{width:45%}
+.canvas .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;height:54px}
+
+/* The rail, in both versions */
+.rail{flex:none;width:var(--rail-w);background:var(--surface);border-right:1px solid var(--line);position:relative;display:flex}
+.rail-in{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 0;overflow:hidden}
+.rail.today .rail-in{overflow-y:scroll;overflow-x:hidden;scrollbar-width:none}
+.rail.today .rail-in::-webkit-scrollbar{display:none}
+/* the classic scrollbar a mouse or Windows adds, drawn so its width cost is visible */
+.rail .fakebar{position:absolute;top:0;right:0;bottom:0;width:16px;background:var(--line2);border-left:1px solid var(--line);display:none}
+.rail .fakebar i{position:absolute;left:3px;right:3px;top:8px;height:34%;border-radius:5px;background:#B7B4CC}
+.rail.today.over .fakebar{display:block}
+.rail.today.over .rail-in{width:calc(100% - 16px)}
+.rb{flex:none;width:var(--pill-w);display:flex;flex-direction:column;align-items:center;gap:5px;padding:var(--pill-py) 3px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:inherit;font-size:var(--lab-px);font-weight:var(--lab-w);letter-spacing:.04em;line-height:1.2;text-transform:uppercase;text-align:center;cursor:pointer;position:relative}
+.rb:hover{background:var(--line2);color:var(--ink)}
+.rb.on{background:var(--soft);color:var(--primary)}
+.rb:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.rb svg{display:block;width:var(--ic-px);height:var(--ic-px)}
+.rb .l{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;flex:none;width:var(--lab-w-box);overflow-x:visible;overflow-y:clip;word-break:normal;overflow-wrap:normal}
+.rail.today .rail-in{overflow-x:hidden}
+.rb.pinned-first{margin-top:auto;position:relative}
+.rb.pinned-first::before{content:"";position:absolute;top:-5px;left:10px;right:10px;height:1px;background:var(--line)}
+.rb.more{color:var(--primary)}
+.rb .cnt{position:absolute;top:5px;right:7px;min-width:16px;height:16px;border-radius:8px;background:var(--primary);color:#fff;font-size:9px;font-weight:800;display:grid;place-items:center;padding:0 4px;letter-spacing:0}
+.pop{position:absolute;left:calc(100% + 8px);bottom:12px;width:224px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(27,23,51,.18);padding:6px;z-index:5}
+.pop button{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:500;padding:8px 10px;border-radius:8px;cursor:pointer;text-align:left}
+.pop button:hover{background:var(--line2)}
+.pop button.on{background:var(--soft);color:var(--primary)}
+.pop button svg{width:16px;height:16px;flex:none}
+.pop .ph{font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:6px 10px 4px}
+
+/* note under the frame */
+.meter{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);padding:10px 2px 0;font-variant-numeric:tabular-nums}
+.meter b{color:var(--ink);font-weight:700}
+.meter .bad{color:var(--amber);font-weight:700}
+.meter .ok{color:var(--green);font-weight:700}
+
+/* ---- reasoning column ---- */
+.col{display:grid;gap:16px;min-width:0}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:8px}
+.sec h3{font-size:15px;font-weight:800}
+.sec ul{margin:0;padding-left:18px}
+.sec li{margin:3px 0}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+td.num{text-align:right}
+.tw{overflow-x:auto}
+.pill{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--primary)}
+.pill.warn{background:var(--amberbg);color:var(--amber)}
+.pill.ok{background:#DCFCE7;color:#166534}
+:root[data-theme="dark"] .pill.ok,:root:not([data-theme="light"]) .pill.ok{background:#14341F;color:#86EFAC}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .pill.ok{background:#DCFCE7;color:#166534}}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px}
+.kv b{color:var(--ink);font-weight:700}
+.small{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.rb{transition:background .12s,color .12s}}
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <div>
+      <h1>The secondary menu, with no scrollbar</h1>
+      <p>Why the People menu scrolls and clips on small screens, and the fix: fewer items, a slightly wider strip, and a fold that keeps every item one click away.</p>
+    </div>
+  </div>
+
+  <div class="controls" role="group" aria-label="Preview settings">
+    <label>Version
+      <span class="seg" id="segVersion">
+        <button class="on" data-v="today" type="button">Today</button>
+        <button data-v="proposed" type="button">Proposed</button>
+      </span>
+    </label>
+    <label>Area
+      <span class="seg" id="segArea">
+        <button class="on" data-a="people" type="button">People</button>
+        <button data-a="payroll" type="button">Payroll</button>
+        <button data-a="hiring" type="button">Hiring</button>
+      </span>
+    </label>
+    <label for="selScreen">Screen
+      <select id="selScreen">
+        <option value="657">Windows laptop 1366×768</option>
+        <option value="845">MacBook Air 13"</option>
+        <option value="877" selected>Your window (877 px tall)</option>
+        <option value="969">Full HD monitor</option>
+      </select>
+    </label>
+    <label>Language
+      <span class="seg" id="segLang">
+        <button class="on" data-l="en" type="button">EN</button>
+        <button data-l="vi" type="button">VI</button>
+      </span>
+    </label>
+    <label><input type="checkbox" id="chkMerge"> Fold the “People › Employees” row into the dark bar</label>
+  </div>
+
+  <div class="stage">
+    <div>
+      <div class="frame" id="frame">
+        <div class="navbar"><span class="grid"></span><span class="co">Payobook Vietnam JSC</span></div>
+        <div class="body">
+          <div class="side"><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+          <div class="hub">
+            <div class="hubbar"><span class="ic" id="hubIcon"></span><span id="hubName">People</span><span class="crumb" id="crumb">› Employees</span><span class="search">Search screens and actions…</span></div>
+            <div class="location" id="location">People <span>›</span> <b>Employees</b></div>
+            <div class="low">
+              <nav class="rail" id="rail" aria-label="Submenu"><div class="rail-in" id="railIn"></div><div class="fakebar"><i></i></div></nav>
+              <div class="canvas"><div class="ph w"></div><div class="ph n"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="meter" id="meter"></div>
+    </div>
+
+    <div class="col">
+      <div class="sec">
+        <h3>What goes wrong today</h3>
+        <ul>
+          <li>The strip is <b>72 px</b> wide and never scrolls the page; when its items are taller than the window, it scrolls <b>inside itself</b>.</li>
+          <li>On a Mac with a mouse plugged in, and on every Windows PC, that inner scrollbar is a real bar <b>16 px</b> wide. It takes that width from the strip, so the 60 px buttons and 64 px labels get <b>clipped on both sides</b>. That is the cut‑off text in the screenshot. On a trackpad‑only Mac the bar floats and nothing clips, which is why it looks fine on some machines.</li>
+          <li>People has <b>13</b> items and Payroll <b>14</b>; the standard says ten by design, twelve at most. Two of People’s items (<i>Workforce</i> and <i>Insights</i>) are both reports. Payroll carries <i>Reports</i>, <i>Budget</i> and <i>Insights</i>, all reports.</li>
+          <li>Three rows sit above the strip (top bar, area bar, “People › Employees”): <b>141 px</b> before the first item. On a 768 px‑tall Windows laptop only about <b>510 px</b> is left: room for nine short items.</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <h3>The fix, in three layers</h3>
+        <div class="kv">
+          <b>1 · Fewer, shorter items</b><span>Merge every report item into <i>Insights</i> (tabs inside). Give the admin items a short word, <i>Access</i>, pinned at the bottom under a hairline. Move <i>Contracts</i> up beside <i>Employees</i>. People 13 → 11 + 1 pinned, Payroll 14 → 11 + 1, Hiring 10 → 8 + 2.</span>
+          <b>2 · A fold instead of a scrollbar</b><span>When the items do not fit, the ones at the bottom collapse into a <i>More</i> button that opens a small list with full names. The selected item is never hidden. Pinned items fold first. No scrollbar can ever appear, so nothing can ever clip, on any screen, in any area, whatever modules a company has.</span>
+          <b>3 · A little more width</b><span>72 → <b>80 px</b>. Today the longest words (WORKFORCE, CONTRACTS, DELEGATION) measure 61–62 px in a 64 px box. At 80 px the label gets a 72 px box, so every English and Vietnamese word fits with room to spare, and the letters can go from 9 px to <b>10 px</b> for readability. The page loses 8 px of width, about half a percent.</span>
+          <b>Optional · One row less on top</b><span>“People › Employees” repeats what the strip and the dark bar already say. Folding it into the dark bar frees 45 px on every screen: one more item visible. Tick the box above to see it.</span>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h3>Items per area, before and after</h3>
+        <div class="tw"><table>
+          <thead><tr><th>Area</th><th class="num">Today</th><th class="num">Proposed</th><th>What changes</th></tr></thead>
+          <tbody>
+            <tr><td>People</td><td class="num">13</td><td class="num">11 + Access</td><td>Workforce report becomes a tab of Insights · Access gets the short word and the bottom slot · Contracts moves up next to Employees</td></tr>
+            <tr><td>Payroll</td><td class="num">14</td><td class="num">11 + Access</td><td>Reports and Budget become tabs of Insights · Access pinned at the bottom</td></tr>
+            <tr><td>Hiring</td><td class="num">10</td><td class="num">8 + Set‑up, Access</td><td>Set‑up and Access move to the bottom slot</td></tr>
+            <tr><td>Home, Workforce, Compliance, Expenses, Insights, Talent, Learning, Settings</td><td class="num">4–8</td><td class="num">same</td><td>Nothing to merge; they simply gain the fold and the width</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">Two further merges are possible but change how people work, so they are owner decisions: <i>Joiners</i> + <i>Probation</i> as one item with two tabs (People drops to 10 + 1); <i>Records</i> reached only from the Employees screen’s Select menu (it already opens from there).</p>
+      </div>
+
+      <div class="sec">
+        <h3>Measured on payobook.com, 2 Nov 2026</h3>
+        <div class="tw"><table>
+          <thead><tr><th>Window height</th><th class="num">Room for the strip</th><th class="num">People needs</th><th class="num">Payroll needs</th><th>Today</th></tr></thead>
+          <tbody>
+            <tr><td>Your window, 877 px</td><td class="num">736 px</td><td class="num">771 px</td><td class="num">816 px</td><td><span class="pill warn">scrolls, clips</span></td></tr>
+            <tr><td>Windows laptop, ~657 px</td><td class="num">516 px</td><td class="num">771 px</td><td class="num">816 px</td><td><span class="pill warn">scrolls, clips</span></td></tr>
+            <tr><td>Full HD monitor, ~969 px</td><td class="num">828 px</td><td class="num">771 px</td><td class="num">816 px</td><td><span class="pill ok">People fits</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">One‑line items are 52 px tall, two‑line items 63 px, with 4 px between them and 14 px above and below. Label widths at today’s 9 px bold capitals: WORKFORCE 62, CONTRACTS 61, DELEGATION 61, EMPLOYEES 58, PROBATION 57; the box is 64. In Vietnamese: LỰC LƯỢNG 56, NGƯỜI MỚI 53, HỢP ĐỒNG 52.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>
+(function(){
+  const L = {
+    employees:["Employees","Nhân viên"], contracts:["Contracts","Hợp đồng"], pay:["Pay","Lương"], records:["Records","Hồ sơ"],
+    where:["Where they work","Nơi họ làm việc"], access:["Access & delegation","Quyền truy cập & bàn giao"], accessShort:["Access","Truy cập"],
+    assets:["Assets","Tài sản"], joiners:["Joiners","Người mới"], probation:["Probation","Thử việc"], exits:["Exits","Nghỉ việc"],
+    workforce:["Workforce","Lực lượng lao động"], insights:["Insights","Phân tích"], plan:["Plan","Kế hoạch"],
+    run:["Run","Chạy lương"], runs:["Runs","Các đợt"], payslips:["Payslips","Phiếu lương"], results:["Results","Kết quả"], inputs:["Inputs","Dữ liệu vào"],
+    payout:["Pay out","Chi trả"], adjust:["Adjust","Điều chỉnh"], settle:["Settle","Thanh toán"], budget:["Budget","Ngân sách"], calendar:["Calendar","Lịch"],
+    awards:["Awards","Khen thưởng"], reports:["Reports","Báo cáo"],
+    overview:["Overview","Tổng quan"], roles:["Roles","Vị trí"], jobboards:["Job boards","Trang tuyển dụng"], applicants:["Applicants","Ứng viên"],
+    interviews:["Interviews","Phỏng vấn"], offers:["Offers","Lời mời"], bank:["Resume bank","Kho hồ sơ"], setup:["Set-up","Thiết lập"], accessPl:["Access & delegations","Quyền truy cập & bàn giao"]
+  };
+  const I = {employees:"users",contracts:"scroll-text",pay:"banknote",records:"database",where:"map-pin",access:"shield",accessShort:"shield",accessPl:"shield",assets:"package",joiners:"user-check",probation:"stamp",exits:"log-out",workforce:"users",insights:"chart-column",plan:"trending-up",run:"zap",runs:"calendar",payslips:"receipt",results:"table",inputs:"download",payout:"send",adjust:"percent",settle:"file",budget:"wallet",calendar:"calendar-days",awards:"award",reports:"file-text",overview:"layout-grid",roles:"briefcase",jobboards:"globe",applicants:"columns-3",interviews:"calendar-clock",offers:"send",bank:"book-open",setup:"sliders-horizontal"};
+  const AREAS = {
+    people:{name:["People","Nhân sự"],icon:"users",today:["employees","records","pay","where","access","assets","joiners","probation","exits","contracts","workforce","insights","plan"],
+      proposed:["employees","contracts","pay","records","joiners","probation","exits","where","assets","insights","plan"],pinned:["accessShort"],first:"employees"},
+    payroll:{name:["Payroll","Bảng lương"],icon:"zap",today:["run","runs","payslips","results","inputs","payout","adjust","settle","budget","calendar","awards","access","reports","insights"],
+      proposed:["run","runs","payslips","results","inputs","payout","adjust","settle","calendar","awards","insights"],pinned:["accessShort"],first:"run"},
+    hiring:{name:["Hiring","Tuyển dụng"],icon:"briefcase",today:["overview","roles","jobboards","applicants","interviews","offers","bank","insights","setup","accessPl"],
+      proposed:["overview","roles","jobboards","applicants","interviews","offers","bank","insights"],pinned:["setup","accessShort"],first:"overview"}
+  };
+  const S = {version:"today",area:"people",screen:877,lang:"en",merge:false,active:null,popOpen:false};
+  const $ = (id)=>document.getElementById(id);
+  const frame=$("frame"), rail=$("rail"), railIn=$("railIn"), meter=$("meter");
+
+  function icon(name,px){
+    if(window.lucide && lucide.icons){ return `<i data-lucide="${name}" style="display:contents"></i>`; }
+    return `<svg viewBox="0 0 24 24" width="${px}" height="${px}" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg>`;
+  }
+  function label(k){ const v=L[k]||[k,k]; return S.lang==="vi"?v[1]:v[0]; }
+  function fullName(k){ return k==="accessShort"?label("access"):label(k); }
+
+  function render(){
+    const A=AREAS[S.area]; const today=S.version==="today";
+    if(!S.active || !(today?A.today:A.proposed.concat(A.pinned)).includes(S.active)) S.active=A.first;
+    // geometry
+    const chrome = 46+50+(S.merge?0:45);
+    const railH = S.screen - chrome;
+    frame.style.setProperty("--rail-h", railH+"px");
+    frame.classList.toggle("merged", S.merge);
+    frame.style.setProperty("--rail-w", today?"72px":"80px");
+    frame.style.setProperty("--pill-w", today?"60px":"68px");
+    frame.style.setProperty("--lab-w-box", today?"64px":"72px");
+    frame.style.setProperty("--lab-px", today?"9px":"10px");
+    frame.style.setProperty("--lab-w", today?"800":"700");
+    frame.style.setProperty("--ic-px", today?"18px":"20px");
+    frame.style.setProperty("--pill-py", today?"9px":"7px");
+    rail.classList.toggle("today", today);
+    $("hubName").textContent = S.lang==="vi"?A.name[1]:A.name[0];
+    $("hubIcon").innerHTML = icon(A.icon,14);
+    $("crumb").textContent = "› "+fullName(S.active);
+    $("location").innerHTML = `${S.lang==="vi"?A.name[1]:A.name[0]} <span>›</span> <b>${fullName(S.active)}</b>`;
+
+    const btn=(k,extra="")=>`<button type="button" class="rb ${S.active===k?"on":""} ${extra}" data-k="${k}" title="${fullName(k)}">${icon(I[k]||"circle",18)}<span class="l">${label(k)}</span></button>`;
+
+    if(today){
+      railIn.innerHTML = A.today.map(k=>btn(k)).join("");
+      if(window.lucide) lucide.createIcons({nameAttr:"data-lucide"});
+      const need = railIn.scrollHeight, have = railIn.clientHeight;
+      rail.classList.toggle("over", need>have+1);
+      meter.innerHTML = `<span>Items <b>${A.today.length}</b></span><span>Room <b>${railH} px</b></span><span>Needs <b>${need} px</b></span>` +
+        (need>have+1?`<span class="bad">Scrolls by ${need-have} px · a 16 px bar steals width · labels clip</span>`:`<span class="ok">Fits on this screen</span>`);
+      return;
+    }
+
+    // proposed: measure every item, then fold
+    const all = A.proposed.concat(A.pinned);
+    railIn.innerHTML = all.map(k=>btn(k, A.pinned[0]===k?"pinned-first":"")).join("");
+    if(window.lucide) lucide.createIcons({nameAttr:"data-lucide"});
+    const hs = {}; railIn.querySelectorAll(".rb").forEach(b=>{hs[b.dataset.k]=b.offsetHeight;});
+    const avail = railIn.clientHeight - 28; // padding
+    const total = all.reduce((s,k)=>s+hs[k],0) + 4*(all.length-1);
+    let visible = all.slice(), folded = [];
+    if(total > avail){
+      // the More button needs a one-line slot
+      const moreH = 52;
+      let budget = avail - moreH - 4;
+      // pinned fold first, then from the end of the main list
+      const order = A.proposed.concat(A.pinned);
+      visible = []; let used = 0;
+      for(const k of A.proposed){ if(used + hs[k] + (visible.length?4:0) <= budget){ visible.push(k); used += hs[k] + (visible.length>1?4:0); } else break; }
+      folded = all.filter(k=>!visible.includes(k));
+      if(folded.includes(S.active) && visible.length){ const last = visible.pop(); folded = folded.filter(k=>k!==S.active); folded.unshift(last); visible.push(S.active); }
+    }
+    const pinnedVisible = visible.filter(k=>A.pinned.includes(k));
+    railIn.innerHTML = visible.map(k=>btn(k, pinnedVisible[0]===k?"pinned-first":"")).join("") +
+      (folded.length?`<button type="button" class="rb more ${pinnedVisible.length?"":"pinned-first"}" data-more="1" title="More">${icon("ellipsis",18)}<span class="l">${S.lang==="vi"?"Thêm":"More"}</span><span class="cnt">${folded.length}</span></button>`:"");
+    if(window.lucide) lucide.createIcons({nameAttr:"data-lucide"});
+    const old=rail.querySelector(".pop"); if(old) old.remove();
+    if(S.popOpen && folded.length){
+      const pop=document.createElement("div"); pop.className="pop";
+      pop.innerHTML = `<div class="ph">${S.lang==="vi"?"Mục khác":"More in "+(A.name[0])}</div>` + folded.map(k=>`<button type="button" class="${S.active===k?"on":""}" data-k="${k}">${icon(I[k]||"circle",16)}<span>${fullName(k)}</span></button>`).join("");
+      rail.appendChild(pop); if(window.lucide) lucide.createIcons({nameAttr:"data-lucide"});
+    } else S.popOpen=false;
+    meter.innerHTML = `<span>Items <b>${A.proposed.length}</b> + <b>${A.pinned.length}</b> pinned</span><span>Room <b>${railH} px</b></span><span>Needs <b>${total} px</b></span>` +
+      (folded.length?`<span class="ok">No scrollbar · ${folded.length} folded into More, still one click away</span>`:`<span class="ok">Everything fits, nothing folded</span>`);
+  }
+
+  rail.addEventListener("click",(ev)=>{
+    const b=ev.target.closest("button"); if(!b) return;
+    if(b.dataset.more){ S.popOpen=!S.popOpen; render(); return; }
+    if(b.dataset.k){ S.active=b.dataset.k; S.popOpen=false; render(); }
+  });
+  document.addEventListener("click",(ev)=>{ if(S.popOpen && !ev.target.closest("#rail")){ S.popOpen=false; render(); } });
+  function seg(id,attr,key){ $(id).addEventListener("click",(ev)=>{ const b=ev.target.closest("button"); if(!b) return; $(id).querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); S[key]=b.dataset[attr]; S.popOpen=false; render(); }); }
+  seg("segVersion","v","version"); seg("segArea","a","area"); seg("segLang","l","lang");
+  $("selScreen").addEventListener("change",(ev)=>{ S.screen=+ev.target.value; render(); });
+  $("chkMerge").addEventListener("change",(ev)=>{ S.merge=ev.target.checked; render(); });
+  render();
+  if(window.lucide) setTimeout(render,50);
+})();
+</script>

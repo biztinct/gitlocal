@@ -25,6 +25,8 @@ class GiamLdReportXlsx(ReportXlsxAbstract):
         employees = base._select_employees(wizard)
         payslips = base._get_payslips_in_range(company, wizard.date_from, wizard.date_to)
         lines_map = base._payslip_lines_map(payslips)
+        # WDGAP S2-B2: the pay items chosen on Form lines, when there are any
+        items = base._pb_si_items(company, wizard.date_from, wizard.date_to)
 
         # Header bold to match template columns
         headers = [
@@ -49,20 +51,20 @@ class GiamLdReportXlsx(ReportXlsxAbstract):
         for emp in employees:
             emp_lines = lines_map.get(emp.id, {})
             wage = emp.contract_id.wage if emp.contract_id else 0.0
-            allowance = emp_lines.get("ALLOW", 0.0)
-            extra = emp_lines.get("EXTRA", 0.0)
-            province_code, district_code, commune_code = base._location_codes(emp.address_home_id)
+            allowance = base._pb_si_amount(items, emp.id, emp_lines, "ALLOW")
+            extra = base._pb_si_amount(items, emp.id, emp_lines, "EXTRA")
+            province_code, district_code, commune_code = base._location_codes(emp)
             reason_note = dict(wizard._fields["giam_reason"].selection).get(wizard.giam_reason, "") or ""
             region_note = wizard.giam_region_code or ""
             note = (
                 f"{reason_note} - {region_note}".strip(" -")
                 if reason_note or region_note
-                else f"Mã vùng:{province_code}; QH:{district_code}; XP:{commune_code} (TODO replace with actual codes)"
+                else f"Mã vùng:{province_code}; QH:{district_code}; XP:{commune_code}"
             )
             sheet.write(row, 0, emp.name or "")
-            sheet.write(row, 1, emp.identification_id or "")
+            sheet.write(row, 1, base._insurance_book(emp))
             sheet.write(row, 2, _fmt(emp.birthday))
-            sheet.write(row, 3, "X" if emp.gender == "female" else "")
+            sheet.write(row, 3, base._is_female(emp) and "X" or "")
             sheet.write(row, 4, emp.identification_id or "")
             sheet.write(row, 5, emp.job_id.name or "")
             sheet.write_number(row, 6, wage)
@@ -79,6 +81,9 @@ class GiamLdReportXlsx(ReportXlsxAbstract):
             )
             sheet.write(row, 12, note)
             row += 1
+        si_note = base._pb_si_note(items, ("ALLOW", "EXTRA"))
+        if si_note:
+            sheet.write(row + 1, 0, si_note)
 
     def get_filename(self, wizard, record):
         base = self.env["pb.govt.report.base"]

@@ -421,18 +421,44 @@ class HrAnalyticsPersonnelCosts(models.Model):
         return [(c.code, c.name) for c in countries]
 
     def _get_payslips_for_period(self):
-        """Get payslips for the analysis period"""
+        """Get payslips for the analysis period.
+
+        GROUP P3: the company filter. This search had none, so on a group
+        every company's payslips landed in every company's report and the
+        figures were the whole database's — labelled with one company's name
+        and priced in one company's currency. A report belongs to the legal
+        entity it names.
+        """
         domain = [
             ('date_from', '>=', self.date_from),
             ('date_to', '<=', self.date_to),
-            ('state', 'in', ['done', 'paid'])
+            ('state', 'in', ['done', 'paid']),
+            ('company_id', '=', (self.company_id or self.env.company).id),
         ]
 
         if self.selected_country:
-            # Filter by country if selected
-            domain.append(('employee_id.address_home_id.country_id.code', '=', self.selected_country))
+            # The country the person belongs to. `hr.employee.address_home_id`
+            # was REMOVED in Odoo 19, so the path this line used to take
+            # raised KeyError and the whole report died the moment a country
+            # was picked. Probe, and fall back to the employee's own country.
+            clause = self._country_clause(self.selected_country)
+            if clause:
+                domain.append(clause)
 
         return self.env['hr.payslip'].search(domain)
+
+    def _country_clause(self, code):
+        """A leaf that narrows payslips to one country, or nothing.
+
+        Returns None when this build has no country on an employee at all —
+        an un-narrowed report is honest, a crash is not.
+        """
+        Employee = self.env['hr.employee']
+        if 'address_home_id' in Employee._fields:
+            return ('employee_id.address_home_id.country_id.code', '=', code)
+        if 'country_id' in Employee._fields:
+            return ('employee_id.country_id.code', '=', code)
+        return None
 
     def _generate_analytics_data(self, payslips):
         """Generate analytics data from payslips"""

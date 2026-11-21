@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+workflow_designer,Workflow designer,model_pb_workflow,group_workflow_designer,1,0,0,0
+workflow_version_designer,Workflow versions,model_pb_workflow_version,group_workflow_designer,1,0,0,0
+workflow_event_designer,Workflow captured events,model_pb_workflow_event,group_workflow_designer,1,0,0,0
+workflow_run_user,Workflow runs,model_pb_workflow_run,base.group_user,1,1,0,0
+workflow_step_user,Workflow task progress,model_pb_workflow_step,base.group_user,1,1,0,0
+workflow_log_user,Workflow history,model_pb_workflow_log,base.group_user,1,0,0,0
+workflow_system,Workflow administrator,model_pb_workflow,base.group_system,1,1,1,1
+workflow_version_system,Workflow version administrator,model_pb_workflow_version,base.group_system,1,1,1,1
+workflow_event_system,Workflow event administrator,model_pb_workflow_event,base.group_system,1,1,1,1
+workflow_stage_user,Workflow stages,model_pb_workflow_stage,base.group_user,1,0,0,0
+workflow_record_stage_user,Workflow stage positions,model_pb_workflow_record_stage,base.group_user,1,0,0,0
+workflow_notice_user,Workflow notices,model_pb_workflow_notice,base.group_user,1,0,0,0
+workflow_stage_visit_viewer,Workflow time in stages,model_pb_workflow_stage_visit,group_workflow_viewer,1,0,0,0
+workflow_stage_visit_designer,Workflow time in stages,model_pb_workflow_stage_visit,group_workflow_designer,1,0,0,0
+workflow_stage_visit_system,Workflow time in stages,model_pb_workflow_stage_visit,base.group_system,1,0,0,0

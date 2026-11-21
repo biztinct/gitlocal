@@ -129,7 +129,7 @@
                         }
 
                         /* ==========================================
-                           PRIMARY BADGES (7 badges in circle)
+                           PRIMARY BADGES (8 badges in circle)
                            ========================================== */
                         .primary-badge {
                             position: absolute;
@@ -179,6 +179,10 @@
                             box-shadow: 0 25px 70px rgba(56, 178, 172, 0.6);
                         }
 
+                        .badge-workforce-planning:hover {
+                            box-shadow: 0 25px 70px rgba(102, 126, 234, 0.6);
+                        }
+
                         .primary-badge.shrink {
                             transform: scale(0.7) !important;
                             opacity: 0.5;
@@ -222,6 +226,7 @@
                         .badge-approval .primary-badge-icon { color: #ed8936; }
                         .badge-pay-salary .primary-badge-icon { color: #9f7aea; }
                         .badge-government .primary-badge-icon { color: #f56565; }
+                        .badge-workforce-planning .primary-badge-icon { color: #667eea; }
                         .badge-analytics .primary-badge-icon { color: #38b2ac; }
 
                         /* Badge Colored Borders (matching icon colors) */
@@ -231,10 +236,14 @@
                         .badge-approval { border-color: #ed8936 !important; }
                         .badge-pay-salary { border-color: #9f7aea !important; }
                         .badge-government { border-color: #f56565 !important; }
+                        .badge-workforce-planning { border-color: #667eea !important; }
                         .badge-analytics { border-color: #38b2ac !important; }
 
-                        /* Badge Positioning (perfect circular symmetry - 7 nodes) */
-                        /* Attendance - Top (12 o'clock position) */
+                        /* Badge Positioning (perfect circular symmetry - 8 nodes at 45° intervals)
+                           Circle center: (350, 350), radius: 280px
+                           0°=top, clockwise: 45°, 90°, 135°, 180°, 225°, 270°, 315° */
+
+                        /* 1. Attendance - Top (0° / 12 o'clock) */
                         .badge-attendance {
                             top: calc(70px + var(--primary-shift-y));
                             left: calc(350px + var(--primary-shift-x));
@@ -242,66 +251,77 @@
                             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
                         }
 
-                        /* Payroll Configuration - Top Right */
+                        /* 2. Payroll Configuration - Top Right (45°) */
                         .badge-payroll-config {
-                            top: calc(175.4px + var(--primary-shift-y));
-                            left: calc(568.9px + var(--primary-shift-x));
-                            animation: fadeIn 0.6s ease-out 0.35s both;
+                            top: calc(152px + var(--primary-shift-y));
+                            left: calc(548px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.3s both;
                         }
 
-                        /* Payroll - Right */
+                        /* 3. Payroll - Right (90°) */
                         .badge-payroll {
-                            top: calc(412.3px + var(--primary-shift-y));
-                            left: calc(623px + var(--primary-shift-x));
+                            top: calc(350px + var(--primary-shift-y));
+                            left: calc(630px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.4s both;
+                        }
+
+                        /* 4. Approval - Bottom Right (135°) */
+                        .badge-approval {
+                            top: calc(548px + var(--primary-shift-y));
+                            left: calc(548px + var(--primary-shift-x));
                             animation: fadeIn 0.6s ease-out 0.5s both;
                         }
 
-                        /* Approval - Bottom Right */
-                        .badge-approval {
-                            top: calc(602.3px + var(--primary-shift-y));
-                            left: calc(471.5px + var(--primary-shift-x));
-                            animation: fadeIn 0.6s ease-out 0.65s both;
+                        /* 5. Pay Salary - Bottom (180°) */
+                        .badge-pay-salary {
+                            top: calc(630px + var(--primary-shift-y));
+                            left: calc(350px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.6s both;
                         }
 
-                        /* Pay Salary - Bottom Left */
-                        .badge-pay-salary {
-                            top: calc(602.3px + var(--primary-shift-y));
-                            left: calc(228.5px + var(--primary-shift-x));
+                        /* 6. Government Reports - Bottom Left (225°) */
+                        .badge-government {
+                            top: calc(548px + var(--primary-shift-y));
+                            left: calc(152px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.7s both;
+                        }
+
+                        /* 7. Workforce Planning - Left (270°) */
+                        .badge-workforce-planning {
+                            top: calc(350px + var(--primary-shift-y));
+                            left: calc(70px + var(--primary-shift-x));
                             animation: fadeIn 0.6s ease-out 0.8s both;
                         }
 
-                        /* Government Reports - Left */
-                        .badge-government {
-                            top: calc(412.3px + var(--primary-shift-y));
-                            left: calc(77px + var(--primary-shift-x));
-                            animation: fadeIn 0.6s ease-out 0.95s both;
-                        }
-
-                        /* Analytics - Top Left */
+                        /* 8. Analytics - Top Left (315°) */
                         .badge-analytics {
-                            top: calc(175.4px + var(--primary-shift-y));
-                            left: calc(131.1px + var(--primary-shift-x));
-                            animation: fadeIn 0.6s ease-out 1.1s both;
+                            top: calc(152px + var(--primary-shift-y));
+                            left: calc(152px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.9s both;
                         }
 
                         @media (max-width: 768px) {
+                            /* 8 nodes on 500x500 grid, center (250,250), radius 200px */
                             .badge-attendance { top: calc(50px + var(--primary-shift-y)); left: calc(250px + var(--primary-shift-x)); }
-                            .badge-payroll-config { top: calc(125.3px + var(--primary-shift-y)); left: calc(406.4px + var(--primary-shift-x)); }
-                            .badge-payroll { top: calc(294.5px + var(--primary-shift-y)); left: calc(445px + var(--primary-shift-x)); }
-                            .badge-approval { top: calc(430.2px + var(--primary-shift-y)); left: calc(336.8px + var(--primary-shift-x)); }
-                            .badge-pay-salary { top: calc(430.2px + var(--primary-shift-y)); left: calc(163.2px + var(--primary-shift-x)); }
-                            .badge-government { top: calc(294.5px + var(--primary-shift-y)); left: calc(55px + var(--primary-shift-x)); }
-                            .badge-analytics { top: calc(125.3px + var(--primary-shift-y)); left: calc(93.6px + var(--primary-shift-x)); }
+                            .badge-payroll-config { top: calc(109px + var(--primary-shift-y)); left: calc(391px + var(--primary-shift-x)); }
+                            .badge-payroll { top: calc(250px + var(--primary-shift-y)); left: calc(450px + var(--primary-shift-x)); }
+                            .badge-approval { top: calc(391px + var(--primary-shift-y)); left: calc(391px + var(--primary-shift-x)); }
+                            .badge-pay-salary { top: calc(450px + var(--primary-shift-y)); left: calc(250px + var(--primary-shift-x)); }
+                            .badge-government { top: calc(391px + var(--primary-shift-y)); left: calc(109px + var(--primary-shift-x)); }
+                            .badge-workforce-planning { top: calc(250px + var(--primary-shift-y)); left: calc(50px + var(--primary-shift-x)); }
+                            .badge-analytics { top: calc(109px + var(--primary-shift-y)); left: calc(109px + var(--primary-shift-x)); }
                         }
 
                         @media (max-width: 480px) {
+                            /* 8 nodes on 350x350 grid, center (175,175), radius 140px */
                             .badge-attendance { top: calc(35px + var(--primary-shift-y)); left: calc(175px + var(--primary-shift-x)); }
-                            .badge-payroll-config { top: calc(87.7px + var(--primary-shift-y)); left: calc(284.5px + var(--primary-shift-x)); }
-                            .badge-payroll { top: calc(206.2px + var(--primary-shift-y)); left: calc(311.5px + var(--primary-shift-x)); }
-                            .badge-approval { top: calc(301.1px + var(--primary-shift-y)); left: calc(235.7px + var(--primary-shift-x)); }
-                            .badge-pay-salary { top: calc(301.1px + var(--primary-shift-y)); left: calc(114.3px + var(--primary-shift-x)); }
-                            .badge-government { top: calc(206.2px + var(--primary-shift-y)); left: calc(38.5px + var(--primary-shift-x)); }
-                            .badge-analytics { top: calc(87.7px + var(--primary-shift-y)); left: calc(65.5px + var(--primary-shift-x)); }
+                            .badge-payroll-config { top: calc(76px + var(--primary-shift-y)); left: calc(274px + var(--primary-shift-x)); }
+                            .badge-payroll { top: calc(175px + var(--primary-shift-y)); left: calc(315px + var(--primary-shift-x)); }
+                            .badge-approval { top: calc(274px + var(--primary-shift-y)); left: calc(274px + var(--primary-shift-x)); }
+                            .badge-pay-salary { top: calc(315px + var(--primary-shift-y)); left: calc(175px + var(--primary-shift-x)); }
+                            .badge-government { top: calc(274px + var(--primary-shift-y)); left: calc(76px + var(--primary-shift-x)); }
+                            .badge-workforce-planning { top: calc(175px + var(--primary-shift-y)); left: calc(35px + var(--primary-shift-x)); }
+                            .badge-analytics { top: calc(76px + var(--primary-shift-y)); left: calc(76px + var(--primary-shift-x)); }
                         }
 
                         /* ==========================================
@@ -836,39 +856,44 @@
                                         </marker>
                                     </defs>
 
-                                    <!-- Attendance to Payroll Configuration -->
+                                    <!-- 1. Attendance to Payroll Configuration (0° → 45°) -->
                                     <path class="flow-arrow"
-                                          d="M 413.1,100.3 Q 459.5,122.5 505.9,144.7"
+                                          d="M 410,100 Q 470,110 510,150"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Payroll Configuration to Payroll -->
+                                    <!-- 2. Payroll Configuration to Payroll (45° → 90°) -->
                                     <path class="flow-arrow"
-                                          d="M 584.6,243.3 Q 596.0,293.5 607.4,343.7"
+                                          d="M 590,220 Q 620,270 630,320"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Payroll to Approval -->
+                                    <!-- 3. Payroll to Approval (90° → 135°) -->
                                     <path class="flow-arrow"
-                                          d="M 579.4,466.8 Q 547.5,507.0 515.6,547.2"
+                                          d="M 630,400 Q 620,450 590,500"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Approval to Pay Salary -->
+                                    <!-- 4. Approval to Pay Salary (135° → 180°) -->
                                     <path class="flow-arrow"
-                                          d="M 402.0,602.0 Q 350.0,602.0 298.0,602.0"
+                                          d="M 510,570 Q 470,610 410,620"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Pay Salary to Government -->
+                                    <!-- 5. Pay Salary to Government (180° → 225°) -->
                                     <path class="flow-arrow"
-                                          d="M 184.4,547.2 Q 152.5,507.0 120.6,466.8"
+                                          d="M 290,620 Q 230,610 190,570"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Government to Analytics -->
+                                    <!-- 6. Government to Workforce Planning (225° → 270°) -->
                                     <path class="flow-arrow"
-                                          d="M 92.6,343.7 Q 104.0,293.5 115.4,243.3"
+                                          d="M 150,500 Q 120,450 110,400"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Analytics to Attendance -->
+                                    <!-- 7. Workforce Planning to Analytics (270° → 315°) -->
                                     <path class="flow-arrow"
-                                          d="M 194.1,144.7 Q 240.5,122.5 286.9,100.3"
+                                          d="M 110,320 Q 120,270 150,220"
+                                          marker-end="url(#arrowhead)"/>
+
+                                    <!-- 8. Analytics to Attendance (315° → 0°/360°) -->
+                                    <path class="flow-arrow"
+                                          d="M 190,150 Q 230,110 290,100"
                                           marker-end="url(#arrowhead)"/>
                                 </svg>
                             </div>
@@ -881,7 +906,7 @@
                                 <span class="center-badge-text">Employee</span>
                             </button>
 
-                            <!-- PRIMARY LEVEL: 7 Badges in Circle -->
+                            <!-- PRIMARY LEVEL: 8 Badges in Circle -->
 
                             <!-- 1. Attendance (Top) -->
                             <div role="button"
@@ -932,7 +957,15 @@
                                 <span class="primary-badge-text">Government<br/>Reports</span>
                             </div>
 
-                            <!-- 7. Analytics (Top Left) -->
+                            <!-- 7. Workforce Planning (Left) -->
+                            <div role="button"
+                                 tabindex="0"
+                                 class="primary-badge badge-workforce-planning">
+                                <i class="fa fa-sitemap primary-badge-icon"></i>
+                                <span class="primary-badge-text">Workforce<br/>Planning</span>
+                            </div>
+
+                            <!-- 8. Analytics (Top Left) -->
                             <div role="button"
                                  tabindex="0"
                                  class="primary-badge badge-analytics">
@@ -940,42 +973,7 @@
                                 <span class="primary-badge-text">Analytics</span>
                             </div>
 
-                            <!-- SECONDARY LEVEL: Attendance Submenu (appears on hover) -->
-                            <div class="secondary-badges-attendance hide-secondary">
-                                <!-- Overtime -->
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="overtime"
-                                     class="secondary-badge secondary-overtime">
-                                    <i class="fa fa-hourglass-end secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Overtime</span>
-                                </div>
-
-                                <!-- Shift -->
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="shift"
-                                     class="secondary-badge secondary-shift">
-                                    <i class="fa fa-calendar secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Shift</span>
-                                </div>
-
-                                <!-- Timesheet -->
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="timesheet"
-                                     class="secondary-badge secondary-timesheet">
-                                    <i class="fa fa-table secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Timesheet</span>
-                                </div>
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="leaves"
-                                     class="secondary-badge secondary-leaves">
-                                    <i class="fa fa-leaf secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Leaves</span>
-                                </div>
-                            </div>
+                            <!-- Attendance secondary circles removed — now uses tertiary tile panel -->
 
                             <!-- SECONDARY LEVEL: Payroll Configuration Submenu -->
                             <div class="secondary-badges-payroll-config hide-secondary">

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PayAI Pulse — Scheduled Anomaly Detection Cron Job -->
+    <record id="ir_cron_payai_pulse_detection" model="ir.cron">
+        <field name="name">PayAI: Anomaly Detection (Daily)</field>
+        <field name="model_id" ref="model_payroll_ai_pulse"/>
+        <field name="state">code</field>
+        <field name="code">model.run_anomaly_detection()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

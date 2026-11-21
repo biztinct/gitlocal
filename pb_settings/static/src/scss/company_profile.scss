@@ -1,0 +1,610 @@
+// =====================================================================
+//  "Your company" (ACCESS P9) — the letterhead, and where it comes out.
+//
+//  Same frame as the Settings hub next door (white header on the #F5F6FA
+//  field, one indigo primary, 14px cards) so the two read as one place. What
+//  is new is the RIGHT column: three pieces of white "paper" that redraw as
+//  the boxes on the left are typed into.
+//
+//  Strictly --pbim-* tokens (W1), flat fills (W3), every var() carrying its
+//  real pbim hex as a fallback (W14/W19). No z-index anywhere in this file
+//  (W37): the surface hosts no overlay of its own and a stacking context here
+//  would trap the Command-K palette's.
+//
+//  THE PAPER IS NOT A SCREENSHOT. It is built out of the same tokens as
+//  everything else, with greeked bars where a real number would be, so it can
+//  never be mistaken for the real document and can never go stale.
+// =====================================================================
+
+.pbim.pbco {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+
+    // ======================================================= header
+    .pbco-top {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 20px;
+        background: var(--pbim-surface, #ffffff);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbco-sp { flex: 1 1 auto; }
+
+    .pbco-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        flex: none;
+        font-weight: 800;
+        font-size: 14.5px;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbco-brand__ic {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+
+    // The unsaved marker. A dot and a count, not a colour-only signal.
+    .pbco-dirty {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        flex: none;
+        padding: 4px 11px;
+        border-radius: 999px;
+        background: var(--pbim-amber-soft, #FEF3C7);
+        color: var(--pbim-amber, #D97706);
+        font-size: 11.5px;
+        font-weight: 800;
+    }
+    .pbco-dirty__dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        flex: none;
+        background: var(--pbim-amber, #D97706);
+    }
+    .pbco-act { flex: none; padding: 7px 15px; font-size: 12px; }
+
+    // ========================================================= body
+    .pbco-split {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        align-items: stretch;
+    }
+
+    // -------------------------------------------------------- the boxes
+    .pbco-form {
+        flex: 1 1 58%;
+        min-width: 0;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 22px 24px 40px;
+    }
+    .pbco-h {
+        margin: 0 0 4px;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbco-lede {
+        max-width: 620px;
+        margin: 0 0 18px;
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // A refusal is a normal answer, so it is amber and it sits in the flow —
+    // not a red dialog over the top of the work (W29).
+    .pbco-err {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin: 0 0 16px;
+        padding: 11px 13px;
+        border: 1px solid #F5D9A6;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-amber-soft, #FEF3C7);
+        color: #7A4A06;
+        font-size: 12.5px;
+        line-height: 1.5;
+    }
+    .pbco-err__ic { flex: none; color: var(--pbim-amber, #D97706); svg { display: block; } }
+    .pbco-err__tx { flex: 1 1 auto; min-width: 0; }
+    .pbco-err__x {
+        flex: none;
+        border: 0;
+        background: transparent;
+        color: #7A4A06;
+        cursor: pointer;
+        padding: 0;
+        svg { display: block; }
+    }
+
+    // ------------------------------------------------------- a block
+    .pbco-sec {
+        margin: 0 0 14px;
+        padding: 16px 18px 18px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-surface, #ffffff);
+        box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+    }
+    .pbco-sec__h {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        margin: 0 0 14px;
+    }
+    .pbco-sec__ic {
+        flex: none;
+        width: 32px;
+        height: 32px;
+        border-radius: var(--pbim-r-sm, 10px);
+        display: grid;
+        place-items: center;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+    .pbco-sec__tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .pbco-sec__t {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbco-sec__s {
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------------ the fields
+    .pbco-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 14px;
+    }
+    .pbco-f {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+        &.is-wide { grid-column: 1 / -1; }
+    }
+    .pbco-f__l {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbco-f__h {
+        font-size: 11px;
+        line-height: 1.4;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbco-in {
+        width: 100%;
+        height: 36px;
+        padding: 0 11px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-text, #1B1733);
+        font: inherit;
+        font-size: 12.5px;
+        transition: border-color .12s, box-shadow .12s;
+
+        &:hover { border-color: var(--pbim-primary-light, #CBC2EE); }
+        &:focus {
+            outline: none;
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(90, 75, 176, .18));
+        }
+    }
+    select.pbco-in { cursor: pointer; }
+
+    // ---------------------------------------------------------- logo
+    .pbco-logo {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 0 0 14px;
+        padding: 12px;
+        border: 1px dashed var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-line-2, #F1F5F9);
+    }
+    .pbco-logo__box {
+        flex: none;
+        width: 76px;
+        height: 76px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        transition: box-shadow .45s, border-color .45s;
+
+        img { max-width: 100%; max-height: 100%; display: block; }
+        &.is-fresh {
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(90, 75, 176, .18));
+        }
+    }
+    .pbco-logo__ph { color: #94A3B8; svg { display: block; } }
+    .pbco-logo__tx { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .pbco-logo__t { font-size: 12.5px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    .pbco-logo__s { font-size: 11.5px; line-height: 1.45; color: var(--pbim-muted, #64748B); }
+    .pbco-logo__ops { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+    // The file input is a real input, kept out of sight inside its own label
+    // so the whole button is the picker and the keyboard still reaches it.
+    .pbco-pick { position: relative; overflow: hidden; cursor: pointer; }
+    .pbco-file {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        font-size: 0;
+    }
+
+    // ------------------------------------------- looked after for you
+    .pbco-fixed {
+        margin: 18px 0 0;
+        padding: 14px 16px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-soft, #EDEAF8);
+    }
+    .pbco-fixed__h {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 10px;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--pbim-primary-dark, #241F52);
+        svg { display: block; }
+    }
+    .pbco-fixed__ic { display: inline-flex; color: var(--pbim-primary, #5A4BB0); }
+    .pbco-fixed__r {
+        display: grid;
+        grid-template-columns: 120px 90px minmax(0, 1fr);
+        gap: 4px 10px;
+        padding: 6px 0;
+        border-top: 1px solid rgba(90, 75, 176, .14);
+        font-size: 11.5px;
+        line-height: 1.45;
+        &:first-of-type { border-top: 0; }
+    }
+    .pbco-fixed__l { font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    .pbco-fixed__v { font-weight: 700; color: var(--pbim-primary, #5A4BB0); }
+    .pbco-fixed__n { color: #4A5578; }
+
+    // --------------------------------------------------- recent changes
+    .pbco-hist {
+        margin: 14px 0 0;
+        padding: 14px 16px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-surface, #ffffff);
+    }
+    .pbco-hist__h {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 8px;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbco-hist__ic { display: inline-flex; color: var(--pbim-primary, #5A4BB0); svg { display: block; } }
+    .pbco-hist__none {
+        margin: 0;
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbco-hist__r {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 2px 12px;
+        padding: 8px 0;
+        border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+        font-size: 11.5px;
+    }
+    .pbco-hist__w { color: var(--pbim-text, #1B1733); }
+    .pbco-hist__t { color: var(--pbim-muted, #64748B); white-space: nowrap; }
+    .pbco-hist__d {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--pbim-muted, #64748B);
+        min-width: 0;
+        .from { text-decoration: line-through; }
+        .to { color: var(--pbim-primary, #5A4BB0); font-weight: 700; }
+        .ar { display: inline-flex; flex: none; svg { display: block; } }
+        span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+
+    // ============================================ where this shows up
+    .pbco-side {
+        flex: 0 0 42%;
+        max-width: 520px;
+        min-width: 0;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 22px 24px 40px;
+        background: var(--pbim-surface, #ffffff);
+        border-left: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbco-side__h {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 3px;
+    }
+    .pbco-side__t {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbco-side__chip {
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+    }
+    .pbco-side__s {
+        margin: 0 0 16px;
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbco-pv { margin: 0 0 18px; }
+    .pbco-pv__h {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 7px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbco-pv__ic { display: inline-flex; color: var(--pbim-primary, #5A4BB0); svg { display: block; } }
+    .pbco-pv__cap {
+        margin: 7px 2px 0;
+        font-size: 11px;
+        line-height: 1.45;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // The paper itself.
+    .pbco-paper {
+        padding: 15px 16px 16px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-surface, #ffffff);
+        box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+    }
+    .pbco-rule {
+        height: 1px;
+        margin: 11px 0;
+        background: var(--pbim-line, #E2E8F0);
+    }
+
+    .pbco-head { display: flex; align-items: flex-start; gap: 11px; }
+    .pbco-head__logo {
+        flex: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        color: #A8B0C4;
+        img { max-width: 100%; max-height: 100%; display: block; }
+        svg { display: block; }
+        &.sm { width: 34px; height: 34px; }
+    }
+    .pbco-head__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+    // The live-change highlight. A transition rather than a keyframe: it comes
+    // on while the box is being typed into and fades when attention moves,
+    // which is a pointer, not an animation somebody has to sit through (W3).
+    .nm, .ad, .tx, .v {
+        border-radius: 5px;
+        transition: background-color .5s ease, color .5s ease;
+        &.is-fresh { background: var(--pbim-soft, #EDEAF8); }
+    }
+    .pbco-head__id .nm,
+    .pbco-letter__id .nm {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        line-height: 1.3;
+    }
+    .pbco-head__id .ad,
+    .pbco-letter__id .ad {
+        display: flex;
+        flex-direction: column;
+        font-size: 10.5px;
+        line-height: 1.45;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbco-head__id .tx {
+        margin-top: 2px;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #475569;
+    }
+
+    .pbco-slip__ttl {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin: 0 0 9px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .06em;
+        color: var(--pbim-primary-dark, #241F52);
+        span:last-child {
+            letter-spacing: 0;
+            font-weight: 700;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .pbco-slip__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 5px 0;
+        font-size: 11px;
+        color: #475569;
+        border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+        &:first-of-type { border-top: 0; }
+        &.is-total { font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    }
+
+    // Greeked money. A real number in a preview is a number somebody will
+    // read as theirs; a bar cannot be.
+    .pbco-bar {
+        display: block;
+        height: 8px;
+        width: 74px;
+        border-radius: 999px;
+        background: var(--pbim-line, #E2E8F0);
+        flex: none;
+        &.is-strong { background: var(--pbim-primary-light, #CBC2EE); width: 96px; }
+        &.full { width: 100%; margin: 3px 0; height: 7px; }
+        &.two-thirds { width: 64%; margin: 3px 0; height: 7px; }
+    }
+
+    .pbco-file__ttl {
+        margin: 0 0 9px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .06em;
+        color: var(--pbim-primary-dark, #241F52);
+    }
+    .pbco-kv {
+        display: grid;
+        grid-template-columns: 108px minmax(0, 1fr);
+        gap: 10px;
+        padding: 5px 0;
+        border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+        font-size: 11px;
+        line-height: 1.4;
+        &:first-of-type { border-top: 0; }
+        .k { color: var(--pbim-muted, #64748B); font-weight: 700; }
+        .v { color: var(--pbim-ink, #1B1733); min-width: 0; }
+    }
+
+    .pbco-letter__h { display: flex; align-items: flex-start; gap: 11px; }
+    .pbco-letter__id {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        margin-left: auto;
+        text-align: right;
+    }
+    .pbco-letter__id .ct { font-size: 10px; color: var(--pbim-muted, #64748B); }
+    .pbco-letter__b {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 11px;
+        color: #475569;
+        .dt { color: var(--pbim-muted, #64748B); }
+        .dr { margin-top: 5px; color: var(--pbim-ink, #1B1733); }
+        .sg { margin-top: 8px; }
+        .sn { font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    }
+
+    // ------------------------------------------------------- nothing here
+    .pbco-none {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 48px 20px;
+        text-align: center;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbco-none__ic {
+        display: inline-flex;
+        width: 46px;
+        height: 46px;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+    .pbco-none__t { font-size: 14px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    .pbco-none__s { max-width: 480px; font-size: 12.5px; line-height: 1.55; }
+
+    // ---------------------------------------------------- narrow screens
+    // The preview column measures the WINDOW while the left rail takes 256px
+    // off it (C4), so the breakpoint is set generously: below this the paper
+    // goes UNDER the boxes rather than beside them, at full width, which is
+    // still the same three documents in the same order.
+    @media (max-width: 1279px) {
+        .pbco-split { flex-direction: column; overflow-y: auto; }
+        .pbco-form,
+        .pbco-side {
+            flex: 0 0 auto;
+            max-width: none;
+            width: 100%;
+            overflow: visible;
+        }
+        .pbco-side {
+            border-left: 0;
+            border-top: 1px solid var(--pbim-line, #E2E8F0);
+        }
+    }
+    @media (max-width: 899px) {
+        .pbco-grid { grid-template-columns: minmax(0, 1fr); }
+        .pbco-fixed__r { grid-template-columns: minmax(0, 1fr); }
+    }
+}

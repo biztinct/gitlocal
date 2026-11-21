@@ -1,0 +1,5 @@
+{
+  "version": "1.0.1",
+  "sha256": "2c7d5709a5338b0edc056c07b901fc02e38baf67e9649d11bd555728cebebcd7",
+  "purpose": "Reuse exact already deployed dependency/runtime bytes; replace connector source files only."
+}

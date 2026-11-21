@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Runs on install AND every upgrade (not noupdate): seeds the loading
+         animation's logo address where the brand is Payobook, leaves a
+         white-labelled database alone. See models/loader_logo.py. -->
+    <function model="ir.config_parameter" name="_pb_theme_seed_loader_logo"/>
+</odoo>

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       THE GOALS LENS ON INSIGHTS.
+
+       R1 — loop variables are never `lt`/`gt`/`lte`/`gte`/`in`/`and`/`or`/
+       `not`: OWL reserves them as operators and the whole template dies
+       pointing at itself. Here they are `tl`, `mg`, `dp`, `bd`, `rg`, `kd`,
+       `cy`, `dep`, `man`.
+
+       R205 — no JavaScript global anywhere in here. Every helper is a method
+       on the component.
+
+       R196/R32 — `.pbim-stats` is `display: grid` and NOTHING else. The
+       columns are in this module's own stylesheet; a lens that forgets opens
+       on a stack of full-width tiles down the left of a 1,500px screen.
+       ================================================================== -->
+
+  <t t-name="pb_goals.PbGoalsNumbers">
+    <div class="pbim pbim-page pbgn"
+         t-att-class="{ 'pbgn--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <span class="pbim-spin"/>
+      </div>
+
+      <t t-else="">
+
+        <!-- ======================= not for you ======================= -->
+        <div t-if="!state.allowed" class="pbim-panel pbgl-empty">
+          <div class="pbgl-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>The goal numbers are for the HR team</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <div class="pbim-wrap pbgn-wrap">
+
+            <!-- ========================= the head ========================= -->
+            <div class="pbgn-head">
+              <div class="pbgn-head-id" t-if="!props.embedded">
+                <h1 class="pbim-h1">Goal numbers</h1>
+                <p class="pbim-sub">Who is writing goals, who is talking about
+                   them, and what the year is coming out at.</p>
+              </div>
+              <div class="pbgn-head-actions">
+                <select class="pbgl-in pbgl-in--sel"
+                        t-on-change="pickCycle">
+                  <t t-foreach="state.cycles" t-as="cy" t-key="cy.id">
+                    <option t-att-value="cy.id"
+                            t-att-selected="cy.id === state.cycleId and 'selected' or false">
+                      <t t-esc="cy.name"/>
+                    </option>
+                  </t>
+                </select>
+                <button class="pbim-btn ghost" t-on-click="() => this.load()"
+                        title="Read it again">
+                  <t t-out="ic('refresh',15)"/>
+                </button>
+                <button class="pbim-btn primary" t-on-click="download"
+                        t-att-disabled="state.busy or state.empty">
+                  <t t-out="ic('fileSpreadsheet',15)"/> Spreadsheet
+                </button>
+              </div>
+            </div>
+
+            <!-- ======================== the filters ======================== -->
+            <div t-if="!state.empty" class="pbgl-filters">
+              <select class="pbgl-in pbgl-in--sel"
+                      t-on-change="(ev) => this.setFilter('department_id', ev.target.value)">
+                <option value="0">Every part of the business</option>
+                <t t-foreach="state.lists.departments" t-as="dep"
+                   t-key="dep.id">
+                  <option t-att-value="dep.id"
+                          t-att-selected="dep.id === state.filters.department_id and 'selected' or false"
+                          t-esc="dep.name"/>
+                </t>
+              </select>
+              <select class="pbgl-in pbgl-in--sel"
+                      t-on-change="(ev) => this.setFilter('manager_id', ev.target.value)">
+                <option value="0">Every manager</option>
+                <t t-foreach="state.lists.managers" t-as="man" t-key="man.id">
+                  <option t-att-value="man.id"
+                          t-att-selected="man.id === state.filters.manager_id and 'selected' or false"
+                          t-esc="man.name"/>
+                </t>
+              </select>
+              <button t-if="anyFilter" class="pbgl-chip pbgl-chip--clear"
+                      t-on-click="clearFilters">
+                <t t-out="ic('x',13)"/> Everything again
+              </button>
+            </div>
+
+            <!-- ====================== nothing yet ======================
+                 EMPTY IS A STATE AND IT GETS A SENTENCE (R27), not a grid of
+                 noughts over a goal year nobody has started. -->
+            <div t-if="state.empty" class="pbim-panel pbgl-empty">
+              <div class="pbgl-empty-ic"><t t-out="ic('target',30)"/></div>
+              <h2>Nothing to count yet</h2>
+              <p t-esc="state.headline"/>
+            </div>
+
+            <t t-else="">
+
+              <p class="pbgl-headline" t-esc="state.headline"/>
+
+              <!-- ======================= the tiles ======================= -->
+              <div class="pbim-stats pbgn-kpis">
+                <t t-foreach="state.tiles" t-as="tl" t-key="tl.key">
+                  <div class="pbim-stat pbgn-stat"
+                       t-att-class="{ 'pbgn-stat--bad': tl.tone === 'bad',
+                                      'pbgn-stat--warn': tl.tone === 'warn',
+                                      'pbgn-stat--ok': tl.tone === 'good' }">
+                    <div class="pbim-stat-ic"><t t-out="ic(tl.icon,21)"/></div>
+                    <div class="pbim-stat-tx">
+                      <div class="n" t-esc="tl.value"/>
+                      <div class="l" t-esc="tl.label"/>
+                      <div class="y" t-esc="tl.sub"/>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+              <!-- ================= how long each rung took ================= -->
+              <div t-if="state.rungs.length" class="pbim-panel pbgn-panel">
+                <h3>How long each step takes</h3>
+                <p class="pbgn-sub">Measured between the day a sheet reached
+                   each rung and the day it reached the next one. A sheet that
+                   never got there is counted separately rather than as a
+                   nought.</p>
+                <div class="pbgn-rungs">
+                  <t t-foreach="state.rungs" t-as="rg" t-key="rg.key">
+                    <div class="pbgn-rung">
+                      <span class="pbgn-rung-l" t-esc="rg.label"/>
+                      <span class="pbgn-rung-n">
+                        <t t-if="rg.days !== null">
+                          <strong t-esc="rg.days"/> days
+                        </t>
+                        <t t-if="rg.days === null">—</t>
+                      </span>
+                      <span class="pbgn-rung-c">
+                        <t t-esc="rg.n"/> <t t-esc="rg.n_word"/>
+                      </span>
+                    </div>
+                  </t>
+                </div>
+              </div>
+
+              <div class="pbgn-splits">
+
+                <!-- ================= manager compliance =================
+                     THE NUMBER THIS LENS EXISTS FOR. A company average tells
+                     nobody what to do; a name beside a percentage is a
+                     sentence somebody can act on this afternoon. -->
+                <div class="pbim-panel pbgn-panel">
+                  <h3>Every manager</h3>
+                  <p class="pbgn-sub">Worst first. "Conversations" is how many
+                     of the monthly check-ins that were owed actually
+                     happened.</p>
+                  <div class="pbgn-table">
+                    <t t-foreach="state.byManager" t-as="mg" t-key="mg.id">
+                      <button class="pbgn-row"
+                              t-on-click="() => this.openCheckins(mg.id)">
+                        <span class="pbgn-row-n" t-esc="mg.label"/>
+                        <span class="pbgn-row-bar">
+                          <span class="pbgn-bar-track">
+                            <span class="pbgn-bar-fill"
+                                  t-attf-style="width: {{share(state.byManager, mg.sheets)}}%"/>
+                          </span>
+                          <span class="pbgn-row-sub">
+                            <t t-esc="mg.sheets"/> <t t-esc="mg.sheets_word"/> ·
+                            <t t-esc="mg.locked"/> agreed ·
+                            <t t-esc="mg.progress"/>% along
+                          </span>
+                        </span>
+                        <span t-attf-class="pbgn-row-pc pbgn-row-pc--{{complianceTone(mg.compliance)}}">
+                          <strong t-esc="pct(mg.compliance)"/>
+                          <span class="pbgn-row-sub">
+                            <t t-esc="mg.done"/> of <t t-esc="mg.owed"/>
+                          </span>
+                        </span>
+                        <span class="pbgn-row-sc">
+                          <strong t-esc="score(mg.score)"/>
+                          <span class="pbgn-row-sub">avg score</span>
+                        </span>
+                      </button>
+                    </t>
+                  </div>
+                </div>
+
+                <!-- ==================== by department ==================== -->
+                <div class="pbim-panel pbgn-panel">
+                  <h3>Every part of the business</h3>
+                  <p class="pbgn-sub">The same figures, gathered up by
+                     department.</p>
+                  <div class="pbgn-table">
+                    <t t-foreach="state.byDepartment" t-as="dp" t-key="dp.id">
+                      <div class="pbgn-row pbgn-row--static">
+                        <span class="pbgn-row-n" t-esc="dp.label"/>
+                        <span class="pbgn-row-bar">
+                          <span class="pbgn-bar-track">
+                            <span class="pbgn-bar-fill"
+                                  t-attf-style="width: {{share(state.byDepartment, dp.sheets)}}%"/>
+                          </span>
+                          <span class="pbgn-row-sub">
+                            <t t-esc="dp.sheets"/> <t t-esc="dp.sheets_word"/> ·
+                            <t t-esc="dp.progress"/>% along
+                          </span>
+                        </span>
+                        <span t-attf-class="pbgn-row-pc pbgn-row-pc--{{complianceTone(dp.compliance)}}">
+                          <strong t-esc="pct(dp.compliance)"/>
+                          <span class="pbgn-row-sub">conversations</span>
+                        </span>
+                        <span class="pbgn-row-sc">
+                          <strong t-esc="score(dp.score)"/>
+                          <span class="pbgn-row-sub">avg score</span>
+                        </span>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="pbgn-splits">
+
+                <!-- ======================= the bands ======================= -->
+                <div t-if="state.bands.length" class="pbim-panel pbgn-panel">
+                  <h3>How the scores came out</h3>
+                  <p class="pbgn-sub">In band order and never by size — a
+                     chart that reorders itself as the numbers change is a
+                     chart nobody can read twice.</p>
+                  <div class="pbgn-bands">
+                    <t t-foreach="state.bands" t-as="bd" t-key="bd.label">
+                      <div class="pbgn-band">
+                        <span class="pbgn-band-l" t-esc="bd.label"/>
+                        <span class="pbgn-bar-track">
+                          <span t-attf-class="pbgn-bar-fill pbgn-bar-fill--{{bd.tone}}"
+                                t-attf-style="width: {{bd.pct}}%"/>
+                        </span>
+                        <span class="pbgn-band-n">
+                          <strong t-esc="bd.count"/>
+                          <span class="pbgn-row-sub"><t t-esc="bd.pct"/>%</span>
+                        </span>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+
+                <!-- ==================== the change requests ==================== -->
+                <div class="pbim-panel pbgn-panel">
+                  <h3>Is the plan still the plan</h3>
+                  <p class="pbgn-sub" t-esc="state.changes.sentence"/>
+                  <div t-if="state.changes.kinds.length" class="pbgn-table">
+                    <t t-foreach="state.changes.kinds" t-as="kd"
+                       t-key="kd.label">
+                      <div class="pbgn-row pbgn-row--static">
+                        <span class="pbgn-row-n" t-esc="kd.label"/>
+                        <span class="pbgn-row-sc">
+                          <strong t-esc="kd.count"/>
+                          <span class="pbgn-row-sub">asked for</span>
+                        </span>
+                        <span class="pbgn-row-sc">
+                          <strong t-esc="kd.agreed"/>
+                          <span class="pbgn-row-sub">agreed</span>
+                        </span>
+                        <span class="pbgn-row-sc">
+                          <strong t-esc="kd.open"/>
+                          <span class="pbgn-row-sub">waiting</span>
+                        </span>
+                      </div>
+                    </t>
+                  </div>
+                  <button t-if="state.changes.total" class="pbim-btn ghost"
+                          t-on-click="openChanges">
+                    <t t-out="ic('external',15)"/> Open them
+                  </button>
+                </div>
+
+              </div>
+
+            </t>
+          </div>
+
+        </t>
+      </t>
+    </div>
+  </t>
+
+</templates>

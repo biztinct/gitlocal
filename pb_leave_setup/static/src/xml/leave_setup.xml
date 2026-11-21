@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Kinds of leave (WDGAP S5-A).
+
+       Comments ruled with `=`, never a doubled hyphen. No `t-as` variable is
+       named lt / gt / lte / gte / and / or / not / in: the kind loop is `kd`,
+       the step loop `sp`, the posting loop `po`, the rule loop `ru`, the
+       table loop `tb`, the option loop `op`, the starter loop `sr`, the
+       source loop `so`, the check loop `ck`. Each translatable sentence sits
+       on ONE line (PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_leave_setup.PbLeaveKinds">
+    <div class="pbim pbim-page pblk" t-att-class="{ 'pblk--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the kinds of leave…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pblk-locked">
+          <div class="pblk-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for the HR team</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pblk-head">
+            <div class="pblk-head-id">
+              <h1 class="pbim-h1">Kinds of leave</h1>
+              <p class="pbim-sub">Every kind of leave your people can take, how it is paid, and how the days build up.</p>
+            </div>
+            <div class="pblk-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh" title="Read the list again" aria-label="Read the list again">
+                <t t-out="icon('refresh', 15)"/>
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost" t-on-click="() => this.openStarter()">
+                <t t-out="icon('sparkles', 15)"/> <span>Ready-made kinds</span>
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn primary" t-on-click="openNew">
+                <t t-out="icon('plus', 15)"/> <span>Add a kind</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ===================== the set-up check ===================== -->
+          <section t-if="hasChecks" class="pblk-check" aria-label="Set-up check">
+            <div class="pblk-check-head">
+              <span class="pblk-check-ic"><t t-out="icon('listChecks', 18)"/></span>
+              <b>Set-up check</b>
+            </div>
+            <div t-if="checks.pay_open.length" class="pblk-check-row is-amber">
+              <span class="pblk-check-dot"/>
+              <div class="pblk-check-tx">
+                <b t-if="state.kpis.pay_open === 1">1 kind that is switched on has no pay decision yet.</b>
+                <b t-else=""><t t-esc="fmtInt(state.kpis.pay_open)"/> kinds that are switched on have no pay decision yet.</b>
+                <span>A pay run that works from leave records stops at these until somebody says how they are paid.</span>
+                <span class="pblk-chips">
+                  <button t-foreach="checks.pay_open" t-as="ck" t-key="ck.id" type="button" class="pblk-chip" t-on-click="() => this.openKind(ck)" t-esc="ck.name"/>
+                  <span t-if="checks.pay_open_more" class="pblk-chip is-more">+<t t-esc="checks.pay_open_more"/></span>
+                </span>
+              </div>
+            </div>
+            <div t-if="checks.no_start and checks.no_start.count" class="pblk-check-row is-amber">
+              <span class="pblk-check-dot"/>
+              <div class="pblk-check-tx">
+                <b t-if="checks.no_start.count === 1">1 person has no date of joining.</b>
+                <b t-else=""><t t-esc="fmtInt(checks.no_start.count)"/> people have no date of joining.</b>
+                <span>They get no extra days for long service, and nothing from a kind with a waiting period. Add the date on their employee record.</span>
+                <span class="pblk-names" t-esc="checks.no_start.names.join(', ')"/>
+              </div>
+            </div>
+            <div t-if="state.kpis.review" class="pblk-check-row">
+              <span class="pblk-check-dot is-blue"/>
+              <div class="pblk-check-tx">
+                <b t-if="state.kpis.review === 1">1 ready-made kind is waiting for your review.</b>
+                <b t-else=""><t t-esc="state.kpis.review"/> ready-made kinds are waiting for your review.</b>
+                <span>They stay switched off until you check each one and switch it on.</span>
+              </div>
+              <button class="pbim-btn-sm" t-on-click="() => kit.toggleFilters({ state: ['review'] })">Show them</button>
+            </div>
+          </section>
+
+          <!-- ======================= the numbers ======================= -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+
+          <!-- ======================= the steps ======================= -->
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="stepsLabel"/>
+            <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+          </t>
+
+          <!-- ========== kinds for other countries (LV1): hidden, never lost ========== -->
+          <div t-if="otherCount or state.showOther" class="pblk-others">
+            <button type="button" class="pblk-others-btn" t-att-aria-pressed="state.showOther ? 'true' : 'false'" t-on-click="() => this.setShowOther(!state.showOther)">
+              <t t-out="icon('globe', 14)"/> <span t-esc="otherLabel"/>
+            </button>
+          </div>
+
+          <!-- ================ the shared filter panel ================ -->
+          <PbFilterLayout kit="kit" coach="'leave-kinds-filters'" searchPlaceholder="searchLabel">
+
+          <div t-if="state.listError" class="pbim-empty pblk-empty">
+            <div class="pblk-empty-ic"><t t-out="icon('alert', 30)"/></div>
+            <h3>The kinds of leave could not load</h3>
+            <p>The connection may have dropped. Your filters are kept.</p>
+            <button class="pbim-btn primary" t-on-click="retry"><t t-out="icon('refresh', 14)"/> <span>Try again</span></button>
+          </div>
+
+          <div t-elif="state.rows.length" class="pbim-tablewrap pblk-tablewrap">
+            <table class="pbim-table pblk-table">
+              <thead>
+                <tr>
+                  <th>Kind of leave</th>
+                  <th>Country</th>
+                  <th>Taken in</th>
+                  <th>Allowance</th>
+                  <th>Pay</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="state.rows" t-as="kd" t-key="kd.id" class="pblk-row"
+                    t-att-class="{ 'is-open': state.kind and state.kind.id === kd.id, 'is-off': kd.state !== 'on' }"
+                    tabindex="0" t-on-click="() => this.openKind(kd)"
+                    t-on-keydown="(ev) => ev.key === 'Enter' and this.openKind(kd)">
+                  <td>
+                    <span class="pblk-kind">
+                      <b t-esc="kd.name"/>
+                      <small>
+                        <t t-esc="kd.company"/>
+                        <span t-if="kd.starter" class="pblk-tag">Ready-made</span>
+                        <span t-if="kd.hr_only" class="pblk-tag">Only HR enters it</span>
+                        <span t-if="kd.policy" class="pblk-tag">Set by your leave policy</span>
+                      </small>
+                    </span>
+                  </td>
+                  <td><span t-if="kd.country" class="pbim-chip" t-esc="kd.country"/><span t-else="" class="pblk-dash">Every country</span></td>
+                  <td t-esc="kd.unit_label"/>
+                  <td><span t-att-class="kd.counted ? '' : 'pblk-dash'" t-esc="kd.earning_label"/></td>
+                  <td><span t-att-class="kd.pay_open ? 'pblk-warn' : ''" t-esc="kd.pay_label"/></td>
+                  <td><span class="pbim-badge pblk-badge" t-att-class="'is-' + kd.state" t-esc="kd.state_label"/></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div t-elif="!state.listLoaded" class="pblk-skeleton" aria-label="Loading">
+            <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="pblk-skel-row"/>
+          </div>
+
+          <div t-elif="!state.total and otherCount and !state.showOther" class="pbim-empty pblk-empty">
+            <div class="pblk-empty-ic"><t t-out="icon('globe', 30)"/></div>
+            <h3>No kinds of leave for your countries yet</h3>
+            <p>The kinds there are belong to other countries. Show them, or start from the ready-made kinds for your country.</p>
+            <div class="pblk-empty-acts">
+              <button class="pbim-btn ghost" t-on-click="() => this.setShowOther(true)"><t t-out="icon('globe', 14)"/> <span t-esc="otherLabel"/></button>
+              <button t-if="state.canWrite" class="pbim-btn primary" t-on-click="() => this.openStarter()"><t t-out="icon('sparkles', 14)"/> <span>Ready-made kinds</span></button>
+            </div>
+          </div>
+
+          <div t-elif="!state.total" class="pbim-empty pblk-empty">
+            <div class="pblk-empty-ic"><t t-out="icon('umbrella', 30)"/></div>
+            <h3>No kinds of leave yet</h3>
+            <p>Start from the ready-made kinds for your country, or add your own one by one.</p>
+            <div t-if="state.canWrite" class="pblk-empty-acts">
+              <button class="pbim-btn primary" t-on-click="() => this.openStarter()"><t t-out="icon('sparkles', 14)"/> <span>Ready-made kinds</span></button>
+              <button class="pbim-btn ghost" t-on-click="openNew"><t t-out="icon('plus', 14)"/> <span>Add a kind</span></button>
+            </div>
+          </div>
+
+          <div t-else="" class="pbim-empty pblk-empty">
+            <div class="pblk-empty-ic"><t t-out="icon('search', 30)"/></div>
+            <h3>No kinds of leave match these filters</h3>
+            <p>Remove a filter above, or start again from every kind.</p>
+            <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show every kind</button>
+          </div>
+
+          <div t-if="state.rows.length and !state.listError" class="pblk-foot">
+            <span>Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/></span>
+            <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
+
+          <t t-if="state.kind" t-call="pb_leave_setup.KindDrawer"/>
+          <t t-if="state.starter" t-call="pb_leave_setup.StarterModal"/>
+
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <!-- ======================== the drawer ======================== -->
+  <t t-name="pb_leave_setup.KindDrawer">
+    <div class="pblk-scrim" t-on-click="closeKind"/>
+    <aside class="pblk-drawer" role="dialog" aria-modal="true" aria-label="Kind of leave" t-att-class="{ 'is-busy': state.busy }">
+      <header class="pblk-dr-head">
+        <div class="pblk-dr-id">
+          <span class="pblk-dr-ic"><t t-out="icon('umbrella', 20)"/></span>
+          <div>
+            <h2><t t-if="K.id" t-esc="(D and D.names.en) or K.name"/><t t-else="">New kind of leave</t></h2>
+            <p t-if="K.id"><t t-esc="K.company"/><t t-if="K.holders_label"> · <span t-esc="K.holders_label"/></t></p>
+            <p t-else="">It starts switched off until you switch it on.</p>
+          </div>
+        </div>
+        <div class="pblk-dr-tools">
+          <span class="pbim-badge pblk-badge" t-att-class="'is-' + K.state" t-esc="K.state_label"/>
+          <button class="pbim-btn-sm ghost" t-on-click="closeKind" aria-label="Close"><t t-out="icon('x', 15)"/></button>
+        </div>
+      </header>
+
+      <div t-if="K.loading or !D" class="pbim-busy"><div class="pbim-spin"/></div>
+      <div t-else="" class="pblk-dr-body">
+
+        <div t-if="K.warning" class="pblk-banner is-amber" role="note">
+          <span class="pblk-banner-ic"><t t-out="icon('triangleAlert', 18)"/></span>
+          <div><b t-esc="K.warning"/></div>
+        </div>
+        <div t-if="K.review" class="pblk-banner" role="note">
+          <span class="pblk-banner-ic"><t t-out="icon('info', 18)"/></span>
+          <div>
+            <b>A starting point — please review each kind before switching it on.</b>
+            <span>The figures follow the law named under each one, as we read it. Check them against your own legal advice and your company's policy.</span>
+          </div>
+        </div>
+        <div t-if="payLocked" class="pblk-banner is-soft" role="note">
+          <span class="pblk-banner-ic"><t t-out="icon('lock', 16)"/></span>
+          <div><b>Pay and how the days build up are set by your leave policy.</b></div>
+        </div>
+        <div t-if="!canEdit" class="pblk-banner is-soft" role="note">
+          <span class="pblk-banner-ic"><t t-out="icon('eye', 16)"/></span>
+          <div><b>You can look; only an HR manager can change kinds of leave.</b></div>
+        </div>
+
+        <fieldset class="pblk-steps" t-att-disabled="!canEdit">
+
+        <!-- 1. what it is -->
+        <section class="pblk-sec">
+          <h3><span class="pblk-n">1</span> What it is</h3>
+          <label class="pblk-field">
+            <span>Name</span>
+            <input type="text" class="pblk-in" maxlength="80" t-att-value="D.names.en" t-on-input="(ev) => this.onName('en', ev)" placeholder="For example: Annual leave"/>
+          </label>
+          <div class="pblk-two" t-if="hasVi or hasId">
+            <label t-if="hasVi" class="pblk-field">
+              <span>Name in Vietnamese</span>
+              <input type="text" class="pblk-in" maxlength="80" t-att-value="D.names.vi" t-on-input="(ev) => this.onName('vi', ev)"/>
+            </label>
+            <label t-if="hasId" class="pblk-field">
+              <span>Name in Indonesian</span>
+              <input type="text" class="pblk-in" maxlength="80" t-att-value="D.names.id" t-on-input="(ev) => this.onName('id', ev)"/>
+            </label>
+          </div>
+          <div class="pblk-two">
+            <label class="pblk-field">
+              <span>Company</span>
+              <select class="pblk-in" t-on-change="(ev) => this.set('company_id', parseInt(ev.target.value || '0', 10) || 0)">
+                <option value="0" t-att-selected="!D.company_id">Every company</option>
+                <option t-foreach="options.companies or []" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="op.id === D.company_id" t-esc="op.name"/>
+              </select>
+            </label>
+            <label class="pblk-field">
+              <span>For people working in</span>
+              <select class="pblk-in" t-on-change="(ev) => this.set('country', ev.target.value)">
+                <option value="" t-att-selected="!D.country">Every country</option>
+                <option t-foreach="options.countries or []" t-as="op" t-key="op.code" t-att-value="op.code" t-att-selected="op.code === D.country" t-esc="op.label"/>
+                <option t-if="D.country and !(options.countries or []).some((c) => c.code === D.country)" t-att-value="D.country" selected="selected" t-esc="D.country"/>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <!-- 2. how people take it -->
+        <section class="pblk-sec">
+          <h3><span class="pblk-n">2</span> How people take it</h3>
+          <div class="pblk-field">
+            <span>Taken in</span>
+            <div class="pbim-seg">
+              <button t-foreach="options.units or []" t-as="op" t-key="op.key" type="button" class="pbim-segbtn" t-att-class="{ 'on': D.unit === op.key }" t-att-disabled="usedLocked" t-on-click="() => this.set('unit', op.key)" t-esc="op.label"/>
+            </div>
+            <small t-if="usedLocked" class="pblk-muted">People have already asked for it, so this cannot change.</small>
+          </div>
+          <label class="pblk-field">
+            <span>Who approves it</span>
+            <select class="pblk-in" t-on-change="(ev) => this.set('approval', ev.target.value)">
+              <option t-foreach="options.approval or []" t-as="op" t-key="op.key" t-att-value="op.key" t-att-selected="op.key === D.approval" t-esc="op.label"/>
+            </select>
+          </label>
+          <label class="pblk-switch">
+            <input type="checkbox" t-att-checked="D.hr_only" t-on-change="(ev) => this.onCheck('hr_only', ev)"/>
+            <span><b>Only HR can enter this</b><small>People do not see it on their own leave page.</small></span>
+          </label>
+          <label class="pblk-switch">
+            <input type="checkbox" t-att-checked="D.backdate_ok" t-on-change="(ev) => this.onCheck('backdate_ok', ev)"/>
+            <span><b>Can be asked for after it happened</b><small>For sick leave and the like. Other kinds can only be entered for a past date by HR.</small></span>
+          </label>
+          <label t-if="D.backdate_ok" class="pblk-switch is-sub">
+            <input type="checkbox" t-att-checked="D.backdate_alert" t-on-change="(ev) => this.onCheck('backdate_alert', ev)"/>
+            <span><b>Tell HR when it is</b></span>
+          </label>
+          <label class="pblk-switch">
+            <input type="checkbox" t-att-checked="D.document" t-on-change="(ev) => this.onCheck('document', ev)"/>
+            <span><b>A document is needed</b><small>For example a medical certificate. The page asks for it; sending is never blocked.</small></span>
+          </label>
+        </section>
+
+        <!-- 3. pay -->
+        <section class="pblk-sec">
+          <h3><span class="pblk-n">3</span> Pay</h3>
+          <div class="pblk-field">
+            <span>Is it paid?</span>
+            <div class="pbim-seg">
+              <button t-foreach="options.pay or []" t-as="op" t-key="op.key" type="button" class="pbim-segbtn" t-att-class="{ 'on': D.pay === op.key }" t-att-disabled="payLocked" t-on-click="() => this.set('pay', op.key)" t-esc="op.label"/>
+            </div>
+          </div>
+          <label t-if="D.pay === 'partial'" class="pblk-field pblk-narrow">
+            <span>Share of pay (%)</span>
+            <input type="number" min="0" max="100" step="any" class="pblk-in" t-att-value="D.pay_pct" t-att-disabled="payLocked" t-on-input="(ev) => this.onInput('pay_pct', ev)"/>
+          </label>
+          <div t-if="D.pay !== 'unpaid'" class="pblk-field">
+            <span>Who pays for it</span>
+            <div class="pbim-seg">
+              <t t-foreach="options.funding or []" t-as="op" t-key="op.key">
+                <button t-if="op.key !== 'none'" type="button" class="pbim-segbtn" t-att-class="{ 'on': D.funding === op.key }" t-att-disabled="payLocked" t-on-click="() => this.set('funding', op.key)" t-esc="op.label"/>
+              </t>
+            </div>
+          </div>
+          <label t-if="D.pay !== 'unpaid' and D.funding === 'mixed'" class="pblk-field pblk-narrow">
+            <span>The company's share (%)</span>
+            <input type="number" min="0" max="100" step="any" class="pblk-in" t-att-value="D.employer_pct" t-att-disabled="payLocked" t-on-input="(ev) => this.onInput('employer_pct', ev)"/>
+          </label>
+          <p t-if="D.pay === 'unconfigured' or D.funding === 'unconfigured'" class="pblk-note is-amber"><t t-out="icon('triangleAlert', 14)"/> <span>Decide this before switching it on: a pay run that works from leave records stops at a kind with no pay decision.</span></p>
+          <p t-if="source('pay')" class="pblk-src"><t t-out="icon('bookOpen', 13)"/> <span t-esc="source('pay')"/></p>
+        </section>
+
+        <!-- 4. allowance -->
+        <section class="pblk-sec">
+          <h3><span class="pblk-n">4</span> Allowance</h3>
+          <label class="pblk-switch">
+            <input type="checkbox" t-att-checked="D.counted" t-att-disabled="usedLocked" t-on-change="(ev) => this.onCheck('counted', ev)"/>
+            <span><b>Counted against an allowance</b><small>People have a number of days of it, shown on their leave page.</small></span>
+          </label>
+          <t t-if="D.counted">
+            <div class="pblk-field">
+              <span>How the days are given</span>
+              <div class="pbim-seg">
+                <button t-foreach="options.earning or []" t-as="op" t-key="op.key" type="button" class="pbim-segbtn" t-att-class="{ 'on': D.earning === op.key }" t-att-disabled="payLocked or (D.unit === 'hour' and op.key !== 'none')" t-on-click="() => this.set('earning', op.key)" t-esc="op.label"/>
+              </div>
+              <small t-if="D.unit === 'hour'" class="pblk-muted">A kind taken in hours is given by HR.</small>
+            </div>
+            <t t-if="builds">
+              <div class="pblk-two">
+                <label class="pblk-field">
+                  <span>Days a year</span>
+                  <input type="number" min="0" max="366" step="any" class="pblk-in" t-att-value="D.days_per_year" t-on-input="(ev) => this.onInput('days_per_year', ev)"/>
+                </label>
+                <label class="pblk-field">
+                  <span>Starts after this many months of service</span>
+                  <input type="number" min="0" max="120" step="1" class="pblk-in" t-att-value="D.waiting_months" t-on-input="(ev) => this.onInput('waiting_months', ev)"/>
+                </label>
+              </div>
+              <p t-if="source('days')" class="pblk-src"><t t-out="icon('bookOpen', 13)"/> <span t-esc="source('days')"/></p>
+
+              <div class="pblk-field">
+                <span>Extra days for long service</span>
+                <div class="pblk-stepsx">
+                  <div t-foreach="D.steps" t-as="sp" t-key="sp_index" class="pblk-stepx">
+                    <span>After</span>
+                    <input type="number" min="1" max="60" step="1" class="pblk-in pblk-in-sm" t-att-value="sp.years" t-on-input="(ev) => this.onStep(sp_index, 'years', ev)" aria-label="Years of service"/>
+                    <span>years:</span>
+                    <input type="number" min="0" max="60" step="any" class="pblk-in pblk-in-sm" t-att-value="sp.days" t-on-input="(ev) => this.onStep(sp_index, 'days', ev)" aria-label="Extra days a year"/>
+                    <span>more days a year</span>
+                    <button type="button" class="pbim-btn-sm ghost" t-on-click="() => this.removeStep(sp_index)" aria-label="Remove this step"><t t-out="icon('x', 13)"/></button>
+                  </div>
+                  <button type="button" class="pbim-btn-sm ghost" t-on-click="addStep"><t t-out="icon('plus', 13)"/> <span>Add a step</span></button>
+                </div>
+                <small class="pblk-muted">Measured from the date of joining. The highest step reached counts; steps are not added together.</small>
+              </div>
+              <p t-if="source('steps')" class="pblk-src"><t t-out="icon('bookOpen', 13)"/> <span t-esc="source('steps')"/></p>
+
+              <div class="pblk-two">
+                <label class="pblk-field">
+                  <span>Most days a person can hold</span>
+                  <input type="number" min="0" step="any" class="pblk-in" t-att-value="D.max_balance" t-on-input="(ev) => this.onInput('max_balance', ev)"/>
+                  <small class="pblk-muted">0 means no limit.</small>
+                </label>
+                <label class="pblk-field">
+                  <span>Days run out this many months after the year ends</span>
+                  <input type="number" min="0" max="60" step="1" class="pblk-in" t-att-value="D.expire_months" t-on-input="(ev) => this.onInput('expire_months', ev)"/>
+                  <small class="pblk-muted">0 means they do not run out.</small>
+                </label>
+              </div>
+              <label t-if="D.earning === 'monthly'" class="pblk-switch">
+                <input type="checkbox" t-att-checked="D.take_ahead" t-on-change="(ev) => this.onCheck('take_ahead', ev)"/>
+                <span><b>People can take days before they are earned</b><small>Off: only what is earned so far. On: the whole year's days from the start of the year.</small></span>
+              </label>
+              <label class="pblk-field pblk-narrow">
+                <span>Build-up starts from</span>
+                <input type="month" class="pblk-in" t-att-value="earnMonth" t-on-input="onMonth"/>
+                <small class="pblk-muted">Months before it are never added, so days already given by hand are not given twice.</small>
+              </label>
+            </t>
+            <label class="pblk-field pblk-narrow">
+              <span>Warn people holding more than this many days</span>
+              <input type="number" min="0" step="any" class="pblk-in" t-att-value="D.carry_cap" t-on-input="(ev) => this.onInput('carry_cap', ev)"/>
+              <small class="pblk-muted">Before the year's cut-off, so the days get used rather than lost. 0 means no warning.</small>
+            </label>
+          </t>
+          <p t-foreach="otherSources" t-as="so" t-key="so_index" class="pblk-src"><t t-out="icon('bookOpen', 13)"/> <span t-esc="so"/></p>
+        </section>
+
+        </fieldset>
+
+        <!-- 5. what the employee sees -->
+        <section class="pblk-sec pblk-sec-preview" aria-live="polite">
+          <h3><span class="pblk-n">5</span> What it means, and what people see</h3>
+          <t t-if="state.preview">
+            <ul class="pblk-rules">
+              <li t-foreach="state.preview.rules" t-as="ru" t-key="ru_index"><t t-out="icon('check', 14)"/> <span t-esc="ru"/></li>
+            </ul>
+            <table t-if="state.preview.table.length" class="pblk-ptable">
+              <thead><tr><th>Service</th><th class="num">Days a year</th><th t-if="D.earning === 'monthly'" class="num">Each month</th></tr></thead>
+              <tbody>
+                <tr t-foreach="state.preview.table" t-as="tb" t-key="tb.years">
+                  <td t-esc="tb.label"/><td class="num" t-esc="tb.year"/><td t-if="D.earning === 'monthly'" class="num" t-esc="tb.month"/>
+                </tr>
+              </tbody>
+            </table>
+            <div class="pblk-mock">
+              <span class="pblk-k">On their leave page</span>
+              <div class="pblk-mock-row">
+                <div t-if="state.preview.tile" class="pblk-mock-tile">
+                  <span class="pblk-mock-eg">Example</span>
+                  <div class="pblk-mock-l" t-esc="state.preview.tile.name"/>
+                  <div class="pblk-mock-v" t-esc="state.preview.tile.balance_label"/>
+                  <div class="pblk-mock-y" t-esc="state.preview.tile.used_label"/>
+                  <div t-if="state.preview.tile.earned_label" class="pblk-mock-e" t-esc="state.preview.tile.earned_label"/>
+                  <div t-if="state.preview.tile.next_label" class="pblk-mock-e" t-esc="state.preview.tile.next_label"/>
+                </div>
+                <div class="pblk-mock-form">
+                  <span class="pblk-mock-lab">Leave type</span>
+                  <div t-if="state.preview.option.shown" class="pblk-mock-sel"><t t-esc="state.preview.option.name"/><t t-out="icon('chevronDown', 14)"/></div>
+                  <div t-else="" class="pblk-mock-sel is-off"><t t-out="icon('eyeOff', 14)"/> <span>Not offered: only HR enters it</span></div>
+                  <small t-if="state.preview.option.shown" t-esc="state.preview.option.unit_label"/>
+                  <small t-if="state.preview.option.shown and state.preview.option.document">A document is needed for this kind of leave</small>
+                </div>
+              </div>
+            </div>
+          </t>
+          <div t-else="" class="pbim-busy"><div class="pbim-spin"/></div>
+        </section>
+
+        <!-- days added recently -->
+        <section t-if="K.id and (K.recent.length or builds)" class="pblk-sec">
+          <h3>Days added recently</h3>
+          <p t-if="!K.recent.length" class="pblk-muted">Nothing yet. Days are added the night after each month ends.</p>
+          <table t-else="" class="pblk-ptable">
+            <tbody>
+              <tr t-foreach="K.recent" t-as="po" t-key="po.id">
+                <td><b t-esc="po.who"/><small t-if="po.why" t-esc="po.why"/></td>
+                <td t-esc="po.when"/>
+                <td class="num" t-esc="po.days"/>
+              </tr>
+            </tbody>
+          </table>
+          <button t-if="canEdit and K.state === 'on' and builds and !state.dirty" class="pbim-btn-sm ghost pblk-postnow" t-att-disabled="state.busy" t-on-click="postNow"><t t-out="icon('play', 13)"/> <span>Add the finished months now</span></button>
+        </section>
+      </div>
+
+      <footer t-if="D and canEdit" class="pblk-dr-foot">
+        <button class="pbim-btn ghost" t-on-click="closeKind">Close</button>
+        <button t-if="K.id and K.state === 'on'" class="pbim-btn ghost danger" t-att-disabled="state.busy" t-on-click="() => this.toggleOn(false)">Switch off</button>
+        <button class="pbim-btn ghost" t-att-disabled="state.busy or (!state.dirty and K.id)" t-on-click="() => this.save(false)">Save</button>
+        <button t-if="K.state !== 'on'" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="() => K.id and !state.dirty ? this.toggleOn(true) : this.save(true)"><t t-out="icon('powerOff', 14)"/> <span t-if="state.dirty or !K.id">Save and switch on</span><span t-else="">Switch on</span></button>
+      </footer>
+    </aside>
+  </t>
+
+  <!-- ===================== ready-made kinds ===================== -->
+  <t t-name="pb_leave_setup.StarterModal">
+    <t t-set="ST" t-value="state.starter"/>
+    <div class="pbim-modal-scrim" t-on-click="closeStarter">
+      <div class="pbim-modal pblk-modal" t-on-click.stop="() => {}" role="dialog" aria-label="Ready-made kinds of leave">
+        <div class="pblk-modal-head">
+          <div>
+            <h3>Ready-made kinds of leave</h3>
+            <p class="pblk-muted">A starting point — please review each kind before switching it on.</p>
+          </div>
+          <button class="pbim-btn-sm ghost" t-on-click="closeStarter" aria-label="Close"><t t-out="icon('x', 14)"/></button>
+        </div>
+        <div class="pblk-modal-body">
+          <div class="pblk-field">
+            <span>Country</span>
+            <div class="pbim-seg pblk-seg-wrap">
+              <button t-foreach="starterHome" t-as="op" t-key="op.code" type="button" class="pbim-segbtn" t-att-class="{ 'on': ST.country === op.code }" t-on-click="() => this.pickCountry(op.code)" t-esc="op.label"/>
+            </div>
+            <button t-if="starterOthers.length" type="button" class="pblk-others-btn" t-att-aria-expanded="ST.others ? 'true' : 'false'" t-on-click="toggleStarterOthers">
+              <t t-out="icon(ST.others ? 'chevronUp' : 'chevronDown', 14)"/> <span>Other countries</span>
+            </button>
+            <div t-if="ST.others and starterOthers.length" class="pbim-seg pblk-seg-wrap">
+              <button t-foreach="starterOthers" t-as="op" t-key="op.code" type="button" class="pbim-segbtn" t-att-class="{ 'on': ST.country === op.code }" t-on-click="() => this.pickCountry(op.code)" t-esc="op.label"/>
+            </div>
+          </div>
+          <label t-if="(options.companies or []).length > 1" class="pblk-field pblk-narrow">
+            <span>For the company</span>
+            <select class="pblk-in" t-on-change="pickCompany">
+              <option t-foreach="options.companies" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="op.id === ST.company_id" t-esc="op.name"/>
+            </select>
+          </label>
+          <div class="pblk-banner" role="note">
+            <span class="pblk-banner-ic"><t t-out="icon('info', 18)"/></span>
+            <div>
+              <b>Each kind is added switched off.</b>
+              <span>The figures follow the law named under each one, as we read it. Nothing reaches anyone until you check a kind and switch it on.</span>
+            </div>
+          </div>
+          <div t-if="ST.warning" class="pblk-banner is-amber" role="note">
+            <span class="pblk-banner-ic"><t t-out="icon('triangleAlert', 18)"/></span>
+            <div><b t-esc="ST.warning"/></div>
+          </div>
+          <div t-if="ST.loading" class="pbim-busy"><div class="pbim-spin"/></div>
+          <ul t-else="" class="pblk-starters">
+            <li t-foreach="ST.rows" t-as="sr" t-key="sr.key" class="pblk-starter" t-att-class="{ 'is-made': sr.made, 'is-picked': ST.picked[sr.key] }">
+              <label class="pblk-starter-top">
+                <input type="checkbox" t-att-checked="sr.made or ST.picked[sr.key]" t-att-disabled="sr.made" t-on-change="() => this.togglePick(sr)"/>
+                <span class="pblk-starter-tx">
+                  <b t-esc="sr.name"/>
+                  <small t-esc="sr.summary"/>
+                </span>
+                <span t-if="sr.made" class="pbim-badge pblk-badge" t-att-class="sr.made_on ? 'is-on' : 'is-review'"><t t-if="sr.made_on">Already switched on</t><t t-else="">Already added</t></span>
+                <span t-elif="sr.pay_open" class="pbim-badge pblk-badge is-review">Pay to decide</span>
+              </label>
+              <details t-if="sr.sources.length" class="pblk-starter-src">
+                <summary>Where the figures come from</summary>
+                <p t-foreach="sr.sources" t-as="so" t-key="so_index" class="pblk-src"><t t-out="icon('bookOpen', 13)"/> <span t-esc="so"/></p>
+              </details>
+            </li>
+          </ul>
+        </div>
+        <div class="pblk-modal-foot">
+          <button class="pbim-btn ghost" t-on-click="closeStarter">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="ST.busy or !pickedCount" t-on-click="applyStarter"><t t-out="icon('plus', 14)"/> <span t-esc="addLabel"/></button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

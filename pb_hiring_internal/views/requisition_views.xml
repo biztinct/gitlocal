@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- "Who can apply" on the role's own form, beside "Open to referrals".
+         The Staff moves tab of Hiring sets it too. -->
+    <record id="view_pb_hiring_requisition_form_pbhi" model="ir.ui.view">
+        <field name="name">pb.hiring.requisition.form.pbhi</field>
+        <field name="model">pb.hiring.requisition</field>
+        <field name="inherit_id" ref="pb_hiring.view_pb_hiring_requisition_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='referral_open']" position="before">
+                <field name="pb_staff_posting"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

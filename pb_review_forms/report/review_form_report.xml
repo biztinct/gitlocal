@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The finished review as a PDF, filed in the person's documents.
+         No binding: nobody prints it from a menu; `_file_pdf` renders ONE
+         review per call (the server's wkhtmltopdf is unpatched). -->
+    <record id="action_report_review_form" model="ir.actions.report">
+        <field name="name">Review</field>
+        <field name="model">pb.review.entry</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_review_forms.report_review_form_document</field>
+        <field name="report_file">pb_review_forms.report_review_form_document</field>
+    </record>
+
+    <template id="report_review_form_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="p" t-value="o._pdf_payload()"/>
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 12.5px; line-height: 1.55; color: #1E1B2E;">
+
+                        <div style="color: #5A4BB0; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;">
+                            <span t-esc="p['year']"/>
+                        </div>
+                        <h3 style="margin: 4px 0 2px; font-weight: 700;" t-esc="p['title']"/>
+                        <div style="color: #64748B; margin-bottom: 16px;">
+                            <strong t-esc="p['employee']"/>
+                            <t t-if="p['job']"> · <span t-esc="p['job']"/></t>
+                            <t t-if="p['manager']"> · <span>Manager:</span> <span t-esc="p['manager']"/></t>
+                        </div>
+
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px;">
+                            <tr>
+                                <td style="padding: 10px 12px; background: #EDEAF8; border-radius: 8px; width: 34%;">
+                                    <div style="font-size: 11px; color: #64748B;">Overall result</div>
+                                    <div style="font-size: 22px; font-weight: 800; color: #241F52;">
+                                        <t t-if="p['overall'] is not None"><span t-esc="p['overall']"/> <span style="font-size: 12px; font-weight: 600;">out of 5</span></t>
+                                        <t t-else="">-</t>
+                                    </div>
+                                </td>
+                                <td style="padding: 10px 12px;">
+                                    <t t-foreach="p['parts']" t-as="part">
+                                        <div>
+                                            <span t-esc="part['label']"/>:
+                                            <strong><t t-if="part['value'] is not None" t-esc="part['value']"/><t t-else="">-</t></strong>
+                                            <span style="color: #64748B;">(<t t-esc="part['share']"/>%)</span>
+                                        </div>
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <h4 style="font-size: 13px; margin: 14px 0 6px;">Skills and values, and questions</h4>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #F4F5FB;">
+                                    <th style="text-align: left; padding: 6px 8px; width: 46%;"> </th>
+                                    <th style="text-align: left; padding: 6px 8px;">Their own view</th>
+                                    <th style="text-align: left; padding: 6px 8px;">Manager</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="p['lines']" t-as="ln">
+                                    <tr style="border-bottom: 1px solid #E2E8F0;">
+                                        <td style="padding: 6px 8px; vertical-align: top;">
+                                            <strong t-esc="ln['name']"/>
+                                            <div t-if="ln['description']" style="color: #64748B; font-size: 11px;" t-esc="ln['description']"/>
+                                        </td>
+                                        <td style="padding: 6px 8px; vertical-align: top;">
+                                            <t t-if="ln['asks_theirs']"><span t-esc="ln['theirs'] or '-'"/></t>
+                                        </td>
+                                        <td style="padding: 6px 8px; vertical-align: top;">
+                                            <t t-if="ln['asks_mine']"><span t-esc="ln['mine'] or '-'"/></t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <h4 style="font-size: 13px; margin: 18px 0 6px;">Overall comment</h4>
+                        <p style="white-space: pre-line;" t-esc="p['comment']"/>
+
+                        <div style="margin-top: 22px; color: #64748B; font-size: 11px;">
+                            <div t-if="p['self_sent']"><span>Own view sent on</span> <span t-esc="p['self_sent']"/></div>
+                            <div t-if="p['without_self']">Finished without their own view.</div>
+                            <div t-if="p['done_on']"><span>Manager finished on</span> <span t-esc="p['done_on']"/></div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

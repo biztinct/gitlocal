@@ -1,0 +1,101 @@
+// MANAGERCOL — "Managers from the file" (pb_orgchart/static/src/xml/import_manager.xml).
+// Rides on two hosts: the import wizard (.iw-root, outside .pbim) and the batch
+// page (.pbim). Every token therefore carries its fallback. Quiet board rule:
+// grey at zero, colour only where there is something to do. No min()/max()
+// with mixed units (ORGCHART_LEDGER G14).
+.pbmg {
+    margin: 14px 0 4px;
+    padding: 12px 14px;
+    border: 1px solid var(--pbim-line, #E5E7EB);
+    border-radius: var(--pbim-r, 12px);
+    background: var(--pbim-surface, #FFFFFF);
+    color: var(--pbim-text, #1F2937);
+    font-size: 13px;
+    text-align: left;
+
+    &[data-tone="amber"] {
+        border-color: var(--pbim-amber-soft, #FDE68A);
+        box-shadow: inset 3px 0 0 var(--pbim-amber, #B45309);
+    }
+
+    .pbmg-h {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 10px;
+    }
+    .pbmg-ic {
+        display: inline-flex;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .pbmg-t {
+        font-weight: 600;
+        color: var(--pbim-ink, #111827);
+    }
+    .pbmg-chips {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .pbmg-chip {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 4px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: var(--pbim-soft, #F3F4F6);
+        color: var(--pbim-muted, #6B7280);
+        white-space: nowrap;
+
+        b { font-weight: 700; color: var(--pbim-ink, #111827); }
+        &[data-tone="zero"] { background: transparent; b { color: var(--pbim-muted, #9CA3AF); font-weight: 600; } }
+        &[data-tone="green"] { background: var(--pbim-green-soft, #ECFDF5); b { color: var(--pbim-green, #047857); } }
+        &[data-tone="amber"] { background: var(--pbim-amber-soft, #FEF3C7); color: var(--pbim-amber, #B45309); b { color: var(--pbim-amber, #B45309); } }
+    }
+    .pbmg-hint {
+        margin-top: 6px;
+        color: var(--pbim-muted, #6B7280);
+        line-height: 1.45;
+    }
+    .pbmg-more {
+        margin-top: 8px;
+
+        > summary {
+            display: inline-block;
+            cursor: pointer;
+            color: var(--pbim-primary, #5A4BB0);
+            font-weight: 600;
+            list-style: none;
+            &::-webkit-details-marker { display: none; }
+            &::before { content: "▸"; display: inline-block; width: 1em; transition: transform .15s ease; }
+            &:hover { text-decoration: underline; }
+            &:focus-visible { outline: 2px solid var(--pbim-ring, #C7D2FE); outline-offset: 2px; border-radius: 4px; }
+        }
+        &[open] > summary::before { transform: rotate(90deg); }
+    }
+    .pbmg-rows {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0;
+        max-height: 280px;
+        overflow-y: auto;
+        border-top: 1px solid var(--pbim-line, #E5E7EB);
+    }
+    .pbmg-row {
+        display: grid;
+        grid-template-columns: 200px 90px 1fr;
+        gap: 10px;
+        align-items: baseline;
+        padding: 7px 2px;
+        border-bottom: 1px solid var(--pbim-line-2, #F3F4F6);
+
+        &[data-st="blank"] .pbmg-why { color: var(--pbim-muted, #6B7280); }
+    }
+    .pbmg-nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbmg-cd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--pbim-muted, #6B7280); }
+    .pbmg-why { color: var(--pbim-text, #374151); }
+
+    @media (max-width: 640px) {
+        .pbmg-row { grid-template-columns: 1fr; gap: 2px; }
+    }
+}

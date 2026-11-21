@@ -1,73 +1,53 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* hr_attendance
-# 
-# Translators:
-# jonasyngvi, 2024
-# Kristófer Arnþórsson, 2024
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"POT-Creation-Date: 2023-05-16 13:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Kristófer Arnþórsson, 2024\n"
-"Language-Team: Icelandic (https://app.transifex.com/odoo/teams/41243/is/)\n"
+"Language-Team: Icelandic (https://www.transifex.com/odoo/teams/41243/is/)\n"
+"Language: is\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: is\n"
 "Plural-Forms: nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);\n"
 
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_attendance.py:0
-#, python-format
 msgid "\"Check Out\" time cannot be earlier than \"Check In\" time."
-msgstr ""
+msgstr "\"Check Out\" time cannot be earlier than \"Check In\" time."
 
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_attendance.py:0
-#, python-format
 msgid "%(empl_name)s from %(check_in)s"
-msgstr ""
+msgstr "%(empl_name)s from %(check_in)s"
 
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_attendance.py:0
-#, python-format
 msgid "%(empl_name)s from %(check_in)s to %(check_out)s"
+msgstr "%(empl_name)s from %(check_in)s to %(check_out)s"
+
+#. module: hr_attendance
+#. odoo-javascript
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
+msgid "%(hours)s hours, %(minutes)s minutes"
 msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/my_attendances/my_attendances.xml:0
 msgid ": Your user should be linked to an employee to use attendance."
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
-msgid ""
-"<b>Warning! Last check in was over 12 hours ago.</b><br/>If this isn't "
-"right, please contact Human Resource staff"
 msgstr ""
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.view_hr_attendance_kanban
 msgid "<i class=\"fa fa-calendar\" aria-label=\"Period\" role=\"img\" title=\"Period\"/>"
-msgstr ""
-
-#. module: hr_attendance
-#: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
-msgid ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
-"specific.\" role=\"img\" aria-label=\"Values set here are company-"
-"specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
 
 #. module: hr_attendance
@@ -87,9 +67,7 @@ msgstr ""
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_employees_view_kanban
-msgid ""
-"<span id=\"oe_hr_attendance_status\" class=\"fa fa-circle text-success "
-"me-1\" role=\"img\" aria-label=\"Available\" title=\"Available\"/>"
+msgid "<span id=\"oe_hr_attendance_status\" class=\"fa fa-circle text-success me-1\" role=\"img\" aria-label=\"Available\" title=\"Available\"/>"
 msgstr ""
 
 #. module: hr_attendance
@@ -108,8 +86,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
 msgid ""
 "<span> Minutes</span>\n"
-"                                    <br/>\n"
-"                                    <br/>"
+"                                <br/>\n"
+"                                <br/>"
+msgstr ""
+
+#. module: hr_attendance
+#: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
+msgid "<span> seconds</span>"
 msgstr ""
 
 #. module: hr_attendance
@@ -141,16 +124,12 @@ msgstr ""
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
-msgid ""
-"Allow a period of time (around working hours) where extra time will not be "
-"counted, in benefit of the company"
+msgid "Allow a period of time (around working hours) where extra time will not be counted, in benefit of the company"
 msgstr ""
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
-msgid ""
-"Allow a period of time (around working hours) where extra time will not be "
-"deducted, in benefit of the employee"
+msgid "Allow a period of time (around working hours) where extra time will not be deducted, in benefit of the employee"
 msgstr ""
 
 #. module: hr_attendance
@@ -160,17 +139,15 @@ msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "An apple a day keeps the doctor away"
-msgstr ""
+msgstr "An apple a day keeps the doctor away"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Another good day's work! See you soon!"
-msgstr ""
+msgstr "Another good day's work! See you soon!"
 
 #. module: hr_attendance
 #: model:ir.actions.client,name:hr_attendance.hr_attendance_action_my_attendances
@@ -178,13 +155,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_employee__attendance_ids
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_report_view_pivot
 msgid "Attendance"
-msgstr ""
+msgstr "Attendance"
 
 #. module: hr_attendance
 #: model:ir.actions.act_window,name:hr_attendance.hr_attendance_report_action
 #: model:ir.actions.act_window,name:hr_attendance.hr_attendance_report_action_filtered
 msgid "Attendance Analysis"
-msgstr ""
+msgstr "Attendance Analysis"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_res_company__attendance_kiosk_delay
@@ -227,15 +204,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_department_view_kanban
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
 msgid "Attendances"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Available"
-msgstr ""
+msgstr "Attendances"
 
 #. module: hr_attendance
 #: model:ir.model.fields.selection,name:hr_attendance.selection__res_company__attendance_barcode_source__back
@@ -244,8 +213,7 @@ msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/kiosk_mode/kiosk_mode.xml:0
 msgid "Barcode"
 msgstr ""
 
@@ -268,36 +236,24 @@ msgstr ""
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_attendance.py:0
-#, python-format
-msgid ""
-"Cannot create new attendance record for %(empl_name)s, the employee hasn't "
-"checked out since %(datetime)s"
-msgstr ""
+msgid "Cannot create new attendance record for %(empl_name)s, the employee hasn't checked out since %(datetime)s"
+msgstr "Cannot create new attendance record for %(empl_name)s, the employee hasn't checked out since %(datetime)s"
 
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_attendance.py:0
-#: code:addons/hr_attendance/models/hr_attendance.py:0
-#, python-format
-msgid ""
-"Cannot create new attendance record for %(empl_name)s, the employee was "
-"already checked in on %(datetime)s"
-msgstr ""
+msgid "Cannot create new attendance record for %(empl_name)s, the employee was already checked in on %(datetime)s"
+msgstr "Cannot create new attendance record for %(empl_name)s, the employee was already checked in on %(datetime)s"
 
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_employee.py:0
-#, python-format
-msgid ""
-"Cannot perform check out on %(empl_name)s, could not find corresponding "
-"check in. Your attendances have probably been modified manually by human "
-"resources."
-msgstr ""
+msgid "Cannot perform check out on %(empl_name)s, could not find corresponding check in. Your attendances have probably been modified manually by human resources."
+msgstr "Cannot perform check out on %(empl_name)s, could not find corresponding check in. Your attendances have probably been modified manually by human resources."
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/components/check_in_out/check_in_out.xml:0
 msgid "Check IN"
 msgstr ""
 
@@ -309,17 +265,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_report_view_search
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_filter
 msgid "Check In"
-msgstr ""
+msgstr "Innstimplun"
 
 #. module: hr_attendance
 #: model:ir.ui.menu,name:hr_attendance.menu_hr_attendance_my_attendances
 msgid "Check In / Check Out"
-msgstr ""
+msgstr "Innstimplun / útstimplun"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/components/check_in_out/check_in_out.xml:0
 msgid "Check OUT"
 msgstr ""
 
@@ -329,7 +284,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_attendance.field_res_users__last_check_out
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_filter
 msgid "Check Out"
-msgstr ""
+msgstr "Útsimplun"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
@@ -339,26 +294,12 @@ msgstr ""
 #. module: hr_attendance
 #: model:ir.model.fields.selection,name:hr_attendance.selection__hr_employee__attendance_state__checked_in
 msgid "Checked in"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Checked in at"
-msgstr ""
+msgstr "Checked in"
 
 #. module: hr_attendance
 #: model:ir.model.fields.selection,name:hr_attendance.selection__hr_employee__attendance_state__checked_out
 msgid "Checked out"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Checked out at"
-msgstr ""
+msgstr "Checked out"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
@@ -368,20 +309,19 @@ msgstr ""
 #. module: hr_attendance
 #: model:ir.model,name:hr_attendance.model_res_company
 msgid "Companies"
-msgstr "Fyrirtæki"
+msgstr ""
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_overtime__company_id
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_report__company_id
 msgid "Company"
-msgstr "Fyrirtæki"
+msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/kiosk_mode/kiosk_mode.xml:0
 msgid "Company Logo"
-msgstr ""
+msgstr "Company Logo"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
@@ -391,12 +331,12 @@ msgstr ""
 #. module: hr_attendance
 #: model:ir.model,name:hr_attendance.model_res_config_settings
 msgid "Config Settings"
-msgstr "Stillingarvalkostir"
+msgstr ""
 
 #. module: hr_attendance
 #: model:ir.ui.menu,name:hr_attendance.menu_hr_attendance_settings
 msgid "Configuration"
-msgstr ""
+msgstr "Uppsetning"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_res_company__hr_attendance_overtime
@@ -411,9 +351,7 @@ msgstr ""
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
-msgid ""
-"Count of extra hours is considered from this date. Potential extra hours "
-"prior to this date are not considered."
+msgid "Count of extra hours is considered from this date. Potential extra hours prior to this date are not considered."
 msgstr ""
 
 #. module: hr_attendance
@@ -431,7 +369,7 @@ msgstr "Búið til af"
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance__create_date
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_overtime__create_date
 msgid "Created on"
-msgstr "Búið til þann"
+msgstr "Stofnað þann"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_overtime__date
@@ -452,14 +390,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance__department_id
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_report__department_id
 msgid "Department"
-msgstr ""
+msgstr "Department"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance__display_name
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_overtime__display_name
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_report__display_name
 msgid "Display Name"
-msgstr "Birtingarnafn"
+msgstr "Nafn"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
@@ -469,24 +407,20 @@ msgstr ""
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_attendance.py:0
-#, python-format
-msgid ""
-"Do not have access, user cannot edit the attendances that are not his own."
+msgid "Do not have access, user cannot edit the attendances that are not his own."
 msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Early to bed and early to rise, makes a man healthy, wealthy and wise"
-msgstr ""
+msgstr "Early to bed and early to rise, makes a man healthy, wealthy and wise"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Eat breakfast as a king, lunch as a merchant and supper as a beggar"
-msgstr ""
+msgstr "Eat breakfast as a king, lunch as a merchant and supper as a beggar"
 
 #. module: hr_attendance
 #: model:ir.model,name:hr_attendance.model_hr_employee
@@ -497,35 +431,28 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_filter
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_employees_view_kanban
 msgid "Employee"
-msgstr ""
+msgstr "Starfsmaður"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_res_config_settings__group_attendance_use_pin
 msgid "Employee PIN"
-msgstr ""
+msgstr "Employee PIN"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_form
 #: model_terms:ir.ui.view,arch_db:hr_attendance.view_attendance_tree
 msgid "Employee attendances"
-msgstr ""
+msgstr "Employee attendances"
 
 #. module: hr_attendance
 #: model:ir.actions.act_window,name:hr_attendance.hr_employee_attendance_action_kanban
 msgid "Employees"
-msgstr ""
+msgstr "Starfsfólk"
 
 #. module: hr_attendance
 #: model:res.groups,name:hr_attendance.group_hr_attendance_use_pin
 msgid "Enable PIN use"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Error: could not find corresponding employee."
-msgstr ""
+msgstr "Enable PIN use"
 
 #. module: hr_attendance
 #: model:ir.actions.act_window,name:hr_attendance.hr_attendance_overtime_action
@@ -547,23 +474,15 @@ msgid "Extra Hours Starting Date"
 msgstr ""
 
 #. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Extra hours today:"
-msgstr ""
-
-#. module: hr_attendance
 #: model:ir.model.fields,help:hr_attendance.field_hr_attendance_overtime__duration_real
 msgid "Extra-hours including the threshold duration"
 msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "First come, first served"
-msgstr ""
+msgstr "First come, first served"
 
 #. module: hr_attendance
 #: model:ir.model.fields.selection,name:hr_attendance.selection__res_company__attendance_barcode_source__front
@@ -572,63 +491,39 @@ msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Glad to have you back, it's been a while!"
-msgstr ""
+msgstr "Glad to have you back, it's been a while!"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Go back"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Good afternoon"
-msgstr ""
+msgstr "Good afternoon"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Good evening"
-msgstr ""
+msgstr "Good evening"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Good morning"
-msgstr ""
+msgstr "Good morning"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Good night"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Goodbye"
-msgstr ""
+msgstr "Good night"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_report_view_search
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_filter
 msgid "Group By"
-msgstr "Hópað eftir"
+msgstr "Hópa eftir"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_report_view_search
@@ -637,31 +532,27 @@ msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Have a good afternoon"
-msgstr ""
+msgstr "Have a good afternoon"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Have a good day!"
-msgstr ""
+msgstr "Have a good day!"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Have a good evening"
-msgstr ""
+msgstr "Have a good evening"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "Have a nice lunch!"
-msgstr ""
+msgstr "Have a nice lunch!"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_user_view_form
@@ -695,53 +586,36 @@ msgstr ""
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_filter
 msgid "Hr Attendance Search"
-msgstr ""
+msgstr "Hr Attendance Search"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance__id
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_overtime__id
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_report__id
 msgid "ID"
-msgstr "Auðkenni (ID)"
+msgstr "Auðkenni"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/kiosk_mode/kiosk_mode.xml:0
 msgid "Identify Manually"
 msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "If a job is worth doing, it is worth doing well!"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Invalid request"
-msgstr ""
+msgstr "If a job is worth doing, it is worth doing well!"
 
 #. module: hr_attendance
 #: model:ir.ui.menu,name:hr_attendance.menu_hr_attendance_kiosk_no_user_mode
 msgid "Kiosk Mode"
-msgstr ""
+msgstr "Stimpilklukkuútlit"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_employee__last_attendance_id
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_employee_public__last_attendance_id
 msgid "Last Attendance"
-msgstr ""
-
-#. module: hr_attendance
-#: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance____last_update
-#: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_overtime____last_update
-#: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_report____last_update
-msgid "Last Modified on"
 msgstr ""
 
 #. module: hr_attendance
@@ -774,12 +648,12 @@ msgstr "Skilaboð"
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_filter
 msgid "My Attendances"
-msgstr ""
+msgstr "My Attendances"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_filter
 msgid "No Check Out"
-msgstr ""
+msgstr "No Check Out"
 
 #. module: hr_attendance
 #: model_terms:ir.actions.act_window,help:hr_attendance.hr_attendance_action
@@ -795,20 +669,12 @@ msgstr ""
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_employee.py:0
-#, python-format
 msgid "No employee corresponding to Badge ID '%(barcode)s.'"
 msgstr ""
 
 #. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "OK"
-msgstr ""
-
-#. module: hr_attendance
 #: model:res.groups,name:hr_attendance.group_hr_attendance_user
-msgid "Officer : Manage all attendances"
+msgid "Officer: Manage all attendances"
 msgstr ""
 
 #. module: hr_attendance
@@ -818,24 +684,8 @@ msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/my_attendances/my_attendances.xml:0
 msgid "Please contact your administrator."
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Please enter your PIN to"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Please return to the main menu."
 msgstr ""
 
 #. module: hr_attendance
@@ -846,14 +696,13 @@ msgstr ""
 #. module: hr_attendance
 #: model:ir.ui.menu,name:hr_attendance.menu_hr_attendance_report
 msgid "Reporting"
-msgstr ""
+msgstr "Skýrslur"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/kiosk_mode/kiosk_mode.xml:0
 msgid "Scan your badge"
-msgstr ""
+msgstr "Scan your badge"
 
 #. module: hr_attendance
 #: model:ir.model.fields.selection,name:hr_attendance.selection__res_company__attendance_barcode_source__scanner
@@ -868,15 +717,7 @@ msgstr ""
 #. module: hr_attendance
 #: model:ir.actions.act_window,name:hr_attendance.action_hr_attendance_settings
 msgid "Settings"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Sign out"
-msgstr ""
+msgstr "Stillingar"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
@@ -884,59 +725,41 @@ msgid "Start from"
 msgstr ""
 
 #. module: hr_attendance
-#. odoo-python
-#: code:addons/hr_attendance/models/hr_employee.py:0
-#, python-format
-msgid "Such grouping is not allowed."
-msgstr ""
-
-#. module: hr_attendance
 #: model_terms:ir.actions.act_window,help:hr_attendance.hr_attendance_action
 #: model_terms:ir.actions.act_window,help:hr_attendance.hr_attendance_action_employee
 msgid "The attendance records of your employees will be displayed here."
-msgstr ""
+msgstr "The attendance records of your employees will be displayed here."
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/js/greeting_message.js:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/greeting_message/greeting_message.js:0
 msgid "The early bird catches the worm"
-msgstr ""
+msgstr "The early bird catches the worm"
 
 #. module: hr_attendance
 #: model:res.groups,comment:hr_attendance.group_hr_attendance_kiosk
-msgid ""
-"The user will be able to open the kiosk mode and validate the employee PIN."
+msgid "The user will be able to open the kiosk mode and validate the employee PIN."
 msgstr ""
 
 #. module: hr_attendance
 #: model:res.groups,comment:hr_attendance.group_hr_attendance
-msgid ""
-"The user will gain access to the human resources attendance menu, enabling "
-"him to manage his own attendance."
-msgstr ""
+msgid "The user will gain access to the human resources attendance menu, enabling him to manage his own attendance."
+msgstr "The user will gain access to the human resources attendance menu, enabling him to manage his own attendance."
 
 #. module: hr_attendance
 #: model:res.groups,comment:hr_attendance.group_hr_attendance_use_pin
-msgid ""
-"The user will have to enter his PIN to check in and out manually at the "
-"company screen."
-msgstr ""
+msgid "The user will have to enter his PIN to check in and out manually at the company screen."
+msgstr "The user will have to enter his PIN to check in and out manually at the company screen."
 
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_employee.py:0
-#, python-format
-msgid ""
-"To activate Kiosk mode without pin code, you must have access right as an "
-"Officer or above in the Attendance app. Please contact your administrator."
+msgid "To activate Kiosk mode without pin code, you must have access right as an Officer or above in the Attendance app. Please contact your administrator."
 msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/my_attendances/my_attendances.xml:0
 msgid "Today's work hours:"
 msgstr ""
 
@@ -962,13 +785,6 @@ msgid "Total Overtime"
 msgstr ""
 
 #. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Total extra hours:"
-msgstr ""
-
-#. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
 msgid "Use PIN codes (defined on the Employee's profile) to check-in."
 msgstr ""
@@ -977,47 +793,34 @@ msgstr ""
 #: model:ir.model,name:hr_attendance.model_res_users
 #: model:res.groups,name:hr_attendance.group_hr_attendance
 msgid "User"
-msgstr "Notandi"
+msgstr ""
 
 #. module: hr_attendance
 #: model:res.groups,name:hr_attendance.group_hr_attendance_kiosk
-msgid "User : Only kiosk mode"
+msgid "User: Only kiosk mode"
 msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/my_attendances/my_attendances.xml:0
 msgid "Want to check out?"
 msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/my_attendances/my_attendances.xml:0
 msgid "Warning"
-msgstr "Aðvörun"
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "Welcome"
 msgstr ""
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/kiosk_mode/kiosk_mode.xml:0
 msgid "Welcome to"
-msgstr ""
+msgstr "Welcome to"
 
 #. module: hr_attendance
 #. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
+#: code:addons/hr_attendance/static/src/client_action/my_attendances/my_attendances.xml:0
 msgid "Welcome!"
 msgstr ""
 
@@ -1029,7 +832,7 @@ msgstr ""
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance__worked_hours
 msgid "Worked Hours"
-msgstr ""
+msgstr "Vinnustundir"
 
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.hr_user_view_form
@@ -1040,37 +843,16 @@ msgstr ""
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_employee.py:0
-#, python-format
 msgid "Wrong PIN"
-msgstr ""
+msgstr "Wrong PIN"
 
 #. module: hr_attendance
 #. odoo-python
 #: code:addons/hr_attendance/models/hr_attendance.py:0
-#, python-format
 msgid "You cannot duplicate an attendance."
-msgstr ""
+msgstr "You cannot duplicate an attendance."
 
 #. module: hr_attendance
 #: model_terms:ir.actions.act_window,help:hr_attendance.hr_attendance_action_overview
 msgid "Your attendance records will be displayed here."
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "check in"
-msgstr ""
-
-#. module: hr_attendance
-#. odoo-javascript
-#: code:addons/hr_attendance/static/src/xml/attendance.xml:0
-#, python-format
-msgid "check out"
-msgstr ""
-
-#. module: hr_attendance
-#: model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
-msgid "seconds"
 msgstr ""

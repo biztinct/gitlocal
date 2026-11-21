@@ -1,0 +1,772 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:08+0000\n"
+"PO-Revision-Date: 2026-11-15 16:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "%s has no published privacy notice yet."
+msgstr "%s chưa công bố thông báo về quyền riêng tư."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "<span>Answered on</span>"
+msgstr "<span>Đã trả lời ngày</span>"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "<span>Version</span>"
+msgstr "<span>Phiên bản</span>"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "<span>Your answer is kept with today's date, and HR can see it. You continue to My Payobook whichever you choose.</span>"
+msgstr "<span>Câu trả lời của bạn được lưu kèm ngày hôm nay và bộ phận nhân sự có thể xem. Dù chọn thế nào, bạn vẫn tiếp tục vào My Payobook.</span>"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "A notice people have seen is kept as a record and cannot be deleted."
+msgstr "Thông báo mà mọi người đã xem được lưu làm hồ sơ và không thể xoá."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "A published notice cannot be changed, because people have answered it. Use \"Write a new version\" to change the words; everybody is then asked again."
+msgstr "Thông báo đã công bố không thể sửa vì mọi người đã trả lời. Dùng \"Viết phiên bản mới\" để đổi nội dung; khi đó mọi người sẽ được hỏi lại."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "A published notice cannot be changed, because people have answered it. Write a new version instead."
+msgstr "Thông báo đã công bố không thể sửa vì mọi người đã trả lời. Hãy viết một phiên bản mới."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Agreed"
+msgstr "Đã đồng ý"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Agreed on paper"
+msgstr "Đồng ý trên giấy"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "An answer is a record and cannot be changed. A new answer is added instead."
+msgstr "Câu trả lời là hồ sơ và không thể sửa. Một câu trả lời mới sẽ được thêm vào."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "An answer is a record and cannot be deleted."
+msgstr "Câu trả lời là hồ sơ và không thể xoá."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__answer
+msgid "Answer"
+msgstr "Câu trả lời"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__user_id
+msgid "Answered with the login"
+msgstr "Trả lời bằng tài khoản"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__consent_ids
+msgid "Answers"
+msgstr "Các câu trả lời"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "Answers are recorded by My Payobook or by HR's paper consent button only."
+msgstr "Câu trả lời chỉ được ghi qua My Payobook hoặc nút ghi đồng ý trên giấy của bộ phận nhân sự."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Ask HR about it"
+msgstr "Hỏi bộ phận nhân sự"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Asked once per version. A new version asks everybody again."
+msgstr "Mỗi phiên bản chỉ hỏi một lần. Phiên bản mới sẽ hỏi lại mọi người."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "Before you continue, please read how"
+msgstr "Trước khi tiếp tục, vui lòng đọc cách"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Cancel"
+msgstr "Huỷ"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Carry on writing the notice"
+msgstr "Viết tiếp thông báo"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "Choose one of the two answers."
+msgstr "Hãy chọn một trong hai câu trả lời."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__company_id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__create_uid model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__create_date model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_ir_http__display_name model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_board__display_name model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__display_name model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "Everybody in this company will be asked to read this notice and answer it on their next visit to My Payobook. Publish it now?"
+msgstr "Mọi người trong công ty sẽ được đề nghị đọc và trả lời thông báo này ở lần vào My Payobook tiếp theo. Công bố ngay?"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Find a person…"
+msgstr "Tìm một người…"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__version
+msgid "Given when the notice is published."
+msgstr "Được đánh khi thông báo được công bố."
+
+#. module: pb_me_privacy
+#: model:ir.model,name:pb_me_privacy.model_ir_http
+msgid "HTTP Routing"
+msgstr "Định tuyến HTTP"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__how
+msgid "How"
+msgstr "Cách"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0 model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "How we use your personal details"
+msgstr "Cách chúng tôi sử dụng thông tin cá nhân của bạn"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "How your company uses your personal details, and the answer you gave."
+msgstr "Cách công ty sử dụng thông tin cá nhân của bạn và câu trả lời bạn đã đưa ra."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_consent__answer__disagree model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "I do not agree"
+msgstr "Tôi không đồng ý"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_consent__answer__agree model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "I have read and agree"
+msgstr "Tôi đã đọc và đồng ý"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "I no longer agree"
+msgstr "Tôi không còn đồng ý"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_ir_http__id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_board__id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_has_error model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_is_follower
+msgid "Is Follower"
+msgstr "Là người theo dõi"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__lang
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__write_uid model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__write_date model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "No login"
+msgstr "Không có tài khoản"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "No privacy notice is published for"
+msgstr "Chưa có thông báo về quyền riêng tư nào được công bố cho"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Nobody here"
+msgstr "Không có ai"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Nobody is locked out: either answer continues to My Payobook."
+msgstr "Không ai bị chặn: trả lời nào cũng tiếp tục vào My Payobook."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Nobody matches what you picked. Clear the search or press the number again."
+msgstr "Không ai khớp với lựa chọn của bạn. Xoá ô tìm kiếm hoặc bấm lại vào con số."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0 model_terms:ir.ui.view,arch_db:pb_me_privacy.pbpv_status
+msgid "Not answered yet"
+msgstr "Chưa trả lời"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_notice__state__draft
+msgid "Not published yet"
+msgstr "Chưa công bố"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Nothing to read here yet"
+msgstr "Chưa có gì để đọc"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__notice_id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__body
+msgid "Notice"
+msgstr "Thông báo"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số việc cần làm"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị lỗi gửi"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_consent__how__screen
+msgid "On My Payobook"
+msgstr "Trên My Payobook"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "On paper, recorded by"
+msgstr "Trên giấy, ghi bởi"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_consent__how__paper
+msgid "On paper, recorded by HR"
+msgstr "Trên giấy, do bộ phận nhân sự ghi"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/board.py:0 code:addons/pb_me_privacy/models/notice.py:0
+msgid "Only HR can change the privacy notice."
+msgstr "Chỉ bộ phận nhân sự mới được sửa thông báo về quyền riêng tư."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/board.py:0 code:addons/pb_me_privacy/models/consent.py:0
+msgid "Only HR can record paper consent."
+msgstr "Chỉ bộ phận nhân sự mới được ghi đồng ý trên giấy."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/board.py:0
+msgid "Only HR can see who has answered the privacy notice."
+msgstr "Chỉ bộ phận nhân sự mới xem được ai đã trả lời thông báo về quyền riêng tư."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "Only the people whose job needs your details can see them. We share them only where we have to, for example with the tax office, social insurance, and the bank that pays your salary."
+msgstr "Chỉ những người cần thông tin của bạn cho công việc mới xem được. Chúng tôi chỉ chia sẻ khi bắt buộc, ví dụ với cơ quan thuế, bảo hiểm xã hội và ngân hàng trả lương cho bạn."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Paper consent recorded for %s."
+msgstr "Đã ghi đồng ý trên giấy cho %s."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0 code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_breadcrumbs_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_home_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Privacy"
+msgstr "Quyền riêng tư"
+
+#. module: pb_me_privacy
+#: model:ir.model,name:pb_me_privacy.model_pb_privacy_board
+msgid "Privacy consent board"
+msgstr "Bảng đồng ý về quyền riêng tư"
+
+#. module: pb_me_privacy
+#: model:ir.model,name:pb_me_privacy.model_pb_privacy_notice model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_breadcrumbs_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "Privacy notice"
+msgstr "Thông báo về quyền riêng tư"
+
+#. module: pb_me_privacy
+#: model:ir.model,name:pb_me_privacy.model_pb_privacy_consent
+msgid "Privacy notice answer"
+msgstr "Câu trả lời thông báo quyền riêng tư"
+
+#. module: pb_me_privacy
+#: model:ir.actions.act_window,name:pb_me_privacy.action_pb_privacy_notice model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_list
+msgid "Privacy notices"
+msgstr "Thông báo về quyền riêng tư"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Privacy · who has answered the notice"
+msgstr "Quyền riêng tư · ai đã trả lời thông báo"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "Publish"
+msgstr "Công bố"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_notice__state__published
+msgid "Published"
+msgstr "Đã công bố"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__published_by
+msgid "Published by"
+msgstr "Người công bố"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__published_on
+msgid "Published on"
+msgstr "Ngày công bố"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Read the answers again"
+msgstr "Đọc lại các câu trả lời"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Read the notice"
+msgstr "Đọc thông báo"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Reading the answers…"
+msgstr "Đang đọc các câu trả lời…"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Record paper consent"
+msgstr "Ghi đồng ý trên giấy"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__recorded_by
+msgid "Recorded by"
+msgstr "Người ghi"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_notice__state__replaced
+msgid "Replaced by a newer version"
+msgstr "Đã được thay bằng phiên bản mới hơn"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__replaced_on
+msgid "Replaced on"
+msgstr "Ngày thay thế"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Said no"
+msgstr "Không đồng ý"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "See the notice"
+msgstr "Xem thông báo"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Signed paper form seen?"
+msgstr "Đã thấy mẫu giấy có chữ ký?"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Start from a plain, neutral wording and change it to say what your company really does."
+msgstr "Bắt đầu từ một nội dung đơn giản, trung lập và sửa lại cho đúng với những gì công ty bạn thực sự làm."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Thank you. Your answer is saved: you agree."
+msgstr "Cảm ơn bạn. Câu trả lời đã được lưu: bạn đồng ý."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "That did not go through. Please try again."
+msgstr "Chưa thực hiện được. Vui lòng thử lại."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/board.py:0
+msgid "That person could not be found."
+msgstr "Không tìm thấy người này."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "The answers could not be read just now. Try again in a moment."
+msgstr "Hiện chưa đọc được các câu trả lời. Thử lại sau giây lát."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "The first 200 people are shown. Search for a name to find somebody further down."
+msgstr "Đang hiển thị 200 người đầu tiên. Tìm theo tên để thấy những người khác."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "This is a starting point. Read it carefully and change it so that it says what your company really does with people's details, then publish it."
+msgstr "Đây là nội dung khởi đầu. Hãy đọc kỹ và sửa lại cho đúng với cách công ty bạn thực sự sử dụng thông tin của mọi người, rồi công bố."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "This notice has been replaced. Please read the new one."
+msgstr "Thông báo này đã được thay thế. Vui lòng đọc thông báo mới."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "This notice is not for you."
+msgstr "Thông báo này không dành cho bạn."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "This one is for HR"
+msgstr "Mục này dành cho bộ phận nhân sự"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "This person is in a company you cannot see."
+msgstr "Người này thuộc một công ty bạn không xem được."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "This version is already published."
+msgstr "Phiên bản này đã được công bố."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__name
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Until you publish one, nobody is asked anything. When you publish it, each employee reads it the next time they open My Payobook and answers \"I have read and agree\" or \"I do not agree\"."
+msgstr "Khi chưa công bố, không ai bị hỏi gì. Khi bạn công bố, mỗi nhân viên sẽ đọc thông báo ở lần mở My Payobook tiếp theo và trả lời \"Tôi đã đọc và đồng ý\" hoặc \"Tôi không đồng ý\"."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__version model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__version
+msgid "Version"
+msgstr "Phiên bản"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "Version %s published. Everybody in %s is asked to read it on their next visit to My Payobook."
+msgstr "Đã công bố phiên bản %s. Mọi người trong %s sẽ được đề nghị đọc ở lần vào My Payobook tiếp theo."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "We keep the personal details you give us, and the details of your work with us, so that we can employ you, pay you correctly and meet our duties to the tax office and social insurance."
+msgstr "Chúng tôi lưu giữ thông tin cá nhân bạn cung cấp và thông tin về công việc của bạn để có thể tuyển dụng, trả lương đúng cho bạn và thực hiện nghĩa vụ với cơ quan thuế và bảo hiểm xã hội."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "We keep your details while you work with us, and afterwards for as long as the rules we follow require."
+msgstr "Chúng tôi lưu thông tin của bạn trong thời gian bạn làm việc và sau đó trong thời hạn mà các quy định chúng tôi phải tuân theo yêu cầu."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trang web"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang web"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_home_privacy
+msgid "What we keep about you, and your answer"
+msgstr "Những gì chúng tôi lưu về bạn và câu trả lời của bạn"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__answered_on
+msgid "When"
+msgstr "Khi nào"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "When your company publishes its privacy notice, you will find it here with your answer."
+msgstr "Khi công ty công bố thông báo về quyền riêng tư, bạn sẽ thấy nó ở đây cùng câu trả lời của bạn."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Who has read your privacy notice and given an answer. Record paper consent for people without a login."
+msgstr "Ai đã đọc thông báo về quyền riêng tư và đã trả lời. Ghi đồng ý trên giấy cho người không có tài khoản."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__wording
+msgid "Wording shown"
+msgstr "Nội dung đã hiển thị"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "Write a new version"
+msgstr "Viết phiên bản mới"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Write the notice"
+msgstr "Viết thông báo"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "Write the notice before publishing it."
+msgstr "Hãy viết thông báo trước khi công bố."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Yes, record it"
+msgstr "Có, ghi lại"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.pbpv_status
+msgid "You agreed"
+msgstr "Bạn đã đồng ý"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.pbpv_status
+msgid "You agreed on paper"
+msgstr "Bạn đã đồng ý trên giấy"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "You can ask HR at any time to see the details we keep about you, to correct them, or to explain how they are used."
+msgstr "Bạn có thể đề nghị bộ phận nhân sự bất cứ lúc nào để xem thông tin chúng tôi lưu về bạn, sửa lại hoặc giải thích cách sử dụng."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.pbpv_status
+msgid "You did not agree"
+msgstr "Bạn đã không đồng ý"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Your answer is saved: you do not agree. HR can see it and may contact you."
+msgstr "Câu trả lời đã được lưu: bạn không đồng ý. Bộ phận nhân sự có thể xem và có thể liên hệ với bạn."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__body
+msgid "Your company's own wording. Employees read exactly this, in their language, before they answer."
+msgstr "Nội dung riêng của công ty bạn. Nhân viên đọc đúng nội dung này, bằng ngôn ngữ của họ, trước khi trả lời."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "agreed on My Payobook"
+msgstr "đồng ý trên My Payobook"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "agreed on paper"
+msgstr "đồng ý trên giấy"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "not answered yet"
+msgstr "chưa trả lời"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "said no"
+msgstr "không đồng ý"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "uses your personal details, then give your answer."
+msgstr "sử dụng thông tin cá nhân của bạn, rồi đưa ra câu trả lời."

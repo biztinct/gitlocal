@@ -219,7 +219,7 @@
                 <field name="total_payroll"/>
                 <field name="state"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="payroll-country-card-enhanced fade-in-enhanced" t-att-data-country="record.country.raw_value">
                             <div class="country-card-header-enhanced">
                                 <!-- Large Animated Country Flag -->
@@ -283,12 +283,6 @@
                             
                             <!-- Enhanced Action Buttons -->
                             <div class="country-card-actions-enhanced">
-                                <!-- New workflow button to open HR Flow dashboard -->
-                                <button type="object"
-                                        name="action_open_hr_flow_wizard"
-                                        class="btn btn-secondary dashboard-access-btn">
-                                    <i class="fa fa-sitemap"/> Dashboard
-                                </button>
                                 <button name="action_refresh_analytics" type="object" class="btn btn-outline-secondary btn-sm">
                                     <i class="fa fa-refresh"/> Refresh
                                 </button>
@@ -305,7 +299,7 @@
         <field name="name">payroll.dashboard.tree.enhanced</field>
         <field name="model">payroll.dashboard</field>
         <field name="arch" type="xml">
-            <tree string="Enhanced Payroll Dashboards" 
+            <list string="Enhanced Payroll Dashboards" 
                   decoration-success="state=='active'" 
                   decoration-warning="state=='maintenance'"
                   decoration-muted="state=='inactive'">
@@ -317,7 +311,7 @@
                 <field name="currency_id" groups="base.group_multi_currency"/>
                 <field name="active"/>
                 <field name="write_date" string="Last Modified"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -335,12 +329,10 @@
                 <separator/>
                 <filter string="Active Status" name="state_active" domain="[('state', '=', 'active')]"/>
                 <filter string="Maintenance" name="state_maintenance" domain="[('state', '=', 'maintenance')]"/>
-                <filter string="Has Employees" name="has_employees" domain="[('total_employees', '>', 0)]"/>
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter string="Country" name="group_country" context="{'group_by': 'country'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
-                    <filter string="Currency" name="group_currency" context="{'group_by': 'currency_id'}"/>
                     <filter string="Status" name="group_active" context="{'group_by': 'active'}"/>
                 </group>
             </search>
@@ -351,7 +343,7 @@
     <record id="action_payroll_dashboard_enhanced" model="ir.actions.act_window">
         <field name="name">Enhanced Multi-Country Payroll Dashboard</field>
         <field name="res_model">payroll.dashboard</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="view_payroll_dashboard_kanban_enhanced"/>
         <field name="context">{'create': True}</field>
         <field name="help" type="html">

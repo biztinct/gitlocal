@@ -1,0 +1,1091 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-B — India: the employer's year-end salary certificate figures
+         (Form 16 Part B up to 2025-26, Form 130 Part C from 2026-27) and the
+         quarterly salary statement figures (Form 24Q / Form 138), workbooks for the
+         return preparer + a per-person PDF. Generated from the tables in
+         WDGAP_S2B1_REPORT.md; see pb_form_lines/models/render_in.py. -->
+
+    <record id="form_in_form16b" model="pb.gov.form">
+        <field name="code">IN_FORM16B</field>
+        <field name="country_code">IN</field>
+        <field name="sequence">130</field>
+        <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
+        <field name="year_start_month">4</field>
+        <field name="name">Salary certificate figures — Form 16 Part B (tax years up to 2025-26)</field>
+        <field name="official_name">Form No. 16, Part B (Annexure-I) — Details of salary paid and any other income and tax deducted</field>
+        <field name="authority">Income Tax Department</field>
+        <field name="period_kind">tax_year</field>
+        <field name="output_kinds">xlsx,pdf</field>
+        <field name="total_line_code">TDS</field>
+        <field name="valid_to">2026-03-31</field>
+        <field name="screen_note">Figures for your return preparer: the upload file itself is made with the tax department's own utility.</field>
+        <field name="source_url">https://www.ramco.com/hubfs/DT%20notification-28-2023.pdf</field>
+        <field name="source_note">Income-tax Rules 1962, Form No. 16 Part B (Annexure-I) as substituted by Notification 28/2023 (G.S.R. 379(E), 22 May 2023) with rows 19-21 from Notification 112/2024 (G.S.R. 639(E), 15 October 2024). Read from published copies (https://www.ramco.com/hubfs/DT%20notification-28-2023.pdf, https://mspa.in/detail/52866.aspx) because incometaxindia.gov.in refused the request. For tax years up to 2025-26 (April 2025 - March 2026). Read on 18 November 2026.</field>
+        <field name="inferred_note">The form text was read from copies published by others (the tax department's site refused the request). Rows 13 to 17 (tax on income, rebate, surcharge, cess) are filled only from pay items HR puts on them: Payobook does not work tax out again. Row 10(d) is not capped. Row 2(g) is shown as one total (2(h)).</field>
+        <field name="employee_certificates" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_form16b_l1a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">1a</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="label">Salary</field>
+        <field name="official_label">Salary as per provisions contained in section 17(1)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">basic salary,basic,salary,gross salary,wages</field>
+        <field name="suggest_roles">earning</field>
+    </record>
+    <record id="form_in_form16b_l1b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">1b</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="label">Value of perquisites</field>
+        <field name="official_label">Value of perquisites under section 17(2) (as per Form No. 12BA, wherever applicable)</field>
+        <field name="suggest_words">perquisite,perquisites,perks</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_in_form16b_l1c" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">1c</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="label">Profits in lieu of salary</field>
+        <field name="official_label">Profits in lieu of salary under section 17(3) (as per Form No. 12BA, wherever applicable)</field>
+    </record>
+    <record id="form_in_form16b_l1d" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">1d</field>
+        <field name="sequence">40</field>
+        <field name="kind">computed</field>
+        <field name="label">Total gross salary</field>
+        <field name="official_label">Total</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">1a,1b,1c</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l1e" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">1e</field>
+        <field name="sequence">50</field>
+        <field name="kind">money</field>
+        <field name="label">Salary reported from other employers</field>
+        <field name="official_label">Reported total amount of salary received from other employer(s)</field>
+    </record>
+    <record id="form_in_form16b_l2a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">2a</field>
+        <field name="sequence">60</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: travel concession</field>
+        <field name="official_label">Travel concession or assistance under section 10(5)</field>
+        <field name="suggest_words">lta,leave travel</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_in_form16b_l2b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">2b</field>
+        <field name="sequence">70</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: gratuity</field>
+        <field name="official_label">Death-cum-retirement gratuity under section 10(10)</field>
+    </record>
+    <record id="form_in_form16b_l2c" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">2c</field>
+        <field name="sequence">80</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: commuted pension</field>
+        <field name="official_label">Commuted value of pension under section 10(10A)</field>
+    </record>
+    <record id="form_in_form16b_l2d" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">2d</field>
+        <field name="sequence">90</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: leave encashment</field>
+        <field name="official_label">Cash equivalent of leave salary encashment under section 10(10AA)</field>
+    </record>
+    <record id="form_in_form16b_l2e" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">2e</field>
+        <field name="sequence">100</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: house rent allowance</field>
+        <field name="official_label">House rent allowance under section 10(13A)</field>
+        <field name="suggest_words">hra exempt,house rent allowance exempt,hra exemption</field>
+        <field name="suggest_roles">info</field>
+    </record>
+    <record id="form_in_form16b_l2f" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">2f</field>
+        <field name="sequence">110</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: other special allowances</field>
+        <field name="official_label">Other special allowances under section 10(14)</field>
+    </record>
+    <record id="form_in_form16b_l2h" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">2h</field>
+        <field name="sequence">120</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: any other exemption under section 10</field>
+        <field name="official_label">Total amount of any other exemption under section 10</field>
+    </record>
+    <record id="form_in_form16b_l2i" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">2i</field>
+        <field name="sequence">130</field>
+        <field name="kind">computed</field>
+        <field name="label">Total exemption claimed</field>
+        <field name="official_label">Total amount of exemption claimed under section 10 [2(a)+2(b)+2(c)+2(d)+2(e)+2(f)+2(h)]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">2a,2b,2c,2d,2e,2f,2h</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l3" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">3</field>
+        <field name="sequence">140</field>
+        <field name="kind">computed</field>
+        <field name="label">Salary from this employer after exemptions</field>
+        <field name="official_label">Total amount of salary received from current employer [1(d)-2(i)]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">1d,-2i</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l4a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">4a</field>
+        <field name="sequence">150</field>
+        <field name="kind">money</field>
+        <field name="label">Standard deduction</field>
+        <field name="official_label">Standard deduction under section 16(ia)</field>
+        <field name="suggest_words">standard deduction</field>
+        <field name="suggest_roles">info</field>
+    </record>
+    <record id="form_in_form16b_l4b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">4b</field>
+        <field name="sequence">160</field>
+        <field name="kind">money</field>
+        <field name="label">Entertainment allowance</field>
+        <field name="official_label">Entertainment allowance under section 16(ii)</field>
+    </record>
+    <record id="form_in_form16b_l4c" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">4c</field>
+        <field name="sequence">170</field>
+        <field name="kind">money</field>
+        <field name="label">Tax on employment (professional tax)</field>
+        <field name="official_label">Tax on employment under section 16(iii)</field>
+        <field name="suggest_words">professional tax,prof tax,pt</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_in_form16b_l5" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">5</field>
+        <field name="sequence">180</field>
+        <field name="kind">computed</field>
+        <field name="label">Total deductions under section 16</field>
+        <field name="official_label">Total amount of deductions under section 16 [4(a)+4(b)+4(c)]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">4a,4b,4c</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l6" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">6</field>
+        <field name="sequence">190</field>
+        <field name="kind">computed</field>
+        <field name="label">Income chargeable under "Salaries"</field>
+        <field name="official_label">Income chargeable under the head "Salaries" [(3+1(e)-5]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">3,1e,-5</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l7a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">7a</field>
+        <field name="sequence">200</field>
+        <field name="kind">money</field>
+        <field name="label">House property income or loss reported by the employee</field>
+        <field name="official_label">Income (or admissible loss) from house property reported by employee offered for TDS</field>
+    </record>
+    <record id="form_in_form16b_l7b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">7b</field>
+        <field name="sequence">210</field>
+        <field name="kind">money</field>
+        <field name="label">Other income reported by the employee</field>
+        <field name="official_label">Income under the head Other Sources offered for TDS</field>
+    </record>
+    <record id="form_in_form16b_l8" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">8</field>
+        <field name="sequence">220</field>
+        <field name="kind">computed</field>
+        <field name="label">Total other income reported</field>
+        <field name="official_label">Total amount of other income reported by the employee [7(a)+7(b)]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">7a,7b</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l9" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">9</field>
+        <field name="sequence">230</field>
+        <field name="kind">computed</field>
+        <field name="label">Gross total income</field>
+        <field name="official_label">Gross total income (6+8)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">6,8</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l10a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10a</field>
+        <field name="sequence">240</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80C: life insurance premia, provident fund</field>
+        <field name="official_label">Deduction in respect of life insurance premia, contributions to provident fund etc. under section 80C</field>
+        <field name="suggest_words">provident fund,pf employee,epf,80c</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_in_form16b_l10b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10b</field>
+        <field name="sequence">250</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80CCC: pension funds</field>
+        <field name="official_label">Deduction in respect of contribution to certain pension funds under section 80CCC</field>
+    </record>
+    <record id="form_in_form16b_l10c" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10c</field>
+        <field name="sequence">260</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80CCD(1): pension scheme (own)</field>
+        <field name="official_label">Deduction in respect of contribution by taxpayer to pension scheme under section 80CCD (1)</field>
+        <field name="suggest_words">nps</field>
+    </record>
+    <record id="form_in_form16b_l10d" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10d</field>
+        <field name="sequence">270</field>
+        <field name="kind">computed</field>
+        <field name="label">Total under sections 80C, 80CCC and 80CCD(1)</field>
+        <field name="official_label">Total deduction under section 80C, 80CCC and 80CCD(1)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">10a,10b,10c</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l10e" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10e</field>
+        <field name="sequence">280</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80CCD(1B): notified pension scheme</field>
+        <field name="official_label">Deductions in respect of amount paid/deposited to notified pension scheme under section 80CCD (1B)</field>
+    </record>
+    <record id="form_in_form16b_l10f" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10f</field>
+        <field name="sequence">290</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80CCD(2): employer to pension scheme</field>
+        <field name="official_label">Deduction in respect of contribution by Employer to pension scheme under section 80CCD (2)</field>
+        <field name="suggest_words">employer nps</field>
+    </record>
+    <record id="form_in_form16b_l10g" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10g</field>
+        <field name="sequence">300</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80D: health insurance</field>
+        <field name="official_label">Deduction in respect of health insurance premia under section 80D</field>
+        <field name="suggest_words">health insurance,mediclaim</field>
+    </record>
+    <record id="form_in_form16b_l10h" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10h</field>
+        <field name="sequence">310</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80E: education loan interest</field>
+        <field name="official_label">Deduction in respect of interest on loan taken for higher education under section 80E</field>
+    </record>
+    <record id="form_in_form16b_l10i" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10i</field>
+        <field name="sequence">320</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80CCH: employee to the Agnipath scheme</field>
+        <field name="official_label">Total Deduction in respect of contribution by the employee to Agnipath Scheme under section 80CCH</field>
+    </record>
+    <record id="form_in_form16b_l10j" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10j</field>
+        <field name="sequence">330</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80CCH: Central Government to the Agnipath scheme</field>
+        <field name="official_label">Total Deduction in respect of contribution by the Central Government to Agnipath Scheme under section 80CCH</field>
+    </record>
+    <record id="form_in_form16b_l10k" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10k</field>
+        <field name="sequence">340</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80G: donations</field>
+        <field name="official_label">Total deduction in respect of donations to certain funds, charitable institutions, etc. under section 80G</field>
+    </record>
+    <record id="form_in_form16b_l10l" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10l</field>
+        <field name="sequence">350</field>
+        <field name="kind">money</field>
+        <field name="label">Section 80TTA: savings account interest</field>
+        <field name="official_label">Deduction in respect of interest on deposits in savings account under section 80TTA</field>
+    </record>
+    <record id="form_in_form16b_l10n" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">10n</field>
+        <field name="sequence">360</field>
+        <field name="kind">money</field>
+        <field name="label">Other deductions under Chapter VI-A</field>
+        <field name="official_label">Total of amount deductible under any other provision(s) of Chapter VI-A</field>
+    </record>
+    <record id="form_in_form16b_l11" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">11</field>
+        <field name="sequence">370</field>
+        <field name="kind">computed</field>
+        <field name="label">Total deductions under Chapter VI-A</field>
+        <field name="official_label">Aggregate of deductible amount under Chapter VI-A [10(d)+10(e)+10(f)+10(g)+10(h)+10(i)+10(j)+10(k)+10(l)+10(n)]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">10d,10e,10f,10g,10h,10i,10j,10k,10l,10n</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l12" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">12</field>
+        <field name="sequence">380</field>
+        <field name="kind">computed</field>
+        <field name="label">Total taxable income</field>
+        <field name="official_label">Total taxable income (9-11)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">9,-11</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l13" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">13</field>
+        <field name="sequence">390</field>
+        <field name="kind">money</field>
+        <field name="label">Tax on total income</field>
+        <field name="official_label">Tax on total income</field>
+        <field name="suggest_words">tax on total income,annual tax</field>
+        <field name="suggest_roles">info</field>
+        <field name="note">Only from a pay item that holds it: Payobook does not work tax out again.</field>
+    </record>
+    <record id="form_in_form16b_l14" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">14</field>
+        <field name="sequence">400</field>
+        <field name="kind">money</field>
+        <field name="label">Rebate under section 87A</field>
+        <field name="official_label">Rebate under section 87A, if applicable</field>
+        <field name="suggest_words">rebate</field>
+        <field name="suggest_roles">info</field>
+        <field name="note">Only from a pay item that holds it: Payobook does not work tax out again.</field>
+    </record>
+    <record id="form_in_form16b_l15" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">15</field>
+        <field name="sequence">410</field>
+        <field name="kind">money</field>
+        <field name="label">Surcharge</field>
+        <field name="official_label">Surcharge, wherever applicable</field>
+        <field name="suggest_words">surcharge</field>
+        <field name="suggest_roles">info,deduction</field>
+        <field name="note">Only from a pay item that holds it: Payobook does not work tax out again.</field>
+    </record>
+    <record id="form_in_form16b_l16" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">16</field>
+        <field name="sequence">420</field>
+        <field name="kind">money</field>
+        <field name="label">Health and education cess</field>
+        <field name="official_label">Health and education cess</field>
+        <field name="suggest_words">cess,education cess</field>
+        <field name="suggest_roles">info,deduction</field>
+        <field name="note">Only from a pay item that holds it: Payobook does not work tax out again.</field>
+    </record>
+    <record id="form_in_form16b_l17" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">17</field>
+        <field name="sequence">430</field>
+        <field name="kind">computed</field>
+        <field name="label">Tax payable</field>
+        <field name="official_label">Tax payable (13+15+16-14)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">13,15,16,-14</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_l18" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">18</field>
+        <field name="sequence">440</field>
+        <field name="kind">money</field>
+        <field name="label">Relief under section 89</field>
+        <field name="official_label">Relief under section 89 (attach details)</field>
+    </record>
+    <record id="form_in_form16b_l19" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">19</field>
+        <field name="sequence">450</field>
+        <field name="kind">money</field>
+        <field name="label">Tax deducted elsewhere, reported on Form 12BAA</field>
+        <field name="official_label">Tax deducted at source as per Form No. 12BAA submitted under provisions of section 192(2B)</field>
+    </record>
+    <record id="form_in_form16b_l20" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">20</field>
+        <field name="sequence">460</field>
+        <field name="kind">money</field>
+        <field name="label">Tax collected elsewhere, reported on Form 12BAA</field>
+        <field name="official_label">Tax collected at source as per Form No. 12BAA submitted under provisions of section 192(2B)</field>
+    </record>
+    <record id="form_in_form16b_l21" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">21</field>
+        <field name="sequence">470</field>
+        <field name="kind">computed</field>
+        <field name="label">Net tax payable</field>
+        <field name="official_label">Net tax payable (17-18-19-20)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">17,-18,-19,-20</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form16b_ltds" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">TDS</field>
+        <field name="sequence">480</field>
+        <field name="kind">money</field>
+        <field name="label">Tax deducted from pay in the year</field>
+        <field name="official_label">Tax deducted at source (Part A)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">tds,income tax,tax deducted,salary tds</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_in_form16b_lpeople" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form16b"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">490</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Number of employees</field>
+        <field name="mappable" eval="False"/>
+    </record>
+
+    <record id="form_in_form130c" model="pb.gov.form">
+        <field name="code">IN_FORM130C</field>
+        <field name="country_code">IN</field>
+        <field name="sequence">131</field>
+        <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
+        <field name="year_start_month">4</field>
+        <field name="name">Salary certificate figures — Form 130 Part C (tax year 2026-27 onwards)</field>
+        <field name="official_name">Form No. 130, Part C (Annexure-I) — Details of salary paid and tax deducted (Income-tax Rules, 2026)</field>
+        <field name="authority">Income Tax Department</field>
+        <field name="period_kind">tax_year</field>
+        <field name="output_kinds">xlsx,pdf</field>
+        <field name="total_line_code">TDS</field>
+        <field name="valid_from">2026-04-01</field>
+        <field name="screen_note">Figures for your return preparer: the upload file itself is made with the tax department's own utility.</field>
+        <field name="source_url">https://egazette.gov.in/WriteReadData/2026/271092.pdf</field>
+        <field name="source_note">Income-tax Rules 2026, G.S.R. 198(E), 20 March 2026 (Gazette of India Extraordinary, https://egazette.gov.in/WriteReadData/2026/271092.pdf), rule 215 and Form No. 130 Part C (Annexure-I), pages 2274-2280. For the tax year April 2026 - March 2027 onwards. Read on 18 November 2026.</field>
+        <field name="inferred_note">Rule 215(1) says the certificate is generated from the tax department's portal: this is a working copy of Part C. Rows 13 to 17 are filled only from pay items HR puts on them. Row 2(d) is shown as one total (2(e)).</field>
+        <field name="employee_certificates" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_form130c_l1a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">1a</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="label">Salary</field>
+        <field name="official_label">Salary as per provisions contained in section 16</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">basic salary,basic,salary,gross salary,wages</field>
+        <field name="suggest_roles">earning</field>
+    </record>
+    <record id="form_in_form130c_l1b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">1b</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="label">Value of perquisites</field>
+        <field name="official_label">Value of perquisites under section 17 (as per Form No. 123, wherever applicable)</field>
+        <field name="suggest_words">perquisite,perquisites,perks</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_in_form130c_l1c" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">1c</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="label">Profits in lieu of salary</field>
+        <field name="official_label">Profits in lieu of salary under section 18 (as per Form No. 123, wherever applicable)</field>
+    </record>
+    <record id="form_in_form130c_l1d" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">1d</field>
+        <field name="sequence">40</field>
+        <field name="kind">computed</field>
+        <field name="label">Total gross salary</field>
+        <field name="official_label">Total</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">1a,1b,1c</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l1e" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">1e</field>
+        <field name="sequence">50</field>
+        <field name="kind">money</field>
+        <field name="label">Salary reported from other employers</field>
+        <field name="official_label">Reported total amount of salary received from other employer(s)</field>
+    </record>
+    <record id="form_in_form130c_l2a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">2a</field>
+        <field name="sequence">60</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: travel concession</field>
+        <field name="official_label">Travel concession or assistance under section 11 being of the nature referred to in Schedule III [Table: Sl. No. 8]</field>
+        <field name="suggest_words">lta,leave travel</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_in_form130c_l2b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">2b</field>
+        <field name="sequence">70</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: house rent allowance</field>
+        <field name="official_label">House rent allowance under section 11 being of the nature referred to in Schedule III [Table: Sl. No. 11]</field>
+        <field name="suggest_words">hra exempt,house rent allowance exempt,hra exemption</field>
+        <field name="suggest_roles">info</field>
+    </record>
+    <record id="form_in_form130c_l2c" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">2c</field>
+        <field name="sequence">80</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: other special allowances</field>
+        <field name="official_label">Other special allowances under section 11 being of the nature referred to in Schedule III [Table: Sl. No. 12 and 13]</field>
+    </record>
+    <record id="form_in_form130c_l2e" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">2e</field>
+        <field name="sequence">90</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: any other exemption under section 11</field>
+        <field name="official_label">Total amount of any other exemption under section 11</field>
+    </record>
+    <record id="form_in_form130c_l2f" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">2f</field>
+        <field name="sequence">100</field>
+        <field name="kind">computed</field>
+        <field name="label">Total exemption claimed</field>
+        <field name="official_label">Total amount of exemption claimed under section 11 [2(a)+2(b)+2(c)+2(e)]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">2a,2b,2c,2e</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l3" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">3</field>
+        <field name="sequence">110</field>
+        <field name="kind">computed</field>
+        <field name="label">Salary from this employer after exemptions</field>
+        <field name="official_label">Total amount of salary received from current employer [1(d)-2(f)]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">1d,-2f</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l4a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">4a</field>
+        <field name="sequence">120</field>
+        <field name="kind">money</field>
+        <field name="label">Tax on employment (professional tax)</field>
+        <field name="official_label">Tax on employment [Table: Sl. No. 1]</field>
+        <field name="suggest_words">professional tax,prof tax,pt</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_in_form130c_l4b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">4b</field>
+        <field name="sequence">130</field>
+        <field name="kind">money</field>
+        <field name="label">Standard deduction</field>
+        <field name="official_label">Standard deduction [Table: Sl. No. 2]</field>
+        <field name="suggest_words">standard deduction</field>
+        <field name="suggest_roles">info</field>
+    </record>
+    <record id="form_in_form130c_l4c" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">4c</field>
+        <field name="sequence">140</field>
+        <field name="kind">money</field>
+        <field name="label">Gratuity</field>
+        <field name="official_label">Gratuity [Table: Sl. No. 3,4,5,6]</field>
+        <field name="suggest_words">gratuity</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_in_form130c_l4d" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">4d</field>
+        <field name="sequence">150</field>
+        <field name="kind">money</field>
+        <field name="label">Commuted value of pension</field>
+        <field name="official_label">Commuted value of pension [Table: Sl. No. 7,8,9]</field>
+    </record>
+    <record id="form_in_form130c_l4e" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">4e</field>
+        <field name="sequence">160</field>
+        <field name="kind">money</field>
+        <field name="label">Compensation received by workmen</field>
+        <field name="official_label">Compensation as received by workmen [Table: Sl. No. 10,11]</field>
+    </record>
+    <record id="form_in_form130c_l4f" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">4f</field>
+        <field name="sequence">170</field>
+        <field name="kind">money</field>
+        <field name="label">Voluntary retirement or termination payment</field>
+        <field name="official_label">Amount received on voluntary retirement or termination of service [Table: Sl. No. 12]</field>
+    </record>
+    <record id="form_in_form130c_l4g" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">4g</field>
+        <field name="sequence">180</field>
+        <field name="kind">money</field>
+        <field name="label">Leave encashment</field>
+        <field name="official_label">Cash equivalent of leave salary encashment [Table: Sl. No. 13,14]</field>
+        <field name="suggest_words">leave encashment</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_in_form130c_l5" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">5</field>
+        <field name="sequence">190</field>
+        <field name="kind">computed</field>
+        <field name="label">Total deductions under section 19(1)</field>
+        <field name="official_label">Total amount of deductions under section 19(1)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">4a,4b,4c,4d,4e,4f,4g</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l6" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">6</field>
+        <field name="sequence">200</field>
+        <field name="kind">computed</field>
+        <field name="label">Income chargeable under "Salaries"</field>
+        <field name="official_label">Income chargeable under the head "Salaries" [3+1(e)-5]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">3,1e,-5</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l7a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">7a</field>
+        <field name="sequence">210</field>
+        <field name="kind">money</field>
+        <field name="label">Other income reported by the employee</field>
+        <field name="official_label">Amount chargeable under any head of income other than "Salaries" as per section 392(4)(a)(iv)</field>
+    </record>
+    <record id="form_in_form130c_l7b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">7b</field>
+        <field name="sequence">220</field>
+        <field name="kind">money</field>
+        <field name="label">Loss from house property reported by the employee</field>
+        <field name="official_label">Any loss from house property reported by employee under section 392(4)(a)(iii)</field>
+    </record>
+    <record id="form_in_form130c_l8" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">8</field>
+        <field name="sequence">230</field>
+        <field name="kind">computed</field>
+        <field name="label">Total other income reported</field>
+        <field name="official_label">Total amount of other income reported by the employee [7(a)-7(b)]</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">7a,-7b</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l9" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">9</field>
+        <field name="sequence">240</field>
+        <field name="kind">computed</field>
+        <field name="label">Gross total income</field>
+        <field name="official_label">Gross total income (6+8)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">6,8</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l10a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10a</field>
+        <field name="sequence">250</field>
+        <field name="kind">money</field>
+        <field name="label">Section 123: life insurance premia, provident fund, pension schemes</field>
+        <field name="official_label">Deduction in respect of life insurance premia, contributions to provident fund etc. under section 123</field>
+        <field name="suggest_words">provident fund,pf employee,epf,80c,section 123</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_in_form130c_l10b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10b</field>
+        <field name="sequence">260</field>
+        <field name="kind">money</field>
+        <field name="label">Section 124(3): notified pension scheme (own)</field>
+        <field name="official_label">Deduction in respect of contribution by taxpayer to notified pension scheme under section 124(3)</field>
+        <field name="suggest_words">nps,notified pension</field>
+    </record>
+    <record id="form_in_form130c_l10c" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10c</field>
+        <field name="sequence">270</field>
+        <field name="kind">money</field>
+        <field name="label">Section 124(1)(a): employer to pension scheme</field>
+        <field name="official_label">Deduction in respect of contribution by employer to pension scheme under section 124(1)(a)</field>
+        <field name="suggest_words">employer nps</field>
+    </record>
+    <record id="form_in_form130c_l10d" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10d</field>
+        <field name="sequence">280</field>
+        <field name="kind">money</field>
+        <field name="label">Section 126: health insurance</field>
+        <field name="official_label">Deduction in respect of health insurance premia under section 126</field>
+        <field name="suggest_words">health insurance,mediclaim</field>
+    </record>
+    <record id="form_in_form130c_l10e" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10e</field>
+        <field name="sequence">290</field>
+        <field name="kind">money</field>
+        <field name="label">Section 129: education loan interest</field>
+        <field name="official_label">Deduction in respect of interest on loan taken for higher education under section 129</field>
+    </record>
+    <record id="form_in_form130c_l10f" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10f</field>
+        <field name="sequence">300</field>
+        <field name="kind">money</field>
+        <field name="label">Section 125(1): employee to the Agnipath scheme</field>
+        <field name="official_label">Deduction in respect of contribution by the employee to Agnipath Scheme under section 125(1)</field>
+    </record>
+    <record id="form_in_form130c_l10g" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10g</field>
+        <field name="sequence">310</field>
+        <field name="kind">money</field>
+        <field name="label">Section 125(2): Central Government to the Agnipath scheme</field>
+        <field name="official_label">Deduction in respect of contribution by the Central Government to Agnipath Scheme under section 125(2)</field>
+    </record>
+    <record id="form_in_form130c_l10h" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10h</field>
+        <field name="sequence">320</field>
+        <field name="kind">money</field>
+        <field name="label">Section 133: donations</field>
+        <field name="official_label">Deduction in respect of donations to certain funds, charitable institutions, etc. under section 133</field>
+    </record>
+    <record id="form_in_form130c_l10i" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10i</field>
+        <field name="sequence">330</field>
+        <field name="kind">money</field>
+        <field name="label">Section 153: savings account interest</field>
+        <field name="official_label">Deduction in respect of interest on deposits in savings account under section 153</field>
+    </record>
+    <record id="form_in_form130c_l10k" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">10k</field>
+        <field name="sequence">340</field>
+        <field name="kind">money</field>
+        <field name="label">Other deductions under Chapter VIII</field>
+        <field name="official_label">Total of amount deductible under any other provisions of Chapter VIII</field>
+    </record>
+    <record id="form_in_form130c_l11" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">11</field>
+        <field name="sequence">350</field>
+        <field name="kind">computed</field>
+        <field name="label">Total deductions under Chapter VIII</field>
+        <field name="official_label">Aggregate of deductible amount under Chapter VIII</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">10a,10b,10c,10d,10e,10f,10g,10h,10i,10k</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l12" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">12</field>
+        <field name="sequence">360</field>
+        <field name="kind">computed</field>
+        <field name="label">Total taxable income</field>
+        <field name="official_label">Total taxable income (9-11)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">9,-11</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l13" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">13</field>
+        <field name="sequence">370</field>
+        <field name="kind">money</field>
+        <field name="label">Tax on total income</field>
+        <field name="official_label">Tax on total income</field>
+        <field name="suggest_words">tax on total income,annual tax</field>
+        <field name="suggest_roles">info</field>
+        <field name="note">Only from a pay item that holds it: Payobook does not work tax out again.</field>
+    </record>
+    <record id="form_in_form130c_l14" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">14</field>
+        <field name="sequence">380</field>
+        <field name="kind">money</field>
+        <field name="label">Rebate under section 156</field>
+        <field name="official_label">Rebate under section 156, if applicable</field>
+        <field name="suggest_words">rebate</field>
+        <field name="suggest_roles">info</field>
+        <field name="note">Only from a pay item that holds it: Payobook does not work tax out again.</field>
+    </record>
+    <record id="form_in_form130c_l15" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">15</field>
+        <field name="sequence">390</field>
+        <field name="kind">money</field>
+        <field name="label">Surcharge</field>
+        <field name="official_label">Surcharge, wherever applicable</field>
+        <field name="suggest_words">surcharge</field>
+        <field name="suggest_roles">info,deduction</field>
+        <field name="note">Only from a pay item that holds it: Payobook does not work tax out again.</field>
+    </record>
+    <record id="form_in_form130c_l16" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">16</field>
+        <field name="sequence">400</field>
+        <field name="kind">money</field>
+        <field name="label">Health and education cess</field>
+        <field name="official_label">Health and education cess</field>
+        <field name="suggest_words">cess,education cess</field>
+        <field name="suggest_roles">info,deduction</field>
+        <field name="note">Only from a pay item that holds it: Payobook does not work tax out again.</field>
+    </record>
+    <record id="form_in_form130c_l17" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">17</field>
+        <field name="sequence">410</field>
+        <field name="kind">computed</field>
+        <field name="label">Tax payable</field>
+        <field name="official_label">Tax payable (13+15+16-14)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">13,15,16,-14</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_l18" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">18</field>
+        <field name="sequence">420</field>
+        <field name="kind">money</field>
+        <field name="label">Relief under section 157</field>
+        <field name="official_label">Relief under section 157 (attach details)</field>
+    </record>
+    <record id="form_in_form130c_l19" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">19</field>
+        <field name="sequence">430</field>
+        <field name="kind">money</field>
+        <field name="label">Tax deducted elsewhere, reported on Form 122</field>
+        <field name="official_label">Tax deducted at source as per Form No. 122 submitted under provisions of section 392(4)</field>
+    </record>
+    <record id="form_in_form130c_l20" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">20</field>
+        <field name="sequence">440</field>
+        <field name="kind">money</field>
+        <field name="label">Tax collected elsewhere, reported on Form 122</field>
+        <field name="official_label">Tax collected at source as per Form No. 122 submitted under provisions of section 392(4)</field>
+    </record>
+    <record id="form_in_form130c_l21" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">21</field>
+        <field name="sequence">450</field>
+        <field name="kind">computed</field>
+        <field name="label">Net tax payable</field>
+        <field name="official_label">Net tax payable (17-18-19-20)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">17,-18,-19,-20</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_in_form130c_ltds" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">TDS</field>
+        <field name="sequence">460</field>
+        <field name="kind">money</field>
+        <field name="label">Tax deducted from pay in the year</field>
+        <field name="official_label">Tax deducted at source (Part A and Part B)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">tds,income tax,tax deducted,salary tds</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_in_form130c_lpeople" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form130c"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">470</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Number of employees</field>
+        <field name="mappable" eval="False"/>
+    </record>
+
+    <record id="form_in_24q" model="pb.gov.form">
+        <field name="code">IN_24Q</field>
+        <field name="country_code">IN</field>
+        <field name="sequence">132</field>
+        <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
+        <field name="year_start_month">4</field>
+        <field name="name">Quarterly salary tax statement figures — Form 24Q (quarters up to March 2026)</field>
+        <field name="official_name">Form No. 24Q — Quarterly statement of deduction of tax under sub-section (3) of section 200 in respect of salary</field>
+        <field name="authority">Income Tax Department</field>
+        <field name="period_kind">quarter</field>
+        <field name="output_kinds">xlsx</field>
+        <field name="total_line_code">TDS</field>
+        <field name="valid_to">2026-03-31</field>
+        <field name="screen_note">Figures for your return preparer: the upload file itself is made with the tax department's own utility.</field>
+        <field name="source_url">https://www.cainindia.org/news/9_2021/incometax_26th_amendment_rules_2021.html</field>
+        <field name="source_note">Income-tax Rules 1962, Form No. 24Q as substituted by Notification 99/2021 (G.S.R. 612(E), 2 September 2021), Annexure I columns 314-329 and Annexure II columns 330-390 (as amended by Notifications 28/2023 and 112/2024). Read from published copies (https://www.cainindia.org/news/9_2021/incometax_26th_amendment_rules_2021.html). For quarters up to January - March 2026. Read on 18 November 2026.</field>
+        <field name="inferred_note">Date of payment and date of deduction are the last day of each payslip period. Challan, deposit and section code columns are left for the return preparer. Deductee type is worked out from the date of birth.</field>
+        <field name="employee_certificates" eval="False"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_24q_lpaid" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_24q"/>
+        <field name="code">PAID</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="label">Amount paid or credited</field>
+        <field name="official_label">Amount paid or credited</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">gross salary,gross pay,gross earnings,total earnings,gross</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_in_24q_ltds" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_24q"/>
+        <field name="code">TDS</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="label">Tax deducted (tax, surcharge and cess)</field>
+        <field name="official_label">Total tax deducted</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">tds,income tax,tax deducted,salary tds</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_in_24q_lsurch" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_24q"/>
+        <field name="code">SURCH</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: surcharge</field>
+        <field name="official_label">Surcharge</field>
+        <field name="suggest_words">surcharge</field>
+        <field name="suggest_roles">info,deduction</field>
+    </record>
+    <record id="form_in_24q_lcess" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_24q"/>
+        <field name="code">CESS</field>
+        <field name="sequence">40</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: health and education cess</field>
+        <field name="official_label">Health and Education Cess</field>
+        <field name="suggest_words">cess,education cess</field>
+        <field name="suggest_roles">info,deduction</field>
+    </record>
+    <record id="form_in_24q_lpeople" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_24q"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">50</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Number of deductees</field>
+        <field name="mappable" eval="False"/>
+    </record>
+
+    <record id="form_in_form138" model="pb.gov.form">
+        <field name="code">IN_FORM138</field>
+        <field name="country_code">IN</field>
+        <field name="sequence">133</field>
+        <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
+        <field name="year_start_month">4</field>
+        <field name="name">Quarterly salary tax statement figures — Form 138 (from April 2026)</field>
+        <field name="official_name">Form No. 138 — Quarterly statement of deduction of tax under section 392 in respect of salary (Income-tax Rules, 2026)</field>
+        <field name="authority">Income Tax Department</field>
+        <field name="period_kind">quarter</field>
+        <field name="output_kinds">xlsx</field>
+        <field name="total_line_code">TDS</field>
+        <field name="valid_from">2026-04-01</field>
+        <field name="screen_note">Figures for your return preparer: the upload file itself is made with the tax department's own utility.</field>
+        <field name="source_url">https://egazette.gov.in/WriteReadData/2026/271092.pdf</field>
+        <field name="source_note">Income-tax Rules 2026, G.S.R. 198(E), 20 March 2026 (https://egazette.gov.in/WriteReadData/2026/271092.pdf), rule 219 and Form No. 138 (pages 2300-2307): Annexure I columns A-O (every quarter), Annexure II columns A-BQ (January - March quarter only). Read on 18 November 2026.</field>
+        <field name="inferred_note">Date of payment and date of deduction are the last day of each payslip period. Challan, deposit and section code columns are left for the return preparer. Deductee type is worked out from the date of birth.</field>
+        <field name="employee_certificates" eval="False"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_in_form138_lpaid" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form138"/>
+        <field name="code">PAID</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="label">Amount paid or credited</field>
+        <field name="official_label">Amount paid or credited</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">gross salary,gross pay,gross earnings,total earnings,gross</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_in_form138_ltds" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form138"/>
+        <field name="code">TDS</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="label">Tax deducted (tax, surcharge and cess)</field>
+        <field name="official_label">Total tax deducted</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">tds,income tax,tax deducted,salary tds</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_in_form138_lpeople" model="pb.gov.form.line">
+        <field name="form_id" ref="form_in_form138"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">30</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Number of deductees</field>
+        <field name="mappable" eval="False"/>
+    </record>
+</odoo>

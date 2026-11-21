@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The board is People > Family (family_lens.js). These native views are
+         where a row opens, and where HR keeps a family list by hand. -->
+    <record id="view_pb_employee_family_form" model="ir.ui.view">
+        <field name="name">pb.employee.family.form</field>
+        <field name="model">pb.employee.family</field>
+        <field name="arch" type="xml">
+            <form string="Family member">
+                <header>
+                    <button name="action_confirm_tax" type="object" string="Confirm for tax"
+                            class="btn-primary" invisible="tax_state != 'waiting'"
+                            groups="om_hr_payroll.group_hr_payroll_user"/>
+                    <button name="action_not_for_tax" type="object" string="Leave pay as it is"
+                            invisible="tax_state != 'waiting'"
+                            groups="om_hr_payroll.group_hr_payroll_user"/>
+                    <field name="tax_state" widget="statusbar" statusbar_visible="none,waiting,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="status" invisible="tax_state != 'waiting'">
+                        <span invisible="tax_action == 'end'">Pay does not count this person for tax yet. Check their papers, then press Confirm for tax: the tax relief starts from the next pay run.</span>
+                        <span invisible="tax_action != 'end'">Pay still counts this person for tax. Press Confirm for tax to stop counting them from the next pay run.</span>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" options="{'no_create': True}"/>
+                            <field name="relationship"/>
+                            <field name="birthdate"/>
+                            <field name="id_number"/>
+                        </group>
+                        <group>
+                            <field name="counts_for_tax"/>
+                            <field name="insured"/>
+                            <field name="tax_action" invisible="not tax_action"/>
+                            <field name="tax_confirmed_by" invisible="not tax_confirmed_by"/>
+                            <field name="tax_confirmed_on" invisible="not tax_confirmed_on"/>
+                            <field name="vn_dependent_id" invisible="not vn_dependent_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_employee_family_list" model="ir.ui.view">
+        <field name="name">pb.employee.family.list</field>
+        <field name="model">pb.employee.family</field>
+        <field name="arch" type="xml">
+            <list string="Family members">
+                <field name="employee_id"/>
+                <field name="name"/>
+                <field name="relationship"/>
+                <field name="birthdate"/>
+                <field name="counts_for_tax"/>
+                <field name="insured"/>
+                <field name="tax_state" widget="badge" decoration-warning="tax_state == 'waiting'" decoration-success="tax_state == 'confirmed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_employee_family_search" model="ir.ui.view">
+        <field name="name">pb.employee.family.search</field>
+        <field name="model">pb.employee.family</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <filter name="waiting" string="Waiting for HR to confirm for tax" domain="[('tax_state', '=', 'waiting')]"/>
+                <filter name="counts" string="Counts for tax" domain="[('counts_for_tax', '=', True)]"/>
+                <separator/>
+                <filter name="archived" string="Removed" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_employee_family" model="ir.actions.act_window">
+        <field name="name">Family members</field>
+        <field name="res_model">pb.employee.family</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_employee_family_search"/>
+    </record>
+
+    <!-- The changes employees asked for: read-only, decided in Approvals. -->
+    <record id="view_pb_me_detail_request_list" model="ir.ui.view">
+        <field name="name">pb.me.detail.request.list</field>
+        <field name="model">pb.me.detail.request</field>
+        <field name="arch" type="xml">
+            <list string="Changes to details" create="false" edit="false" delete="false">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="state" widget="badge" decoration-warning="state == 'hr_review'" decoration-success="state == 'approved'" decoration-danger="state == 'refused'"/>
+                <field name="submitted_on"/>
+                <field name="decided_on"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_me_detail_request_form" model="ir.ui.view">
+        <field name="name">pb.me.detail.request.form</field>
+        <field name="model">pb.me.detail.request</field>
+        <field name="arch" type="xml">
+            <form string="Change to details" create="false" edit="false" delete="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,hr_review,approved"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="status" invisible="state != 'hr_review'">Decide this in Approvals.</div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="kind"/>
+                            <field name="submitted_on"/>
+                            <field name="decided_on"/>
+                        </group>
+                        <group>
+                            <field name="member_id" invisible="not member_id"/>
+                            <field name="document_id" invisible="not document_id"/>
+                            <field name="decision_note" invisible="not decision_note"/>
+                        </group>
+                    </group>
+                    <group string="Family member" invisible="kind not in ('family_add', 'family_change', 'family_remove')">
+                        <field name="f_name"/>
+                        <field name="f_relationship"/>
+                        <field name="f_birthdate"/>
+                        <field name="f_id_number"/>
+                        <field name="f_counts_for_tax"/>
+                        <field name="f_insured"/>
+                    </group>
+                    <group string="ID paper" invisible="kind != 'id_paper'">
+                        <field name="paper_kind"/>
+                        <field name="paper_number"/>
+                        <field name="paper_expiry"/>
+                    </group>
+                    <group invisible="kind != 'marital'">
+                        <field name="marital"/>
+                    </group>
+                    <group invisible="not attachment_id">
+                        <field name="attachment_id"/>
+                    </group>
+                    <field name="note" invisible="not note"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+</odoo>

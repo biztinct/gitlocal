@@ -1,0 +1,725 @@
+{
+  "release_commit": "15c6491e0ffe79c18edf72d25440d66e1e93e1cc",
+  "implementation_commits": [
+    "04e0f88bd6f64dfa1d03b7a2f0dd0e65975797ea",
+    "15c6491e0ffe79c18edf72d25440d66e1e93e1cc"
+  ],
+  "module_version": "19.0.1.9.1",
+  "ssh_target": "Payobook19v2",
+  "addons_directory": "/odoo/odoo-server/addons",
+  "combined_custom_trees_verified": 154,
+  "deployment": {
+    "commit": "15c6491e0ffe79c18edf72d25440d66e1e93e1cc",
+    "status": "DONE",
+    "databases": {
+      "p0clone": {
+        "prior_crons": [
+          43,
+          44,
+          45,
+          46,
+          49,
+          50,
+          51,
+          52,
+          54,
+          55,
+          56,
+          57,
+          58,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          67,
+          68,
+          71,
+          72,
+          73,
+          74,
+          75,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "crons": [
+          43,
+          44,
+          45,
+          46,
+          49,
+          50,
+          51,
+          52,
+          54,
+          55,
+          56,
+          57,
+          58,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          67,
+          68,
+          71,
+          72,
+          73,
+          74,
+          75,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "upgrade_modules": [
+          "biz_access"
+        ],
+        "backup": "/odoo/backups/access-studio-20261029T214731Z/p0clone",
+        "upgraded": true,
+        "versions_verified": true
+      },
+      "payobook": {
+        "prior_crons": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          10,
+          12,
+          13,
+          16,
+          25,
+          28,
+          30,
+          31,
+          32,
+          33,
+          82,
+          83,
+          84,
+          85,
+          92,
+          93,
+          94,
+          95,
+          96,
+          98,
+          101,
+          103,
+          111,
+          123,
+          124,
+          125,
+          130,
+          139,
+          140,
+          142,
+          143,
+          144,
+          145,
+          146
+        ],
+        "crons": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          10,
+          12,
+          13,
+          16,
+          25,
+          28,
+          30,
+          31,
+          32,
+          33,
+          82,
+          83,
+          84,
+          85,
+          92,
+          93,
+          94,
+          95,
+          96,
+          98,
+          101,
+          103,
+          111,
+          123,
+          124,
+          125,
+          130,
+          139,
+          140,
+          142,
+          143,
+          144,
+          145,
+          146
+        ],
+        "upgrade_modules": [
+          "biz_access"
+        ],
+        "backup": "/odoo/backups/access-studio-20261029T214731Z/payobook",
+        "upgraded": true,
+        "versions_verified": true
+      },
+      "payobook_template": {
+        "prior_crons": [
+          43,
+          44,
+          46,
+          49,
+          50,
+          51,
+          52,
+          54,
+          55,
+          56,
+          57,
+          58,
+          60,
+          61,
+          62,
+          63,
+          67,
+          68,
+          71,
+          72,
+          73,
+          74,
+          75,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "crons": [
+          43,
+          44,
+          46,
+          49,
+          50,
+          51,
+          52,
+          54,
+          55,
+          56,
+          57,
+          58,
+          60,
+          61,
+          62,
+          63,
+          67,
+          68,
+          71,
+          72,
+          73,
+          74,
+          75,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "upgrade_modules": [
+          "biz_access"
+        ],
+        "backup": "/odoo/backups/access-studio-20261029T214731Z/payobook_template",
+        "upgraded": true,
+        "versions_verified": true
+      },
+      "rize": {
+        "prior_crons": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          20,
+          21,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "crons": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          20,
+          21,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "upgrade_modules": [
+          "biz_access"
+        ],
+        "backup": "/odoo/archives/rize-access-studio-20261029T214731Z",
+        "upgraded": true,
+        "versions_verified": true
+      }
+    },
+    "p0clone_tests": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "downtime_seconds": 208,
+    "http": {
+      "payobook.com": "200",
+      "rize.payobook.com": "200",
+      "p0clone.payobook.com": "200"
+    }
+  },
+  "capability_map": "biz_access/ACCESS_STUDIO.md#unified-people-navigation-30-october-2026",
+  "local_validation": [
+    "Full inherited OWL mount: standalone and embedded passports; Assign profile, Review assignment, Explain access and same-person full-menu routing",
+    "Screens administration and return link; native Give a role, history and preview controls retained",
+    "Directory-independent owner choices and periodic reviews",
+    "Stale selected-person requests ignored; scoped-owner controls retain server permission boundaries",
+    "Profile editor, action scopes, fields, requests/reviews and history regression",
+    "19 component mapping, 3 source navigation and 14 typed-value checks",
+    "SCSS compilation; Python compileall; git diff --check"
+  ],
+  "chrome": {
+    "status": "BLOCKED_NOT_RUN",
+    "attempted_browser": "Chrome",
+    "target": "https://payobook.com/bizapp/pb_access_board",
+    "tool_reason": "A saved user permission setting blocks this action.",
+    "user_settings_verified": "User screenshot shows Always allow for https://payobook.com and https://rize.payobook.com. A subsequent direct retry still returned the saved-block response.",
+    "required_follow_up": "Reconnect Codex desktop/browser session and complete live Chrome end-to-end checks; do not claim UI acceptance complete.",
+    "workarounds_used": false,
+    "screenshots_generated": 0
+  },
+  "test_screenshots_saved_to_disk": false,
+  "unrelated_work_preserved": [
+    "outputs/komal-learning-2026-10-23/"
+  ],
+  "abm_touched": false,
+  "deployed_regression": {
+    "p0clone": {
+      "tests": 207,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "payobook": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "payobook_template": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "rize": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    }
+  },
+  "live_profile_audit": {
+    "p0clone": {
+      "database": "p0clone",
+      "version": "19.0.1.9.1",
+      "profiles": 6,
+      "accounts": [],
+      "workspaces": [
+        "hiring",
+        "people",
+        "payroll",
+        "lifecycle",
+        "money",
+        "system"
+      ]
+    },
+    "payobook": {
+      "database": "payobook",
+      "version": "19.0.1.9.1",
+      "profiles": 18,
+      "accounts": [
+        {
+          "login": "ess1.demo@payobook.com",
+          "profiles": [
+            "Employee self service"
+          ],
+          "workspaces": [
+            "people"
+          ],
+          "roles": [
+            "Employee self service"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "demo.hr@example.com",
+          "profiles": [
+            "HR service team",
+            "HR lifecycle team",
+            "HR budget administration",
+            "HR payroll operations",
+            "HR access and vendor administration"
+          ],
+          "workspaces": [
+            "people",
+            "lifecycle",
+            "money",
+            "payroll",
+            "system"
+          ],
+          "roles": [
+            "HR records administration",
+            "Equipment team",
+            "Head of pay \u2014 packages and awards",
+            "Recognition lead",
+            "HR lead for goals",
+            "Training manager",
+            "Growth plans \u2014 head of HR",
+            "Head of announcements",
+            "HR lifecycle team",
+            "Budget team",
+            "Payroll operations",
+            "Pay reporting \u2014 can look",
+            "Pay formulas \u2014 can look",
+            "Access team",
+            "Vendor team"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "demo.hiringmanager@example.com",
+          "profiles": [
+            "Hiring managers"
+          ],
+          "workspaces": [
+            "hiring"
+          ],
+          "roles": [
+            "Hiring requestor"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "demo.recruiter@example.com",
+          "profiles": [
+            "Recruiting team"
+          ],
+          "workspaces": [
+            "hiring"
+          ],
+          "roles": [
+            "Recruiter"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "demo.talentlead@example.com",
+          "profiles": [
+            "Hiring leadership"
+          ],
+          "workspaces": [
+            "hiring"
+          ],
+          "roles": [
+            "Head of hiring"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "komal@rize.farm",
+          "profiles": [
+            "Learning administration"
+          ],
+          "workspaces": [
+            "people"
+          ],
+          "roles": [
+            "Head of training"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "lam.ngo@example.com",
+          "profiles": [
+            "Team managers"
+          ],
+          "workspaces": [
+            "people"
+          ],
+          "roles": [
+            "Team management"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "tuan.quach@example.com",
+          "profiles": [
+            "Employee self service",
+            "Workforce HR reviewer"
+          ],
+          "workspaces": [
+            "people",
+            "people"
+          ],
+          "roles": [
+            "Employee self service",
+            "HR records administration"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "linh.quan@example.com",
+          "profiles": [
+            "Finance budget reviewers"
+          ],
+          "workspaces": [
+            "money"
+          ],
+          "roles": [
+            "Finance \u2014 budgets"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "diep.thai@example.com",
+          "profiles": [
+            "Function budget owners"
+          ],
+          "workspaces": [
+            "money"
+          ],
+          "roles": [
+            "Budget holder"
+          ],
+          "passport_assignments_verified": true
+        },
+        {
+          "login": "demo.field@example.com",
+          "profiles": [
+            "Field team"
+          ],
+          "workspaces": [
+            "people"
+          ],
+          "roles": [
+            "Field staff"
+          ],
+          "passport_assignments_verified": true
+        }
+      ],
+      "workspaces": [
+        "hiring",
+        "people",
+        "payroll",
+        "lifecycle",
+        "money",
+        "system"
+      ]
+    },
+    "payobook_template": {
+      "database": "payobook_template",
+      "version": "19.0.1.9.1",
+      "profiles": 6,
+      "accounts": [],
+      "workspaces": [
+        "hiring",
+        "people",
+        "payroll",
+        "lifecycle",
+        "money",
+        "system"
+      ]
+    },
+    "rize": {
+      "database": "rize",
+      "version": "19.0.1.9.1",
+      "profiles": 7,
+      "accounts": [
+        {
+          "login": "komal@rize.farm",
+          "profiles": [
+            "Learning administration"
+          ],
+          "workspaces": [
+            "people"
+          ],
+          "roles": [
+            "Head of training"
+          ],
+          "passport_assignments_verified": true
+        }
+      ],
+      "workspaces": [
+        "hiring",
+        "people",
+        "payroll",
+        "lifecycle",
+        "money",
+        "system"
+      ]
+    }
+  },
+  "post_regression_content_and_versions_verified": true
+}

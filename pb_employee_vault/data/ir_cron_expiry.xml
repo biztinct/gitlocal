@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Daily expiry watch: raise ONE HR to-do activity per document nearing or
+         at expiry (config param pb_employee_vault.expiry_warn_days, default 30).
+         Idempotent per (employee, document title). -->
+    <record id="cron_pb_employee_document_expiry" model="ir.cron">
+        <field name="name">Employee Vault: document expiry check</field>
+        <field name="model_id" ref="model_pb_employee_document"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_expiry_check()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

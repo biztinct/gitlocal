@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_expense_view_form_receipt_currency" model="ir.ui.view">
+        <field name="name">hr.expense.form.receipt.currency</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <!-- A percentage cap in a shrink-to-fit row lets the monetary
+                 symbol overflow into the currency selector in receipt dialogs.
+                 Keep each field intact and let the row wrap between fields. -->
+            <xpath expr="//div[field[@name='total_amount_currency']]" position="attributes">
+                <attribute name="class" add="d-flex flex-wrap w-100 gap-2" separator=" "/>
+            </xpath>
+            <xpath expr="//field[@name='total_amount_currency']" position="attributes">
+                <attribute name="class" remove="mw-50" add="flex-shrink-0" separator=" "/>
+            </xpath>
+            <xpath expr="//div[field[@name='total_amount_currency']]/field[@name='currency_id']" position="attributes">
+                <attribute name="class" remove="mw-25" add="w-auto flex-shrink-0" separator=" "/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

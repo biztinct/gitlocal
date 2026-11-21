@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="pb_expense_allowance_view_list" model="ir.ui.view">
+    <field name="name">pb.expense.allowance.list</field>
+    <field name="model">pb.expense.allowance</field>
+    <field name="arch" type="xml">
+      <list string="Yearly claim limits" editable="bottom">
+        <field name="year"/>
+        <field name="product_id"/>
+        <field name="employee_id" placeholder="Everybody in the company"/>
+        <field name="amount"/>
+        <field name="currency_id" groups="base.group_multi_currency"/>
+        <field name="note"/>
+        <field name="company_id" groups="base.group_multi_company"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="pb_expense_allowance_view_search" model="ir.ui.view">
+    <field name="name">pb.expense.allowance.search</field>
+    <field name="model">pb.expense.allowance</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="product_id"/>
+        <field name="employee_id"/>
+        <field name="year"/>
+        <filter name="company_wide" string="For everybody" domain="[('employee_id', '=', False)]"/>
+        <filter name="personal" string="For one person" domain="[('employee_id', '!=', False)]"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="action_pb_expense_allowance" model="ir.actions.act_window">
+    <field name="name">Yearly claim limits</field>
+    <field name="res_model">pb.expense.allowance</field>
+    <field name="view_mode">list</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">No yearly limits yet</p>
+      <p>Add a limit per kind of expense for everybody, or for one person (it wins over the company figure). With no limit, claims are not checked.</p>
+    </field>
+  </record>
+
+  <!-- the "How claims are paid" form gets the switch and the door to the limits -->
+  <record id="pb_expense_pay_setup_view_form_allowance" model="ir.ui.view">
+    <field name="name">pb.expense.pay.setup.form.allowance</field>
+    <field name="model">pb.expense.pay.setup</field>
+    <field name="inherit_id" ref="pb_expense_payroll.pb_expense_pay_setup_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//sheet" position="inside">
+        <separator string="Yearly limits"/>
+        <group>
+          <field name="allow_over"/>
+        </group>
+        <p class="text-muted">Off: a claim over what is left of a yearly limit is refused, and the person sees the limit, what is used and what is left. On: it is sent, and its approvers see that it is over.</p>
+        <button name="action_open_limits" type="object" string="Set yearly limits" class="btn-secondary"/>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

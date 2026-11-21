@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Theme Engine: published token overrides. Anchored after the last
+         asset call inside the head_web block, so the :root overrides load
+         AFTER the compiled bundles and win the cascade. If the route fails,
+         compiled brand defaults apply — tint-only, never breaking. -->
+    <template id="webclient_bootstrap" inherit_id="web.webclient_bootstrap">
+        <xpath expr="//t[@t-call='web.conditional_assets_tests']" position="after">
+            <link rel="stylesheet" type="text/css" href="/biz_theme/tokens.css"/>
+        </xpath>
+
+        <!-- Backend browser-tab favicon + title.
+             Stock web hard-codes the favicon to /web/static/img/favicon.ico
+             (the Odoo icon) and the <title> to "Odoo". Neither honours the
+             company favicon or the debrand name — and the company *logo* is a
+             different field the tab never uses. Point the favicon at the current
+             company's `favicon` (biz_debrand seeds every company with the brand
+             icon) and the title at the debrand brand name. Both degrade safely:
+             missing favicon → the stock static file; missing brand param →
+             the product name. Scoped to webclient_bootstrap, so the website/portal front
+             end (which sets its own favicon) is untouched. -->
+        <xpath expr="//t[@t-call='web.layout']" position="inside">
+            <t t-set="icp" t-value="request.env['ir.config_parameter'].sudo()"/>
+            <!-- Tab favicon from the current company's LOGO (this CE build has no
+                 res.company.favicon field — only web_debranding adds one, and it
+                 isn't installed). /web/image degrades to a transparent 1x1 if the
+                 logo is empty, so we guard on `logo` and fall back to the stock
+                 icon to keep a real image. -->
+            <t t-set="x_icon"
+               t-value="request.env.company.logo and ('/web/image/res.company/%s/logo' % request.env.company.id) or '/web/static/img/favicon.ico'"/>
+            <!-- Tab title: an explicit `biz_theme.app_name` knob wins; otherwise
+                 honour the debrand suite's own keys if installed; otherwise fall
+                 back to the current company name (already per-company branded);
+                 finally a NEUTRAL word (C7 WP-1: the tab title is a string an
+                 end user reads). Configure at Settings → Technical → System
+                 Parameters (key `biz_theme.app_name`).
+
+                 ERRORS E4-2. The last step used to be this platform's own
+                 product name, which is the mirror of the vendor bug: biz_theme
+                 is the REUSABLE half, so hard-coding "Payobook" here would put
+                 our name in a white-labelled tenant's browser tab the moment
+                 their own brand went missing. It must end on the same neutral
+                 word the session chain does — biz_theme/models/ir_http.py's
+                 NEUTRAL_APP_NAME, which tests/test_brand_fallback.py pins this
+                 literal to. -->
+            <t t-set="title"
+               t-value="icp.get_param('biz_theme.app_name') or icp.get_param('biz_debrand.brand_name') or icp.get_param('web_debranding.new_title') or request.env.company.name or 'Workspace'"/>
+
+            <!-- FIRST-OPEN SPLASH — the "First open" moment of the loading
+                 language (scss/biz_loading.scss has the other two). Rendered
+                 straight into the body with its own inline CSS, so the brand
+                 mark is rising while the web client mounts and the first screen
+                 loads; js/biz_splash.js fades it out once that screen is up.
+                 Repeat loads in the same tab get the finished mark with no rise
+                 (.is-still, set by the inline script below before first paint).
+
+                 Which mark: this database's own loading-screen logo
+                 (biz_debrand.loader_logo_url) as picture AND mask with a light
+                 sweeping through it; a white-labelled tenant with no picture
+                 gets its brand NAME in its brand colour. The master product's
+                 mark never appears on a tenant — the overlay seeds the URL only
+                 where the brand IS the product (pb_theme). -->
+            <t t-set="bz_logo" t-value="(icp.get_param('biz_debrand.loader_logo_url') or '').strip()"/>
+            <t t-set="bz_brand" t-value="(icp.get_param('biz_debrand.brand_name') or '').strip()"/>
+            <t t-set="bz_product" t-value="(icp.get_param('biz_debrand.product_name') or '').strip()"/>
+            <t t-set="bz_white" t-value="bool(bz_brand and bz_product and bz_brand.lower() != bz_product.lower())"/>
+            <t t-set="bz_accent" t-value="(bz_white and (icp.get_param('biz_debrand.theme_color') or '').strip()) or '#E0218A'"/>
+            <!-- status line from session_info's lang, NOT the view's arch_db:
+                 the render lang lags one request behind a language switch -->
+            <t t-set="bz_lang" t-value="((session_info or {}).get('user_context') or {}).get('lang') or ''"/>
+            <div id="biz-splash" class="biz-splash" aria-hidden="true" t-attf-style="--bz-accent:#{bz_accent}">
+                <style>
+#biz-splash{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;background:#FFFFFF;color:#1E1B2E;transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1)}
+#biz-splash.is-out{opacity:0;transform:scale(.985);pointer-events:none}
+#biz-splash .bz-in{display:grid;justify-items:center;gap:18px;transform:translateY(-4vh)}
+#biz-splash .bz-logo{width:min(320px,78vw);height:80px;opacity:0;transform:translateY(12px);background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.88) 50%,transparent 70%) -200% 0/200% 100% no-repeat,var(--bz-logo) center/contain no-repeat;-webkit-mask:var(--bz-logo) center/contain no-repeat;mask:var(--bz-logo) center/contain no-repeat;animation:bz-rise .6s .1s cubic-bezier(.2,.8,.2,1) forwards,bz-sweep 1.6s .8s cubic-bezier(.4,.1,.5,.9) infinite}
+#biz-splash .bz-text{max-width:84vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 46px/1.15 "Inter",-apple-system,"Segoe UI",system-ui,sans-serif;letter-spacing:-.02em;opacity:0;transform:translateY(12px);background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.9) 50%,transparent 70%) -200% 0/200% 100% no-repeat,var(--bz-accent);-webkit-background-clip:text;background-clip:text;color:transparent;animation:bz-rise .6s .1s cubic-bezier(.2,.8,.2,1) forwards,bz-sweep-text 1.6s .8s cubic-bezier(.4,.1,.5,.9) infinite}
+#biz-splash .bz-bar{width:160px;height:3px;border-radius:999px;opacity:0;background:linear-gradient(90deg,#5A4BB0,var(--bz-accent)) -100% 0/45% 100% no-repeat,#E9EAF3;animation:bz-fade .4s .5s forwards,bz-bar 1.2s .6s cubic-bezier(.45,.1,.55,.9) infinite}
+#biz-splash .bz-status{font:500 13px/1.4 "Inter",-apple-system,"Segoe UI",system-ui,sans-serif;letter-spacing:.02em;color:#6B7280;opacity:0;min-height:1.4em;animation:bz-fade .4s 1.2s forwards}
+@keyframes bz-rise{to{opacity:1;transform:none}}
+@keyframes bz-sweep{to{background-position:200% 0,center}}
+@keyframes bz-sweep-text{to{background-position:200% 0,0 0}}
+@keyframes bz-bar{to{background-position:200% 0,0 0}}
+@keyframes bz-fade{to{opacity:1}}
+#biz-splash.is-still .bz-logo,#biz-splash.is-still .bz-text{animation:none;opacity:1;transform:none}
+#biz-splash.is-still .bz-bar{animation:bz-bar 1.2s cubic-bezier(.45,.1,.55,.9) infinite;opacity:1}
+#biz-splash.is-still .bz-status{animation:none;opacity:1}
+@media (prefers-reduced-motion:reduce){
+#biz-splash .bz-logo,#biz-splash .bz-text{animation:none;opacity:1;transform:none}
+#biz-splash .bz-bar{animation:none;opacity:1;background:var(--bz-accent)}
+#biz-splash .bz-status{animation:none;opacity:1}
+}
+                </style>
+                <div class="bz-in">
+                    <div t-if="bz_logo" class="bz-logo" role="img" t-att-aria-label="bz_brand or title" t-attf-style="--bz-logo:url('#{bz_logo}')"/>
+                    <div t-else="" class="bz-text" t-out="bz_brand or title"/>
+                    <div class="bz-bar"/>
+                    <div class="bz-status" t-out="'Đang mở không gian làm việc của bạn' if bz_lang.startswith('vi') else 'Opening your workspace'"/>
+                </div>
+            </div>
+            <script type="text/javascript">
+                (function () {
+                    var s = document.getElementById('biz-splash');
+                    if (!s) { return; }
+                    s.dataset.t0 = String(performance.now());
+                    try {
+                        if (sessionStorage.getItem('biz_splash_seen')) { s.classList.add('is-still'); }
+                    } catch (e) { /* storage blocked: play every time */ }
+                })();
+            </script>
+        </xpath>
+    </template>
+
+</odoo>

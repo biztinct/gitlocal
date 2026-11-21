@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+  ERRORS E2-5 — the page a mistyped workspace address lands on.
+
+  Served by nginx off disk, from sites-available/pb-wildcard, for any
+  *.payobook.com hostname that is not a live workspace. It never reaches the
+  application, which is the whole point: before a database is chosen the
+  platform answers with its own pre-database 404 ("No database is selected …
+  use the X-Odoo-Database header"), and no module can reach that string.
+
+  Self-contained on purpose — one inline <style>, one inline <svg>, no asset
+  URL, no webfont. The same reasoning as the 500 breakdown page in biz_errors
+  (ER3): this file has to render on the day the application does not.
+
+  Kept in the same visual family as biz_errors/views/error_templates.xml. If
+  that card changes, change this one.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>No workspace at this address</title>
+<style>
+html,body{margin:0;background:#f5f7fa;}
+.bze-wrap{--bze-accent:#1565c0;--bze-ink:#16202c;--bze-muted:#5d6b7a;--bze-edge:#e4e9ef;--bze-paper:#ffffff;box-sizing:border-box;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:56px 20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+.bze-card{box-sizing:border-box;width:100%;max-width:34rem;background:var(--bze-paper);border:1px solid var(--bze-edge);border-radius:16px;padding:44px 40px 36px;text-align:center;box-shadow:0 1px 2px rgba(16,32,48,.05),0 14px 36px rgba(16,32,48,.07);animation:bze-rise .2s cubic-bezier(.22,.61,.36,1) both;}
+.bze-brand{margin:0 0 26px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--bze-muted);}
+.bze-icon{display:block;width:44px;height:44px;margin:0 auto 22px;color:var(--bze-muted);}
+.bze-icon svg{display:block;width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.bze-headline{margin:0 0 12px;font-size:22px;font-weight:650;letter-spacing:-.01em;line-height:1.3;color:var(--bze-ink);}
+.bze-sub{margin:0;font-size:15px;line-height:1.6;color:var(--bze-muted);}
+.bze-host{margin:20px 0 0;padding:12px 14px;font-size:14px;line-height:1.6;color:var(--bze-ink);background:#f7f9fb;border:1px solid var(--bze-edge);border-radius:10px;}
+.bze-actions{margin:26px 0 0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.bze-btn{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 22px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:transform .12s ease,box-shadow .12s ease,background-color .12s ease;}
+.bze-btn-primary{background:var(--bze-accent);border:1px solid var(--bze-accent);color:#fff;}
+.bze-btn-primary:hover,.bze-btn-primary:focus{color:#fff;text-decoration:none;transform:translateY(-1px);box-shadow:0 6px 16px rgba(16,32,48,.18);}
+.bze-btn-ghost{background:var(--bze-paper);border:1px solid var(--bze-edge);color:var(--bze-ink);}
+.bze-btn-ghost:hover,.bze-btn-ghost:focus{background:#f5f8fb;color:var(--bze-ink);text-decoration:none;transform:translateY(-1px);}
+@keyframes bze-rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@media (max-width:430px){.bze-card{padding:32px 22px 28px;border-radius:14px;}.bze-headline{font-size:20px;}.bze-actions{flex-direction:column;}.bze-btn{width:100%;}}
+@media (prefers-reduced-motion:reduce){.bze-card{animation:none;}.bze-btn{transition:none;}.bze-btn:hover,.bze-btn:focus{transform:none;}}
+</style>
+</head>
+<body>
+<div class="bze-wrap">
+  <div class="bze-card" role="alert">
+    <p class="bze-brand">Payobook</p>
+    <span class="bze-icon">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <path d="m21 21-4.34-4.34"/>
+        <circle cx="11" cy="11" r="8"/>
+      </svg>
+    </span>
+    <h1 class="bze-headline">There's no workspace at this address</h1>
+    <p class="bze-sub">The web address you used doesn't belong to any workspace. It may have been mistyped, or the workspace may have been closed.</p>
+    <p class="bze-host">Check the spelling of the address, or go to the main site and sign in from there.</p>
+    <div class="bze-actions">
+      <a class="bze-btn bze-btn-primary" href="https://payobook.com">Go to the main site</a>
+      <a class="bze-btn bze-btn-ghost" href="javascript: window.history.back()">Go back</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

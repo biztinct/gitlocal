@@ -1,0 +1,2629 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_conduct
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 13:05+0000\n"
+"PO-Revision-Date: 2026-11-16 13:05+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: \n"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_setup.py:0
+msgid ""
+"\"${%(word)s}\" is not a word the letter can fill in. Use one of: %(words)s."
+msgstr "\"${%(word)s}\" bukan kata yang bisa diisi surat. Gunakan salah satu: %(words)s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "%s added."
+msgstr "%s ditambahkan."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s cases"
+msgstr "%s kasus"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "%s items wait for your sign-off"
+msgstr "%s hal menunggu persetujuan Anda"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "%s letters from HR to read"
+msgstr "%s surat dari HR untuk dibaca"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s letters to issue"
+msgstr "%s surat untuk diterbitkan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s to send for a second sign-off"
+msgstr "%s perlu dikirim untuk persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s waiting for a decision"
+msgstr "%s menunggu keputusan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s waiting for a second sign-off"
+msgstr "%s menunggu persetujuan orang kedua"
+
+#. module: pb_conduct
+#: model:ir.actions.report,print_report_name:pb_conduct.action_report_conduct_letter
+msgid "(object.title or 'Letter')"
+msgstr "(object.title or 'Letter')"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 case"
+msgstr "1 kasus"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "1 item waits for your sign-off"
+msgstr "1 hal menunggu persetujuan Anda"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "1 letter from HR to read"
+msgstr "1 surat dari HR untuk dibaca"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 letter to issue"
+msgstr "1 surat untuk diterbitkan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 to send for a second sign-off"
+msgstr "1 perlu dikirim untuk persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 waiting for a decision"
+msgstr "1 menunggu keputusan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 waiting for a second sign-off"
+msgstr "1 menunggu persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"A closed case stays here and in the person's history. You can open it again."
+msgstr "Kasus yang ditutup tetap di sini dan di riwayat orang itu. Anda bisa membukanya lagi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "A letter needs a title and some text."
+msgstr "Surat perlu judul dan isi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"A second person named for conduct cases is needed to confirm this decision. "
+"Only one person is named for this company now: name a second one on the "
+"Access screen."
+msgstr "Diperlukan orang kedua yang ditunjuk untuk kasus disiplin untuk mengonfirmasi keputusan ini. Saat ini hanya satu orang yang ditunjuk untuk perusahaan ini: tunjuk orang kedua di layar Akses."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"A warning or a dismissal needs a second person named for conduct cases to "
+"confirm it. Check the letter, then ask for the second sign-off: the letter "
+"is issued when they confirm."
+msgstr "Teguran atau pemutusan hubungan kerja perlu dikonfirmasi oleh orang kedua yang ditunjuk untuk kasus disiplin. Periksa suratnya, lalu minta persetujuan orang kedua: surat diterbitkan saat mereka mengonfirmasi."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__active
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Add a file"
+msgstr "Tambah berkas"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Add the note"
+msgstr "Tambah catatan"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__valid_until
+msgid ""
+"After this date the warning no longer counts. The usual period differs by "
+"country; check it with your adviser."
+msgstr "Setelah tanggal ini teguran tidak berlaku lagi. Masa berlakunya berbeda per negara; periksa dengan penasihat Anda."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "All cases"
+msgstr "Semua kasus"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "An issued letter cannot be changed."
+msgstr "Surat yang sudah diterbitkan tidak bisa diubah."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "An issued letter cannot be changed. Prepare a new letter instead."
+msgstr "Surat yang sudah diterbitkan tidak bisa diubah. Siapkan surat baru."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "An issued letter is kept with the case. It cannot be deleted."
+msgstr "Surat yang sudah diterbitkan disimpan bersama kasus dan tidak bisa dihapus."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Ask HR to link it, then letters they send you appear here."
+msgstr "Minta HR menghubungkannya, lalu surat untuk Anda akan muncul di sini."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Ask for the second sign-off"
+msgstr "Minta persetujuan orang kedua"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_attendance
+msgid "Attendance or lateness"
+msgstr "Kehadiran atau keterlambatan"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Back to my home"
+msgstr "Kembali ke beranda saya"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_behaviour
+msgid "Behaviour towards others"
+msgstr "Perilaku terhadap orang lain"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_rules
+msgid "Breaking a company rule"
+msgstr "Melanggar aturan perusahaan"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__user_id
+msgid "By"
+msgstr "Oleh"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__case_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__case_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__case_id
+msgid "Case"
+msgstr "Kasus"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Case closed with the decision letter."
+msgstr "Kasus ditutup dengan surat keputusan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Case closed."
+msgstr "Kasus ditutup."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Case closed: %s"
+msgstr "Kasus ditutup: %s"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Case opened again."
+msgstr "Kasus dibuka kembali."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Case opened. Only the people named for conduct cases can see it."
+msgstr "Kasus dibuka. Hanya orang yang ditunjuk untuk kasus disiplin yang bisa melihatnya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Case opened: %s."
+msgstr "Kasus dibuka: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Change the decision"
+msgstr "Ubah keputusan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Change the wording"
+msgstr "Ubah kata-kata"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Check each step with your adviser."
+msgstr "Periksa setiap tahap dengan penasihat Anda."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Choose the date and time of the hearing."
+msgstr "Pilih tanggal dan jam sidang."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Choose the reason."
+msgstr "Pilih alasannya."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Choose what was decided."
+msgstr "Pilih apa yang diputuskan."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Choose…"
+msgstr "Pilih…"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Close the case"
+msgstr "Tutup kasus"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__closed
+msgid "Closed"
+msgstr "Ditutup"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Closed cases"
+msgstr "Kasus ditutup"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__closed_on
+msgid "Closed on"
+msgstr "Ditutup pada"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__concern
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__concern
+msgid "Concern"
+msgstr "Keluhan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+msgid "Conduct"
+msgstr "Disiplin"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model,name:pb_conduct.model_pb_conduct_case
+msgid "Conduct case"
+msgstr "Kasus disiplin"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_country_note
+msgid "Conduct case country note"
+msgstr "Catatan negara kasus disiplin"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_event
+msgid "Conduct case history"
+msgstr "Riwayat kasus disiplin"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_letter
+msgid "Conduct case letter"
+msgstr "Surat kasus disiplin"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_note
+msgid "Conduct case note"
+msgstr "Catatan kasus disiplin"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_reason
+msgid "Conduct case reason"
+msgstr "Alasan kasus disiplin"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_reason
+msgid "Conduct case reasons"
+msgstr "Alasan kasus disiplin"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.actions.client,name:pb_conduct.action_pb_conduct_board
+#: model:ir.module.category,name:pb_conduct.module_category_conduct
+#: model:res.groups.privilege,name:pb_conduct.res_groups_privilege_conduct
+msgid "Conduct cases"
+msgstr "Kasus disiplin"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Conduct cases are seen only by the people HR names for them on the Access "
+"screen. Being in HR, running payroll or managing a team does not include it."
+" Ask your head of HR if you believe you should have it."
+msgstr "Kasus disiplin hanya dilihat oleh orang yang ditunjuk HR di layar Akses. Bekerja di HR, mengurus penggajian, atau memimpin tim tidak termasuk. Tanyakan kepala HR jika Anda merasa seharusnya punya akses."
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct
+msgid "Conduct cases board data"
+msgstr "Data papan kasus disiplin"
+
+#. module: pb_conduct
+#: model:pb.role.profile,name:pb_conduct.role_conduct_hr
+msgid "Conduct cases — HR"
+msgstr "Kasus disiplin — HR"
+
+#. module: pb_conduct
+#: model:pb.role.profile,name:pb_conduct.role_conduct_head
+msgid "Conduct cases — head of HR"
+msgstr "Kasus disiplin — kepala HR"
+
+#. module: pb_conduct
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_letter_template
+#: model:ir.model,name:pb_conduct.model_pb_conduct_letter_template
+msgid "Conduct letter wording"
+msgstr "Kata-kata surat disiplin"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Confirm and issue the letter"
+msgstr "Konfirmasi dan terbitkan surat"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_verbal
+msgid "Confirmation of a verbal warning"
+msgstr "Konfirmasi teguran lisan"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__confirmed
+msgid "Confirmed"
+msgstr "Dikonfirmasi"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Confirmed by %(who)s on %(when)s."
+msgstr "Dikonfirmasi oleh %(who)s pada %(when)s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Confirmed. The letter is issued and the employee can read it on their own "
+"page now."
+msgstr "Dikonfirmasi. Surat telah diterbitkan dan karyawan sekarang dapat membacanya di halamannya sendiri."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__country_id
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_country_note_list
+msgid "Country notes"
+msgstr "Catatan per negara"
+
+#. module: pb_conduct
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_country_note
+msgid "Country notes for conduct cases"
+msgstr "Catatan per negara untuk kasus disiplin"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__date
+msgid "Date"
+msgstr "Tanggal"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Date and time"
+msgstr "Tanggal dan jam"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_final
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we are giving you a final written warning.\n"
+"\n"
+"${decision}\n"
+"\n"
+"This warning stays on your HR file until ${valid_until}. If the problem happens again, your employment may end. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Yth. ${employee},\n\nSetelah pertemuan kita mengenai ${reason}, kami memberikan teguran tertulis terakhir kepada Anda.\n\n${decision}\n\nTeguran ini tercatat di berkas HR Anda sampai ${valid_until}. Jika masalah ini terulang, hubungan kerja Anda dapat berakhir. Anda dapat membalas surat ini jika tidak setuju.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_written
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we are giving you a written warning.\n"
+"\n"
+"${decision}\n"
+"\n"
+"This warning stays on your HR file until ${valid_until}. If the problem happens again, further steps may be taken. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Yth. ${employee},\n\nSetelah pertemuan kita mengenai ${reason}, kami memberikan teguran tertulis kepada Anda.\n\n${decision}\n\nTeguran ini tercatat di berkas HR Anda sampai ${valid_until}. Jika masalah ini terulang, langkah lanjutan dapat diambil. Anda dapat membalas surat ini jika tidak setuju.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_dismissal
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we have decided to end your employment.\n"
+"\n"
+"${decision}\n"
+"\n"
+"HR will contact you about your last day, your final pay and returning company property. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Yth. ${employee},\n\nSetelah pertemuan kita mengenai ${reason}, kami memutuskan untuk mengakhiri hubungan kerja Anda.\n\n${decision}\n\nHR akan menghubungi Anda tentang hari terakhir, gaji terakhir, dan pengembalian aset perusahaan. Anda dapat membalas surat ini jika tidak setuju.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_none
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Thank you for meeting us about ${reason}.\n"
+"\n"
+"${decision}\n"
+"\n"
+"We have decided to take no further action. This letter is kept on your HR file.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Yth. ${employee},\n\nTerima kasih telah bertemu kami mengenai ${reason}.\n\n${decision}\n\nKami memutuskan tidak mengambil tindakan lanjutan. Surat ini disimpan di berkas HR Anda.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_verbal
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"This letter confirms the verbal warning you were given about ${reason}.\n"
+"\n"
+"${decision}\n"
+"\n"
+"The warning stays on your HR file until ${valid_until}. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Yth. ${employee},\n\nSurat ini mengonfirmasi teguran lisan yang Anda terima mengenai ${reason}.\n\n${decision}\n\nTeguran ini tercatat di berkas HR Anda sampai ${valid_until}. Anda dapat membalas surat ini jika tidak setuju.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_invite
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"We would like to meet you to talk about a concern: ${reason}.\n"
+"\n"
+"The meeting will take place on ${hearing_date} at ${hearing_place}.\n"
+"\n"
+"You may bring a colleague or an employee representative with you. You will be able to give your side of what happened before any decision is made.\n"
+"\n"
+"If you cannot attend at this time, please tell HR as soon as possible.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Yth. ${employee},\n\nKami ingin bertemu Anda untuk membicarakan sebuah keluhan: ${reason}.\n\nPertemuan akan diadakan pada ${hearing_date} di ${hearing_place}.\n\nAnda boleh membawa seorang rekan atau perwakilan karyawan. Anda dapat menyampaikan penjelasan Anda sebelum keputusan apa pun dibuat.\n\nJika Anda tidak dapat hadir pada waktu tersebut, mohon beri tahu HR secepatnya.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+msgid "Dear ${employee}, ..."
+msgstr "Yth. ${employee}, ..."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Decide the outcome"
+msgstr "Putuskan hasilnya"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decided_by
+msgid "Decided by"
+msgstr "Diputuskan oleh"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decided_on
+msgid "Decided on"
+msgstr "Diputuskan pada"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decided: %s."
+msgstr "Diputuskan: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__outcome
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__decision
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__decision
+msgid "Decision"
+msgstr "Keputusan"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decision (%s) taken back to change it."
+msgstr "Keputusan (%s) ditarik kembali untuk diubah."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decision confirmed by a second named person."
+msgstr "Keputusan dikonfirmasi oleh orang kedua yang ditunjuk."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Decision saved. Check the letter, then ask a second named person to sign it "
+"off."
+msgstr "Keputusan disimpan. Periksa suratnya, lalu minta orang kedua yang ditunjuk untuk menyetujuinya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Decision saved. The letter is ready to check and issue."
+msgstr "Keputusan disimpan. Surat siap diperiksa dan diterbitkan."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decision_summary
+msgid "Decision, in a few sentences"
+msgstr "Keputusan, dalam beberapa kalimat"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Delete the draft"
+msgstr "Hapus draf"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__department_id
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__dismissal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__dismissal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__dismissal
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_dismissal
+msgid "Dismissal"
+msgstr "Pemutusan hubungan kerja"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Done."
+msgstr "Selesai."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Download"
+msgstr "Unduh"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Download the letter"
+msgstr "Unduh surat"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__state__draft
+msgid "Draft"
+msgstr "Draf"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Draft letter deleted."
+msgstr "Draf surat dihapus."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Draft letter deleted: %s."
+msgstr "Draf surat dihapus: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Draft, not seen by the employee"
+msgstr "Draf, belum dilihat karyawan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Draft, waits for the second sign-off"
+msgstr "Draf, menunggu persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Earlier cases for this person"
+msgstr "Kasus sebelumnya untuk orang ini"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__employee_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data beranda karyawan"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__read_on
+msgid "Employee read it on"
+msgstr "Karyawan membacanya pada"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply
+msgid "Employee's reply"
+msgstr "Balasan karyawan"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_dismissal
+msgid "End of your employment"
+msgstr "Berakhirnya hubungan kerja Anda"
+
+#. module: pb_conduct
+#: model:pb.role.ability,description:pb_conduct.ability_conduct_head
+#: model:res.groups,comment:pb_conduct.group_conduct_head
+msgid ""
+"Everything above, plus the reasons, the letter wording and the country "
+"notes."
+msgstr "Semua di atas, ditambah alasan, kata-kata surat dan catatan per negara."
+
+#. module: pb_conduct
+#: model:pb.role.profile,description:pb_conduct.role_conduct_head
+msgid ""
+"Everything in Conduct cases — HR, plus the reasons, the letter wording and "
+"the country notes."
+msgstr "Semua di Kasus disiplin — HR, ditambah alasan, kata-kata surat dan catatan per negara."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "File added to the case."
+msgstr "Berkas ditambahkan ke kasus."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "File added: %s."
+msgstr "Berkas ditambahkan: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Files"
+msgstr "Berkas"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__final
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__final
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__final
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_final
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_final
+msgid "Final written warning"
+msgstr "Teguran tertulis terakhir"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Find a person, a reference or a word…"
+msgstr "Cari orang, referensi atau kata…"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__hearing_attendees
+msgid ""
+"For example: the employee, a companion or employee representative, the HR "
+"lead."
+msgstr "Contoh: karyawan, pendamping atau perwakilan karyawan, pimpinan HR."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Go to a decision without a hearing"
+msgstr "Ke keputusan tanpa sidang"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "HR has sent you a letter."
+msgstr "HR telah mengirimi Anda surat."
+
+#. module: pb_conduct
+#: model:ir.actions.report,name:pb_conduct.action_report_conduct_letter
+msgid "HR letter"
+msgstr "Surat HR"
+
+#. module: pb_conduct
+#: model:res.groups,name:pb_conduct.group_conduct_user
+msgid "HR — conduct cases"
+msgstr "HR — kasus disiplin"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_harassment
+msgid "Harassment or bullying"
+msgstr "Pelecehan atau perundungan"
+
+#. module: pb_conduct
+#: model:res.groups,name:pb_conduct.group_conduct_head
+msgid "Head of HR — conduct cases"
+msgstr "Kepala HR — kasus disiplin"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_safety
+msgid "Health and safety"
+msgstr "Kesehatan dan keselamatan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__hearing
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__hearing
+msgid "Hearing"
+msgstr "Sidang"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing %s"
+msgstr "Sidang %s"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing date, soonest first"
+msgstr "Tanggal sidang, terdekat dulu"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_held_on
+msgid "Hearing held on"
+msgstr "Sidang diadakan pada"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing held on %s."
+msgstr "Sidang diadakan pada %s."
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__minutes
+msgid "Hearing minutes"
+msgstr "Notulen sidang"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing moved to %s."
+msgstr "Sidang dipindah ke %s."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_date
+msgid "Hearing on"
+msgstr "Sidang pada"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing planned for %s."
+msgstr "Sidang dijadwalkan pada %s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing recorded. Next: the decision."
+msgstr "Sidang dicatat. Berikutnya: keputusan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing saved."
+msgstr "Sidang disimpan."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Held on"
+msgstr "Diadakan pada"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__event_ids
+msgid "History"
+msgstr "Riwayat"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "I have read this"
+msgstr "Saya sudah membaca ini"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__document_id
+msgid "In documents"
+msgstr "Di dokumen"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__investigation
+msgid "Investigation note"
+msgstr "Catatan pemeriksaan"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Invitation prepared. Check it, then issue it."
+msgstr "Undangan disiapkan. Periksa, lalu terbitkan."
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__invite
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__invite
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_invite
+msgid "Invitation to a hearing"
+msgstr "Undangan sidang"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_invite
+msgid "Invitation to a meeting"
+msgstr "Undangan pertemuan"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Issue the decision letter first, or say why the case closes without it."
+msgstr "Terbitkan surat keputusan dulu, atau jelaskan mengapa kasus ditutup tanpanya."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Issue the letter"
+msgstr "Terbitkan surat"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__state__issued
+msgid "Issued"
+msgstr "Diterbitkan"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__issued_by
+msgid "Issued by"
+msgstr "Diterbitkan oleh"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__issued_on
+msgid "Issued on"
+msgstr "Diterbitkan pada"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"It goes back to the person who recorded the decision, with your reason. The "
+"employee sees nothing."
+msgstr "Kasus kembali ke orang yang mencatat keputusan, dengan alasan Anda. Karyawan tidak melihat apa pun."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__kind
+msgid "Kind"
+msgstr "Jenis"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_reason__company_id
+msgid "Leave empty to offer it in every company."
+msgstr "Kosongkan agar tersedia di semua perusahaan."
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_letter_template__company_id
+msgid "Leave empty to use it in every company."
+msgstr "Kosongkan agar dipakai di semua perusahaan."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__exit_case_id
+msgid "Leaving checklist"
+msgstr "Daftar keluar"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Leaving checklist opened."
+msgstr "Daftar keluar dibuka."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__kind
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__kind
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__letter
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__letter
+msgid "Letter"
+msgstr "Surat"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Letter issued. The employee can read it on their own page now."
+msgstr "Surat diterbitkan. Karyawan kini bisa membacanya di halamannya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Letter issued: %s. The employee can now read it on their own page."
+msgstr "Surat diterbitkan: %s. Karyawan kini bisa membacanya di halamannya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Letter prepared: %s."
+msgstr "Surat disiapkan: %s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Letter saved."
+msgstr "Surat disimpan."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__body
+msgid "Letter text"
+msgstr "Isi surat"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__title
+msgid "Letter title"
+msgstr "Judul surat"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_list
+msgid "Letter wording"
+msgstr "Kata-kata surat"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__letter_ids
+msgid "Letters"
+msgstr "Surat"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_home_hr_letters
+msgid "Letters HR has sent you"
+msgstr "Surat yang dikirim HR kepada Anda"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Letters HR has sent you. Only you and the people in HR who handle them can "
+"see these."
+msgstr "Surat yang dikirim HR kepada Anda. Hanya Anda dan orang HR yang menanganinya yang bisa melihatnya."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_breadcrumbs_hr_letters
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_home_hr_letters
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Letters from HR"
+msgstr "Surat dari HR"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Loading cases"
+msgstr "Memuat kasus"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Look into it, then plan a hearing"
+msgstr "Periksa, lalu jadwalkan sidang"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Mark as read"
+msgstr "Tandai sudah dibaca"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__meeting
+msgid "Meeting note"
+msgstr "Catatan rapat"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Minutes: who was there, what was said"
+msgstr "Notulen: siapa yang hadir, apa yang dikatakan"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_property
+msgid "Misuse of company property or money"
+msgstr "Penyalahgunaan aset atau uang perusahaan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Move the hearing"
+msgstr "Pindahkan sidang"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Moved to the decision."
+msgstr "Dipindah ke keputusan."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__pb_conduct_reader
+msgid "Named for conduct cases"
+msgstr "Ditunjuk untuk kasus disiplin"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_required
+msgid "Needs a second sign-off"
+msgstr "Perlu persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "New"
+msgstr "Baru"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "New case"
+msgstr "Kasus baru"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "New conduct case"
+msgstr "Kasus disiplin baru"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__none
+msgid "No action"
+msgstr "Tanpa tindakan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No cases match these filters"
+msgstr "Tidak ada kasus yang cocok dengan filter ini"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No conduct cases"
+msgstr "Belum ada kasus disiplin"
+
+#. module: pb_conduct
+#: model_terms:ir.actions.act_window,help:pb_conduct.action_pb_conduct_country_note
+msgid "No country notes yet"
+msgstr "Belum ada catatan per negara"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "No department"
+msgstr "Tanpa departemen"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__none
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__none
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_none
+msgid "No further action"
+msgstr "Tidak ada tindakan lanjutan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No hearing needed"
+msgstr "Tidak perlu sidang"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "No letters from HR"
+msgstr "Tidak ada surat dari HR"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No notes for"
+msgstr "Belum ada catatan untuk"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Nobody else named for conduct cases can confirm this decision: the person "
+"who recorded it, the person who asked and the employee themselves cannot. "
+"Name another person on the Access screen."
+msgstr "Tidak ada orang lain yang ditunjuk untuk kasus disiplin yang dapat mengonfirmasi keputusan ini: orang yang mencatatnya, orang yang meminta, dan karyawan itu sendiri tidak boleh. Tunjuk orang lain di layar Akses."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "None."
+msgstr "Tidak ada."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Not read by the employee yet."
+msgstr "Belum dibaca karyawan."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__body
+msgid "Note"
+msgstr "Catatan"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Note added."
+msgstr "Catatan ditambahkan."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__note_ids
+msgid "Notes"
+msgstr "Catatan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Notes and minutes stay with the case. They are never put in the employee's "
+"documents and the employee does not see them."
+msgstr "Catatan dan notulen disimpan bersama kasus. Tidak pernah masuk dokumen karyawan dan karyawan tidak melihatnya."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Notes for the other steps ("
+msgstr "Catatan untuk tahap lain ("
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "On"
+msgstr "Pada"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Only a second person named for conduct cases can do this: not the person who"
+" recorded the decision or asked for the sign-off, and never the employee "
+"themselves."
+msgstr "Hanya orang kedua yang ditunjuk untuk kasus disiplin yang dapat melakukan ini: bukan orang yang mencatat keputusan atau meminta persetujuan, dan tidak pernah karyawan itu sendiri."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Only for the people HR names"
+msgstr "Hanya untuk orang yang ditunjuk HR"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Only the head of HR for conduct cases can change this."
+msgstr "Hanya kepala HR untuk kasus disiplin yang dapat mengubah ini."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Only the people named for conduct cases will see it. The employee sees "
+"nothing until a letter is issued."
+msgstr "Hanya orang yang ditunjuk untuk kasus disiplin yang akan melihatnya. Karyawan tidak melihat apa pun sampai surat diterbitkan."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"Only when no hearing is needed, for example when you decide to take no "
+"action."
+msgstr "Hanya bila sidang tidak diperlukan, misalnya saat Anda memutuskan tanpa tindakan."
+
+#. module: pb_conduct
+#: model:pb.role.ability,description:pb_conduct.ability_conduct_hr
+msgid ""
+"Open and run conduct cases: the concern, the hearing notes, the decision and"
+" the letters. Highly confidential: give it only to the people who handle "
+"these cases."
+msgstr "Membuka dan menangani kasus disiplin: keluhan, catatan sidang, keputusan dan surat. Sangat rahasia: berikan hanya kepada yang menangani kasus ini."
+
+#. module: pb_conduct
+#: model:pb.role.profile,description:pb_conduct.role_conduct_hr
+msgid ""
+"Open and run somebody's conduct case: the concern, the hearing notes, the "
+"decision and the letters. Highly confidential."
+msgstr "Membuka dan menangani kasus disiplin seseorang: keluhan, catatan sidang, keputusan dan surat. Sangat rahasia."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Open cases"
+msgstr "Kasus terbuka"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Open it in HR to confirm or send it back"
+msgstr "Buka di HR untuk mengonfirmasi atau mengembalikannya"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the Access screen"
+msgstr "Buka layar Akses"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the case"
+msgstr "Buka kasus"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the case again"
+msgstr "Buka kasus lagi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the leaving checklist"
+msgstr "Buka daftar keluar"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__opened_on
+msgid "Opened"
+msgstr "Dibuka"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Opened longest ago"
+msgstr "Dibuka paling lama"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Opened most recently"
+msgstr "Dibuka paling baru"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_other
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__other
+msgid "Other note"
+msgstr "Catatan lain"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_none
+msgid "Outcome of our meeting"
+msgstr "Hasil pertemuan kita"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__attachment_id
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Pick who the case is about."
+msgstr "Pilih siapa yang menjadi subjek kasus."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Plan the hearing"
+msgstr "Jadwalkan sidang"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Prepare an invitation letter"
+msgstr "Siapkan surat undangan"
+
+#. module: pb_conduct
+#: model:pb.employee.document.category,name:pb_conduct.vault_category_conduct
+msgid "Private HR letters"
+msgstr "Surat HR pribadi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__raised_by
+msgid "Raised by"
+msgstr "Dilaporkan oleh"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Raised by (optional)"
+msgstr "Dilaporkan oleh (opsional)"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Read"
+msgstr "Sudah dibaca"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Read it and reply if you want to"
+msgstr "Baca dan balas jika Anda mau"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Read the board again"
+msgstr "Muat ulang papan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Reading the cases…"
+msgstr "Membaca kasus…"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__reason_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__name
+msgid "Reason"
+msgstr "Alasan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_reason_list
+msgid "Reasons"
+msgstr "Alasan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Record the decision"
+msgstr "Catat keputusan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Record the hearing"
+msgstr "Catat sidang"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__name
+msgid "Reference"
+msgstr "Referensi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Remove a filter above, or start again from every case."
+msgstr "Hapus filter di atas, atau mulai lagi dari semua kasus."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply_on
+msgid "Replied on"
+msgstr "Dibalas pada"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply_seen
+msgid "Reply read by HR"
+msgstr "Balasan dibaca HR"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Reply to HR"
+msgstr "Balas ke HR"
+
+#. module: pb_conduct
+#: model:pb.role.ability,name:pb_conduct.ability_conduct_hr
+msgid "Run conduct cases"
+msgstr "Menangani kasus disiplin"
+
+#. module: pb_conduct
+#: model:pb.role.ability,name:pb_conduct.ability_conduct_head
+msgid "Run conduct cases and their set-up"
+msgstr "Menangani kasus disiplin dan pengaturannya"
+
+#. module: pb_conduct
+#: model:res.groups,comment:pb_conduct.group_conduct_user
+msgid ""
+"Run conduct cases: record a concern, plan and record a hearing, record the "
+"decision and issue the letter. Not part of the general HR permissions — it "
+"is given by name."
+msgstr "Menangani kasus disiplin: mencatat keluhan, menjadwalkan dan mencatat sidang, mencatat keputusan dan menerbitkan surat. Bukan bagian izin HR umum — diberikan per nama."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Save the letter"
+msgstr "Simpan surat"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why it goes back."
+msgstr "Jelaskan singkat mengapa dikembalikan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why the case is closed."
+msgstr "Jelaskan singkat mengapa kasus ditutup."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why there is no hearing."
+msgstr "Jelaskan singkat mengapa tidak ada sidang."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Say why, in a few words."
+msgstr "Jelaskan alasannya secara singkat."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_state
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__signoff
+msgid "Second sign-off"
+msgstr "Persetujuan orang kedua"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_by
+msgid "Second sign-off by"
+msgstr "Disetujui orang kedua oleh"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_on
+msgid "Second sign-off on"
+msgstr "Disetujui orang kedua pada"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Seen only by the people HR names for conduct cases. Nothing here is emailed."
+msgstr "Hanya dilihat orang yang ditunjuk HR untuk kasus disiplin. Tidak ada yang dikirim lewat email."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Send it back"
+msgstr "Kembalikan"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Send my reply"
+msgstr "Kirim balasan saya"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__sent_back
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back by %(who)s on %(when)s: \"%(why)s\""
+msgstr "Dikembalikan oleh %(who)s pada %(when)s: \"%(why)s\""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Sent back by the second sign-off: %s"
+msgstr "Dikembalikan oleh penyetuju kedua: %s"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back with your reason."
+msgstr "Dikembalikan dengan alasan Anda."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back: check it and ask again"
+msgstr "Dikembalikan: periksa lalu minta lagi"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Sent by %(who)s on %(when)s. A second person named for conduct cases "
+"confirms it; the employee sees nothing until then."
+msgstr "Dikirim oleh %(who)s pada %(when)s. Orang kedua yang ditunjuk untuk kasus disiplin akan mengonfirmasinya; sampai saat itu karyawan tidak melihat apa pun."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Sent for a second sign-off."
+msgstr "Dikirim untuk persetujuan orang kedua."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Sent for the second sign-off. The employee sees nothing until it is "
+"confirmed."
+msgstr "Dikirim untuk persetujuan orang kedua. Karyawan tidak melihat apa pun sampai dikonfirmasi."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Sent on"
+msgstr "Dikirim pada"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__sequence
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Set up"
+msgstr "Pengaturan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Show all cases"
+msgstr "Tampilkan semua kasus"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Showing"
+msgstr "Menampilkan"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_asked_by
+msgid "Sign-off asked by"
+msgstr "Persetujuan diminta oleh"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_asked_on
+msgid "Sign-off asked on"
+msgstr "Persetujuan diminta pada"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Something not clear? Ask HR. You can also find these letters in your "
+"documents."
+msgstr "Ada yang kurang jelas? Tanyakan HR. Surat-surat ini juga ada di dokumen Anda."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Something waits for your sign-off."
+msgstr "Ada yang menunggu persetujuan Anda."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__state
+msgid "State"
+msgstr "Status"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__state
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__step
+msgid "Step"
+msgstr "Tahap"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Take it back"
+msgstr "Tarik kembali"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Taken back before the second sign-off."
+msgstr "Ditarik kembali sebelum persetujuan orang kedua."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Taken back. You can change the letter or the decision now."
+msgstr "Ditarik kembali. Sekarang Anda dapat mengubah surat atau keputusannya."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+msgid "Talent"
+msgstr "Talenta"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"Tell the employee in good time and in writing. Prepare an invitation letter "
+"from this case once the date is set."
+msgstr "Beri tahu karyawan jauh hari dan secara tertulis. Siapkan surat undangan dari kasus ini setelah tanggal ditetapkan."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Thank you. HR can see that you have read it."
+msgstr "Terima kasih. HR bisa melihat bahwa Anda sudah membacanya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "That cannot be done here."
+msgstr "Itu tidak bisa dilakukan di sini."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "That could not be done."
+msgstr "Itu tidak bisa dilakukan."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "That could not be opened."
+msgstr "Itu tidak bisa dibuka."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "That letter is not one of yours."
+msgstr "Surat itu bukan milik Anda."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The Access screen could not be opened."
+msgstr "Layar Akses tidak bisa dibuka."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The case could not be opened."
+msgstr "Kasus tidak bisa dibuka."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The cases could not be read just now."
+msgstr "Kasus tidak bisa dibaca saat ini."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The cases could not load"
+msgstr "Kasus tidak bisa dimuat"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Koneksi mungkin terputus. Filter Anda tetap tersimpan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The decision (%s) had no second sign-off and does not count."
+msgstr "Keputusan (%s) belum disetujui orang kedua dan tidak dihitung."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The decision is open to change. The draft letter was removed."
+msgstr "Keputusan dapat diubah. Draf surat telah dihapus."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The decision letter has been issued, so the decision cannot change."
+msgstr "Surat keputusan sudah diterbitkan, jadi keputusan tidak dapat diubah."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"The decision letter is prepared from it. A warning or a dismissal then needs"
+" a second named person to sign it off before the letter is issued: only then"
+" can the employee read it."
+msgstr "Surat keputusan disiapkan dari sini. Teguran atau pemutusan hubungan kerja lalu perlu disetujui orang kedua yang ditunjuk sebelum surat diterbitkan: baru setelah itu karyawan dapat membacanya."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The decision, in a few sentences (it goes in the letter)"
+msgstr "Keputusan, dalam beberapa kalimat (masuk ke surat)"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__department_id
+msgid "The department when the case was opened."
+msgstr "Departemen saat kasus dibuka."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee has replied"
+msgstr "Karyawan sudah membalas"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The employee replied to \"%s\"."
+msgstr "Karyawan membalas \"%s\"."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The employee said they have read \"%s\"."
+msgstr "Karyawan menyatakan sudah membaca \"%s\"."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee said they read it on"
+msgstr "Karyawan menyatakan membacanya pada"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee's reply,"
+msgstr "Balasan karyawan,"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee, a companion or representative, the HR lead"
+msgstr "Karyawan, pendamping atau perwakilan, pimpinan HR"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The file is empty."
+msgstr "Berkas kosong."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The file is larger than 10 MB."
+msgstr "Berkas lebih besar dari 10 MB."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"The law on hearings, warnings and letters differs by country, and these "
+"steps are general."
+msgstr "Hukum tentang sidang, teguran dan surat berbeda per negara, dan tahap-tahap ini bersifat umum."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The leaving checklist is not part of this system."
+msgstr "Daftar keluar tidak tersedia di sistem ini."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The leaving checklist is open on the employee's record."
+msgstr "Daftar keluar sudah dibuka di data karyawan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The leaving checklist is opened only after a dismissal."
+msgstr "Daftar keluar hanya dibuka setelah pemutusan hubungan kerja."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"The leaving checklist opens once the dismissal has its second sign-off."
+msgstr "Daftar periksa keluar dibuka setelah pemutusan hubungan kerja disetujui orang kedua."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The letter has no text yet."
+msgstr "Surat belum ada isinya."
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_letter_template__body
+msgid ""
+"The letter text. Words in ${...} are filled in from the case: ${employee}, "
+"${job}, ${department}, ${company}, ${date}, ${reason}, ${incident_date}, "
+"${hearing_date}, ${hearing_place}, ${decision}, ${valid_until}, "
+"${signed_by}."
+msgstr "Isi surat. Kata dalam ${...} diisi dari kasus: ${employee}, ${job}, ${department}, ${company}, ${date}, ${reason}, ${incident_date}, ${hearing_date}, ${hearing_place}, ${decision}, ${valid_until}, ${signed_by}."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"The minutes stay with the case. They are never put in the employee's "
+"documents and the employee does not see them."
+msgstr "Notulen disimpan bersama kasus. Tidak pernah masuk dokumen karyawan dan karyawan tidak melihatnya."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"The reasons, letter wording and country notes are changed by the head of HR "
+"for conduct cases."
+msgstr "Alasan, kata-kata surat dan catatan per negara diubah oleh kepala HR untuk kasus disiplin."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The steps above the table."
+msgstr "Tahap-tahap di atas tabel."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The warning must stay valid after the day it was decided."
+msgstr "Teguran harus berlaku setelah tanggal keputusan."
+
+#. module: pb_conduct
+#: model:ir.model.constraint,message:pb_conduct.constraint_pb_conduct_country_note_country_step_uniq
+msgid "There is already a note for this country and step. Edit that one."
+msgstr "Sudah ada catatan untuk negara dan tahap ini. Ubah catatan itu."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "There is no decision letter to confirm. Record the decision again."
+msgstr "Tidak ada surat keputusan untuk dikonfirmasi. Catat keputusan lagi."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "This case could not be opened."
+msgstr "Kasus ini tidak bisa dibuka."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "This case is at the \"%s\" step, so that cannot be done now."
+msgstr "Kasus ada di tahap \"%s\", jadi itu belum bisa dilakukan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "This case no longer exists, or it is not one you can see."
+msgstr "Kasus ini sudah tidak ada, atau tidak bisa Anda lihat."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "This decision does not need a second sign-off."
+msgstr "Keputusan ini tidak perlu persetujuan orang kedua."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"This decision has no second sign-off yet, so its letter cannot be issued. To"
+" close the case without it, say why."
+msgstr "Keputusan ini belum disetujui orang kedua, jadi suratnya belum dapat diterbitkan. Untuk menutup kasus tanpa surat itu, jelaskan alasannya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"This decision is waiting for a second sign-off. Take it back first if the "
+"case should close without it."
+msgstr "Keputusan ini menunggu persetujuan orang kedua. Tarik kembali dulu jika kasus harus ditutup tanpanya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"This decision needs a second sign-off first. A second person named for "
+"conduct cases confirms it, and the letter is issued when they do."
+msgstr "Keputusan ini perlu persetujuan orang kedua terlebih dahulu. Orang kedua yang ditunjuk untuk kasus disiplin mengonfirmasinya, dan surat diterbitkan saat itu."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"This decision waits for your sign-off. Read the decision and the letter "
+"below, then confirm it or send it back. The employee sees nothing until it "
+"is confirmed."
+msgstr "Keputusan ini menunggu persetujuan Anda. Baca keputusan dan surat di bawah, lalu konfirmasi atau kembalikan. Karyawan tidak melihat apa pun sampai dikonfirmasi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "This letter has already been issued."
+msgstr "Surat ini sudah diterbitkan."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"This letter is waiting for a second sign-off. Take it back to change it."
+msgstr "Surat ini menunggu persetujuan orang kedua. Tarik kembali untuk mengubahnya."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "This letter no longer exists."
+msgstr "Surat ini sudah tidak ada."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+msgid ""
+"This wording is a starting point. Check it with your adviser before you use "
+"it: what a letter must say differs by country."
+msgstr "Kata-kata ini hanya titik awal. Periksa dengan penasihat Anda sebelum digunakan: isi wajib surat berbeda per negara."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__title
+msgid "Title"
+msgstr "Judul"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_res_users__pb_conduct_reader
+msgid ""
+"True for the people HR has named on the Access screen to see conduct cases. "
+"Read by the record rules."
+msgstr "Benar untuk orang yang ditunjuk HR di layar Akses untuk melihat kasus disiplin."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Type a name or an employee code"
+msgstr "Ketik nama atau kode karyawan"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_res_users
+msgid "User"
+msgstr "Pengguna"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__verbal
+msgid "Verbal warning"
+msgstr "Teguran lisan"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__verbal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__verbal
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_verbal
+msgid "Verbal warning confirmed"
+msgstr "Konfirmasi teguran lisan"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__waiting
+msgid "Waiting for a second sign-off"
+msgstr "Menunggu persetujuan orang kedua"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Waiting for your sign-off"
+msgstr "Menunggu persetujuan Anda"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Waiting on you"
+msgstr "Menunggu Anda"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__valid_until
+msgid "Warning valid until"
+msgstr "Teguran berlaku sampai"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Went to a decision without a hearing: %s"
+msgstr "Langsung ke keputusan tanpa sidang: %s"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "What comes next"
+msgstr "Langkah berikutnya"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__summary
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__text
+msgid "What happened"
+msgstr "Apa yang terjadi"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__note
+msgid "What to do in this country"
+msgstr "Yang harus dilakukan di negara ini"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "When HR sends you a letter, you can read it here and reply."
+msgstr "Saat HR mengirim surat, Anda bisa membacanya dan membalas di sini."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"When a concern about someone's conduct reaches HR, open a case here. It goes"
+" from the concern to a hearing, a decision and a letter, and only the people"
+" named for conduct cases can see it."
+msgstr "Saat keluhan tentang perilaku seseorang sampai ke HR, buka kasus di sini. Kasus berjalan dari keluhan ke sidang, keputusan dan surat, dan hanya orang yang ditunjuk yang bisa melihatnya."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__incident_date
+msgid "When it happened"
+msgstr "Kapan terjadi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_place
+msgid "Where"
+msgstr "Tempat"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Where every case is"
+msgstr "Posisi setiap kasus"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who"
+msgstr "Siapa"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_attendees
+msgid "Who attends"
+msgstr "Yang hadir"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__raised_by
+msgid ""
+"Who brought the concern to HR. Free text, not a login: the person who raised"
+" it does not get to see the case."
+msgstr "Siapa yang menyampaikan keluhan ke HR. Teks bebas, bukan akun: pelapor tidak dapat melihat kasus."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who can see conduct cases"
+msgstr "Siapa yang bisa melihat kasus disiplin"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who it is about"
+msgstr "Tentang siapa"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__close_reason
+msgid "Why it was closed"
+msgstr "Alasan ditutup"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_note
+msgid "Why it was sent back"
+msgstr "Alasan dikembalikan"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__template_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__body
+msgid "Wording"
+msgstr "Kata-kata"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Write a note…"
+msgstr "Tulis catatan…"
+
+#. module: pb_conduct
+#: model_terms:ir.actions.act_window,help:pb_conduct.action_pb_conduct_country_note
+msgid ""
+"Write down what your adviser tells you for each step in each country: time "
+"limits, who must attend the hearing, how long a warning lasts. The note "
+"shows on every case at that step."
+msgstr "Catat apa yang dikatakan penasihat Anda untuk setiap tahap di setiap negara: batas waktu, siapa yang wajib hadir di sidang, berapa lama teguran berlaku. Catatan tampil di setiap kasus pada tahap itu."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write the decision in a few sentences. It goes in the letter."
+msgstr "Tulis keputusan dalam beberapa kalimat. Ini masuk ke surat."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write the note first."
+msgstr "Tulis catatannya dulu."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write what happened, in a few sentences."
+msgstr "Tulis apa yang terjadi dalam beberapa kalimat."
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_country_note__note
+msgid ""
+"Write what your adviser tells you for this step in this country (time "
+"limits, who must attend, what the letter must say). It shows on every case "
+"at this step."
+msgstr "Tulis apa yang dikatakan penasihat Anda untuk tahap ini di negara ini (batas waktu, siapa yang wajib hadir, apa isi surat). Catatan ini tampil di setiap kasus pada tahap ini."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Write your reply first."
+msgstr "Tulis balasan Anda dulu."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__author_id
+msgid "Written by"
+msgstr "Ditulis oleh"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__written
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__written
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__written
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_written
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_written
+msgid "Written warning"
+msgstr "Teguran tertulis"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "You cannot open a case about yourself."
+msgstr "Anda tidak bisa membuka kasus tentang diri sendiri."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"You have already replied to this letter. Ask HR if you want to add "
+"something."
+msgstr "Anda sudah membalas surat ini. Tanyakan HR jika ingin menambahkan sesuatu."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your login is not linked to an employee record"
+msgstr "Akun Anda belum terhubung ke data karyawan"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Your reply could not be sent. Write something first, or ask HR if you have "
+"already replied."
+msgstr "Balasan Anda tidak terkirim. Tulis sesuatu dulu, atau tanyakan HR jika Anda sudah membalas."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Your reply goes to the people in HR who handle this letter. You can reply "
+"once."
+msgstr "Balasan Anda dikirim ke orang HR yang menangani surat ini. Anda hanya bisa membalas sekali."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your reply has been sent to HR."
+msgstr "Balasan Anda sudah dikirim ke HR."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your reply, sent on"
+msgstr "Balasan Anda, dikirim pada"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Your sign-off is needed"
+msgstr "Persetujuan Anda diperlukan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "by"
+msgstr "oleh"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "cases"
+msgstr "kasus"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "file"
+msgstr "berkas"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "hearings in the next 7 days"
+msgstr "sidang dalam 7 hari ke depan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "letters to issue"
+msgstr "surat untuk diterbitkan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "more"
+msgstr "lagi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "open cases"
+msgstr "kasus terbuka"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "replies from employees to read"
+msgstr "balasan karyawan untuk dibaca"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "valid until"
+msgstr "berlaku sampai"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "waiting for a decision"
+msgstr "menunggu keputusan"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "waiting for your sign-off"
+msgstr "menunggu persetujuan Anda"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "warnings still valid"
+msgstr "teguran yang masih berlaku"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"yet. The head of HR can add what your adviser says under Set up › Country "
+"notes."
+msgstr "Kepala HR dapat menambahkan saran penasihat di Pengaturan › Catatan per negara."

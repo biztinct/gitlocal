@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
@@ -7,27 +6,30 @@ from odoo import api, fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    group_attendance_use_pin = fields.Boolean(
-        string='Employee PIN',
-        implied_group="hr_attendance.group_hr_attendance_use_pin")
-    hr_attendance_overtime = fields.Boolean(
-        string="Count Extra Hours", readonly=False)
-    overtime_start_date = fields.Date(string="Extra Hours Starting Date", readonly=False)
+    # TODO: Remove in master
     overtime_company_threshold = fields.Integer(
         string="Tolerance Time In Favor Of Company", readonly=False)
+    # TODO: Remove in master
     overtime_employee_threshold = fields.Integer(
         string="Tolerance Time In Favor Of Employee", readonly=False)
+    hr_attendance_display_overtime = fields.Boolean(related='company_id.hr_attendance_display_overtime', readonly=False)
     attendance_kiosk_mode = fields.Selection(related='company_id.attendance_kiosk_mode', readonly=False)
     attendance_barcode_source = fields.Selection(related='company_id.attendance_barcode_source', readonly=False)
     attendance_kiosk_delay = fields.Integer(related='company_id.attendance_kiosk_delay', readonly=False)
+    attendance_kiosk_url = fields.Char(related='company_id.attendance_kiosk_url')
+    attendance_kiosk_use_pin = fields.Boolean(related='company_id.attendance_kiosk_use_pin', readonly=False)
+    attendance_from_systray = fields.Boolean(related="company_id.attendance_from_systray", readonly=False)
+    attendance_overtime_validation = fields.Selection(related="company_id.attendance_overtime_validation", readonly=False)
+    auto_check_out = fields.Boolean(related="company_id.auto_check_out", readonly=False)
+    auto_check_out_tolerance = fields.Float(related="company_id.auto_check_out_tolerance", readonly=False)
+    absence_management = fields.Boolean(related="company_id.absence_management", readonly=False)
+    attendance_device_tracking = fields.Boolean(related="company_id.attendance_device_tracking", readonly=False)
 
     @api.model
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
         company = self.env.company
         res.update({
-            'hr_attendance_overtime': company.hr_attendance_overtime,
-            'overtime_start_date': company.overtime_start_date,
             'overtime_company_threshold': company.overtime_company_threshold,
             'overtime_employee_threshold': company.overtime_employee_threshold,
         })
@@ -40,10 +42,12 @@ class ResConfigSettings(models.TransientModel):
         # to avoid recomputing the overtimes several times with
         # invalid company configurations
         fields_to_check = [
-            'hr_attendance_overtime',
-            'overtime_start_date',
             'overtime_company_threshold',
             'overtime_employee_threshold',
         ]
         if any(self[field] != company[field] for field in fields_to_check):
             company.write({field: self[field] for field in fields_to_check})
+
+    def regenerate_kiosk_key(self):
+        if self.env.user.has_group("hr_attendance.group_hr_attendance_user"):
+            self.company_id._regenerate_attendance_kiosk_key()

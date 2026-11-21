@@ -1,0 +1,57 @@
+// FS-12 — My Profile drawn from the administrator's page. A thin layer over
+// pb_me_portal's .pbme kit (tokens, cards, buttons): a header that takes a
+// light tint from the locked palette and an optional banner picture, and
+// section grids of one or two columns. No gradients; phone first.
+
+.pbme.pbfp {
+    .pbfp-hero {
+        position: relative; overflow: hidden; margin: 4px 0 20px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh);
+        &.pbfp-tint-brand { background: var(--pbim-soft); }
+        &.pbfp-tint-teal { background: var(--pbim-teal-soft); }
+        &.pbfp-tint-sky { background: var(--pbim-cyan-soft); }
+        &.pbfp-tint-green { background: var(--pbim-green-soft); }
+        &.pbfp-tint-amber { background: var(--pbim-amber-soft); }
+        &.pbfp-tint-rose { background: var(--pbim-rose-soft); }
+        &.pbfp-tint-slate { background: var(--pbim-slate-soft); }
+    }
+    .pbfp-banner { display: block; width: 100%; height: 168px; object-fit: cover; }
+    .pbfp-hero-in {
+        display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+        padding: 22px 24px;
+    }
+    .pbfp-hero-tx { min-width: 0; }
+
+    .pbfp-sec { display: flex; flex-direction: column; gap: 12px; }
+    .pbfp-sec-h { font-size: 15px; font-weight: 800; margin: 0; }
+    .pbfp-grid { display: grid; gap: 12px 18px; grid-template-columns: 1fr;
+        &.pbfp-cols-2 { grid-template-columns: 1fr 1fr; .is-full { grid-column: 1 / -1; } } }
+    .pbfp-kv b { overflow-wrap: anywhere; }
+    .pbfp-mode { display: block; color: var(--pbim-muted); font-size: 11.5px; font-weight: 600; margin-top: 2px; }
+    .pbfp-form fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+    .pbfp-form .pbme-form-grid { width: 100%; }
+
+    .pbfp-preview, .pbfp-alert, .pbfp-toast {
+        display: flex; align-items: center; gap: 10px; padding: 11px 14px; margin: 4px 0 14px;
+        border-radius: var(--pbim-r); font-size: 13.5px; font-weight: 600;
+    }
+    .pbfp-preview { background: var(--pbim-amber-soft); color: var(--pbim-ink); border: 1px solid var(--pbim-amber); }
+    .pbfp-alert { background: var(--pbim-rose-soft); color: var(--pbim-ink); border: 1px solid var(--pbim-rose); }
+    .pbfp-toast { background: var(--pbim-green-soft); color: var(--pbim-ink); border: 1px solid var(--pbim-green); }
+
+    // FS-13: an administrator with no employee record
+    .pbfp-noemp { max-width: 640px; margin: 8px auto 24px;
+        p { margin-top: 6px; }
+        .pbme-btn { display: inline-flex; align-items: center; gap: 7px; } }
+
+    // look only: links and buttons of a preview lead nowhere
+    &.is-preview .pbme-detail a, &.is-preview .pbme-detail button { pointer-events: none; }
+    &.is-preview .pbme-detail { user-select: none; }
+
+    @media (max-width: 768px) {
+        .pbfp-grid.pbfp-cols-2 { grid-template-columns: 1fr; }
+        .pbfp-banner { height: 112px; }
+        .pbfp-hero-in { padding: 18px; }
+    }
+}

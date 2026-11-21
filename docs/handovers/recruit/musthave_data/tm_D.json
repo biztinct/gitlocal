@@ -1,0 +1,335 @@
+[
+ {
+  "tab": "Payroll, Comp n Ben",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in at payobook.com.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My pay package” and choose “My pay package”. (or go to payobook.com/my and open “My Pay Package”).\n3. Look at “Your pay package”, the line table, “What you are covered by” and “What you have been awarded”.",
+  "comments": "Shows the yearly package, each pay line (pay, statutory, benefits, perks, variable) by month and by year, the date it applies from, benefits with an “Open provider site” button, and paid awards with their letters. A new package version replaces the old one from its start date."
+ },
+ {
+  "tab": "Payroll, Comp n Ben",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Already in Payobook",
+  "try_as": "Employee (ess1.demo@payobook.com); HR lead (demo.hr@example.com) for the pay side",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Employee: go to payobook.com/my and open “Payslips”.\n3. HR: click “Pay Run” in the left menu, then the “Payslips” tab to review them, and the “Import” tab to load figures worked out somewhere else.\n4. HR: the “Deliver” tab sends payslips out.",
+  "comments": "Payslips are produced by Payobook itself (agreed), so there is no step to upload ready-made payslip files. Each country is its own company, so HR only sees the countries they are given. Figures calculated outside can be loaded under “Import”."
+ },
+ {
+  "tab": "Payroll, Comp n Ben",
+  "row": 6,
+  "supported": "Partly",
+  "solution": "Already in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Pay Run” in the left menu.\n3. Open the “Import” tab to load an input file, and the “Results” tab to see and download what came out.",
+  "comments": "Rize agreed that Payobook calculates pay itself, so no outside payroll vendor is needed. Input files can be loaded and results downloaded, but there is no automatic hand-off to or from an outside payroll vendor."
+ },
+ {
+  "tab": "Payroll, Comp n Ben",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Already in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Pay Run” in the left menu, then the “Runs” tab.\n3. Open a run that is waiting (for example “Payobook Construction — End-Month Payroll · October 2026”) and send it for approval; each approver sees it in “Home” → “Approvals”.\n4. To see or change who signs: “Settings” → “Approvals” → “Approval Matrix”, process “Pay run”.",
+  "comments": "On the demo company a pay run goes Payroll manager → HR lead → Finance approver before it is final. The route can be changed to add or remove people, including managers."
+ },
+ {
+  "tab": "Payroll, Comp n Ben",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Pay Run” in the left menu, then the “Awards” tab.\n3. Press “New award”, fill in “Who it is for”, the amount and “Why”, then “Raise it” and “Send for approval”.\n4. Once approved the award letter is prepared and emailed; press “Put awards into a pay run” to add approved awards to a draft run.",
+  "comments": "Each award keeps its status: waiting, approved, letter sent, in a pay run, paid. On the demo company the award sign-off is set to “No approval needed”, so it is approved straight away. The pay run must have the award pay item on its pay scheme, or the screen refuses and says why."
+ },
+ {
+  "tab": "Payroll, Comp n Ben",
+  "row": 9,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Pay Run” in the left menu, then the “Calendar” tab.\n3. See the next closing date countdown and each month’s “Changes close” and “People are paid” dates; use “Plan the year” to build twelve months.\n4. Reminders can be turned on or off on the same screen (“Switch on” / “Switch off”).",
+  "comments": "Cut-off and pay dates are set per company (country) with reminders before each closing date (5, 2 and 0 days by default). Reminders go to the pay team only; line managers are not emailed."
+ },
+ {
+  "tab": "Payroll, Comp n Ben",
+  "row": 10,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in at payobook.com.\n2. Go to payobook.com/my and open “My Pay Package”.\n3. Scroll to “What you are covered by”: plan, family covered, and “Open provider site”.\n4. HR (the HR lead): Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Benefit plans” and choose “Benefit plans”.",
+  "comments": "Employees see each plan they are covered by, who in the family is covered, and a button to the provider’s website. Single sign-on into the insurer and viewing claims are not built; the provider site handles those for now."
+ },
+ {
+  "tab": "Payroll, Comp n Ben",
+  "row": 11,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Pay Run” in the left menu, then the “Runs” tab.\n3. Open the approved run “Demo Payroll June 2026 — Corporate Office”.\n4. Look at the “Finance pack” box: the bank file and the one-page run summary, and the address they were emailed to.",
+  "comments": "When the last approver agrees a pay run, the bank file and a run summary are attached to the run and emailed to finance automatically. On the demo the finance address is a test one; Rize gives us the real finance mailbox. Posting into an accounting ledger stays off, as agreed."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee (tuan.quach@example.com)",
+  "clicks": "1. Sign in at payobook.com.\n2. Go to payobook.com/my and open “My Resignation”.\n3. Fill in “The last working day you would like” and “Why you are leaving”, then press “Hand in my notice”.\n4. The page then shows “Where it is up to”.",
+  "comments": "The notice period for the person’s country fills in the earliest last day. The manager and the HR team for that company are emailed as soon as it is sent; the head of HR is included when they are in the HR team. It can be taken back until HR agrees it."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 5,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Manager (lam.ngo@example.com), HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Manager: click “Home” in the left menu, then the “Approvals” tab, and open the resignation.\n3. Agree or turn it down; the employee sees the result on “My Resignation” and gets an email.\n4. the HR lead: Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Resignations” and choose “Resignations”.",
+  "comments": "The route is Their manager → HR team, with the agreed last working day recorded. On the demo company this sign-off is set to “No approval needed”, so it is agreed the moment it is sent. To turn it on: “Settings” → “Approvals” → “Approval Matrix”, then switch the route back on for this process. (process “Resignations and contract extensions”)."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 6,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then the “Exits” tab.\n3. Open a leaver (for example “Đinh Gia Huy”) and look at “Handover”: topic, who hands over, who picks it up, “Where the notes are”.\n4. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Handover items” and choose “Handover items”. for the full list.",
+  "comments": "Handover items are tracked per leaver, and HR is emailed every 15 days while any stay open. The employee sees their own steps on “My Resignation”, but a line manager without the HR role cannot see the handover list yet."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 7,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then the “Exits” tab.\n3. Open a leaver and look at “Exit conversation”: “Not asked”, “Waiting” or “Answered”.\n4. The employee answers from “My Resignation” → “Answer the questions”.\n5. HR marks “Sorry to lose them” on the resignation: Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Resignations” and choose “Resignations”.",
+  "comments": "The exit form works and HR can see who has answered. The “sorry to lose them” (regrettable) mark is set by HR, not by the line manager."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee (tuan.quach@example.com), HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Employee: on payobook.com/my → “My Resignation”, see “Things of ours you still have” and “Take your papers with you” (“My payslips”, “My documents”).\n3. HR: click “Lifecycle” in the left menu, then “Exits”; each leaver shows “Still holding” and the items to come back.",
+  "comments": "Laptops, phones, SIM and ID cards, company cards, email accounts, logins and licences are all on the asset register and become return items when someone leaves. The final settlement cannot be closed while anything is still out."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then the “Exits” tab.\n3. Open a leaver and look at the four clearances (IT, HR, Finance, Admin) and the settlement line, e.g. “The final settlement cannot be closed yet”.\n4. The settlement itself: “Pay Run” in the left menu → “Settle” tab → “Full & Final”.",
+  "comments": "Each department signs off its clearance with a note. The final settlement is blocked, with the reasons named, until every clearance is signed, every item is back and every step marked as holding the money is done. On the demo the settlement sign-off is set to “No approval needed”."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 10,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: the day after the last working day the experience letter is prepared and emailed; the final settlement letter goes out once the settlement is closed.\n2. the HR lead can follow it: “Lifecycle” → “Exits”, open a leaver and see the steps “Experience letter” and “Final settlement letter”.",
+  "comments": "Both letters are made from templates HR can reword. The final settlement letter waits until the settlement is closed so the numbers cannot change after it is sent."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 11,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: 30 days after the last day, HR is emailed “Documents still to file for …”.\n2. the HR lead: “Lifecycle” → “Exits” → open the leaver → step “Post-exit documents filed”, ticked by HR when done.",
+  "comments": "HR is reminded automatically. The former employee is not emailed automatically yet; HR sends the documents themselves."
+ },
+ {
+  "tab": "OffBoarding",
+  "row": 12,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic; HR lead (demo.hr@example.com) to edit the wording",
+  "clicks": "1. Nothing to press: on the last working day a farewell email goes to the leaver’s own team.\n2. To change the words first: “Lifecycle” in the left menu → “Exits” → open the leaver → the farewell note, edit it and save (“The wording is saved. It goes out on the day.”).",
+  "comments": "Email is used instead of Slack, as agreed. It goes to the person’s own department only."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Vendors”.\n3. Press “Add a vendor” and fill in “Who they are”, “What they do”, “Who to ask for”, “Their email”, “Their phone”, “Team they work with” and “Who looks after them”.\n4. Press “Record an agreement” to add “Starts”, “Ends” and attach files.",
+  "comments": "Vendor types cover recruitment, training, test providers, committees, insurers and software suppliers. Try “Talent Partners” on the demo."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Vendors”.\n3. Open “Cloudline Software” (already run out) or “Talent Partners”.\n4. Each agreement shows “Starts”, “Ends”, “Talk about renewing on” and days left; press “Renew it” to record the next one.",
+  "comments": "The date it was created is kept automatically. A renewed agreement links to the one it replaces, so the history stays."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 6,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Vendors”.\n3. Open any vendor and set “Who looks after them”.",
+  "comments": "Every vendor must have one named person; the board can be filtered to “You look after”."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com); compare with a manager (lam.ngo@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. As the HR lead: “Settings” → “Vendors” shows the whole register.\n3. Sign in as lam.ngo@example.com: “Vendors” does not appear under “Settings”.",
+  "comments": "Only the HR team and people given the “Vendor owner” role can open vendors, and a vendor owner sees only the vendors they look after. On the demo no one holds the “Vendor owner” role yet; HR gives it under “Settings” → “Access & delegation”."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: every night the person who looks after the vendor is emailed when an agreement is within 45 days of renewal or end.\n2. If it runs out and nobody renews it, the HR team is emailed as well.\n3. the HR lead can see it on “Settings” → “Vendors” (“Coming up for renewal”, “Already run out”).",
+  "comments": "Expiry and renewal alerts are on. Vendors have no approval step, so there are no pending approvals to alert on."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 13,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Access & delegation”.\n3. Use the “Roles” and “People” tabs; press “Give a role” or “Add a person”, or “Copy from another person”.",
+  "comments": "Every role is described in plain words and shows who holds it. Roles are given person by person (or copied from a colleague); they are not handed out automatically by department. On the demo each change goes through a sign-off first."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 14,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Any employee for their own access; HR lead (demo.hr@example.com) to approve",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Access & delegation”.\n3. Press “Hand my access over”, choose “Who is it for”, “Which roles”, “For how long” (“For a while” or “For good”), “From”, “Until” and “Why”, then “Hand it over”.\n4. Running hand-overs are on the “Hand-overs” tab.",
+  "comments": "A hand-over “for a while” takes itself back on the end date. On the demo each hand-over waits for a sign-off by the access team before it starts."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 15,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Access & delegation”.\n3. Open the “Screens” tab to see who can open each screen, or open a role to see “What they should be able to do”.\n4. Use “See it as” to view the system as a chosen person.",
+  "comments": "Each role lists the screens and data it opens, and you can check what a person will see before you give them a role."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 16,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: when a hand-over starts and when it ends, the person receiving it and the person handing it over are emailed.\n2. the HR lead can see every hand-over on “Settings” → “Access & delegation” → “Hand-overs”.",
+  "comments": "The two people involved are emailed. HR is not emailed separately; HR sees it on the screen and in the history."
+ },
+ {
+  "tab": "Vendor & Acsess",
+  "row": 17,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Access & delegation”.\n3. Press “Who holds what” to download roles per person, or “History” for every hand-over, grant and removal.",
+  "comments": "Both downloads are Excel spreadsheets."
+ },
+ {
+  "tab": "Budget Management",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Insights” in the left menu, then the “Budget” tab.\n3. Press “Upload a budget”, “Get the template”, fill it in, and drop it back (“Drop the filled-in file back”).\n4. Choose “People” at the top to see each function’s budget, spent and left; “Read the pay figures” refreshes from pay runs.",
+  "comments": "Spent amounts are filled in from the pay runs automatically every day, so used and remaining update by themselves. The demo has a full year for Payobook Vietnam JSC."
+ },
+ {
+  "tab": "Budget Management",
+  "row": 5,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Insights” in the left menu, then the “Budget” tab.\n3. Choose “HR operations” or “Admin” at the top.\n4. Press “Add an expense” and fill in what it was for, “Paid to”, amount and date.",
+  "comments": "HR and admin budgets are uploaded the same way, and utilisation and remaining are worked out automatically. Expenses are added one at a time; there is no bulk upload of expenses yet."
+ },
+ {
+  "tab": "Budget Management",
+  "row": 6,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Function head (diep.thai@example.com), Finance (linh.quan@example.com), HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Budget” and choose “Budget”..\n3. As diep.thai you see only “Quality Assurance”; as linh.quan you see every function but cannot change anything; the HR lead sees and edits their company.",
+  "comments": "Function heads see only their own function, finance sees all of it read-only, and HR sees the companies (countries) they are given."
+ },
+ {
+  "tab": "Budget Management",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Insights” in the left menu, then the “Budget” tab.\n3. Pick the “Year”, then press “Spreadsheet” for the full Excel file or “Summary” for a one-page PDF.",
+  "comments": "Both downloads are built from the live figures, so they include the latest pay runs and expenses. The board can be read month by month or for the whole year."
+ },
+ {
+  "tab": "Budget Management",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Rates: click the “Settings” gear at the top right of the screen, then “Group” → “Exchange rates”, and enter the rate by hand.\n3. Budget: “Insights” → “Budget”; when budgets are in more than one currency, buttons at the top switch between local currency and the reporting currency.",
+  "comments": "Each country keeps its budget in its own currency and it is converted to one reporting currency at the rate you set. The demo only has Vietnam budgets in VND, so the currency switch does not show there."
+ },
+ {
+  "tab": "Contract emp management",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then the “Contracts” tab.\n3. Open any row to see “Category” (intern, contractor…), “Runs from”, “Runs to”, “Manager”, “Pay” and the terms.",
+  "comments": "Interns and contractors are their own employment types. The board lists every contract with an end date and where it stands."
+ },
+ {
+  "tab": "Contract emp management",
+  "row": 5,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic; HR lead (demo.hr@example.com) to see it",
+  "clicks": "1. Nothing to press: every night a decision is raised for each contract ending within 60 days, and the manager is emailed with three choices.\n2. the HR lead: “Lifecycle” → “Contracts”, open “Giang Tuyết Nhung” (“Decision needed”) and see “Let it end”, “Extend it”, “Make it permanent”.",
+  "comments": "Alerts start 60 days before the end date. The number of days is one setting for everybody (changed by our team on request); it does not yet follow each person’s notice period automatically."
+ },
+ {
+  "tab": "Contract emp management",
+  "row": 6,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then the “Contracts” tab.\n3. Open a contract with “Decision needed”, choose “Extend it”, write “Why this contract should run for longer” and the months, then send it.\n4. The manager answers in “Home” → “Approvals”.",
+  "comments": "HR writes the reason; the manager is asked to agree within 5 days, and HR is told if nobody answers. When agreed, a new contract on the same terms starts the day after the old one ends (instead of changing the old end date). On the demo company this sign-off is set to “No approval needed”, so it is agreed the moment it is sent. To turn it on: “Settings” → “Approvals” → “Approval Matrix”, then switch the route back on for this process. (process “Contract extension”)."
+ },
+ {
+  "tab": "Contract emp management",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then the “Contracts” tab.\n3. Open a contract with “Decision needed” and choose “Make it permanent”.\n4. The manager is asked to name three to five colleagues; the evaluation runs the same way as a probation review, and HR is emailed the result.",
+  "comments": "If it goes well, a contract with no end date is prepared. The manager gets deadlines and reminders; HR is told the decision automatically."
+ },
+ {
+  "tab": "Contract emp management",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic; HR lead (demo.hr@example.com) to see it",
+  "clicks": "1. Nothing to press: the nightly job raises decisions, chases unanswered ones, emails HR every day in the last week, and marks a contract “ended with nothing decided” if the date passes.\n2. the HR lead: “Lifecycle” → “Contracts” shows “Decision needed”, “Being agreed”, “Being evaluated”, “Decided” and the late ones.",
+  "comments": "Every step has a deadline and late items are escalated. A line manager needs the HR role to open the Contracts board; otherwise they act from the email and “Home” → “Approvals”."
+ }
+]

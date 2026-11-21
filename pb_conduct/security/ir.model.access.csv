@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_conduct_case_user,Conduct case named HR,model_pb_conduct_case,pb_conduct.group_conduct_user,1,1,1,0
+access_conduct_case_head,Conduct case head,model_pb_conduct_case,pb_conduct.group_conduct_head,1,1,1,1
+access_conduct_note_user,Conduct note named HR,model_pb_conduct_note,pb_conduct.group_conduct_user,1,0,1,0
+access_conduct_note_head,Conduct note head,model_pb_conduct_note,pb_conduct.group_conduct_head,1,1,1,1
+access_conduct_event_user,Conduct history named HR,model_pb_conduct_event,pb_conduct.group_conduct_user,1,0,0,0
+access_conduct_letter_user,Conduct letter named HR,model_pb_conduct_letter,pb_conduct.group_conduct_user,1,1,1,1
+access_conduct_reason_user,Conduct reason read,model_pb_conduct_reason,pb_conduct.group_conduct_user,1,0,0,0
+access_conduct_reason_head,Conduct reason head,model_pb_conduct_reason,pb_conduct.group_conduct_head,1,1,1,1
+access_conduct_template_user,Conduct letter wording read,model_pb_conduct_letter_template,pb_conduct.group_conduct_user,1,0,0,0
+access_conduct_template_head,Conduct letter wording head,model_pb_conduct_letter_template,pb_conduct.group_conduct_head,1,1,1,1
+access_conduct_country_user,Conduct country note read,model_pb_conduct_country_note,pb_conduct.group_conduct_user,1,0,0,0
+access_conduct_country_head,Conduct country note head,model_pb_conduct_country_note,pb_conduct.group_conduct_head,1,1,1,1

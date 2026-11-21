@@ -1,0 +1,440 @@
+Payobook: practical job-channel activation guide
+Reviewed 28 October 2026 against all 29 keys in pb_hiring/services/board_catalogue.py.
+
+This is the owner/implementation team's working guide. No application has been
+submitted, agreement accepted, subscription purchased or provider approval received
+through this review. Public evidence of another ATS's integration does not confer
+access on Payobook. The steps below include proposed requests, not provider promises.
+
+What the customer should eventually experience
+Select a channel -> connect their employer account using the provider's approved
+method -> confirm the posting package -> publish -> receive applications.
+Payobook owns partner registration, connector development, hosting, certification
+and maintenance. Employers own their company verification, subscription and consent.
+There is no universal developer-app registration or universal password connection.
+Some providers provision apps; some issue employer keys; others accept feeds.
+
+Current product baseline
+The catalogue and setup-progress tracking are deployed. LinkedIn and SEEK have
+connector code but still require approved platform access and employer activation.
+Careerjet/Jooble redirect-apply XML feeds are implemented but acceptance is pending.
+Google JobPosting markup exists; Indexing API notifications are not configured.
+Other channels need an approved specification and implementation before automatic
+publishing/intake can be offered. Manual tracking does not enable an API.
+
+Start here: one Payobook application pack
+Owner supplies: legal entity name and registration country; named business contact,
+role, business email and phone; company size/location; accurate customer count and
+job volume; pilot employer if available. Do not invent customers or volume.
+Technical team supplies: product description/demo, supported countries, proposed
+posting/application workflow, actual callback URLs, privacy/security contact and
+provider-specific test plan. Callback URLs must be implemented before registration.
+Credentials belong in approved secret storage, never this guide or setup notes.
+
+Suggested sequence (Payobook recommendation, not provider-mandated ordering)
+1. Prepare the identity/contact pack once. Begin with Zwayam Amplify below: one
+   conversation can cover Naukri, hirist and iimjobs.
+2. Apply to SEEK, TopCV and ITviec; open LinkedIn/Indeed applications concurrently
+   because their approval is a separate dependency. Obtain a pilot employer.
+3. Submit accepted public-job feeds to Careerjet/Jooble and verify careers domains
+   for Google. These do not depend on building every premium-board connector.
+4. Send targeted scope requests for the remaining channels. Request a board-by-
+   board coverage quote from Broadbean and LogicMelon before choosing either.
+
+Every request below should include this short introduction
+"Payobook (https://payobook.com) is an applicant tracking and hiring platform.
+We are seeking an approved integration for our employer customers. Payobook will
+build and maintain the connector; employers will authorize their own accounts.
+Please route this request to your ATS integration/technical partnerships team."
+Then append the channel-specific request below. Confirm partner fees, employer
+fees, sandbox access, certification and production activation before committing.
+
+01 | linkedin | LinkedIn | India, Vietnam, Indonesia
+Route: approved Talent Solutions partnership, then customer provisioning.
+Start: https://business.linkedin.com/hire/ats-partners/partner-application
+Form: contact name/email, company/site/type/HQ, customer regions/count, largest
+customers and LinkedIn pages, daily active jobs, requested integrations and benefit.
+Choose Job Postings and discuss Apply Connect for application delivery. A generic
+LinkedIn sign-in app does not grant these products. State the true development
+status; local connector code is not a certified/live LinkedIn integration.
+Payobook next: obtain approval/agreement, configure partner access, provision each
+customer's application and complete the relevant onboarding/certification flow.
+Client later: authorize their eligible company/contract through the approved flow.
+Ask: "Please evaluate Payobook for Job Postings and Apply Connect in IN/VN/ID.
+Please confirm eligibility, customer provisioning, sandbox and certification."
+Evidence: https://learn.microsoft.com/en-us/linkedin/talent/apply-connect/create-configure-customer-application?view=li-lts-2026-04
+
+02 | jobstreet | JobStreet by SEEK | Indonesia
+Route: SEEK partner approval and employer relationship binding.
+Start: https://employer.seek.com/partners/integration-request/
+This may redirect to a regional SEEK host. Specify Indonesia/JobStreet explicitly.
+Form: contact/job title/phone/email, company/site/location/platform, customer
+segment, number of SEEK customers, estimated annual ads, current integration status.
+Select recruitment-system provider and request Job Posting + Optimised Apply.
+The form requires an apply solution with Job Posting. Owner reviews its terms.
+Payobook next: obtain credentials, validate the existing connector against the
+approved scope, complete testing and arrange each hirer relationship.
+Client later: approved employer/hirer ID, posting contact, ad entitlement and consent.
+Ask: "We need JobStreet Indonesia posting and applications into Payobook. Please
+confirm country scope, hirer onboarding and production acceptance requirements."
+Evidence: https://developer.seek.com/
+
+03 | naukri | Naukri | India
+Route: Zwayam Amplify commercial/technical onboarding.
+Start: https://www.zwayam.com/zwayam-amplify (Request demo)
+Form: product interest, full name, work email, phone, company, size and location.
+Select Amplify if offered; explain that Payobook is an ATS integration partner.
+Payobook next: request the partner specification, test employer, key ownership,
+job lifecycle and applicant delivery contract; build and certify the connector.
+Client later: eligible Naukri/Amplify subscription and issued authorization/key.
+Ask: "Please onboard Payobook to Zwayam Amplify for Naukri, hirist and iimjobs.
+Confirm the package/entitlement for each board, API and webhook documentation,
+sandbox, customer key issuance, candidate status sync and production sign-off."
+Evidence: Zwayam's page describes these three boards and applications into an ATS.
+Zoho's example uses an Amplify key plus Naukri subscription selection:
+https://help.zoho.com/portal/en/kb/recruit/talent-sourcing/job-boards/premium-job-boards/articles/post-jobs-on-naukri-through-zoho-recruit
+
+04 | foundit | foundit India | India
+Route: request Payobook-specific partner approval from foundit recruiter sales.
+Start: https://recruiter.foundit.in/v2/contact_us.html ; info@foundit.in
+Ask: "We need foundit India ATS posting/update/closure and application delivery.
+Please confirm Payobook partner access, employer entitlement, sandbox and the
+current authentication contract, including Corp ID/Login ID/API key requirements."
+Zoho documents username/password as well as Corp ID, Login ID and API key. That
+is evidence of Zoho's implementation, not permission to collect those credentials
+for Payobook. Confirm the supported auth method before designing the client form.
+Payobook next: approved specification -> adapter -> provider acceptance.
+Client later: authorized India employer account and the credentials foundit issues.
+Evidence: https://help.zoho.com/portal/en/kb/recruit/talent-sourcing/job-boards/premium-job-boards/articles/post-your-jobs-on-foundit-india-from-zoho-recruit-4-6-2026
+
+05 | foundit_id | foundit Indonesia | Indonesia
+Route: local commercial/technical confirmation; India access is not proof of scope.
+Start: https://recruiter.foundit.id/ (Request a Demo); sales@foundit.id
+Form: full name, contact number, company and email.
+Ask: "Can Payobook integrate with foundit Indonesia for employer-authorized job
+posting and application delivery? Please confirm API availability, local account
+requirements, whether India partner credentials cover Indonesia, and sandbox."
+Payobook next: obtain written market scope and docs before building this adapter.
+Client later: Indonesia employer verification, package and approved authorization.
+Verified: employer services/contact route. External ATS API scope remains unverified.
+
+06 | apna | Apna | India
+Route: provider-mediated ATS access; no verified self-service developer signup.
+Start: https://www.apna.co/contact-us ; support@apna.co (ask for partnerships).
+Ask: "Please connect us to Apna's ATS integration team to enable Payobook. Your
+Zoho integration uses Client ID and Client Secret; are these employer-specific or
+partner credentials? Please supply posting, update, closure and applicant-delivery
+specifications, sandbox access, package requirements and production approval steps."
+Payobook next: establish credential ownership, implement and test the approved API.
+Client later: eligible employer account and issued credentials/authorization.
+Evidence: https://help.zoho.com/portal/en/kb/recruit/talent-sourcing/job-boards/premium-job-boards/articles/post-and-manage-your-jobs-on-apna
+
+07 | shine | Shine | India
+Route: recruiter services to ATS partnerships; access scope requires confirmation.
+Start: https://recruiter.shine.com/ ; recruiterservices@shine.com
+Ask: "Please provide Payobook's ATS partnership route for Shine.com, including
+job lifecycle, candidate delivery, account authentication, sandbox and plan needs."
+Payobook next: obtain an approved API contract and build the adapter.
+Client later: eligible Shine recruiter account and approved connection method.
+Verified: employer site advertises ATS integration experience and recruiter contact.
+Do not use Shine Interview documentation: it is a different product/company route.
+Evidence: https://backoffice.shine.com/contactus/
+
+08 | hirist | hirist | India
+Route: include in the Zwayam Amplify application in item 03.
+Start: https://www.zwayam.com/zwayam-amplify
+Ask: "Please include hirist publishing and candidate return in Payobook's Amplify
+scope; identify its employer entitlement, board identifier and required IT fields."
+Payobook next: map hirist independently in the shared connector and test it.
+Client later: activate the hirist entitlement confirmed by Zwayam.
+Do not infer that a Naukri package automatically includes hirist.
+
+09 | iimjobs | iimjobs | India
+Route: include in the Zwayam Amplify application in item 03.
+Start: https://www.zwayam.com/zwayam-amplify
+Ask: "Please include iimjobs publishing and candidate return in Payobook's Amplify
+scope; identify its employer entitlement and management/specialist field mappings."
+Payobook next: test iimjobs create/update/close and applications separately.
+Client later: activate the iimjobs entitlement confirmed by Zwayam.
+The provider's shared offering does not establish identical billing across boards.
+
+10 | instahyre | Instahyre | India
+Route: account-manager-led addition of Payobook to supported ATS integrations.
+Start: https://help.instahyre.com/en/article/get-started-with-ats-integration-14s0ijg/
+Ask: "Payobook is not yet an available ATS. Please add Payobook as an integration
+partner and provide the candidate-export contract. Does the scope also include
+job creation/update/closure, or only job mapping and candidate export?"
+Verified: yearly subscription and employer Admin required; unsupported ATS requests
+go through the account manager. Available ATSs can require API key/subdomain.
+Payobook next: implement only the agreed capabilities and obtain listing/activation.
+Client later: Admin -> Integrations -> Applicant tracking system -> Payobook once
+listed -> supply the provider-approved connection details. No Payobook option yet.
+
+11 | timesjobs | TimesJobs | India
+Route: sales/technical-partnership enquiry; current external API not verified.
+Start: https://recruit.timesjobs.com/contactus
+Contact: recruitmentsolutions@timesjobs.com; existing accounts corporatecare@timesjobs.com
+Ask: "Does TimesJobs currently accept new ATS partners? We need Payobook job
+posting, update/close and application return. Please confirm API/feed availability,
+customer subscription, documentation, sandbox and the technical contact."
+Payobook next: decide feasibility from the response, then implement agreed scope.
+Client later: verified recruiter account and required entitlement.
+Use this current contact route instead of relying on the older hire.timesjobs.com.
+
+12 | internshala | Internshala | India
+Route: employer support to technical partnerships; no verified external ATS API.
+Start: https://internshala.com/blog/employer-how-to-hire-on-internshala/
+Employer help route; employer@internshala.com is published in its employer guide:
+https://internshala.com/blog/employers-guide-internshala-services-2/
+Ask: "Can Payobook publish internships/jobs and receive applications through an
+approved API/feed? If unavailable, are external application URLs or authorized CV
+exports supported? Please confirm employer verification and package requirements."
+Payobook next: obtain a supported workflow before offering automatic integration.
+Client later: employer registration and company verification, then agreed method.
+Manual employer posting is verified; API credentials/developer signup are not.
+
+13 | vietnamworks | VietnamWorks | Vietnam
+Route: obtain a current contract and employer entitlement from VietnamWorks.
+Start: https://www.vietnamworks.com/ -> employer/account-manager support.
+Public general contact: contact@vietnamworks.com, confirmed by Navigos' official
+responses on https://play.google.com/store/apps/details?id=com.vietnamworks.vietnamworks
+Ask: "Please onboard Payobook as an ATS partner. Confirm current OAuth/app
+registration, posting API, sandbox, employer portal/API fees, callback registration
+and the permitted CV delivery mechanism, including required job privacy notices."
+Payobook next: validate the existing setup against current docs; implement missing
+posting/intake behavior and provider tests before activating the card.
+Client later: eligible employer account, privacy information and provider consent.
+Base documents its own authorization and email intake flow, not Payobook access:
+https://help.base.vn/support/solutions/articles/63000283594-base-e-hiring-c%C3%A1ch-t%C3%ADch-h%E1%BB%A3p-hiring-v%E1%BB%9Bivietnamwork
+Do not treat old third-party GitHub API documentation as current permission.
+
+14 | topcv | TopCV | Vietnam
+Route: partner onboarding with commercial agreement/NDA, sandbox and activation.
+Start: cskh@topcv.vn or employer account manager, published here:
+https://tuyendung.topcv.vn/help/huong-dan-su-dung/ket-noi-he-thong/
+Ask: "Please onboard Payobook as an ATS partner for posting and CV synchronization.
+Please provide NDA, service package, sandbox, partner credentials, webhook/security
+requirements and the production approval process."
+Payobook next: integrate approved partner scope and complete acceptance testing.
+Client later: employer login -> Account settings (Cài đặt tài khoản) -> System
+connection (Kết nối hệ thống) -> enable -> copy Access Token into the approved
+Payobook connection form -> verify Payobook and enabled features appear in TopCV.
+One employer account connects to one ATS at a time; agree migration before switching.
+Partner docs link is published but timed out during this review:
+https://docs-tuyendung.topcv.vn/partner-api/connection.html
+Commercial process: https://www.topcv.vn/dieu-kien-giao-dich-chung
+
+15 | itviec | ITviec | Vietnam
+Route: direct ATS/API onboarding via Customer Love Team.
+Start: love@itviec.com or current account manager.
+Ask: "Please enable Payobook as an ATS integration partner for job create, list,
+detail, edit, hide/reopen and CV delivery. Please provide API documentation,
+sandbox credentials, employer entitlement, callback requirements and acceptance."
+These capabilities are described by ITviec; credential format is not established.
+Payobook next: build the adapter, verify CV/job mapping and complete provider tests.
+Client later: eligible employer account and the authorization ITviec specifies.
+Evidence/contact: https://itviec.com/blog/ket-noi-he-thong-quan-tri-tuyen-dung/
+
+16 | careerviet | CareerViet | Vietnam
+Route: local employer/API agreement; do not assume global CareerBuilder APIs.
+Start: https://careerviet.vn/en/employers ; sales@careerviet.vn
+Ask: "Please provide Payobook partner onboarding for candidate synchronization
+and confirm whether job publishing is available. MISA documents Emp_secret and
+Emp_hash for its connection: can authorized Payobook employers receive equivalent
+credentials, and what are the current API, sandbox and privacy requirements?"
+Payobook next: implement the approved local contract and job-ID mapping.
+Client later: enabled employer account and provider-issued authorization.
+MISA's own integration documents CV receipt, not full publishing:
+https://helpamis.misa.vn/amis-tuyen-dung/kb/ket-noi-voi-san-tuyen-dung-careerviet/
+
+17 | vieclam24h | Vieclam24h | Vietnam
+Route: confirm supported intake with provider; do not promise a public API.
+Start: https://promotion.vieclam24h.vn/ (consultation form).
+Ask: "Can Payobook receive full candidate details/CVs through an approved API or
+job-specific application email? Please confirm current restrictions, privacy
+requirements, publishing support, and the employer package required."
+Payobook next: agree API versus email intake, validate an actual permitted sample,
+then implement/test job attribution, attachments and duplicate handling.
+Client later: verified employer account and approved destination per job.
+MISA's July 2026 guide documents per-job application-email setup:
+https://helpamis.misa.vn/amis-tuyen-dung/kb/ket-noi-voi-san-tuyen-dung-vieclam24h/
+The card's earlier September-restriction reference was not independently recovered
+in this review. Treat current delivery limitations as unresolved until confirmed.
+
+18 | topdev | TopDev | Vietnam
+Route: employer-services consultation; external ATS API not verified.
+Start: https://topdev.vn/page/products -> consultation; published phone 028.6273.3496.
+Ask: "Does TopDev offer an approved ATS publishing/application API or feed for
+Payobook? Can applicants use our employer's careers-page apply URL? Please provide
+the supported route, technical contact, package and test environment."
+Payobook next: build only after supported capabilities are confirmed.
+Client later: employer account/package and approved posting/application method.
+Employer advertising services alone do not establish developer access.
+
+19 | glints | Glints | Vietnam and Indonesia
+Route: partnership enquiry, with separate market/verification confirmation.
+Start: https://glints.com/about -> partnership enquiry; hi@glints.com.
+Employer route: https://employers.glints.com/ ; employers@glints.com.
+Ask: "Please assess Payobook for ATS job publishing and applicant return in
+Vietnam and Indonesia. Confirm whether an external ATS API/feed exists, customer
+authorization, country-specific employer verification and application-link support."
+Payobook next: obtain written scope for both countries and implement accepted path.
+Client later: local employer verification plus the approved authorization method.
+Indonesia employer guidance lists legal-document checks; verify requirements for
+the pilot's legal entity rather than assuming a single signup covers both markets:
+https://help.glints.com/hc/id-id/articles/4409549200537-Syarat-Membuat-Akun-Employer-Perusahaan-di-Website-Glints-for-Employers
+
+20 | kalibrr | Kalibrr | Indonesia
+Route: account-manager scope enquiry, not a confirmed ATS posting connector.
+Start: https://kalibrr-support.zendesk.com/hc/en-us/articles/21664815834905-Do-Kalibrr-offer-integration-with-other-platforms
+Official indexed help text says the API exports Kalibrr jobs to a customer's
+careers website. Direct retrieval returned 404 during review; confirm with support.
+Ask: "Beyond careers-site job display, can Payobook create/update/close jobs and
+receive applicants? Please identify approved endpoints/feeds, commercial terms,
+test access and the Indonesia technical contact."
+Payobook next: determine supported direction before building an adapter.
+Client later: employer account and any approved entitlement/authorization.
+If only job display is available, label it as that; it is not ATS multiposting.
+
+21 | dealls | Dealls | Indonesia
+Route: employer demo/partnership request; external ATS API not verified.
+Start: https://dealls.com/en/pasang-loker-gratis -> Book a Demo.
+Form: name, company, WhatsApp number, role. Use the official page's contact link.
+Ask: "Payobook is an external ATS. Do you support an approved job publishing and
+candidate-return API/feed for us, or external apply links? Please route to technical
+partnerships and confirm market scope, commercial access and sandbox."
+Payobook next: evaluate the response; Dealls having its own ATS does not prove an
+API is offered to other ATS vendors.
+Client later: verified Dealls employer account and the agreed connection method.
+Evidence: https://dealls.com/en/about
+
+22 | kitalulus | KitaLulus | Indonesia
+Route: partnership form for API; documented external apply route is a separate option.
+Start: https://id.kitalulus.com/en/partner
+Form: name, company, email, WhatsApp, select KitaLulus, message; attachment optional.
+Ask: "Can Payobook integrate employer posting through an approved API/feed? We
+also want Enterprise Pro external applications directed to our careers pages.
+Please confirm entitlement, employer validation, API scope and supported tracking."
+Payobook next: assess API access; external-link setup can be piloted separately.
+Client later: verified employer -> eligible Enterprise Pro plan -> create job ->
+choose company-website application route -> enter its Payobook application URL.
+Provider warns application route cannot change after posting; plan downgrade
+affects editing/reposting. Verify behavior before enabling the pilot.
+Evidence: https://help.kitalulus.com/article/85-apa-itu-jalur-lamaran
+
+23 | karir | Karir.com | Indonesia
+Route: employer support to technical partnerships; external API not verified.
+Start: https://karir.com/info/contact-us ; cs@karir.com
+Ask: "Please introduce Payobook to your ATS partnerships team. Do you support
+authorized job publishing/update/closure and application delivery via API/feed?
+If not, are external apply links supported? Please confirm employer requirements."
+Payobook next: agree a supported workflow and test it before activation.
+Client later: verified employer account, commercial entitlement and authorization.
+Do not confuse Karir.com with similarly named job sites.
+
+24 | indeed | Indeed | India, Vietnam, Indonesia (confirm product coverage)
+Route: Indeed partner approval; Indeed provisions the integration application.
+Start: https://partners.indeed.com/ (linked from official developer documentation).
+Ask: "Please evaluate Payobook as an ATS partner for Job Sync, Indeed Apply and
+Disposition Sync. Confirm IN/VN/ID product coverage, eligibility, employer consent,
+required job coverage, sandbox, review and production activation."
+Payobook next: access Partner Console after approval, configure the provisioned
+app/credentials, implement required workflows and complete integration review.
+Client later: employer authorization using the approved account-linking flow.
+Job Sync terms exclude beta ATSs and free-trial customer content and require a
+comprehensive eligible client-job feed. Confirm readiness before application.
+Evidence: https://docs.indeed.com/getstarted/integrate-and-call-apis
+Terms: https://docs.indeed.com/legal-terms/job-sync
+
+25 | careerjet | Careerjet | India, Vietnam, Indonesia
+Route: website/feed submission; no developer app needed for redirect-apply feed.
+Start: https://www.careerjet.com/recruiter/indexing/submit-your-website
+ATS partnership option: https://www.careerjet.com/mediakit/ats
+Ask: "Please review Payobook's employer-authorized XML feed for IN/VN/ID and
+redirect applications to our careers pages. Confirm country feeds, required job
+coverage, crawl/withdrawal timing, acceptance and any advertising charges."
+Payobook next: validate public job pages, agree feed scope, enable the company feed,
+include approved jobs and submit the generated URL. Confirm external listings.
+Client later: select eligible public roles; no portal password needed for this flow.
+Careerjet Apply native intake is a separate integration, not implemented by our feed.
+Evidence: https://www.careerjet.co.in/docs/feeds/xml
+
+26 | jooble | Jooble | India, Vietnam, Indonesia
+Route: send feed URL for review to xml_support@jooble.com or country manager.
+Start/evidence: https://jooble.org/files/xml_feed_specifications.pdf
+Ask: "Please accept Payobook employer-job XML feeds for IN/VN/ID with careers-page
+redirect apply. Confirm coverage, country segmentation, eligible job age, refresh
+timing, removal behavior and commercial conditions."
+Payobook next: validate feed completeness and current public descriptions, enable
+company feed, include agreed jobs, submit its URL and verify indexed listings.
+Client later: select public roles; no developer app/portal password for this route.
+Jooble's job-search API is a different direction; it is not posting approval.
+Native Jooble application delivery is outside the implemented redirect-apply feed.
+
+27 | google_jobs | Google job search | India, Vietnam, Indonesia
+Route: eligible public job pages and search discovery; no job-board partner app.
+Start: https://search.google.com/search-console
+Owner: identify the real public careers domain and its Google property owner.
+Payobook: validate each job's JobPosting markup, apply URL and expiry/removal; make
+pages crawlable and submit sitemap. Search appearance is Google's decision.
+Optional Indexing API: create a controlled Cloud project, enable Indexing API,
+create service account, verify site ownership, grant that service account ownership
+of the required property, then implement/test update and removal notifications.
+Client later: public jobs and domain verification/delegation when customer-owned.
+Evidence: https://developers.google.com/search/docs/appearance/structured-data/job-posting
+API setup: https://developers.google.com/search/apis/indexing-api/v3/prereqs
+
+28 | logicmelon | LogicMelon | Coverage enquiry for all three countries
+Route: ATS/multiposting commercial integration partnership.
+Start: https://logicmelon.com/about-logicmelon/ (contact/demo).
+Ask: "We want embedded distribution from Payobook, not a replacement ATS. Please
+return a named-board coverage matrix for our 29 destinations: posting/update/close,
+native applications versus redirects/email, customer credentials/subscriptions,
+country availability, API sandbox, certification, partner fees and per-client cost."
+Payobook next: compare confirmed coverage and total cost against direct connectors;
+agree scope, implement and test only if selected.
+Client later: required multiposter and underlying board entitlements/authorization.
+Its published integration count is not proof that all our target boards are covered.
+Evidence: https://logicmelon.com/
+
+29 | broadbean | Broadbean / Veritone Hire | Coverage enquiry for all three countries
+Route: ATS/CRM partner approval, workflow agreement and commercial scope.
+Start: https://www.broadbean.com/ -> Contact; request ATS/CRM partner onboarding.
+Ask: "Please assess Payobook for embedded distribution and applicant return.
+Provide the same named-board/country/capability/fee matrix requested from LogicMelon,
+plus sandbox and production acceptance requirements."
+Payobook next: kick-off -> workflow sign-off -> agreed scope/test access -> build
+and demo approval -> training as needed -> production activation.
+Client later: enabled Broadbean account and required board subscriptions/credentials.
+Use the ATS/CRM process, not the job-board-ingestion integration documentation:
+https://integrations.broadbean.com/115004597789-Overview-of-ATS-CRM-Integration-Process.html
+
+First application: Zwayam Amplify owner walkthrough
+1. Open the item 03 link and reach Request demo. If the page blocks automated access,
+   use a normal browser or the existing employer's Naukri account manager.
+2. Choose Amplify where offered. Use the actual legal entity and business contact.
+   Company size/location describe Payobook's legal business, not a hypothetical client.
+3. Use item 03's request in the message field if available, otherwise in the follow-up
+   conversation. Explain that Payobook is the ATS vendor and identify a real pilot.
+4. Owner reviews and submits the completed form. Save the receipt/reference and date.
+5. Record status Requested in the Naukri guide, with related hirist/iimjobs notes.
+6. On response, obtain the named integration contact, technical docs, sandbox and
+   per-board entitlement quote. A sales/demo response is not production approval.
+7. Payobook implements/tests the approved connector. Then guide the pilot employer
+   through its key/authorization setup and a controlled live posting.
+
+How we determine that a channel is actually usable
+For each approved API: connect the correct employer, publish one authorized vacancy,
+observe the external ID/listing, update it, receive a consented test application with
+correct employer/job/source/CV mapping, handle retries without duplicates, close it,
+and verify disconnect stops access. Test only capabilities in the approved scope.
+For feeds: verify provider acceptance, real listing, correct redirect application
+and source attribution, and removal after the provider refreshes.
+For candidate-only integrations: verify job mapping and candidate delivery; do not
+label the channel as automatic publishing. For Google, validate markup/indexing
+separately; an API notification is not a guarantee of a search-result appearance.
+
+Track per provider: owner, contact route, sent date/reference, agreed countries and
+capabilities, commercial requirements, approval/docs location, sandbox, connector
+status, pilot employer, production approval and verified test result. Never store
+secret values here. All external applications remain Not submitted in this review.

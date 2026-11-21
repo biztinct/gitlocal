@@ -1,0 +1,1151 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_hiring
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "All open roles"
+msgstr "Semua lowongan"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "A meaningful next step starts with a conversation."
+msgstr "Langkah berarti berikutnya dimulai dengan sebuah percakapan."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} of {m} answered"
+msgstr "{n} dari {m} terjawab"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Required"
+msgstr "Wajib"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Optional"
+msgstr "Opsional"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Drop your file here, or choose one"
+msgstr "Letakkan berkas di sini, atau pilih berkas"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose a different file"
+msgstr "Pilih berkas lain"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "or"
+msgstr "atau"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Upload a file"
+msgstr "Unggah berkas"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Paste a link"
+msgstr "Tempel tautan"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose your country"
+msgstr "Pilih negara Anda"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose one"
+msgstr "Pilih salah satu"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Send my application"
+msgstr "Kirim lamaran saya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Sending…"
+msgstr "Mengirim…"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Only the hiring team for this role sees your application."
+msgstr "Hanya tim rekrutmen untuk peran ini yang melihat lamaran Anda."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Preview — nothing is sent from this page."
+msgstr "Pratinjau — tidak ada yang dikirim dari halaman ini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "(English)"
+msgstr "(bahasa Inggris)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} words"
+msgstr "{n} kata"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Include the country code, like +{code}."
+msgstr "Sertakan kode negara, misalnya +{code}."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Enter an email address like name@example.com."
+msgstr "Masukkan alamat email, misalnya nama@example.com."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Paste a full link that starts with https://"
+msgstr "Tempel tautan lengkap yang diawali https://"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "This file is larger than {mb} MB. Choose a smaller file."
+msgstr "Berkas ini lebih dari {mb} MB. Pilih berkas yang lebih kecil."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "This kind of file cannot be sent here."
+msgstr "Jenis berkas ini tidak dapat dikirim di sini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Write between {min} and {max} words. You have {n}."
+msgstr "Tulis antara {min} dan {max} kata. Anda baru menulis {n}."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "One answer needs a look before you send."
+msgstr "Ada satu jawaban yang perlu diperiksa sebelum dikirim."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} answers need a look before you send."
+msgstr "Ada {n} jawaban yang perlu diperiksa sebelum dikirim."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Files are not kept when a send fails — please choose them again."
+msgstr "Berkas tidak disimpan saat pengiriman gagal — silakan pilih lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Application received"
+msgstr "Lamaran diterima"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "What happens next"
+msgstr "Apa yang terjadi selanjutnya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "A person on the hiring team reads every application, usually within two weeks."
+msgstr "Seseorang dari tim rekrutmen membaca setiap lamaran, biasanya dalam dua minggu."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "If your experience fits the role, they contact you to arrange a first conversation."
+msgstr "Jika pengalaman Anda cocok dengan peran ini, mereka akan menghubungi Anda untuk mengatur percakapan pertama."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "See other open roles"
+msgstr "Lihat lowongan lainnya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Language"
+msgstr "Bahasa"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Your application"
+msgstr "Lamaran Anda"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Add your answer to “%s”."
+msgstr "Isi jawaban untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Choose the country you live in."
+msgstr "Pilih negara tempat Anda tinggal."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose an answer for “%s”."
+msgstr "Pilih jawaban untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose at least one answer for “%s”."
+msgstr "Pilih setidaknya satu jawaban untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Tick the box to agree before you send."
+msgstr "Centang kotak untuk menyetujui sebelum mengirim."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose a file for “%s”."
+msgstr "Pilih berkas untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Paste a link for “%s”."
+msgstr "Tempel tautan untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Upload a file or paste a link for “%s”."
+msgstr "Unggah berkas atau tempel tautan untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "%(kinds)s · up to %(mb)s MB"
+msgstr "%(kinds)s · maksimal %(mb)s MB"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "%s per month"
+msgstr "%s per bulan"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Between %(min)s and %(max)s words"
+msgstr "Antara %(min)s dan %(max)s kata"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "At least %s words"
+msgstr "Minimal %s kata"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "At most %s words"
+msgstr "Maksimal %s kata"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Thank you, %s."
+msgstr "Terima kasih, %s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Thank you."
+msgstr "Terima kasih."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Your application for %(role)s is with the %(brand)s hiring team."
+msgstr "Lamaran Anda untuk %(role)s sudah diterima tim rekrutmen %(brand)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Either way, you will hear from us. A confirmation is on its way to %s."
+msgstr "Apa pun hasilnya, Anda akan mendapat kabar dari kami. Konfirmasi sedang dikirim ke %s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Either way, you will hear from us."
+msgstr "Apa pun hasilnya, Anda akan mendapat kabar dari kami."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Please open the application form and try again."
+msgstr "Silakan buka formulir lamaran dan coba lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Your application is being processed. Please wait a moment before trying again."
+msgstr "Lamaran Anda sedang diproses. Mohon tunggu sebentar sebelum mencoba lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "This does not look like a phone number in %s. Include the country code, like +%s."
+msgstr "Ini tidak terlihat seperti nomor telepon di %s. Sertakan kode negara, misalnya +%s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "This does not look like a phone number."
+msgstr "Ini tidak terlihat seperti nomor telepon."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Enter a number, like 15000000."
+msgstr "Masukkan angka, misalnya 15000000."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Choose a date."
+msgstr "Pilih tanggal."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Write between %(min)s and %(max)s words. You have %(n)s."
+msgstr "Tulis antara %(min)s dan %(max)s kata. Anda baru menulis %(n)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Write at least %(min)s words. You have %(n)s."
+msgstr "Tulis minimal %(min)s kata. Anda baru menulis %(n)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Keep it under %(max)s words. You have %(n)s."
+msgstr "Tulis tidak lebih dari %(max)s kata. Anda menulis %(n)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is larger than %(mb)s MB. Choose a smaller file."
+msgstr "“%(name)s” lebih dari %(mb)s MB. Pilih berkas yang lebih kecil."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%s” is empty. Choose the file again."
+msgstr "“%s” kosong. Pilih berkas itu lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is not a file we can take here. Use %(kinds)s."
+msgstr "“%(name)s” bukan berkas yang dapat kami terima di sini. Gunakan %(kinds)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is not really a %(kind)s file. Choose the original file."
+msgstr "“%(name)s” sebenarnya bukan berkas %(kind)s. Pilih berkas aslinya."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Before you join"
+msgstr "Sebelum Anda bergabung"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Your laptop"
+msgstr "Laptop Anda"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "We are getting your first day ready. Tell us how you like to work and we will set your laptop up that way."
+msgstr "Kami sedang menyiapkan hari pertama Anda. Beri tahu kami cara Anda suka bekerja dan kami akan menyiapkan laptop Anda seperti itu."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "You join on {date}"
+msgstr "Anda bergabung pada {date}"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Which kind of laptop?"
+msgstr "Laptop jenis apa?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Mac"
+msgstr "Mac"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Windows"
+msgstr "Windows"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "No preference"
+msgstr "Tidak ada preferensi"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Keyboard layout"
+msgstr "Tata letak keyboard"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "English (US)"
+msgstr "Bahasa Inggris (AS)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "English (UK)"
+msgstr "Bahasa Inggris (Inggris)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Vietnamese"
+msgstr "Bahasa Vietnam"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Indonesian"
+msgstr "Bahasa Indonesia"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Something else"
+msgstr "Lainnya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Screen size"
+msgstr "Ukuran layar"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "13 to 14 inch, easy to carry"
+msgstr "13 sampai 14 inci, mudah dibawa"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "15 to 16 inch, more room"
+msgstr "15 sampai 16 inci, lebih lega"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Anything else you would like?"
+msgstr "Ada lagi yang Anda inginkan?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A mouse"
+msgstr "Mouse"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A headset"
+msgstr "Headset"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A second screen"
+msgstr "Layar kedua"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A laptop stand"
+msgstr "Dudukan laptop"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Anything we should know?"
+msgstr "Ada yang perlu kami ketahui?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "For example: I am left-handed, or I use a screen reader."
+msgstr "Misalnya: saya kidal, atau saya memakai pembaca layar."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Send my answers"
+msgstr "Kirim jawaban saya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Only the people preparing your first day see this."
+msgstr "Hanya orang yang menyiapkan hari pertama Anda yang melihat ini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Choose Mac, Windows or no preference."
+msgstr "Pilih Mac, Windows, atau tidak ada preferensi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Thank you"
+msgstr "Terima kasih"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Your answers are with the team getting your first day ready. See you soon."
+msgstr "Jawaban Anda sudah diterima tim yang menyiapkan hari pertama Anda. Sampai jumpa."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Already answered"
+msgstr "Sudah dijawab"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "You have already told us. If something has changed, write to {who}."
+msgstr "Anda sudah memberi tahu kami. Jika ada yang berubah, tulis ke {who}."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "This link has closed"
+msgstr "Tautan ini sudah ditutup"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "There is nothing to answer here any more. If you think that is wrong, reply to the email that brought you here."
+msgstr "Tidak ada lagi yang perlu dijawab di sini. Jika menurut Anda ini keliru, balas email yang membawa Anda ke sini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "That did not save. Try once more; if it happens again, reply to the email that brought you here."
+msgstr "Belum tersimpan. Coba sekali lagi; jika terjadi lagi, balas email yang membawa Anda ke sini."
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "A stage needs a name."
+msgstr "Tahap perlu diberi nama."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "Keep a stage name under 60 characters — it has to fit on a column."
+msgstr "Buat nama tahap kurang dari 60 karakter — nama itu harus muat di kolom."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "Choose the stage the new one comes after."
+msgstr "Pilih tahap yang akan diikuti tahap baru."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid ""
+"A new stage goes among the working stages, before Joined. Choose one of those to put it after."
+msgstr ""
+"Tahap baru ditempatkan di antara tahap kerja, sebelum Bergabung. Pilih salah satunya untuk menaruh tahap baru setelahnya."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "There is already a stage called “%s”."
+msgstr "Sudah ada tahap bernama “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "Hiring takes up to %s stages of your own. Rename one you no longer use."
+msgstr ""
+"Rekrutmen menerima hingga %s tahap milik Anda sendiri. Ganti nama tahap yang tidak Anda pakai lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "“%(name)s” added after %(after)s."
+msgstr "“%(name)s” ditambahkan setelah %(after)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "That stage is no longer there."
+msgstr "Tahap itu sudah tidak ada."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid ""
+"“%s” is one of Hiring's own stages. It can be renamed or hidden from a role, but not removed."
+msgstr ""
+"“%s” adalah tahap bawaan Rekrutmen. Tahap ini bisa diganti nama atau disembunyikan dari suatu peran, tetapi tidak bisa dihapus."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "1 candidate is in this stage. Move them first."
+msgstr "Ada 1 kandidat di tahap ini. Pindahkan dulu kandidat tersebut."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "%s candidates are in this stage. Move them first."
+msgstr "Ada %s kandidat di tahap ini. Pindahkan mereka dulu."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "An automation uses “%(s)s”: %(r)s. Change or remove it in Automations first."
+msgstr ""
+"Sebuah otomatisasi memakai “%(s)s”: %(r)s. Ubah atau hapus dulu di Otomatisasi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "“%(name)s” is removed. %(free)s of %(total)s company stages are free."
+msgstr "“%(name)s” dihapus. %(free)s dari %(total)s tahap perusahaan masih tersedia."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring"
+msgstr "Rekrutmen"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Candidate"
+msgstr "Kandidat"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Move to a Hiring stage"
+msgstr "Pindahkan ke tahap Rekrutmen"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Existing stage"
+msgstr "Tahap yang ada"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Choose a permitted Hiring stage. Joined stays with its own action."
+msgstr ""
+"Pilih tahap Rekrutmen yang diizinkan. Bergabung tetap memakai tindakannya sendiri."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Stages, candidate messages and automations"
+msgstr "Tahap, pesan kandidat, dan otomatisasi"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring settings"
+msgstr "Pengaturan Rekrutmen"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"Confirming the person started creates their employee record, contract and login, and opens their joining checklist."
+msgstr ""
+"Mengonfirmasi bahwa orang ini sudah mulai bekerja akan membuat catatan karyawan, kontrak, dan akun login mereka, lalu membuka daftar periksa bergabung mereka."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Whoever moves a candidate here can choose to send the “not this time” email."
+msgstr ""
+"Siapa pun yang memindahkan kandidat ke sini dapat memilih untuk mengirim email “belum kali ini”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Add a tag"
+msgstr "Tambahkan label"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Added the tag “%s”."
+msgstr "Label “%s” ditambahkan."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Would add the tag “%s”"
+msgstr "Akan menambahkan label “%s”"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Adds the tag “%s”"
+msgstr "Menambahkan label “%s”"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "The candidate"
+msgstr "Kandidat"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring has not opened this value to workflows."
+msgstr "Rekrutmen belum membuka nilai ini untuk alur kerja."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "That tag is no longer in Hiring. Edit the step."
+msgstr "Label itu sudah tidak ada di Rekrutmen. Ubah langkah ini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Someone confirms the person started, from their offer"
+msgstr ""
+"Seseorang mengonfirmasi bahwa orang ini sudah mulai bekerja, dari surat penawarannya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Somebody applies, or a recruiter moves them here"
+msgstr "Seseorang melamar, atau perekrut memindahkannya ke sini"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "A recruiter moves the candidate here"
+msgstr "Perekrut memindahkan kandidat ke sini"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring automations"
+msgstr "Otomatisasi Rekrutmen"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "late"
+msgstr "terlambat"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "the feedback deadline"
+msgstr "batas waktu masukan"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "This business action is no longer available."
+msgstr "Tindakan ini sudah tidak tersedia."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring did not move this candidate."
+msgstr "Rekrutmen tidak memindahkan kandidat ini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "This stage no longer exists."
+msgstr "Tahap ini sudah tidak ada."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "This stage changed. Reopen Stages before editing it."
+msgstr "Tahap ini sudah berubah. Buka kembali Tahap sebelum mengubahnya."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/joining_p6.py:0
+msgid "the hiring manager"
+msgstr "atasan perekrut"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/joining_p6.py:0
+msgid "them"
+msgstr "mereka"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/joining_p6.py:0
+msgid "nobody"
+msgstr "tidak ada siapa pun"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/joining_p6.py:0
+msgid "Chosen in Hiring by %(who)s on %(day)s."
+msgstr "Dipilih di Rekrutmen oleh %(who)s pada %(day)s."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_setup.js:0
+msgid "%(used)s of %(total)s company stages used"
+msgstr "%(used)s dari %(total)s tahap perusahaan terpakai"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Stages"
+msgstr "Tahap"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Add a stage"
+msgstr "Tambahkan tahap"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Name of the new stage"
+msgstr "Nama tahap baru"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "after"
+msgstr "setelah"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "The stage it comes after"
+msgstr "Tahap sebelumnya"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Add it"
+msgstr "Tambahkan"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid ""
+"It shows wherever the stage before it shows: on those roles' boards and in those presets."
+msgstr ""
+"Tahap ini muncul di mana pun tahap sebelumnya muncul: di papan peran-peran tersebut dan di preset-preset tersebut."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "· always on"
+msgstr "· selalu aktif"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "· added by your company"
+msgstr "· ditambahkan oleh perusahaan Anda"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Remove “"
+msgstr "Hapus “"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "”? It comes off every board and preset. Candidates' history keeps it."
+msgstr ""
+"”? Tahap ini akan hilang dari setiap papan dan preset. Riwayat kandidat tetap menyimpannya."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Remove it"
+msgstr "Ya, hapus"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Keep it"
+msgstr "Biarkan"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "and"
+msgstr "dan"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Add"
+msgstr "Tambah"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"When somebody applies on the careers page, send “Application received” to the candidate, right away."
+msgstr ""
+"Saat seseorang melamar di halaman karier, kirim “Lamaran diterima” ke kandidat, segera."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"When an interview is arranged, send the invitation with a calendar file to the candidate, the panel and the recruiter, right away."
+msgstr ""
+"Saat wawancara dijadwalkan, kirim undangan beserta file kalender ke kandidat, panel, dan perekrut, segera."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"The day before an interview and again half an hour before, remind the candidate, the panel and the recruiter."
+msgstr ""
+"Sehari sebelum wawancara dan sekali lagi setengah jam sebelumnya, ingatkan kandidat, panel, dan perekrut."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"When an interview ends, ask each panellist for their scorecard, remind them every day while it is late, and tell the talent lead at %(lead)s."
+msgstr ""
+"Saat wawancara selesai, minta setiap anggota panel mengisi kartu penilaian, ingatkan mereka setiap hari selama terlambat, dan beri tahu kepala rekrutmen di %(lead)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "When all the papers are in, give the recruiter a to-do on the offer."
+msgstr "Saat semua dokumen sudah lengkap, beri perekrut tugas untuk penawaran."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"While papers are missing, remind the candidate once a day; when the date passes, give the recruiter a to-do and tell the talent lead."
+msgstr ""
+"Selama dokumen masih kurang, ingatkan kandidat sekali sehari; saat tanggalnya lewat, beri perekrut tugas dan beri tahu kepala rekrutmen."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "When a background check starts, give the recruiter a to-do."
+msgstr "Saat pemeriksaan latar belakang dimulai, beri perekrut tugas."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "When an offer is sent, email it to the candidate with the letter attached."
+msgstr "Saat penawaran dikirim, kirim email ke kandidat dengan surat terlampir."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"When every opening has a signed offer, keep remaining candidates without a live offer On hold as Future-fit. No rejection email is sent."
+msgstr ""
+"Saat setiap lowongan sudah memiliki penawaran yang ditandatangani, simpan kandidat lain yang tidak memiliki penawaran aktif dalam status Ditunda sebagai Cocok di masa depan. Tidak ada email penolakan yang dikirim."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"%(days)s before somebody joins, ask the recruiter, the hiring manager and HR whether it is still on."
+msgstr ""
+"%(days)s sebelum seseorang mulai bekerja, tanyakan kepada perekrut, manajer perekrutan, dan HR apakah rencananya masih berjalan."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"When somebody joins, tell the hiring manager and the people who get the new joiner ready."
+msgstr ""
+"Saat seseorang mulai bekerja, beri tahu manajer perekrutan dan orang-orang yang menyiapkan karyawan baru."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "When a role gets its recruiter, tell the recruiter and their manager."
+msgstr "Saat sebuah posisi mendapatkan perekrut, beri tahu perekrut dan atasannya."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "When a colleague refers somebody, tell the recruiter."
+msgstr "Saat rekan kerja mereferensikan seseorang, beri tahu perekrut."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "When a role opens to referrals, tell every colleague with a login by email."
+msgstr ""
+"Saat sebuah posisi dibuka untuk referensi, beri tahu lewat email setiap rekan kerja yang memiliki akun login."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"When a recruiter shares a candidate with somebody, email them that they were given access."
+msgstr ""
+"Saat perekrut membagikan kandidat kepada seseorang, kirim email kepada orang itu bahwa mereka diberi akses."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"When an agency puts somebody forward, give the recruiter a to-do for a first look."
+msgstr "Saat agensi mengajukan seseorang, beri perekrut tugas untuk peninjauan awal."

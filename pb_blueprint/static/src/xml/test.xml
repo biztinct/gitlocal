@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================
+     Step 5 — Test. One click, meaningful checks, and a verdict
+     in words. See outputs.xml for the two house rules about XML
+     comments and t-if chains; both apply here.
+     ========================================================== -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_blueprint.StepTest">
+    <div class="pbbp-step pbbp-test" t-on-keydown="onKeydown">
+
+      <div class="pbbp-step-head">
+        <span class="pbbp-eyebrow">05 / BUILD CONFIDENCE BEFORE RELEASE</span>
+        <h1 class="pbbp-h1">Try the days that aren't ordinary.</h1>
+        <p class="pbbp-lead">
+          Use real-life examples to challenge the rules. A calculation that passes is
+          evidence — it is not a substitute for somebody approving the policy.
+        </p>
+      </div>
+
+      <div class="pbbp-cmp-boot" t-if="state.loading">
+        <div class="pbim-spin"/>
+        <span>Reading the checks…</span>
+      </div>
+      <div class="pbbp-alert is-err" t-elif="state.error">
+        <span class="i" t-out="ic('alert', 18)"/>
+        <div>
+          <b>The checks could not be shown</b>
+          <p t-esc="state.error"/>
+        </div>
+        <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.load()">
+          Try again
+        </button>
+      </div>
+      <t t-else="">
+
+      <section class="pbbp-card pbbp-run">
+        <div class="pbbp-run-l">
+          <b class="pbbp-run-h" t-esc="headline"/>
+          <p class="pbbp-run-plan" t-if="plan" t-esc="plan"/>
+          <p class="pbbp-run-plan" t-else="">
+            Add a boundary case or a sample of your own, and there is something to run.
+          </p>
+          <div class="pbbp-run-evi">
+            <EvidenceChip evidence="evidence" showWhen="true"/>
+          </div>
+        </div>
+        <div class="pbim-modal__sp"/>
+        <div class="pbbp-run-r">
+          <button class="pbim-btn primary pbbp-run-go"
+                  t-att-disabled="state.running or isEmpty or !canWrite"
+                  t-att-title="canWrite ? '' : 'Only somebody who can change payroll setup may run the checks'"
+                  t-on-click="run">
+            <t t-if="state.running"><span class="pbbp-cta-spin"/> Running…</t>
+            <t t-else=""><t t-out="ic('play', 15)"/> Run the checks</t>
+          </button>
+          <p class="pbbp-run-plan" t-if="!canWrite">
+            You can read these checks but not run them. Ask whoever looks after
+            payroll setup.
+          </p>
+          <div class="pbbp-run-more">
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="openPicks"
+                    t-att-disabled="state.busy === 'picks'">
+              <t t-out="ic('target', 14)"/> Add boundary cases
+              <span class="pbbp-run-n" t-if="data.boundary_available"
+                    t-esc="data.boundary_available"/>
+            </button>
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="openReal">
+              <t t-out="ic('user', 14)"/> Try with a real person
+            </button>
+            <button class="pbim-btn ghost pbim-btn-sm" t-if="canConfirmAll"
+                    t-att-disabled="state.busy === 'confirm'"
+                    t-on-click="confirmAll">
+              <t t-out="ic('checkCheck', 14)"/> Confirm all waiting
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div class="pbim-empty pbbp-test-empty" t-if="isEmpty">
+        <span class="i" t-out="ic('beaker', 22)"/>
+        <b>Nothing to check yet</b>
+        <p t-esc="emptyLine"/>
+        <div class="pbbp-emptydoors-b">
+          <button class="pbim-btn primary pbim-btn-sm" t-on-click="openPicks">
+            <t t-out="ic('target', 14)"/> Add boundary cases
+          </button>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.props.onGrid()">
+            <t t-out="ic('table', 14)"/> Open the grid
+          </button>
+        </div>
+      </div>
+      <t t-else="">
+
+      <section class="pbbp-scen">
+        <div t-foreach="samples" t-as="s" t-key="s.id"
+             t-attf-class="pbbp-scen-row is-{{ s.verdict }}">
+          <div class="pbbp-scen-main">
+            <div class="pbbp-scen-t">
+              <input class="pbbp-scen-rename" t-if="state.renaming === s.id"
+                     t-att-value="state.renameValue"
+                     aria-label="Scenario name"
+                     t-on-input="(ev) => this.state.renameValue = ev.target.value"
+                     t-on-keydown="onRenameKey"
+                     t-on-blur="saveRename"/>
+              <button class="pbbp-scen-name" t-elif="canWrite"
+                      title="Rename this scenario"
+                      t-on-click="() => this.startRename(s)">
+                <t t-esc="s.name"/>
+              </button>
+              <b t-else="" t-esc="s.name"/>
+              <span class="pbim-badge pbbp-scen-kind" t-esc="s.kind_label"/>
+            </div>
+            <div class="pbbp-scen-sub" t-esc="s.subtitle"/>
+            <div class="pbbp-scen-why" t-esc="s.reason"/>
+            <!-- WHICH INPUT MOVED. The reason above names the numbers that
+                 disagree; this names the thing that made them. -->
+            <div class="pbbp-scen-moved" t-if="s.input_changes and s.input_changes.length">
+              <span t-out="ic('sliders', 12)"/>
+              <span>
+                <t t-foreach="s.input_changes" t-as="c" t-key="c.code">
+                  <t t-if="!c_first"> </t><t t-esc="c.line"/>
+                </t>
+              </span>
+            </div>
+          </div>
+          <span t-attf-class="pbbp-scen-pill {{ pill(s.verdict).cls }} {{ state.moved[s.id] ? 'is-moved' : '' }}">
+            <span class="i" t-out="ic(pill(s.verdict).icon, 12)"/>
+            <t t-esc="s.verdict_label"/>
+          </span>
+          <div class="pbbp-scen-act">
+            <button class="pbim-btn outline pbim-btn-sm"
+                    t-if="(s.verdict === 'pending' or s.verdict === 'not_run') and canWrite"
+                    t-on-click="() => this.openConfirm(s)">
+              <t t-out="ic('check', 13)"/> Confirm these numbers
+            </button>
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openDetail(s)">
+              Open
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <p t-attf-class="pbbp-cover {{ coverageComplete ? 'is-good' : '' }}">
+        <span class="i" t-out="ic('gauge', 14)"/>
+        <span t-esc="coverageLine"/>
+        <t t-if="untested.length">
+          <span class="pbbp-cover-list">
+            <button t-foreach="untested" t-as="u" t-key="u.code"
+                    class="pbbp-cover-code" t-att-title="u.name"
+                    t-on-click="() => this.onInspect(u)">
+              <t t-esc="u.code"/>
+            </button>
+            <span class="pbbp-cover-more" t-if="coverage.untested_more">
+              and <t t-esc="coverage.untested_more"/> more
+            </span>
+          </span>
+        </t>
+      </p>
+      </t>
+
+      <section class="pbbp-card pbbp-beyond">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('route', 18)"/>
+          <div>
+            <h2>Beyond the happy path</h2>
+            <p>
+              Each of these changes what a payroll means by a period, so each is a piece
+              of work in its own right rather than a switch to turn on. None of them is
+              part of this release, and nothing you have set up here depends on them.
+            </p>
+          </div>
+        </header>
+        <div class="pbbp-beyond-rows">
+          <div class="pbbp-beyond-row" t-foreach="recipes" t-as="r" t-key="r.key">
+            <div>
+              <b t-esc="r.title"/>
+              <p t-esc="r.text"/>
+            </div>
+            <span class="pbim-badge pbbp-beyond-chip">Later</span>
+          </div>
+        </div>
+      </section>
+      </t>
+
+      <div class="pbim-modal-scrim" t-if="state.confirmFor" t-on-click="closeConfirm">
+        <div class="pbim-modal pbbp-confirm" t-ref="modal" tabindex="-1"
+             t-on-click.stop="" t-on-keydown="onKeydown">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">These are the numbers I expect</div>
+              <div class="pbim-modal__sub" t-esc="state.detail and state.detail.name"/>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-modal__x" t-on-click="closeConfirm"
+                    title="Close" aria-label="Close" t-out="ic('x', 16)"/>
+          </div>
+          <div class="pbim-modal__body">
+            <p class="pbim-note">
+              Confirming says these are the right answers for this person. Until you do,
+              the scenario counts as waiting rather than as passed — a number the engine
+              produced is not yet a number anybody agreed to.
+            </p>
+            <div class="pbbp-confirm-rows" t-if="state.detail">
+              <div class="pbbp-confirm-head">
+                <span>Component</span><span>Expected</span><span>Worked out</span>
+              </div>
+              <div class="pbbp-confirm-row" t-foreach="detailRows" t-as="r" t-key="r.code">
+                <span class="n">
+                  <b t-esc="r.name"/>
+                  <code t-esc="r.code"/>
+                </span>
+                <span class="e" t-esc="value(r.expected)"/>
+                <span t-attf-class="c {{ r.passed === false ? 'is-bad' : '' }}"
+                      t-esc="value(r.computed)"/>
+              </div>
+            </div>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="closeConfirm">Not yet</button>
+            <button class="pbim-btn primary" t-att-disabled="state.busy === 'confirm'"
+                    t-on-click="confirmOne">
+              These are the numbers I expect
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbim-modal-scrim" t-if="state.open" t-on-click="closeDetail">
+        <div class="pbim-modal pbbp-confirm" t-ref="modal" tabindex="-1"
+             t-on-click.stop="" t-on-keydown="onKeydown">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl" t-esc="state.detail and state.detail.name"/>
+              <div class="pbim-modal__sub" t-esc="state.detail and state.detail.subtitle"/>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-modal__x" t-on-click="closeDetail"
+                    title="Close" aria-label="Close" t-out="ic('x', 16)"/>
+          </div>
+          <div class="pbim-modal__body">
+            <p class="pbim-note" t-if="state.detail" t-esc="state.detail.reason"/>
+            <p class="pbim-note is-warn"
+               t-if="state.detail and state.detail.input_changes and state.detail.input_changes.length">
+              <t t-foreach="state.detail.input_changes" t-as="c" t-key="c.code">
+                <t t-if="!c_first"> </t><t t-esc="c.line"/>
+              </t>
+            </p>
+            <div class="pbbp-confirm-rows" t-if="state.detail">
+              <div class="pbbp-confirm-head">
+                <span>Component</span><span>Expected</span><span>Worked out</span>
+              </div>
+              <div class="pbbp-confirm-row" t-foreach="detailRows" t-as="r" t-key="r.code">
+                <span class="n">
+                  <b t-esc="r.name"/>
+                  <code t-esc="r.code"/>
+                </span>
+                <span class="e" t-esc="value(r.expected)"/>
+                <span t-attf-class="c {{ r.passed === false ? 'is-bad' : '' }}"
+                      t-esc="value(r.computed)"/>
+              </div>
+            </div>
+          </div>
+          <div class="pbim-modal__foot">
+            <!-- The way out of a check that disagrees because the SCENARIO
+                 changed, not because the calculation is wrong. Without it the
+                 only escape was remembering the old input and typing it back. -->
+            <small class="pbbp-retake-note" t-if="canRetake">
+              Changed this scenario's inputs on purpose? The numbers it expects
+              are still the old ones.
+            </small>
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-if="canRetake"
+                    t-att-disabled="state.busy"
+                    t-on-click="retakeExpected"
+                    title="Agree that what this scenario works out today is what it should work out">
+              <t t-if="state.busy === 'retake'">Taking…</t>
+              <t t-else="">Expect today's numbers instead</t>
+            </button>
+            <button class="pbim-btn ghost" t-on-click="closeDetail">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbim-modal-scrim" t-if="state.picksOpen" t-on-click="closePicks">
+        <div class="pbim-modal pbbp-picks" t-ref="modal" tabindex="-1"
+             t-on-click.stop="" t-on-keydown="onKeydown">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">Add boundary cases</div>
+              <div class="pbim-modal__sub">
+                Each edge becomes three scenarios: just below it, exactly on it, and just
+                above it.
+              </div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-modal__x" t-on-click="closePicks"
+                    title="Close" aria-label="Close" t-out="ic('x', 16)"/>
+          </div>
+          <div class="pbim-modal__body">
+            <div class="pbim-empty" t-if="!recommendedPicks.length and !otherPicks.length">
+              <b>No edges to check</b>
+              <p>
+                Nothing in this configuration changes what it does at a particular number,
+                so there is no boundary to sit either side of. Add a sample of your own
+                instead.
+              </p>
+            </div>
+            <t t-else="">
+              <h4 class="pbbp-picks-h" t-if="recommendedPicks.length">Worth checking</h4>
+              <label t-foreach="recommendedPicks" t-as="p" t-key="p.key"
+                     t-attf-class="pbbp-pick {{ p.exists ? 'is-done' : '' }}">
+                <input type="checkbox" t-att-checked="isPicked(p)"
+                       t-att-disabled="p.exists"
+                       t-on-change="() => this.togglePick(p)"/>
+                <span class="pbbp-pick-t">
+                  <b t-esc="p.label"/>
+                  <small t-esc="p.why"/>
+                </span>
+                <span class="pbbp-pick-v" t-esc="value(p.edge)"/>
+                <span class="pbim-badge" t-if="p.exists">Already there</span>
+              </label>
+
+              <button class="pbbp-sheet-toggle" t-if="otherPicks.length"
+                      t-att-aria-expanded="state.showOther ? 'true' : 'false'"
+                      t-on-click="() => this.state.showOther = !this.state.showOther">
+                <t t-if="state.showOther">Hide the other edges</t>
+                <t t-else="">
+                  Other edges found in your rules (<t t-esc="otherPicks.length"/>)
+                </t>
+              </button>
+              <div t-if="state.showOther">
+                <label t-foreach="otherPicks" t-as="p" t-key="p.key"
+                       t-attf-class="pbbp-pick {{ p.exists ? 'is-done' : '' }}">
+                  <input type="checkbox" t-att-checked="isPicked(p)"
+                         t-att-disabled="p.exists"
+                         t-on-change="() => this.togglePick(p)"/>
+                  <span class="pbbp-pick-t">
+                    <b t-esc="p.label"/>
+                    <small t-esc="p.why"/>
+                  </span>
+                  <span class="pbbp-pick-v" t-esc="value(p.edge)"/>
+                  <span class="pbim-badge" t-if="p.exists">Already there</span>
+                </label>
+                <p class="pbim-note" t-if="state.picks and state.picks.extra_more">
+                  <t t-esc="state.picks.extra_more"/> more edges were found and are not
+                  listed. The ones above are the ones a single number can actually land on.
+                </p>
+              </div>
+            </t>
+          </div>
+          <div class="pbim-modal__foot">
+            <span class="pbbp-hint" t-esc="pickedLine"/>
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="closePicks">Cancel</button>
+            <button class="pbim-btn primary"
+                    t-att-disabled="!state.picked.length or state.busy === 'picks'"
+                    t-on-click="addBoundaries">
+              Add them
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbim-modal-scrim" t-if="state.realOpen" t-on-click="closeReal">
+        <div class="pbim-modal pbbp-real" t-ref="modal" tabindex="-1"
+             t-on-click.stop="" t-on-keydown="onKeydown">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">Try with a real person</div>
+              <div class="pbim-modal__sub">
+                Their own numbers, run through these rules. Nothing is written, and no
+                payslip is changed.
+              </div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-modal__x" t-on-click="closeReal"
+                    title="Close" aria-label="Close" t-out="ic('x', 16)"/>
+          </div>
+          <div class="pbim-modal__body">
+            <div class="pbbp-real-boot" t-if="state.realBusy">
+              <div class="pbim-spin"/>
+              <span>Working it out…</span>
+            </div>
+            <div class="pbim-empty" t-elif="state.real and state.real.reason">
+              <b>No pay run has used this configuration yet</b>
+              <p t-esc="state.real.reason"/>
+            </div>
+            <t t-else="">
+              <label class="pbbp-pay-pick" t-if="state.real and state.real.runs.length > 1">
+                <span>Pay run</span>
+                <select t-on-change="onPickRun">
+                  <option t-foreach="state.real.runs" t-as="r" t-key="r.id"
+                          t-att-value="r.id"
+                          t-att-selected="r.id === state.real.run_id">
+                    <t t-esc="r.name"/> · <t t-esc="peopleCount(r.count)"/>
+                  </option>
+                </select>
+              </label>
+              <div class="pbbp-real-people" t-if="!state.realRows">
+                <button t-foreach="state.real and state.real.people or []" t-as="p"
+                        t-key="p.payslip_id" class="pbbp-real-person"
+                        t-on-click="() => this.onPickPerson(p)">
+                  <b t-esc="p.name"/>
+                  <small t-esc="sourcedLine(p.sourced)"/>
+                </button>
+              </div>
+              <div class="pbbp-real-rows" t-else="">
+                <p class="pbim-note">
+                  <b t-esc="state.realLabel"/> — the name is left off on purpose. These are
+                  their recorded inputs through the rules as they stand right now.
+                </p>
+                <div class="pbbp-confirm-row" t-foreach="realShown" t-as="r" t-key="r.code">
+                  <span class="n">
+                    <b t-esc="r.name"/>
+                    <code t-esc="r.code"/>
+                  </span>
+                  <span class="e"/>
+                  <span class="c" t-esc="value(r.value)"/>
+                </div>
+              </div>
+            </t>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost pbim-btn-sm" t-if="state.realRows"
+                    t-on-click="() => this.state.realRows = null">
+              <t t-out="ic('back', 13)"/> Pick somebody else
+            </button>
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="closeReal">Close</button>
+            <button class="pbim-btn primary" t-if="state.realRows and canWrite"
+                    t-att-disabled="state.realBusy" t-on-click="keepReal">
+              Keep as a scenario
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

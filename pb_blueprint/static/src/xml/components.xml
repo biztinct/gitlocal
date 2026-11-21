@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================
+     Step 2 — Pay rules. Three tabs; Components is the live one.
+
+     House rule, learned the hard way (BP9): an XML comment may NEVER
+     contain a double hyphen. The file stops being well formed, the
+     bundle silently ships no templates from it, and every component
+     that uses one dies at mount with "Missing template".
+     ========================================================== -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_blueprint.StepRules">
+    <div class="pbbp-step">
+
+      <div class="pbbp-step-head">
+        <span class="pbbp-eyebrow" t-esc="meta.eyebrow"/>
+        <h1 class="pbbp-h1" t-esc="meta.title"/>
+        <p class="pbbp-lead" t-esc="meta.lead"/>
+      </div>
+
+      <div class="pbbp-ruletabsrow">
+        <div class="pbim-seg pbbp-ruletabs" role="tablist">
+          <button t-foreach="TABS" t-as="t" t-key="t.key"
+                  t-attf-class="pbim-segbtn {{ state.tab === t.key ? 'on' : '' }}"
+                  role="tab"
+                  t-att-aria-selected="state.tab === t.key ? 'true' : 'false'"
+                  t-on-click="() => this.onTab(t.key)">
+            <t t-esc="t.label"/>
+          </button>
+        </div>
+        <div class="pbbp-ruletabs-sp"/>
+        <EvidenceChip t-if="showEvidence"
+                      evidence="state.evidence"
+                      showWhen="true"
+                      goLabel="'Check them'"
+                      onRun="() => this.props.onGoTest()"/>
+      </div>
+
+      <div class="pbbp-card" t-if="!props.configId">
+        <div class="pbim-empty">
+          <b>Create the configuration first</b>
+          <p>Give it a name on the Start step and press Continue. The components
+             appear here straight away.</p>
+        </div>
+      </div>
+      <ComponentsTab t-elif="state.tab === 'components'"
+                     configId="props.configId"
+                     revision="props.revision or 0"
+                     sampleId="props.sampleId or false"
+                     sampleName="props.sampleName or ''"
+                     currency="props.currency or ''"
+                     reloadKey="tick"
+                     search="search"
+                     openRule="props.openRule or 0"
+                     openTick="props.openTick or 0"
+                     needsWorkbook="props.needsWorkbook or false"
+                     onChanged="(res) => this.onSubChanged(res)"
+                     onRevision="props.onRevision"
+                     onGrid="props.onGrid"
+                     onImportWorkbook="props.onImportWorkbook"/>
+      <TaxTab t-elif="state.tab === 'tax'"
+              configId="props.configId"
+              revision="props.revision or 0"
+              currency="props.currency or ''"
+              reloadKey="tick"
+              onChanged="(res) => this.onSubChanged(res)"
+              onRevision="props.onRevision"
+              onGrid="props.onGrid"
+              onComponents="(what) => this.onComponents(what)"/>
+      <CalendarTab t-else=""
+                   configId="props.configId"
+                   revision="props.revision or 0"
+                   reloadKey="tick"
+                   onChanged="(res) => this.onSubChanged(res)"
+                   onRevision="props.onRevision"
+                   onGrid="props.onGrid"/>
+
+    </div>
+  </t>
+
+  <!-- ==========================================================
+       The Components tab
+       ========================================================== -->
+  <t t-name="pb_blueprint.ComponentsTab">
+    <div class="pbbp-cmp">
+
+      <div class="pbbp-cmp-boot" t-if="state.loading">
+        <div class="pbim-spin"/>
+        <span>Reading the components…</span>
+      </div>
+      <div class="pbbp-alert is-err" t-elif="state.error">
+        <span class="i" t-out="ic('alert', 18)"/>
+        <div>
+          <b>The components could not be shown</b>
+          <p t-esc="state.error"/>
+        </div>
+        <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.load()">
+          Try again
+        </button>
+      </div>
+      <t t-else="">
+
+      <!-- The rules of a configuration that has left draft, or paid somebody,
+           are changed in the components grid where every change is versioned.
+           One banner and one door, instead of buttons that refuse. -->
+      <div class="pbbp-alert is-lock" t-if="!editable">
+        <span class="i" t-out="ic('lock', 18)"/>
+        <div>
+          <b>These pay rules are read-only here</b>
+          <p t-esc="readonlyReason"/>
+        </div>
+        <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.props.onGrid()">
+          <t t-out="ic('table', 14)"/> Open the components grid
+        </button>
+      </div>
+
+      <!-- toolbar -->
+      <div class="pbbp-cmp-bar">
+        <span class="pbim-chip pbbp-cmp-chip" t-esc="chipLine"/>
+        <label class="pbbp-cmp-search">
+          <span class="i" t-out="ic('search', 15)"/>
+          <input type="search" t-ref="search"
+                 placeholder="Find a component by name or code"
+                 aria-label="Find a component by name or code"
+                 t-att-value="state.query"
+                 t-on-input="onSearch"/>
+          <button class="pbbp-cmp-searchx" t-if="searching"
+                  title="Clear the search" aria-label="Clear the search"
+                  t-on-click="clearSearch" t-out="ic('x', 13)"/>
+        </label>
+        <div class="pbbp-cmp-barsp"/>
+        <button class="pbim-btn ghost pbim-btn-sm" t-if="editable" t-on-click="onRegenerate"
+                t-att-disabled="state.busy"
+                title="Work every guided rule out again">
+          <t t-out="ic('refresh', 14)"/> Refresh the rules
+        </button>
+        <button class="pbim-btn primary pbim-btn-sm" t-if="editable" t-on-click="openNew">
+          <t t-out="ic('plus', 14)"/> Add component
+        </button>
+      </div>
+
+      <!-- group tabs -->
+      <div class="pbbp-cmp-groups" t-if="!searching" role="tablist">
+        <button t-foreach="GROUPS" t-as="g" t-key="g.key"
+                t-attf-class="pbbp-cmp-gtab {{ state.group === g.key ? 'is-on' : '' }}"
+                role="tab"
+                t-att-aria-selected="state.group === g.key ? 'true' : 'false'"
+                t-on-click="() => this.state.group = g.key">
+          <t t-esc="g.label"/>
+          <span class="n" t-esc="countIn(g.key)"/>
+        </button>
+      </div>
+      <p class="pbbp-cmp-found" t-else="">
+        <t t-esc="matching.length"/> matching this configuration
+      </p>
+
+      <!-- the list -->
+      <div class="pbbp-cmp-list" t-ref="list" t-on-keydown="onListKeydown">
+        <div class="pbim-empty pbbp-cmp-empty" t-if="!matching.length">
+          <b t-esc="emptyHead"/>
+          <p t-esc="emptyLine"/>
+          <div class="pbbp-emptydoors-b" t-if="!searching">
+            <button class="pbim-btn primary pbim-btn-sm" t-if="props.needsWorkbook"
+                    t-on-click="() => this.props.onImportWorkbook()">
+              <t t-out="ic('fileSpreadsheet', 14)"/> Import the workbook
+            </button>
+            <button t-if="editable"
+                    t-attf-class="pbim-btn {{ props.needsWorkbook ? 'outline' : 'primary' }} pbim-btn-sm"
+                    t-on-click="openNew">
+              <t t-out="ic('plus', 14)"/> Add a component
+            </button>
+            <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.props.onGrid()">
+              <t t-out="ic('table', 14)"/> Open the grid
+            </button>
+          </div>
+          <button class="pbim-btn ghost pbim-btn-sm" t-else="" t-on-click="clearSearch">
+            Clear the search
+          </button>
+        </div>
+        <t t-else="">
+          <div t-foreach="matching" t-as="row" t-key="row.id"
+               t-attf-class="pbbp-cmp-row {{ isSelected(row.id) ? 'is-sel' : '' }} {{ row.locked ? 'is-locked' : '' }}"
+               tabindex="0"
+               t-att-aria-selected="isSelected(row.id) ? 'true' : 'false'"
+               t-on-click="(ev) => this.onRowClick(row, ev)">
+
+            <span class="pbbp-cmp-lock" t-if="row.locked or !editable"
+                  title="Part of every configuration"
+                  aria-label="Part of every configuration"
+                  t-out="ic('lock', 14)"/>
+            <input t-else="" type="checkbox" class="pbbp-cmp-chk" checked="checked"
+                   t-att-aria-label="'Remove ' + row.name"
+                   t-on-click.stop.prevent="() => this.onToggleInclude(row)"/>
+
+            <div class="pbbp-cmp-main">
+              <div class="pbbp-cmp-t">
+                <b t-esc="row.name"/>
+                <code t-esc="row.code"/>
+                <span class="pbim-badge pbbp-cmp-badge" t-if="row.source === 'manual' and row.column_type === 'formula'">
+                  Written as Excel
+                </span>
+              </div>
+              <div class="pbbp-cmp-sub" t-esc="row.summary"/>
+              <div class="pbbp-cmp-rowerr" t-if="state.rowError[row.id]">
+                <span class="i" t-out="ic('alert', 13)"/>
+                <span t-esc="state.rowError[row.id]"/>
+              </div>
+            </div>
+
+            <span t-attf-class="pbbp-cmp-dot is-{{ row.health }}"
+                  t-att-title="healthTitle(row)"/>
+            <span class="pbbp-cmp-health" t-esc="healthWord(row.health)"/>
+            <span class="pbbp-cmp-val" t-esc="valueOf(row)"/>
+
+            <button class="pbim-btn ghost pbim-btn-sm pbbp-cmp-cfg"
+                    t-att-aria-label="(editable ? 'Configure ' : 'Look at ') + row.name"
+                    t-on-click.stop="() => this.openEditor(row.id)">
+              <t t-if="editable"><t t-out="ic('sliders', 14)"/> Configure</t>
+              <t t-else=""><t t-out="ic('eye', 14)"/> Look</t>
+            </button>
+          </div>
+        </t>
+      </div>
+
+      <!-- bulk bar -->
+      <div class="pbbp-cmp-bulk" t-if="state.selected.length">
+        <b><t t-esc="state.selected.length"/> selected</b>
+        <div class="pbbp-cmp-barsp"/>
+        <button class="pbim-btn ghost pbim-btn-sm" t-on-click="clearSelection">Clear</button>
+        <button class="pbim-btn danger pbim-btn-sm" t-on-click="onBulkRemove"
+                t-att-disabled="state.busy">
+          <t t-out="ic('trash', 14)"/> Remove from this configuration
+        </button>
+      </div>
+
+      <!-- removed tray -->
+      <div class="pbbp-cmp-tray" t-if="state.removed.length">
+        <button class="pbbp-cmp-trayhead"
+                t-att-aria-expanded="state.trayOpen ? 'true' : 'false'"
+                t-on-click="() => this.state.trayOpen = !this.state.trayOpen">
+          <span class="i" t-out="ic(state.trayOpen ? 'chevronDown' : 'chevron', 14)"/>
+          <span t-esc="trayLine"/>
+          <div class="pbbp-cmp-barsp"/>
+          <span class="pbbp-cmp-trayall" t-if="state.trayOpen"
+                t-on-click.stop="onRestoreAll">Restore all</span>
+        </button>
+        <div class="pbbp-cmp-trayrows" t-if="state.trayOpen">
+          <div class="pbbp-cmp-trayrow" t-foreach="state.removed" t-as="r" t-key="r.code">
+            <b t-esc="r.name"/>
+            <code t-esc="r.code"/>
+            <div class="pbbp-cmp-barsp"/>
+            <button class="pbim-btn outline pbim-btn-sm"
+                    t-att-disabled="state.busy"
+                    t-on-click="() => this.onRestore(r.code)">
+              <t t-out="ic('undo', 13)"/> Restore
+            </button>
+          </div>
+        </div>
+      </div>
+      </t>
+
+      <!-- overlays -->
+      <SentenceEditor t-if="state.editor"
+                      configId="props.configId"
+                      ruleId="state.editor.ruleId"
+                      sampleId="props.sampleId or false"
+                      sampleName="props.sampleName or ''"
+                      revision="props.revision or 0"
+                      newGroup="state.editor.group"
+                      takenCodes="takenCodes"
+                      currency="props.currency or ''"
+                      onSaved.bind="onEditorSaved"
+                      onRemoved.bind="onEditorRemoved"
+                      onClose.bind="closeEditor"/>
+
+      <div class="pbim-modal-scrim" t-if="state.confirmRemove"
+           t-on-click="() => this.state.confirmRemove = null">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div class="pbim-modal__ttl">Remove this component?</div>
+            <div class="pbim-modal__sp"/>
+          </div>
+          <div class="pbim-modal__body">
+            <p>
+              Remove <b t-esc="state.confirmRemove.label"/>? It is not part of the
+              starting point, so it cannot be restored later.
+            </p>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="() => this.state.confirmRemove = null">
+              Keep it
+            </button>
+            <button class="pbim-btn danger"
+                    t-on-click="() => this.remove(state.confirmRemove.ids, state.confirmRemove.label, true)">
+              Remove it
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

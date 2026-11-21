@@ -1,0 +1,116 @@
+"""Approved publication scope: website and calendar integration policies.
+
+Governing law and forum are intentionally omitted at the owner's instruction.
+Keep this factual: do not add unverified certifications or deletion deadlines.
+"""
+
+
+def section(key, title, *paragraphs, items=None, link=None):
+    return dict(id=key, title=title, paragraphs=list(paragraphs), items=items, link=link)
+
+
+PRIVACY = {
+    'title': 'Privacy Policy',
+    'intro': 'This policy explains how Payobook handles personal information through its website, business application and optional calendar connections.',
+    'sections': [
+        section('who-we-are', 'Who we are',
+            'Payobook is located at 37 Ton Duc Thang, District 1, Ho Chi Minh City, Vietnam. For privacy questions or requests, contact hello@payobook.com. For help with Google calendar authorization, contact payobook@gmail.com.'),
+        section('your-organisation', 'Your organisation and your information',
+            'Your employer or another customer organisation may provide your account and determine which records are entered, who can access them and how they are used. Payobook processes those records to provide the service on that organisation’s instructions. Its privacy notices and agreement with Payobook also apply.',
+            'Payobook separately uses account, support and technical information to manage its customer relationships, operate and protect the service, and meet applicable obligations.'),
+        section('information', 'Information we handle',
+            'The information processed depends on the modules your organisation enables and the information you or your organisation provide.',
+            items=[
+                'Account and contact information, organisation membership, roles and permissions.',
+                'Employee, applicant, recruitment, attendance, leave, compensation, payroll, tax and payment records where the relevant features are used.',
+                'Calendar events and authorization information when a calendar is connected.',
+                'Support communications, subscription records, and technical records such as IP addresses, browser information, access logs and service errors.',
+                'Prompts, uploaded material and relevant workspace information submitted to enabled AI features.'
+            ]),
+        section('purposes', 'Why we use information',
+            'We use information to provide the selected payroll, HR, recruitment and scheduling features; manage access and approvals; respond to support requests; administer subscriptions; prevent misuse; maintain the service; and meet legal obligations.',
+            'Your organisation is responsible for its employment and payroll decisions and for providing the notices and authorizations required for its use of the service. Where consent is the basis for a feature, you may withdraw it; this does not undo earlier lawful processing.'),
+        section('google-calendar', 'Google Calendar',
+            'Connecting Google Calendar is optional. Google handles sign-in and consent. Payobook does not receive or store your Google password; it stores access and refresh tokens needed to maintain your authorized connection.',
+            'The current connector synchronizes the connected account’s primary calendar. Event data can include titles, descriptions, start and end times, time zones, locations, organisers, attendees and responses, recurrence, reminders and meeting links. Imported information is stored in your organisation’s Payobook database.',
+            'The installed connector requests Google’s calendar permission. Google describes that permission as allowing access to edit, share and delete accessible calendars. The Payobook synchronization feature uses primary-calendar events; connecting it does not import Gmail messages or Google Drive files.',
+            'Synchronization can work in both directions. Creating, editing or deleting a synchronized event may change the corresponding event in Google. Invitations or attendee changes may notify participants. Review event details and recipients before saving.',
+            'Google change notifications tell Payobook when to retrieve calendar changes. Periodic recovery synchronization also checks for changes. Synchronization depends on valid authorization, provider availability and service limits.',
+            'Payobook applies workspace permissions and relevant calendar-sharing rules. Calendar access does not grant a recruiter access to restricted payroll records. Payroll dates shown by the internal payroll calendar are not exported by this connector. Authorised organisation administrators and service personnel may have operational access as described below.'),
+        section('limited-use', 'Limits on Google data use',
+            'Payobook uses Google user data to provide or improve the calendar and scheduling features presented to users. We do not sell Google user data, use it for advertising or credit decisions, or use it to train general-purpose AI models.',
+            'Transfers and human access are limited to what Google’s policies permit: providing the requested features, support with your consent for specific data, security investigations, legal obligations, and other expressly permitted cases. A business transfer involving Google user data requires the consent and safeguards required by those policies.',
+            'Payobook’s use of Google API information follows the Google API Services User Data Policy, including its Limited Use requirements.',
+            link=('https://developers.google.com/terms/api-services-user-data-policy', 'Read Google’s API Services User Data Policy')),
+        section('disconnect', 'Disconnecting and deleting calendar data',
+            'In Calendar → Connections, Pause stops synchronization; it does not erase events already imported or revoke authorization. To revoke Google access, remove Payobook from your Google Account’s third-party connections.',
+            'Revocation prevents future authorized access but does not automatically delete imported copies in Payobook or copies held by participants. To request deletion of imported data and stored connection information, contact your organisation’s administrator or hello@payobook.com. We will verify the request, identify the records and applicable retention duties, and explain the outcome.',
+            'If you want to remove only the Payobook copy, pause synchronization and revoke provider access first, then request removal. Deleting an event while synchronization is active may also delete the Google copy.',
+            link=('https://myaccount.google.com/connections', 'Manage your Google Account connections')),
+        section('sharing', 'Who receives information',
+            'Information is available to authorised users in your organisation according to their roles, event participants, and integrations selected by you or your organisation. A Google connection shares the event changes needed for synchronization with Google. Microsoft connections, where configured, are subject to Microsoft’s consent screen and supported calendar features.',
+            'Payobook uses infrastructure and service providers to host and operate the application. The current Payobook hosting infrastructure is Amazon Web Services in the Sydney region, Australia. Organisations may also select email, signing, calendar and AI services. Contact hello@payobook.com for information about the providers applicable to your workspace.',
+            'We may disclose information where required by law or necessary to investigate misuse or protect lawful rights, subject to applicable restrictions. We do not sell personal information.'),
+        section('ai', 'Optional AI features',
+            'Where your organisation enables an external AI service, prompts, submitted files and relevant feature context may be sent to its configured provider to produce a response. Your administrator can identify the enabled provider. Only submit information you are authorised to use for that feature.',
+            'Connecting Google Calendar enables synchronization; it does not by itself authorize unrelated AI processing. Google data remains subject to the limits described above. AI responses can be inaccurate and need human review before consequential decisions.'),
+        section('cookies', 'Cookies and technical information',
+            'The website and application use cookies and browser storage for functions such as sign-in sessions, security, language preferences and interface settings. Server logs help us diagnose failures and detect misuse. The public website currently has no Google Analytics tracking identifier configured.',
+            'You can manage cookies through your browser. Blocking essential cookies may prevent sign-in or other functions. If optional tracking is introduced, we will explain its purpose and provide the choices required by applicable law.'),
+        section('security', 'Security and international processing',
+            'Payobook uses HTTPS connections, application access controls and restricted operational access to protect information. Authorization tokens allow calendar access without storing your Google password. No service can guarantee absolute security.',
+            'The current hosting location is Australia. Your organisation’s users, authorised support personnel and selected providers may process information in other countries. Information may therefore be processed outside Vietnam or your country of residence. We handle transfers under applicable obligations and the relevant customer and provider arrangements.'),
+        section('retention', 'Retention',
+            'Workspace information is retained while needed to provide the customer’s service, follow its instructions, maintain required employment or payroll records, resolve disputes, protect security or meet legal obligations. The relevant period depends on the record, the customer’s requirements and applicable law; a calendar connection does not set a universal deletion date.',
+            'Disconnecting a provider or closing an account does not automatically erase all information. Customers may request export or deletion through support. We review the scope, authority and any retention duties before removing records. Backup and archival copies may remain after removal from the active application; deletion requests must address those copies as well. We will explain any retained categories and the reason for retention rather than promise immediate erasure.'),
+        section('rights', 'Your choices and requests',
+            'Depending on applicable law, you may have rights to access, correct or delete information, restrict or object to processing, obtain a copy, withdraw consent, or complain to a competent authority. For employer-controlled records, contact your organisation first. You can also contact hello@payobook.com and we will help route your request.',
+            'We may request information needed to verify your identity and authority. We will respond within applicable legal time limits and explain any limitation on your request. Payobook is a business service and is not directed to children.'),
+        section('changes', 'Changes and contact',
+            'We will update this policy when our practices change and provide additional notice or obtain consent where required. New uses of Google data require the disclosures and consent required by Google’s policies.',
+            'Privacy contact: hello@payobook.com. Google connection support: payobook@gmail.com. Postal address: Payobook, 37 Ton Duc Thang, District 1, Ho Chi Minh City, Vietnam.')
+    ],
+}
+
+TERMS = {
+    'title': 'Terms of Service',
+    'intro': 'These terms describe use of the Payobook website, business application and optional integrations. Customer-specific commercial and service commitments remain in the applicable customer agreement.',
+    'sections': [
+        section('provider', 'Provider and scope',
+            'Payobook is located at 37 Ton Duc Thang, District 1, Ho Chi Minh City, Vietnam. These terms apply to use of its website and service. “Customer” means the organisation subscribing to Payobook; “user” means someone that organisation authorises to use it.',
+            'A signed customer agreement or order form takes precedence for the matters it addresses. An applicable data processing agreement governs processing of customer personal data. These website terms do not impose new prices, renewal commitments or liability limits on an existing customer agreement.'),
+        section('accounts', 'Accounts and authorised use',
+            'Use Payobook only within the authority and permissions your organisation gives you. Protect your credentials and promptly report suspected unauthorised access. Customers manage user accounts, roles and approval responsibilities.',
+            'Do not bypass access controls, attempt to access another organisation’s records, introduce malicious software, disrupt the service or use it unlawfully. An individual may make commitments for an organisation only with authority to do so.'),
+        section('customer-data', 'Customer data and decisions',
+            'Customers retain their rights in information they provide and authorise Payobook to process it to deliver and secure the service, follow lawful instructions and meet applicable obligations. Customers are responsible for the accuracy and lawful provision of their records and for required notices to employees, applicants and other people.',
+            'Review inputs, calculations, configuration and outputs before approving payroll, submitting payments or filings, or making employment decisions. Payobook supports these processes; it does not replace the customer’s responsibilities or professional advice where needed. This does not remove Payobook’s agreed duties or responsibilities that cannot lawfully be excluded.'),
+        section('calendar', 'Calendar integrations',
+            'Calendar connections are optional. Connect only accounts you are authorised to use and review the permissions requested by the provider. Google or Microsoft handles its own sign-in; do not give your provider password to Payobook support.',
+            'The current Google connector synchronizes the primary calendar. Changes can propagate in both directions, including event deletion and attendee changes. Invitations may notify participants. Check recipients, dates, time zones and recurrence before saving.',
+            'Calendar visibility follows application permissions and relevant sharing rules. Internal payroll calendar dates are not exported by the connector. Connecting a calendar does not grant access to restricted payroll or hiring records.',
+            'Synchronization depends on provider availability, valid authorization and service limits. It may be delayed or require reconnection. Check the source calendar for time-critical appointments. No lifetime or uninterrupted availability of a third-party integration is promised.',
+            'Pause stops synchronization without deleting existing copies. Revoke provider authorization to stop future authorized access, and contact your administrator or support for deletion of imported data. Deleting a synchronized event while connected can affect its provider copy.',
+            link=('/privacy#google-calendar', 'How Payobook handles calendar data')),
+        section('privacy', 'Privacy and security',
+            'The Privacy Policy describes information handling, calendar consent, retention and rights requests. Customers and Payobook each remain responsible for applicable obligations and the commitments in their agreement.',
+            'Customers should configure appropriate access and report security concerns promptly. Security measures and any incident-response commitments are governed by applicable law and the customer agreement.',
+            link=('/privacy', 'Read the Privacy Policy')),
+        section('ai', 'AI assistance',
+            'AI features may produce incorrect, incomplete or unsuitable responses. Users must review outputs before acting, particularly for employment, payroll or other consequential decisions. An AI suggestion does not grant permission or replace a required approval.',
+            'External AI processing depends on the services your organisation enables and the information submitted. The Privacy Policy explains this processing. Do not submit information you lack authority to share.'),
+        section('commercial', 'Subscriptions and service commitments',
+            'Purchased modules, charges, taxes, payment dates, trial conditions, renewals and cancellation rights are those agreed with the customer or clearly presented before purchase. These terms do not themselves create an additional charge or subscription.',
+            'Service levels, support and remedies are those agreed with the customer or required by law. Maintenance, upgrades and provider outages may affect availability. Product previews or roadmaps are not delivery commitments unless expressly agreed.'),
+        section('ownership', 'Ownership',
+            'Payobook and its licensors retain rights in the software and service materials. Customers and authorised users may use the subscribed service within their agreement. Ownership of customer data is not transferred to Payobook.'),
+        section('suspension', 'Suspension and ending service',
+            'Access may be restricted where reasonably necessary to address misuse, a security threat, unlawful activity or a material contractual breach, subject to the customer agreement and applicable law. Where practicable and appropriate, Payobook will explain the issue and allow it to be resolved.',
+            'Cancellation, termination and any export or transition assistance follow the customer agreement. Contact support before ending service to arrange required records and exports. Deletion and retention follow the Privacy Policy, customer instructions and applicable obligations; ending service does not automatically erase every copy.'),
+        section('rights', 'Responsibilities and statutory rights',
+            'Each party remains responsible for its contractual and legal obligations. Nothing in these terms excludes or limits any right, remedy or liability that cannot lawfully be excluded or limited. Questions or concerns can be raised with hello@payobook.com.'),
+        section('updates', 'Updates and contact',
+            'Payobook may update these terms as the service changes. The effective date identifies the current version. Notice and any acceptance required for material changes will follow the customer agreement and applicable law; changes are not applied retrospectively without a lawful basis.',
+            'General, privacy and contract enquiries: hello@payobook.com. Google connection support: payobook@gmail.com. Postal address: Payobook, 37 Ton Duc Thang, District 1, Ho Chi Minh City, Vietnam.')
+    ],
+}

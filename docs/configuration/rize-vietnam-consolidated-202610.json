@@ -1,0 +1,939 @@
+{
+  "code": "RIZE_VIETNAM_MASTER_V3",
+  "config_id": 4760,
+  "database": "rize",
+  "filename": "Rize_Vietnam_Consolidated_Payroll_and_Master.xlsx",
+  "sha256": "80b1edd51a032029d1090875c2ded91bd47ad20c8f703b075ca07c2df96e2a80",
+  "sheet": "Consolidated",
+  "source_rows": 129,
+  "source_columns": 122,
+  "primary_key": "Employee Code",
+  "configuration": {
+    "state": "draft",
+    "source_priority": "api,excel,records",
+    "source_api_enabled": true,
+    "source_excel_enabled": true,
+    "source_records_enabled": true
+  },
+  "bindings": [
+    {
+      "code": "VNHCE",
+      "name": "Mã nhân viên (Code)",
+      "key": "Consolidated|Mã nhân viên (Code)",
+      "column": "H"
+    },
+    {
+      "code": "VNHCB",
+      "name": "Country",
+      "key": "Consolidated|Country",
+      "column": "E"
+    },
+    {
+      "code": "VNHCC",
+      "name": "Position ID",
+      "key": "Consolidated|Position ID",
+      "column": "F"
+    },
+    {
+      "code": "VNHCD",
+      "name": "Employee ID",
+      "key": "Consolidated|Employee ID",
+      "column": "G"
+    },
+    {
+      "code": "VNHCF",
+      "name": "Họ và tên (Full name)",
+      "key": "Consolidated|Họ và tên (Full name)",
+      "column": "B"
+    },
+    {
+      "code": "VNHCG",
+      "name": "First Name",
+      "key": "Consolidated|First Name",
+      "column": "I"
+    },
+    {
+      "code": "VNHCH",
+      "name": "Last Name",
+      "key": "Consolidated|Last Name",
+      "column": "J"
+    },
+    {
+      "code": "VNHCI",
+      "name": "Gender",
+      "key": "Consolidated|Gender",
+      "column": "K"
+    },
+    {
+      "code": "VNHCJ",
+      "name": "Nationality",
+      "key": "Consolidated|Nationality",
+      "column": "L"
+    },
+    {
+      "code": "VNHCK",
+      "name": "Date of Birth",
+      "key": "Consolidated|Date of Birth",
+      "column": "M"
+    },
+    {
+      "code": "VNHCM",
+      "name": "Place of Birth",
+      "key": "Consolidated|Place of Birth",
+      "column": "N"
+    },
+    {
+      "code": "VNHCN",
+      "name": "Blood Type",
+      "key": "Consolidated|Blood Type",
+      "column": "O"
+    },
+    {
+      "code": "VNHCO",
+      "name": "Religion",
+      "key": "Consolidated|Religion",
+      "column": "P"
+    },
+    {
+      "code": "VNHCP",
+      "name": "Marital Status",
+      "key": "Consolidated|Marital Status",
+      "column": "Q"
+    },
+    {
+      "code": "VNHCQ",
+      "name": "Dependent/Children",
+      "key": "Consolidated|Dependent/Children",
+      "column": "R"
+    },
+    {
+      "code": "VNHCR",
+      "name": "personal email ID",
+      "key": "Consolidated|personal email ID",
+      "column": "S"
+    },
+    {
+      "code": "VNHCS",
+      "name": "Personal Contact Number",
+      "key": "Consolidated|Personal Contact Number",
+      "column": "T"
+    },
+    {
+      "code": "VNHCT",
+      "name": "Work Contact Number",
+      "key": "Consolidated|Work Contact Number",
+      "column": "U"
+    },
+    {
+      "code": "VNHCU",
+      "name": "Vị trí (Position)",
+      "key": "Consolidated|Vị trí (Position)",
+      "column": "V"
+    },
+    {
+      "code": "VNHCV",
+      "name": "Country of Work",
+      "key": "Consolidated|Country of Work",
+      "column": "W"
+    },
+    {
+      "code": "VNHCW",
+      "name": "City of Work",
+      "key": "Consolidated|City of Work",
+      "column": "X"
+    },
+    {
+      "code": "VNHCX",
+      "name": "Ngày bắt đầu (Commencing date)",
+      "key": "Consolidated|Ngày bắt đầu (Commencing date)",
+      "column": "Y"
+    },
+    {
+      "code": "VNHCY",
+      "name": "Probation Start Date",
+      "key": "Consolidated|Probation Start Date",
+      "column": "Z"
+    },
+    {
+      "code": "VNHCZ",
+      "name": "Probation end date",
+      "key": "Consolidated|Probation end date",
+      "column": "AA"
+    },
+    {
+      "code": "VNHCAA",
+      "name": "Probation result/Outcome",
+      "key": "Consolidated|Probation result/Outcome",
+      "column": "AB"
+    },
+    {
+      "code": "VNHCAB",
+      "name": "Ngày ký hợp đồng (Date contract)",
+      "key": "Consolidated|Ngày ký hợp đồng (Date contract)",
+      "column": "AC"
+    },
+    {
+      "code": "VNHCAC",
+      "name": "Contract end date",
+      "key": "Consolidated|Contract end date",
+      "column": "AD"
+    },
+    {
+      "code": "VNHCAD",
+      "name": "employment Type(Full time/Contract/Intern)",
+      "key": "Consolidated|employment Type(Full time/Contract/Intern)",
+      "column": "AE"
+    },
+    {
+      "code": "VNHCAE",
+      "name": "Reporting Manager",
+      "key": "Consolidated|Reporting Manager",
+      "column": "AF"
+    },
+    {
+      "code": "VNHCAF",
+      "name": "Reporting manager Mail ID",
+      "key": "Consolidated|Reporting manager Mail ID",
+      "column": "AG"
+    },
+    {
+      "code": "VNHCAG",
+      "name": "Hiring Manager",
+      "key": "Consolidated|Hiring Manager",
+      "column": "AH"
+    },
+    {
+      "code": "VNHCAH",
+      "name": "Department",
+      "key": "Consolidated|Department",
+      "column": "AI"
+    },
+    {
+      "code": "VNHCAI",
+      "name": "Sub-Function/Sub-Department",
+      "key": "Consolidated|Sub-Function/Sub-Department",
+      "column": "AJ"
+    },
+    {
+      "code": "VNHCAJ",
+      "name": "Level(Jr/Mid/Sr)",
+      "key": "Consolidated|Level(Jr/Mid/Sr)",
+      "column": "AK"
+    },
+    {
+      "code": "VNHCAK",
+      "name": "Status(Active/Inactive/Notice Period)",
+      "key": "Consolidated|Status(Active/Inactive/Notice Period)",
+      "column": "AL"
+    },
+    {
+      "code": "VNHCAN",
+      "name": "Govt ID Proof/ID (KTP/Passport Number)/",
+      "key": "Consolidated|Govt ID Proof/ID (KTP/Passport Number)/",
+      "column": "AM"
+    },
+    {
+      "code": "VNHCAO",
+      "name": "Work Permit (if expat)",
+      "key": "Consolidated|Work Permit (if expat)",
+      "column": "AN"
+    },
+    {
+      "code": "VNHCAP",
+      "name": "Passport Number",
+      "key": "Consolidated|Passport Number",
+      "column": "AO"
+    },
+    {
+      "code": "VNHCAQ",
+      "name": "Visa Status",
+      "key": "Consolidated|Visa Status",
+      "column": "AP"
+    },
+    {
+      "code": "VNHCAR",
+      "name": "Tax ID (PAN/NRIC/NIK etc.)",
+      "key": "Consolidated|Tax ID (PAN/NRIC/NIK etc.)",
+      "column": "AQ"
+    },
+    {
+      "code": "VNHCAS",
+      "name": "NPWP Number (Tax Number)-Indo",
+      "key": "Consolidated|NPWP Number (Tax Number)-Indo",
+      "column": "AR"
+    },
+    {
+      "code": "VNHCAT",
+      "name": "Family Card Number-Indo",
+      "key": "Consolidated|Family Card Number-Indo",
+      "column": "AS"
+    },
+    {
+      "code": "VNHCAU",
+      "name": "BPJS Keternagakerjaan Number-Indo",
+      "key": "Consolidated|BPJS Keternagakerjaan Number-Indo",
+      "column": "AT"
+    },
+    {
+      "code": "VNHCAV",
+      "name": "BPJS Kesehatan Number-Indo",
+      "key": "Consolidated|BPJS Kesehatan Number-Indo",
+      "column": "AU"
+    },
+    {
+      "code": "VNHCAW",
+      "name": "SI Book No.-Viet",
+      "key": "Consolidated|SI Book No.-Viet",
+      "column": "AV"
+    },
+    {
+      "code": "VNHCAX",
+      "name": "Background Check Completed",
+      "key": "Consolidated|Background Check Completed",
+      "column": "AW"
+    },
+    {
+      "code": "VNHCAY",
+      "name": "Background Check/Ref Check status",
+      "key": "Consolidated|Background Check/Ref Check status",
+      "column": "AX"
+    },
+    {
+      "code": "VNHCAZ",
+      "name": "Background Check/Ref Check Links",
+      "key": "Consolidated|Background Check/Ref Check Links",
+      "column": "AY"
+    },
+    {
+      "code": "VNHCBA",
+      "name": "Signed Offer Letter",
+      "key": "Consolidated|Signed Offer Letter",
+      "column": "AZ"
+    },
+    {
+      "code": "VNHCBB",
+      "name": "NDA/Employment Agreement",
+      "key": "Consolidated|NDA/Employment Agreement",
+      "column": "BA"
+    },
+    {
+      "code": "VNHCBC",
+      "name": "Personal Document Link",
+      "key": "Consolidated|Personal Document Link",
+      "column": "BB"
+    },
+    {
+      "code": "VNHCBD",
+      "name": "Current Address",
+      "key": "Consolidated|Current Address",
+      "column": "BC"
+    },
+    {
+      "code": "VNHCBE",
+      "name": "Emmergency Contact Number",
+      "key": "Consolidated|Emmergency Contact Number",
+      "column": "BD"
+    },
+    {
+      "code": "VNHCBF",
+      "name": "Emmergency Contact Name",
+      "key": "Consolidated|Emmergency Contact Name",
+      "column": "BE"
+    },
+    {
+      "code": "VNHCBG",
+      "name": "Emmergency Contact Relationship",
+      "key": "Consolidated|Emmergency Contact Relationship",
+      "column": "BF"
+    },
+    {
+      "code": "VNHCBH",
+      "name": "Salary Currency",
+      "key": "Consolidated|Salary Currency",
+      "column": "BG"
+    },
+    {
+      "code": "VNHCBI",
+      "name": "Gross/Nett",
+      "key": "Consolidated|Gross/Nett",
+      "column": "BH"
+    },
+    {
+      "code": "VNHCBK",
+      "name": "Lương hợp đồng (Gross contract salary) — VND",
+      "key": "Consolidated|Lương hợp đồng (Gross contract salary) — VND",
+      "column": "BI"
+    },
+    {
+      "code": "VNHCBL",
+      "name": "Annual Var %",
+      "key": "Consolidated|Annual Var %",
+      "column": "BJ"
+    },
+    {
+      "code": "VNHCBQ",
+      "name": "Other Bonus/Incentive",
+      "key": "Consolidated|Other Bonus/Incentive",
+      "column": "BK"
+    },
+    {
+      "code": "VNHCBS",
+      "name": "Stock Options / ESOPs",
+      "key": "Consolidated|Stock Options / ESOPs",
+      "column": "BL"
+    },
+    {
+      "code": "VNHCBY",
+      "name": "Resignation date/Notice Put down date",
+      "key": "Consolidated|Resignation date/Notice Put down date",
+      "column": "BM"
+    },
+    {
+      "code": "VNHCBZ",
+      "name": "Notice Period",
+      "key": "Consolidated|Notice Period",
+      "column": "BN"
+    },
+    {
+      "code": "VNHCCA",
+      "name": "LWD as per Notice period",
+      "key": "Consolidated|LWD as per Notice period",
+      "column": "BO"
+    },
+    {
+      "code": "VNHCCB",
+      "name": "Ngày làm việc cuối cùng (Last working date)",
+      "key": "Consolidated|Ngày làm việc cuối cùng (Last working date)",
+      "column": "BP"
+    },
+    {
+      "code": "VNHCCC",
+      "name": "Unserved notice period",
+      "key": "Consolidated|Unserved notice period",
+      "column": "BQ"
+    },
+    {
+      "code": "VNHCCD",
+      "name": "Reason for Exit",
+      "key": "Consolidated|Reason for Exit",
+      "column": "BR"
+    },
+    {
+      "code": "VNHCCE",
+      "name": "Exit Interview Status",
+      "key": "Consolidated|Exit Interview Status",
+      "column": "BS"
+    },
+    {
+      "code": "VNHCCF",
+      "name": "Full & Final Settlement Done",
+      "key": "Consolidated|Full & Final Settlement Done",
+      "column": "BT"
+    },
+    {
+      "code": "VNHCCG",
+      "name": "Clearance Forms Submitted",
+      "key": "Consolidated|Clearance Forms Submitted",
+      "column": "BU"
+    },
+    {
+      "code": "VNHCCH",
+      "name": "Official email ID",
+      "key": "Consolidated|Official email ID",
+      "column": "BV"
+    },
+    {
+      "code": "VNHCCI",
+      "name": "IT Asset type",
+      "key": "Consolidated|IT Asset type",
+      "column": "BW"
+    },
+    {
+      "code": "VNHCCJ",
+      "name": "IT Asset number",
+      "key": "Consolidated|IT Asset number",
+      "column": "BX"
+    },
+    {
+      "code": "VNHCCK",
+      "name": "Software access given",
+      "key": "Consolidated|Software access given",
+      "column": "BY"
+    },
+    {
+      "code": "VNHCCL",
+      "name": "Last Appraisal Date",
+      "key": "Consolidated|Last Appraisal Date",
+      "column": "BZ"
+    },
+    {
+      "code": "VNHCCM",
+      "name": "Performance Rating",
+      "key": "Consolidated|Performance Rating",
+      "column": "CA"
+    },
+    {
+      "code": "VNHCCN",
+      "name": "Promotion Date (if any)",
+      "key": "Consolidated|Promotion Date (if any)",
+      "column": "CB"
+    },
+    {
+      "code": "VNHCCO",
+      "name": "PIP History (if any)",
+      "key": "Consolidated|PIP History (if any)",
+      "column": "CC"
+    },
+    {
+      "code": "VNHCCP",
+      "name": "Bank Name",
+      "key": "Consolidated|Bank Name",
+      "column": "CD"
+    },
+    {
+      "code": "VNHCCQ",
+      "name": "Bank Account Number",
+      "key": "Consolidated|Bank Account Number",
+      "column": "CE"
+    },
+    {
+      "code": "VNHCCR",
+      "name": "Bank Account Name/Beneficiary Name",
+      "key": "Consolidated|Bank Account Name/Beneficiary Name",
+      "column": "CF"
+    },
+    {
+      "code": "VNHCCS",
+      "name": "SWIFT Code/IFSC Code",
+      "key": "Consolidated|SWIFT Code/IFSC Code",
+      "column": "CG"
+    },
+    {
+      "code": "VNHCCT",
+      "name": "University/School",
+      "key": "Consolidated|University/School",
+      "column": "CH"
+    },
+    {
+      "code": "VNHCCU",
+      "name": "Major",
+      "key": "Consolidated|Major",
+      "column": "CI"
+    },
+    {
+      "code": "VNHCCV",
+      "name": "Education Level",
+      "key": "Consolidated|Education Level",
+      "column": "CJ"
+    },
+    {
+      "code": "VNHCCY",
+      "name": "Eligible Sick leave/year",
+      "key": "Consolidated|Eligible Sick leave/year",
+      "column": "CK"
+    },
+    {
+      "code": "VNJOINED",
+      "name": "Legal entity Date of Joining (employee)",
+      "key": "Consolidated|Legal entity Date of Joining (employee)",
+      "column": "CL"
+    },
+    {
+      "code": "VNREGISTER",
+      "name": "Người phụ thuộc (Dependants) — Count",
+      "key": "Consolidated|Người phụ thuộc (Dependants) — Count",
+      "column": "DI"
+    },
+    {
+      "code": "VNINSBASE",
+      "name": "Lương bảo hiểm (Insurance salary) — Fixed base",
+      "key": "Consolidated|Lương bảo hiểm (Insurance salary) — Fixed base",
+      "column": "DQ"
+    },
+    {
+      "code": "VNSIJOIN",
+      "name": "Tham gia BHXH (SHUI Joining)",
+      "key": "Consolidated|Tham gia BHXH (SHUI Joining)",
+      "column": "CN"
+    },
+    {
+      "code": "VNSTDDAYS",
+      "name": "Ngày công chuẩn (Standard working days)",
+      "key": "Consolidated|Ngày công chuẩn (Standard working days)",
+      "column": "CQ"
+    },
+    {
+      "code": "VNPAIDDAYS",
+      "name": "Số ngày làm việc thực tế (Paid days)",
+      "key": "Consolidated|Số ngày làm việc thực tế (Paid days)",
+      "column": "CR"
+    },
+    {
+      "code": "VNACTBONUS",
+      "name": "Variable Bonus",
+      "key": "Consolidated|Variable Bonus",
+      "column": "DA"
+    },
+    {
+      "code": "VNBENEFIT",
+      "name": "Phúc lợi (không trả bằng tiền) Non-cash benefit",
+      "key": "Consolidated|Phúc lợi (không trả bằng tiền) Non-cash benefit",
+      "column": "DF"
+    },
+    {
+      "code": "VNADVANCE",
+      "name": "Tạm ứng (Advance)",
+      "key": "Consolidated|Tạm ứng (Advance)",
+      "column": "DJ"
+    },
+    {
+      "code": "VNDEDUCT",
+      "name": "ĐC giảm (Deduction)",
+      "key": "Consolidated|ĐC giảm (Deduction)",
+      "column": "DK"
+    },
+    {
+      "code": "VNPITREF",
+      "name": "PIT refund",
+      "key": "Consolidated|PIT refund",
+      "column": "DM"
+    },
+    {
+      "code": "VNPTYPE",
+      "name": "Loại (Type)",
+      "key": "Consolidated|Loại (Type)",
+      "column": "CM"
+    },
+    {
+      "code": "VNPAYNAT",
+      "name": "Quốc tịch (Nationality)",
+      "key": "Consolidated|Quốc tịch (Nationality)",
+      "column": "CO"
+    },
+    {
+      "code": "VNTUFLAG",
+      "name": "Tham gia CĐ (TU Joining)",
+      "key": "Consolidated|Tham gia CĐ (TU Joining)",
+      "column": "DH"
+    },
+    {
+      "code": "VNPRIVATE",
+      "name": "Phụ cấp bảo hiểm tư nhân (Private Insurance allowance)",
+      "key": "Consolidated|Phụ cấp bảo hiểm tư nhân (Private Insurance allowance)",
+      "column": "CX"
+    },
+    {
+      "code": "VNGROSSUSD",
+      "name": "Lương hợp đồng (Gross contract salary) — USD",
+      "key": "Consolidated|Lương hợp đồng (Gross contract salary) — USD",
+      "column": "CP"
+    },
+    {
+      "code": "VNUNIFORM",
+      "name": "Đồng phục (Uniform)",
+      "key": "Consolidated|Đồng phục (Uniform)",
+      "column": "CS"
+    },
+    {
+      "code": "VNFREETEL",
+      "name": "Điện thoại (Phone)",
+      "key": "Consolidated|Điện thoại (Phone)",
+      "column": "CT"
+    },
+    {
+      "code": "VNSEVER",
+      "name": "Trợ cấp thôi việc (Severance)",
+      "key": "Consolidated|Trợ cấp thôi việc (Severance)",
+      "column": "CU"
+    },
+    {
+      "code": "VNFREOTH",
+      "name": "Phụ cấp khác (Others) — Phụ cấp không theo lương (Allowance-Non-taxable)",
+      "key": "Consolidated|Phụ cấp khác (Others) — Phụ cấp không theo lương (Allowance-Non-taxable)",
+      "column": "CV"
+    },
+    {
+      "code": "VNEXTRANS",
+      "name": "Xăng xe thêm (Additional Transportation)",
+      "key": "Consolidated|Xăng xe thêm (Additional Transportation)",
+      "column": "CW"
+    },
+    {
+      "code": "VNY2S2",
+      "name": "Y2S2 Ags incentive",
+      "key": "Consolidated|Y2S2 Ags incentive",
+      "column": "CY"
+    },
+    {
+      "code": "VNPRODUCT",
+      "name": "New product launching (RP-Lem Lep Hat) incentive",
+      "key": "Consolidated|New product launching (RP-Lem Lep Hat) incentive",
+      "column": "CZ"
+    },
+    {
+      "code": "VNREFERRAL",
+      "name": "Refferal incentive",
+      "key": "Consolidated|Refferal incentive",
+      "column": "DB"
+    },
+    {
+      "code": "VNOTHTAX",
+      "name": "Phụ cấp khác (Others) — Phụ cấp không theo lương (Allowance-Taxable)",
+      "key": "Consolidated|Phụ cấp khác (Others) — Phụ cấp không theo lương (Allowance-Taxable)",
+      "column": "DC"
+    },
+    {
+      "code": "VNPREADD",
+      "name": "Điều chỉnh tăng (Additional Adjustment)",
+      "key": "Consolidated|Điều chỉnh tăng (Additional Adjustment)",
+      "column": "DD"
+    },
+    {
+      "code": "VNPREDED",
+      "name": "Điều chỉnh giảm (Deduction Adjustment)",
+      "key": "Consolidated|Điều chỉnh giảm (Deduction Adjustment)",
+      "column": "DE"
+    },
+    {
+      "code": "VNHOLPAY",
+      "name": "Holiday",
+      "key": "Consolidated|Holiday",
+      "column": "DG"
+    },
+    {
+      "code": "VNNETADD",
+      "name": "ĐC tăng (Addition)",
+      "key": "Consolidated|ĐC tăng (Addition)",
+      "column": "DL"
+    },
+    {
+      "code": "VNTRIP",
+      "name": "Incentive trip",
+      "key": "Consolidated|Incentive trip",
+      "column": "DN"
+    },
+    {
+      "code": "VNPREMIUM",
+      "name": "Premium insurance for dependent",
+      "key": "Consolidated|Premium insurance for dependent",
+      "column": "DO"
+    },
+    {
+      "code": "VNSUPPORT",
+      "name": "Support for incident",
+      "key": "Consolidated|Support for incident",
+      "column": "DP"
+    }
+  ],
+  "rule_updates": {
+    "VNHCE": {
+      "is_required": true
+    },
+    "VNHCF": {
+      "is_required": true
+    },
+    "VNHCT": {
+      "column_role": "profile"
+    },
+    "VNFREETEL": {
+      "column_role": "payroll"
+    },
+    "VNUNPAID": {
+      "column_role": "reference",
+      "net_role": "info",
+      "component_type": "Time and attendance"
+    },
+    "VNHCCL": {
+      "value_kind": "date",
+      "value_kind_reason": "Consolidated source contains typed dates for Last Appraisal Date; retained as information on the contract."
+    },
+    "VNHCAK": {
+      "payroll_signal": "employment_status"
+    },
+    "VNSTDDAYS": {
+      "component_type": "Time and attendance"
+    },
+    "VNPAIDDAYS": {
+      "component_type": "Time and attendance"
+    },
+    "VNWEEKHRS": {
+      "component_type": "Time and attendance"
+    },
+    "VNLEAVEWD": {
+      "component_type": "Time and attendance"
+    },
+    "VNLEAVESTD": {
+      "component_type": "Time and attendance"
+    }
+  },
+  "employee_mapping_correction": {
+    "remove": {
+      "code": "VNFREETEL",
+      "destination": "f:hr.employee:work_phone"
+    },
+    "add": {
+      "code": "VNHCT",
+      "destination": "f:hr.employee:work_phone"
+    }
+  },
+  "derived_dependents": {
+    "code": "VNHCQ",
+    "rule_output": "VNDEPCOUNT",
+    "source": "Saved employee dependent records; spreadsheet count is fallback only.",
+    "tax_dependents_code": "VNREGISTER",
+    "share_tax_count": false
+  },
+  "preserve_absent_inputs": [
+    {
+      "code": "VNTAXMODE",
+      "name": "Tax calculation mode",
+      "key": "Recurring settings|Tax calculation mode",
+      "storage": "contract"
+    },
+    {
+      "code": "VNHIJOIN",
+      "name": "HI participation",
+      "key": "Recurring settings|HI participation",
+      "storage": "contract"
+    },
+    {
+      "code": "VNUIJOIN",
+      "name": "UI participation",
+      "key": "Recurring settings|UI participation",
+      "storage": "contract"
+    },
+    {
+      "code": "VNUIREGCAP",
+      "name": "UI salary cap VND",
+      "key": "Recurring settings|UI salary cap VND",
+      "storage": "contract"
+    },
+    {
+      "code": "VNTUJOIN",
+      "name": "Employer union participation",
+      "key": "Recurring settings|Employer union participation",
+      "storage": "contract"
+    },
+    {
+      "code": "VNTRANSPORT",
+      "name": "Fixed transport allowance VND",
+      "key": "Recurring settings|Fixed transport allowance VND",
+      "storage": "contract"
+    },
+    {
+      "code": "VNPHONE",
+      "name": "Fixed phone allowance VND",
+      "key": "Recurring settings|Fixed phone allowance VND",
+      "storage": "contract"
+    },
+    {
+      "code": "VNOTHERFIX",
+      "name": "Other fixed allowance VND",
+      "key": "Recurring settings|Other fixed allowance VND",
+      "storage": "contract"
+    },
+    {
+      "code": "VNUNPAID",
+      "name": "Unpaid leave days reference",
+      "key": "Time|Unpaid leave days reference",
+      "storage": "monthly"
+    },
+    {
+      "code": "VNWEEKHRS",
+      "name": "Weekend Hours",
+      "key": "Salary|Giờ làm việc cuối tuần (Weekend Hours)",
+      "storage": "monthly"
+    },
+    {
+      "code": "VNUMEMBER",
+      "name": "Union Count",
+      "key": "Recurring settings|Union Count",
+      "storage": "contract"
+    },
+    {
+      "code": "VNINSMODE",
+      "name": "Insurance salary basis",
+      "key": "Recurring settings|Insurance salary basis",
+      "storage": "contract"
+    },
+    {
+      "code": "VNUSDSHOW",
+      "name": "USD payment reference",
+      "key": "Recurring settings|USD payment reference",
+      "storage": "contract"
+    },
+    {
+      "code": "VNLEAVEWD",
+      "name": "Annual leave encashment days",
+      "key": "Time|Annual leave encashment days",
+      "storage": "monthly"
+    },
+    {
+      "code": "VNLEAVESTD",
+      "name": "Annual leave salary divisor",
+      "key": "Time|Annual leave salary divisor",
+      "storage": "monthly"
+    },
+    {
+      "code": "VNPITMAN",
+      "name": "Reviewed manual PIT",
+      "key": "Monthly adjustments|Reviewed manual PIT",
+      "storage": "monthly"
+    },
+    {
+      "code": "VNTECH1",
+      "name": "Technical advisory approved payment 1",
+      "key": "Monthly adjustments|Technical advisory approved payment 1",
+      "storage": "monthly"
+    },
+    {
+      "code": "VNTECH2",
+      "name": "Technical advisory approved payment 2",
+      "key": "Monthly adjustments|Technical advisory approved payment 2",
+      "storage": "monthly"
+    },
+    {
+      "code": "VNTECH3",
+      "name": "Technical advisory approved payment 3",
+      "key": "Monthly adjustments|Technical advisory approved payment 3",
+      "storage": "monthly"
+    },
+    {
+      "code": "VNTECH4",
+      "name": "Technical advisory approved payment 4",
+      "key": "Monthly adjustments|Technical advisory approved payment 4",
+      "storage": "monthly"
+    }
+  ],
+  "review_roster": {
+    "count": 70,
+    "statuses": [
+      "Active",
+      "Notice Period"
+    ],
+    "assign_live_population": false
+  },
+  "utility_columns": [
+    "Employee Code",
+    "Merge status",
+    "Review notes",
+    "Kỳ lương (Period)"
+  ],
+  "preserve_formulas": 42,
+  "preserve_constants": 5,
+  "preserve_contract_components": 79,
+  "monthly_layout": {
+    "time_codes": [
+      "VNSTDDAYS",
+      "VNPAIDDAYS",
+      "VNWEEKHRS",
+      "VNLEAVEWD",
+      "VNLEAVESTD"
+    ],
+    "available_codes": [
+      "VNUNPAID"
+    ],
+    "records": "All employee/contract/contract-component/bank fields; protected in monthly workbook."
+  },
+  "business_data_changes": false
+}

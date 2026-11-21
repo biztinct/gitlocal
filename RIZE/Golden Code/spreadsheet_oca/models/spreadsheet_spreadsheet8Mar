@@ -1,0 +1,619 @@
+# Copyright 2022 CreuBlanca
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+
+import pandas as pd
+import os
+import base64
+import json
+import zipfile
+import xlwings as xw
+import openpyxl
+import tempfile
+import xlsxwriter
+from io import BytesIO
+from subprocess import Popen, PIPE
+from subprocess import call
+from odoo import _, api, fields, models
+#Biztinct
+import logging
+_logger = logging.getLogger(__name__)
+from odoo.exceptions import UserError
+from datetime import datetime
+from pudb import set_trace
+import xlwings as xw
+
+from odoo import models, api
+from odoo.exceptions import ValidationError
+from datetime import datetime, timedelta
+
+
+class SpreadsheetSpreadsheet(models.Model):
+    _name = "spreadsheet.spreadsheet"
+    _inherit = "spreadsheet.abstract"
+    _description = "Spreadsheet"
+
+    data = fields.Binary()
+    filename = fields.Char(compute="_compute_filename")
+    spreadsheet_raw = fields.Serialized(
+        compute="_compute_spreadsheet_raw", inverse="_inverse_spreadsheet_raw"
+    )
+    owner_id = fields.Many2one(
+        "res.users", required=True, default=lambda r: r.env.user.id
+    )
+    contributor_ids = fields.Many2many(
+        "res.users",
+        relation="spreadsheet_contributor",
+        column1="spreadsheet_id",
+        column2="user_id",
+        string="Contributors",
+    )
+    reader_ids = fields.Many2many(
+        "res.users",
+        relation="spreadsheet_reader",
+        column1="spreadsheet_id",
+        column2="user_id",
+        string="Readers",
+    )
+
+
+    @api.depends("name")
+    def _compute_filename(self):
+        for record in self:
+            record.filename = "%s.json" % (self.name or _("Unnamed"))
+
+    @api.depends("data")
+    def _compute_spreadsheet_raw(self):
+        for dashboard in self:
+            if dashboard.data:
+                dashboard.spreadsheet_raw = json.loads(
+                    base64.decodebytes(dashboard.data).decode("UTF-8")
+                )
+            else:
+                dashboard.spreadsheet_raw = {}
+
+    def _inverse_spreadsheet_raw(self):
+        for record in self:
+            record.data = base64.encodebytes(
+                json.dumps(record.spreadsheet_raw).encode("UTF-8")
+            )
+
+    def create_document_from_attachment(self, attachment_ids):
+        attachments = self.env["ir.attachment"].browse(attachment_ids)
+        spreadsheets = self.env["spreadsheet.spreadsheet"]
+        for attachment in attachments:
+            extracted = {}
+            with zipfile.ZipFile(
+                BytesIO(base64.b64decode(attachment.datas)), "r"
+            ) as xlsx:
+                # List and filter for XML and REL files
+                xml_files = [
+                    f
+                    for f in xlsx.namelist()
+                    if f.endswith(".xml") or f.endswith(".rels")
+                ]
+                # Extract each file
+                for xml_file in xml_files:
+                    # Read the XML file into memory
+                    with xlsx.open(xml_file) as file:
+                        extracted[xml_file] = file.read().decode("UTF8")
+                spreadsheets |= self.create(
+                    {
+                        "spreadsheet_raw": extracted,
+                        "name": attachment.name,
+                    }
+                )
+        attachments.unlink()
+        if len(spreadsheets) == 1:
+            return spreadsheets.get_formview_action()
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "spreadsheet_oca.spreadsheet_spreadsheet_act_window"
+        )
+        action["domain"] = [("id", "in", spreadsheets.ids)]
+        return action
+
+
+    #Biztinct
+    '''   
+    def write(self, vals):
+        set_trace()
+        if 'data' in vals:
+            for record in self:
+                header_row = record.data[0] if record.data else None
+                if not header_row:
+                    raise ValidationError("The header row cannot be deleted.")
+        return super(SpreadsheetSpreadsheet, self).write(vals)
+    '''
+
+    '''
+    def write(self, vals):
+        # Decoding the data from base64
+        data = json.loads(base64.b64decode(self.data).decode("UTF-8"))
+        set_trace()
+        # Check for changes in the "Staging" worksheet
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Staging":
+                for cell, content in sheet.get('cells', {}).items():
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row <= 2:  # Check if row is 1 or 2
+                        if cell in vals:  # Check if cell is being modified
+                            raise ValidationError("You are not allowed to modify the top 2 rows in the 'Staging' worksheet.")
+
+        return super().write(vals)
+    '''
+
+
+
+    '''
+    def write(self, vals):
+        # Check if 'data' field is being modified
+        if 'data' in vals:
+            # Decode the base64 encoded original data
+            original_data = json.loads(base64.b64decode(self.data).decode("UTF-8"))
+
+            # Decode the base64 encoded new data
+            new_data = json.loads(base64.b64decode(vals['data']).decode("UTF-8"))
+
+            # Check for changes in the "Staging" worksheet
+            for new_sheet in new_data.get('sheets', []):
+                if new_sheet['name'] == "Staging":
+                    original_sheet = next((sheet for sheet in original_data.get('sheets', []) if sheet['name'] == "Staging"), None)
+                    if not original_sheet:
+                        raise ValidationError("Original 'Staging' worksheet not found.")
+
+                    for cell, new_content in new_sheet.get('cells', {}).items():
+                        row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                        if row <= 2:  # Check if row is 1 or 2
+                            original_content = original_sheet.get('cells', {}).get(cell, {}).get('content', '')
+                            if new_content.get('content', '') != original_content:  # Check if content has changed
+                                raise ValidationError("You are not allowed to modify the top 2 rows in the 'Staging' worksheet.")
+
+        return super().write(vals)
+    '''
+
+
+
+
+    def write(self, vals):
+        # Check if 'data' field is being modified
+        if 'data' in vals:
+            # Ensure the data is a string and not boolean
+            if isinstance(vals['data'], (str, bytes)):
+                try:
+                    # Decode the base64 encoded original data
+                    original_data = json.loads(base64.b64decode(self.data).decode("UTF-8"))
+
+                    # Decode the base64 encoded new data
+                    new_data = json.loads(base64.b64decode(vals['data']).decode("UTF-8"))
+
+                    changes = []
+                    '''                    
+                    # Check for changes in the "Staging" worksheet
+                    for new_sheet in new_data.get('sheets', []):
+                        if new_sheet['name'] == "Staging":
+                            original_sheet = next((sheet for sheet in original_data.get('sheets', []) if sheet['name'] == "Staging"), None)
+                            if not original_sheet:
+                                raise ValidationError("Original 'Staging' worksheet not found.")
+
+                            for cell, new_content in new_sheet.get('cells', {}).items():
+                                row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                                if row <= 2:  # Check if row is 1 or 2
+                                    original_content = original_sheet.get('cells', {}).get(cell, {}).get('content', '')
+                                    if new_content.get('content', '') != original_content:  # Check if content has changed
+                                        changes.append({
+                                            'cell': cell,
+                                            'original': original_content,
+                                            'new': new_content.get('content', '')
+                                        })
+                    '''                    
+                    if changes:
+                        # Format the changes into a message
+                        change_messages = [f"Cell {change['cell']}: Original Content = '{change['original']}', New Content = '{change['new']}'" for change in changes]
+                        #super().write({'data': self.data})
+                        #raise ValidationError("The following changes were detected in the top 2 rows of the 'Staging' worksheet:\n" + "\n".join(change_messages))
+                        return
+                except (TypeError, json.JSONDecodeError, base64.binascii.Error) as e:
+                    self.env.user.notify_info(message=f"Error decoding base64 data: {e}", title='INFO', sticky=False)
+                    return super().write(vals)
+            else:
+                self.env.user.notify_info(message="Invalid data format: Expected a base64-encoded string.", title='INFO', sticky=False)
+                return super().write(vals)
+
+        #set_trace()
+        return super().write(vals)
+
+    '''
+    def import_json_data(self):
+        self.env.user.notify_info(message='Payroll data is being imported from FINAL worksheet. Ensure FINAL worksheet has latest data otherwise copy and import again.', title='INFORMATION', sticky=False )
+        data = json.loads(base64.b64decode(self.data).decode("UTF-8"))
+
+        # Delete all existing data from zoho.employee.data
+        self.env['zoho.employee.data'].search([]).unlink()
+
+        # Process the "Employee details" sheet
+        headers_emp_details = {}
+        rows_emp_details = {}
+
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Employee Details":
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row == 1 and 'HEADER' in content['content']:
+                        field_name = content['content'].split('\"')[1]
+                        headers_emp_details[col] = field_name
+                break
+
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Employee Details":
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row > 1:  # Skip headers
+                        if row not in rows_emp_details:
+                            rows_emp_details[row] = {}
+                        cell_value = content.get('content', '')
+                        rows_emp_details[row][col] = cell_value
+                break
+
+        field_value_dicts = {}  # Dictionary to hold all field_value_dicts based on employee_id
+        for row, cells in rows_emp_details.items():
+            field_value_dict = {}
+            for col, field_name in headers_emp_details.items():
+                cell_value = cells.get(col, '')
+                if cell_value.strip() == '-':  # Check if cell_value is only a hyphen after stripping blanks
+                    cell_value = ''  # Change cell value to empty string
+                if cell_value:  # Check if cell_value is not empty or null
+                    if field_name in ['contract_from', 'contract_to']:  # Date fields
+                        cell_value = self.parse_date(cell_value)  # Parse date values
+                    field_value_dict[field_name] = cell_value
+                else:
+                    field_value_dict[field_name] = None  # Handle empty date fields
+
+            employee_id_cell = cells.get('A', '')  # Assuming employee_id is in column A
+            if employee_id_cell:
+                employee_id = employee_id_cell
+                field_value_dicts[employee_id] = field_value_dict  # Store field_value_dict by employee_id
+
+        headers = {}
+        rows = {}
+        # Extract headers from the "Staging" sheet
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Staging":
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row == 1 and 'HEADER' in content['content']:
+                        field_name = content['content'].split('\"')[1]
+                        headers[col] = field_name
+                break
+        # Extract values from the "Final" sheet
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Final":
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row > 1:  # Skip headers
+                        if row not in rows:
+                            rows[row] = {}
+                        rows[row][col] = content.get('content', '').strip()
+                break
+
+        # Update field_value_dict with values from "Final" sheet
+        for row, cells in rows.items():
+            employee_id_cell = cells.get('A', '')  # Assuming employee_id is in column A
+            if employee_id_cell:
+                employee_id = employee_id_cell
+                field_value_dict = field_value_dicts.get(employee_id, {})  # Get the existing dictionary or create a new one
+                for col, field_name in headers.items():
+                    cell_value = cells.get(col, '')
+                    if cell_value.strip() == '-':  # Check if cell_value is only a hyphen after stripping blanks
+                        cell_value = ''  # Change cell value to empty string
+                    if cell_value:  # Check if cell_value is not empty or null
+                        if field_name in ['date_of_birth', 'date_of_joining', 'start_date', 'end_date', 'last_workday', 'contract_from', 'contract_to']:  # Date fields
+                            cell_value = self.parse_date(cell_value)  # Parse date values
+                        field_value_dict[field_name] = cell_value
+                    else:
+                        field_value_dict[field_name] = None  # Handle empty date fields
+                field_value_dicts[employee_id] = field_value_dict  # Update the dictionary for this employee_id
+
+        # Now update or create the record in zoho_employee_data with the combined field_value_dict
+        for employee_id, field_value_dict in field_value_dicts.items():
+            #set_trace()
+            record = self.env['zoho.employee.data'].search([('employee_id', '=', employee_id)])
+            if record:
+                record.write(field_value_dict)
+            else:
+                self.env['zoho.employee.data'].create(field_value_dict)
+
+        self.env.user.notify_success(message='Import of payroll data completed successfully! Now you can do payroll processing', title='SUCCESS', sticky=True)
+
+        return {
+            'type': 'ir.actions.act_window_close',
+        }
+        
+    '''
+    
+    def run_js_function(self, js_file_path, input_path, output_path):
+        process = Popen(['node', js_file_path, input_path, output_path], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = process.communicate()
+        if stderr:
+            self.env.user.notify_warning(message=f"JavaScript error: {stderr.decode('utf-8')}")
+            raise Exception(f"JavaScript error: {stderr.decode('utf-8')}")
+        if not stdout:
+            raise Exception(f"No output from JavaScript function.")
+        
+        output = stdout.decode('utf-8')
+        self.env.user.notify_info(message=f"JavaScript output: {output}")
+
+    def col2num(self,col):
+        num = 0
+        for c in col:
+            if c.isalpha():
+                num = num * 26 + ord(c.upper()) - ord('A') + 1
+        return num - 1  # Convert to zero-based index
+
+
+
+    def export_spreadsheet_to_csv_then_xlsx(self, data):
+        # Convert the Odoo spreadsheet data to an Excel file and save it to /tmp directory
+        input_path = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx").name
+
+        # Create a workbook and worksheet using openpyxl
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = 'Staging'
+
+        # Write data to the worksheet
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == 'Staging':
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    value = content.get('content', '')  # Safely get the 'content' or use an empty string if missing
+
+                    # Write the value or formula to the worksheet
+                    ws[f'{col}{row}'] = value
+
+        # Save the workbook to the temporary path using openpyxl
+        wb.save(input_path)
+
+        # Define the output CSV file path
+        csv_path = input_path.replace(".xlsx", ".csv")
+
+        # Use LibreOffice to convert the Excel file to a CSV file
+        call(f"libreoffice --headless --convert-to csv {input_path} --outdir {os.path.dirname(input_path)}", shell=True)
+
+        # Set read permission for all users
+        os.chmod(csv_path, 0o644)
+
+        # Read the CSV file and convert it back to an Excel file using pandas
+        df = pd.read_csv(csv_path)
+        output_xlsx_path = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx").name
+        df.to_excel(output_xlsx_path, index=False)
+
+        # Set read permission for all users
+        os.chmod(output_xlsx_path, 0o644)
+        print (" Output file is : " + output_xlsx_path)
+        return output_xlsx_path
+
+
+
+
+
+
+    '''
+    def export_spreadsheet_to_xlsx(self, data):
+        # Convert the Odoo spreadsheet data to an Excel file and save it to /tmp directory
+        input_path = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx").name
+
+        workbook = xlsxwriter.Workbook(input_path)
+        worksheet = workbook.add_worksheet()
+
+        # Write data to the worksheet
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == 'Staging':
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell))) - 1  # Extract row numbers and adjust for zero-based index
+                    col_idx = self.col2num(col)  # Convert column letters to indices
+                    value = content.get('content', '')  # Safely get the 'content' or use an empty string if missing
+                    worksheet.write(row, col_idx, value)
+        workbook.close()
+        return input_path
+    '''
+    '''
+    def paste_as_values(self, file_path):
+        # Open the workbook with data_only=True to get the values of the formulas
+        wb = openpyxl.load_workbook(file_path, data_only=True)
+        wb.save(file_path)
+        return wb
+    '''
+    def paste_as_values(self, file_path):
+        # Open the workbook without data_only first to ensure formulas are calculated
+        wb = openpyxl.load_workbook(file_path, data_only=False)
+        
+        # Save the workbook to ensure all formulas are calculated
+        wb.save(file_path)
+        
+        # Reopen the workbook with data_only to get the values of the formulas
+        wb = openpyxl.load_workbook(file_path, data_only=True)
+        
+        # Save the workbook again with values only
+        wb.save(file_path)
+        
+        return wb
+
+
+
+
+    def save_staging_to_final(self, data, wb, source_sheet_name, target_sheet_name):
+        # Open the source and target sheets
+        source_sheet = wb[source_sheet_name]
+        
+        # Get the Odoo Spreadsheet Final
+        target_sheet = None
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == target_sheet_name:
+                target_sheet = sheet
+                break
+
+        if target_sheet is None:
+            raise ValueError(f"Target sheet {target_sheet_name} not found in Odoo spreadsheet data.")
+
+        # Copy values from source sheet (Staging) to target sheet (Final)
+        for row_idx, row in enumerate(source_sheet.iter_rows(values_only=True), start=1):
+            for col_idx, value in enumerate(row, start=1):
+                cell_name = openpyxl.utils.get_column_letter(col_idx) + str(row_idx)
+                target_sheet['cells'][cell_name] = {'content': str(value) if value is not None else ''}
+
+    def import_json_data(self):
+        self.env.user.notify_info(
+            message='Payroll data is being imported from FINAL worksheet. Ensure FINAL worksheet has latest data otherwise copy and import again.',
+            title='INFORMATION',
+            sticky=False
+        )
+        #set_trace()
+        # Load JSON data
+        data = json.loads(base64.b64decode(self.data).decode("UTF-8"))
+
+        # Export the Odoo spreadsheet data as an Excel file
+        input_path = self.export_spreadsheet_to_csv_then_xlsx(data)
+
+        # Convert formulas to values in the Excel file
+        wb = self.paste_as_values(input_path)
+
+        # Save Staging data to Final sheet in Odoo Spreadsheet
+        self.save_staging_to_final(data, wb, source_sheet_name='Staging', target_sheet_name='Final')
+
+        # The remaining part of import_json_data code that processes the final data
+        # Delete all existing data from zoho.employee.data
+        self.env['zoho.employee.data'].search([]).unlink()
+
+        # Process the "Employee details" sheet
+        headers_emp_details = {}
+        rows_emp_details = {}
+
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Employee Details":
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row == 1 and 'HEADER' in content['content']:
+                        field_name = content['content'].split('\"')[1]
+                        headers_emp_details[col] = field_name
+                break
+
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Employee Details":
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row > 1:  # Skip headers
+                        if row not in rows_emp_details:
+                            rows_emp_details[row] = {}
+                        cell_value = content.get('content', '')
+                        rows_emp_details[row][col] = cell_value
+                break
+
+        field_value_dicts = {}  # Dictionary to hold all field_value_dicts based on employee_id
+        for row, cells in rows_emp_details.items():
+            field_value_dict = {}
+            for col, field_name in headers_emp_details.items():
+                cell_value = cells.get(col, '')
+                if cell_value.strip() == '-':  # Check if cell_value is only a hyphen after stripping blanks
+                    cell_value = ''  # Change cell value to empty string
+                if cell_value:  # Check if cell_value is not empty or null
+                    if field_name in ['contract_from', 'contract_to']:  # Date fields
+                        cell_value = self.parse_date(cell_value)  # Parse date values
+                    field_value_dict[field_name] = cell_value
+                else:
+                    field_value_dict[field_name] = None  # Handle empty date fields
+
+            employee_id_cell = cells.get('A', '')  # Assuming employee_id is in column A
+            if employee_id_cell:
+                employee_id = employee_id_cell
+                field_value_dicts[employee_id] = field_value_dict  # Store field_value_dict by employee_id
+
+        headers = {}
+        rows = {}
+        # Extract headers from the "Staging" sheet
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Staging":
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row == 1 and 'HEADER' in content['content']:
+                        field_name = content['content'].split('\"')[1]
+                        headers[col] = field_name
+                break
+        # Extract values from the "Final" sheet
+        for sheet in data.get('sheets', []):
+            if sheet['name'] == "Final":
+                for cell, content in sheet.get('cells', {}).items():
+                    col = ''.join(filter(str.isalpha, cell))  # Extract column letters
+                    row = int(''.join(filter(str.isdigit, cell)))  # Extract row numbers
+                    if row > 1:  # Skip headers
+                        if row not in rows:
+                            rows[row] = {}
+                        rows[row][col] = content.get('content', '').strip()
+                break
+
+        # Update field_value_dict with values from "Final" sheet
+        for row, cells in rows.items():
+            employee_id_cell = cells.get('A', '')  # Assuming employee_id is in column A
+            if employee_id_cell:
+                employee_id = employee_id_cell
+                field_value_dict = field_value_dicts.get(employee_id, {})  # Get the existing dictionary or create a new one
+                for col, field_name in headers.items():
+                    cell_value = cells.get(col, '')
+                    if cell_value.strip() == '-':  # Check if cell_value is only a hyphen after stripping blanks
+                        cell_value = ''  # Change cell value to empty string
+                    if cell_value:  # Check if cell_value is not empty or null
+                        if field_name in ['date_of_birth', 'date_of_joining', 'start_date', 'end_date', 'last_workday', 'contract_from', 'contract_to']:  # Date fields
+                            cell_value = self.parse_date(cell_value)  # Parse date values
+                        field_value_dict[field_name] = cell_value
+                    else:
+                        field_value_dict[field_name] = None  # Handle empty date fields
+                field_value_dicts[employee_id] = field_value_dict  # Update the dictionary for this employee_id
+
+        # Now update or create the record in zoho_employee_data with the combined field_value_dict
+        for employee_id, field_value_dict in field_value_dicts.items():
+            record = self.env['zoho.employee.data'].search([('employee_id', '=', employee_id)])
+            if record:
+                record.write(field_value_dict)
+            else:
+                self.env['zoho.employee.data'].create(field_value_dict)
+
+        self.env.user.notify_success(
+            message='Import of payroll data completed successfully! Now you can do payroll processing',
+            title='SUCCESS',
+            sticky=True
+        )
+
+        return {
+            'type': 'ir.actions.act_window_close',
+        }
+
+
+    @staticmethod
+    def parse_date(date_str):
+        # Check if the date_str is a number
+        if date_str.isdigit():
+            # Convert the number to an integer
+            date_num = int(date_str)
+            # Calculate the date from the base date (e.g., 1-Jan-1900)
+            base_date = datetime(1900, 1, 1)
+            date = base_date + timedelta(days=date_num - 2)  # Adjust for Excel's date system
+            return date.date()
+
+        # Try parsing the date in various formats
+        for fmt in ('%Y-%m-%d', '%d-%b-%y', '%d-%b-%Y', '%d/%m/%Y', '%d/%m/%y', '%m/%d/%Y'):
+            try:
+                return datetime.strptime(date_str, fmt).date()
+            except ValueError:
+                continue
+
+        raise ValueError(f"Date format not supported: {date_str}")
+
+

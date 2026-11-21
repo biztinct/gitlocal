@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Settings › HR › Learning (LEARNING L6). Comments ruled with `=` (R35);
+       loop variables `tb` (R1); every translatable text node on one line
+       (LN13). The pbls-switch is a real button with role="switch".
+       ==================================================================== -->
+  <t t-name="pb_training.PbLearningSettings">
+    <div class="pbim pbls">
+      <div class="pbls-wrap">
+
+        <t t-if="!state.loaded">
+          <div class="pbls-hero pbls-skel" aria-busy="true">
+            <div class="pbls-skel-line pbls-skel-line--s"/>
+            <div class="pbls-skel-line"/>
+          </div>
+        </t>
+
+        <div t-elif="state.failed" class="pbls-panel pbls-empty">
+          <div class="pbls-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>That did not load</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
+        <div t-elif="!allowed" class="pbls-panel pbls-empty">
+          <div class="pbls-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>These settings are for the training team</h2>
+          <p>Training managers can read them; the head of training changes them. Ask your HR administrator.</p>
+        </div>
+
+        <t t-else="">
+          <section class="pbls-hero">
+            <div class="pbls-eyebrow"><t t-out="ic('graduationCap',14)"/> Learning</div>
+            <p class="pbls-headline" t-esc="heroWords"/>
+            <p t-if="!canWrite" class="pbls-sub"><t t-out="ic('lock',13)"/> Only the head of training can change these. You can read them.</p>
+            <p t-else="" class="pbls-sub">Every switch says what it will do. Nothing changes until you press Save.</p>
+          </section>
+
+          <nav class="pbls-tabs" role="tablist">
+            <button t-foreach="tabs" t-as="tb" t-key="tb.key" role="tab" class="pbls-tab"
+                    t-att-class="{ 'is-on': state.tab === tb.key }" t-att-aria-selected="state.tab === tb.key ? 'true' : 'false'"
+                    t-on-click="() => this.pickTab(tb.key)">
+              <t t-out="ic(tb.icon,15)"/> <span t-esc="tb.label"/>
+            </button>
+          </nav>
+
+          <!-- ============ report pack ============ -->
+          <section t-if="state.tab === 'report_pack'" class="pbls-panel">
+            <div class="pbls-row">
+              <div class="pbls-row-tx">
+                <b>Send the training pack by email</b>
+                <span class="pbls-effect" t-esc="words.report_pack"/>
+              </div>
+              <button class="pbls-switch" role="switch" t-att-aria-checked="state.form.report_pack ? 'true' : 'false'" t-att-class="{ 'is-on': state.form.report_pack }" t-att-disabled="!canWrite" t-on-click="() => this.flip('report_pack')" title="Send the training pack by email"><span class="pbls-knob"/></button>
+            </div>
+            <div class="pbls-row">
+              <div class="pbls-row-tx">
+                <b>How often</b>
+                <span class="pbls-dim">For the week or the month that has just ended, never the one under way.</span>
+              </div>
+              <div class="pbls-seg" role="radiogroup">
+                <button role="radio" class="pbls-seg-b" t-att-class="{ 'is-on': state.form.report_pack_period === 'weekly' }" t-att-aria-checked="state.form.report_pack_period === 'weekly' ? 'true' : 'false'" t-att-disabled="!canWrite" t-on-click="() => { this.state.form.report_pack_period = 'weekly'; }">Weekly</button>
+                <button role="radio" class="pbls-seg-b" t-att-class="{ 'is-on': state.form.report_pack_period !== 'weekly' }" t-att-aria-checked="state.form.report_pack_period !== 'weekly' ? 'true' : 'false'" t-att-disabled="!canWrite" t-on-click="() => { this.state.form.report_pack_period = 'monthly'; }">Monthly</button>
+              </div>
+            </div>
+            <label class="pbls-row pbls-row--stack">
+              <span class="pbls-row-tx">
+                <b>Who gets it</b>
+                <span class="pbls-dim" t-esc="capWords"/>
+              </span>
+              <textarea class="pbls-in pbls-area" rows="2" t-att-disabled="!canWrite" t-att-value="state.form.report_pack_email" t-on-input="(ev) => this.setText('report_pack_email', ev)" placeholder="hr.lead@company.com, ceo@company.com"/>
+              <span t-if="emailProblem" class="pbls-bad"><t t-out="ic('triangleAlert',13)"/> <t t-esc="emailProblem"/></span>
+            </label>
+            <div class="pbls-packline">
+              <span class="pbls-dim" t-esc="packStatusWords"/>
+              <span class="pbls-dim" t-esc="testWords"/>
+              <div class="pbls-packbtns">
+                <button class="pbim-btn ghost" t-att-disabled="state.previewing" t-on-click="openPreview"><t t-out="ic('eye',14)"/> Preview the email</button>
+                <button class="pbim-btn ghost" t-att-disabled="state.testing or !d.my_email" t-on-click="sendTest"><t t-out="ic('send',14)"/> Send me a test</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ reminders ============ -->
+          <section t-if="state.tab === 'reminders'" class="pbls-panel">
+            <div class="pbls-row">
+              <div class="pbls-row-tx">
+                <b>Remind people about their courses</b>
+                <span class="pbls-effect" t-esc="words.reminders"/>
+              </div>
+              <button class="pbls-switch" role="switch" t-att-aria-checked="state.form.reminders ? 'true' : 'false'" t-att-class="{ 'is-on': state.form.reminders }" t-att-disabled="!canWrite" t-on-click="() => this.flip('reminders')" title="Remind people about their courses"><span class="pbls-knob"/></button>
+            </div>
+            <label class="pbls-row">
+              <span class="pbls-row-tx"><b>Tell the manager after</b><span class="pbls-dim">Days late before their manager hears.</span></span>
+              <span class="pbls-num"><input class="pbls-in" type="number" min="0" max="60" t-att-value="state.form.manager_days" t-att-disabled="!canWrite" t-on-input="(ev) => this.setNum('manager_days', ev)"/> <span class="pbls-dim">days</span></span>
+            </label>
+            <label class="pbls-row">
+              <span class="pbls-row-tx"><b>Tell the HR lead after</b><span class="pbls-dim">Days late before the HR lead hears.</span></span>
+              <span class="pbls-num"><input class="pbls-in" type="number" min="0" max="90" t-att-value="state.form.hr_days" t-att-disabled="!canWrite" t-on-input="(ev) => this.setNum('hr_days', ev)"/> <span class="pbls-dim">days</span></span>
+            </label>
+            <div class="pbls-row">
+              <div class="pbls-row-tx">
+                <b>Remind people before a certificate runs out</b>
+                <span class="pbls-effect" t-esc="words.cert_reminders"/>
+              </div>
+              <button class="pbls-switch" role="switch" t-att-aria-checked="state.form.cert_reminders ? 'true' : 'false'" t-att-class="{ 'is-on': state.form.cert_reminders }" t-att-disabled="!canWrite" t-on-click="() => this.flip('cert_reminders')" title="Remind people before a certificate runs out"><span class="pbls-knob"/></button>
+            </div>
+            <label class="pbls-row">
+              <span class="pbls-row-tx"><b>Renewal window</b><span class="pbls-effect" t-esc="words.renew_before"/></span>
+              <span class="pbls-num"><input class="pbls-in" type="number" min="0" max="365" t-att-value="state.form.renew_before" t-att-disabled="!canWrite" t-on-input="(ev) => this.setNum('renew_before', ev)"/> <span class="pbls-dim">days</span></span>
+            </label>
+            <label class="pbls-row">
+              <span class="pbls-row-tx"><b>Most required courses in one morning</b><span class="pbls-effect" t-esc="words.enforce_cap"/></span>
+              <span class="pbls-num"><input class="pbls-in" type="number" min="0" max="10000" t-att-value="state.form.enforce_cap" t-att-disabled="!canWrite" t-on-input="(ev) => this.setNum('enforce_cap', ev)"/></span>
+            </label>
+          </section>
+
+          <!-- ============ feedback ============ -->
+          <section t-if="state.tab === 'feedback'" class="pbls-panel">
+            <div class="pbls-row">
+              <div class="pbls-row-tx">
+                <b>Ask people how a course was</b>
+                <span class="pbls-effect" t-esc="words.feedback_on"/>
+              </div>
+              <button class="pbls-switch" role="switch" t-att-aria-checked="state.form.feedback_on ? 'true' : 'false'" t-att-class="{ 'is-on': state.form.feedback_on }" t-att-disabled="!canWrite" t-on-click="() => this.flip('feedback_on')" title="Ask people how a course was"><span class="pbls-knob"/></button>
+            </div>
+            <div class="pbls-row">
+              <div class="pbls-row-tx">
+                <b>Ask the manager whether it made a difference</b>
+                <span class="pbls-effect" t-esc="words.followup_on"/>
+              </div>
+              <button class="pbls-switch" role="switch" t-att-aria-checked="state.form.followup_on ? 'true' : 'false'" t-att-class="{ 'is-on': state.form.followup_on }" t-att-disabled="!canWrite" t-on-click="() => this.flip('followup_on')" title="Ask the manager whether it made a difference"><span class="pbls-knob"/></button>
+            </div>
+            <label class="pbls-row">
+              <span class="pbls-row-tx"><b>Ask the manager after</b><span class="pbls-dim">Days after somebody finishes a course.</span></span>
+              <span class="pbls-num"><input class="pbls-in" type="number" min="1" max="365" t-att-value="state.form.followup_days" t-att-disabled="!canWrite" t-on-input="(ev) => this.setNum('followup_days', ev)"/> <span class="pbls-dim">days</span></span>
+            </label>
+          </section>
+
+          <!-- ============ country packs (the L2 screen, embedded) ============ -->
+          <section t-if="state.tab === 'country_packs'" class="pbls-embed">
+            <PbRequiredSettings packsOnly="true"/>
+          </section>
+
+          <!-- ============ day one ============ -->
+          <section t-if="state.tab === 'day_one'" class="pbls-panel">
+            <div class="pbls-row">
+              <div class="pbls-row-tx">
+                <b>Put day-one courses on new joiners by themselves</b>
+                <span class="pbls-effect" t-esc="words.day1"/>
+              </div>
+              <button class="pbls-switch" role="switch" t-att-aria-checked="state.form.day1 ? 'true' : 'false'" t-att-class="{ 'is-on': state.form.day1 }" t-att-disabled="!canWrite" t-on-click="() => this.flip('day1')" title="Put day-one courses on new joiners by themselves"><span class="pbls-knob"/></button>
+            </div>
+          </section>
+
+          <div t-if="canWrite and state.tab !== 'country_packs'" class="pbls-foot">
+            <span t-if="dirty" class="pbls-dim">You have changes that are not saved yet.</span>
+            <button class="pbim-btn ghost" t-att-disabled="!dirty or state.saving" t-on-click="undo">Undo</button>
+            <button class="pbim-btn primary" t-att-disabled="!dirty or state.saving or emailProblem" t-on-click="save"><t t-out="ic('check',15)"/> Save</button>
+          </div>
+        </t>
+
+        <!-- ============ the email, as it would go ============ -->
+        <div t-if="state.preview" class="pbim-modal-scrim" t-on-click="closePreview">
+          <div class="pbim-modal pbls-modal" t-on-click.stop="() => {}">
+            <div class="pbls-modal-head">
+              <h3 t-esc="state.preview.subject"/>
+              <button class="pbim-btn ghost" t-on-click="closePreview" title="Close"><t t-out="ic('x',14)"/></button>
+            </div>
+            <div class="pbls-modal-body">
+              <p class="pbls-dim" t-esc="previewToWords"/>
+              <p class="pbls-dim"><t t-out="ic('fileSpreadsheet',13)"/> <t t-esc="state.preview.attachment"/></p>
+              <div class="pbls-mail" t-out="state.preview.body"/>
+            </div>
+            <div class="pbls-modal-foot">
+              <button class="pbim-btn ghost" t-on-click="closePreview">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

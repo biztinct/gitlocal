@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-A — the privacy notice on My Payobook. Pages reuse
+       pb_me_portal's .pbme kit; `.pbpv-*` is this module's thin layer
+       (static/src/scss/privacy_portal.scss). Every sentence sits on one line
+       (ledger PRD-3). No %-formatting inside t-att-* (ledger PRB-W5). -->
+
+  <template id="portal_breadcrumbs_privacy" name="Privacy breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="38">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'privacy'" class="breadcrumb-item active">Privacy</li>
+      <li t-if="page_name == 'privacy_notice'" class="breadcrumb-item active">Privacy notice</li>
+    </xpath>
+  </template>
+
+  <!-- The tile, only for a person whose company has published a notice. -->
+  <template id="portal_my_home_privacy" name="Privacy home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="60">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home and request.env['pb.privacy.consent'].sudo()._pb_has_notice(request.env.user)" t-call="portal.portal_docs_entry">
+        <t t-set="title">Privacy</t>
+        <t t-set="text">What we keep about you, and your answer</t>
+        <t t-set="url" t-value="'/my/privacy'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The notice, before anything else (first visit, new version)   -->
+  <!-- ============================================================= -->
+  <template id="portal_privacy_notice" name="Privacy notice (ESS)">
+    <t t-call="portal.portal_layout">
+      <t t-set="no_breadcrumbs" t-value="True"/>
+      <div class="pbme pbpv">
+        <article class="pbpv-door" aria-labelledby="pbpv-title">
+          <header class="pbpv-door-head">
+            <span class="pbpv-door-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="22"/></t></span>
+            <div>
+              <div class="pbpv-eyebrow" t-esc="company.name"/>
+              <h1 id="pbpv-title" class="pbpv-title" t-esc="notice.name"/>
+              <div class="pbpv-meta"><span>Version</span> <b t-esc="notice.version"/><t t-if="notice.published_on"><span class="pbpv-dot" aria-hidden="true"/><span t-out="notice.published_on" t-options="{'widget': 'date'}"/></t></div>
+            </div>
+          </header>
+          <p class="pbpv-lead">Before you continue, please read how <b t-esc="company.name"/> uses your personal details, then give your answer.</p>
+          <div class="pbpv-body" tabindex="0" t-out="notice.body"/>
+          <footer class="pbpv-door-foot">
+            <p class="pbpv-note"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="15"/></t><span>Your answer is kept with today's date, and HR can see it. You continue to My Payobook whichever you choose.</span></p>
+            <div class="pbpv-actions">
+              <form action="/my/privacy/answer" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="notice_id" t-att-value="notice.id"/>
+                <input type="hidden" name="next" t-att-value="next"/>
+                <input type="hidden" name="answer" value="agree"/>
+                <button type="submit" class="pbme-btn pbme-btn--primary pbpv-agree"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>I have read and agree</button>
+              </form>
+              <form action="/my/privacy/answer" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="notice_id" t-att-value="notice.id"/>
+                <input type="hidden" name="next" t-att-value="next"/>
+                <input type="hidden" name="answer" value="disagree"/>
+                <button type="submit" class="pbme-btn pbme-btn--ghost pbpv-disagree">I do not agree</button>
+              </form>
+            </div>
+          </footer>
+        </article>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/privacy — what I answered, and the words I answered       -->
+  <!-- ============================================================= -->
+  <template id="pbpv_status" name="Privacy: answer pill">
+    <span t-att-class="'pbpv-pill pbpv-pill--' + status">
+      <i class="pbpv-pill-dot" aria-hidden="true"/>
+      <t t-if="status == 'agreed'">You agreed</t>
+      <t t-elif="status == 'paper'">You agreed on paper</t>
+      <t t-elif="status == 'declined'">You did not agree</t>
+      <t t-else="">Not answered yet</t>
+    </span>
+  </template>
+
+  <template id="portal_my_privacy" name="My privacy (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbpv">
+        <div t-if="done" class="pbpv-toast" role="status" aria-live="polite">
+          <span class="pbpv-toast-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></span>
+          <span t-if="done == 'agree'">Thank you. Your answer is saved: you agree.</span>
+          <span t-else="">Your answer is saved: you do not agree. HR can see it and may contact you.</span>
+        </div>
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Privacy</t>
+          <t t-set="hero_sub">How your company uses your personal details, and the answer you gave.</t>
+        </t>
+
+        <div t-if="not cards" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Nothing to read here yet</h3>
+          <p>When your company publishes its privacy notice, you will find it here with your answer.</p>
+        </div>
+
+        <section t-foreach="cards" t-as="cd" class="pbme-card pbpv-card">
+          <div class="pbpv-card-head">
+            <div>
+              <div class="pbpv-eyebrow" t-esc="cd['company']"/>
+              <h2 class="pbpv-card-title" t-esc="cd['notice'].name"/>
+              <div class="pbpv-meta"><span>Version</span> <b t-esc="cd['notice'].version"/></div>
+            </div>
+            <t t-call="pb_me_privacy.pbpv_status"><t t-set="status" t-value="cd['status']"/></t>
+          </div>
+          <p t-if="cd['row']" class="pbpv-when"><span>Answered on</span> <b t-out="cd['row'].answered_on" t-options="{'widget': 'date'}"/></p>
+          <details class="pbpv-read">
+            <summary>Read the notice</summary>
+            <div class="pbpv-body" t-out="cd['notice'].body"/>
+          </details>
+          <div class="pbpv-change">
+            <form t-if="cd['status'] != 'declined'" action="/my/privacy/answer" method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="notice_id" t-att-value="cd['notice'].id"/>
+              <input type="hidden" name="next" value="/my/privacy"/>
+              <input type="hidden" name="answer" value="disagree"/>
+              <button type="submit" class="pbme-btn pbme-btn--ghost">I no longer agree</button>
+            </form>
+            <form t-if="cd['status'] in ('declined', 'not_yet')" action="/my/privacy/answer" method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="notice_id" t-att-value="cd['notice'].id"/>
+              <input type="hidden" name="next" value="/my/privacy"/>
+              <input type="hidden" name="answer" value="agree"/>
+              <button type="submit" class="pbme-btn pbme-btn--primary">I have read and agree</button>
+            </form>
+            <a t-if="ask_hr_url" class="pbme-btn pbme-btn--ghost" t-att-href="ask_hr_url"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>Ask HR about it</a>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+</odoo>

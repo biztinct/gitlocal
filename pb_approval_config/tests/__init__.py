@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*-
+from . import common
+from . import test_static_contract
+from . import test_seed
+from . import test_matrix_facade
+from . import test_inbox_facade
+from . import test_vietnamese
+from . import test_inbox_scopes
+# Approval Matrix P7 — the spreadsheet door, and the catalogue's own truth.
+from . import test_p7_import
+from . import test_p7_matrix
+# The browser walk's five findings.
+from . import test_p7_walk_fixes
+# Many processes switched to "No approval needed" in one press.
+from . import test_bulk_no_approval
+# UPDATES P6 — a client's own admin sets approvals up (D22).
+from . import test_p6_tenant_admin
+from . import test_p6_bank_rails
+# WDGAP QF1 — approve selected.
+from . import test_wdgap_qf1_bulk
+# INBOX-BULK-BANK — bank details approved several at once, after a check.
+from . import test_inbox_bulk_bank

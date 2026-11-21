@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ONE extra job, and it is deliberately tiny.
+
+         Everything else this module does rides P0's single daily job
+         (`_cron_lifecycle_reminders`, extended in probation_automation.py) —
+         two jobs on the same table is two jobs that can disagree about what
+         "today" means.
+
+         This one cannot ride it. "The window closes today" is only true for
+         one day, and a colleague told the morning after has been told nothing.
+         So it runs hourly, does exactly one thing, and stamps each review so
+         it says it once.
+
+         `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the module load — and `nextcall` takes no eval
+         expression in a data file, so the first run is simply the next tick
+         after installation. The whole job is behind
+         `pb_probation.hourly_alerts`. -->
+    <record id="cron_probation_deadline_alerts" model="ir.cron">
+        <field name="name">Probation: the answer window closes today</field>
+        <field name="model_id" ref="model_pb_probation_review"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_deadline_alerts()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

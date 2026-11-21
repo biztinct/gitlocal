@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The lens is the screen (People › Agency staff). This named action is
+         its own page from the palette, and the target of a deep link. -->
+    <record id="action_pb_agency_staff" model="ir.actions.client">
+        <field name="name">Agency staff</field>
+        <field name="tag">pb_agency_staff</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Native views: an off-menu fallback for administrators. -->
+    <record id="view_pb_agency_worker_list" model="ir.ui.view">
+        <field name="name">pb.agency.worker.list</field>
+        <field name="model">pb.agency.worker</field>
+        <field name="arch" type="xml">
+            <list string="Agency staff">
+                <field name="name"/>
+                <field name="vendor_id"/>
+                <field name="job_title"/>
+                <field name="department_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_agency_worker_form" model="ir.ui.view">
+        <field name="name">pb.agency.worker.form</field>
+        <field name="model">pb.agency.worker</field>
+        <field name="arch" type="xml">
+            <form string="Agency staff member">
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="Their name"/></h1></div>
+                    <group>
+                        <group string="Who supplies them">
+                            <field name="vendor_id"/>
+                            <field name="job_title"/>
+                            <field name="phone"/>
+                            <field name="email"/>
+                        </group>
+                        <group string="Where they work">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="department_id"/>
+                            <field name="work_location_id"/>
+                            <field name="manager_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Notes"/>
+                    <field name="attachment_ids" widget="many2many_binary"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+</odoo>

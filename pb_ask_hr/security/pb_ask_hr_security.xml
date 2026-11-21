@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- TIERS T3a (D3). No base.group_portal row anywhere: an employee login
+         reaches its own questions only through the /my routes, which read
+         under sudo after the ownership guard (ledger T-R11). -->
+
+    <!-- multi-company: global -->
+    <record id="rule_pb_ask_hr_ticket_company" model="ir.rule">
+        <field name="name">Ask HR: own companies</field>
+        <field name="model_id" ref="model_pb_ask_hr_ticket"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- a full-account employee may READ their own question from the backend
+         (the e-mail link); the portal is the product surface -->
+    <record id="rule_pb_ask_hr_ticket_own" model="ir.rule">
+        <field name="name">Ask HR: an employee reads their own questions</field>
+        <field name="model_id" ref="model_pb_ask_hr_ticket"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- group rules OR together: HR (and admins) see every question -->
+    <record id="rule_pb_ask_hr_ticket_hr" model="ir.rule">
+        <field name="name">Ask HR: HR sees every question</field>
+        <field name="model_id" ref="model_pb_ask_hr_ticket"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user')), (4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Growth plans × learning paths (LEARNING L3). Extends the growth-plan
+       drawer's objective block; `pb_pip` is not edited. Loop variable `pop`
+       (R1). Every translatable text node on one line (ledger LN13).
+       ==================================================================== -->
+  <t t-name="pb_training_growth.PbPipBoardPaths" t-inherit="pb_pip.PbPipBoard" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pip-obj-act')]" position="before">
+      <div t-if="(ob.path and ob.path.id) or (state.canWrite and (state.drawer.path_options or []).length)" class="pgr-path">
+        <t t-if="ob.path and ob.path.id">
+          <span class="pgr-chip" t-att-class="pathChipClass(ob.path)" title="Learning path"><t t-out="ic('route',12)"/> <t t-esc="ob.path.words"/></span>
+          <button t-if="state.canWrite and !ob.path.enrolment_id" class="pip-inline-btn" t-on-click="() => this.enrolObjectivePath(ob)"><t t-out="ic('userPlus',12)"/> Enrol</button>
+        </t>
+        <label t-if="state.canWrite and (state.drawer.path_options or []).length" class="pgr-pick">
+          <span class="pgr-pick-l">Learning path</span>
+          <select class="pgr-in" t-on-change="(ev) => this.setObjectivePath(ob, ev)">
+            <option value="0" t-att-selected="!(ob.path and ob.path.id)">No learning path</option>
+            <t t-foreach="state.drawer.path_options" t-as="pop" t-key="pop.id">
+              <option t-att-value="pop.id" t-att-selected="ob.path and ob.path.id === pop.id" t-esc="pop.name"/>
+            </t>
+          </select>
+        </label>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

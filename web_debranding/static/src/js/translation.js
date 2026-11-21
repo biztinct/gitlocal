@@ -1,29 +1,22 @@
 /** @odoo-module **/
-/*  Copyright 2022 Ivan Yelizariev <https://twitter.com/yelizariev>
+/*  Copyright 2022-2023 Ivan Yelizariev <https://twitter.com/yelizariev>
     License OPL-1 (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#odoo-apps). */
+/*  Odoo 19 compatibility: translatedTerms may not be available */
 
 import { localizationService } from "@web/core/l10n/localization_service";
-import { translatedTerms } from "@web/core/l10n/translation";
 
-const odoo_terms = [
-    "Odoo Session Expired",
-    "Your Odoo session expired. The current page is about to be refreshed.",
-];
-
+// Odoo 19: translatedTerms is no longer exported, debranding handled elsewhere
 export const debrandTranslation = () => {
-    if (!odoo.debranding_new_name) {
-        return;
-    }
-    _.each(odoo_terms, (term) => {
-        if (!translatedTerms[term]) {
-            translatedTerms[term] = term;
-        }
-        translatedTerms[term] = term.replace(/Odoo/gi, odoo.debranding_new_name);
-    });
+    // Stub function for Odoo 19 compatibility
+    // Translation debranding is handled via server-side mechanisms
 };
 
-const start = localizationService.start;
-localizationService.start = async (env, { user }) => {
-    await start(env, { user });
-    debrandTranslation();
-};
+// Only patch if localizationService.start exists
+if (localizationService && localizationService.start) {
+    const start = localizationService.start;
+    localizationService.start = async (...args) => {
+        const localization = await start(...args);
+        debrandTranslation();
+        return localization;
+    };
+}

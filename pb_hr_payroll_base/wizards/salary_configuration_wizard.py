@@ -53,7 +53,7 @@ class SalaryConfigurationWorkflowWizard(models.TransientModel):
         """Open HR connectors in kanban with New button visible immediately."""
         preferred_views = [
             ('pb_hr_payroll_formula.view_integration_connector_kanban', 'kanban'),
-            ('pb_hr_payroll_formula.view_integration_connector_tree', 'tree'),
+            ('pb_hr_payroll_formula.view_integration_connector_tree', 'list'),
             ('pb_hr_payroll_formula.view_integration_connector_form', 'form'),
         ]
         return self._open_action('pb_hr_payroll_formula.action_integration_connector_kanban', preferred_views)
@@ -62,7 +62,7 @@ class SalaryConfigurationWorkflowWizard(models.TransientModel):
         """Open salary structure/formula configs in kanban with create enabled."""
         preferred_views = [
             ('pb_hr_payroll_formula.view_formula_config_kanban', 'kanban'),
-            ('pb_hr_payroll_formula.view_formula_config_tree', 'tree'),
+            ('pb_hr_payroll_formula.view_formula_config_tree', 'list'),
             ('pb_hr_payroll_formula.view_formula_config_form', 'form'),
         ]
         return self._open_action('pb_hr_payroll_formula.action_formula_config_kanban', preferred_views)
@@ -71,7 +71,7 @@ class SalaryConfigurationWorkflowWizard(models.TransientModel):
         """Open sample data/tests with kanban first and create enabled."""
         preferred_views = [
             ('pb_hr_payroll_formula.view_formula_sample_data_kanban', 'kanban'),
-            ('pb_hr_payroll_formula.view_formula_sample_data_tree', 'tree'),
+            ('pb_hr_payroll_formula.view_formula_sample_data_tree', 'list'),
             ('pb_hr_payroll_formula.view_formula_sample_data_form', 'form'),
         ]
         return self._open_action('pb_hr_payroll_formula.action_sample_data', preferred_views)

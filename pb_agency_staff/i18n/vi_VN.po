@@ -1,0 +1,563 @@
+# Translation of Payobook module pb_agency_staff (Vietnamese).
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "%s has been added. They are not an employee and are never in a pay run."
+msgstr "Đã thêm %s. Đây không phải nhân viên và không bao giờ có trong kỳ lương."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "%s has been removed."
+msgstr "Đã xóa %s."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "%s has been updated."
+msgstr "Đã cập nhật %s."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "A file can be at most 10 MB."
+msgstr "Mỗi tệp tối đa 10 MB."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Add a file (PDF, PNG or JPG)"
+msgstr "Thêm tệp (PDF, PNG hoặc JPG)"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Add someone"
+msgstr "Thêm người"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Add someone from an agency"
+msgstr "Thêm người từ một công ty cung ứng"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Added last"
+msgstr "Thêm gần nhất"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__vendor_id
+msgid "Agency"
+msgstr "Công ty cung ứng"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff_patches.js:0 code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.actions.client,name:pb_agency_staff.action_pb_agency_staff model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_list
+msgid "Agency staff"
+msgstr "Nhân sự thuê ngoài"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Agency staff are looked after by HR"
+msgstr "Nhân sự thuê ngoài do Nhân sự quản lý"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Agency staff are looked after by HR. Ask your administrator for an HR role to see this list."
+msgstr "Nhân sự thuê ngoài do Nhân sự quản lý. Hãy đề nghị quản trị viên cấp vai trò nhân sự để xem danh sách này."
+
+#. module: pb_agency_staff
+#: model:ir.model,name:pb_agency_staff.model_pb_agency_worker model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Agency staff member"
+msgstr "Nhân sự thuê ngoài"
+
+#. module: pb_agency_staff
+#: model:ir.model,name:pb_agency_staff.model_pb_agency_board
+msgid "Agency staff — screen data"
+msgstr "Nhân sự thuê ngoài — dữ liệu màn hình"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Dates"
+msgstr "Thời gian"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Document"
+msgstr "Tài liệu"
+
+#. module: pb_agency_staff
+#: model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__attachment_ids
+msgid "Documents"
+msgstr "Tài liệu"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__email
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 model:ir.model.fields.selection,name:pb_agency_staff.selection__pb_agency_worker__status__ended
+msgid "Ended"
+msgstr "Đã kết thúc"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Ending in 30 days"
+msgstr "Kết thúc trong 30 ngày"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Ending soon"
+msgstr "Sắp kết thúc"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Ending soonest"
+msgstr "Kết thúc sớm nhất"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__date_end
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Everyone"
+msgstr "Tất cả"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "Find by name, role or agency…"
+msgstr "Tìm theo tên, vai trò hoặc công ty cung ứng…"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Keep a light record for each of them: the agency, the site and team, their manager here, their dates and their papers. They are shown beside your headcount, not in it."
+msgstr "Lưu một hồ sơ gọn cho mỗi người: công ty cung ứng, địa điểm và nhóm, quản lý tại đây, thời gian và giấy tờ. Họ được hiển thị bên cạnh số nhân viên, không tính vào đó."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Last day is today"
+msgstr "Hôm nay là ngày cuối"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__manager_id
+msgid "Manager here"
+msgstr "Quản lý tại đây"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "No papers yet: an agency agreement, an ID copy, a site pass."
+msgstr "Chưa có giấy tờ: hợp đồng cung ứng, bản sao giấy tờ tùy thân, thẻ ra vào."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Nobody matches these filters"
+msgstr "Không ai khớp bộ lọc"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Not an employee · never in a pay run"
+msgstr "Không phải nhân viên · không bao giờ có trong kỳ lương"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__notes model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 model:ir.model.fields.selection,name:pb_agency_staff.selection__pb_agency_worker__status__on_site
+msgid "On site"
+msgstr "Đang làm việc"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Only PDF, PNG or JPG files can be added."
+msgstr "Chỉ thêm được tệp PDF, PNG hoặc JPG."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Only an HR manager can delete somebody from this list. Set an end date instead."
+msgstr "Chỉ quản lý nhân sự mới xóa được người khỏi danh sách. Hãy đặt ngày kết thúc thay vào đó."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Papers"
+msgstr "Giấy tờ"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff_patches.js:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff_patches.js:0
+msgid "People an agency supplies — not on your payroll"
+msgstr "Người do công ty cung ứng cấp — không thuộc bảng lương của bạn"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "People an agency supplies. They are not employees: never in a pay run, never on a payslip, never in your headcount."
+msgstr "Người do công ty cung ứng cấp. Họ không phải nhân viên: không có trong kỳ lương, không có phiếu lương, không tính vào số nhân viên."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__phone
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Pick a company you work in."
+msgstr "Chọn công ty bạn làm việc."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Read the list again"
+msgstr "Đọc lại danh sách"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Reading the list…"
+msgstr "Đang đọc danh sách…"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Recorded: %(who)s's last day is %(day)s."
+msgstr "Đã ghi: ngày cuối của %(who)s là %(day)s."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Remove"
+msgstr "Gỡ"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__job_title
+msgid "Role"
+msgstr "Vai trò"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Save first, then add their papers."
+msgstr "Hãy lưu trước, rồi thêm giấy tờ."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Show everyone"
+msgstr "Hiện tất cả"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__work_location_id
+msgid "Site"
+msgstr "Địa điểm"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 model:ir.model.fields.selection,name:pb_agency_staff.selection__pb_agency_worker__status__upcoming
+msgid "Starting later"
+msgstr "Bắt đầu sau"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__date_start
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__status
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0 model:ir.model.fields,field_description:pb_agency_staff.field_pb_agency_worker__department_id
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Team and site"
+msgstr "Nhóm và địa điểm"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "That could not be done."
+msgstr "Không thực hiện được."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_worker.py:0
+msgid "The %(what)s belongs to another company."
+msgstr "%(what)s thuộc công ty khác."
+
+#. module: pb_agency_staff
+#: model:ir.model.fields,help:pb_agency_staff.field_pb_agency_worker__vendor_id
+msgid "The agency that supplies them, from Vendors."
+msgstr "Công ty cung ứng nhân sự, lấy từ danh sách Nhà cung cấp."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0 code:addons/pb_agency_staff/models/agency_worker.py:0
+msgid "The end date cannot be before the start date."
+msgstr "Ngày kết thúc không thể trước ngày bắt đầu."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "The file could not be added."
+msgstr "Không thêm được tệp."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "The file could not be removed."
+msgstr "Không gỡ được tệp."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "The list could not be read just now."
+msgstr "Chưa đọc được danh sách."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "The list could not load"
+msgstr "Không tải được danh sách"
+
+#. module: pb_agency_staff
+#: model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Their name"
+msgstr "Tên của họ"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Their people here"
+msgstr "Người của họ tại đây"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "This could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "This file could not be read."
+msgstr "Không đọc được tệp này."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "This person could not be opened."
+msgstr "Không mở được người này."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "This person is no longer on the list."
+msgstr "Người này không còn trong danh sách."
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Type a name…"
+msgstr "Nhập tên…"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Type their name."
+msgstr "Nhập tên của họ."
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_board.py:0
+msgid "Where they are"
+msgstr "Họ đang ở đâu"
+
+#. module: pb_agency_staff
+#: model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Where they work"
+msgstr "Nơi họ làm việc"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "Who is working here through an agency?"
+msgstr "Ai đang làm việc tại đây qua công ty cung ứng?"
+
+#. module: pb_agency_staff
+#: model_terms:ir.ui.view,arch_db:pb_agency_staff.view_pb_agency_worker_form
+msgid "Who supplies them"
+msgstr "Ai cung ứng họ"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0 code:addons/pb_agency_staff/static/src/js/agency_staff_patches.js:0
+msgid "agency staff"
+msgstr "nhân sự thuê ngoài"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "ended"
+msgstr "đã kết thúc"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "ending in 30 days"
+msgstr "kết thúc trong 30 ngày"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_worker.py:0
+msgid "manager"
+msgstr "quản lý"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/xml/agency_staff.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "on site"
+msgstr "đang làm việc"
+
+#. module: pb_agency_staff
+#. odoo-javascript
+#: code:addons/pb_agency_staff/static/src/js/agency_staff.js:0
+msgid "starting later"
+msgstr "bắt đầu sau"
+
+#. module: pb_agency_staff
+#. odoo-python
+#: code:addons/pb_agency_staff/models/agency_worker.py:0
+msgid "team"
+msgstr "nhóm"

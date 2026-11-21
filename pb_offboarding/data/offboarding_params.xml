@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         The dials, shipped so they are DISCOVERABLE rather than folklore.
+
+         The SWITCHES that gate outgoing email — resign_mail, kt_ping_mail,
+         exit_feedback_mail, farewell_mail — are deliberately NOT here, for
+         the reason P3 wrote down: they default in code
+         (`offboarding_common.DEFAULTS`), and shipping a record for them
+         would freeze whatever value a test run happened to leave behind,
+         because `noupdate="1"` means the next upgrade never corrects it. A
+         switch whose only home is a row somebody set once, months ago, is
+         the kind of thing that turns "why did nobody get a farewell note"
+         into an afternoon.
+
+         Everything below is a number with a sensible answer, and changing
+         one is a normal thing for an HR administrator to do.
+         ================================================================== -->
+
+    <record id="param_notice_days" model="ir.config_parameter">
+        <field name="key">pb_offboarding.notice_days</field>
+        <!-- Only reached when no notice policy covers the person at all.
+             The policies below are the real answer. -->
+        <field name="value">30</field>
+    </record>
+
+    <record id="param_kt_ping_days" model="ir.config_parameter">
+        <field name="key">pb_offboarding.kt_ping_days</field>
+        <!-- How often HR is reminded while a handover is still open. Once a
+             fortnight is a reminder; once a day is noise somebody filters. -->
+        <field name="value">15</field>
+    </record>
+
+    <record id="param_exit_feedback_days" model="ir.config_parameter">
+        <field name="key">pb_offboarding.exit_feedback_days</field>
+        <!-- How long the exit questionnaire link stays open, counted from the
+             last working day. Three weeks: long enough that somebody can
+             answer it once they have stopped being angry. -->
+        <field name="value">21</field>
+    </record>
+
+    <record id="param_farewell_cap" model="ir.config_parameter">
+        <field name="key">pb_offboarding.farewell_cap</field>
+        <!-- Past this many colleagues the farewell note is NOT sent and the
+             log says so. Sixty people is a note; six hundred is an incident,
+             and the difference has to be a number somebody chose. -->
+        <field name="value">60</field>
+    </record>
+
+</data>
+</odoo>

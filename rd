@@ -3,13 +3,13 @@
   # Function to copy all health modules
   copy_all_health() {
       echo "Copying all pb_* modules..."
-      scp -r /Users/adity/Documents/GitHub/gitlocal/pb_* RizeV16:/odoo/odoo-server/addons/
+      scp -r /Users/adity/Documents/GitHub/gitlocal/pb_* Payobook19:/odoo/odoo-server/addons/
   }
 
   # Function to copy specific modules
   copy_specific() {
       echo "Copying specified modules: $@"
-      scp -r "/Users/adity/Documents/GitHub/gitlocal/$@" RizeV16:/odoo/odoo-server/addons/
+      scp -r "/Users/adity/Documents/GitHub/gitlocal/$@" Payobook19:/odoo/odoo-server/addons/
   }
 
   # Function to list available health modules

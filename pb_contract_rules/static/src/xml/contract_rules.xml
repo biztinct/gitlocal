@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The fixed-term rule on the contract decisions board (template
+       inheritance, no edit of pb_contract_lifecycle). Every sentence on one
+       line (PRD-3). No `t-as` named lt/gt/and/or/not/in: lines `ln`.
+       ==================================================================== -->
+  <t t-name="pb_contract_rules.PbContractLifeBoard" t-inherit="pb_contract_lifecycle.PbContractLifeBoard" t-inherit-mode="extension">
+
+    <!-- The drawer: "Fixed-term contract 2 in a row". -->
+    <xpath expr="//div[hasclass('ctl-drawer-head')]" position="after">
+      <div t-if="state.drawer.fixed_term and state.drawer.fixed_term.count" class="pbcr-chain" t-att-class="state.drawer.fixed_term.tone ? 'is-' + state.drawer.fixed_term.tone : ''">
+        <t t-out="ic('repeat', 15)"/>
+        <div>
+          <b t-esc="state.drawer.fixed_term.label"/>
+          <small t-if="state.drawer.fixed_term.started"><span>In a row since</span> <t t-esc="state.drawer.fixed_term.started"/><t t-if="state.drawer.fixed_term.before"> · <span>includes earlier contracts typed on the person</span></t></small>
+          <small t-if="state.drawer.fixed_term.next" t-esc="state.drawer.fixed_term.next"/>
+        </div>
+        <button t-if="state.drawer.fixed_term_rules and state.drawer.fixed_term.rule_id" class="pbim-btn ghost pbim-btn-sm" t-on-click="pbcrOpenRules"><t t-out="ic('scale', 13)"/> The rule</button>
+      </div>
+    </xpath>
+
+    <!-- The extension dialog: the red warning, with "Make it permanent" beside it. -->
+    <xpath expr="//div[hasclass('ctl-modal')]//p[hasclass('ctl-hint')]" position="after">
+      <div t-if="state.deciding.preview and state.deciding.preview.limit and state.deciding.preview.limit.over" class="pbcr-limit" role="alert">
+        <div class="pbcr-limit-h"><t t-out="ic('alert', 18)"/> <b>This goes past the fixed-term rule</b></div>
+        <ul>
+          <li t-foreach="state.deciding.preview.limit.lines" t-as="ln" t-key="ln_index" t-esc="ln"/>
+        </ul>
+        <p class="pbcr-limit-sub" t-esc="state.deciding.preview.limit.counted"/>
+        <p class="pbcr-limit-sub" t-if="state.deciding.preview.limit.source" t-esc="state.deciding.preview.limit.source"/>
+        <p class="pbcr-limit-sub">You can still extend it: write down why in the box above. The reason is kept with the extension and its sign-off.</p>
+        <button class="pbim-btn primary pbim-btn-sm" t-on-click="() => this.askDecide('convert')"><t t-out="ic('checkCircle', 14)"/> Make it permanent instead</button>
+      </div>
+    </xpath>
+
+  </t>
+
+</templates>

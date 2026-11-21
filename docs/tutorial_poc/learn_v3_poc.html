@@ -1,0 +1,1137 @@
+<title>Payobook Learn Reimagined</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --ink:#1E1B2E; --ink-2:#4B4866; --ink-3:#7A778F;
+  --canvas:#F4F5FB; --card:#FFFFFF; --line:#E2E8F0; --line-2:#EDEAF8;
+  --p:#5A4BB0; --p-hover:#4A3D96; --p-dark:#241F52; --p-light:#CBC2EE; --p-soft:#EDEAF8; --p-soft2:#F6F4FC;
+  --ok:#2E7D4F; --ok-soft:#E4F3EA; --info:#2563EB; --info-soft:#E6EEFD; --warn:#D97706; --warn-soft:#FCEFD9; --err:#DC2668; --err-soft:#FBE3EA; --teal:#0F766E; --teal-soft:#DDF3F0;
+  --r:14px; --r-s:10px; --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px -12px rgba(36,31,82,.18);
+  --font:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
+h1,h2,h3,h4{margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.lg{width:20px;height:20px}.ic.xl{width:24px;height:24px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- page chrome ---------- */
+.wrap{max-width:1180px;margin:0 auto}
+.masthead{padding-block:28px 18px;display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;justify-content:space-between}
+.masthead h1{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.masthead p{max-width:62ch;color:var(--ink-2);margin-top:6px}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--warn-soft);color:#8A4B00}
+.scenes{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--canvas) 88%,transparent);backdrop-filter:blur(8px);padding-block:10px;margin-inline:-16px;padding-inline:16px;border-bottom:1px solid var(--line)}
+.scenes .row{max-width:1180px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.scenes .row::-webkit-scrollbar{display:none}
+.scene-tab{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;font-weight:700;color:var(--ink-2);white-space:nowrap;border:1px solid transparent}
+.scene-tab b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--p-soft);color:var(--p);font-size:11px}
+.scene-tab[aria-selected="true"]{background:var(--p);color:#fff}
+.scene-tab[aria-selected="true"] b{background:rgba(255,255,255,.2);color:#fff}
+.scene{display:none;padding-block:28px 8px}
+.scene.on{display:block}
+.scene-head{display:grid;grid-template-columns:1fr auto;gap:12px 32px;align-items:end;margin-bottom:18px}
+.scene-head h2{font-size:22px;font-weight:800}
+.scene-head p{color:var(--ink-2);max-width:70ch;margin-top:6px}
+.scene-head .hero-moment{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;max-width:320px;font-size:13px}
+.scene-head .hero-moment .eyebrow{color:var(--p);margin-bottom:4px}
+@media (max-width:760px){.scene-head{grid-template-columns:1fr}}
+.frame-scroll{overflow-x:auto;border-radius:18px;box-shadow:var(--shadow);border:1px solid var(--line);background:var(--card)}
+.notes{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.note{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.note b{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:4px}
+.note b i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:var(--p-soft);color:var(--p);font-style:normal;font-size:11px;font-weight:800}
+.note p{color:var(--ink-2);font-size:13px}
+.note .now{margin-top:8px;font-size:12px;color:var(--ink-3)}
+.note .now strong{color:var(--err);font-weight:700}
+
+/* ---------- product mock frame ---------- */
+.app{min-width:980px;height:640px;display:grid;grid-template-columns:64px 1fr;position:relative;overflow:hidden;border-radius:18px;background:var(--canvas)}
+.rail{background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding-block:14px;gap:6px}
+.rail .logo{width:34px;height:34px;border-radius:10px;background:var(--p);display:grid;place-items:center;color:#fff;margin-bottom:10px}
+.rail button{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:var(--ink-3);position:relative}
+.rail button.cur{background:var(--p);color:#fff}
+.rail button span{position:absolute;bottom:2px;font-size:8px;font-weight:700;letter-spacing:.04em}
+.rail .sp{flex:1}
+.main{display:flex;flex-direction:column;min-width:0}
+.topbar{height:52px;display:flex;align-items:center;gap:10px;padding-inline:20px;background:var(--card);border-bottom:1px solid var(--line);font-weight:700}
+.topbar .crumb{color:var(--ink-3);font-weight:500}
+.topbar .sp{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:12px;font-weight:600;color:var(--ink-2)}
+.pill.kbd{font-family:var(--mono);font-size:11px}
+.content{padding:20px;overflow:hidden;position:relative;flex:1}
+.page-title{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.page-title h3{font-size:20px;font-weight:800}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}.chip.warn{background:var(--warn-soft);color:#8A4B00}.chip.info{background:var(--info-soft);color:var(--info)}.chip.p{background:var(--p-soft);color:var(--p)}.chip.teal{background:var(--teal-soft);color:var(--teal)}.chip.neutral{background:#EEF0F6;color:var(--ink-2)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;gap:12px;align-items:center}
+.kpi .badge{width:36px;height:36px;border-radius:10px;display:grid;place-items:center}
+.kpi .badge.p{background:var(--p-soft);color:var(--p)}.kpi .badge.rose{background:var(--err-soft);color:var(--err)}.kpi .badge.green{background:var(--ok-soft);color:var(--ok)}
+.kpi .l{font-size:11.5px;color:var(--ink-3);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.kpi .v{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.kpi .v.money{color:var(--ok)}
+.steps{display:flex;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;margin-bottom:14px;gap:0}
+.step{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--ink-3);font-size:13px}
+.step i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;border:2px solid var(--line);color:var(--ink-3)}
+.step.done i{background:var(--ok);border-color:var(--ok);color:#fff}
+.step.cur{color:var(--ink)}.step.cur i{border-color:var(--p);background:var(--p);color:#fff}
+.step-line{flex:1;height:2px;background:var(--line);margin-inline:10px}
+.step-line.done{background:var(--ok)}
+.tbl{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tbl table{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding:10px 14px;border-bottom:1px solid var(--line);font-weight:700}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--line-2)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r{text-align:right}
+.actions{display:flex;gap:8px;margin-left:auto}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-weight:700;font-size:13px;border:1px solid transparent;transition:background .15s,transform .15s}
+.btn.primary{background:var(--p);color:#fff}.btn.primary:hover{background:var(--p-hover)}
+.btn.outline{border-color:var(--p-light);color:var(--p);background:var(--card)}.btn.outline:hover{background:var(--p-soft2)}
+.btn.ghost{background:var(--p-soft2);color:var(--p)}.btn.ghost:hover{background:var(--p-soft)}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
+.btn.ok{background:var(--ok);color:#fff}
+
+/* ---------- ONE helper orb + panel ---------- */
+.orb{position:absolute;right:22px;bottom:22px;z-index:12;display:flex;align-items:center;gap:0;height:52px;border-radius:999px;background:var(--p-dark);color:#fff;box-shadow:0 10px 30px -8px rgba(36,31,82,.55);padding:0 6px 0 6px;transition:transform .2s}
+.orb:hover{transform:translateY(-2px)}
+.orb .core{width:40px;height:40px;border-radius:50%;background:var(--p);display:grid;place-items:center;position:relative}
+.orb .core::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--p-light);opacity:.55;animation:breathe 2.8s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(.92);opacity:.25}50%{transform:scale(1.05);opacity:.7}}
+.orb .lbl{padding:0 14px 0 10px;font-weight:700;font-size:13px;display:flex;flex-direction:column;line-height:1.15}
+.orb .lbl small{font-weight:500;font-size:11px;opacity:.7}
+.orb .dot{width:8px;height:8px;border-radius:50%;background:#7EE2A8;margin-right:8px;box-shadow:0 0 0 3px rgba(126,226,168,.25)}
+.orb .kbd{font-family:var(--mono);font-size:10px;background:rgba(255,255,255,.12);padding:2px 6px;border-radius:6px;margin-right:6px}
+.panel{position:absolute;top:12px;right:12px;bottom:86px;width:392px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px -20px rgba(36,31,82,.45);z-index:11;display:flex;flex-direction:column;transform:translateX(24px);opacity:0;pointer-events:none;transition:transform .22s cubic-bezier(.2,.7,.2,1),opacity .18s}
+.panel.open{transform:none;opacity:1;pointer-events:auto}
+.panel-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.panel-head .who{display:flex;align-items:center;gap:9px;font-weight:800}
+.panel-head .who i{width:30px;height:30px;border-radius:9px;background:var(--p);color:#fff;display:grid;place-items:center;font-style:normal}
+.panel-head .where{font-size:11.5px;color:var(--ink-3);font-weight:600}
+.panel-head .sp{flex:1}
+.panel-head .x{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--ink-3)}
+.panel-head .x:hover{background:var(--p-soft2);color:var(--ink)}
+.promise{display:flex;gap:8px;align-items:flex-start;padding:8px 14px;background:var(--teal-soft);color:var(--teal);font-size:12px;font-weight:600}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:10px 12px 0}
+.seg button{padding:8px 6px;border-radius:9px;font-weight:700;font-size:12.5px;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:6px;background:var(--p-soft2)}
+.seg button[aria-selected="true"]{background:var(--p);color:#fff}
+.panel-body{flex:1;overflow:auto;padding:12px 14px 14px;display:flex;flex-direction:column;gap:12px}
+.ptab{display:none;flex-direction:column;gap:12px}
+.ptab.on{display:flex}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.card.tint{background:var(--p-soft2);border-color:var(--p-soft)}
+.card h4{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card h4 .t{margin-left:auto;font-size:11px;color:var(--ink-3);font-weight:600}
+.explain{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.explain .row{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink-2)}
+.explain .row i{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:6px;background:var(--p-soft);color:var(--p);font-style:normal;font-size:10px;font-weight:800;flex:none;margin-top:1px}
+.explain .row button{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--p);display:inline-flex;gap:4px;align-items:center;white-space:nowrap}
+.explain .row button:hover{text-decoration:underline}
+.nextup{display:flex;gap:10px;align-items:center}
+.nextup .ring{width:40px;height:40px;border-radius:50%;background:conic-gradient(var(--p) 0 62%,var(--p-soft) 62% 100%);display:grid;place-items:center;flex:none}
+.nextup .ring b{width:30px;height:30px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:10px;font-weight:800;color:var(--p)}
+.nextup .txt{flex:1;min-width:0}
+.nextup .txt b{display:block;font-size:13px}
+.nextup .txt small{color:var(--ink-3);font-size:11.5px;display:block}
+.qs{display:flex;flex-direction:column;gap:6px}
+.q{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;font-size:12.5px;font-weight:600;text-align:left;color:var(--ink)}
+.q:hover{border-color:var(--p-light);background:var(--p-soft2)}
+.q .k{margin-left:auto;font-size:10.5px;color:var(--ink-3);font-weight:600}
+.ask{border-top:1px solid var(--line);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ask .routes{display:flex;gap:6px;flex-wrap:wrap}
+.ask .routes .chip{cursor:pointer}
+.ask .box{display:flex;gap:8px;align-items:center}
+.ask input{flex:1;height:40px;border:1px solid var(--line);border-radius:12px;padding:0 12px;font:inherit;font-size:13px;color:var(--ink);background:var(--card)}
+.ask input:focus{outline:2px solid var(--p);outline-offset:-1px;border-color:transparent}
+.ask .send{width:40px;height:40px;border-radius:12px;background:var(--p);color:#fff;display:grid;place-items:center}
+.ask .mic{width:40px;height:40px;border-radius:12px;background:var(--p-soft2);color:var(--p);display:grid;place-items:center}
+.answer{font-size:12.5px;color:var(--ink);display:flex;flex-direction:column;gap:8px}
+.answer .from{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3);font-weight:600}
+.answer ul{margin:0;padding-left:18px;color:var(--ink-2)}
+.answer .a-actions{display:flex;gap:6px;flex-wrap:wrap}
+.lineage{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:12px}
+.lineage .lr{display:grid;grid-template-columns:1fr auto;padding:7px 10px;border-bottom:1px solid var(--line-2);gap:8px}
+.lineage .lr:last-child{border-bottom:0;background:var(--ok-soft);font-weight:800;color:var(--ok)}
+.lineage .lr small{color:var(--ink-3);display:block;font-weight:500}
+.lineage .lr .num{font-weight:700}
+
+/* spotlight */
+.spot{position:absolute;inset:0;z-index:9;background:rgba(30,27,46,.45);opacity:0;pointer-events:none;transition:opacity .2s}
+.spot.on{opacity:1;pointer-events:auto}
+.lit{position:relative;z-index:10;box-shadow:0 0 0 4px var(--p-light),0 0 0 9px rgba(203,194,238,.35);border-radius:12px;background:var(--card)}
+.callout{position:absolute;z-index:10;background:var(--p-dark);color:#fff;padding:10px 12px;border-radius:12px;font-size:12.5px;max-width:280px;box-shadow:var(--shadow);opacity:0;transition:opacity .2s;pointer-events:none}
+.callout.on{opacity:1;pointer-events:auto}
+.callout b{display:block;margin-bottom:2px}
+.callout .cta{display:flex;gap:6px;margin-top:8px}
+.callout .cta button{background:rgba(255,255,255,.14);padding:5px 9px;border-radius:7px;font-size:11.5px;font-weight:700;color:#fff}
+.callout .cta button.w{background:#fff;color:var(--p-dark)}
+.callout::before{content:"";position:absolute;left:-6px;top:18px;border:6px solid transparent;border-right-color:var(--p-dark);border-left:0}
+
+/* ---------- scene 2: Learn home ---------- */
+.learn{min-width:980px;background:var(--canvas);border-radius:18px;padding:22px 24px 24px;display:grid;grid-template-columns:1fr 300px;gap:18px;position:relative}
+.learn .top{grid-column:1/-1;display:flex;align-items:center;gap:12px}
+.learn .top h3{font-size:22px;font-weight:800}
+.learn .top .sp{flex:1}
+.streak{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--warn-soft);color:#8A4B00;font-weight:800;font-size:12px}
+.hero-next{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;position:relative;overflow:hidden}
+.hero-next::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--p)}
+.hero-next .big{width:64px;height:64px;border-radius:18px;background:var(--p-soft);color:var(--p);display:grid;place-items:center}
+.hero-next .eyebrow{color:var(--p)}
+.hero-next h4{font-size:19px;font-weight:800;margin:2px 0 4px}
+.hero-next p{color:var(--ink-2);font-size:13px;max-width:56ch}
+.hero-next .why{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--ink-3);font-weight:600}
+.hero-next .go{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.modes{display:inline-flex;background:var(--p-soft2);border-radius:10px;padding:3px;gap:2px}
+.modes button{padding:6px 12px;border-radius:8px;font-weight:700;font-size:12.5px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+.modes button[aria-selected="true"]{background:var(--card);color:var(--p);box-shadow:0 1px 3px rgba(30,27,46,.12)}
+.roles{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.roles .eyebrow{margin-right:4px}
+.role{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:700;font-size:12.5px;color:var(--ink-2);display:inline-flex;gap:6px;align-items:center}
+.role[aria-pressed="true"]{background:var(--p);border-color:var(--p);color:#fff}
+.path{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px 12px;display:flex;flex-direction:column;gap:6px}
+.path .ph{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.path .ph h4{font-size:15px;font-weight:800}
+.path .ph .sp{flex:1}
+.chapter{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start;padding-block:12px;border-top:1px dashed var(--line)}
+.chapter:first-of-type{border-top:0}
+.chapter .cl b{display:block;font-size:13.5px}
+.chapter .cl small{color:var(--ink-3);font-size:12px;display:block;margin-top:2px}
+.chapter .cl .bar{height:6px;border-radius:3px;background:var(--p-soft);margin-top:8px;overflow:hidden}
+.chapter .cl .bar i{display:block;height:100%;background:var(--p);border-radius:3px}
+.track{position:relative;display:flex;justify-content:space-between;padding-top:6px}
+.track::before{content:"";position:absolute;left:14px;right:14px;top:20px;height:3px;background:var(--line);border-radius:2px}
+.station{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;width:92px;text-align:center;font-size:11.5px;font-weight:700;color:var(--ink-2);transition:opacity .2s}
+.station i{width:30px;height:30px;border-radius:50%;background:var(--card);border:3px solid var(--line);display:grid;place-items:center;color:var(--ink-3);font-style:normal;position:relative;z-index:1}
+.station.done i{background:var(--ok);border-color:var(--ok);color:#fff}
+.station.cur i{border-color:var(--p);color:var(--p);box-shadow:0 0 0 5px var(--p-soft)}
+.station.cur{color:var(--p)}
+.station.locked i{background:var(--canvas);color:var(--ink-3)}
+.station small{display:block;font-weight:600;color:var(--ink-3);font-size:10.5px}
+.station .req{position:absolute;top:-6px;right:14px;width:8px;height:8px;border-radius:50%;background:var(--warn);z-index:2;display:none}
+.station.required .req{display:block}
+.station.optional{opacity:.42}
+.side{display:flex;flex-direction:column;gap:14px}
+.side .card h4{font-size:13px}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.badge-t{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:12px;background:var(--p-soft2);font-size:11px;font-weight:700;color:var(--ink-2);text-align:center}
+.badge-t i{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-style:normal}
+.badge-t.bronze i{background:#F3E2CF;color:#8A5A2B}.badge-t.silver i{background:#E6E9F0;color:#5F6B7A}.badge-t.gold i{background:#FBEFC7;color:#9A6B00}
+.badge-t.off{opacity:.45}
+.timed{display:flex;gap:10px;align-items:flex-start}
+.timed .cal{width:40px;height:44px;border-radius:10px;background:var(--err-soft);color:var(--err);display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}
+.timed .cal small{font-size:9px;display:block;text-align:center;line-height:1;margin-top:-2px}
+.timed b{display:block;font-size:13px}
+.timed p{font-size:12px;color:var(--ink-2)}
+.lens{display:inline-flex;gap:4px;background:var(--p-soft2);padding:3px;border-radius:10px}
+.lens button{padding:6px 12px;border-radius:8px;font-weight:700;font-size:12.5px;color:var(--ink-2)}
+.lens button[aria-selected="true"]{background:var(--card);color:var(--p);box-shadow:0 1px 3px rgba(30,27,46,.12)}
+.mini-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.mini-list .it{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:7px 9px;border-radius:9px;background:var(--p-soft2)}
+.mini-list .it .sp{flex:1}
+.mini-list .it small{color:var(--ink-3);font-weight:600}
+
+/* ---------- scene 3: lesson player ---------- */
+.player{min-width:980px;background:var(--canvas);border-radius:18px;padding:18px 22px 22px;display:grid;grid-template-columns:1fr 330px;grid-template-rows:auto 1fr auto;gap:14px;height:640px}
+.player .ph{grid-column:1/-1;display:flex;align-items:center;gap:12px}
+.player .ph h3{font-size:18px;font-weight:800}
+.player .ph .sp{flex:1}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:16px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.stage .wm{position:absolute;right:14px;top:12px;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--teal);background:var(--teal-soft);padding:4px 8px;border-radius:999px;z-index:2}
+.stage .replica{padding:16px;flex:1;display:flex;flex-direction:column;gap:10px}
+.stage .replica .kpis{grid-template-columns:repeat(3,1fr)}
+.stage .replica .kpi .v{font-size:16px}
+.ghost-cursor{position:absolute;width:22px;height:22px;z-index:4;color:var(--p-dark);filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));transition:left .6s cubic-bezier(.3,.7,.2,1),top .6s cubic-bezier(.3,.7,.2,1)}
+.scrub{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.scrub .bar{display:flex;gap:4px;height:8px}
+.scrub .bar i{flex:1;border-radius:4px;background:var(--line)}
+.scrub .bar i.done{background:var(--ok)}.scrub .bar i.cur{background:var(--p)}
+.scrub .meta{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-3);font-weight:600}
+.scrub .meta .sp{flex:1}
+.scrub .ctrls{display:flex;gap:6px}
+.scrub .ctrls button{width:34px;height:34px;border-radius:9px;background:var(--p-soft2);color:var(--p);display:grid;place-items:center}
+.scrub .ctrls button.main{background:var(--p);color:#fff;width:auto;padding:0 14px;font-weight:700;display:inline-flex;gap:6px;align-items:center}
+.stepper{grid-row:2/4;background:var(--card);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+.stepper .sh{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px}
+.stepper .sh .sp{flex:1}
+.stepper ol{list-style:none;margin:0;padding:8px;display:flex;flex-direction:column;gap:4px;overflow:auto;flex:1}
+.stepper li{display:flex;gap:10px;padding:9px 10px;border-radius:10px;font-size:12.5px;color:var(--ink-2);align-items:flex-start}
+.stepper li i{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:800;flex:none;color:var(--ink-3)}
+.stepper li.done i{background:var(--ok);border-color:var(--ok);color:#fff}
+.stepper li.cur{background:var(--p-soft2);color:var(--ink)}
+.stepper li.cur i{border-color:var(--p);background:var(--p);color:#fff}
+.stepper li b{display:block;font-size:13px}
+.stepper li .why{display:block;font-size:11.5px;color:var(--ink-3);margin-top:2px}
+.stepper .handoff{border-top:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--p-soft2)}
+.stepper .handoff b{font-size:13px}
+.stepper .handoff p{font-size:12px;color:var(--ink-2)}
+.quiz{position:absolute;left:16px;right:16px;bottom:16px;background:var(--card);border:1px solid var(--p-light);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);z-index:3}
+.quiz b{display:block;font-size:13px;margin-bottom:8px}
+.quiz .opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.quiz .opts button{padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:12.5px;font-weight:600;text-align:left}
+.quiz .opts button:hover{border-color:var(--p-light);background:var(--p-soft2)}
+.quiz .opts button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.quiz .opts button.wrong{border-color:var(--err);background:var(--err-soft);color:var(--err)}
+.quiz .res{font-size:12px;margin-top:8px;color:var(--ink-2);min-height:18px}
+
+/* ---------- scene 4: real-screen moments ---------- */
+.moments{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.moment{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.moment .mh{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;font-weight:800;font-size:13.5px}
+.moment .mh .chip{margin-left:auto}
+.moment .mb{padding:16px;background:var(--canvas);flex:1;position:relative;min-height:230px}
+.moment .mf{padding:10px 16px;font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--line)}
+.banner{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--p-light);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow)}
+.banner i{width:32px;height:32px;border-radius:9px;background:var(--p-soft);color:var(--p);display:grid;place-items:center;font-style:normal;flex:none}
+.banner b{display:block;font-size:13px}
+.banner small{font-size:12px;color:var(--ink-2)}
+.banner .sp{flex:1}
+.empty{border:1.5px dashed var(--p-light);border-radius:14px;padding:26px 18px;text-align:center;background:var(--card);display:flex;flex-direction:column;align-items:center;gap:8px}
+.empty i{width:44px;height:44px;border-radius:12px;background:var(--p-soft2);color:var(--p);display:grid;place-items:center;font-style:normal}
+.empty b{font-size:14px}
+.empty p{font-size:12.5px;color:var(--ink-2);max-width:36ch}
+.empty .row{display:flex;gap:8px;margin-top:4px}
+.toast{background:var(--p-dark);color:#fff;border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 18px 40px -16px rgba(36,31,82,.6)}
+.toast .ti{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);display:grid;place-items:center;flex:none;color:#B7F0CF}
+.toast b{display:block;font-size:13.5px}
+.toast p{font-size:12.5px;opacity:.85;margin-top:2px}
+.toast .ta{display:flex;gap:6px;margin-top:8px}
+.toast .ta button{background:rgba(255,255,255,.14);padding:5px 10px;border-radius:8px;font-size:12px;font-weight:700;color:#fff}
+.toast .ta button.w{background:#fff;color:var(--p-dark)}
+.figure{display:inline-flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;position:relative}
+.figure .l{font-size:11px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.figure .v{font-size:22px;font-weight:800;color:var(--ok);display:inline-flex;align-items:center;gap:8px}
+.figure .v button{width:22px;height:22px;border-radius:50%;background:var(--p-soft);color:var(--p);display:grid;place-items:center}
+.pop{position:absolute;left:16px;top:96px;width:calc(100% - 32px);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:12px;z-index:2}
+.pop h5{margin:0 0 8px;font-size:13px;font-weight:800;display:flex;align-items:center;gap:6px}
+.pop .pa{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.nudge{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.nudge .cal{width:44px;height:48px;border-radius:10px;background:var(--err-soft);color:var(--err);display:grid;place-items:center;font-weight:800;font-size:17px;flex:none;line-height:1}
+.nudge .cal small{font-size:9px;display:block;text-align:center;margin-top:2px}
+.nudge b{display:block;font-size:13px}
+.nudge p{font-size:12.5px;color:var(--ink-2)}
+.nudge .na{display:flex;gap:6px;margin-top:8px}
+.hover-term{border-bottom:1.5px dotted var(--p);cursor:help;color:var(--ink);font-weight:700}
+.glossary-card{position:absolute;left:16px;top:120px;width:300px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow);font-size:12.5px;z-index:2}
+.glossary-card b{display:block;font-size:13px;margin-bottom:4px}
+.glossary-card p{color:var(--ink-2)}
+.glossary-card .ga{display:flex;gap:6px;margin-top:8px}
+.cmdk{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.cmdk .in{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);font-size:14px;font-weight:600}
+.cmdk .in span{color:var(--ink-3);font-weight:500}
+.cmdk .in .caret{width:2px;height:16px;background:var(--p);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.cmdk .grp{padding:6px 8px 4px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.cmdk .it{display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:13px}
+.cmdk .it.sel{background:var(--p-soft2)}
+.cmdk .it i{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-style:normal;flex:none}
+.cmdk .it i.p{background:var(--p-soft);color:var(--p)}.cmdk .it i.g{background:var(--ok-soft);color:var(--ok)}.cmdk .it i.b{background:var(--info-soft);color:var(--info)}
+.cmdk .it small{margin-left:auto;color:var(--ink-3);font-weight:600;font-size:11px}
+
+/* ---------- scene 5: team & switches ---------- */
+.admin{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+@media (max-width:900px){.admin{grid-template-columns:1fr}}
+.admin .card{padding:16px}
+.admin .card h4{font-size:14px;margin-bottom:4px}
+.admin .card > p{font-size:12.5px;color:var(--ink-2)}
+.matrix{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px}
+.matrix th{text-align:left;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding:8px 8px;border-bottom:1px solid var(--line);font-weight:700}
+.matrix th.c,.matrix td.c{text-align:center}
+.matrix td{padding:9px 8px;border-bottom:1px solid var(--line-2)}
+.matrix td .who{display:flex;align-items:center;gap:8px;font-weight:700}
+.matrix td .who i{width:26px;height:26px;border-radius:50%;background:var(--p-soft);color:var(--p);display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:800}
+.matrix td .who small{display:block;font-weight:500;color:var(--ink-3);font-size:11px}
+.cell{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%}
+.cell.d{background:var(--ok);color:#fff}.cell.p{background:var(--p-soft);color:var(--p)}.cell.n{background:#EEF0F6;color:var(--ink-3)}.cell.o{background:var(--warn-soft);color:#8A4B00}
+.switches{display:flex;flex-direction:column;gap:0;margin-top:10px}
+.sw{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line-2)}
+.sw:first-child{border-top:0}
+.sw b{display:block;font-size:13px}
+.sw p{font-size:12px;color:var(--ink-2)}
+.sw .sp{flex:1}
+.tog{width:40px;height:22px;border-radius:999px;background:var(--line);position:relative;flex:none;transition:background .15s;margin-top:2px}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.tog[aria-checked="true"]{background:var(--ok)}
+.tog[aria-checked="true"]::after{left:21px}
+.sw .state{font-size:11px;font-weight:700;color:var(--ink-3);margin-top:4px}
+
+/* ---------- summary table ---------- */
+.summary{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px}
+.summary h2{font-size:20px;font-weight:800;margin-bottom:4px}
+.summary > p{color:var(--ink-2);max-width:70ch;margin-bottom:12px}
+.summary .tw{overflow-x:auto}
+.summary table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+.summary th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding:8px 10px;border-bottom:1px solid var(--line)}
+.summary td{padding:10px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.summary td:first-child{font-weight:700}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chevl" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-pointer" viewBox="0 0 24 24"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+  <symbol id="i-cog" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-grad" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+  <symbol id="i-ccheck" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-sheet" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></symbol>
+  <symbol id="i-userplus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+  <symbol id="i-pip" viewBox="0 0 24 24"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"/><rect width="10" height="7" x="12" y="13" rx="2"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+  <symbol id="i-cursor" viewBox="0 0 24 24"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></symbol>
+</svg>
+
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <span class="tag"><svg class="ic"><use href="#i-flask"/></svg> Concept mock-up · nothing here is live</span>
+      <h1 style="margin-top:10px">Payobook Learn, reimagined</h1>
+      <p>Five scenes showing how Learning, Coaching, Tutorials, Lessons and PayAI could feel as <b>one helper</b> that knows where you are, what you have done, and what is coming up in your pay calendar. Click around: the orb, the tabs, the roles, the quiz and the toggles all work.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="pill"><svg class="ic"><use href="#i-globe"/></svg> English · Tiếng Việt stays a one-tap toggle</span>
+      <span class="pill kbd">? opens the helper anywhere</span>
+    </div>
+  </header>
+
+  <nav class="scenes" aria-label="Scenes">
+    <div class="row" role="tablist">
+      <button class="scene-tab" role="tab" aria-selected="true" data-scene="s1"><b>1</b> One helper, not two buttons</button>
+      <button class="scene-tab" role="tab" aria-selected="false" data-scene="s2"><b>2</b> Learn home as a path</button>
+      <button class="scene-tab" role="tab" aria-selected="false" data-scene="s3"><b>3</b> Lesson player</button>
+      <button class="scene-tab" role="tab" aria-selected="false" data-scene="s4"><b>4</b> Learning on the real screens</button>
+      <button class="scene-tab" role="tab" aria-selected="false" data-scene="s5"><b>5</b> Team view and switches</button>
+    </div>
+  </nav>
+
+  <!-- ================= SCENE 1 ================= -->
+  <section class="scene on" id="s1">
+    <div class="scene-head">
+      <div>
+        <h2>One helper, not two buttons</h2>
+        <p>Today "Stuck?" and the lightning button sit on top of each other and do not know about each other. Here they become one orb that already knows the screen you are on. Press it (or type <b>?</b>) and it opens beside the screen, never over it. Try <b>Show me</b> to spotlight a real control.</p>
+      </div>
+      <div class="hero-moment"><div class="eyebrow">Hero moment</div>The helper's first line is always about <b>this</b> screen and <b>your</b> next step, never "I have no lessons for this screen".</div>
+    </div>
+
+    <div class="frame-scroll">
+      <div class="app" id="app1">
+        <aside class="rail">
+          <div class="logo"><svg class="ic lg"><use href="#i-grad"/></svg></div>
+          <button title="Home"><svg class="ic lg"><use href="#i-home"/></svg></button>
+          <button class="cur" title="Pay runs"><svg class="ic lg"><use href="#i-bank"/></svg></button>
+          <button title="People"><svg class="ic lg"><use href="#i-users"/></svg></button>
+          <button title="Insights"><svg class="ic lg"><use href="#i-chart"/></svg></button>
+          <button title="Learn"><svg class="ic lg"><use href="#i-book"/></svg></button>
+          <div class="sp"></div>
+          <button title="Settings"><svg class="ic lg"><use href="#i-cog"/></svg></button>
+        </aside>
+        <div class="main">
+          <div class="topbar"><span>Pay runs</span><span class="crumb">· End-Month Payroll · September 2026</span><div class="sp"></div><span class="pill kbd">⌘K</span><span class="pill"><svg class="ic"><use href="#i-globe"/></svg> Tiếng Việt</span></div>
+          <div class="content">
+            <div class="page-title"><h3>End-Month Payroll · September 2026</h3><span class="chip warn">Waiting for approval</span><span class="chip neutral">248 people</span>
+              <div class="actions"><button class="btn outline sm">Download Excel</button><button class="btn primary sm" id="approveBtn"><svg class="ic"><use href="#i-clip"/></svg> Approve run</button></div>
+            </div>
+            <div class="kpis" id="kpiBand">
+              <div class="kpi"><div class="badge p"><svg class="ic lg"><use href="#i-bank"/></svg></div><div><div class="l">Gross</div><div class="v num">₫1,216.8M</div></div></div>
+              <div class="kpi"><div class="badge rose"><svg class="ic lg"><use href="#i-calc"/></svg></div><div><div class="l">Deductions</div><div class="v num">₫116.3M</div></div></div>
+              <div class="kpi"><div class="badge green"><svg class="ic lg"><use href="#i-ccheck"/></svg></div><div><div class="l">Net pay</div><div class="v num money">₫1,100.5M</div></div></div>
+            </div>
+            <div class="steps" id="stepRail">
+              <div class="step done"><i><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></i>Draft</div><div class="step-line done"></div>
+              <div class="step done"><i><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></i>Computed</div><div class="step-line done"></div>
+              <div class="step cur"><i>3</i>Waiting for approval</div><div class="step-line"></div>
+              <div class="step"><i>4</i>Approved</div><div class="step-line"></div>
+              <div class="step"><i>5</i>Paid</div>
+            </div>
+            <div class="tbl" id="slipTable">
+              <table>
+                <thead><tr><th>Employee</th><th>Scheme</th><th class="r">Gross</th><th class="r">Deductions</th><th class="r">Net pay</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td>Nguyễn Thị Mai</td><td>Vietnam standard</td><td class="r num">₫28,400,000</td><td class="r num">₫2,982,000</td><td class="r num">₫25,418,000</td><td><span class="chip ok">Ready</span></td></tr>
+                  <tr><td>Trần Văn Hùng</td><td>Vietnam standard</td><td class="r num">₫19,200,000</td><td class="r num">₫2,016,000</td><td class="r num">₫17,184,000</td><td><span class="chip ok">Ready</span></td></tr>
+                  <tr><td>Lê Minh Anh</td><td>Vietnam standard</td><td class="r num">₫31,000,000</td><td class="r num">₫3,255,000</td><td class="r num">₫27,745,000</td><td><span class="chip warn">Check overtime</span></td></tr>
+                  <tr><td>Phạm Quốc Bảo</td><td>Vietnam standard</td><td class="r num">₫15,600,000</td><td class="r num">₫1,638,000</td><td class="r num">₫13,962,000</td><td><span class="chip ok">Ready</span></td></tr>
+                  <tr><td>Hoàng Thu Hà</td><td>Vietnam standard</td><td class="r num">₫22,750,000</td><td class="r num">₫2,388,750</td><td class="r num">₫20,361,250</td><td><span class="chip ok">Ready</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="spot" id="spot"></div>
+        <div class="callout" id="callout"><b id="coT">Approve run</b><span id="coB">This is the signature. Nothing is paid until this is pressed and the approver lane says yes.</span><div class="cta"><button class="w" id="coNext">Next</button><button id="coDone">Got it</button></div></div>
+
+        <button class="orb" id="orb" aria-label="Open the helper">
+          <span class="core"><svg class="ic lg"><use href="#i-sparkles"/></svg></span>
+          <span class="lbl">Ask Payobook<small>Guide · Ask · Practice</small></span>
+          <span class="kbd">?</span><span class="dot" title="Something new for this screen"></span>
+        </button>
+
+        <div class="panel" id="panel" role="dialog" aria-label="Payobook helper">
+          <div class="panel-head">
+            <div class="who"><i><svg class="ic"><use href="#i-sparkles"/></svg></i><div>Payobook helper<div class="where">On: Pay runs · Waiting for approval</div></div></div>
+            <div class="sp"></div>
+            <button class="x" title="Say it in Tiếng Việt"><svg class="ic"><use href="#i-globe"/></svg></button>
+            <button class="x" id="panelX" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="promise"><svg class="ic"><use href="#i-shield"/></svg> I explain and point. I never approve, pay or change a record for you.</div>
+          <div class="seg" role="tablist">
+            <button role="tab" aria-selected="true" data-ptab="guide"><svg class="ic"><use href="#i-compass"/></svg> Guide me</button>
+            <button role="tab" aria-selected="false" data-ptab="ask"><svg class="ic"><use href="#i-msg"/></svg> Ask</button>
+            <button role="tab" aria-selected="false" data-ptab="practice"><svg class="ic"><use href="#i-flask"/></svg> Practice</button>
+          </div>
+          <div class="panel-body">
+            <div class="ptab on" data-ptab="guide">
+              <div class="card tint">
+                <div class="nextup">
+                  <div class="ring"><b>62%</b></div>
+                  <div class="txt"><b>Your next step: approve this run</b><small>Because: it has been waiting 2 days and you are the approver.</small></div>
+                  <button class="btn primary sm" data-spot="approveBtn">Show me</button>
+                </div>
+              </div>
+              <div class="card">
+                <h4><svg class="ic"><use href="#i-eye"/></svg> This screen in 30 seconds <span class="t">3 things</span></h4>
+                <div class="explain">
+                  <div class="row"><i>1</i><span>The three figures on top always add up: gross minus deductions equals net pay.</span><button data-spot="kpiBand"><svg class="ic" style="width:12px;height:12px"><use href="#i-target"/></svg> Show me</button></div>
+                  <div class="row"><i>2</i><span>The run moves left to right. It is at step 3. Only an approver can move it to 4.</span><button data-spot="stepRail"><svg class="ic" style="width:12px;height:12px"><use href="#i-target"/></svg> Show me</button></div>
+                  <div class="row"><i>3</i><span>Each row is one payslip. An amber chip means someone should look before approving.</span><button data-spot="slipTable"><svg class="ic" style="width:12px;height:12px"><use href="#i-target"/></svg> Show me</button></div>
+                </div>
+              </div>
+              <div class="card">
+                <h4><svg class="ic"><use href="#i-help"/></svg> People on this screen usually ask</h4>
+                <div class="qs" style="margin-top:8px">
+                  <button class="q"><svg class="ic"><use href="#i-msg"/></svg> Why is Lê Minh Anh flagged "Check overtime"? <span class="k">about this run</span></button>
+                  <button class="q"><svg class="ic"><use href="#i-msg"/></svg> What happens after I approve? <span class="k">45 sec</span></button>
+                  <button class="q"><svg class="ic"><use href="#i-msg"/></svg> How do I send one payslip back for a fix? <span class="k">1 min</span></button>
+                </div>
+              </div>
+              <div class="card">
+                <h4><svg class="ic"><use href="#i-book"/></svg> Full lesson: Pay runs <span class="t">7 min · not started</span></h4>
+                <div style="display:flex;gap:6px;margin-top:8px"><button class="btn ghost sm"><svg class="ic"><use href="#i-play"/></svg> Watch</button><button class="btn ghost sm"><svg class="ic"><use href="#i-flask"/></svg> Try</button><button class="btn ghost sm"><svg class="ic"><use href="#i-pip"/></svg> Play beside this screen</button></div>
+              </div>
+            </div>
+
+            <div class="ptab" data-ptab="ask">
+              <div class="card">
+                <div class="answer">
+                  <div class="from"><svg class="ic"><use href="#i-msg"/></svg> You asked: <b>&nbsp;why is net pay for Mai 25,418,000?</b></div>
+                  <div class="lineage">
+                    <div class="lr"><span>Basic salary<small>From the contract</small></span><span class="num">₫25,000,000</span></div>
+                    <div class="lr"><span>Lunch allowance<small>From the pay data file, column H</small></span><span class="num">₫3,400,000</span></div>
+                    <div class="lr"><span>Social insurance (employee share)<small>Rate 10.5% on the insured salary</small></span><span class="num">−₫2,625,000</span></div>
+                    <div class="lr"><span>Personal income tax<small>After the family deduction</small></span><span class="num">−₫357,000</span></div>
+                    <div class="lr"><span>Net pay</span><span class="num">₫25,418,000</span></div>
+                  </div>
+                  <div class="from"><svg class="ic"><use href="#i-shield"/></svg> Read from this run. Names never leave Payobook.</div>
+                  <div class="a-actions"><button class="btn ghost sm"><svg class="ic"><use href="#i-route"/></svg> Open where each line comes from</button><button class="btn ghost sm"><svg class="ic"><use href="#i-bulb"/></svg> Say it more simply</button></div>
+                </div>
+              </div>
+              <div class="card">
+                <h4><svg class="ic"><use href="#i-help"/></svg> One box, three kinds of answer</h4>
+                <div class="explain">
+                  <div class="row"><i>?</i><span><b>How do I…</b> gets a guided answer from the lessons, with a Show me button.</span></div>
+                  <div class="row"><i>#</i><span><b>Why is this number…</b> gets the real figure, built line by line from this run.</span></div>
+                  <div class="row"><i>A</i><span><b>What does … mean</b> gets the glossary card, in your language.</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ptab" data-ptab="practice">
+              <div class="card tint">
+                <h4><svg class="ic"><use href="#i-flask"/></svg> Try this on a copy</h4>
+                <p style="font-size:12.5px;color:var(--ink-2);margin-top:6px">Open a practice copy of <b>this exact run</b>, with names swapped for practice names. Approve it, reject it, break it. Nothing reaches the real September run.</p>
+                <div style="display:flex;gap:6px;margin-top:10px"><button class="btn primary sm"><svg class="ic"><use href="#i-flask"/></svg> Copy this run to practice</button><button class="btn ghost sm">Open the practice company</button></div>
+              </div>
+              <div class="card">
+                <h4><svg class="ic"><use href="#i-target"/></svg> Missions for this screen</h4>
+                <div class="mini-list">
+                  <div class="it"><svg class="ic"><use href="#i-ccheck"/></svg> Review and approve like a manager <span class="sp"></span><small>8 min</small></div>
+                  <div class="it"><svg class="ic"><use href="#i-undo"/></svg> Send a payslip back and re-run <span class="sp"></span><small>5 min</small></div>
+                  <div class="it"><svg class="ic"><use href="#i-sheet"/></svg> Fix a bad import <span class="sp"></span><small>6 min</small></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ask">
+            <div class="routes"><span class="chip p">How do I…</span><span class="chip teal">Why is this number…</span><span class="chip info">What does … mean</span></div>
+            <div class="box"><input id="askBox" placeholder="Ask about this screen, this run, or any word you see…"><button class="mic" title="Hold to talk (needs your consent once)"><svg class="ic"><use href="#i-mic"/></svg></button><button class="send" aria-label="Send"><svg class="ic"><use href="#i-send"/></svg></button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="note"><b><i>1</i> One orb, three jobs</b><p>Guide me, Ask and Practice are tabs in one panel. The old Coach and the PayAI chat are merged behind one box that works out which kind of answer you need.</p><p class="now"><strong>Today:</strong> two floating buttons, stacked, no shared memory.</p></div>
+      <div class="note"><b><i>2</i> Never "no lessons for this screen"</b><p>Every screen gets a "30 seconds" card written from what the screen actually does. A full lesson is a bonus, not a requirement.</p><p class="now"><strong>Today:</strong> 11 of 19 screens answer "I do not have lessons for this screen yet".</p></div>
+      <div class="note"><b><i>3</i> Show me spotlights the real control</b><p>The screen dims, the real button lights up, a short caption says what it does and what happens next. Next / Got it steps through.</p><p class="now"><strong>Today:</strong> exists in scenarios, but not from the "30 seconds" card.</p></div>
+      <div class="note"><b><i>4</i> Next step, with the reason</b><p>The panel opens on "your next step" and says why it chose it. The percentage ring shows progress on your path, not 0 / 19.</p><p class="now"><strong>Today:</strong> the "Continue" strip is built but switched off on every database.</p></div>
+      <div class="note"><b><i>5</i> Beside, not over</b><p>The panel docks to the right edge and never covers the buttons it talks about. The orb hides while you scroll and comes back when you stop.</p><p class="now"><strong>Today:</strong> "Stuck?" sits over the Take the tour card's own button.</p></div>
+      <div class="note"><b><i>6</i> Ask about a number</b><p>"Why is net pay 25,418,000?" gets the figure built line by line from the run, with where each line came from. Names never leave the product.</p><p class="now"><strong>Today:</strong> PayAI answers with charts; the line-by-line lineage lives on another screen.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= SCENE 2 ================= -->
+  <section class="scene" id="s2">
+    <div class="scene-head">
+      <div>
+        <h2>Learn home as a path, not a card wall</h2>
+        <p>The "Your journey" page becomes a path with three chapters and one big "Next up". Pick a role and the path re-lights around what that person actually needs. Streaks and badges are on. The month-end nudge knows your pay calendar.</p>
+      </div>
+      <div class="hero-moment"><div class="eyebrow">Hero moment</div>One card says <b>what to do next, why, and how long</b>. Pressing it starts the lesson in the mode you last used.</div>
+    </div>
+
+    <div class="frame-scroll">
+      <div class="learn">
+        <div class="top">
+          <h3>Learn</h3>
+          <div class="lens" role="tablist"><button aria-selected="true">Payobook skills</button><button aria-selected="false">Company courses</button></div>
+          <div class="sp"></div>
+          <span class="streak"><svg class="ic"><use href="#i-flame"/></svg> 4 days in a row</span>
+          <span class="pill"><svg class="ic"><use href="#i-search"/></svg> Search lessons, words, screens</span>
+          <span class="pill"><svg class="ic"><use href="#i-globe"/></svg> Tiếng Việt</span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+          <div class="hero-next">
+            <div class="big"><svg class="ic xl"><use href="#i-bank"/></svg></div>
+            <div>
+              <div class="eyebrow">Next up for you</div>
+              <h4 id="heroTitle">Run a pay run, start to finish</h4>
+              <p id="heroBody">Six steps on a practice copy of the September run. You will compute, check one payslip and send the run for approval.</p>
+              <span class="why" id="heroWhy"><svg class="ic"><use href="#i-info"/></svg> Because: you finished "Pay runs" yesterday and the real cut-off is in 5 days.</span>
+            </div>
+            <div class="go">
+              <div class="modes" role="tablist"><button aria-selected="false"><svg class="ic"><use href="#i-play"/></svg> Watch</button><button aria-selected="true"><svg class="ic"><use href="#i-flask"/></svg> Try</button><button aria-selected="false"><svg class="ic"><use href="#i-pointer"/></svg> Do</button></div>
+              <button class="btn primary"><svg class="ic"><use href="#i-arrow"/></svg> Continue · 6 min</button>
+            </div>
+          </div>
+
+          <div class="roles" id="roles">
+            <span class="eyebrow">I am the</span>
+            <button class="role" aria-pressed="true" data-role="officer"><svg class="ic"><use href="#i-calc"/></svg> Payroll officer</button>
+            <button class="role" aria-pressed="false" data-role="approver"><svg class="ic"><use href="#i-clip"/></svg> Approver</button>
+            <button class="role" aria-pressed="false" data-role="hr"><svg class="ic"><use href="#i-users"/></svg> HR admin</button>
+            <button class="role" aria-pressed="false" data-role="owner"><svg class="ic"><use href="#i-chart"/></svg> Owner</button>
+            <span style="font-size:12px;color:var(--ink-3);margin-left:4px" id="roleHint">Required for you: 7 stations · about 48 min</span>
+          </div>
+
+          <div class="path">
+            <div class="ph"><h4>Your path</h4><span class="chip p">6 of 19 done</span><div class="sp"></div><span style="font-size:12px;color:var(--ink-3)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warn);margin-right:4px"></span>required for your role</span></div>
+
+            <div class="chapter">
+              <div class="cl"><b>1 · Get around</b><small>Where things live and who signs what.</small><div class="bar"><i style="width:100%"></i></div></div>
+              <div class="track">
+                <div class="station done" data-id="dash"><span class="req"></span><i><svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg></i>Dashboard<small>8 min</small></div>
+                <div class="station done" data-id="appr"><span class="req"></span><i><svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg></i>Approvals<small>7 min</small></div>
+                <div class="station done" data-id="people"><span class="req"></span><i><svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg></i>Employees<small>4 min</small></div>
+                <div class="station done" data-id="contracts"><span class="req"></span><i><svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg></i>Contracts<small>5 min</small></div>
+              </div>
+            </div>
+
+            <div class="chapter">
+              <div class="cl"><b>2 · Run pay</b><small>From pay data to money out.</small><div class="bar"><i style="width:40%"></i></div></div>
+              <div class="track">
+                <div class="station done" data-id="import"><span class="req"></span><i><svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg></i>Import<small>9 min</small></div>
+                <div class="station done" data-id="payruns"><span class="req"></span><i><svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg></i>Pay runs<small>7 min</small></div>
+                <div class="station cur" data-id="runpay"><span class="req"></span><i><svg class="ic" style="width:14px;height:14px"><use href="#i-play"/></svg></i>Run payroll<small>6 min</small></div>
+                <div class="station" data-id="payslips"><span class="req"></span><i>4</i>Payslips<small>6 min</small></div>
+                <div class="station" data-id="deliver"><span class="req"></span><i>5</i>Pay &amp; deliver<small>4 min</small></div>
+              </div>
+            </div>
+
+            <div class="chapter">
+              <div class="cl"><b>3 · Keep it right</b><small>Rules, rates, fixes and reports.</small><div class="bar"><i style="width:0%"></i></div></div>
+              <div class="track">
+                <div class="station locked" data-id="formula"><span class="req"></span><i><svg class="ic" style="width:12px;height:12px"><use href="#i-lock"/></svg></i>Formula engine<small>18 min</small></div>
+                <div class="station locked" data-id="statutory"><span class="req"></span><i><svg class="ic" style="width:12px;height:12px"><use href="#i-lock"/></svg></i>Statutory<small>8 min</small></div>
+                <div class="station locked" data-id="fixes"><span class="req"></span><i><svg class="ic" style="width:12px;height:12px"><use href="#i-lock"/></svg></i>Corrections<small>5 min</small></div>
+                <div class="station locked" data-id="reports"><span class="req"></span><i><svg class="ic" style="width:12px;height:12px"><use href="#i-lock"/></svg></i>Gov. reports<small>4 min</small></div>
+                <div class="station locked" data-id="insights"><span class="req"></span><i><svg class="ic" style="width:12px;height:12px"><use href="#i-lock"/></svg></i>Insights<small>4 min</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side">
+          <div class="card">
+            <h4><svg class="ic"><use href="#i-award"/></svg> Badges</h4>
+            <div class="badges">
+              <div class="badge-t bronze"><i><svg class="ic"><use href="#i-award"/></svg></i>Pay run<span style="font-weight:500;color:var(--ink-3)">Bronze</span></div>
+              <div class="badge-t silver off"><i><svg class="ic"><use href="#i-award"/></svg></i>Approver<span style="font-weight:500;color:var(--ink-3)">2 to go</span></div>
+              <div class="badge-t gold off"><i><svg class="ic"><use href="#i-trophy"/></svg></i>Right first time<span style="font-weight:500;color:var(--ink-3)">Locked</span></div>
+            </div>
+            <p style="font-size:11.5px;color:var(--ink-3);margin-top:8px">Gold means every quiz right on the first try. Share a badge as a certificate PDF.</p>
+          </div>
+          <div class="card">
+            <h4><svg class="ic"><use href="#i-cal"/></svg> Before month-end</h4>
+            <div class="timed" style="margin-top:8px">
+              <div class="cal">5<small>days</small></div>
+              <div><b>Cut-off is Sunday 28 Sep</b><p>Two-minute refresher: "What to check before you send a run for approval."</p><button class="btn ghost sm" style="margin-top:6px"><svg class="ic"><use href="#i-play"/></svg> Watch now</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4><svg class="ic"><use href="#i-msg"/></svg> Your questions this week</h4>
+            <div class="mini-list">
+              <div class="it">How do I fix a wrong bank account?<span class="sp"></span><small>answered</small></div>
+              <div class="it">What is "insured salary"?<span class="sp"></span><small>glossary</small></div>
+            </div>
+            <p style="font-size:11.5px;color:var(--ink-3);margin-top:8px">Only you see these. They are cleared after 180 days.</p>
+          </div>
+          <div class="card">
+            <h4><svg class="ic"><use href="#i-flask"/></svg> Practice company</h4>
+            <p style="font-size:12.5px;color:var(--ink-2);margin-top:6px">Your sandbox has 3 runs and 42 people. Reset it any time.</p>
+            <div style="display:flex;gap:6px;margin-top:8px"><button class="btn outline sm">Open</button><button class="btn ghost sm"><svg class="ic"><use href="#i-undo"/></svg> Reset</button></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="note"><b><i>1</i> Three chapters, one path</b><p>Nineteen stations in six sections become a three-chapter path: Get around, Run pay, Keep it right. Order carries meaning, so the numbering is honest.</p><p class="now"><strong>Today:</strong> a wall of cards in six sections; "0 / 19" is the first thing you see.</p></div>
+      <div class="note"><b><i>2</i> Pick your role</b><p>An approver needs seven stations, not nineteen. The path dims what is optional for the role and the time estimate changes with it.</p><p class="now"><strong>Today:</strong> everyone sees the same 13 "Required" chips.</p></div>
+      <div class="note"><b><i>3</i> Next up, with the reason</b><p>The hero card explains its choice: what you finished, what is coming in the pay calendar. Watch / Try / Do is remembered.</p><p class="now"><strong>Today:</strong> "Practice missions" button and a search box; no recommendation.</p></div>
+      <div class="note"><b><i>4</i> Timed to the pay calendar</b><p>A five-day countdown to cut-off with a two-minute refresher. Learning arrives when it is useful, not when someone remembers the Learn page.</p><p class="now"><strong>Today:</strong> nothing on the Learn page knows the pay calendar.</p></div>
+      <div class="note"><b><i>5</i> Turn on what is already built</b><p>Streaks, bronze / silver / gold tiers and the Continue strip exist in the product. Here they are simply on.</p><p class="now"><strong>Today:</strong> off on every database, and four of five switches have no screen.</p></div>
+      <div class="note"><b><i>6</i> Payobook skills and Company courses side by side</b><p>Product lessons and the employer's own training live under one Learn with two lenses, so a new starter has one place to go.</p><p class="now"><strong>Today:</strong> they are two lenses already, but the Journey still opens on its own full page.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= SCENE 3 ================= -->
+  <section class="scene" id="s3">
+    <div class="scene-head">
+      <div>
+        <h2>Lesson player: Watch, Try, Do on one stage</h2>
+        <p>One lesson, three modes, one switch. Watch plays a ghost cursor on the practice screen. Try hands you the cursor. Do plays the same steps beside the real screen with the helper waiting. A one-question check at the end earns the tier. Try the quiz below.</p>
+      </div>
+      <div class="hero-moment"><div class="eyebrow">Hero moment</div>The ghost cursor <b>moves on the practice screen</b> as each step is read out, and you can grab the cursor at any moment by switching to Try.</div>
+    </div>
+
+    <div class="frame-scroll">
+      <div class="player">
+        <div class="ph">
+          <button class="btn ghost sm"><svg class="ic"><use href="#i-chevl"/></svg> Path</button>
+          <h3>Run a pay run, start to finish</h3>
+          <span class="chip p">Chapter 2 · Run pay</span>
+          <div class="sp"></div>
+          <div class="modes" role="tablist" id="playerModes"><button aria-selected="true" data-mode="watch"><svg class="ic"><use href="#i-play"/></svg> Watch</button><button aria-selected="false" data-mode="try"><svg class="ic"><use href="#i-flask"/></svg> Try</button><button aria-selected="false" data-mode="do"><svg class="ic"><use href="#i-pointer"/></svg> Do it for real</button></div>
+          <span class="pill"><svg class="ic"><use href="#i-pip"/></svg> Pop out beside the screen</span>
+        </div>
+
+        <div class="stage" id="stage">
+          <span class="wm" id="wm">PRACTICE · NOTHING IS REAL</span>
+          <svg class="ghost-cursor ic" id="ghost" style="left:520px;top:110px"><use href="#i-cursor"/></svg>
+          <div class="replica">
+            <div class="page-title"><h3 style="font-size:16px">End-Month Payroll · September 2026</h3><span class="chip neutral">Draft</span><div class="actions"><button class="btn outline sm" id="r-compute">Compute</button><button class="btn primary sm" id="r-send">Send for approval</button></div></div>
+            <div class="kpis">
+              <div class="kpi"><div class="badge p"><svg class="ic"><use href="#i-bank"/></svg></div><div><div class="l">Gross</div><div class="v num">₫0</div></div></div>
+              <div class="kpi"><div class="badge rose"><svg class="ic"><use href="#i-calc"/></svg></div><div><div class="l">Deductions</div><div class="v num">₫0</div></div></div>
+              <div class="kpi"><div class="badge green"><svg class="ic"><use href="#i-ccheck"/></svg></div><div><div class="l">Net pay</div><div class="v num money">₫0</div></div></div>
+            </div>
+            <div class="tbl" id="r-table"><table><thead><tr><th>Employee</th><th class="r">Gross</th><th class="r">Net pay</th><th>Status</th></tr></thead><tbody>
+              <tr><td>Practice person 01</td><td class="r num">—</td><td class="r num">—</td><td><span class="chip neutral">Not computed</span></td></tr>
+              <tr><td>Practice person 02</td><td class="r num">—</td><td class="r num">—</td><td><span class="chip neutral">Not computed</span></td></tr>
+              <tr><td>Practice person 03</td><td class="r num">—</td><td class="r num">—</td><td><span class="chip neutral">Not computed</span></td></tr>
+            </tbody></table></div>
+          </div>
+          <div class="quiz" id="quiz">
+            <b>Quick check · step 3: what does Compute change?</b>
+            <div class="opts">
+              <button data-ok="0">It pays everyone</button>
+              <button data-ok="1">It fills every payslip with figures</button>
+              <button data-ok="0">It sends the run to the approver</button>
+              <button data-ok="0">It locks the month</button>
+            </div>
+            <div class="res" id="quizRes">Right on the first try earns the gold tier for this lesson.</div>
+          </div>
+        </div>
+
+        <div class="stepper">
+          <div class="sh"><svg class="ic"><use href="#i-book"/></svg> 6 steps <div class="sp"></div><span class="chip ok">2 done</span></div>
+          <ol id="stepList">
+            <li class="done"><i><svg class="ic" style="width:11px;height:11px"><use href="#i-check"/></svg></i><div><b>Open the September run</b><span class="why">Pay runs → the row with the amber chip.</span></div></li>
+            <li class="done"><i><svg class="ic" style="width:11px;height:11px"><use href="#i-check"/></svg></i><div><b>Check the pay data landed</b><span class="why">The Import column shows 248 of 248.</span></div></li>
+            <li class="cur" data-target="r-compute"><i>3</i><div><b>Press Compute</b><span class="why">Every payslip fills in. Nothing is paid yet.</span></div></li>
+            <li data-target="r-table"><i>4</i><div><b>Open one payslip and read it top to bottom</b><span class="why">Gross, then each deduction, then net.</span></div></li>
+            <li data-target="r-send"><i>5</i><div><b>Send for approval</b><span class="why">The approver gets it in their inbox.</span></div></li>
+            <li><i>6</i><div><b>Quick check</b><span class="why">One question. Right first time = gold.</span></div></li>
+          </ol>
+          <div class="handoff">
+            <b><svg class="ic" style="vertical-align:-3px"><use href="#i-pointer"/></svg> Ready to do it for real?</b>
+            <p>Same six steps on the real September run. I stay open beside the screen and stop you before anything irreversible.</p>
+            <button class="btn primary sm" style="align-self:flex-start">Do it for real</button>
+          </div>
+        </div>
+
+        <div class="scrub">
+          <div class="bar"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+          <div class="meta">
+            <div class="ctrls"><button title="Back"><svg class="ic"><use href="#i-chevl"/></svg></button><button class="main" id="playBtn"><svg class="ic"><use href="#i-pause"/></svg> Playing</button><button title="Next" id="nextStep"><svg class="ic"><use href="#i-chev"/></svg></button></div>
+            <span>Step 3 of 6 · 2:10 of 6:00</span><div class="sp"></div>
+            <span class="chip teal"><svg class="ic"><use href="#i-globe"/></svg> Narration: English</span>
+            <span class="chip neutral">Speed 1×</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="note"><b><i>1</i> One switch for the three modes</b><p>Watch, Try and Do are the same lesson at different levels of your control. The switch is in the same place in every lesson and is remembered.</p><p class="now"><strong>Today:</strong> three separate buttons per scenario; three of seven lessons have no Do mode.</p></div>
+      <div class="note"><b><i>2</i> A scrub bar you can trust</b><p>Six segments, one per step, green when done. You can jump back to step 2 without restarting the lesson.</p><p class="now"><strong>Today:</strong> no timeline; you step forward only.</p></div>
+      <div class="note"><b><i>3</i> The reason under every step</b><p>Each step carries one line of "why", so the lesson teaches judgement, not just clicks.</p></div>
+      <div class="note"><b><i>4</i> Pop out beside the real screen</b><p>The lesson can shrink to a small player docked beside the real screen, so Do mode is literally "follow along".</p><p class="now"><strong>Today:</strong> lessons play inside the Learn page; the real screen is elsewhere.</p></div>
+      <div class="note"><b><i>5</i> The quiz earns the tier</b><p>One question, right first time, gold. Wrong answers say why in one line and let you try again for silver.</p><p class="now"><strong>Today:</strong> quizzes exist in 8 lessons; tiers are built but switched off.</p></div>
+      <div class="note"><b><i>6</i> Narrated in your language</b><p>Steps can be read aloud in English or Tiếng Việt with the browser's own voice. No recording, no cost, works offline.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= SCENE 4 ================= -->
+  <section class="scene" id="s4">
+    <div class="scene-head">
+      <div>
+        <h2>Learning that lives on the real screens</h2>
+        <p>Most people never open a Learn page. So the learning comes to them: a first-visit strip, empty states that teach, a calm note after the first real milestone, a dotted word you can hover, a number you can ask about, and a search that answers "how do I".</p>
+      </div>
+      <div class="hero-moment"><div class="eyebrow">Hero moment</div>The first time you confirm a real payslip, a quiet note says <b>what just happened and what comes next</b>. No confetti, no pop-up wall.</div>
+    </div>
+
+    <div class="moments">
+      <div class="moment">
+        <div class="mh"><svg class="ic"><use href="#i-eye"/></svg> First visit strip <span class="chip p">once per screen</span></div>
+        <div class="mb">
+          <div class="banner"><i><svg class="ic"><use href="#i-compass"/></svg></i><div><b>First time on Statutory?</b><small>40-second tour: what the rate table is, what changes payslips, what does not.</small></div><div class="sp"></div><button class="btn primary sm"><svg class="ic"><use href="#i-play"/></svg> Show me</button><button class="btn ghost sm">Not now</button></div>
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;opacity:.55">
+            <div class="kpi"><div class="badge p"><svg class="ic"><use href="#i-shield"/></svg></div><div><div class="l">Policies</div><div class="v">7 active</div></div></div>
+            <div class="kpi"><div class="badge green"><svg class="ic"><use href="#i-cal"/></svg></div><div><div class="l">Next change</div><div class="v">1 Jul 2027</div></div></div>
+          </div>
+        </div>
+        <div class="mf">Shows once, then becomes a small "?" in the header. Dismissed strips never come back on their own.</div>
+      </div>
+
+      <div class="moment">
+        <div class="mh"><svg class="ic"><use href="#i-grid"/></svg> Empty states that teach <span class="chip teal">new tenant</span></div>
+        <div class="mb">
+          <div class="empty"><i><svg class="ic lg"><use href="#i-bank"/></svg></i><b>No pay runs yet</b><p>A pay run is one month of pay for one scheme. You need people and a pay data file first.</p><div class="row"><button class="btn primary sm"><svg class="ic"><use href="#i-flask"/></svg> Run a practice one · 6 min</button><button class="btn outline sm">Start a real one</button></div></div>
+        </div>
+        <div class="mf">Every empty screen says what the thing is, what it needs, and offers a practice run before the real one.</div>
+      </div>
+
+      <div class="moment">
+        <div class="mh"><svg class="ic"><use href="#i-sparkles"/></svg> First real milestone <span class="chip ok">calm, not confetti</span></div>
+        <div class="mb">
+          <div style="opacity:.5;margin-bottom:12px" class="steps"><div class="step done"><i><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></i>Draft</div><div class="step-line done"></div><div class="step done"><i><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></i>Computed</div><div class="step-line done"></div><div class="step cur"><i>3</i>Waiting</div></div>
+          <div class="toast" id="toast"><div class="ti"><svg class="ic lg"><use href="#i-ccheck"/></svg></div><div><b>You sent your first real run for approval</b><p>Nothing is paid yet. The approver sees it in their inbox now. Once they sign, "Pay &amp; deliver" lights up.</p><div class="ta"><button class="w">What happens next · 45 s</button><button>Fine, thanks</button></div></div></div>
+        </div>
+        <div class="mf">Fires once per milestone: first employee, first import, first run, first approval, first payment. Then never again.</div>
+      </div>
+
+      <div class="moment">
+        <div class="mh"><svg class="ic"><use href="#i-book"/></svg> Dotted words on real screens <span class="chip info">hover</span></div>
+        <div class="mb">
+          <div class="tbl" style="font-size:13px"><table><thead><tr><th>Component</th><th class="r">Amount</th></tr></thead><tbody>
+            <tr><td>Basic salary</td><td class="r num">₫25,000,000</td></tr>
+            <tr><td><span class="hover-term">Insured salary</span></td><td class="r num">₫25,000,000</td></tr>
+            <tr><td>Social insurance (employee)</td><td class="r num">−₫2,625,000</td></tr>
+          </tbody></table></div>
+          <div class="glossary-card"><b>Insured salary</b><p>The part of pay that social insurance is charged on. In Vietnam it is capped at 20 times the base salary.</p><div class="ga"><button class="btn ghost sm">Tiếng Việt</button><button class="btn ghost sm">Where is it set?</button></div></div>
+        </div>
+        <div class="mf">The 66 glossary cards already exist inside lessons. Here they work on the real payslip too.</div>
+      </div>
+
+      <div class="moment">
+        <div class="mh"><svg class="ic"><use href="#i-route"/></svg> Ask about this number <span class="chip teal">from any figure</span></div>
+        <div class="mb">
+          <div class="figure"><span class="l">Net pay · Nguyễn Thị Mai</span><span class="v num">₫25,418,000 <button title="How was this built?"><svg class="ic" style="width:12px;height:12px"><use href="#i-help"/></svg></button></span></div>
+          <div class="pop"><h5><svg class="ic"><use href="#i-route"/></svg> How this was built</h5>
+            <div class="lineage">
+              <div class="lr"><span>Basic salary<small>contract</small></span><span class="num">₫25,000,000</span></div>
+              <div class="lr"><span>Lunch allowance<small>pay data file, col H</small></span><span class="num">₫3,400,000</span></div>
+              <div class="lr"><span>Social insurance<small>10.5% × insured salary</small></span><span class="num">−₫2,625,000</span></div>
+              <div class="lr"><span>Income tax<small>after family deduction</small></span><span class="num">−₫357,000</span></div>
+              <div class="lr"><span>Net pay</span><span class="num">₫25,418,000</span></div>
+            </div>
+            <div class="pa"><button class="btn ghost sm">Why is tax only 357,000?</button><button class="btn ghost sm">Compare with August</button></div>
+          </div>
+        </div>
+        <div class="mf">A small "?" beside any money figure. Same lineage the product already keeps, shown where the question happens.</div>
+      </div>
+
+      <div class="moment">
+        <div class="mh"><svg class="ic"><use href="#i-search"/></svg> One search for "how do I" <span class="chip p">⌘K anywhere</span></div>
+        <div class="mb">
+          <div class="cmdk">
+            <div class="in"><svg class="ic"><use href="#i-search"/></svg> how do I fix a bank account<span class="caret"></span></div>
+            <div class="grp">Show me</div>
+            <div class="it sel"><i class="p"><svg class="ic"><use href="#i-target"/></svg></i> Change an employee's bank account <small>on Employees · 40 s</small></div>
+            <div class="grp">Lessons</div>
+            <div class="it"><i class="g"><svg class="ic"><use href="#i-book"/></svg></i> Corrections: fix a payslip after approval <small>5 min</small></div>
+            <div class="grp">Words</div>
+            <div class="it"><i class="b"><svg class="ic"><use href="#i-help"/></svg></i> "Bank file" <small>glossary</small></div>
+            <div class="grp">Go to</div>
+            <div class="it"><i class="p"><svg class="ic"><use href="#i-users"/></svg></i> Employees <small>screen</small></div>
+          </div>
+        </div>
+        <div class="mf">The same box that finds screens also answers questions. Pressing Enter on "Show me" spotlights the control on the real screen.</div>
+      </div>
+
+      <div class="moment">
+        <div class="mh"><svg class="ic"><use href="#i-cal"/></svg> Timed nudge on the home screen <span class="chip warn">pay calendar</span></div>
+        <div class="mb">
+          <div class="nudge"><div class="cal">5<small>days</small></div><div><b>Cut-off Sunday 28 Sep</b><p>Last month two payslips were sent back for overtime. A two-minute refresher on checking overtime before approval.</p><div class="na"><button class="btn primary sm"><svg class="ic"><use href="#i-play"/></svg> Watch · 2 min</button><button class="btn ghost sm">Skip this month</button></div></div></div>
+        </div>
+        <div class="mf">Learning tied to what went wrong last time and what is due next. Skipping is one press and remembered.</div>
+      </div>
+
+      <div class="moment">
+        <div class="mh"><svg class="ic"><use href="#i-mic"/></svg> Talk instead of type <span class="chip neutral">opt in</span></div>
+        <div class="mb">
+          <div class="card" style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px"><button class="btn primary" style="border-radius:999px;width:48px;height:48px;padding:0;justify-content:center"><svg class="ic lg"><use href="#i-mic"/></svg></button><div><b style="font-size:13px">Hold to talk</b><p style="font-size:12px;color:var(--ink-2)">"Làm sao để gửi lại một phiếu lương?"</p></div></div>
+            <div style="font-size:12px;color:var(--ink-2);background:var(--p-soft2);padding:8px 10px;border-radius:9px">Heard: <b>How do I send a payslip back?</b> · Press send to ask, or edit first.</div>
+            <p style="font-size:11.5px;color:var(--ink-3)">Ask once for permission. Your voice is turned into text and then treated like typing.</p>
+          </div>
+        </div>
+        <div class="mf">Built for PayAI already. Here it is one mic in the one helper, in both languages.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCENE 5 ================= -->
+  <section class="scene" id="s5">
+    <div class="scene-head">
+      <div>
+        <h2>Team view and one place for the switches</h2>
+        <p>A manager sees who has done the required lessons for their role, assigns one in a click, and gets a reminder before a new starter's first pay run. All learning switches live on one settings card, in plain words, instead of hidden system parameters.</p>
+      </div>
+      <div class="hero-moment"><div class="eyebrow">Hero moment</div>"Two people will approve their first real run next week and have not done the Approvals lesson." One line, one button.</div>
+    </div>
+
+    <div class="admin">
+      <div class="card">
+        <h4>Who is ready for month-end</h4>
+        <p>Required lessons by role. Amber means overdue against the person's first real run.</p>
+        <div class="nudge" style="margin-top:12px;background:var(--warn-soft);border-color:transparent"><div class="cal" style="background:#fff;color:#8A4B00">2</div><div><b>Two approvers have not done the Approvals lesson</b><p>Both are due to sign their first real run on 28 Sep.</p><div class="na"><button class="btn primary sm"><svg class="ic"><use href="#i-bell"/></svg> Send a reminder</button><button class="btn ghost sm">Assign it</button></div></div></div>
+        <div style="overflow-x:auto">
+        <table class="matrix">
+          <thead><tr><th>Person</th><th class="c">Get around</th><th class="c">Run pay</th><th class="c">Approvals</th><th class="c">Statutory</th><th>Ready</th></tr></thead>
+          <tbody>
+            <tr><td><div class="who"><i>TL</i><div>Trần Lan<small>Payroll officer</small></div></div></td><td class="c"><span class="cell d"><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></span></td><td class="c"><span class="cell d"><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></span></td><td class="c"><span class="cell n">–</span></td><td class="c"><span class="cell p">½</span></td><td><span class="chip ok">Ready</span></td></tr>
+            <tr><td><div class="who"><i>NH</i><div>Nguyễn Hòa<small>Approver · first run 28 Sep</small></div></div></td><td class="c"><span class="cell d"><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></span></td><td class="c"><span class="cell n">–</span></td><td class="c"><span class="cell o">!</span></td><td class="c"><span class="cell n">–</span></td><td><span class="chip warn">Overdue</span></td></tr>
+            <tr><td><div class="who"><i>PD</i><div>Phạm Dũng<small>Approver · first run 28 Sep</small></div></div></td><td class="c"><span class="cell p">½</span></td><td class="c"><span class="cell n">–</span></td><td class="c"><span class="cell o">!</span></td><td class="c"><span class="cell n">–</span></td><td><span class="chip warn">Overdue</span></td></tr>
+            <tr><td><div class="who"><i>LA</i><div>Lê An<small>HR admin</small></div></div></td><td class="c"><span class="cell d"><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></span></td><td class="c"><span class="cell n">–</span></td><td class="c"><span class="cell n">–</span></td><td class="c"><span class="cell d"><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg></span></td><td><span class="chip ok">Ready</span></td></tr>
+            <tr><td><div class="who"><i>VM</i><div>Vũ Minh<small>Owner</small></div></div></td><td class="c"><span class="cell p">½</span></td><td class="c"><span class="cell n">–</span></td><td class="c"><span class="cell n">–</span></td><td class="c"><span class="cell n">–</span></td><td><span class="chip neutral">Optional</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p style="margin-top:10px;font-size:12px;color:var(--ink-3)">Progress only. Nobody's questions are shown here.</p>
+      </div>
+
+      <div class="card">
+        <h4>Learning settings</h4>
+        <p>Every switch in one place, in plain words. These are the five things already built and currently off.</p>
+        <div class="switches">
+          <div class="sw"><div><b>Suggest the next step</b><p>The helper opens on "your next step" with the reason. Chosen by fixed rules inside Payobook; nothing is sent anywhere.</p><div class="state">On</div></div><div class="sp"></div><button class="tog" role="switch" aria-checked="true"></button></div>
+          <div class="sw"><div><b>Streaks and badge tiers</b><p>Days in a row, bronze / silver / gold on each lesson. Visible to the person and their manager.</p><div class="state">On</div></div><div class="sp"></div><button class="tog" role="switch" aria-checked="true"></button></div>
+          <div class="sw"><div><b>Written answers from the guide</b><p>Free-text questions get an answer written from the lesson text only. Labelled "From the guide". Names and amounts are removed before anything leaves Payobook.</p><div class="state">Off</div></div><div class="sp"></div><button class="tog" role="switch" aria-checked="false"></button></div>
+          <div class="sw"><div><b>Talk to the helper</b><p>A microphone in the helper. Each person agrees once. Voice becomes text, then it is treated like typing.</p><div class="state">Off</div></div><div class="sp"></div><button class="tog" role="switch" aria-checked="false"></button></div>
+          <div class="sw"><div><b>Learn from questions people ask</b><p>Keep anonymised questions for 180 days to improve the lessons. Each person also agrees in the helper.</p><div class="state">Off</div></div><div class="sp"></div><button class="tog" role="switch" aria-checked="false"></button></div>
+          <div class="sw"><div><b>Timed nudges before cut-off</b><p>A short refresher on the home screen a few days before each cut-off, based on last month's corrections.</p><div class="state">On</div></div><div class="sp"></div><button class="tog" role="switch" aria-checked="true"></button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="note"><b><i>1</i> Readiness, not vanity</b><p>The team view answers one question: is everyone who touches month-end ready for it? It uses the role paths from scene 2.</p><p class="now"><strong>Today:</strong> an author-only "Learner progress" list in an old-style menu that the Payobook sidebar cannot reach.</p></div>
+      <div class="note"><b><i>2</i> Privacy line stays</b><p>Managers see progress, never the questions people asked. That rule already exists and should stay written on the screen.</p></div>
+      <div class="note"><b><i>3</i> Switches with words</b><p>Each switch says what it turns on and what leaves Payobook. Owners can decide without a developer.</p><p class="now"><strong>Today:</strong> five hidden settings; only one has a screen, and nobody has the role that can see it.</p></div>
+    </div>
+  </section>
+
+  <section class="summary">
+    <h2>What would change, in one table</h2>
+    <p>Ranked by how much of the experience it lifts against how much is genuinely new. Most of the "big" ideas reuse things that are already built and switched off.</p>
+    <div class="tw">
+    <table>
+      <thead><tr><th>Idea</th><th>What the user gets</th><th>What already exists</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr><td>Turn on the built features</td><td>Next step, streaks, tiers, timed Continue; a settings card in plain words</td><td>All five features; no settings screen for four</td><td>Small</td></tr>
+        <tr><td>One helper orb</td><td>One button, three tabs, one ask box that routes the question</td><td>Coach drawer, PayAI chat, spotlight, glossary</td><td>Medium</td></tr>
+        <tr><td>"30 seconds" card for every screen</td><td>No screen ever says "no lessons yet"</td><td>20 screen descriptions, 41 intents</td><td>Small to medium (writing)</td></tr>
+        <tr><td>Role paths and three chapters</td><td>A shorter, honest path per role; time estimates</td><td>19 stations, required flags, sections</td><td>Medium</td></tr>
+        <tr><td>Pay-calendar nudges</td><td>A refresher when it matters, based on last month's fixes</td><td>Cut-off rule, corrections history</td><td>Medium</td></tr>
+        <tr><td>First-visit strips and teaching empty states</td><td>Learning without opening Learn</td><td>Empty-state panel, scenarios</td><td>Small</td></tr>
+        <tr><td>Milestone notes</td><td>A calm "what just happened" after each first</td><td>Learning events log</td><td>Small</td></tr>
+        <tr><td>Ask about a number</td><td>Line-by-line build of any figure, in place</td><td>Lineage from the Sourcing work</td><td>Medium</td></tr>
+        <tr><td>Lesson player with scrub bar and pop-out</td><td>Watch, Try, Do on one stage; follow along beside the real screen</td><td>Scenario engine, practice replicas</td><td>Medium to large</td></tr>
+        <tr><td>Team readiness view</td><td>Who is ready for month-end; assign and remind</td><td>Progress records, roles</td><td>Medium</td></tr>
+        <tr><td>Finish the 11 outline-only lessons</td><td>Every station is a real lesson</td><td>Outlines</td><td>Writing, not code</td></tr>
+        <tr><td>Global "how do I" search</td><td>One box for screens, lessons, words, Show me</td><td>Command centre in Formula Studio</td><td>Medium</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var $=function(s,r){return (r||document).querySelector(s)};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+
+  /* scene tabs */
+  $$('.scene-tab').forEach(function(t){t.addEventListener('click',function(){
+    $$('.scene-tab').forEach(function(x){x.setAttribute('aria-selected','false')});
+    t.setAttribute('aria-selected','true');
+    $$('.scene').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.scene)});
+    try{location.hash=t.dataset.scene}catch(e){}
+  })});
+  var h=(location.hash||'').replace('#','');
+  if(h&&$('#'+h+'.scene')){var tb=$('.scene-tab[data-scene="'+h+'"]');if(tb)tb.click();}
+
+  /* helper orb + panel */
+  var panel=$('#panel'),orb=$('#orb');
+  function openPanel(o){panel.classList.toggle('open',o);orb.style.display=o?'none':'';if(o){var a=$('#askBox');}else{clearSpot();}}
+  orb.addEventListener('click',function(){openPanel(true)});
+  $('#panelX').addEventListener('click',function(){openPanel(false)});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='?'&&!/input|textarea/i.test(e.target.tagName)&&$('#s1').classList.contains('on')){e.preventDefault();openPanel(!panel.classList.contains('open'));}
+    if(e.key==='Escape'){clearSpot();}
+  });
+  $$('.seg [data-ptab]').forEach(function(b){b.addEventListener('click',function(){
+    $$('.seg [data-ptab]').forEach(function(x){x.setAttribute('aria-selected','false')});
+    b.setAttribute('aria-selected','true');
+    $$('.ptab').forEach(function(p){p.classList.toggle('on',p.dataset.ptab===b.dataset.ptab)});
+  })});
+
+  /* spotlight tour */
+  var tour=[
+    {id:'approveBtn',t:'Approve run',b:'This is the signature. Nothing is paid until this is pressed and the approver lane says yes.'},
+    {id:'kpiBand',t:'The three figures',b:'Gross minus deductions equals net pay, always. If they do not add up, something in the pay data is wrong.'},
+    {id:'stepRail',t:'Where the run is',b:'Draft, Computed, Waiting for approval, Approved, Paid. Only an approver moves it from 3 to 4.'},
+    {id:'slipTable',t:'One row, one payslip',b:'An amber chip means look before you approve. Click the row to open the payslip and read it top to bottom.'}
+  ];
+  var spotIdx=-1,lit=null;
+  function clearSpot(){$('#spot').classList.remove('on');$('#callout').classList.remove('on');if(lit){lit.classList.remove('lit');lit=null;}spotIdx=-1;}
+  function showSpot(i){
+    var s=tour[i];if(!s){clearSpot();return;}
+    spotIdx=i;if(lit)lit.classList.remove('lit');
+    lit=$('#'+s.id);lit.classList.add('lit');
+    $('#spot').classList.add('on');
+    $('#coT').textContent=s.t;$('#coB').textContent=s.b;
+    var app=$('#app1').getBoundingClientRect(),r=lit.getBoundingClientRect(),c=$('#callout');
+    var left=r.left-app.left+Math.min(r.width,320)+16, top=r.top-app.top+Math.max(0,Math.min(r.height-70,20));
+    if(left>app.width-560){left=r.left-app.left;top=r.top-app.top+r.height+14;}
+    c.style.left=left+'px';c.style.top=top+'px';c.classList.add('on');
+    $('#coNext').textContent=(i<tour.length-1)?'Next':'Finish';
+  }
+  $$('[data-spot]').forEach(function(b){b.addEventListener('click',function(){
+    var i=tour.findIndex(function(t){return t.id===b.dataset.spot});showSpot(i<0?0:i);
+  })});
+  $('#coNext').addEventListener('click',function(){showSpot(spotIdx+1)});
+  $('#coDone').addEventListener('click',clearSpot);
+  $('#spot').addEventListener('click',clearSpot);
+
+  /* roles → path */
+  var roleData={
+    officer:{req:['dash','appr','people','import','payruns','runpay','payslips','deliver','fixes','statutory'],n:'Required for you: 10 stations · about 61 min',title:'Run a pay run, start to finish',body:'Six steps on a practice copy of the September run. You will compute, check one payslip and send the run for approval.',why:'Because: you finished "Pay runs" yesterday and the real cut-off is in 5 days.'},
+    approver:{req:['dash','appr','payruns','payslips','fixes'],n:'Required for you: 5 stations · about 30 min',title:'Review and approve like a manager',body:'Read a waiting run, open two payslips, send one back with a note, approve the rest. On a practice copy.',why:'Because: you will sign your first real run on 28 Sep.'},
+    hr:{req:['dash','people','contracts','import','statutory'],n:'Required for you: 5 stations · about 34 min',title:'Add a person and their contract, ready for pay',body:'Create an employee, attach a contract with components, and see the person appear in the next run.',why:'Because: three new starters join on 1 Oct.'},
+    owner:{req:['dash','appr','insights','reports'],n:'Required for you: 4 stations · about 23 min',title:'Read the month in five minutes',body:'The dashboard, the Insights lens and one government report. What to look at and what to ignore.',why:'Because: you asked "where does the ₫1.1bn go?" last week.'}
+  };
+  $$('#roles .role').forEach(function(b){b.addEventListener('click',function(){
+    $$('#roles .role').forEach(function(x){x.setAttribute('aria-pressed','false')});
+    b.setAttribute('aria-pressed','true');
+    var d=roleData[b.dataset.role];
+    $$('.station').forEach(function(s){var req=d.req.indexOf(s.dataset.id)>-1;s.classList.toggle('required',req);s.classList.toggle('optional',!req);});
+    $('#roleHint').textContent=d.n;$('#heroTitle').textContent=d.title;$('#heroBody').textContent=d.body;
+    $('#heroWhy').innerHTML='<svg class="ic"><use href="#i-info"/></svg> '+d.why;
+  })});
+  $('#roles .role').click();
+
+  /* mode switches (generic) */
+  $$('.modes').forEach(function(m){$$('button',m).forEach(function(b){b.addEventListener('click',function(){
+    $$('button',m).forEach(function(x){x.setAttribute('aria-selected','false')});b.setAttribute('aria-selected','true');
+    if(m.id==='playerModes'){
+      var wm=$('#wm'),g=$('#ghost');
+      if(b.dataset.mode==='watch'){wm.textContent='PRACTICE · NOTHING IS REAL';wm.style.background='';wm.style.color='';g.style.display='';}
+      if(b.dataset.mode==='try'){wm.textContent='PRACTICE · YOUR TURN';g.style.display='none';}
+      if(b.dataset.mode==='do'){wm.textContent='REAL SCREEN · I WILL STOP YOU BEFORE ANYTHING IRREVERSIBLE';wm.style.background='var(--err-soft)';wm.style.color='var(--err)';g.style.display='none';}
+    }
+  })})});
+
+  /* ghost cursor moves to the current step's control */
+  function moveGhost(){
+    var cur=$('#stepList li.cur'),g=$('#ghost'),st=$('#stage');if(!cur||!cur.dataset.target)return;
+    var t=$('#'+cur.dataset.target);if(!t)return;
+    var a=st.getBoundingClientRect(),r=t.getBoundingClientRect();
+    g.style.left=(r.left-a.left+Math.min(r.width/2,60))+'px';g.style.top=(r.top-a.top+r.height/2)+'px';
+  }
+  setTimeout(moveGhost,300);
+  window.addEventListener('resize',moveGhost);
+  $('#nextStep').addEventListener('click',function(){
+    var lis=$$('#stepList li'),i=lis.findIndex(function(l){return l.classList.contains('cur')});
+    if(i<0||i>=lis.length-1)return;
+    lis[i].classList.remove('cur');lis[i].classList.add('done');lis[i].querySelector('i').innerHTML='<svg class="ic" style="width:11px;height:11px"><use href="#i-check"/></svg>';
+    lis[i+1].classList.add('cur');
+    var segs=$$('.scrub .bar i');segs[i].className='done';if(segs[i+1])segs[i+1].className='cur';
+    $('.scrub .meta > span').textContent='Step '+(i+2)+' of 6 · '+['0:00','0:40','2:10','3:20','4:35','5:30'][i+1]+' of 6:00';
+    moveGhost();
+  });
+  var playing=true;$('#playBtn').addEventListener('click',function(){playing=!playing;this.innerHTML=playing?'<svg class="ic"><use href="#i-pause"/></svg> Playing':'<svg class="ic"><use href="#i-play"/></svg> Paused';});
+
+  /* quiz */
+  var tries=0;
+  $$('#quiz .opts button').forEach(function(b){b.addEventListener('click',function(){
+    tries++;
+    if(b.dataset.ok==='1'){b.classList.add('right');$('#quizRes').innerHTML=tries===1?'<b style="color:var(--ok)">Right first time.</b> Gold tier for this lesson. Compute fills every payslip with figures; nothing is paid.':'<b style="color:var(--ok)">Right.</b> Silver tier. Compute fills every payslip; approval and payment come later.';}
+    else{b.classList.add('wrong');$('#quizRes').innerHTML='<b style="color:var(--err)">Not quite.</b> '+({'It pays everyone':'Paying is the last step, after approval.','It sends the run to the approver':'That is step 5, "Send for approval".','It locks the month':'Nothing locks until the run is paid.'})[b.textContent]+' Try again.';}
+  })});
+
+  /* toggles */
+  $$('.tog').forEach(function(t){t.addEventListener('click',function(){
+    var on=t.getAttribute('aria-checked')!=='true';t.setAttribute('aria-checked',on?'true':'false');
+    var st=t.parentElement.querySelector('.state');if(st)st.textContent=on?'On':'Off';
+  })});
+})();
+</script>

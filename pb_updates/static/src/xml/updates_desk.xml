@@ -1,0 +1,1346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- =================================================================
+       People › Updates. One root, one view at a time. Wording is the
+       prototype's (docs/design/updates-desk-prototype.html): screen words,
+       never code words.
+       ================================================================= -->
+  <t t-name="pb_updates.PbUpdatesDesk">
+    <div class="pbim pbim-page pbu-root" t-att-class="{ 'pbu-root--embedded': props.embedded }">
+      <div class="pbu-wrap">
+
+        <div t-if="state.loading" class="pbu-card pbu-loading" aria-busy="true">
+          <span class="pbu-spin"/><span>Opening Updates…</span>
+        </div>
+
+        <div t-elif="state.error" class="pbu-card pbu-fail" role="alert">
+          <span class="pbu-ib pbu-ib--err"><t t-out="icon('alert', 20)"/></span>
+          <div>
+            <h2 class="pbu-h2">Updates could not be opened</h2>
+            <p t-esc="state.error"/>
+          </div>
+        </div>
+
+        <div t-else="" class="pbu-view" t-key="state.view">
+
+          <!-- ======================================================= HOME -->
+          <t t-if="state.view === 'home'">
+            <section class="pbu-hero">
+              <span class="pbu-hero-av"><t t-out="icon('fileSpreadsheet', 26)"/></span>
+              <div class="pbu-hero-id">
+                <h1 class="pbu-h1">Update many people at once</h1>
+                <p class="pbu-lead" t-esc="heroBody"/>
+                <p t-if="!canWrite" class="pbu-inline-note">
+                  <t t-out="icon('info', 14)"/><span t-esc="noWriteNote"/>
+                </p>
+              </div>
+              <button type="button" class="pbim-btn primary pbu-btn-lg" t-on-click="newUpdate">
+                <t t-out="icon('plus', 16)"/> New update
+              </button>
+            </section>
+
+            <div class="pbu-tiles">
+              <button type="button" class="pbu-tile" t-att-class="{ 'is-off': !canExport }" t-on-click="newUpdate">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('download', 20)"/></span>
+                <span class="pbu-tile-t">Download a ready-to-fill sheet</span>
+                <span class="pbu-tile-d">Your people and their current values are already in it. Change what you need and send it back.</span>
+                <span t-if="canExport" class="pbu-chip pbu-chip--pri">Safest way</span>
+                <span t-else="" class="pbu-tile-off"><t t-out="icon('lock', 13)"/> Needs permission to export employee records</span>
+              </button>
+              <button type="button" class="pbu-tile" t-on-click="newUpdate">
+                <span class="pbu-ib pbu-ib--ok"><t t-out="icon('upload', 20)"/></span>
+                <span class="pbu-tile-t">Upload your own file</span>
+                <span class="pbu-tile-d">Any layout, any column names. Match the columns once and they are remembered next time.</span>
+              </button>
+              <!-- UPDATES P2d — the second kind of sheet. -->
+              <button type="button" class="pbu-tile pbu-tile--oneoff" t-att-class="{ 'is-off': !oneoffInfo.available }"
+                      t-on-click="() => this.newUpdate('oneoff')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('coins', 20)"/></span>
+                <span class="pbu-tile-t">One-off pay for a month</span>
+                <span class="pbu-tile-d">A bonus, a one-time deduction, an overtime amount. Paid once, in that month's pay run.</span>
+                <span t-if="!oneoffInfo.available" class="pbu-tile-off"><t t-out="icon('info', 13)"/> None of your pay schemes has a one-off pay item yet</span>
+              </button>
+              <!-- UPDATES P4 — the third kind of sheet. -->
+              <button type="button" class="pbu-tile pbu-tile--leave" t-att-class="{ 'is-off': !leaveInfo.available }"
+                      t-on-click="() => this.newUpdate('leave')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('calendarRange', 20)"/></span>
+                <span class="pbu-tile-t">Leave opening balances</span>
+                <span class="pbu-tile-d">How much leave each person still has on a date, for many people at once. Set once per person and leave type.</span>
+                <span t-if="!leaveInfo.available" class="pbu-tile-off"><t t-out="icon('info', 13)"/> No leave type keeps a balance yet</span>
+                <span t-elif="!mayLeave" class="pbu-tile-off"><t t-out="icon('lock', 13)"/> Setting them needs the HR officer role</span>
+              </button>
+              <!-- UPDATES P5 — the fourth kind of sheet. -->
+              <button type="button" class="pbu-tile pbu-tile--ytd" t-att-class="{ 'is-off': !ytdInfo.available }"
+                      t-on-click="() => this.newUpdate('ytd')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('history', 20)"/></span>
+                <span class="pbu-tile-t">Year-to-date figures before Payobook</span>
+                <span class="pbu-tile-d">What each person was paid and taxed this year before your company started here. For tax summaries and the year-end tax step.</span>
+                <span t-if="!ytdInfo.available" class="pbu-tile-off"><t t-out="icon('lock', 13)"/> Seeing pay figures needs a payroll role</span>
+              </button>
+            </div>
+
+            <!-- UPDATES P5 — the year-to-date view. -->
+            <button t-if="ytdInfo.available" type="button" class="pbu-ytd-door" t-on-click="openYtdView">
+              <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('history', 16)"/></span>
+              <span class="pbu-ytd-door-t">
+                <b>Year-to-date figures</b>
+                <span class="pbu-sub" t-esc="ytdDoorLine"/>
+              </span>
+              <t t-out="icon('arrowRight', 16)"/>
+            </button>
+
+            <!-- UPDATES P3b — unfinished updates, private to whoever made them. -->
+            <section t-if="drafts.length" class="pbu-card pbu-drafts" aria-labelledby="pbu-drafts-h">
+              <header class="pbu-card-h">
+                <div>
+                  <h2 id="pbu-drafts-h" class="pbu-h2"><t t-out="icon('save', 18)"/> Continue where you left off</h2>
+                  <p class="pbu-sub">Saved as you worked. Only you can see these. Continuing reads the file again against today's records.</p>
+                </div>
+              </header>
+              <ul class="pbu-draftlist">
+                <li t-foreach="draftsShown" t-as="d" t-key="d.id" class="pbu-draft">
+                  <span t-attf-class="pbu-ib pbu-ib--{{ d.kind === 'lasting' ? 'info' : 'pri' }} sm"><t t-out="icon(draftIcon(d), 16)"/></span>
+                  <div class="pbu-hrow-t">
+                    <b t-esc="d.filename"/>
+                    <span class="pbu-sub"><t t-esc="draftKind(d)"/> · <t t-esc="draftStep(d)"/></span>
+                  </div>
+                  <t t-set="age" t-value="draftAge(d)"/>
+                  <span t-attf-class="pbu-draft-age {{ age.old ? 'is-old' : '' }}"><t t-out="icon('clock', 12)"/><t t-esc="age.label"/></span>
+                  <div class="pbu-row">
+                    <button type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.opening"
+                            t-on-click="() => this.continueDraft(d)">
+                      <span t-if="state.opening === d.id" class="pbu-spin sm"/>
+                      <t t-else="" t-out="icon('play', 13)"/> Continue
+                    </button>
+                    <button type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.discardDraft(d)">
+                      <t t-out="icon('trash', 13)"/> Discard
+                    </button>
+                  </div>
+                </li>
+              </ul>
+              <footer t-if="draftsMore" class="pbu-card-f">
+                <button type="button" class="pbu-link" t-on-click="() => this.state.draftsAll = !this.state.draftsAll">
+                  <t t-if="state.draftsAll">Fewer drafts</t><t t-else="" t-esc="draftsMoreLabel"/>
+                </button>
+              </footer>
+            </section>
+
+            <!-- UPDATES P3b — new employees from a sheet: still with an
+                 approver, or hired with values still to apply. Hidden when empty. -->
+            <section t-if="joinersWaiting.length" class="pbu-card pbu-joiners" aria-labelledby="pbu-joiners-h">
+              <header class="pbu-card-h">
+                <div>
+                  <h2 id="pbu-joiners-h" class="pbu-h2"><t t-out="icon('userPlus', 18)"/> New employees waiting</h2>
+                  <p class="pbu-sub">Added from a sheet. The rest of each row follows by itself once the person exists.</p>
+                </div>
+              </header>
+              <ul class="pbu-hist">
+                <li t-foreach="joinersWaiting" t-as="j" t-key="j.id" class="pbu-hrow pbu-joiner">
+                  <span t-attf-class="pbu-ib pbu-ib--{{ joinerTone(j) }} sm"><t t-out="icon(joinerIcon(j), 16)"/></span>
+                  <div class="pbu-hrow-t">
+                    <b t-esc="j.name"/>
+                    <span class="pbu-sub"><t t-if="j.team"><t t-esc="j.team"/> · </t><t t-esc="j.line"/></span>
+                    <span class="pbu-sub" t-esc="joinerFrom(j)"/>
+                  </div>
+                  <span t-attf-class="pbu-chip pbu-chip--{{ joinerTone(j) }}" t-esc="j.state_label"/>
+                  <button t-if="j.can_apply_now" type="button" class="pbim-btn outline pbim-btn-sm"
+                          t-att-disabled="state.applyingNow" t-on-click="() => this.applyNowJoiner(j)">
+                    <span t-if="state.applyingNow === j.id" class="pbu-spin sm"/>
+                    <t t-else="" t-out="icon('send', 13)"/> Apply now
+                  </button>
+                </li>
+              </ul>
+            </section>
+
+            <!-- UPDATES P2d — one-off amounts waiting for their pay run, and
+                 the questions a pay run asked (decision D11). Hidden when empty. -->
+            <section t-if="waitingMonths.length or clashes.length" class="pbu-card pbu-waiting">
+              <header class="pbu-card-h">
+                <div>
+                  <h2 class="pbu-h2"><t t-out="icon('coins', 18)"/> Waiting for a pay run</h2>
+                  <p t-if="waitingMonths.length" class="pbu-sub">One-off amounts approved for a pay month. Each is paid once, by the first pay run of that month for the person's pay scheme.</p>
+                  <p t-else="" class="pbu-sub">A pay run is waiting for you to choose between two amounts.</p>
+                </div>
+              </header>
+              <div t-if="clashes.length" class="pbu-clash">
+                <div class="pbu-clash-h">
+                  <span class="pbu-ib pbu-ib--warn sm"><t t-out="icon('scale', 15)"/></span>
+                  <div>
+                    <b t-esc="clashTitle"/>
+                    <span class="pbu-sub">Updates and the pay data file disagree. The pay run waits until you choose; the two are never added up.</span>
+                  </div>
+                </div>
+                <ul class="pbu-clash-list">
+                  <li t-foreach="clashes" t-as="c" t-key="c.id" class="pbu-clash-row">
+                    <div class="pbu-hrow-t">
+                      <b><t t-esc="c.emp"/> · <t t-esc="c.item"/></b>
+                      <span class="pbu-sub" t-esc="clashWhere(c)"/>
+                    </div>
+                    <div class="pbu-clash-amts">
+                      <span class="pbu-amt is-upd"><small>From Updates</small><b t-esc="c.updates"/></span>
+                      <span class="pbu-amt-vs" aria-hidden="true">or</span>
+                      <span class="pbu-amt is-file"><small>In the pay data file</small><b t-esc="c.file"/></span>
+                    </div>
+                    <div t-if="waiting.can_choose" class="pbu-row">
+                      <button type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.choosing"
+                              t-on-click="() => this.chooseAmount(c, 'updates')">
+                        <span t-if="state.choosing === c.id + ':updates'" class="pbu-spin sm"/>
+                        <t t-else="" t-out="icon('fileSpreadsheet', 13)"/> Use the Updates amount
+                      </button>
+                      <button type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.choosing"
+                              t-on-click="() => this.chooseAmount(c, 'file')">
+                        <span t-if="state.choosing === c.id + ':file'" class="pbu-spin sm"/>
+                        <t t-else="" t-out="icon('upload', 13)"/> Use the file's amount
+                      </button>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <ul class="pbu-cal">
+                <li t-foreach="waitingMonths" t-as="m" t-key="m.month" class="pbu-wait">
+                  <div class="pbu-cal-row">
+                    <t t-set="md" t-value="monthDay(m)"/>
+                    <span class="pbu-cal-day pbu-cal-day--month" aria-hidden="true">
+                      <small t-esc="md.m"/><b><t t-out="icon('coins', 18)"/></b><small t-esc="md.y"/>
+                    </span>
+                    <div class="pbu-hrow-t">
+                      <b t-esc="m.label"/>
+                      <span class="pbu-sub" t-esc="waitingLine(m)"/>
+                      <span class="pbu-wait-money" t-esc="waitingMoney(m)"/>
+                    </div>
+                    <span t-foreach="waitingChips(m)" t-as="chip" t-key="chip.key"
+                          t-attf-class="pbu-chip pbu-chip--{{ chip.tone }}" t-esc="chip.label"/>
+                    <button type="button" class="pbim-btn ghost pbim-btn-sm" t-att-aria-expanded="state.openMonth === m.month ? 'true' : 'false'"
+                            t-on-click="() => this.toggleMonth(m)">
+                      <t t-out="icon(state.openMonth === m.month ? 'chevronUp' : 'chevronDown', 14)"/>
+                      <t t-if="state.openMonth === m.month"> Hide the list</t><t t-else=""> Show the list</t>
+                    </button>
+                  </div>
+                  <div t-if="state.openMonth === m.month" class="pbu-wait-list">
+                    <table class="pbu-wait-t">
+                      <thead><tr><th scope="col">Person</th><th scope="col">Pay item</th><th scope="col" class="num">Amount</th><th scope="col">Where it is</th></tr></thead>
+                      <tbody>
+                        <tr t-foreach="m.rows" t-as="r" t-key="r.id">
+                          <td t-esc="r.emp"/>
+                          <td><t t-esc="r.item"/> <span t-if="r.role === 'deduction'" class="pbu-tag">Takes from pay</span></td>
+                          <td class="num" t-esc="r.amount"/>
+                          <td><span t-attf-class="pbu-chip pbu-chip--{{ rowTone(r) }}"><t t-esc="r.run ? r.state_label + ' · ' + r.run : r.state_label"/></span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class="pbu-wait-batches">
+                      <span t-foreach="m.batches" t-as="b" t-key="b.id" class="pbu-wait-b">
+                        <t t-out="icon('fileSpreadsheet', 13)"/><span t-esc="b.name"/>
+                        <button t-if="b.can_cancel" type="button" class="pbu-link"
+                                t-on-click="() => this.cancelOneoff({ id: b.id, name: b.name })">Cancel</button>
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </section>
+
+            <!-- UPDATES P2c — changes waiting for their day. Hidden when empty. -->
+            <section t-if="comingUp.length" class="pbu-card pbu-coming">
+              <header class="pbu-card-h">
+                <div>
+                  <h2 class="pbu-h2"><t t-out="icon('calendarClock', 18)"/> Coming up</h2>
+                  <p class="pbu-sub">Approved and waiting for their start date. Each one is written on its day by itself, all of it or none of it.</p>
+                </div>
+              </header>
+              <ul class="pbu-cal">
+                <li t-foreach="comingUp" t-as="c" t-key="c.apply_id" class="pbu-cal-row">
+                  <t t-set="day" t-value="comingDay(c)"/>
+                  <span class="pbu-cal-day" aria-hidden="true">
+                    <small t-esc="day.m"/><b t-esc="day.d"/><small t-esc="day.y"/>
+                  </span>
+                  <div class="pbu-hrow-t">
+                    <b t-esc="c.name"/>
+                    <span class="pbu-sub" t-esc="comingLine(c)"/>
+                    <span class="pbu-cal-when"><t t-out="icon('clock', 12)"/><t t-esc="comingWhen(c)"/></span>
+                    <span t-if="c.note" class="pbu-sub pbu-warn-text" t-esc="c.note"/>
+                  </div>
+                  <div class="pbu-row">
+                    <button t-if="c.can_start" type="button" class="pbim-btn outline pbim-btn-sm"
+                            t-att-disabled="state.starting === c.apply_id"
+                            t-on-click="() => this.startNow(c)">
+                      <span t-if="state.starting === c.apply_id" class="pbu-spin sm"/>
+                      <t t-else="" t-out="icon('play', 13)"/> Start now
+                    </button>
+                    <button t-if="c.can_cancel" type="button" class="pbim-btn ghost pbim-btn-sm"
+                            t-on-click="() => this.cancelComing(c)">
+                      <t t-out="icon('x', 13)"/> Cancel
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </section>
+
+            <!-- UPDATES P3a — the company switch, for whoever looks after approvals. -->
+            <div t-if="detailsNow and detailsNow.can_set" class="pbu-switch">
+              <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('userRound', 16)"/></span>
+              <div class="pbu-switch-t">
+                <b>Personal details from a sheet apply without approval</b>
+                <span class="pbu-sub" t-esc="detailsNowNote"/>
+              </div>
+              <button type="button" class="pbu-toggle" role="switch"
+                      t-att-aria-checked="detailsNow.on ? 'true' : 'false'"
+                      aria-label="Personal details from a sheet apply without approval"
+                      t-att-disabled="state.switching or detailsNow.route === 'custom'"
+                      t-on-click="toggleDetailsNow"/>
+            </div>
+
+            <section class="pbu-card">
+              <header class="pbu-card-h">
+                <div>
+                  <h2 class="pbu-h2">Past updates</h2>
+                  <p class="pbu-sub">Every update is kept with who sent it, what changed and the original file.</p>
+                </div>
+              </header>
+              <div t-if="!state.home.history.length" class="pbu-empty">
+                <span class="pbu-ib pbu-ib--muted"><t t-out="icon('history', 20)"/></span>
+                <div>
+                  <b>No updates yet</b>
+                  <p>Each update you apply shows up here with its name, who sent it, how many people and values it changed, and the file it came from. You can undo it from here too.</p>
+                </div>
+              </div>
+              <ul t-else="" class="pbu-hist">
+                <li t-foreach="state.home.history" t-as="h" t-key="h.id" class="pbu-hrow">
+                  <span t-attf-class="pbu-ib pbu-ib--{{ historyTone(h) }}"><t t-out="icon(historyIcon(h), 17)"/></span>
+                  <div class="pbu-hrow-t">
+                    <b t-esc="h.name"/>
+                    <span class="pbu-sub" t-esc="historyLine(h)"/>
+                    <span t-if="historyNote(h)" class="pbu-sub" t-esc="historyNote(h)"/>
+                    <!-- UPDATES P3b — each new employee, with their own state. -->
+                    <ul t-if="h.joiners and h.joiners.length" class="pbu-hlanes pbu-hjoiners">
+                      <li t-foreach="h.joiners" t-as="j" t-key="j.id" class="pbu-hlane pbu-hlane--new">
+                        <span class="pbu-hlane-ic"><t t-out="icon('userPlus', 13)"/></span>
+                        <div class="pbu-hlane-t">
+                          <b t-esc="j.name"/>
+                          <span class="pbu-sub" t-esc="j.line"/>
+                        </div>
+                        <span t-attf-class="pbu-chip pbu-chip--{{ joinerTone(j) }}" t-esc="j.state_label"/>
+                        <button t-if="j.can_apply_now" type="button" class="pbim-btn ghost pbim-btn-sm"
+                                t-att-disabled="state.applyingNow" t-on-click="() => this.applyNowJoiner(j)">
+                          <t t-out="icon('send', 13)"/> Apply now
+                        </button>
+                      </li>
+                      <li class="pbu-hjoiners-note"><t t-out="icon('info', 12)"/>Adding a person cannot be undone from here. Undo puts back the other changes only.</li>
+                    </ul>
+                    <!-- UPDATES P3a — each lane its own line, state, Undo and Cancel. -->
+                    <ul t-if="h.lanes and h.lanes.length > 1" class="pbu-hlanes">
+                      <li t-foreach="h.lanes" t-as="l" t-key="l.apply_id" t-attf-class="pbu-hlane pbu-hlane--{{ l.lane }}">
+                        <span class="pbu-hlane-ic"><t t-out="icon(laneIcon(l.lane), 13)"/></span>
+                        <div class="pbu-hlane-t">
+                          <b t-esc="l.label"/>
+                          <span class="pbu-sub" t-esc="hlaneLine(l)"/>
+                          <t t-set="fix" t-value="l.fix"/>
+                          <t t-if="l.fix" t-call="pb_updates.WayOut"/>
+                        </div>
+                        <span t-attf-class="pbu-chip pbu-chip--{{ hlaneTone(l) }}" t-esc="l.state_label"/>
+                        <button t-if="l.can_undo" type="button" class="pbim-btn ghost pbim-btn-sm"
+                                t-att-disabled="state.undoing === h.id" t-on-click="() => this.undoLane(h, l)">
+                          <t t-out="icon('undo', 13)"/> Undo
+                        </button>
+                        <button t-if="l.can_cancel" type="button" class="pbim-btn ghost pbim-btn-sm"
+                                t-on-click="() => this.cancelLane(h, l)">
+                          <t t-out="icon('x', 13)"/> Cancel
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <a t-if="h.file_id" class="pbu-file" t-att-href="fileUrl(h)" t-att-title="h.filename">
+                    <t t-out="icon('fileSpreadsheet', 14)"/><span t-esc="h.filename"/>
+                  </a>
+                  <span t-attf-class="pbu-chip pbu-chip--{{ historyTone(h) }}" t-esc="historyLabel(h)"/>
+                  <button t-if="h.can_undo" type="button" class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="state.undoing === h.id"
+                          t-on-click="() => this.undoFromHistory(h)">
+                    <t t-out="icon('undo', 14)"/>
+                    <t t-if="h.has_open"> Undo what was applied</t><t t-else=""> Undo</t>
+                  </button>
+                  <button t-if="h.can_cancel" type="button" class="pbim-btn ghost pbim-btn-sm"
+                          t-on-click="() => this.cancelBatch(h)">
+                    <t t-out="icon('x', 14)"/> <t t-esc="cancelLabel(h)"/>
+                  </button>
+                </li>
+              </ul>
+              <footer t-if="historyMoreLine" class="pbu-card-f">
+                <span class="pbu-sub" t-esc="historyMoreLine"/>
+                <button type="button" class="pbu-link" t-on-click="showAllHistory">Show all</button>
+              </footer>
+            </section>
+          </t>
+
+          <!-- ================================================ YEAR TO DATE -->
+          <t t-elif="state.view === 'ytd' and state.ytd" t-call="pb_updates.YtdView"/>
+
+          <!-- ======================================================= START -->
+          <section t-elif="state.view === 'start'" class="pbu-card pbu-flow">
+            <t t-call="pb_updates.Steps"/>
+            <!-- UPDATES P2d — two kinds of sheet. -->
+            <div class="pbu-kinds" role="radiogroup" aria-label="What kind of update">
+              <button type="button" role="radio" class="pbu-kind-card"
+                      t-att-aria-checked="isLasting ? 'true' : 'false'" t-on-click="() => this.setKind('lasting')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('layers', 20)"/></span>
+                <span class="pbu-kind-t">
+                  <b>Lasting changes</b>
+                  <span class="pbu-sub">Job details, contracts, bank details and ongoing pay items. They stay until changed again.</span>
+                </span>
+              </button>
+              <button type="button" role="radio" class="pbu-kind-card"
+                      t-att-aria-checked="isOneoff ? 'true' : 'false'" t-att-disabled="!oneoffInfo.available"
+                      t-on-click="() => this.setKind('oneoff')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('coins', 20)"/></span>
+                <span class="pbu-kind-t">
+                  <b>One-off pay items for a pay month</b>
+                  <span class="pbu-sub">A bonus, a one-time deduction, an overtime amount. Paid once, in that month's pay run.</span>
+                  <span t-if="!oneoffInfo.available" class="pbu-topic-warn"><t t-out="icon('info', 12)"/> None of your pay schemes has a one-off pay item yet.</span>
+                </span>
+              </button>
+              <!-- UPDATES P4 — the third kind. -->
+              <button type="button" role="radio" class="pbu-kind-card"
+                      t-att-aria-checked="isLeave ? 'true' : 'false'" t-att-disabled="!leaveInfo.available"
+                      t-on-click="() => this.setKind('leave')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('calendarRange', 20)"/></span>
+                <span class="pbu-kind-t">
+                  <b>Leave opening balances</b>
+                  <span class="pbu-sub">How much leave each person still has on a date. Set once per person and leave type.</span>
+                  <span t-if="!leaveInfo.available" class="pbu-topic-warn"><t t-out="icon('info', 12)"/> No leave type keeps a balance yet.</span>
+                  <span t-elif="!mayLeave" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> You can check a sheet; setting balances needs the HR officer role.</span>
+                </span>
+              </button>
+              <!-- UPDATES P5 — the fourth kind. -->
+              <button type="button" role="radio" class="pbu-kind-card"
+                      t-att-aria-checked="isYtd ? 'true' : 'false'" t-att-disabled="!ytdInfo.available"
+                      t-on-click="() => this.setKind('ytd')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('history', 20)"/></span>
+                <span class="pbu-kind-t">
+                  <b>Year-to-date figures before Payobook</b>
+                  <span class="pbu-sub">Gross pay, tax and contributions so far this year, from the payroll used before. Set once, replaced or cleared later.</span>
+                  <span t-if="!ytdInfo.available" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> Seeing pay figures needs a payroll role.</span>
+                  <span t-elif="!ytdInfo.may_send" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> You can check a sheet; sending it needs the Payroll Officer role.</span>
+                </span>
+              </button>
+            </div>
+            <!-- UPDATES P4 (D17) — attendance and timesheets have their own screen. -->
+            <button t-if="attendance.available" type="button" class="pbu-attend" t-on-click="openAttendance">
+              <span class="pbu-ib pbu-ib--muted sm"><t t-out="icon('clock', 16)"/></span>
+              <span class="pbu-attend-t">
+                <b>Attendance and timesheets</b>
+                <span class="pbu-sub">Loaded on the Attendance screen, with its own checks.</span>
+              </span>
+              <t t-out="icon('arrowRight', 16)"/>
+            </button>
+            <!-- UPDATES P5 — the tax year and the date the figures cover up to. -->
+            <t t-if="isYtd" t-call="pb_updates.YtdStart"/>
+            <!-- UPDATES P4 — the date and the leave types of a leave sheet. -->
+            <div t-if="isLeave" class="pbu-month pbu-leave-date">
+              <label for="pbu-cutover" class="pbu-label">Balances as at</label>
+              <input id="pbu-cutover" type="date" class="pbu-input pbu-date" t-att-value="state.cutover"
+                     t-att-min="leaveInfo.min" t-att-max="leaveInfo.today" t-on-change="onCutover"/>
+              <p class="pbu-sub pbu-month-line"><t t-out="icon('calendarRange', 13)"/><span t-esc="cutoverLine"/></p>
+            </div>
+            <p t-if="isLeave and cutoverError" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="cutoverError"/></p>
+            <p t-if="state.cutoverNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="state.cutoverNote"/></p>
+            <div t-if="isLeave" class="pbu-flow-h">
+              <h2 class="pbu-h2">Which leave types?</h2>
+              <p class="pbu-sub">The sheet has a column for each one picked. Only leave types that keep a balance, for people who can have them.</p>
+            </div>
+            <div t-if="isLeave" class="pbu-topics pbu-leave-types" role="group" aria-label="Leave types">
+              <button t-foreach="leaveTypes" t-as="ltype" t-key="ltype.id" type="button"
+                      class="pbu-topic" t-att-aria-pressed="state.leavePicked[ltype.id] ? 'true' : 'false'"
+                      t-on-click="() => this.toggleLeaveType(ltype.id)">
+                <span class="pbu-box"><t t-if="state.leavePicked[ltype.id]" t-out="icon('check', 12)"/></span>
+                <span class="pbu-topic-t">
+                  <b t-esc="ltype.name"/>
+                  <span class="pbu-sub" t-esc="leaveTypeLine(ltype)"/>
+                </span>
+              </button>
+            </div>
+            <div t-if="isLeave and leavePolicyLine" class="pbu-note">
+              <t t-out="icon('shieldCheck', 16)"/>
+              <div t-esc="leavePolicyLine"/>
+            </div>
+            <div t-if="isOneoff" class="pbu-month">
+              <label for="pbu-month" class="pbu-label">Pay month</label>
+              <select id="pbu-month" class="pbu-select pbu-month-pick" t-on-change="onMonth">
+                <option t-foreach="oneoffInfo.months" t-as="o" t-key="o.value" t-att-value="o.value"
+                        t-att-selected="o.value === state.month" t-esc="o.current ? o.label + ' (this month)' : o.label"/>
+              </select>
+              <p class="pbu-sub pbu-month-line"><t t-out="icon('calendar', 13)"/><span t-esc="monthLine"/></p>
+            </div>
+            <p t-if="state.monthNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="state.monthNote"/></p>
+            <div t-if="isLasting" class="pbu-flow-h">
+              <h2 class="pbu-h2">What do you want to update?</h2>
+              <p class="pbu-sub">Pick the topics. The sheet you download has exactly these columns, filled with today's values.</p>
+            </div>
+            <div t-if="isLasting" class="pbu-topics" role="group">
+              <button t-foreach="state.home.topics" t-as="t" t-key="t.key" type="button"
+                      class="pbu-topic" t-att-aria-pressed="state.picked[t.key] ? 'true' : 'false'"
+                      t-on-click="() => this.toggleTopic(t.key)">
+                <span class="pbu-box"><t t-if="state.picked[t.key]" t-out="icon('check', 12)"/></span>
+                <span class="pbu-topic-t">
+                  <b><t t-esc="t.label"/> <span class="pbu-count-pill" t-esc="grouped(t.count)"/></b>
+                  <span class="pbu-sub" t-esc="topicExamples(t)"/>
+                  <span t-if="t.key === 'bank'" class="pbu-topic-warn">Left out unless you pick it, so a sheet you send around carries no account numbers.</span>
+                  <span t-if="t.locked" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> You can read these but not change them.</span>
+                </span>
+              </button>
+            </div>
+
+            <!-- UPDATES P3b — a third way in under Lasting changes. -->
+            <div t-if="isLasting and canHire" t-attf-class="pbu-newsheet {{ state.joinerSheet.open ? 'is-open' : '' }}">
+              <button type="button" class="pbu-newsheet-h" t-att-aria-expanded="state.joinerSheet.open ? 'true' : 'false'"
+                      t-on-click="openJoinerSheet">
+                <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('userPlus', 16)"/></span>
+                <span class="pbu-newsheet-t">
+                  <b>Blank sheet for new employees</b>
+                  <span class="pbu-sub">Headings only: name, team, contract start, wage and the pay items of a pay scheme. Fill one row per new person.</span>
+                </span>
+                <t t-out="icon(state.joinerSheet.open ? 'chevronUp' : 'chevronDown', 15)"/>
+              </button>
+              <div t-if="state.joinerSheet.open" class="pbu-newsheet-b">
+                <label for="pbu-newsheet-scheme" class="pbu-label">Pay items of</label>
+                <div class="pbu-row">
+                  <select id="pbu-newsheet-scheme" class="pbu-select" t-on-change="onJoinerScheme">
+                    <option value="" t-att-selected="!state.joinerSheet.scheme">No pay items</option>
+                    <t t-foreach="state.joinerSheet.schemes || []" t-as="sc" t-key="sc.id">
+                      <option t-att-value="sc.id" t-att-selected="(sc.id + '') === state.joinerSheet.scheme"
+                              t-esc="sc.name + ' · ' + sc.items"/>
+                    </t>
+                  </select>
+                  <button type="button" class="pbim-btn outline" t-att-disabled="state.joinerSheet.busy" t-on-click="downloadJoinerSheet">
+                    <span t-if="state.joinerSheet.busy" class="pbu-spin sm"/>
+                    <t t-else="" t-out="icon('download', 15)"/> Download the blank sheet
+                  </button>
+                </div>
+                <p class="pbu-hint">Each row needs a name, a team that already exists and a contract start date. A wage gives the person a first contract.</p>
+                <p t-if="state.joinerSheet.msg" t-attf-class="pbu-msg pbu-msg--{{ state.joinerSheet.tone }}" role="status">
+                  <t t-out="icon(state.joinerSheet.tone === 'ok' ? 'checkCircle' : 'alert', 14)"/><span t-esc="state.joinerSheet.msg"/>
+                </p>
+              </div>
+            </div>
+
+            <div class="pbu-split">
+              <div class="pbu-dl">
+                <h3 class="pbu-h3">For whom</h3>
+                <div class="pbu-forwhom"><t t-out="icon('users', 15)"/><span t-esc="peopleLine"/></div>
+                <button type="button" class="pbim-btn outline"
+                        t-att-disabled="state.download.busy or !canExport or !canDownload"
+                        t-on-click="downloadSheet">
+                  <span t-if="state.download.busy" class="pbu-spin sm"/>
+                  <t t-else="" t-out="icon('download', 15)"/>
+                  <t t-if="state.download.busy">Building the sheet…</t>
+                  <t t-else="">Download the sheet</t>
+                </button>
+                <p class="pbu-hint" t-esc="downloadHint"/>
+                <p t-if="state.download.msg" t-attf-class="pbu-msg pbu-msg--{{ state.download.tone }}" role="status">
+                  <t t-out="icon(state.download.tone === 'ok' ? 'checkCircle' : 'alert', 14)"/>
+                  <span t-esc="state.download.msg"/>
+                </p>
+              </div>
+
+              <div class="pbu-drop"
+                   t-att-class="{ 'is-over': state.file.over, 'is-busy': state.file.busy, 'is-err': state.file.error }"
+                   t-on-dragenter="onDragEnter" t-on-dragover="onDragOver"
+                   t-on-dragleave="onDragLeave" t-on-drop="onDrop">
+                <t t-if="state.file.busy">
+                  <span class="pbu-spin lg"/>
+                  <b t-esc="busyLine"/>
+                  <span class="pbu-sub">Nothing is changed while it is read.</span>
+                  <span class="pbu-prog pbu-prog--run"><i/></span>
+                </t>
+                <t t-elif="state.file.error">
+                  <span class="pbu-ib pbu-ib--err"><t t-out="icon('alert', 20)"/></span>
+                  <b>That file cannot be used yet</b>
+                  <span class="pbu-drop-err" role="alert" t-esc="state.file.error"/>
+                  <label class="pbim-btn primary">
+                    <t t-out="icon('upload', 15)"/> Choose another file
+                    <input type="file" accept=".xlsx,.xlsm,.csv" class="pbu-hidden" t-on-change="onPick"/>
+                  </label>
+                </t>
+                <t t-else="">
+                  <span class="pbu-ib pbu-ib--pri"><t t-out="icon('fileSpreadsheet', 22)"/></span>
+                  <b>Drop your filled-in file here</b>
+                  <span class="pbu-sub">Excel or CSV. Your own layout works too.</span>
+                  <label class="pbim-btn primary">
+                    <t t-out="icon('upload', 15)"/> Choose a file
+                    <input type="file" accept=".xlsx,.xlsm,.csv" class="pbu-hidden" t-on-change="onPick"/>
+                  </label>
+                </t>
+                <div t-if="state.file.over and !state.file.busy" class="pbu-drop-over">
+                  <t t-out="icon('download', 18)"/> Drop it to check it
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ======================================================= MATCH -->
+          <section t-elif="state.view === 'match'" class="pbu-card pbu-flow">
+            <t t-call="pb_updates.Steps"/>
+            <t t-call="pb_updates.DraftNotice"/>
+            <div class="pbu-flow-h">
+              <h2 class="pbu-h2">Match your columns</h2>
+              <p class="pbu-sub"><t t-esc="matchLead"/> <b t-if="matchCheckLine" class="pbu-warn-text" t-esc="matchCheckLine"/></p>
+            </div>
+            <div t-if="matchSchemes" class="pbu-schemes">
+              <span class="pbu-schemes-l"><t t-out="icon('layers', 15)"/>Each person's pay scheme is worked out for you, the same way a pay run does it.</span>
+              <span t-if="matchSchemes.chips.length" class="pbu-schemes-chips">
+                <span t-foreach="matchSchemes.chips" t-as="c" t-key="c.key" t-attf-class="pbu-sch pbu-sch--{{ c.tone }} is-static" t-att-title="c.label">
+                  <span class="pbu-sch-l" t-esc="c.label"/><b t-esc="grouped(c.count)"/>
+                </span>
+              </span>
+            </div>
+            <div t-if="state.match.truncated" class="pbu-note pbu-note--warn">
+              <t t-out="icon('alert', 16)"/>
+              <div>This file has more than 10,000 rows. Only the first 10,000 are checked and can be applied. Put the rest in a second file.</div>
+            </div>
+            <div class="pbu-scroll">
+              <table class="pbu-mt">
+                <thead>
+                  <tr>
+                    <th>Column in your file</th>
+                    <th>Example</th>
+                    <th>Goes to</th>
+                    <th>What kind of value</th>
+                    <th>How it was matched</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="state.match.columns" t-as="col" t-key="col.idx"
+                      t-att-class="{ 'is-off': !col.target or col.target === 'ignore' }">
+                    <td class="pbu-mt-head"><b t-esc="col.head"/></td>
+                    <td class="pbu-samples">
+                      <t t-foreach="col.samples" t-as="s" t-key="s_index"><span t-esc="s"/></t>
+                      <span t-if="!col.samples.length" class="pbu-faint">Empty column</span>
+                    </td>
+                    <td>
+                      <select class="pbu-select" t-att-aria-label="col.head"
+                              t-on-change="(ev) => this.setTarget(col, ev.target.value)">
+                        <option value="ignore" t-att-selected="!col.target or col.target === 'ignore'">Don't bring this column in</option>
+                        <optgroup t-if="isLasting" label="When it starts">
+                          <option t-att-value="whenOption.value" t-att-selected="col.target === whenOption.value" t-esc="whenOption.label"/>
+                        </optgroup>
+                        <optgroup label="Finds the person">
+                          <t t-foreach="identityOptions" t-as="o" t-key="o.value">
+                            <option t-att-value="o.value" t-att-selected="col.target === o.value" t-esc="o.label"/>
+                          </t>
+                        </optgroup>
+                        <optgroup t-if="isLasting" label="For new employees">
+                          <option t-att-value="schemeOption.value" t-att-selected="col.target === schemeOption.value" t-esc="schemeOption.label"/>
+                        </optgroup>
+                        <t t-foreach="goesTo" t-as="g" t-key="g.key">
+                          <optgroup t-att-label="g.label" t-att-disabled="g.divider ? 'disabled' : undefined" t-att-class="g.divider ? 'pbu-divider' : undefined">
+                            <t t-foreach="g.options" t-as="f" t-key="f.id">
+                              <option t-att-value="f.id" t-att-selected="col.target === f.id" t-esc="f.label"/>
+                            </t>
+                          </optgroup>
+                        </t>
+                      </select>
+                    </td>
+                    <td>
+                      <t t-set="k" t-value="kindOf(col)"/>
+                      <span t-if="k.label" t-attf-class="pbu-kind pbu-kind--{{ k.tone }}"><t t-out="icon(k.icon, 14)"/><t t-esc="k.label"/></span>
+                    </td>
+                    <td class="pbu-mt-how">
+                      <t t-set="chip" t-value="chipOf(col)"/>
+                      <span t-attf-class="pbu-chip pbu-chip--{{ chip.tone }}"><t t-out="icon(chip.icon, 13)"/><t t-esc="chip.label"/></span>
+                      <button t-if="col.how === 'guess'" type="button" class="pbim-btn ghost pbim-btn-sm"
+                              t-on-click="() => this.confirmGuess(col)">Looks right</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div t-if="isOneoff" class="pbu-note">
+              <t t-out="icon('coins', 16)"/>
+              <div><b t-esc="oneoffMatchLead"/> <span>A blank cell changes nothing. Type amounts without a minus sign: each pay item already says whether it adds to pay or takes from pay. CLEAR takes back an amount waiting for that month.</span></div>
+            </div>
+            <div t-elif="isYtd" class="pbu-note">
+              <t t-out="icon('history', 16)"/>
+              <div><b t-esc="ytdMatchLead"/> <span>A blank cell changes nothing. Type amounts without a currency or a minus sign; months counted is a whole number from 0 to 12. CLEAR removes a figure that is set. A Source column is kept with the figures.</span></div>
+            </div>
+            <div t-elif="isLeave" class="pbu-note">
+              <t t-out="icon('calendarRange', 16)"/>
+              <div><b t-esc="leaveMatchLead"/> <span>A blank cell changes nothing. Type days, or hours where the leave type is counted in hours. A balance can be set once per person and leave type.</span></div>
+            </div>
+            <div t-else="" class="pbu-note">
+              <t t-out="icon('info', 16)"/>
+              <div><b>A blank cell means "leave it alone".</b> Only cells with something in them can change anything. To empty a value on purpose, type CLEAR in its cell. Nothing is written until you apply, and you can undo it afterwards.</div>
+            </div>
+            <p t-if="state.matchError" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="state.matchError"/></p>
+            <div class="pbu-bar">
+              <button type="button" class="pbim-btn ghost" t-on-click="() => this.go('start')">
+                <t t-out="icon('back', 15)"/> Back
+              </button>
+              <button type="button" class="pbim-btn primary" t-att-disabled="state.file.busy" t-on-click="continueMatch">
+                <span t-if="state.file.busy" class="pbu-spin sm on-dark"/>
+                <t t-if="state.file.busy" t-esc="busyLine"/>
+                <t t-else="">Show me the changes <t t-out="icon('arrow', 15)"/></t>
+              </button>
+            </div>
+          </section>
+
+          <!-- ======================================================= REVIEW -->
+          <section t-elif="state.view === 'review'" class="pbu-card pbu-flow">
+            <t t-call="pb_updates.Steps"/>
+            <t t-call="pb_updates.DraftNotice"/>
+            <UpdReview rv="state.rv" canWrite="canWrite"
+                       recheck.bind="recheck" lookup.bind="lookup"
+                       onBack.bind="backFromReview" onContinue.bind="toApply"
+                       onChangeMatching.bind="changeMatching"
+                       judgeNew.bind="judgeNew" canHire="canHire"
+                       onChanged="() => this.queueDraft()"/>
+          </section>
+
+          <!-- ======================================================= APPLY -->
+          <section t-elif="state.view === 'apply'" class="pbu-card pbu-flow">
+            <t t-call="pb_updates.Steps"/>
+            <div class="pbu-flow-h">
+              <h2 class="pbu-h2">Name it and apply it</h2>
+              <p class="pbu-sub">The name is how you will find this update later in Past updates.</p>
+            </div>
+            <div class="pbu-apply">
+              <div class="pbu-field">
+                <label for="pbu-name" class="pbu-label">Name this update</label>
+                <input id="pbu-name" type="text" class="pbu-input" maxlength="200"
+                       t-att-value="state.apply.name" t-on-input="onName" t-on-keydown="onNameKey"
+                       placeholder="For example: November pay changes, Jakarta office"/>
+                <p t-if="state.apply.error" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="state.apply.error"/></p>
+              </div>
+              <div class="pbu-counts">
+                <div class="pbu-count">
+                  <span class="pbu-ib pbu-ib--info"><t t-out="icon('users', 17)"/></span>
+                  <div><b>People</b><span class="pbu-sub">See at least one change.</span></div>
+                  <span class="pbu-n" t-esc="grouped(applyCounts.people)"/>
+                </div>
+                <div class="pbu-count">
+                  <span class="pbu-ib pbu-ib--pri"><t t-out="icon('pencil', 17)"/></span>
+                  <div t-if="isOneoff"><b>One-off amounts</b><span class="pbu-sub" t-esc="oneoffEachLine"/></div>
+                  <div t-elif="isLeave"><b>Values sent</b><span class="pbu-sub">Balances, and what is kept with them.</span></div>
+                  <div t-elif="isYtd"><b>Figures</b><span class="pbu-sub">Each kept with what it replaces.</span></div>
+                  <div t-else=""><b>Values that change</b><span class="pbu-sub">Each one is recorded with its old value.</span></div>
+                  <span class="pbu-n" t-esc="grouped(applyCounts.changes)"/>
+                </div>
+                <div class="pbu-count">
+                  <span class="pbu-ib pbu-ib--muted"><t t-out="icon('minusCircle', 17)"/></span>
+                  <div><b>Left out</b><span class="pbu-sub">Stay exactly as they are now.</span></div>
+                  <span class="pbu-n" t-esc="grouped(applyCounts.leftOut)"/>
+                </div>
+              </div>
+              <p t-if="applyOffScheme" class="pbu-inline-note pbu-apply-off"><t t-out="icon('ban', 14)"/><span t-esc="applyOffScheme"/></p>
+
+              <!-- UPDATES P3a — one card per lane: what will happen to it. -->
+              <section t-if="isLasting and state.lanes.length" class="pbu-lanecards" aria-labelledby="pbu-lanes-h" aria-live="polite">
+                <h3 id="pbu-lanes-h" class="pbu-lanecards-h">What happens to each part</h3>
+                <div t-foreach="state.lanes" t-as="l" t-key="l.lane"
+                     t-attf-class="pbu-lanecard pbu-lanecard--{{ l.lane }} {{ l.outcome === 'nobody' ? 'is-warn' : '' }}">
+                  <span class="pbu-lanecard-ic"><t t-out="icon(l.icon, 17)"/></span>
+                  <div class="pbu-lanecard-t">
+                    <b t-esc="l.label"/>
+                    <span class="pbu-sub" t-esc="laneValues(l)"/>
+                  </div>
+                  <span t-attf-class="pbu-lanecard-out is-{{ l.outcome }}">
+                    <t t-out="icon(laneOutIcon(l), 14)"/><span t-esc="l.line"/>
+                  </span>
+                  <!-- UPDATES P5 (P6 deviation 1) — the way out. -->
+                  <t t-set="fix" t-value="l.fix"/>
+                  <t t-if="l.outcome === 'nobody' and l.fix" t-call="pb_updates.WayOut"/>
+                </div>
+              </section>
+              <p t-elif="isLasting and state.lanesBusy" class="pbu-sub"><span class="pbu-spin sm"/> Working out who approves what…</p>
+              <!-- UPDATES P3b — the fourth card: new employees. -->
+              <section t-if="isLasting and newCount" class="pbu-lanecards pbu-lanecards--new" aria-live="polite">
+                <h3 t-if="!state.lanes.length" class="pbu-lanecards-h">What happens to each part</h3>
+                <div t-attf-class="pbu-lanecard pbu-lanecard--new {{ state.joinerOutlook and state.joinerOutlook.outcome === 'none' ? 'is-warn' : '' }}">
+                  <span class="pbu-lanecard-ic"><t t-out="icon('userPlus', 17)"/></span>
+                  <div class="pbu-lanecard-t">
+                    <b>New employees</b>
+                    <span class="pbu-sub" t-esc="joinerCount"/>
+                  </div>
+                  <span t-attf-class="pbu-lanecard-out is-{{ state.joinerOutlook ? (state.joinerOutlook.outcome === 'none' ? 'nobody' : state.joinerOutlook.outcome) : 'approval' }}">
+                    <t t-out="icon(joinerOutIcon, 14)"/><span t-esc="joinerCardLine"/>
+                  </span>
+                </div>
+              </section>
+
+              <!-- UPDATES P2d — the pay month and its totals. -->
+              <section t-if="isOneoff" class="pbu-when-card pbu-month-card" aria-labelledby="pbu-month-h">
+                <div class="pbu-when-head">
+                  <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('coins', 16)"/></span>
+                  <div>
+                    <h3 id="pbu-month-h" class="pbu-h3" t-esc="monthCardTitle"/>
+                    <p class="pbu-sub" t-esc="monthCardBody"/>
+                  </div>
+                </div>
+                <div class="pbu-totals">
+                  <span class="pbu-total is-earn"><small>Adds to pay</small><b t-esc="money(applyTotals.earn)"/></span>
+                  <span class="pbu-total is-take"><small>Takes from pay</small><b t-esc="money(applyTotals.take)"/></span>
+                </div>
+              </section>
+              <!-- UPDATES P4 — one card: the date, the balances, who decides. -->
+              <section t-if="isLeave and leaveApply" class="pbu-when-card pbu-month-card pbu-leave-card" aria-labelledby="pbu-leave-h">
+                <div class="pbu-when-head">
+                  <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('calendarRange', 16)"/></span>
+                  <div>
+                    <h3 id="pbu-leave-h" class="pbu-h3" t-esc="leaveCardTitle"/>
+                    <p class="pbu-sub">Each balance is what the person can still take from that day. Leave already taken or asked for is not touched.</p>
+                  </div>
+                </div>
+                <div class="pbu-totals">
+                  <span class="pbu-total is-earn"><small>In total</small><b t-esc="leaveTotalLabel"/></span>
+                  <span t-if="leaveApply.policy" class="pbu-total is-take"><small>Through the absence policy</small><b t-esc="leaveApply.policy"/></span>
+                </div>
+                <p class="pbu-when-sum" aria-live="polite">
+                  <t t-if="state.leaveOutlook"><t t-out="icon(leaveOutIcon, 14)"/><span t-esc="state.leaveOutlook.line"/></t>
+                  <t t-else=""><span class="pbu-spin sm"/><span>Working out who approves these…</span></t>
+                </p>
+              </section>
+              <!-- UPDATES P5 — the tax year, the totals, who decides. -->
+              <t t-if="isYtd" t-call="pb_updates.YtdApply"/>
+              <!-- UPDATES P2c — when do these changes start? -->
+              <section t-if="isLasting" class="pbu-when-card" aria-labelledby="pbu-when-h">
+                <div class="pbu-when-head">
+                  <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('calendarClock', 16)"/></span>
+                  <div>
+                    <h3 id="pbu-when-h" class="pbu-h3">When do these changes start?</h3>
+                    <p class="pbu-sub" t-if="state.rv.dated">Rows with their own start date in the file keep it. This is for every other row.</p>
+                    <p class="pbu-sub" t-else="">A past date is recorded as when the change started. A future date waits and is written on the day.</p>
+                  </div>
+                </div>
+                <div class="pbu-when-pick">
+                  <div class="pbu-seg" role="radiogroup" aria-label="When do these changes start?">
+                    <button type="button" role="radio" t-att-aria-checked="state.when.mode === 'today' ? 'true' : 'false'"
+                            t-on-click="() => this.setWhenMode('today')">Today</button>
+                    <button type="button" role="radio" t-att-aria-checked="state.when.mode === 'date' ? 'true' : 'false'"
+                            t-on-click="() => this.setWhenMode('date')"><t t-out="icon('calendar', 13)"/> Pick a date</button>
+                  </div>
+                  <input t-if="state.when.mode === 'date'" type="date" class="pbu-input pbu-date"
+                         aria-label="Start date" t-att-min="whenBounds.min" t-att-max="whenBounds.max"
+                         t-att-value="state.when.date" t-on-change="onWhenDate"/>
+                </div>
+                <p t-if="whenDateError" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="whenDateError"/></p>
+                <div t-if="futureInPlay" class="pbu-hold" role="radiogroup" aria-label="What waits for the date">
+                  <label t-att-class="{ 'is-on': state.when.scope === 'pay' }">
+                    <input type="radio" name="pbu-hold" value="pay" t-att-checked="state.when.scope === 'pay'"
+                           t-on-change="() => this.setScope('pay')"/>
+                    <span><b>Pay and contract changes wait; personal details change today</b>
+                      <small>Job titles, phone numbers and bank details go in now.</small></span>
+                  </label>
+                  <label t-att-class="{ 'is-on': state.when.scope === 'all' }">
+                    <input type="radio" name="pbu-hold" value="all" t-att-checked="state.when.scope === 'all'"
+                           t-on-change="() => this.setScope('all')"/>
+                    <span><b>Everything waits until that date</b>
+                      <small>Nothing changes before the day.</small></span>
+                  </label>
+                </div>
+                <p t-if="whenSummary" class="pbu-when-sum" aria-live="polite">
+                  <t t-out="icon(laterCount ? 'calendarClock' : 'check', 14)"/><span t-esc="whenSummary"/>
+                </p>
+                <p t-if="tooManyDates" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="tooManyDatesLine"/></p>
+                <div t-if="paidNote" class="pbu-note pbu-note--warn">
+                  <t t-out="icon('history', 16)"/>
+                  <div t-esc="paidNote"/>
+                </div>
+              </section>
+
+              <div t-if="isOneoff" class="pbu-note">
+                <t t-out="icon('ban', 16)"/>
+                <div>You can cancel these from the Updates home until a pay run has taken them. If your company asks for approval, no pay run reads them until they are approved.</div>
+              </div>
+              <div t-elif="isYtd" class="pbu-note">
+                <t t-out="icon('undo', 16)"/>
+                <div><b>You can undo this.</b> One click in Past updates takes these figures back and brings back any they replaced, unless a finished payslip has used one. If your company asks for approval, nothing is set until it is approved.</div>
+              </div>
+              <div t-elif="isLeave" t-attf-class="pbu-note {{ leaveApply and leaveApply.policy ? 'pbu-note--warn' : '' }}">
+                <t t-out="icon(leaveApply and leaveApply.policy and !leaveApply.plain ? 'lock' : 'undo', 16)"/>
+                <div><b>What undo can do.</b> <span t-esc="leaveUndoLine"/></div>
+              </div>
+              <div t-else="" class="pbu-note">
+                <t t-out="icon('undo', 16)"/>
+                <div><b>You can undo this.</b> One click in Past updates puts every value back the way it was, unless someone has changed it since. If your company asks for approval, nothing changes until it is approved.</div>
+              </div>
+              <div t-if="isLasting and newCount" class="pbu-note pbu-note--warn">
+                <t t-out="icon('userPlus', 16)"/>
+                <div><b>Adding a new employee cannot be undone here.</b> Undo puts back the changes to people who were already here. A person added from this file stays; to remove them, end their employment on their record.</div>
+              </div>
+            </div>
+            <span t-if="state.apply.busy" class="pbu-prog pbu-prog--run"><i/></span>
+            <p t-if="isLeave and !mayLeave" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these balances, but setting them needs the HR officer role.</span></p>
+            <p t-elif="isYtd and !ytdInfo.may_send" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these figures, but sending them needs the Payroll Officer role.</span></p>
+            <p t-elif="!isLeave and !isYtd and !canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these changes, but applying them needs permission to change employee records. Ask an administrator for the HR or Payroll Officer role.</span></p>
+            <div class="pbu-bar">
+              <button type="button" class="pbim-btn ghost" t-att-disabled="state.apply.busy" t-on-click="() => this.go('review')">
+                <t t-out="icon('back', 15)"/> Back
+              </button>
+              <button t-if="isLeave ? mayLeave : isYtd ? ytdInfo.may_send : canWrite" type="button" class="pbim-btn primary"
+                      t-att-disabled="state.apply.busy or nameMissing or (!applyCounts.changes and !newCount) or (isLasting and (whenDateError or tooManyDates)) or (newCount and state.joinerOutlook and state.joinerOutlook.outcome === 'none')"
+                      t-on-click="applyNow">
+                <span t-if="state.apply.busy" class="pbu-spin sm on-dark"/>
+                <t t-else="" t-out="icon(applyIcon, 15)"/>
+                <t t-esc="applyLabel"/>
+              </button>
+            </div>
+          </section>
+
+          <!-- ======================================================= DONE -->
+          <section t-elif="state.view === 'done'" class="pbu-card pbu-flow pbu-done">
+            <span t-attf-class="pbu-done-ic pbu-ib pbu-ib--{{ (state.done.pending or doneOnlyWaitingHires) ? 'info' : state.done.nothing ? 'muted' : doneOnlyLater ? 'pri' : 'ok' }}">
+              <t t-out="icon((state.done.pending or doneOnlyWaitingHires) ? 'clock' : state.done.nothing ? 'info' : state.done.kind === 'oneoff' ? 'coins' : state.done.kind === 'leave' ? 'calendarRange' : state.done.kind === 'ytd' ? 'history' : doneOnlyLater ? 'calendarClock' : 'checkCircle', 26)"/>
+            </span>
+            <h1 class="pbu-h1" t-esc="doneTitle"/>
+            <p class="pbu-lead" t-esc="doneLine"/>
+            <p t-if="doneWhenLine" class="pbu-when-sum"><t t-out="icon(state.done.kind === 'oneoff' ? 'coins' : state.done.kind === 'leave' ? 'calendarRange' : state.done.kind === 'ytd' ? 'history' : 'calendarClock', 14)"/><span t-esc="doneWhenLine"/></p>
+            <ul t-if="doneLanes.length" class="pbu-hlanes" aria-label="Each part of this update">
+              <li t-foreach="doneLanes" t-as="l" t-key="l.apply_id" t-attf-class="pbu-hlane pbu-hlane--{{ l.lane }}">
+                <span class="pbu-hlane-ic"><t t-out="icon(laneIcon(l.lane), 14)"/></span>
+                <div class="pbu-hlane-t">
+                  <b t-esc="laneName(l.lane)"/>
+                  <span class="pbu-sub" t-esc="doneLaneLine(l)"/>
+                  <t t-set="fix" t-value="l.fix"/>
+                  <t t-if="l.fix" t-call="pb_updates.WayOut"/>
+                </div>
+                <span t-attf-class="pbu-chip pbu-chip--{{ doneLaneTone(l) }}">
+                  <t t-if="l.pending">Waiting</t><t t-elif="l.scheduled">Scheduled</t><t t-else="">Done</t>
+                </span>
+              </li>
+            </ul>
+            <ul t-if="doneJoiners.length" class="pbu-hlanes pbu-hjoiners" aria-label="New employees">
+              <li t-foreach="doneJoiners" t-as="j" t-key="j.id" class="pbu-hlane pbu-hlane--new">
+                <span class="pbu-hlane-ic"><t t-out="icon('userPlus', 14)"/></span>
+                <div class="pbu-hlane-t">
+                  <b t-esc="j.name"/>
+                  <span class="pbu-sub"><t t-if="j.team"><t t-esc="j.team"/> · </t><t t-esc="j.line"/></span>
+                  <span t-if="j.note and j.state !== 'needs_attention'" class="pbu-sub pbu-warn-text" t-esc="j.note"/>
+                </div>
+                <span t-attf-class="pbu-chip pbu-chip--{{ joinerTone(j) }}" t-esc="j.state_label"/>
+              </li>
+            </ul>
+            <p t-if="doneNotAddedLine" class="pbu-inline-note"><t t-out="icon('userX', 14)"/><span t-esc="doneNotAddedLine"/></p>
+            <p t-if="doneLaterNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="doneLaterNote"/></p>
+            <p t-if="doneOffScheme" class="pbu-inline-note"><t t-out="icon('ban', 14)"/><span t-esc="doneOffScheme"/></p>
+            <ol t-if="state.done.pending and state.done.route and state.done.route.length" class="pbu-route">
+              <li t-foreach="state.done.route" t-as="step" t-key="step_index" t-attf-class="is-{{ stepTone(step) }}">
+                <span class="pbu-route-dot"><t t-out="icon(step.status === 'open' ? 'clock' : 'check', 13)"/></span>
+                <div>
+                  <b t-esc="step.title"/>
+                  <span t-if="step.people.length" class="pbu-sub" t-esc="step.people.join(', ')"/>
+                </div>
+              </li>
+            </ol>
+            <div t-if="refusedRows.length" class="pbu-refused">
+              <h3 class="pbu-h3"><t t-out="icon('alert', 15)"/> These could not be saved, so they stay as they are</h3>
+              <ul>
+                <li t-foreach="refusedRows" t-as="r" t-key="r.key">
+                  <b t-esc="r.who"/><span t-if="r.what"> · <t t-esc="r.what"/></span>
+                  <span class="pbu-sub" t-esc="r.why"/>
+                </li>
+              </ul>
+            </div>
+            <div class="pbu-row">
+              <button type="button" class="pbim-btn primary" t-on-click="close">Back to Updates</button>
+              <!-- UPDATES P5 — straight to the figures just set. -->
+              <button t-if="state.done.kind === 'ytd' and !state.done.nothing" type="button" class="pbim-btn outline"
+                      t-on-click="openYtdView">
+                <t t-out="icon('history', 15)"/> See the year-to-date figures
+              </button>
+              <button t-if="canUndoDone" type="button" class="pbim-btn ghost"
+                      t-on-click="undoDone">
+                <t t-out="icon('undo', 15)"/> <t t-esc="undoDoneLabel"/>
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- The stepper and Close, shared by every step of the flow. -->
+  <t t-name="pb_updates.Steps">
+    <div class="pbu-steps-bar">
+      <ol class="pbu-steps">
+        <li t-foreach="stepLabels" t-as="s" t-key="s.key" t-attf-class="pbu-step is-{{ stepState(s.key) or 'todo' }}">
+          <span class="pbu-dot">
+            <t t-if="stepState(s.key) === 'done' or stepState(s.key) === 'skip'" t-out="icon('check', 13)"/>
+            <t t-else="" t-esc="s.n"/>
+          </span>
+          <span class="pbu-step-l" t-esc="s.label"/>
+        </li>
+      </ol>
+      <span t-if="draftSavedLine" class="pbu-draftsaved" role="status"><t t-out="icon('save', 12)"/><t t-esc="draftSavedLine"/></span>
+      <button type="button" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.apply.busy" t-on-click="close">
+        <t t-out="icon('x', 14)"/> Close
+      </button>
+    </div>
+  </t>
+
+  <!-- UPDATES P3b — what no longer fits, after a draft was continued. -->
+  <t t-name="pb_updates.DraftNotice">
+    <div t-if="state.draftNotice.length" class="pbu-note pbu-note--draft" role="status">
+      <t t-out="icon('history', 16)"/>
+      <div>
+        <b>Continued from your draft, read again against today's records.</b>
+        <ul><li t-foreach="state.draftNotice" t-as="n" t-key="n_index" t-esc="n"/></ul>
+      </div>
+      <button type="button" class="pbu-x" aria-label="Dismiss" t-on-click="dismissDraftNotice"><t t-out="icon('x', 14)"/></button>
+    </div>
+  </t>
+
+  <!-- =================================================================
+       The review grid (updates_review.js).
+       ================================================================= -->
+  <t t-name="pb_updates.UpdReview">
+    <div class="pbu-review">
+      <div t-if="rv.fromSheet" class="pbu-note pbu-note--ok">
+        <t t-out="icon('checkCircle', 16)"/>
+        <div>
+          This is a Payobook sheet, so every column was matched for you.
+          <button t-if="props.onChangeMatching" type="button" class="pbu-link" t-on-click="props.onChangeMatching">Change the matching</button>
+        </div>
+      </div>
+
+      <p t-attf-class="pbu-sum is-{{ heroParts.tone }}" aria-live="polite">
+        <t t-esc="heroParts.lead"/> <span class="pbu-sum-tail" t-esc="heroParts.tail"/>
+      </p>
+      <p class="pbu-sub">
+        <t t-esc="identityLine"/> <t t-esc="ignoredLine"/>
+      </p>
+      <div t-if="rv.truncated" class="pbu-note pbu-note--warn">
+        <t t-out="icon('alert', 16)"/>
+        <div>This file has more than 10,000 rows. Only the first 10,000 are checked and can be applied. Put the rest in a second file.</div>
+      </div>
+
+      <!-- UPDATES P3b — rows that match nobody can be added as new employees,
+           only when the person switches it on for this file (default off). -->
+      <section t-if="canAddNew" t-attf-class="pbu-newchoice {{ rv.addNew ? 'is-on' : '' }}" aria-live="polite">
+        <span class="pbu-newchoice-ic"><t t-out="icon('userPlus', 20)"/></span>
+        <div class="pbu-newchoice-t">
+          <b t-esc="newChoiceTitle"/>
+          <span class="pbu-sub">Each one gets a first contract and goes through your company's new-hire approval, exactly like Add employee. Nobody who is already here is added twice, and teams or jobs are never created.</span>
+          <span t-if="ui.newError" class="pbu-refuse" role="alert"><t t-out="icon('alert', 14)"/><span t-esc="ui.newError"/></span>
+        </div>
+        <span t-if="ui.newBusy" class="pbu-spin sm"/>
+        <button type="button" class="pbu-toggle" role="switch"
+                t-att-aria-checked="rv.addNew ? 'true' : 'false'"
+                t-att-aria-label="newChoiceTitle" t-att-disabled="ui.newBusy"
+                t-on-click="toggleNew"/>
+      </section>
+
+      <!-- Rows that matched nobody: their own band, above the grid. -->
+      <section t-if="openUnmatched.length" class="pbu-band">
+        <header class="pbu-band-h">
+          <span class="pbu-ib pbu-ib--err sm"><t t-out="icon('userX', 15)"/></span>
+          <div>
+            <b><t t-esc="openUnmatched.length"/> <t t-if="openUnmatched.length === 1">row matches nobody</t><t t-else="">rows match nobody</t></b>
+            <span t-if="canAddNew and rv.addNew" class="pbu-sub">These cannot be added as new employees. Find the right person, or skip the row.</span>
+            <span t-elif="canAddNew" class="pbu-sub">Find the right person, or skip the row. Nobody is created from a file unless you switch on adding new employees above.</span>
+            <span t-else="" class="pbu-sub">Find the right person, or skip the row. Nobody is ever created from a file.</span>
+          </div>
+        </header>
+        <ul class="pbu-um">
+          <li t-foreach="openUnmatched" t-as="u" t-key="u.row" t-att-class="{ 'is-skipped': u.skipped }">
+            <div class="pbu-um-id">
+              <span class="pbu-rowno">Row <t t-esc="u.row"/></span>
+              <b t-esc="unmatchedTitle(u)"/>
+              <span class="pbu-um-why" t-esc="u.why"/>
+              <span t-if="u.newWhy" class="pbu-um-new"><t t-out="icon('userX', 12)"/><t t-esc="u.newWhy"/></span>
+              <span class="pbu-sub"><t t-esc="valuesWaiting(u)"/>: <t t-esc="unmatchedValues(u)"/></span>
+            </div>
+            <div class="pbu-um-act">
+              <t t-if="u.skipped">
+                <span class="pbu-chip pbu-chip--muted">Skipped</span>
+                <button type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.unskip(u)">Bring it back</button>
+              </t>
+              <t t-elif="ui.finder === u_index">
+                <UpdPersonFinder lookup="props.lookup" onPick="(p) => this.bind(u, p)" onCancel.bind="cancelFind"/>
+              </t>
+              <t t-else="">
+                <button type="button" class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.startFind(u_index)">
+                  <t t-out="icon('search', 13)"/> Find person…
+                </button>
+                <button type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.skip(u)">Skip this row</button>
+              </t>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- UPDATES P4 — the date and the totals of a leave sheet. -->
+      <div t-if="rv.leave" class="pbu-oneoff-strip pbu-leave-strip" aria-live="polite">
+        <span class="pbu-oneoff-month"><t t-out="icon('calendarRange', 15)"/><b t-esc="leaveStripLine"/></span>
+        <span class="pbu-leave-sum" t-esc="leaveSummary"/>
+        <span t-if="leavePolicyChip" class="pbu-chip pbu-chip--pri"><t t-out="icon('shieldCheck', 12)"/><t t-esc="leavePolicyChip"/></span>
+      </div>
+
+      <!-- UPDATES P5 — the tax year, the date and the totals. -->
+      <div t-if="rv.ytd" class="pbu-oneoff-strip pbu-ytd-strip" aria-live="polite">
+        <span class="pbu-oneoff-month"><t t-out="icon('history', 15)"/><b t-esc="ytdStripLine"/></span>
+        <span class="pbu-leave-sum" t-esc="ytdSummary"/>
+        <span t-if="ytdLateChip" class="pbu-chip pbu-chip--warn"><t t-out="icon('alert', 12)"/><t t-esc="ytdLateChip"/></span>
+      </div>
+
+      <!-- UPDATES P2d — the month and its totals, before the grid. -->
+      <div t-if="rv.oneoff" class="pbu-oneoff-strip" aria-live="polite">
+        <span class="pbu-oneoff-month"><t t-out="icon('coins', 15)"/><b t-esc="stripMonthLine"/></span>
+        <span class="pbu-total is-earn"><small>Adds to pay</small><b t-esc="money(totals.earn)"/></span>
+        <span class="pbu-total is-take"><small>Takes from pay</small><b t-esc="money(totals.take)"/></span>
+        <span t-if="paidMonthRows" class="pbu-chip pbu-chip--warn" t-att-title="(rv.rows.find((r) => r.paid_month) || {}).paid_note">
+          <t t-out="icon('history', 12)"/><t t-esc="paidMonthChip"/>
+        </span>
+      </div>
+
+      <div t-if="schemeChips.length" class="pbu-schemes pbu-schemes--strip" role="group" aria-label="Pay schemes in this file">
+        <span class="pbu-schemes-l"><t t-out="icon('layers', 15)"/>Pay schemes in this file</span>
+        <span class="pbu-schemes-chips">
+          <button t-foreach="schemeChips" t-as="c" t-key="c.key" type="button"
+                  t-attf-class="pbu-sch pbu-sch--{{ c.tone }}" t-att-title="c.label"
+                  t-att-aria-pressed="rv.scheme === c.id ? 'true' : 'false'"
+                  t-on-click="() => this.setScheme(c.id)">
+            <span class="pbu-sch-l" t-esc="c.label"/><b t-esc="grouped(c.count)"/>
+          </button>
+        </span>
+      </div>
+
+      <!-- UPDATES P3a — the three lanes this file is split into. -->
+      <div t-if="laneStrip.length" class="pbu-lanes" role="group" aria-label="What happens to each kind of value">
+        <div t-foreach="laneStrip" t-as="l" t-key="l.lane" t-attf-class="pbu-lane pbu-lane--{{ l.lane }}">
+          <span class="pbu-lane-ic"><t t-out="icon(l.icon, 15)"/></span>
+          <div class="pbu-lane-t">
+            <b><t t-esc="l.label"/> <span class="pbu-lane-n" t-esc="grouped(l.count)"/></b>
+            <span class="pbu-sub" t-esc="l.hint"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbu-toolbar">
+        <div class="pbu-filters" role="group" aria-label="Show">
+          <button t-foreach="filters" t-as="f" t-key="f.key" type="button"
+                  t-att-class="{ 'is-quiet': f.quiet, 'is-later': f.when === 'later', 'is-past': f.when === 'past' }"
+                  t-att-aria-pressed="rv.filter === f.key ? 'true' : 'false'"
+                  t-on-click="() => this.setFilter(f.key)">
+            <t t-if="f.when" t-out="icon(f.when === 'later' ? 'calendarClock' : 'history', 12)"/>
+            <t t-esc="f.label"/> <span class="pbu-count-pill" t-esc="grouped(f.count)"/>
+          </button>
+        </div>
+        <div class="pbu-legend">
+          <span><i class="lg-change"/>Changes</span>
+          <span><i class="lg-fix"/>Needs a fix</span>
+          <span><i class="lg-left"/>Left out</span>
+          <span><i class="lg-same"/>Stays the same</span>
+          <span t-if="rv.pay_items"><i class="lg-off"/>Not in their pay scheme</span>
+          <span t-if="rv.leave and counts.offScheme"><i class="lg-off"/>Not used for this person</span>
+          <span><i class="lg-blank"/>Blank in your file</span>
+        </div>
+      </div>
+
+      <div class="pbu-scroll pbu-grid-wrap">
+        <table class="pbu-grid" t-att-class="{ 'has-starts': showStarts }">
+          <thead>
+            <tr>
+              <th class="pbu-who" scope="col">Person</th>
+              <th t-if="showStarts" class="pbu-starts" scope="col">Starts</th>
+              <th t-foreach="columns" t-as="col" t-key="col.field_id" scope="col">
+                <span t-esc="col.label"/>
+                <small t-if="col.head and col.head !== col.label" t-esc="col.head"/>
+                <small t-if="!rv.oneoff and col.lane" t-attf-class="pbu-lanetag pbu-lanetag--{{ col.lane }}"
+                       t-att-title="laneLabel(col.lane)">
+                  <t t-out="icon(laneIcon(col.lane), 11)"/><t t-esc="laneLabel(col.lane)"/>
+                </small>
+                <small t-if="rv.leave" t-attf-class="pbu-coltag {{ col.role === 'avail' ? 'is-earn' : 'is-take' }}" t-esc="leaveColTag(col)"/>
+                <small t-if="rv.ytd" class="pbu-coltag is-earn" t-esc="ytdColTag(col)"/>
+                <small t-if="rv.oneoff" t-attf-class="pbu-coltag {{ col.role === 'deduction' ? 'is-take' : 'is-earn' }}">
+                  <t t-esc="roleLabel(col)"/><t t-if="colTotal(col)"> · <t t-esc="colTotal(col)"/></t>
+                </small>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- UPDATES P3b — new employees, in their own group first. -->
+            <t t-if="newRowsShown.length">
+              <tr class="pbu-grouprow pbu-grouprow--new">
+                <th t-att-colspan="columns.length + (showStarts ? 2 : 1)" scope="rowgroup">
+                  <span class="pbu-grouprow-ic"><t t-out="icon('userPlus', 14)"/></span>
+                  <b>New employees</b> <span class="pbu-count-pill" t-esc="grouped(newRowsShown.length)"/>
+                  <span class="pbu-sub" t-esc="newGroupLine"/>
+                </th>
+              </tr>
+              <t t-foreach="newRowsShown" t-as="row" t-key="row.key">
+                <t t-call="pb_updates.UpdRow"/>
+              </t>
+              <tr t-if="pageRows.length" class="pbu-grouprow">
+                <th t-att-colspan="columns.length + (showStarts ? 2 : 1)" scope="rowgroup">
+                  <span class="pbu-grouprow-ic"><t t-out="icon('users', 14)"/></span>
+                  <b>Already here</b>
+                </th>
+              </tr>
+            </t>
+            <t t-foreach="pageRows" t-as="row" t-key="row.key">
+              <t t-call="pb_updates.UpdRow"/>
+            </t>
+            <tr t-if="!pageRows.length and !newRowsShown.length">
+              <td t-att-colspan="columns.length + (showStarts ? 2 : 1)" class="pbu-empty-row">No rows in this view. Pick another filter above.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pbu-grid-foot">
+        <button t-if="moreRows" type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="showMore" t-esc="moreLabel"/>
+        <button t-if="hiddenColumns or rv.allCols" type="button" class="pbu-link" t-on-click="() => this.rv.allCols = !this.rv.allCols" t-esc="columnsToggleLabel"/>
+      </div>
+      <p class="pbu-hint">Click a red cell to sort it out here, with no need to go back to Excel. Click a changed cell to leave it out. Grey values are what is on file today and are not touched.<t t-if="rv.pay_items"> Values crossed out with <t t-out="icon('ban', 12)"/> are pay items that are not in that person's pay scheme, so they are skipped.</t></p>
+
+      <p t-if="attentionNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="attentionNote"/></p>
+      <p t-if="!props.canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span t-esc="noWriteLine"/></p>
+      <div class="pbu-bar">
+        <button type="button" class="pbim-btn ghost" t-on-click="props.onBack">
+          <t t-out="icon('back', 15)"/> Back
+        </button>
+        <button t-if="props.canWrite" type="button" class="pbim-btn primary"
+                t-att-disabled="!canContinue" t-on-click="props.onContinue">
+          <t t-esc="continueLabel"/> <t t-out="icon('arrow', 15)"/>
+        </button>
+      </div>
+    </div>
+  </t>
+
+  <!-- One person's row of the grid (and its fix row), for people already
+       here and for new employees alike (UPDATES P3b). -->
+  <t t-name="pb_updates.UpdRow">
+              <tr t-att-class="{ 'is-bound': row.bound, 'is-open': rowOpen(row), 'is-new': row.isNew, 'is-skipped': row.isNew and row.skipped }">
+                <th t-if="row.isNew" scope="row" class="pbu-who pbu-who--new">
+                  <b><t t-esc="row.name"/></b>
+                  <span>
+                    <span class="pbu-rowno">Row <t t-esc="row.row"/></span>
+                    <t t-if="row.code"> · <t t-esc="row.code"/></t>
+                    · <span t-attf-class="pbu-tag pbu-tag--new is-{{ newState(row) }}"><t t-out="icon('userPlus', 11)"/><t t-esc="newStateLabel(row)"/></span>
+                  </span>
+                  <span t-if="row.scheme" class="pbu-who-sch" t-att-title="row.scheme"><t t-esc="row.scheme"/></span>
+                  <span t-if="row.schemeNote" class="pbu-who-note is-warn"><t t-out="icon('info', 11)"/><t t-esc="row.schemeNote"/></span>
+                  <span t-if="row.noContract" class="pbu-who-note"><t t-out="icon('fileText', 11)"/>No contract yet: no wage in the file</span>
+                  <span t-if="row.block" class="pbu-who-note is-err"><t t-out="icon('alert', 11)"/><t t-esc="row.block"/></span>
+                  <button t-if="!row.skipped" type="button" class="pbu-link pbu-who-act" t-on-click.stop="() => this.skipNew(row)">Don't add</button>
+                  <button t-else="" type="button" class="pbu-link pbu-who-act" t-on-click.stop="() => this.unskipNew(row)">Add after all</button>
+                </th>
+                <th t-else="" scope="row" class="pbu-who">
+                  <b><t t-esc="row.name"/><span t-if="rv.pay_items and row.no_scheme" class="pbu-dot-amber" t-att-title="noSchemeTitle()" role="img" t-att-aria-label="noSchemeTitle()"/></b>
+                  <span>
+                    <span class="pbu-rowno">Row <t t-esc="row.row"/></span>
+                    <t t-if="row.code"> · <t t-esc="row.code"/></t>
+                    <t t-if="row.bound"> · <span class="pbu-tag">Matched by you</span></t>
+                    <t t-if="row.twice"> · <span class="pbu-tag pbu-tag--warn">In the file twice</span></t>
+                    <t t-if="row.paid_month"> · <span class="pbu-tag pbu-tag--warn" t-att-title="row.paid_note" t-esc="paidTag"/></t>
+                    <t t-if="rv.leave and row.policy"> · <span class="pbu-tag">Absence policy</span></t>
+                    <t t-if="rv.ytd and row.late"> · <span class="pbu-tag pbu-tag--warn" t-att-title="row.late_note">Joined after this date</span></t>
+                  </span>
+                  <span t-if="rv.pay_items" class="pbu-who-sch" t-att-title="row.scheme or noSchemeTitle()">
+                    <t t-if="row.scheme" t-esc="row.scheme"/>
+                    <t t-else="">No pay scheme yet</t>
+                  </span>
+                </th>
+                <td t-if="showStarts" class="pbu-starts">
+                  <t t-set="st" t-value="startCell(row)"/>
+                  <span t-attf-class="pbu-when pbu-when--{{ st.kind }}" t-att-title="st.title">
+                    <t t-if="st.icon" t-out="icon(st.icon, 13)"/><t t-esc="st.label"/>
+                  </span>
+                </td>
+                <td t-foreach="columns" t-as="col" t-key="col.field_id"
+                    t-att-class="cellClass(row, col)" t-att-title="cellTitle(row, col)"
+                    t-att-tabindex="isActionable(row, col) ? '0' : undefined"
+                    t-att-role="isActionable(row, col) ? 'button' : undefined"
+                    t-att-data-cell="row.key + '|' + col.field_id"
+                    t-on-click="() => this.openFix(row, col)"
+                    t-on-keydown="(ev) => this.onCellKey(ev, row, col)">
+                  <t t-set="cell" t-value="row.cells[col.field_id]"/>
+                  <t t-set="k" t-value="kind(cell)"/>
+                  <t t-if="k === 'change' and cell.cleared">
+                    <span t-if="cell.old" class="pbu-was" t-esc="cell.old"/>
+                    <span t-else="" class="pbu-was pbu-was--empty">empty</span>
+                    <span class="pbu-now pbu-now--clear"><t t-out="icon('eraser', 13)"/>Cleared<t t-if="cell.new"> · <t t-esc="cell.new"/></t></span>
+                  </t>
+                  <t t-elif="k === 'change'">
+                    <span t-if="cell.old" class="pbu-was" t-esc="cell.old"/>
+                    <span t-elif="rv.oneoff or rv.leave or rv.ytd or row.isNew" class="pbu-was pbu-was--empty">new</span>
+                    <span t-else="" class="pbu-was pbu-was--empty">empty</span>
+                    <span class="pbu-now"><t t-esc="cell.new"/><t t-if="cell.fixed" t-out="icon('check', 12)"/></span>
+                  </t>
+                  <span t-elif="k === 'off'" class="pbu-offval">
+                    <t t-out="icon('ban', 13)"/><span t-if="cell.cleared">CLEAR</span><span t-else="" t-esc="cell.new"/>
+                  </span>
+                  <span t-elif="k === 'fix'" class="pbu-fixval">
+                    <t t-out="icon('alert', 13)"/><span t-esc="cell.new or cell.value"/>
+                  </span>
+                  <t t-elif="k === 'left'">
+                    <span class="pbu-was" t-esc="cell.new"/>
+                    <span class="pbu-lo">Left out</span>
+                  </t>
+                  <t t-elif="k === 'dup'">
+                    <span class="pbu-was" t-esc="cell.new"/>
+                    <span class="pbu-lo">Used further down</span>
+                  </t>
+                  <span t-elif="k === 'same' and cell.cleared" class="pbu-same pbu-same--clear"><t t-out="icon('eraser', 12)"/>Already empty</span>
+                  <span t-elif="k === 'same'" class="pbu-same" t-esc="cell.old or cell.new"/>
+                </td>
+              </tr>
+              <tr t-if="rowOpen(row)" class="pbu-fixrow">
+                <td t-att-colspan="columns.length + (showStarts ? 2 : 1)">
+                  <UpdFixRow cell="fixFor(row)" colspan="columns.length + (showStarts ? 2 : 1)"
+                             label="fixLabel()" person="row.name" canWrite="props.canWrite"
+                             onCheck="(value) => this.checkValue(row, value)"
+                             onLeave="() => this.leaveOut(row)"
+                             onRestore="() => this.restore(row)"
+                             onClose.bind="closeFix"/>
+                </td>
+              </tr>
+  </t>
+
+  <t t-name="pb_updates.UpdFixRow">
+    <div class="pbu-fixbox" t-on-keydown="onKey" role="group" t-att-aria-label="props.label">
+      <div class="pbu-fix-msg">
+        <span t-attf-class="pbu-chip pbu-chip--{{ kind === 'fix' ? 'err' : kind === 'left' ? 'muted' : 'pri' }}">
+          <t t-out="icon(kind === 'fix' ? 'alert' : kind === 'left' ? 'minusCircle' : 'pencil', 13)"/>
+          <t t-esc="headline"/>
+        </span>
+        <span class="pbu-fix-who"><b t-esc="props.person"/> · <t t-esc="props.label"/></span>
+        <p class="pbu-fix-why" t-esc="sentence"/>
+      </div>
+      <div class="pbu-fix-act">
+        <t t-if="!cell.date_refused">
+          <input t-ref="input" type="text" class="pbu-input" t-model="state.draft"
+                 placeholder="Type a different value" aria-label="Type a different value"/>
+          <button type="button" class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.busy" t-on-click="check">
+            <span t-if="state.busy" class="pbu-spin sm on-dark"/>
+            Check this value
+          </button>
+        </t>
+        <button t-if="kind !== 'left'" type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="props.onLeave">Leave this one out</button>
+        <button t-else="" type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="props.onRestore">Bring it back</button>
+        <button type="button" class="pbu-x" t-on-click="props.onClose" title="Close (Esc)" aria-label="Close">
+          <t t-out="icon('x', 15)"/>
+        </button>
+      </div>
+    </div>
+  </t>
+
+  <t t-name="pb_updates.UpdPersonFinder">
+    <div class="pbu-finder">
+      <div class="pbu-finder-in">
+        <t t-out="icon('search', 14)"/>
+        <input t-ref="input" type="text" t-att-value="state.term" t-on-input="onInput" t-on-keydown="onKey"
+               placeholder="Type a name or a code…" aria-label="Find person"/>
+        <span t-if="state.busy" class="pbu-spin sm"/>
+        <button type="button" class="pbu-x" t-on-click="props.onCancel" aria-label="Cancel"><t t-out="icon('x', 14)"/></button>
+      </div>
+      <ul t-if="state.results.length" class="pbu-finder-list" role="listbox">
+        <li t-foreach="state.results" t-as="p" t-key="p.id">
+          <button type="button" t-att-class="{ 'is-on': state.active === p_index }"
+                  t-on-mouseenter="() => this.state.active = p_index"
+                  t-on-click="() => this.props.onPick(p)" t-esc="p.label"/>
+        </li>
+      </ul>
+      <p t-elif="state.searched and !state.busy" class="pbu-finder-none">Nobody you can see matches “<t t-esc="state.term"/>”.</p>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      FORM STUDIO FS-6 — the employee and contract "advanced form" pages in the
+      current look.
+
+      pb_theme (views/vu_native_forms.xml, priority 99) puts `vu-form-native`
+      on both forms, which makes the form engine (biz_theme vu_form_compiler.js)
+      return the stock template. These two views run AFTER it (priority 100)
+      and take that class off again, adding a marker class that scopes this
+      module's fixes (static/src/scss/native_look.scss) to exactly these two
+      forms. The fixes are what the opt-out was working around; see FS6_REPORT.md.
+
+      Uninstalling this module puts both forms back in the stock look; nothing
+      else changes (no field, page, button, group or rule is touched here).
+    -->
+    <record id="view_employee_form_native_look" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb.native.look</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="/form" position="attributes">
+                <attribute name="class" remove="vu-form-native" add="pb-nl pb-nl-emp" separator=" "/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_contract_form_native_look" model="ir.ui.view">
+        <field name="name">hr.contract.form.pb.native.look</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="/form" position="attributes">
+                <attribute name="class" remove="vu-form-native" add="pb-nl pb-nl-con" separator=" "/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

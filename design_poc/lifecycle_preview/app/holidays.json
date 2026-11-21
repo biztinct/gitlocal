@@ -1,0 +1,387 @@
+[
+  {
+    "country": "Indonesia",
+    "name": "2026 New Year",
+    "date": "2026-01-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Isra Mi‘raj of the Prophet Muhammad SAW.",
+    "date": "2026-01-16",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Chinese New Year 2576 Kongzili",
+    "date": "2026-02-17",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Hari Suci Nyepi",
+    "date": "2026-03-19",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Good Friday",
+    "date": "2026-04-03",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "International Labor Day",
+    "date": "2026-05-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Ascension Day of Jesus Christ",
+    "date": "2026-05-14",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Eid al-Adha 1446 Hijri",
+    "date": "2026-05-27",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Pancasila Day",
+    "date": "2026-06-01",
+    "type": "Holiday",
+    "conflict": true
+  },
+  {
+    "country": "Indonesia",
+    "name": "Islamic New Year 1 Muharram 1447 Hijri",
+    "date": "2026-06-16",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Independence Day of Indonesia",
+    "date": "2026-08-17",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Mawlid of Prophet Muhammad SAW.",
+    "date": "2026-08-25",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Christmas",
+    "date": "2026-12-25",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Eid al-Fitr 1447 Hijri",
+    "date": "2026-03-20",
+    "type": "Collective leave",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Eid al-Fitr 1447 Hijri",
+    "date": "2026-03-23",
+    "type": "Collective leave",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Eid al-Fitr 1447 Hijri",
+    "date": "2026-03-24",
+    "type": "Collective leave",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Ascension Day of Jesus Christ",
+    "date": "2026-05-15",
+    "type": "Collective leave",
+    "conflict": false
+  },
+  {
+    "country": "Indonesia",
+    "name": "Christmas Boxing Day",
+    "date": "2026-12-24",
+    "type": "Collective leave",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "New Year’s Holiday",
+    "date": "2026-01-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Lunar New Year (Tet) Holidays",
+    "date": "2026-02-16",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Lunar New Year (Tet) Holidays",
+    "date": "2026-02-17",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Lunar New Year (Tet) Holidays",
+    "date": "2026-02-18",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Lunar New Year (Tet) Holidays",
+    "date": "2026-02-19",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Lunar New Year (Tet) Holidays",
+    "date": "2026-02-20",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Hung Kings Commemoration Day",
+    "date": "2026-04-27",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Reunification Day – International Labor Day",
+    "date": "2026-04-30",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Reunification Day – International Labor Day",
+    "date": "2026-05-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Independence day",
+    "date": "2026-09-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Independence day",
+    "date": "2026-09-02",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Vietnam",
+    "name": "Vietnam Cultural Day",
+    "date": "2026-11-24",
+    "type": "Holiday",
+    "conflict": true
+  },
+  {
+    "country": "Vietnam",
+    "name": "Christmas Day",
+    "date": "2026-12-25",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "New Year’s Day",
+    "date": "2026-01-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Chinese New Year",
+    "date": "2026-02-17",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Chinese New Year",
+    "date": "2026-02-18",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Hari Raya Puasa",
+    "date": "2026-03-21",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Good Friday",
+    "date": "2026-04-03",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Labour Day",
+    "date": "2026-05-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Hari Raya Haji",
+    "date": "2026-05-27",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Vesak Day",
+    "date": "2026-06-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "National Day",
+    "date": "2026-08-10",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Deepavali",
+    "date": "2026-11-09",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "Singapore",
+    "name": "Christmas Day",
+    "date": "2026-12-25",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "New year",
+    "date": "2026-01-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Makara Sankranti FestivalUttarayana Punyakala",
+    "date": "2026-01-14",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Republic Day",
+    "date": "2026-01-26",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Holi Festival",
+    "date": "2026-03-02",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Good Friday",
+    "date": "2026-04-03",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "May Day",
+    "date": "2026-05-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Bakri-id",
+    "date": "2026-05-28",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Onam Festival/Eid-Milad",
+    "date": "2026-08-26",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Ganesh Chaturthi",
+    "date": "2026-09-14",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Mahanavami Ayudhapooja/Vijayadasami",
+    "date": "2026-10-01",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Gandhi Jayanthi",
+    "date": "2026-10-02",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Diwali",
+    "date": "2026-11-09",
+    "type": "Holiday",
+    "conflict": false
+  },
+  {
+    "country": "India",
+    "name": "Christmas",
+    "date": "2026-12-25",
+    "type": "Holiday",
+    "conflict": false
+  }
+]

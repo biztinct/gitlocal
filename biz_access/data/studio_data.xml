@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="cron_studio_expire" model="ir.cron">
+    <field name="name">Access Studio: end expired profile and temporary grants</field>
+    <field name="model_id" ref="model_pb_access"/>
+    <field name="state">code</field><field name="code">model._studio_expire()</field>
+    <field name="interval_number">1</field><field name="interval_type">minutes</field>
+    <field name="active" eval="True"/>
+    <field name="user_id" ref="base.user_root"/>
+  </record>
+  <function model="pb.access" name="_studio_sync_navigation"/>
+  <record id="rule_studio_profile_company" model="ir.rule"><field name="name">Access Studio: allowed companies</field><field name="model_id" ref="model_pb_access_profile"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+  <record id="rule_studio_owner_company" model="ir.rule"><field name="name">Access Studio: allowed companies</field><field name="model_id" ref="model_pb_access_owner"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+  <record id="rule_studio_membership_company" model="ir.rule"><field name="name">Access Studio: allowed companies</field><field name="model_id" ref="model_pb_access_membership"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+  <record id="rule_studio_studio_request_company" model="ir.rule"><field name="name">Access Studio: allowed companies</field><field name="model_id" ref="model_pb_access_studio_request"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+  <record id="rule_studio_event_company" model="ir.rule"><field name="name">Access Studio: allowed companies</field><field name="model_id" ref="model_pb_access_event"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+  <record id="rule_studio_extra_company" model="ir.rule"><field name="name">Access Studio: allowed companies</field><field name="model_id" ref="model_pb_access_extra"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+</odoo>

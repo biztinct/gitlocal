@@ -1,0 +1,671 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "%s drifting or at risk"
+msgstr "%s đang chệch hướng hoặc có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "%s plans"
+msgstr "%s kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "1 drifting or at risk"
+msgstr "1 đang chệch hướng hoặc có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "1 plan"
+msgstr "1 kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "A manager asked HR to look"
+msgstr "Quản lý đã nhờ Nhân sự xem xét"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Asked"
+msgstr "Đã yêu cầu"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__state__evaluation
+msgid "Being evaluated"
+msgstr "Đang được đánh giá"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__state__coaching
+msgid "Coaching"
+msgstr "Kèm cặp"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_case__verdict
+msgid "Decision"
+msgstr "Quyết định"
+
+#. module: pb_pip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Drifting or at risk"
+msgstr "Chệch hướng hoặc có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Objectives and regular check-ins"
+msgstr "Mục tiêu và các buổi trao đổi định kỳ"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Open"
+msgstr "Đang mở"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__state__active
+#: model_terms:ir.ui.view,arch_db:pb_pip.view_pb_pip_case_search
+msgid "Plan running"
+msgstr "Kế hoạch đang chạy"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Plans running"
+msgstr "Kế hoạch đang chạy"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing %s of %s plans"
+msgstr "Đang hiển thị %s trên %s kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing %s of %s plans at %s"
+msgstr "Đang hiển thị %s trên %s kế hoạch ở bước %s"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing all %s closed plans"
+msgstr "Đang hiển thị tất cả %s kế hoạch đã đóng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing all %s plans · press a step or a number to narrow it"
+msgstr ""
+"Đang hiển thị tất cả %s kế hoạch · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing all 1 closed plan"
+msgstr "Đang hiển thị 1 kế hoạch đã đóng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing all 1 plan · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 kế hoạch · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing no closed plans yet"
+msgstr "Chưa có kế hoạch nào đã đóng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing no plans yet"
+msgstr "Chưa có kế hoạch nào"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Still a conversation"
+msgstr "Vẫn đang trao đổi"
+
+#. module: pb_pip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model_terms:ir.ui.view,arch_db:pb_pip.view_pb_pip_case_search
+msgid "Waiting on a decision"
+msgstr "Đang chờ quyết định"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+#: model:ir.actions.act_window,name:pb_pip.action_pb_pip_case
+#: model_terms:ir.ui.view,arch_db:pb_pip.view_pb_pip_case_list
+#: model_terms:ir.ui.view,arch_db:pb_pip.view_pb_pip_case_search
+msgid "Growth plans"
+msgstr "Kế hoạch phát triển"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Run today's checks"
+msgstr "Chạy kiểm tra hôm nay"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_objective__name
+msgid "What has to change"
+msgstr "Điều cần thay đổi"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_case__on_track_count
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_objective__status__on_track
+msgid "On track"
+msgstr "Đúng hướng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_case__at_risk_count
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_objective__status__at_risk
+msgid "At risk"
+msgstr "Có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_objective__status__met
+msgid "Met"
+msgstr "Đạt"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_objective__status__not_met
+msgid "Not met"
+msgstr "Không đạt"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_request.xml:0
+msgid "Ask HR about someone in your team"
+msgstr "Hỏi nhân sự về một người trong nhóm của bạn"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+#: model:ir.actions.client,name:pb_pip.action_pb_pip_request
+msgid "Ask HR about someone in my team"
+msgstr "Hỏi bộ phận nhân sự về một người trong nhóm của tôi"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "All growth plans"
+msgstr "Tất cả kế hoạch phát triển"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+#: model:ir.actions.act_window,name:pb_pip.action_pb_pip_template
+#: model_terms:ir.ui.view,arch_db:pb_pip.view_pb_pip_template_list
+msgid "Growth plan templates"
+msgstr "Mẫu kế hoạch phát triển"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "Talent"
+msgstr "Nhân tài"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "Growth"
+msgstr "Phát triển"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "A running plan whose end date has passed."
+msgstr "Kế hoạch đang chạy đã qua ngày kết thúc."
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Asked by"
+msgstr "Người đề nghị"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Asked most recently"
+msgstr "Đề nghị gần đây nhất trước"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Check-in rhythm"
+msgstr "Nhịp trao đổi"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Closed plans"
+msgstr "Kế hoạch đã đóng"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_case__company_id
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_objective__company_id
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_template__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Ending soonest first"
+msgstr "Sắp kết thúc trước"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Ending within 7 days"
+msgstr "Kết thúc trong 7 ngày"
+
+#. module: pb_pip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_pip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_case__hr_owner_user_id
+#: model_terms:ir.ui.view,arch_db:pb_pip.view_pb_pip_case_search
+msgid "HR owner"
+msgstr "Người phụ trách nhân sự"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Loading the plans"
+msgstr "Đang tải các kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "No end date yet"
+msgstr "Chưa có ngày kết thúc"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "No plans match these filters"
+msgstr "Không có kế hoạch nào khớp với các bộ lọc này"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "No template"
+msgstr "Không có mẫu"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Nobody is on a growth plan"
+msgstr "Không ai đang trong kế hoạch phát triển"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Nobody yet"
+msgstr "Chưa có ai"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Not decided yet"
+msgstr "Chưa quyết định"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Not opened yet"
+msgstr "Chưa mở"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Not started yet"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Not yet seen"
+msgstr "Chưa xem"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Nothing has been closed yet"
+msgstr "Chưa có kế hoạch nào được đóng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Nothing matches “"
+msgstr "Không có kết quả nào khớp với “"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "On track or closed"
+msgstr "Đúng hướng hoặc đã đóng"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Open plans"
+msgstr "Kế hoạch đang mở"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Outcome"
+msgstr "Kết quả"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Past its end date"
+msgstr "Quá ngày kết thúc"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Past its end date, still running"
+msgstr "Quá ngày kết thúc, vẫn đang chạy"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_case__end_date
+msgid "Plan ends"
+msgstr "Kế hoạch kết thúc"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_case__start_date
+msgid "Plan starts"
+msgstr "Kế hoạch bắt đầu"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Plan template"
+msgstr "Mẫu kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid ""
+"Plans that have been completed, closed in coaching or\n"
+"               closed because the person left will show up here."
+msgstr ""
+"Các kế hoạch đã hoàn thành, đã đóng ở giai đoạn hướng dẫn hoặc đã đóng vì "
+"người đó nghỉ việc sẽ hiện ở đây."
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Read the board again"
+msgstr "Đọc lại bảng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Remove a filter above, or start again from the open plans."
+msgstr ""
+"Bỏ bớt một bộ lọc phía trên, hoặc bắt đầu lại từ các kế hoạch đang mở."
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Search by name, template or reason…"
+msgstr "Tìm theo tên, mẫu kế hoạch hoặc lý do…"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Seen by the person"
+msgstr "Người được hỗ trợ đã xem"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Show the open plans"
+msgstr "Hiện các kế hoạch đang mở"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Stage"
+msgstr "Giai đoạn"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Started most recently"
+msgstr "Bắt đầu gần đây nhất trước"
+
+#. module: pb_pip
+#: model:ir.model.fields,field_description:pb_pip.field_pb_pip_case__state
+#: model_terms:ir.ui.view,arch_db:pb_pip.view_pb_pip_case_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể kết nối đã bị gián đoạn. Bộ lọc của bạn vẫn được giữ nguyên."
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "The plans could not load"
+msgstr "Không tải được các kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "The plans could not load. Check your connection, then press Try again."
+msgstr "Không tải được các kế hoạch. Hãy kiểm tra kết nối rồi bấm Thử lại."
+
+#. module: pb_pip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "They have read it"
+msgstr "Họ đã đọc"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid ""
+"This starts when a line manager asks HR\n"
+"               to look at how somebody is getting on — there is a row in the\n"
+"               command bar for it. The first thing that happens is a\n"
+"               conversation and a written coaching note, not a letter, and most\n"
+"               of them should end there. Nothing is written to anybody's record\n"
+"               until somebody presses \"Start the plan\"."
+msgstr ""
+"Việc này bắt đầu khi quản lý trực tiếp nhờ nhân sự xem xét tình hình của một"
+" người — có một dòng trên thanh lệnh để làm việc đó. Việc đầu tiên là một "
+"buổi trao đổi và ghi chú hướng dẫn bằng văn bản, không phải một lá thư, và "
+"phần lớn sẽ dừng ở đó. Không có gì được ghi vào hồ sơ của ai cho đến khi có "
+"người bấm \"Bắt đầu kế hoạch\"."
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Where it is"
+msgstr "Đang ở bước nào"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Within its dates"
+msgstr "Trong thời hạn"
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "closed"
+msgstr "đã đóng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "plans"
+msgstr "kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "”. Check the spelling, or search by a template or a reason."
+msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo mẫu kế hoạch hoặc lý do."
+
+#. module: pb_pip
+#. odoo-python
+#: code:addons/pb_pip/models/pb_pip.py:0
+msgid "Needs attention"
+msgstr "Cần chú ý"
+
+#. module: pb_pip
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__state__terminated
+msgid "Closed — left the company"
+msgstr "Đã đóng — đã rời công ty"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__state__passed
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__verdict__pass
+msgid "Completed successfully"
+msgstr "Hoàn thành tốt"
+
+#. module: pb_pip
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__checkin_freq__biweekly
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_template__checkin_freq__biweekly
+msgid "Every two weeks"
+msgstr "Hai tuần một lần"
+
+#. module: pb_pip
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__checkin_freq__weekly
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_template__checkin_freq__weekly
+msgid "Every week"
+msgstr "Hằng tuần"
+
+#. module: pb_pip
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__state__failed
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__verdict__fail
+msgid "Not successful"
+msgstr "Không đạt"
+
+#. module: pb_pip
+#: model:ir.model.fields.selection,name:pb_pip.selection__pb_pip_case__state__requested
+msgid "Requested"
+msgstr "Đã đề nghị"

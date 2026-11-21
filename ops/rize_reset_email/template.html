@@ -1,0 +1,11 @@
+<table border="0" cellpadding="0" cellspacing="0" style="width:100%;background:#FFFFFF;font-family:Arial,sans-serif;color:#454748;font-size:14px;"><tr><td align="center"><table cellpadding="8" cellspacing="0" width="590" style="max-width:590px;width:100%;"><tr><td>
+<p style="font-size:12px;margin-bottom:4px;">Your Account</p><strong style="font-size:22px;"><t t-out="object.name"/></strong>
+<hr style="border:0;border-top:1px solid #CCCCCC;margin:20px 0;"/>
+<p>Dear <t t-out="object.name"/>,</p>
+<p>A password reset was requested for the account linked to this email. You may change your password using the button below. This link remains valid for <t t-out="object.env['ir.config_parameter'].sudo().get_param('auth_signup.reset_password.validity.hours', 4)"/> hours.</p>
+<p style="margin:22px 0;"><a t-att-href="object.partner_id._get_signup_url()" style="background-color:#2563EB;color:#FFFFFF;border-radius:5px;padding:12px 20px;text-decoration:none;font-weight:bold;display:inline-block;">Change password</a></p>
+<p>If you did not request this, you can safely ignore this email.</p>
+<p>Thanks,<br/>Rize HRMS Support</p>
+<hr style="border:0;border-top:1px solid #CCCCCC;margin:20px 0;"/>
+<p style="font-size:12px;"><t t-out="object.company_id.name"/><br/><a href="mailto:support@payobook.com" style="color:#2563EB;text-decoration:none;">support@payobook.com</a></p>
+</td></tr><tr><td align="center" style="background:#F3F4F6;font-size:12px;">Powered by Rize</td></tr></table></td></tr></table>

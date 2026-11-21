@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Biz Theme 19.0\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: biz_theme
+#. odoo-javascript
+#: code:addons/biz_theme/static/src/js/required_fields.js:0
+msgid "Complete the required fields"
+msgstr "Điền đầy đủ các trường bắt buộc"
+
+#. module: biz_theme
+#. odoo-javascript
+#: code:addons/biz_theme/static/src/js/required_fields.js:0
+msgid "Required field"
+msgstr "Trường bắt buộc"
+
+#. module: biz_theme
+#. odoo-javascript
+#: code:addons/biz_theme/static/src/xml/required_fields.xml:0
+msgid "Complete these fields before continuing. Your changes have been kept."
+msgstr "Điền đầy đủ các trường này trước khi tiếp tục. Các thay đổi của bạn vẫn được giữ lại."
+
+#. module: biz_theme
+#. odoo-javascript
+#: code:addons/biz_theme/static/src/xml/required_fields.xml:0
+msgid "You will return to the first required field."
+msgstr "Bạn sẽ quay lại trường bắt buộc đầu tiên."
+
+#. module: biz_theme
+#. odoo-javascript
+#: code:addons/biz_theme/static/src/xml/required_fields.xml:0
+msgid "Go to first field"
+msgstr "Đến trường đầu tiên"

@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ============================================================ layout -->
+  <t t-name="pb_filter_kit.Layout">
+    <div class="pbf" t-att-class="{ 'pbf--open': kit.ui.panel, 'pbf--busy': kit.busy, 'pbf--narrow': kit.ui.narrow }">
+      <PbFilterViews t-if="kit.loaded and !kit.failed" kit="kit" coach="props.viewsCoach"/>
+
+      <div class="pbf-bar" t-att-data-coach="props.coach or undefined">
+        <button type="button" class="pbf-toggle" t-att-class="{ on: kit.ui.panel }"
+                t-att-aria-expanded="kit.ui.panel ? 'true' : 'false'" t-att-disabled="kit.failed"
+                t-on-click="() => kit.togglePanel()"
+                t-att-title="toggleTitle">
+          <t t-out="icon('panelLeft', 16)"/>
+          <span t-if="kit.ui.panel">Hide filters</span>
+          <span t-else="">Filters</span>
+          <span t-if="kit.activeCount" class="pbf-badge" t-esc="kit.activeCount"/>
+        </button>
+        <label class="pbf-search">
+          <t t-out="icon('search', 15)"/>
+          <input t-ref="search" type="search" t-att-value="kit.search" t-att-placeholder="placeholder"
+                 t-on-input="(ev) => kit.setSearch(ev.target.value)" t-on-keydown="onSearchKey"
+                 aria-label="Search the list"/>
+          <kbd t-if="!kit.search" class="pbf-kbd" title="Press / to search">/</kbd>
+          <button t-else="" type="button" class="pbf-x" t-on-click="clearSearch" title="Clear the search">
+            <t t-out="icon('x', 13)"/>
+          </button>
+        </label>
+        <div class="pbf-bar-end">
+          <PbFilterSort t-if="kit.sorts.length > 1" kit="kit"/>
+          <t t-slot="toolbar"/>
+        </div>
+      </div>
+
+      <div class="pbf-body">
+        <div t-if="kit.ui.panel and kit.ui.narrow" class="pbf-scrim" t-on-click="() => kit.togglePanel(false)"/>
+        <PbFilterPanel t-if="kit.loaded and !kit.failed" kit="kit"/>
+        <div class="pbf-main">
+          <PbFilterChips t-if="kit.loaded" kit="kit"/>
+          <div class="pbf-progress" aria-hidden="true"><span/></div>
+          <div class="pbf-list">
+            <t t-slot="default"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============================================================= views -->
+  <t t-name="pb_filter_kit.Views">
+    <div t-if="showRow" class="pbf-views" t-ref="root" t-att-data-coach="props.coach or undefined">
+      <div class="pbf-tabs" role="tablist" aria-label="Views">
+        <button t-foreach="kit.views" t-as="vw" t-key="vw.key" type="button" role="tab"
+                class="pbf-tab" t-att-class="{ on: vw.key === kit.viewKey, dirty: isDirtyTab(vw) }"
+                t-att-aria-selected="vw.key === kit.viewKey ? 'true' : 'false'" t-att-title="tabTitle(vw)"
+                t-on-click="() => kit.useView(vw.key)">
+          <span t-if="!vw.builtin and vw.shared" class="pbf-tab-i"><t t-out="icon('users', 13)"/></span>
+          <span t-elif="!vw.builtin" class="pbf-tab-i"><t t-out="icon('bookmark', 13)"/></span>
+          <span class="pbf-tab-l" t-esc="vw.label"/>
+          <span t-if="isDirtyTab(vw)" class="pbf-dot" title="Changed since it was saved"/>
+          <span t-if="vw.n !== null and vw.n !== undefined" class="pbf-tab-n" t-esc="fmt(vw.n)"/>
+        </button>
+      </div>
+
+      <div class="pbf-vact">
+        <t t-if="kit.dirty">
+          <button t-if="kit.currentView and kit.currentView.mine" type="button" class="pbf-btn"
+                  t-on-click="() => kit.updateView()">
+            <t t-out="icon('check', 14)"/> Save changes
+          </button>
+          <button type="button" class="pbf-btn pbf-btn--accent" t-on-click="openSave">
+            <t t-out="icon('save', 14)"/>
+            <span t-if="kit.currentView and kit.currentView.mine">Save as new</span>
+            <span t-else="">Save view</span>
+          </button>
+          <button type="button" class="pbf-btn pbf-btn--ghost" t-on-click="() => kit.resetView()"
+                  title="Back to the view as it was saved">
+            <t t-out="icon('undo', 14)"/> Reset
+          </button>
+        </t>
+        <button t-if="kit.currentView and kit.currentView.mine and !kit.dirty" type="button"
+                class="pbf-btn pbf-btn--ghost" t-on-click="openManage" title="Rename, share or delete this view">
+          <t t-out="icon('settings', 14)"/> View options
+        </button>
+
+        <!-- save a new view -->
+        <form t-if="pop.open === 'save'" class="pbf-pop" t-on-submit="submitSave" t-on-keydown="onPopKey">
+          <div class="pbf-pop-h">Save this view</div>
+          <p class="pbf-pop-p">
+            Keeps these filters as a tab you can come back to.
+            <t t-if="kit.matched !== null"> It shows <b t-esc="fmt(kit.matched)"/> right now.</t>
+          </p>
+          <label class="pbf-field">
+            <span>Name</span>
+            <input autofocus="autofocus" maxlength="60" t-model="pop.name" placeholder="e.g. Hanoi plant, ending soon"/>
+          </label>
+          <label class="pbf-switch">
+            <input type="checkbox" t-model="pop.shared"/>
+            <span class="pbf-switch-ui"/>
+            <span class="pbf-switch-t">
+              <b>Share with everyone</b>
+              <small>Everyone who uses this list sees it as a tab. Off: only you see it.</small>
+            </span>
+          </label>
+          <div class="pbf-pop-f">
+            <button type="button" class="pbf-btn pbf-btn--ghost" t-on-click="close">Cancel</button>
+            <button type="submit" class="pbf-btn pbf-btn--primary" t-att-disabled="!pop.name.trim() or pop.busy">Save view</button>
+          </div>
+        </form>
+
+        <!-- manage one of your views -->
+        <div t-if="pop.open === 'manage' and kit.currentView" class="pbf-pop" t-on-keydown="onPopKey">
+          <div class="pbf-pop-h">View options</div>
+          <form class="pbf-rename" t-on-submit="submitRename">
+            <label class="pbf-field">
+              <span>Name</span>
+              <input autofocus="autofocus" maxlength="60" t-model="pop.name"/>
+            </label>
+            <button type="submit" class="pbf-btn" t-att-disabled="!pop.name.trim() or pop.name.trim() === kit.currentView.label or pop.busy">Rename</button>
+          </form>
+          <label class="pbf-switch">
+            <input type="checkbox" t-att-checked="kit.currentView.shared" t-on-change="toggleShare"/>
+            <span class="pbf-switch-ui"/>
+            <span class="pbf-switch-t">
+              <b>Share with everyone</b>
+              <small t-if="kit.currentView.shared">Everyone who uses this list sees this tab.</small>
+              <small t-else="">Only you can see this tab.</small>
+            </span>
+          </label>
+          <div class="pbf-pop-f">
+            <t t-if="!pop.confirm">
+              <button type="button" class="pbf-btn pbf-btn--danger" t-on-click="() => this.setConfirm(true)">
+                <t t-out="icon('trash', 14)"/> Delete view
+              </button>
+              <button type="button" class="pbf-btn pbf-btn--ghost" t-on-click="close">Done</button>
+            </t>
+            <t t-else="">
+              <span class="pbf-confirm">Delete “<t t-esc="kit.currentView.label"/>”? <t t-if="kit.currentView.shared">It disappears for everyone.</t></span>
+              <button type="button" class="pbf-btn pbf-btn--ghost" t-on-click="() => this.setConfirm(false)">Keep it</button>
+              <button type="button" class="pbf-btn pbf-btn--danger-solid" t-on-click="doDelete">Delete</button>
+            </t>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============================================================== sort -->
+  <t t-name="pb_filter_kit.Sort">
+    <div class="pbf-sort" t-ref="root">
+      <button type="button" class="pbf-btn pbf-btn--ghost" t-on-click="toggle"
+              t-att-aria-expanded="st.open ? 'true' : 'false'" title="Change the order">
+        <t t-out="icon('arrowUpDown', 14)"/> <span t-esc="current.label"/> <t t-out="icon('chevronDown', 13)"/>
+      </button>
+      <div t-if="st.open" class="pbf-menu" role="menu">
+        <button t-foreach="kit.sorts" t-as="s" t-key="s.key" type="button" role="menuitemradio"
+                class="pbf-menu-i" t-att-class="{ on: s.key === kit.sort }"
+                t-att-aria-checked="s.key === kit.sort ? 'true' : 'false'" t-on-click="() => this.pick(s.key)">
+          <span class="pbf-menu-c"><t t-if="s.key === kit.sort" t-out="icon('check', 14)"/></span>
+          <t t-esc="s.label"/>
+        </button>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============================================================= chips -->
+  <t t-name="pb_filter_kit.Chips">
+    <div class="pbf-chips" t-att-class="{ 'is-empty': !kit.chips.length and !kit.search }">
+      <span t-foreach="kit.chips" t-as="c" t-key="c.key" class="pbf-chip" role="button" tabindex="0"
+            t-on-click="() => kit.jumpTo(c.key)" t-on-keydown="(ev) => this.onChipKey(ev, c.key)"
+            title="Change this filter">
+        <span class="pbf-chip-i"><t t-out="icon(c.icon || 'filter', 13)"/></span>
+        <span class="pbf-chip-f" t-esc="c.label"/>
+        <span class="pbf-chip-v" t-esc="c.text"/>
+        <button type="button" class="pbf-chip-x" t-on-click.stop="() => kit.clear(c.key)"
+                t-att-aria-label="removeLabel(c)" title="Remove">
+          <t t-out="icon('x', 12)"/>
+        </button>
+      </span>
+      <span t-if="kit.search" class="pbf-chip pbf-chip--search">
+        <span class="pbf-chip-i"><t t-out="icon('search', 13)"/></span>
+        <span class="pbf-chip-v">“<t t-esc="kit.search"/>”</span>
+        <button type="button" class="pbf-chip-x" t-on-click="() => kit.setSearch('', true)" aria-label="Clear the search" title="Remove">
+          <t t-out="icon('x', 12)"/>
+        </button>
+      </span>
+      <button t-if="kit.chips.length + (kit.search ? 1 : 0) > 1" type="button" class="pbf-clearall"
+              t-on-click="() => kit.clearAll()">Clear all</button>
+      <span class="pbf-matched" t-att-class="{ 'is-zero': kit.matched === 0 }" aria-live="polite" t-esc="matchedText"/>
+    </div>
+  </t>
+
+  <!-- ============================================================= panel -->
+  <t t-name="pb_filter_kit.Panel">
+    <aside class="pbf-panel" t-ref="root" t-att-class="{ 'is-open': kit.ui.panel }" aria-label="Filters"
+           t-att-aria-hidden="kit.ui.panel ? 'false' : 'true'">
+      <div class="pbf-panel-in">
+        <div class="pbf-ph">
+          <span class="pbf-ph-t"><t t-out="icon('filter', 15)"/> Filters</span>
+          <span t-if="kit.activeCount" class="pbf-badge" t-esc="kit.activeCount"/>
+          <button t-if="kit.activeCount or kit.search" type="button" class="pbf-link" t-on-click="() => kit.clearAll()">Clear all</button>
+          <button t-if="kit.ui.narrow" type="button" class="pbf-iconbtn" t-on-click="() => kit.togglePanel(false)" title="Close">
+            <t t-out="icon('x', 16)"/>
+          </button>
+        </div>
+
+        <label class="pbf-find">
+          <t t-out="icon('search', 14)"/>
+          <input type="search" placeholder="Find a filter or a value…" t-att-value="kit.ui.find"
+                 t-on-input="(ev) => kit.setFind(ev.target.value)" t-on-keydown="onFindKey"
+                 aria-label="Find a filter or a value"/>
+          <button t-if="kit.ui.find" type="button" class="pbf-x" t-on-click="() => kit.setFind('')" title="Clear">
+            <t t-out="icon('x', 12)"/>
+          </button>
+        </label>
+
+        <div class="pbf-secs">
+          <t t-foreach="blocks" t-as="b" t-key="b.key">
+            <div t-if="b.divider" class="pbf-divider" t-esc="b.label"/>
+            <t t-else="" t-call="pb_filter_kit.Section">
+              <t t-set="v" t-value="view(b.section)"/>
+            </t>
+          </t>
+          <div t-if="!blocks.length" class="pbf-nofind">
+            <t t-out="icon('search', 18)"/>
+            <b>Nothing matches “<t t-esc="kit.ui.find"/>” here</b>
+            <span t-if="kit.activeCount">It may exist outside the filters that are on. Try the name of a filter, like <t t-esc="findExamples"/>, or clear some filters.</span>
+            <span t-else="">Try the name of a filter, like <t t-esc="findExamples"/>, or a value such as a department.</span>
+          </div>
+        </div>
+
+        <div class="pbf-pf">
+          <button type="button" class="pbf-link pbf-link--muted" t-on-click="() => kit.copyLink()"
+                  title="Copies a link that opens this list filtered exactly like this">
+            <t t-out="icon('link', 13)"/> Copy a link to this list
+          </button>
+        </div>
+      </div>
+    </aside>
+  </t>
+
+  <t t-name="pb_filter_kit.Section">
+    <section class="pbf-sec" t-att-class="{ 'is-open': v.open, 'is-on': v.active, 'is-flash': v.flash }"
+             t-att-data-pbf-key="v.key">
+      <div class="pbf-sh">
+        <button type="button" class="pbf-st" t-att-aria-expanded="v.open ? 'true' : 'false'"
+                t-on-click="() => kit.toggleSection(v.key)" t-att-title="v.help or undefined">
+          <span class="pbf-si"><t t-out="icon(v.icon, 15)"/></span>
+          <span class="pbf-sl" t-esc="v.label"/>
+          <span t-if="v.nActive" class="pbf-sn" t-esc="v.nActive"/>
+          <span t-if="!v.open and v.active" class="pbf-ss" t-esc="v.summary"/>
+          <span class="pbf-chev"><t t-out="icon('chevronDown', 14)"/></span>
+        </button>
+        <button type="button" class="pbf-pin" t-att-class="{ on: v.pinned }"
+                t-att-aria-pressed="v.pinned ? 'true' : 'false'"
+                t-att-title="pinTitle(v)"
+                t-on-click="() => kit.togglePin(v.key)">
+          <t t-out="icon('pin', 13)"/>
+        </button>
+      </div>
+
+      <div t-if="v.open" class="pbf-sb">
+        <div t-if="v.loading" class="pbf-skel" aria-label="Counting…">
+          <span/><span/><span/>
+        </div>
+        <div t-elif="v.failed" class="pbf-hint">These numbers could not be counted. Close and open the section to try again.</div>
+
+        <!-- one or many values -->
+        <t t-elif="v.rows">
+          <label t-if="v.searchable" class="pbf-mini">
+            <t t-out="icon('search', 13)"/>
+            <input type="search" t-att-value="v.mini" t-att-placeholder="miniPlaceholder(v)"
+                   t-on-input="(ev) => kit.setMini(v.key, ev.target.value)"/>
+          </label>
+          <div class="pbf-vals" t-att-class="{ 'is-long': v.expanded }" role="group" t-att-aria-label="v.label">
+            <div t-foreach="v.rows" t-as="r" t-key="'' + r.v" class="pbf-val"
+                 t-att-class="{ on: r.on, zero: !r.n and !r.on }" role="checkbox" tabindex="0"
+                 t-att-aria-checked="r.on ? 'true' : 'false'"
+                 t-on-mousedown="noFocusJump"
+                 t-on-click="() => kit.toggle(v.key, r.v)" t-on-keydown="(ev) => this.onValueKey(ev, v.key, r.v)">
+              <span class="pbf-box"><t t-out="icon('check', 11)"/></span>
+              <span t-if="r.tone" class="pbf-tone" t-att-class="'is-' + r.tone"/>
+              <span class="pbf-vl" t-esc="r.label" t-att-title="r.label"/>
+              <button type="button" class="pbf-only" tabindex="-1" t-on-click.stop="() => kit.only(v.key, r.v)"
+                      title="Show only this one">Only</button>
+              <span class="pbf-vn" t-esc="fmt(r.n)"/>
+            </div>
+            <div t-if="v.empty" class="pbf-hint">No match here.</div>
+          </div>
+          <button t-if="v.hiddenCount > 0" type="button" class="pbf-more" t-on-click="() => kit.showAll(v.key)">
+            Show all <t t-esc="fmt(v.hiddenCount + v.rows.length)"/>
+          </button>
+          <button t-elif="v.expanded" type="button" class="pbf-more" t-on-click="() => kit.showAll(v.key, false)">Show fewer</button>
+          <div t-if="v.serverMore and v.expanded" class="pbf-hint">Only the most common are listed. Type in the box above to find the rest.</div>
+        </t>
+
+        <!-- dates -->
+        <t t-elif="v.presets">
+          <div class="pbf-vals" role="radiogroup" t-att-aria-label="v.label">
+            <div t-foreach="v.presets" t-as="p" t-key="p.v" class="pbf-val pbf-val--radio"
+                 t-att-class="{ on: p.on, zero: !p.n and !p.on }" role="radio" tabindex="0"
+                 t-att-aria-checked="p.on ? 'true' : 'false'"
+                 t-on-mousedown="noFocusJump"
+                 t-on-click="() => kit.setPreset(v.key, p.v)"
+                 t-on-keydown="(ev) => this.onPresetKey(ev, v.key, p.v)">
+              <span class="pbf-radio"/>
+              <span class="pbf-vl" t-esc="p.label"/>
+              <span class="pbf-vn" t-esc="fmt(p.n)"/>
+            </div>
+            <div class="pbf-val pbf-val--radio" t-att-class="{ on: v.custom }" role="radio" tabindex="0"
+                 t-att-aria-checked="v.custom ? 'true' : 'false'"
+                 t-on-click="() => kit.setCustom(v.key, !v.custom)" t-on-keydown="(ev) => this.onPresetKey(ev, v.key, null, !v.custom)">
+              <span class="pbf-radio"/>
+              <span class="pbf-vl">Pick dates…</span>
+            </div>
+          </div>
+          <div t-if="v.custom" class="pbf-range">
+            <label><span>From</span><input type="date" t-att-value="v.from" t-on-change="(ev) => this.onRange(v.key, 'from', ev)"/></label>
+            <label><span>To</span><input type="date" t-att-value="v.to" t-on-change="(ev) => this.onRange(v.key, 'to', ev)"/></label>
+          </div>
+        </t>
+
+        <!-- numbers -->
+        <t t-elif="v.type === 'number'">
+          <div class="pbf-range">
+            <label><span>From</span>
+              <span class="pbf-num"><i t-if="v.prefix" t-esc="v.prefix"/>
+                <input type="text" inputmode="numeric" t-att-value="v.minText" t-att-placeholder="v.loPh"
+                       t-on-input="(ev) => this.onNumber(v.key, 'min', ev)"/></span>
+            </label>
+            <label><span>To</span>
+              <span class="pbf-num"><i t-if="v.prefix" t-esc="v.prefix"/>
+                <input type="text" inputmode="numeric" t-att-value="v.maxText" t-att-placeholder="v.hiPh"
+                       t-on-input="(ev) => this.onNumber(v.key, 'max', ev)"/></span>
+            </label>
+          </div>
+          <div t-if="v.loText" class="pbf-hint">In this list now: <b t-esc="v.loText"/> to <b t-esc="v.hiText"/>.</div>
+        </t>
+
+        <button t-if="v.active" type="button" class="pbf-clear" t-on-click="() => kit.clear(v.key)">
+          <t t-out="icon('x', 12)"/> Clear this filter
+        </button>
+      </div>
+    </section>
+  </t>
+
+</templates>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="pb_hr_payroll_formula.ValueWordField">
+        <span t-if="props.readonly" class="o_pb_value_word" t-esc="value"/>
+        <select t-else="" class="o_input o_pb_value_word" t-on-change="onChange" t-att-aria-label="ariaLabel">
+            <option t-foreach="options" t-as="option" t-key="option.label" t-att-value="option.label"
+                    t-att-selected="option.label === value" t-esc="option.label"/>
+        </select>
+    </t>
+</templates>

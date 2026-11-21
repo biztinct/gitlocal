@@ -53,26 +53,12 @@ class SocialSecurityWizard(models.TransientModel):
                     if ssf_employer_line:
                         record.total_ssf_employer += sum(ssf_employer_line.mapped('amount'))
     
-    def action_generate_ssf_file(self):
-        """Generate SSF submission file"""
-        self.ensure_one()
-        
-        if not self.total_employees:
-            raise UserError(_('No employees found for SSF submission in the selected period.'))
-        
-        # This would generate the actual SSF submission file
-        # For now, return a success message
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('SSF Submission'),
-                'message': _('SSF submission file generated successfully for %d employees.') % self.total_employees,
-                'type': 'success',
-                'sticky': False,
-            }
-        }
-    
+    def action_generate_ssf_file(self, *args, **kwargs):
+        """WDGAP S2-A (S2F-4): RETIRED. This door used to say a file was
+        made (or data imported) and made none. It now says so and makes
+        no claim. (Thailand SSF submission)"""
+        raise UserError(_("This file is not available yet, so nothing was made. Government filings are prepared on Compliance › Filings."))
+
     def action_preview_ssf_data(self):
         """Preview SSF submission data"""
         self.ensure_one()
@@ -81,7 +67,7 @@ class SocialSecurityWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': _('SSF Submission Preview'),
             'res_model': 'hr.payslip',
-            'view_mode': 'tree',
+            'view_mode': 'list',
             'domain': [
                 ('date_from', '<=', self.submission_period),
                 ('date_to', '>=', self.submission_period),

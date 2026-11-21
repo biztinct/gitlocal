@@ -1,0 +1,20 @@
+# Part of Payobook. See LICENSE file for full copyright and licensing details.
+# The audit glue (adds biz.audit.mixin to hr models) has no ordering constraint
+# among these — the base models are core, the mixin lives in the dependency.
+from . import hr_employee_audit
+from . import hr_contract_audit
+from . import hr_version_audit
+from . import employee_document
+from . import employee_timeline
+from . import pb_people_360
+from . import employee_details
+from . import employee_vietnam
+
+from . import payroll_profile
+
+# WORKFLOW-2 P5c (D31): the document-expiry timetable, declared to Workflow Studio.
+from . import workflow_timetable
+
+from . import employee_profile_tools
+
+from . import weekday_location

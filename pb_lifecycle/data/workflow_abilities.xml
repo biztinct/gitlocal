@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+  <record id="ability_workflow_progress" model="pb.role.ability"><field name="technical_key">workflow-progress-view</field><field name="name">View a record’s workflow progress</field><field name="area">system</field><field name="description">Read the live flowchart for records you can access, without editing workflows or revealing form answers.</field><field name="group_ids" eval="[(4, ref('group_workflow_viewer'))]"/></record>
+  <record id="ability_workflow_design" model="pb.role.ability"><field name="technical_key">workflow-design</field><field name="name">Design business workflows</field><field name="area">system</field><field name="description">Create and change drafts across modules. Publishing and activation need a separate ability.</field><field name="group_ids" eval="[(4, ref('group_workflow_designer'))]"/></record>
+  <record id="ability_workflow_publish" model="pb.role.ability"><field name="technical_key">workflow-publish</field><field name="name">Publish and activate workflows</field><field name="area">system</field><field name="description">Review, publish and activate workflows using existing business-record permissions.</field><field name="group_ids" eval="[(4, ref('group_workflow_publisher'))]"/></record>
+</odoo>

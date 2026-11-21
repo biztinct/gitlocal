@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- WDGAP S6-C: the Claims tab, extended (never edited). -->
+  <t t-inherit="pb_expenses_hub.PbClaimsLens" t-inherit-mode="extension">
+    <xpath expr="//t[@t-set-slot='toolbar']" position="inside">
+      <button t-if="pbCanSetup" type="button" class="pbcl-btn pbexp-setup" t-on-click="openPaySetup" t-att-title="pbPaidBy">
+        <span t-out="ic('wallet', 14)"/> <span>How claims are paid</span>
+      </button>
+    </xpath>
+    <xpath expr="//span[@t-attf-class='pbcl-st is-{{ r.state }}']" position="after">
+      <small t-if="r.pay_note" t-attf-class="pbexp-note is-{{ r.pay_step }}" t-esc="r.pay_note"/>
+    </xpath>
+  </t>
+
+</templates>

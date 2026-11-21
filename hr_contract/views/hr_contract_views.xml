@@ -16,52 +16,37 @@
                             icon="fa-book"
                             type="object"
                             groups="hr_contract.group_hr_contract_manager"
-                            attrs="{'invisible' : [('employee_type', 'not in', ['employee', 'student', 'trainee'])]}">
-                            <div attrs="{'invisible' : [('first_contract_date', '=', False)]}" class="o_stat_info">
-                                <span class="o_stat_text text-success" attrs="{'invisible' : [('contract_warning', '=', True)]}" title="In Contract Since"> In Contract Since</span>
-                                <span class="o_stat_value text-success" attrs="{'invisible' : [('contract_warning', '=', True)]}">
+                            invisible="employee_type not in ('employee', 'student', 'trainee')">
+                            <div invisible="not first_contract_date" class="o_stat_info">
+                                <span class="o_stat_text text-success" invisible="contract_warning" title="In Contract Since"> In Contract Since</span>
+                                <span class="o_stat_value text-success" invisible="contract_warning">
                                     <field name="first_contract_date" readonly="1"/>
                                 </span>
-                                <span class="o_stat_text text-danger" attrs="{'invisible' : [('contract_warning', '=', False)]}" title="In Contract Since">
+                                <span class="o_stat_text text-danger" invisible="not contract_warning" title="In Contract Since">
                                     In Contract Since
                                 </span>
-                                <span class="o_stat_value text-danger" attrs="{'invisible' : [('contract_warning', '=', False)]}">
+                                <span class="o_stat_value text-danger" invisible="not contract_warning">
                                     <field name="first_contract_date" readonly="1"/>
                                 </span>
                             </div>
-                            <div attrs="{'invisible' : [('first_contract_date', '!=', False)]}" class="o_stat_info">
+                            <div invisible="first_contract_date" class="o_stat_info">
                                 <span class="o_stat_value text-danger">
                                    <field name="contracts_count"/>
                                 </span>
-                                <span attrs="{'invisible' : [('contracts_count', '!=', 1)]}" class="o_stat_text text-danger" >
+                                <span invisible="contracts_count != 1" class="o_stat_text text-danger" >
                                     Contract
                                 </span>
-                                <span attrs="{'invisible' : [('contracts_count', '=', 1)]}" class="o_stat_text text-danger">
+                                <span invisible="contracts_count == 1" class="o_stat_text text-danger">
                                     Contracts
                                 </span>
                             </div>
                         </button>
                     </div>
-                    <xpath expr="//page[@name='hr_settings']//field[@name='employee_type']" position="after">
+                    <xpath expr="//field[@name='employee_type'][1]" position="after">
                         <field name="first_contract_date" invisible="1"/>
                     </xpath>
-                    <xpath expr="//field[@name='bank_account_id']" position="replace">
-                        <field name="bank_account_id" context="{'display_partner':True}" attrs="{'invisible' : [('address_home_id', '=', False)]}"/>
-                    </xpath>
-                    <xpath expr="//field[@name='resource_calendar_id']" position="replace">
-                        <field name="calendar_mismatch" invisible="1"/>
-                        <label for="resource_calendar_id"/>
-                        <div>
-                            <field name="resource_calendar_id" required="1" nolabel="1"/>
-                            <span attrs="{'invisible': [('calendar_mismatch', '=', False)]}"
-                                class="fa fa-exclamation-triangle text-danger o_calendar_warning ms-3"
-                                data-tooltip-template="hr_contract.CalendarMismatch"
-                                data-tooltip-info='{
-                                        "text":"Calendar Mismatch : The employee&apos;s calendar does not match this contract&apos;s calendar. This could lead to unexpected behaviors."
-                                    }'>
-                            </span>
-                        </div>
-                    </xpath>
+
+
                     <field name="job_id" position="before">
                         <field name="contract_id" groups="hr_contract.group_hr_contract_manager" readonly="1"/>
                     </field>
@@ -83,16 +68,7 @@
             </field>
         </record>
 
-        <record id="hr_user_view_form" model="ir.ui.view">
-        <field name="name">hr.user.preferences.view.form.contract.inherit</field>
-        <field name="model">res.users</field>
-        <field name="inherit_id" ref="hr.res_users_view_form_profile"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='employee_bank_account_id']" position="replace">
-                <field name="employee_bank_account_id" context="{'display_partner':True}" attrs="{'readonly': [('can_edit', '=', False)]}"/>
-            </xpath>
-        </field>
-    </record>
+
 
         <record id="hr_contract_view_search" model="ir.ui.view">
             <field name="name">hr.contract.search</field>
@@ -120,7 +96,7 @@
                         domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
                     <filter string="Future Activities" name="activities_upcoming_all"
                         domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
-                    <group expand="0" string="Group By">
+                    <group>
                         <filter string="Status" name="group_by_state" domain="[]" context="{'group_by': 'state'}"/>
                         <filter string="Employee" name="group_by_employee" domain="[]" context="{'group_by': 'employee_id'}"/>
                         <filter string="Start Date" name="group_by_date_start" domain="[]" context="{'group_by': 'date_start'}"/>
@@ -143,7 +119,7 @@
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box"/>
-                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
                         <div class="oe_title pe-0 w-100 mw-100" name="title">
                             <h1 class="d-flex flex-row justify-content-between">
                                 <field name="name" class="text-truncate" placeholder="Contract Reference"/>
@@ -177,12 +153,9 @@
                                 <div id="resource_calendar_warning">
                                     <field name="resource_calendar_id" groups="!hr_contract.group_hr_contract_manager" required="1" nolabel="1" options="{'no_open': True, 'no_create': True}"/>
                                     <field name="resource_calendar_id" groups="hr_contract.group_hr_contract_manager" required="1" nolabel="1"/>
-                                    <span attrs="{'invisible': ['|', ('calendar_mismatch', '=', False), ('state', '!=', 'open')]}"
+                                    <span invisible="not calendar_mismatch or state != 'open'"
                                         class="fa fa-exclamation-triangle text-danger o_calendar_warning ms-3"
-                                        data-tooltip-template="hr_contract.CalendarMismatch"
-                                        data-tooltip-info='{
-                                                "text":"Calendar Mismatch : The employee&apos;s calendar does not match this contract&apos;s calendar. This could lead to unexpected behaviors."
-                                            }'>
+                                        title="Calendar Mismatch: The employee's calendar does not match this contract's calendar. This could lead to unexpected behaviors.">
                                     </span>
                                 </div>
                             </group>
@@ -217,11 +190,7 @@
                             </page>
                         </notebook>
                     </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" groups="base.group_user"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-                    </div>
+                    <chatter/>
                 </form>
             </field>
         </record>
@@ -230,7 +199,7 @@
             <field name="name">hr.contract.tree</field>
             <field name="model">hr.contract</field>
             <field name="arch" type="xml">
-                <tree string="Contracts" multi_edit="1" sample="1" default_order='date_start ASC'>
+                <list string="Contracts" multi_edit="1" sample="1" default_order='date_start ASC'>
                     <field name="company_id" invisible="1"/>
                     <field name="name" readonly="1"/>
                     <field name="employee_id" readonly="1" widget="many2one_avatar_employee"/>
@@ -243,7 +212,7 @@
                     <field name="wage" invisible="1"/>
                     <field name="message_needaction" invisible="1"/>
                     <field name="company_id" groups="base.group_multi_company" readonly="1" optional="show"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -316,7 +285,7 @@
         <record id="action_hr_contract" model="ir.actions.act_window">
             <field name="name">Contracts</field>
             <field name="res_model">hr.contract</field>
-            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="view_mode">kanban,list,form,activity</field>
             <field name="domain">[('employee_id', '!=', False)]</field>
             <field name="context">{'search_default_group_by_state': 1}</field>
             <field name="search_view_id" ref="hr_contract_view_search"/>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Route the native "New" on the Formula Configurations list & kanban to
+         the guided Formula Studio wizard via a js_class controller override. -->
+    <record id="view_formula_config_tree_studio" model="ir.ui.view">
+        <field name="name">hr.formula.config.tree.studio</field>
+        <field name="model">hr.formula.config</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_formula_config_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="js_class">formula_config_list</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_formula_config_kanban_studio" model="ir.ui.view">
+        <field name="name">hr.formula.config.kanban.studio</field>
+        <field name="model">hr.formula.config</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_formula_config_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="js_class">formula_config_kanban</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

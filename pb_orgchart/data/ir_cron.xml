@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Daily: approved plans whose day has come are made live. Idempotent
+         per change (`applied`), never raises (a failing change records a
+         sentence and is tried again the next day). Anchored on the concrete
+         plan model. NOTE for deploys: filter_deploy.sh restores the cron
+         on/off states it saw before the upgrade, so a NEW job comes out
+         switched off — switch it on by hand after the first deploy (G22). -->
+    <record id="cron_apply_plans" model="ir.cron">
+        <field name="name">Org chart: make approved plans live</field>
+        <field name="model_id" ref="model_pb_orgchart_plan"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_apply_due()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Patterns board (a lens of Mission Control, and its own page). A
+         named action RECORD, so a deep link and a breadcrumb back to it have
+         a name. -->
+    <record id="action_pb_shift_patterns" model="ir.actions.client">
+        <field name="name">Shift patterns</field>
+        <field name="tag">pb_shift_patterns</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- ================================================================
+         Native views: an off-menu fallback for administrators. The board
+         is the screen.
+         ================================================================ -->
+    <record id="view_pb_shift_pattern_list" model="ir.ui.view">
+        <field name="name">pb.shift.pattern.list</field>
+        <field name="model">pb.shift.pattern</field>
+        <field name="arch" type="xml">
+            <list string="Shift patterns">
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="cycle_days"/>
+                <field name="start_date"/>
+                <field name="team_count"/>
+                <field name="member_count"/>
+                <field name="last_made_to"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_shift_pattern_form" model="ir.ui.view">
+        <field name="name">pb.shift.pattern.form</field>
+        <field name="model">pb.shift.pattern</field>
+        <field name="arch" type="xml">
+            <form string="Shift pattern">
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="department_id"/>
+                            <field name="start_date"/>
+                            <field name="cycle_days"/>
+                            <field name="work_on_holidays"/>
+                        </group>
+                        <group>
+                            <field name="last_made_to"/>
+                            <field name="last_made_by"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Days of the cycle">
+                            <field name="slot_ids">
+                                <list editable="bottom">
+                                    <field name="day_index"/>
+                                    <field name="template_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Teams">
+                            <field name="team_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="offset_days"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="People">
+                            <field name="member_ids">
+                                <list editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="team_id" domain="[('pattern_id', '=', parent.id)]"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <field name="note" placeholder="Notes"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_shift_pattern_records" model="ir.actions.act_window">
+        <field name="name">Shift patterns</field>
+        <field name="res_model">pb.shift.pattern</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- The shift form says which pattern made it. -->
+    <record id="view_shift_planning_form_pattern" model="ir.ui.view">
+        <field name="name">hr.shift.planning.form.pattern</field>
+        <field name="model">hr.shift.planning</field>
+        <field name="inherit_id" ref="pb_hr_workforce.view_shift_planning_form"/>
+        <field name="arch" type="xml">
+            <field name="date" position="after">
+                <field name="pb_pattern_id" invisible="not pb_pattern_id"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

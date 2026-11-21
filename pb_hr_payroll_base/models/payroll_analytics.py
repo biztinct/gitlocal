@@ -105,15 +105,20 @@ class PayrollAnalytics(models.Model):
                 # Basic metrics
                 record.total_employees = len(payslips.mapped('employee_id'))
                 
-                # Get salary totals
-                gross_lines = payslips.line_ids.filtered(lambda l: l.category_id.code == 'GROSS')
-                record.total_payroll = sum(gross_lines.mapped('total'))
-                
+                # Get salary totals. Which lines make up gross is the scheme's
+                # own answer, read through the shared helper so this figure
+                # agrees with the pay run it came from — the rule category
+                # alone reported zero on any scheme without a GROSS category.
+                record.total_payroll = payslips.line_ids.pb_pay_totals()['gross']
+
                 if record.total_employees > 0:
                     record.average_salary = record.total_payroll / record.total_employees
-                    
-                    # Calculate median salary
-                    salaries = gross_lines.mapped('total')
+
+                    # Calculate median salary — one figure per PAYSLIP. Over
+                    # payslip lines it was the median component, not the median
+                    # person, and moved whenever a scheme split a component.
+                    salaries = [slip.line_ids.pb_pay_totals()['gross']
+                                for slip in payslips]
                     salaries.sort()
                     n = len(salaries)
                     if n > 0:
@@ -205,9 +210,7 @@ class PayrollAnalytics(models.Model):
                     'average_salary': 0.0,
                 }
             
-            gross_total = sum(payslip.line_ids.filtered(
-                lambda l: l.category_id.code == 'GROSS'
-            ).mapped('total'))
+            gross_total = payslip.line_ids.pb_pay_totals()['gross']
             
             dept_data[dept]['employee_count'] += 1
             dept_data[dept]['total_payroll'] += gross_total
@@ -236,9 +239,7 @@ class PayrollAnalytics(models.Model):
                     'max_salary': 0.0,
                 }
             
-            gross_total = sum(payslip.line_ids.filtered(
-                lambda l: l.category_id.code == 'GROSS'
-            ).mapped('total'))
+            gross_total = payslip.line_ids.pb_pay_totals()['gross']
             
             position_data[position]['employee_count'] += 1
             position_data[position]['total_payroll'] += gross_total

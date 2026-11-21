@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_job_level_user,pb.job.level user,model_pb_job_level,base.group_user,1,0,0,0
+access_pb_job_level_manager,pb.job.level HR manager,model_pb_job_level,hr.group_hr_manager,1,1,1,1
+access_pb_cost_centre_user,pb.cost.centre user,model_pb_cost_centre,base.group_user,1,0,0,0
+access_pb_cost_centre_manager,pb.cost.centre HR manager,model_pb_cost_centre,hr.group_hr_manager,1,1,1,1
+access_pb_cost_centre_move_hr,pb.cost.centre.move HR officer,model_pb_cost_centre_move,hr.group_hr_user,1,0,0,0
+access_pb_cost_centre_move_manager,pb.cost.centre.move HR manager,model_pb_cost_centre_move,hr.group_hr_manager,1,1,1,0

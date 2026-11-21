@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP W2-B: the catalogue row a fund or tax-office payment is approved
+         under. Money leaves the company with it, so it sits with the other
+         money-out rows and is never one of an "approve selected" batch in the
+         Approvals inbox (biz_approval_workflow refuses bulk_ok on a money
+         process; pb_approval_config `_can_bulk`). -->
+    <record id="process_fundpay" model="biz.approval.process">
+        <field name="key">fundpay</field>
+        <field name="name">Fund and tax payments</field>
+        <field name="area">money</field>
+        <field name="model_name">pb.fund.payment</field>
+        <field name="money" eval="True"/>
+        <field name="bulk_ok" eval="False"/>
+        <field name="description">What is paid to insurance funds and the tax office after a pay run.</field>
+        <field name="sequence">75</field>
+    </record>
+</odoo>

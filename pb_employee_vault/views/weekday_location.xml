@@ -1,0 +1,18 @@
+<odoo>
+    <record id="view_company_weekday_location" model="ir.ui.view">
+        <field name="name">res.company.weekday.location.defaults</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Employee location defaults" name="weekday_location_defaults" groups="base.group_system">
+                    <group>
+                        <field name="pb_weekday_location_defaults"/>
+                        <field name="pb_weekday_fallback_location_id" options="{'no_create': True}"/>
+                    </group>
+                    <p>New employees default Monday–Friday to their Work Location, or the fallback above. Saturday and Sunday stay empty. Individual choices can be changed in the employee profile. This does not change working hours or payroll calendars.</p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

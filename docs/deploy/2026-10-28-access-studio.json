@@ -1,0 +1,135 @@
+{
+  "release_commit": "785ee4f00a82110e20c6f7885218dd5fea79ccee",
+  "module_version": "19.0.1.7.4",
+  "combined_custom_trees_verified": 154,
+  "database_tests": {
+    "p0clone": {
+      "tests": 198,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "payobook": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "payobook_template": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "rize": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    }
+  },
+  "http": {
+    "payobook.com": "200",
+    "rize.payobook.com": "200",
+    "p0clone.payobook.com": "200"
+  },
+  "database_checks": {
+    "p0clone": {
+      "installed_version": "19.0.1.7.4",
+      "expiry_cron_active": true,
+      "profiles_memberships_requests": [
+        0,
+        0,
+        0
+      ]
+    },
+    "payobook": {
+      "installed_version": "19.0.1.7.4",
+      "expiry_cron_active": true,
+      "profiles_memberships_requests": [
+        0,
+        0,
+        0
+      ]
+    },
+    "payobook_template": {
+      "installed_version": "19.0.1.7.4",
+      "expiry_cron_active": true,
+      "profiles_memberships_requests": [
+        0,
+        0,
+        0
+      ]
+    },
+    "rize": {
+      "installed_version": "19.0.1.7.4",
+      "expiry_cron_active": true,
+      "profiles_memberships_requests": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "backup_locations": {
+    "p0clone": "/odoo/backups/access-studio-20261027T200939Z/p0clone",
+    "payobook": "/odoo/backups/access-studio-20261027T200939Z/payobook",
+    "payobook_template": "/odoo/backups/access-studio-20261027T200939Z/payobook_template",
+    "rize": "/odoo/archives/rize-access-studio-20261027T200939Z"
+  },
+  "rize_backups_permanent": true,
+  "retired_abm_touched": false,
+  "cleanup": {
+    "isolated_database_removed": true,
+    "isolated_test_filestore_removed": true,
+    "test_screenshots_saved_to_disk": false,
+    "local_test_png_files": 0
+  },
+  "verified_on": "2026-10-28 Australia/Sydney",
+  "ssh_target": "Payobook19v2",
+  "addons_target": "/odoo/odoo-server/addons",
+  "chrome_checks": {
+    "passed": true,
+    "sites": [
+      "payobook.com",
+      "rize.payobook.com"
+    ],
+    "workflows": [
+      "Hiring, People and Payroll hub navigation and scoped Access Studio tabs",
+      "See it as and full Screens/menu preview",
+      "Profile editor, module-only role picker, optional shared roles and search",
+      "People filters and search",
+      "Access explanation drawer",
+      "CRUD policy editor, form-field controls and reason-required review dialog",
+      "Requests, access reviews and history",
+      "People and Payroll selected workspace matches loaded data",
+      "View/Edit dropdowns match policy values"
+    ],
+    "mobile_viewport": {
+      "width": 390,
+      "height": 844,
+      "page_width": 390,
+      "dialog_width": 390,
+      "dialog_height": 844,
+      "viewport_restored": true
+    },
+    "runtime_errors_observed": 0,
+    "permission_changes_submitted_in_chrome": false
+  },
+  "ui_component_test": "Passed: mounted inherited OWL templates, profile filtering, policy scope bindings, dialogs and workspace-navigation preservation",
+  "granular_resource_coverage": [
+    "Candidates",
+    "Hiring requests",
+    "Offers",
+    "Interviews",
+    "Employees",
+    "Contracts",
+    "Payslips",
+    "Pay runs"
+  ],
+  "other_resources": "Existing application permission controls remain in use."
+}

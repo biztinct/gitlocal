@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         Who reads a fund payment (WDGAP W2-B §1.7) — the money-out records'
+         pattern (pb_pay_delivery/security/money_out_rules.xml).
+
+         ACL: the pay team reads (payroll users), the people who may prepare a
+         bank file write (payroll managers — `pb.money.approval.mixin`
+         PAY_GROUPS also lets a finance role act, checked in code).
+
+         Group rules OR together; the company rule is global (AND).
+           * everyone inside the business: only the payments a published
+             route asked them to decide (`seat_user_ids`, AM60);
+           * the pay team: every payment of their companies.
+         ================================================================== -->
+
+    <record id="rule_fund_payment_company" model="ir.rule">
+        <field name="name">Fund payment: company</field>
+        <field name="model_id" ref="model_pb_fund_payment"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_fund_payment_seat" model="ir.rule">
+        <field name="name">Fund payment: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_fund_payment"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <record id="rule_fund_payment_payroll" model="ir.rule">
+        <field name="name">Fund payment: payroll</field>
+        <field name="model_id" ref="model_pb_fund_payment"/>
+        <field name="groups" eval="[
+            (4, ref('om_hr_payroll.group_hr_payroll_user')),
+            (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_fund_payee_company" model="ir.rule">
+        <field name="name">Fund payee: company</field>
+        <field name="model_id" ref="model_pb_fund_payee"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_fund_payee_item_company" model="ir.rule">
+        <field name="name">Fund payee item: company</field>
+        <field name="model_id" ref="model_pb_fund_payee_item"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

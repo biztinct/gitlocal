@@ -1,0 +1,253 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_form_studio_contracts
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 10:00+0000\n"
+"PO-Revision-Date: 2026-11-19 10:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "%s is required. Fill it in before saving."
+msgstr "%s wajib diisi. Isi dulu sebelum menyimpan."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A field that has since been deleted"
+msgstr "Kolom yang sudah dihapus"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A field you cannot see"
+msgstr "Kolom yang tidak dapat Anda lihat"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A file"
+msgstr "Sebuah berkas"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A new file"
+msgstr "Berkas baru"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
+msgid "Add or move fields on this screen"
+msgstr "Tambah atau pindahkan kolom di layar ini"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+msgid "Add your own fields"
+msgstr "Tambahkan kolom Anda sendiri"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "Choose a file"
+msgstr "Pilih berkas"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Company details"
+msgstr "Detail perusahaan"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Contract"
+msgstr "Kontrak"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "Contract change · %s"
+msgstr "Perubahan kontrak · %s"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__pb_country_of_work_id
+msgid "Country of Work"
+msgstr "Negara Tempat Kerja"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contract_proposal__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_form_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_people_contract_wizard__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "Download"
+msgstr "Unduh"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Drawn by the contract screen itself. Fields cannot be placed here."
+msgstr "Ditampilkan oleh layar kontrak itu sendiri. Kolom tidak dapat ditempatkan di sini."
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_hr_contract
+msgid "Employee Contract"
+msgstr "Kontrak Karyawan"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_form_studio
+msgid "Form builder"
+msgstr "Pembuat formulir"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contract_proposal__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_form_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_people_contract_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "Not filled in"
+msgstr "Belum diisi"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "PDF or image, up to 10 MB"
+msgstr "PDF atau gambar, maksimal 10 MB"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr "Data kokpit kontrak Payobook"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_people_contract_wizard
+msgid "Payobook guided contract creation"
+msgstr "Pembuatan kontrak terpandu Payobook"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_contract_proposal
+msgid "Proposed contract change"
+msgstr "Usulan perubahan kontrak"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "That is not something this screen can change, so it was left alone."
+msgstr "Layar ini tidak dapat mengubah hal itu, jadi dibiarkan apa adanya."
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid ""
+"The fields on this screen were changed. Save or discard your changes to see "
+"them."
+msgstr "Kolom di layar ini telah diubah. Simpan atau buang perubahan Anda untuk melihatnya."
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,help:pb_form_studio_contracts.field_hr_contract__pb_country_of_work_id
+msgid "The person's Country of Work, read from their employee record."
+msgstr "Negara tempat kerja orang ini, dibaca dari data karyawannya."
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+msgid ""
+"Uniform size, union number, a signed copy: anything your company keeps on a "
+"contract."
+msgstr "Ukuran seragam, nomor serikat, salinan bertanda tangan: apa pun yang disimpan perusahaan Anda pada kontrak."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "name"
+msgstr "nama"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr "File data gaji mengisinya, jadi gaji bergantung pada kolom ini."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
+msgstr "Rumus gaji membacanya, jadi gaji bergantung pada kolom ini."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
+msgstr "Persetujuan, akses, dan pengaturan gaji mengikuti kolom ini."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Contract panel: %s"
+msgstr "Panel kontrak: %s"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It names the contract on every payslip and file."
+msgstr "Kolom ini menamai kontrak di setiap slip gaji dan file."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It says whose contract this is."
+msgstr "Kolom ini menunjukkan kontrak milik siapa."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
+msgstr "Gaji atau file wajib bergantung pada kolom ini."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Payroll facts"
+msgstr "Data penggajian"

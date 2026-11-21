@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-C — the bank directory beyond Vietnam: the main Indonesian,
+         Singaporean and Indian banks, with their public national codes, so a
+         bank name recorded on an employee's account ("BCA", "Bank Central
+         Asia") resolves to one bank and its code. noupdate: a company's
+         corrections survive every upgrade.
+
+         SOURCES (also in WDGAP_S2C_REPORT.md):
+         * Singapore — OCBC "ACH Bank and Branch Code Guide" (as at 09 Dec
+           2011), https://www.ocbc.com/assets/pdf/ach-bank-and-branch-code-guide.pdf :
+           OCBC 7339, UOB 7375, DBS 7171, POSB 7171 (branch 081 for every
+           POSB account), HSBC 7232, Standard Chartered 7144. A bank's own
+           published document, but from 2011 — check before the first file.
+         * Indonesia — INFERRED from public bank-code lists in the press
+           (Bisnis.com 2022-01-27, CNN Indonesia 2021-07-22, Kompas TV), not
+           Bank Indonesia's own list: BCA 014, Mandiri 008, BNI 009, BRI 002,
+           BTN 200, CIMB Niaga 022, Permata 013, Danamon 011, BSI 451 (the
+           press also gives 427 / 422 for the banks BSI merged).
+         * India — INFERRED: the first four letters of every IFSC of the bank
+           (the RBI IFSC scheme: 4 letters, a 0, 6 characters — confirmed by
+           ICICI's published "File Format for Bulk upload in CIB"). The
+           directory cannot give a branch's full IFSC; a bank file for India
+           needs the IFSC recorded on the person's account.
+         Vietnamese rows stay in vn_bank_registry_data.xml with no country. -->
+
+    <!-- ============================ Indonesia ============================ -->
+    <record id="bank_id_bca" model="pb.bank.registry">
+        <field name="name">Bank Central Asia</field>
+        <field name="short_name">BCA</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">014</field>
+        <field name="aliases">BCA,Bank BCA,Bank Central Asia,PT Bank Central Asia</field>
+    </record>
+    <record id="bank_id_mandiri" model="pb.bank.registry">
+        <field name="name">Bank Mandiri</field>
+        <field name="short_name">Mandiri</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">008</field>
+        <field name="aliases">Mandiri,Bank Mandiri,PT Bank Mandiri</field>
+    </record>
+    <record id="bank_id_bni" model="pb.bank.registry">
+        <field name="name">Bank Negara Indonesia</field>
+        <field name="short_name">BNI</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">009</field>
+        <field name="aliases">BNI,Bank BNI,Bank Negara Indonesia</field>
+    </record>
+    <record id="bank_id_bri" model="pb.bank.registry">
+        <field name="name">Bank Rakyat Indonesia</field>
+        <field name="short_name">BRI</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">002</field>
+        <field name="aliases">BRI,Bank BRI,Bank Rakyat Indonesia</field>
+    </record>
+    <record id="bank_id_btn" model="pb.bank.registry">
+        <field name="name">Bank Tabungan Negara</field>
+        <field name="short_name">BTN</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">200</field>
+        <field name="aliases">BTN,Bank BTN,Bank Tabungan Negara</field>
+    </record>
+    <record id="bank_id_cimb" model="pb.bank.registry">
+        <field name="name">Bank CIMB Niaga</field>
+        <field name="short_name">CIMB Niaga</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">022</field>
+        <field name="aliases">CIMB Niaga,Bank CIMB Niaga,CIMB</field>
+    </record>
+    <record id="bank_id_permata" model="pb.bank.registry">
+        <field name="name">Bank Permata</field>
+        <field name="short_name">Permata</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">013</field>
+        <field name="aliases">Permata,Bank Permata,PermataBank</field>
+    </record>
+    <record id="bank_id_danamon" model="pb.bank.registry">
+        <field name="name">Bank Danamon Indonesia</field>
+        <field name="short_name">Danamon</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">011</field>
+        <field name="aliases">Danamon,Bank Danamon</field>
+    </record>
+    <record id="bank_id_bsi" model="pb.bank.registry">
+        <field name="name">Bank Syariah Indonesia</field>
+        <field name="short_name">BSI</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="clearing_code">451</field>
+        <field name="aliases">BSI,Bank Syariah Indonesia,Mandiri Syariah</field>
+    </record>
+
+    <!-- ============================ Singapore ============================ -->
+    <record id="bank_sg_dbs" model="pb.bank.registry">
+        <field name="name">DBS Bank</field>
+        <field name="short_name">DBS</field>
+        <field name="country_id" ref="base.sg"/>
+        <field name="clearing_code">7171</field>
+        <field name="swift_prefix">DBSS</field>
+        <field name="aliases">DBS,DBS Bank,Development Bank of Singapore</field>
+    </record>
+    <record id="bank_sg_posb" model="pb.bank.registry">
+        <field name="name">POSB</field>
+        <field name="short_name">POSB</field>
+        <field name="country_id" ref="base.sg"/>
+        <field name="clearing_code">7171</field>
+        <field name="aliases">POSB,POSB Bank,POSBank</field>
+    </record>
+    <record id="bank_sg_ocbc" model="pb.bank.registry">
+        <field name="name">Oversea-Chinese Banking Corporation</field>
+        <field name="short_name">OCBC</field>
+        <field name="country_id" ref="base.sg"/>
+        <field name="clearing_code">7339</field>
+        <field name="swift_prefix">OCBC</field>
+        <field name="aliases">OCBC,OCBC Bank,Oversea Chinese Banking</field>
+    </record>
+    <record id="bank_sg_uob" model="pb.bank.registry">
+        <field name="name">United Overseas Bank</field>
+        <field name="short_name">UOB</field>
+        <field name="country_id" ref="base.sg"/>
+        <field name="clearing_code">7375</field>
+        <field name="swift_prefix">UOVB</field>
+        <field name="aliases">UOB,United Overseas Bank</field>
+    </record>
+    <record id="bank_sg_hsbc" model="pb.bank.registry">
+        <field name="name">HSBC Singapore</field>
+        <field name="short_name">HSBC</field>
+        <field name="country_id" ref="base.sg"/>
+        <field name="clearing_code">7232</field>
+        <field name="aliases">HSBC,Hongkong and Shanghai Banking</field>
+    </record>
+    <record id="bank_sg_scb" model="pb.bank.registry">
+        <field name="name">Standard Chartered Bank Singapore</field>
+        <field name="short_name">Standard Chartered</field>
+        <field name="country_id" ref="base.sg"/>
+        <field name="clearing_code">7144</field>
+        <field name="aliases">Standard Chartered,SCB,StanChart</field>
+    </record>
+
+    <!-- ============================== India ============================== -->
+    <record id="bank_in_sbi" model="pb.bank.registry">
+        <field name="name">State Bank of India</field>
+        <field name="short_name">SBI</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">SBIN</field>
+        <field name="aliases">SBI,State Bank of India,State Bank</field>
+    </record>
+    <record id="bank_in_hdfc" model="pb.bank.registry">
+        <field name="name">HDFC Bank</field>
+        <field name="short_name">HDFC</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">HDFC</field>
+        <field name="aliases">HDFC,HDFC Bank</field>
+    </record>
+    <record id="bank_in_icici" model="pb.bank.registry">
+        <field name="name">ICICI Bank</field>
+        <field name="short_name">ICICI</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">ICIC</field>
+        <field name="aliases">ICICI,ICICI Bank</field>
+    </record>
+    <record id="bank_in_axis" model="pb.bank.registry">
+        <field name="name">Axis Bank</field>
+        <field name="short_name">Axis</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">UTIB</field>
+        <field name="aliases">Axis,Axis Bank,UTI Bank</field>
+    </record>
+    <record id="bank_in_kotak" model="pb.bank.registry">
+        <field name="name">Kotak Mahindra Bank</field>
+        <field name="short_name">Kotak</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">KKBK</field>
+        <field name="aliases">Kotak,Kotak Mahindra,Kotak Mahindra Bank</field>
+    </record>
+    <record id="bank_in_pnb" model="pb.bank.registry">
+        <field name="name">Punjab National Bank</field>
+        <field name="short_name">PNB</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">PUNB</field>
+        <field name="aliases">PNB,Punjab National Bank</field>
+    </record>
+    <record id="bank_in_bob" model="pb.bank.registry">
+        <field name="name">Bank of Baroda</field>
+        <field name="short_name">Bank of Baroda</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">BARB</field>
+        <field name="aliases">Bank of Baroda,BOB,Baroda</field>
+    </record>
+    <record id="bank_in_canara" model="pb.bank.registry">
+        <field name="name">Canara Bank</field>
+        <field name="short_name">Canara</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">CNRB</field>
+        <field name="aliases">Canara,Canara Bank</field>
+    </record>
+    <record id="bank_in_union" model="pb.bank.registry">
+        <field name="name">Union Bank of India</field>
+        <field name="short_name">Union Bank</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">UBIN</field>
+        <field name="aliases">Union Bank,Union Bank of India</field>
+    </record>
+    <record id="bank_in_indusind" model="pb.bank.registry">
+        <field name="name">IndusInd Bank</field>
+        <field name="short_name">IndusInd</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">INDB</field>
+        <field name="aliases">IndusInd,IndusInd Bank</field>
+    </record>
+    <record id="bank_in_yes" model="pb.bank.registry">
+        <field name="name">Yes Bank</field>
+        <field name="short_name">Yes Bank</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">YESB</field>
+        <field name="aliases">Yes Bank,YESBANK</field>
+    </record>
+    <record id="bank_in_idfc" model="pb.bank.registry">
+        <field name="name">IDFC First Bank</field>
+        <field name="short_name">IDFC First</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="clearing_code">IDFB</field>
+        <field name="aliases">IDFC,IDFC First,IDFC First Bank</field>
+    </record>
+</odoo>

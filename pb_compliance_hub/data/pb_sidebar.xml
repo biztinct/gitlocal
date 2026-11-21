@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13) — see pb_home_hub/data/pb_sidebar.xml. -->
+<odoo noupdate="0">
+
+    <!-- UNDERSTAND › Compliance — what you owe, and the trail that proves it.
+
+         Government Reports · Bank Verification · Young Workers · Audit, plus the
+         full-page filing flow Cycle 4 built to replace the Generate modal. The
+         first three were COMPLIANCE rail items; Audit was an ADMIN one, and it
+         moves domain rather than just address — reading who changed what is an
+         officer's job, not a sysadmin's configuration screen. All five actions
+         still work and all four rail records survive retired, so their tags are
+         claimed here.
+
+         UNGATED, like every hub item — the shell gates each lens from the model
+         behind it (W95), and the four answers differ: the filing wizard's own
+         group, every internal user for a bank-change request, the payroll/
+         attendance tiers for young workers, the payroll manager for the audit
+         console. -->
+    <!-- GATED SINCE ACCESS P4, in TWO LANES read as an OR — see
+         `pb_payhub/data/pb_sidebar.xml` for why the lane written here is a
+         PERMISSION and the ROLE lane is written onto the row by
+         `pb_vendor_access`.
+
+         TWO permissions, because this entry really is two jobs: the filing flow
+         has its own group, and the audit console is the payroll manager's. Either
+         is enough, which keeps both of the people this entry was built for.
+
+         `(4, ref(…))` never `(6, 0, …)` — an ADD, so `pb_demo`'s join survives
+         the next upgrade of this module. -->
+    <record id="item_compliance" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_insights"/>
+        <field name="groups_id"
+               eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user')),
+                      (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="name">Compliance</field>
+        <field name="icon">shield</field>
+        <field name="sequence">20</field>
+        <field name="action_xmlid">pb_compliance_hub.action_pb_compliance_hub</field>
+        <field name="action_tag">pb_compliance_hub</field>
+        <field name="match_action_tags">pb_compliance_hub,pb_govt_reports,pb_filing_flow,pb_bank_ocr,pb_young_worker,pb_audit</field>
+    </record>
+
+</odoo>

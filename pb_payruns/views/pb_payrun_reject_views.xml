@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- LEARN REFRESH step 6: Reject on the run form and the kanban asks why
+         first. The reason is kept on the run and shown on its card and form. -->
+    <record id="view_pb_payrun_reject_form" model="ir.ui.view">
+        <field name="name">pb.payrun.reject.form</field>
+        <field name="model">pb.payrun.reject</field>
+        <field name="arch" type="xml">
+            <form string="Reject this pay run">
+                <div class="alert alert-danger" role="alert">
+                    <div>
+                        <b>Reject “<field name="run_name" nolabel="1" readonly="1" class="d-inline"/>”?</b>
+                        Every payslip in it is cancelled and the run does not come
+                        back — a new run has to be made. To have something fixed
+                        instead, send it back from Approvals.
+                    </div>
+                </div>
+                <field name="run_id" invisible="1"/>
+                <group>
+                    <field name="reason" placeholder="For example: made twice by mistake, or the wrong month"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Reject run" class="btn-danger"/>
+                    <button string="Keep it" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

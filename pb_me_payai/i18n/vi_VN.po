@@ -1,0 +1,995 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_me_payai
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 00:00+0000\n"
+"PO-Revision-Date: 2026-11-16 00:00+0000\n"
+"Last-Translator: Payobook Translation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "<b>PayAI</b>"
+msgstr "<b>PayAI</b>"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "<span class=\"pbpa-sources-h\">From the policy</span>"
+msgstr "<span class=\"pbpa-sources-h\">Từ chính sách</span>"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"<span class=\"pbpa-thinking\" aria-live=\"polite\" data-pbpa-"
+"thinking=\"\">Reading the policies…</span>"
+msgstr ""
+"<span class=\"pbpa-thinking\" aria-live=\"polite\" "
+"data-pbpa-thinking=\"\">Đang đọc các chính sách…</span>"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "<span>Ask</span>"
+msgstr "<span>Hỏi</span>"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "AI account"
+msgstr "Tài khoản AI"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Answered"
+msgstr "Đã trả lời"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_question__outcome__answered
+msgid "Answered from a policy"
+msgstr "Đã trả lời từ chính sách"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"Answers come from the policy text. If something matters, check with HR."
+msgstr ""
+"Câu trả lời lấy từ nội dung chính sách. Nếu điều gì quan trọng, hãy hỏi lại "
+"phòng nhân sự."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid ""
+"Answers come only from the policy files HR publishes under Home, Policies. "
+"Never personal figures. Uses this company's AI account."
+msgstr ""
+"Câu trả lời chỉ lấy từ các tệp chính sách phòng nhân sự công bố tại Trang "
+"chủ, Chính sách. Không bao giờ có số liệu cá nhân. Dùng tài khoản AI của "
+"công ty này."
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_document__language__any
+msgid "Any language"
+msgstr "Mọi ngôn ngữ"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Ask HR instead"
+msgstr "Hỏi phòng nhân sự"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Ask HR, with my question"
+msgstr "Hỏi phòng nhân sự với câu hỏi của tôi"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"Ask PayAI about the company's policies. It answers only from the policy "
+"files HR has shared, and tells you which one it used."
+msgstr ""
+"Hỏi PayAI về chính sách của công ty. PayAI chỉ trả lời từ các tệp chính "
+"sách phòng nhân sự đã chia sẻ, và cho bạn biết đã dùng tệp nào."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_my_home_pbpa
+msgid "Ask PayAI, answered from the policies"
+msgstr "Hỏi PayAI, trả lời từ các chính sách"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Choose a file first."
+msgstr "Hãy chọn một tệp trước."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid ""
+"Choose limits between 0 and 1,000 per person and 0 and 100,000 per company."
+msgstr ""
+"Chọn giới hạn từ 0 đến 1.000 mỗi người và từ 0 đến 100.000 mỗi công ty."
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__company_id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__company_id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_breadcrumbs_pbpa
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_my_home_pbpa
+msgid "Company policies"
+msgstr "Chính sách công ty"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_document
+msgid "Company policy file"
+msgstr "Tệp chính sách công ty"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_res_config_settings
+msgid "Config Settings"
+msgstr "Cài đặt cấu hình"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Could not answer"
+msgstr "Chưa trả lời được"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_question__outcome__failed
+msgid "Could not answer just then"
+msgstr "Lúc đó chưa trả lời được"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_quota__count
+msgid "Count"
+msgstr "Số lần"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__create_uid
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__create_date
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__create_date
+msgid "Created on"
+msgstr "Tạo lúc"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_question__outcome__limit
+msgid "Daily limit reached"
+msgstr "Đã đạt giới hạn trong ngày"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Daily limits"
+msgstr "Giới hạn mỗi ngày"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Daily limits saved."
+msgstr "Đã lưu giới hạn mỗi ngày."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__day
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_quota__day
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_payroll_ai_config__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_answer__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_desk__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_quota__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__document_id
+msgid "Document"
+msgstr "Tài liệu"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,help:pb_me_payai.field_res_company__pb_policy_ai_person_day
+#: model:ir.model.fields,help:pb_me_payai.field_res_config_settings__pb_policy_ai_person_day
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Each question PayAI answers costs a little on the AI account."
+msgstr "Mỗi câu hỏi PayAI trả lời tốn một chút chi phí trên tài khoản AI."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__published
+msgid "Employees can ask about it"
+msgstr "Nhân viên có thể hỏi về tệp này"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__pb_policy_ai_on
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__pb_policy_ai_on
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Employees may ask PayAI about company policies"
+msgstr "Nhân viên có thể hỏi PayAI về chính sách công ty"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Employees no longer ask about it."
+msgstr "Nhân viên không còn hỏi về tệp này."
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_document__language__en_us
+msgid "English"
+msgstr "Tiếng Anh"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__file
+msgid "File"
+msgstr "Tệp"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__filename
+msgid "File name"
+msgstr "Tên tệp"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "For example: How many days of leave do I get when I get married?"
+msgstr "Ví dụ: Tôi được nghỉ bao nhiêu ngày khi kết hôn?"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"For your own leave or pay, open your Leave or Payslips page: PayAI does not "
+"read your records."
+msgstr ""
+"Với ngày nghỉ hoặc lương của riêng bạn, hãy mở trang Nghỉ phép hoặc Phiếu "
+"lương: PayAI không đọc hồ sơ của bạn."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Give the policy a title."
+msgstr "Hãy đặt tên cho chính sách."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__heading_keys
+msgid "Heading search words"
+msgstr "Từ tìm kiếm của tiêu đề"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "I could not answer just now. Try again in a few minutes, or ask HR."
+msgstr ""
+"Tôi chưa trả lời được lúc này. Hãy thử lại sau vài phút, hoặc hỏi phòng "
+"nhân sự."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"I could not find the answer in the company's policies. HR can answer it."
+msgstr ""
+"Tôi không tìm thấy câu trả lời trong chính sách của công ty. Phòng nhân sự "
+"có thể trả lời."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_payroll_ai_config__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_answer__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_desk__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_quota__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__id
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid ""
+"In a company with fewer than five people who can ask, a question could point"
+" at the person who asked it, so only the numbers above are shown."
+msgstr ""
+"Ở công ty có dưới năm người có thể hỏi, một câu hỏi có thể chỉ ra người đã "
+"hỏi, nên chỉ hiện các số liệu phía trên."
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_document__language__id_id
+msgid "Indonesian"
+msgstr "Tiếng Indonesia"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_quota__key
+msgid "Key"
+msgstr "Mã"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__language
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__write_uid
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__write_date
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,help:pb_me_payai.field_pb_policy_document__department_ids
+msgid "Leave empty for everyone in the company."
+msgstr "Để trống nếu dành cho mọi người trong công ty."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid ""
+"Names, phone numbers and amounts are taken out, and nothing says who asked. "
+"Use the questions PayAI could not answer to fill gaps in the policies."
+msgstr ""
+"Tên người, số điện thoại và số tiền đã được bỏ đi, và không có gì cho biết "
+"ai đã hỏi. Hãy dùng các câu hỏi PayAI chưa trả lời được để bổ sung chỗ còn "
+"thiếu trong chính sách."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "No policy files yet"
+msgstr "Chưa có tệp chính sách"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "No questions here yet."
+msgstr "Chưa có câu hỏi nào ở đây."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid ""
+"No words could be read from %(name)s. A scanned file has no words: upload "
+"the original document instead."
+msgstr ""
+"Không đọc được chữ nào từ %(name)s. Tệp quét không có chữ: hãy tải lên tài "
+"liệu gốc."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "No words could be read from this file, so it cannot be published."
+msgstr "Không đọc được chữ nào từ tệp này, nên không thể công bố."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "No words found"
+msgstr "Không tìm thấy chữ"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Not available yet: this company has no AI account set up."
+msgstr "Chưa dùng được: công ty này chưa thiết lập tài khoản AI."
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_question__outcome__not_found
+msgid "Not in the policies"
+msgstr "Không có trong chính sách"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Not published"
+msgstr "Chưa công bố"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Not set up yet. An administrator adds it in the PayAI settings."
+msgstr "Chưa thiết lập. Quản trị viên thêm tài khoản trong cài đặt PayAI."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Nothing PayAI could not answer. The policies cover what people asked."
+msgstr ""
+"Không có câu hỏi nào PayAI chưa trả lời được. Các chính sách đã bao quát "
+"những gì mọi người hỏi."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__section_count
+msgid "Number of sections"
+msgstr "Số mục"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Numbers only in a small company"
+msgstr "Chỉ hiện số liệu ở công ty nhỏ"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Off. Employees do not see it."
+msgstr "Tắt. Nhân viên không thấy."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid ""
+"On, but no policy is published yet. Employees do not see it until one is."
+msgstr ""
+"Đang bật, nhưng chưa công bố chính sách nào. Nhân viên chưa thấy cho đến "
+"khi có một chính sách được công bố."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "On. Employees see Company policies on their own pages."
+msgstr "Đang bật. Nhân viên thấy Chính sách công ty trên trang của mình."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Only an HR manager changes the daily limits."
+msgstr "Chỉ trưởng phòng nhân sự thay đổi giới hạn mỗi ngày."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid ""
+"Only an HR manager switches PayAI on for employees and sets the limits."
+msgstr "Chỉ trưởng phòng nhân sự bật PayAI cho nhân viên và đặt giới hạn."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Only an HR manager switches PayAI on for employees."
+msgstr "Chỉ trưởng phòng nhân sự bật PayAI cho nhân viên."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__department_ids
+msgid "Only for these departments"
+msgstr "Chỉ cho các phòng ban này"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,help:pb_me_payai.field_pb_policy_document__published
+msgid "Only published files are searched for an employee question."
+msgstr "Chỉ các tệp đã công bố được tìm kiếm cho câu hỏi của nhân viên."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/controllers/download.py:0
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Only the HR team manages company policies."
+msgstr "Chỉ phòng nhân sự quản lý chính sách công ty."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__outcome
+msgid "Outcome"
+msgstr "Kết quả"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid ""
+"PDF with text, Word (.docx) or plain text, up to 10 MB. A file stays private"
+" until you publish it."
+msgstr ""
+"PDF có chữ, Word (.docx) hoặc văn bản thường, tối đa 10 MB. Tệp được giữ "
+"riêng tư cho đến khi bạn công bố."
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_payroll_ai_config
+msgid "PayAI Configuration"
+msgstr "Cấu hình PayAI"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,help:pb_me_payai.field_res_company__pb_policy_ai_on
+#: model:ir.model.fields,help:pb_me_payai.field_res_config_settings__pb_policy_ai_on
+msgid ""
+"PayAI answers only from the policy files HR publishes, never with personal "
+"figures. Every question uses this company's AI account."
+msgstr ""
+"PayAI chỉ trả lời từ các tệp chính sách phòng nhân sự công bố, không bao "
+"giờ có số liệu cá nhân. Mỗi câu hỏi dùng tài khoản AI của công ty này."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "PayAI for employees"
+msgstr "PayAI cho nhân viên"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Per company"
+msgstr "Mỗi công ty"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Per company per day"
+msgstr "Mỗi công ty mỗi ngày"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.res_config_settings_view_form_pb_me_payai
+msgid "Per person"
+msgstr "Mỗi người"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Per person per day"
+msgstr "Mỗi người mỗi ngày"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Policies"
+msgstr "Chính sách"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__document_ids
+msgid "Policies used"
+msgstr "Chính sách đã dùng"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Policy"
+msgstr "Chính sách"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_answer
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__payroll_ai_config__purpose__policy_answers
+msgid "Policy answers for employees"
+msgstr "Trả lời chính sách cho nhân viên"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_desk
+msgid "Policy answers: the HR desk"
+msgstr "Trả lời chính sách: bàn làm việc của nhân sự"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Policy files"
+msgstr "Tệp chính sách"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_question
+msgid "Policy question asked by an employee"
+msgstr "Câu hỏi chính sách của nhân viên"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_quota
+msgid "Policy questions: daily count per person"
+msgstr "Câu hỏi chính sách: số lần mỗi người mỗi ngày"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Published"
+msgstr "Đã công bố"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Published. Employees can ask about it."
+msgstr "Đã công bố. Nhân viên có thể hỏi về tệp này."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_payroll_ai_config__purpose
+msgid "Purpose"
+msgstr "Mục đích"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__question
+msgid "Question (names taken out)"
+msgstr "Câu hỏi (đã bỏ tên)"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Questions"
+msgstr "Câu hỏi"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Questions people asked"
+msgstr "Các câu hỏi mọi người đã hỏi"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__pb_policy_ai_company_day
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__pb_policy_ai_company_day
+msgid "Questions per company per day"
+msgstr "Số câu hỏi mỗi công ty mỗi ngày"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_company__pb_policy_ai_person_day
+#: model:ir.model.fields,field_description:pb_me_payai.field_res_config_settings__pb_policy_ai_person_day
+msgid "Questions per person per day"
+msgstr "Số câu hỏi mỗi người mỗi ngày"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Questions today"
+msgstr "Câu hỏi hôm nay"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid ""
+"Read %(n)s sections from %(name)s. Publish it when it is ready for "
+"employees."
+msgstr ""
+"Đã đọc %(n)s mục từ %(name)s. Hãy công bố khi đã sẵn sàng cho nhân viên."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Reload the page. If it keeps happening, tell your administrator."
+msgstr "Tải lại trang. Nếu vẫn xảy ra, hãy báo quản trị viên."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Remove"
+msgstr "Gỡ bỏ"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Remove “%s”? Employees can no longer ask about it."
+msgstr "Gỡ bỏ “%s”? Nhân viên sẽ không thể hỏi về tệp này nữa."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Removed."
+msgstr "Đã gỡ bỏ."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Save limits"
+msgstr "Lưu giới hạn"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__keys
+msgid "Search words"
+msgstr "Từ tìm kiếm"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__heading
+msgid "Section"
+msgstr "Mục"
+
+#. module: pb_me_payai
+#: model:ir.model,name:pb_me_payai.model_pb_policy_section
+msgid "Section of a company policy file"
+msgstr "Mục của tệp chính sách công ty"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__section_id
+msgid "Section used"
+msgstr "Mục đã dùng"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__section_ids
+msgid "Sections"
+msgstr "Các mục"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Set up"
+msgstr "Đã thiết lập"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Switch off for employees"
+msgstr "Tắt cho nhân viên"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Switch on for employees"
+msgstr "Bật cho nhân viên"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Switched off for employees."
+msgstr "Đã tắt cho nhân viên."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "Switched on for employees."
+msgstr "Đã bật cho nhân viên."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "That did not go through."
+msgstr "Chưa thực hiện được."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "That file could not be read. Try again."
+msgstr "Không đọc được tệp. Hãy thử lại."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+#: code:addons/pb_me_payai/models/policy_document.py:0
+#: code:addons/pb_me_payai/static/src/js/policy_desk.js:0
+msgid "That file is bigger than 10 MB. Upload a smaller one, or split it."
+msgstr "Tệp lớn hơn 10 MB. Hãy tải lên tệp nhỏ hơn, hoặc chia nhỏ."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "That file is empty."
+msgstr "Tệp này trống."
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "That policy is not there any more."
+msgstr "Chính sách này không còn nữa."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "The company has used today's questions. Ask HR, or try again tomorrow."
+msgstr ""
+"Công ty đã dùng hết số câu hỏi hôm nay. Hãy hỏi phòng nhân sự, hoặc thử lại "
+"vào ngày mai."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "The policies PayAI reads"
+msgstr "Các chính sách PayAI đọc"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "The policies could not be read"
+msgstr "Không đọc được các chính sách"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"The question is kept without your name, so HR can improve the policies. "
+"Nothing records who asked it."
+msgstr ""
+"Câu hỏi được lưu mà không có tên bạn, để phòng nhân sự cải thiện chính "
+"sách. Không có gì ghi lại ai đã hỏi."
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__text
+msgid "The words read from the file"
+msgstr "Chữ đọc được từ tệp"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_document__name
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Title, for example Leave policy"
+msgstr "Tiêu đề, ví dụ Chính sách nghỉ phép"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Type the limits as whole numbers."
+msgstr "Hãy nhập giới hạn bằng số nguyên."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Upload"
+msgstr "Tải lên"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Upload a PDF, a Word file (.docx) or a text file."
+msgstr "Tải lên tệp PDF, Word (.docx) hoặc tệp văn bản."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid ""
+"Upload the handbook and policy files. Employees ask PayAI about them on "
+"their own pages, and PayAI answers only from these words."
+msgstr ""
+"Tải lên sổ tay nhân viên và các tệp chính sách. Nhân viên hỏi PayAI về "
+"chúng trên trang của mình, và PayAI chỉ trả lời từ những nội dung này."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Upload the staff handbook first: it answers most questions people ask."
+msgstr ""
+"Hãy tải lên sổ tay nhân viên trước: sổ tay trả lời hầu hết câu hỏi mọi "
+"người hay hỏi."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "Uploaded"
+msgstr "Tải lên ngày"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_question__called_ai
+msgid "Used the AI account"
+msgstr "Đã dùng tài khoản AI"
+
+#. module: pb_me_payai
+#: model:ir.model.fields.selection,name:pb_me_payai.selection__pb_policy_document__language__vi_vn
+msgid "Vietnamese"
+msgstr "Tiếng Việt"
+
+#. module: pb_me_payai
+#: model:ir.model.fields,field_description:pb_me_payai.field_pb_policy_section__body
+msgid "Words"
+msgstr "Nội dung"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_desk.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_me_payai
+#. odoo-python
+#: code:addons/pb_me_payai/models/policy_answer.py:0
+msgid "You can only ask for yourself."
+msgstr "Bạn chỉ có thể hỏi cho chính mình."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"You have asked as many questions as one person can today. Ask HR, or try "
+"again tomorrow."
+msgstr ""
+"Hôm nay bạn đã hỏi đủ số câu hỏi cho một người. Hãy hỏi phòng nhân sự, hoặc "
+"thử lại vào ngày mai."
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Your privacy"
+msgstr "Quyền riêng tư của bạn"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid "Your question"
+msgstr "Câu hỏi của bạn"
+
+#. module: pb_me_payai
+#: model_terms:ir.ui.view,arch_db:pb_me_payai.portal_ask_policy
+msgid ""
+"Your question goes to the company's AI service without your name, and with "
+"names, phone numbers and amounts taken out. Only the matching policy text "
+"goes with it."
+msgstr ""
+"Câu hỏi của bạn được gửi tới dịch vụ AI của công ty mà không có tên bạn, và "
+"đã bỏ tên người, số điện thoại và số tiền. Chỉ phần chính sách phù hợp được "
+"gửi kèm."
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "answered from a policy"
+msgstr "trả lời từ chính sách"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "asked"
+msgstr "đã hỏi"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "not in the policies"
+msgstr "không có trong chính sách"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "sections"
+msgstr "mục"
+
+#. module: pb_me_payai
+#. odoo-javascript
+#: code:addons/pb_me_payai/static/src/xml/policy_desk.xml:0
+msgid "used the AI account"
+msgstr "đã dùng tài khoản AI"

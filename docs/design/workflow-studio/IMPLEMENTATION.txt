@@ -1,0 +1,346 @@
+Workflow Studio — system-wide implementation
+9 November 2026
+
+Product decision
+One Studio coordinates processes across installed business modules. Hiring is
+one adapter, not the foundation. New processes can have their own forms, stages,
+tasks and approval route without creating an Odoo model. New business modules
+join through the same capability contract. The approved POC is the UI reference:
+Journey first; Flowchart and People are views of the same definition; readable
+cards, short labels, contextual settings, real drag reordering and Undo.
+
+Ownership and reuse
+- base_automation owns record-change/date triggers and their Odoo domains.
+  Install the server's standard Community module; never replace its checkout.
+  A generated server action only captures a workflow event. It does not execute
+  an entire long-running process inside the original record transaction.
+- pb_lifecycle hosts the additive, module-neutral workflow service. Existing
+  employee journey templates/cases/tasks and their generators remain intact.
+- mail.activity owns human to-dos and reminders. Workflow step records track
+  orchestration state; they are not a second independent task assignment.
+- biz.approval.engine owns approval routes, scopes, people, cover, safeguards,
+  decision deadlines, return/rejection and application. Studio references it.
+- Business adapters own permitted state transitions, payroll locks, settlement
+  blockers, Hiring stage events, learning enrolments and other effects.
+- mail.template and the mail queue own ordinary messages. Hiring's company/key
+  templates, language fallback, sender and delivery ledger remain distinct.
+- Existing settings screens remain authoritative. Studio provides contextual
+  entry and return paths rather than copying settings into each workflow.
+- ir.attachment owns uploaded files. Record/field permissions still apply.
+- Access Studio owns access and access delegation. Assignment never grants it.
+- Existing integrations retain credentials, mapping and inbox idempotency.
+  No arbitrary Python, raw SQL, URLs or method names are accepted from a flow.
+
+Application-wide reconciliation
+Inventory includes the Approval Matrix and legacy bridges; Lifecycle and its
+onboarding/offboarding/probation/PIP/contract generators; Hiring; expenses,
+travel and final settlements; pay runs, pay-data loads and Records Desk; leave,
+attendance and timesheets; learning and goals; assets; HR letters and vault;
+announcements and birthday/anniversary senders; integration arrival rules;
+shared filters, calendars, settings/navigation and PayAI action ownership.
+Existing behaviour is shown as owned behaviour, not silently recreated.
+Generated Studio rules carry explicit ownership links. Publishing checks other
+Studio bindings and existing native automations for overlapping triggers.
+
+Definition and versions
+A company-scoped workflow has a draft, optimistic revision and immutable
+published versions. A graph contains ordered stage groups, nested branches,
+parallel groups, reusable groups, forms and service references. Stages organise
+work; they do not create or write native state values. A version freezes the
+graph and form schema. Shared module settings and mail templates retain their
+existing semantics; their live identity is referenced, not copied.
+
+Execution
+A captured event is durable and deduplicated. The worker starts one run on a
+pinned version, under the configured execution user's current permissions.
+Every run is locked while advancing. Each step has one durable identity and
+one activity/approval/mail reference. Completed steps never repeat on retry.
+Only the failing step retries. Forms validate on the server and can be saved
+partially. Waits survive restarts. Branches use typed, declared values. Parallel
+groups have explicit joins; first-finished groups cannot contain irreversible
+automatic effects. Logs explain selected paths, owners, waits and failures.
+
+Security and change controls
+Separate designer and publisher roles; company-scoped records; participants
+see their own tasks and permitted source data. Editing configuration grants no
+business-record rights. Automatic work rechecks its execution user's access.
+Source facts are read through that actor's field permissions. Native approval
+application revalidates the business record. Direct RPC cannot forge runtime
+state, complete another person's task, change an immutable version or bypass
+required form validation. Optimistic revision checks prevent lost edits.
+
+Rollout
+No example workflow is activated on installation. Existing flows and in-flight
+requests keep their current owner/version. Publish validates and snapshots;
+activation is a separate explicit action. Pause stops new starts while existing
+runs continue; a run can separately be held or cancelled. Native approval and
+already-queued mail retain their own cancellation rules. Definition Undo never
+pretends to undo an email or an applied business action.
+
+Deployment
+Commit only this work, recheck combined HEAD and custom trees, preserve concurrent
+changes and standard addons. Back up all four active databases and filestores;
+Rize backup is permanent. Install base_automation and missing standard
+dependencies; upgrade changed custom modules only where already installed.
+Validate on p0clone before the other databases. Preserve cron enablement and
+activate only the new worker needed for explicitly activated workflows.
+Verify code/version parity, migrations, permissions and existing record counts.
+Transactional tests cover branches, retries, forms, native approvals and
+automation. Chrome covers expense record progress and a complete new process.
+Remove all current-run screenshots. ABM remains retired and untouched.
+
+Record-level visual progress — added at the user's pause, 9 November 2026
+Status: implemented through the shared native record-form action, with a
+read-only flowchart and permission-checked progress facade. Bespoke module
+canvases can open the same client action; they are not all individually patched.
+- Every supported module record, including expenses, offers a consistent
+  "View workflow" button/icon when the user can inspect a linked run. This
+  opens a read-only flowchart for that record, with a return link to it.
+- Show the actual run's immutable version, not the latest design. Highlight
+  "You are here" on every active step, including concurrent parallel paths.
+  Clearly mark completed, waiting, blocked, failed, cancelled, skipped and
+  upcoming steps using text/icons as well as colour. Unchosen branches stay
+  conditional until a decision is known; do not imply predicted execution.
+- Selecting a step shows only permitted details: owner, elapsed time, due
+  date, reason for waiting/blocking and relevant activity/history. Sensitive
+  form answers, recipients and restricted approval information are not
+  automatically visible just because someone can see progress.
+- A separate progress-view capability, integrated with existing Access Studio,
+  requires current company and source-record access plus workflow visibility.
+  It never grants designer/publisher rights. Enforce the same checks in RPC,
+  direct links, record pickers, run listings and refresh requests.
+- Reuse the designer's graph renderer with runtime overlays; disable moving,
+  adding, editing, publishing and execution controls in this view. Opening a
+  chart must never start a run or change the record. Preserve readable zoom,
+  fit-to-current, keyboard navigation and reduced-motion preferences.
+- If a record has multiple permitted runs, show a clear chooser with process,
+  status, start date and current/history distinction; never pick an unrelated
+  or completed run silently. Show an honest empty state when no run exists.
+- Expand or link the Approval Matrix step to the existing approval engine's
+  permitted route progress. Read its actual steps, people and decisions; do
+  not create another approval status store. Refresh progress without losing
+  the selected step; show freshness and disconnected/loading states.
+- Legacy/native flows can appear only through explicit adapters exposing real
+  progress. Do not invent run history or silently migrate existing records.
+- Acceptance: expense -> chart at correct step; complete form/approve -> chart
+  advances; parallel active steps; returned/blocked/rejected/finished paths;
+  immutable old-version run; multiple runs; no-run state; restricted users,
+  direct URL/RPC denial and cross-company isolation; no edit rights implied.
+
+
+Implemented integration boundaries on resume
+- All accessible, installed company-scoped business models are selectable.
+  Generic forms, tasks, stages, waits, decisions, parallel work, reusable groups,
+  saved mail templates and native approvals share the same service. A new process
+  needs no new module or database model. No example runs are seeded in production.
+- Native Approval Matrix is required for approval-capable sources. Existing
+  pending requests are adopted; native approved/applied/returned/rejected states
+  are read directly. New custom processes get a catalog entry, not a second
+  route editor. Frozen submission details are available to the submitter and
+  authorized native approval participants, not every progress viewer.
+- Native Hiring transitions use the existing Hiring facade. Additional native
+  business mutations need explicit module capability adapters; a generic flow
+  cannot write arbitrary model fields or bypass native transition safeguards.
+  Existing native statuses remain separate from user-defined workflow stages.
+- Ordinary saved emails use mail.template and the native queue. Hiring-specific
+  messages continue through Hiring settings/actions, preserving their delivery
+  rules. Template edits retain native shared-template semantics across workflows.
+- Access Studio contains separate view-progress, design and publish abilities.
+  Current source/company permissions are rechecked. Start permissions and the
+  execution account are pinned per published version. Assignment grants no rights.
+- Native activities are reused, with server validation preventing the standard
+  activity-completion path from skipping a required information form.
+- Settings links reuse Approvals, Access, Hiring, Journeys, Pay, Time, Expenses,
+  Assets, Learning, Attendance and Integrations. No extra settings/template store
+  is introduced. Existing birthdays, broadcasts, payroll and lifecycle generators
+  keep their current owner. A reference block explains existing work; it does not
+  execute or monitor that external work.
+- Duplicate native triggers and same-template sends within a graph are checked.
+  Existing automation is surfaced before activation. Semantic duplication across
+  unrelated templates or bespoke module code still requires the designer's review;
+  the product does not claim to infer every existing side effect automatically.
+- Simple returned custom submissions can be corrected and resubmitted. Complex
+  paths with prior effects require a new corrected request, avoiding a replay of
+  already completed work. Editing Undo never reverses a business effect.
+
+User experience and operational checks
+Journey is the default. Flowchart and People use the same saved definition.
+Drag changes execution order, including positions in stages/branches; Move is
+available without dragging; Undo restores the previous definition. Multi-field
+forms use a dedicated screen with typed answers, save/resume, required/conditional
+questions, uploads, line items and permitted-record lookups. Validation reserves
+space so correcting an answer cannot move a clicked action. Progress uses the
+run's pinned graph, highlights active leaves and updates every fifteen seconds.
+Parallel active leaves may be highlighted together. A view never edits a run.
+
+Release tools in tools/workflow_studio prepare a committed combined release,
+refuse unknown server edits, preserve stock addons, back up all active databases,
+upgrade custom modules only where installed, preserve cron settings, and verify
+custom tree/version parity across payobook, payobook_template, p0clone and rize.
+The backend suite is transactional and rolls back its fixtures. Browser fixtures
+are allowed only in the isolated test database or p0clone, and are explicitly
+removed after verification. PNGs/screenshots generated by testing are removed.
+
+Premium configuration and native automation review — 10 November 2026
+
+Recommendation
+Keep one premium orchestration UI over the native services. Reuse a service's
+records and permissions, rather than embedding its technical forms or building
+another settings/template store. Simple steps show their essentials; optional
+filters, delivery settings and waits expand only when needed.
+
+Implemented in 19.0.1.8.0
+- Create/edit a saved email inside Studio: full-screen composer, formatting,
+  record-detail tokens, delivery fields, language, advanced HTML, and a sandboxed
+  preview using a permitted example record. Save the same mail.template; edits
+  explicitly say they affect its other uses. Preserve attachments, native default
+  recipients, schedules and other settings not edited here. Native template-editor
+  permissions, HTML sanitization, QWeb rendering and mail delivery remain in charge.
+  Preview neither queues nor sends a message. Optimistic template revision checks
+  prevent overwriting a concurrent edit.
+- Return to the exact originating workflow, step and view after save/cancel.
+  External settings links use the shared hub return protocol and carry explicit
+  origin state. The old resource entry also resolves to the premium composer.
+- One typed All/Any filter builder for start scope, optional steps, path decisions,
+  parallel paths and wait conditions. Nested groups have bounded depth/size.
+  Values include permitted record fields, existing record stages/statuses and
+  related records, earlier answers, the initiating person/access group, current
+  workflow stage and completed workflow stages. Role conditions never grant access.
+  Approval decisions remain in the existing Approval Matrix, so a conditional
+  block cannot bypass a required sign-off.
+- Native before-change and after-change domains use base_automation's own hooks.
+  Watched fields still prevent unrelated edits from starting a run. Only validated
+  field/operator/value structures become domains; there is no raw Python input.
+  Try it out accepts separate before/after examples and explains skipped paths.
+- New step filters and grouped decisions read current source values when reached.
+  Existing legacy single-rule decisions retain their original snapshot semantics.
+  A step's decision is not reconsidered once it has started. Parallel eligibility
+  is recorded once: excluded paths cannot accidentally win a first-finished join;
+  all joins consider only eligible paths. No eligible paths means continue.
+- Assign a task can use an existing native activity type and a person field on the
+  record, as well as initiator, manager, named person or responsibility. The activity
+  remains a native mail.activity; there is no duplicate task/reminder engine.
+- Wait can pause for elapsed time or until a condition matches. The existing worker
+  rechecks conditions on its scheduled cycle. The maximum wait ends in a visible
+  failure requiring attention/retry, rather than silently continuing an unready run.
+- Across is a compact serpentine journey: left to right, then down and right to
+  left. Cards keep their execution order in the DOM and support drag, Move and Undo.
+  Parallel lanes remain separate and join explicitly. Deeply nested groups open
+  in Flowchart to avoid displaying concurrent work as a misleading linear chain.
+  Existing Journey, Flowchart and People views remain available.
+
+Stage ownership
+The Stages dialog creates groups in this versioned workflow definition, not rows
+in a source module's stage table and not new values in a native state selection.
+A run enters a group when its steps begin; several paths may be active together.
+The current/completed group values can be used in filters. A step's Workflow stage
+picker moves it in the definition; nested work follows the parent group. Deleting
+an in-use stage requires first moving its steps and updating its filter references.
+A candidate's stage_id or an expense's state is a separate existing record field:
+filter it through the same picker, change it through an approved module action.
+Hiring already exposes its guarded stage action. Other modules can register their
+own _workflow_capabilities / _workflow_execute adapters. Arbitrary state writes
+would bypass accounting, payroll, approval or Hiring safeguards and are not exposed.
+
+Native capability assessment and follow-on recommendations
+The installed Community base_automation and mail code, not Enterprise Studio's
+feature list, are the implementation authority. Native create/change/date triggers,
+pre/post domains, server actions, activities, templates and queue are reused today.
+Native automation also offers event-specific triggers, record mutation/creation,
+followers, inbound/outbound messages, webhooks and code execution. Do not expose a
+second generic technical console for those capabilities:
+- Add business-specific update/create operations through module adapters, showing
+  friendly parameter forms, previewed effects and their existing permissions.
+- Connect inbound/outbound events through the existing Integrations module so
+  credentials, signatures, deduplication and retries have one owner.
+- Keep Approval Matrix escalation/cover and module-specific notification rules in
+  their current owners. Surface links and reuse them rather than generating extra
+  mail/activity rules for the same effect.
+- Deletion/UI-change triggers do not fit a durable workflow attached to a surviving
+  record. Offer only explicit supported event adapters, not a generic delete hook.
+- Arbitrary Python, arbitrary model writes and unconfigured webhook URLs remain
+  outside the business-user builder. Native availability alone is not a reason
+  to expose operations that bypass the application's business rules.
+These follow-on adapters are recommendations, not claims of implemented capability.
+
+Sources reviewed
+Odoo 19 Community source, including the actual server checkout:
+https://github.com/odoo/odoo/blob/19.0/addons/base_automation/models/base_automation.py
+https://github.com/odoo/odoo/blob/19.0/addons/mail/models/mail_template.py
+https://github.com/odoo/odoo/blob/19.0/addons/mail/models/mail_render_mixin.py
+Odoo's automation documentation for interaction patterns (its Studio UI is not a
+Community dependency):
+https://www.odoo.com/documentation/19.0/applications/studio/automated_actions.html
+
+Record stages, workflow sections and entry from any module — 10 November 2026
+
+The record's status is the source of truth. The former “workflow stages” were
+versioned groups of steps, not record statuses; naming both “stages” implied a
+connection that did not exist. The UI now calls those groups Sections. Existing
+stored definitions, section filters and running versions keep their old keys.
+There is no data migration, automatic activation or source status write.
+
+Implemented in 19.0.1.9.0
+- Record progress shows the native stage/status choices and highlights the actual
+  current value. It does not infer completion or history from their ordering.
+  Native statusbar visibility is reused when unambiguous; exceptional states such
+  as Refused appear if current. Conditional variants show all choices instead of
+  guessing the current form's branch. Shared relational stages use normal read
+  permissions; Hiring scopes them to the candidate's job when a record is known.
+- Approval progress explains which native status owns its checks by reading the
+  existing approval-chain adapter, including the adapter's state_field. For an
+  Expense claim, the manager and finance checks belong to Waiting approval.
+  An older approval attempt can be viewed alongside the record's CURRENT status;
+  the UI explicitly says if the record has since moved. This is not a historical
+  snapshot of the source record.
+- Stages opens Record stages; Sections opens step grouping. Native fields can be
+  used by the existing filter builder and a “Wait for this” shortcut configures an
+  ordinary live-value wait. Completing a section never moves a native status.
+- Hiring stage renaming uses the existing pb.hiring.act('stage_rename') service,
+  checks its own configuration permission, locks/checks write_date, and edits the
+  SAME stage. It warns that the name changes wherever that stage is used. There
+  is no second stage catalogue. Other module settings open via the existing hub
+  return protocol. A Designer alone cannot alter a module's shared configuration.
+- Fixed selection statuses (Expense Draft/Waiting approval/Approved/Paid and
+  similar Pay/Time states) are shown, not made editable. Adding/renaming their
+  underlying keys requires module implementation: transition guards, reports,
+  payment/approval effects and tests. An extra business task normally belongs in
+  a workflow section, not in a new financial status.
+- Saved business record forms expose Set up workflow to Workflow Designers, even
+  when no run exists. The setup page lists existing workflows for the same module
+  and company before offering a new draft. View progress and Design are distinct.
+  Editing from a run opens the latest draft and explains that the run stays pinned.
+- New drafts can apply to matching module records or to this one record. The latter
+  uses an ordinary typed id equality scope, which is enforced in native automation
+  domains and runtime evaluation. The record ID now remains in source facts.
+  It is not a separate override workflow engine. Creating a draft does not publish,
+  activate or start it. Other active workflows are still flagged during review.
+- The entry is generic for Studio-supported business models, including future
+  installed modules: persistent, readable models with company_id. Technical,
+  transient, inaccessible and company-unscoped models are not silently granted
+  execution support. The existing source-record company and access checks apply.
+  Bespoke module screens can use the same record_setup/record_runs API and client
+  action context as native record forms; they do not need their own builder.
+
+Recommendation and tradeoffs
+Keep record stage configuration with its owner. A unified premium editor should
+expose a capability only when a module supplies its business operation: catalogue,
+rename/create, applicable scope, permitted transitions and previewed side effects.
+Hiring's existing service currently supports renaming/reordering a controlled
+catalogue; arbitrary new candidate stages are NOT implemented by this release.
+New configurable stage creation for other modules must reuse that module's own
+create-stage service, with its normal permissions and scope. Do not implement a
+generic sudo create/write or add values to a Selection field at runtime.
+
+Pros: one set of stages, real progress, stable reporting and safeguards; no duplicate
+approval routes, templates, tasks or triggers. Cost: modules with different stage
+semantics need a small adapter for mutation. This is preferable to a universal
+stage editor that appears easy but can mark unpaid claims Paid or skip sign-off.
+For new standalone processes with no source model, sections already give complete
+control of the journey. For a new module, registering its native transitions is
+separate from being able to design tasks/forms/filters around its records.
+
+Validation: transactional tests cover record-only trigger isolation, designer and
+company boundaries, native expense statusbar context, and shared Hiring rename
+permissions/concurrency. Deployed Chrome verification covers record setup, real
+approval progress, both stage/section panels and responsive layouts.

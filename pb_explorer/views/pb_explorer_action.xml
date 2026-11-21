@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Explorer cockpit: an OWL client action, same pattern as the
+         Insights board (pb_insights/views/pb_insights_action.xml). -->
+    <record id="action_pb_explorer" model="ir.actions.client">
+        <field name="name">Analytics Explorer</field>
+        <field name="tag">pb_explorer_cockpit</field>
+    </record>
+
+    <!-- Background top-up so the fact tables self-heal between visits: a read
+         only ever builds what fits its budget (pb.fact.builder._ENSURE_CAP),
+         and this finishes the tail. -->
+    <record id="cron_pb_explorer_build" model="ir.cron">
+        <field name="name">Payobook: build analytics facts</field>
+        <!-- Anchored on the concrete fact model: pb.fact.builder is abstract,
+             and an ir.cron model_id pointing at an abstract model is a trap. -->
+        <field name="model_id" ref="model_pb_fact_run"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.fact.builder'].cron_build()</field>
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+        <!-- Odoo 19 removed ir.cron.numbercall / doall: a cron simply repeats
+             on its interval until deactivated. -->
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

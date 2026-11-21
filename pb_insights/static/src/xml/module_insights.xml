@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pb_insights.PbModuleInsights">
+    <div class="pbim pbmi" t-att-class="{ 'is-hosting': !!activeSub }">
+      <!-- RAIL FIT 2026-11-02: report screens that used to be rail items of
+           their own (People's Workforce insights, Payroll's report and Budget)
+           are tabs here now. While one is open the page hands it the whole
+           height and drops its own heading. -->
+      <header t-if="!activeSub" class="pbmi-head">
+        <div>
+          <div class="pbmi-eyebrow">Insights <span t-if="!isCatalogue">· <t t-esc="title"/></span></div>
+          <h1 t-if="isCatalogue">Reports across Payobook</h1>
+          <h1 t-else="">Understand <t t-esc="title"/></h1>
+          <p t-if="isCatalogue">Find a report in its original workspace.</p>
+          <p t-else="">Explore the numbers, then open the detailed report where the work lives.</p>
+        </div>
+        <button t-if="!isCatalogue and !isPayroll" class="pbmi-refresh"
+                t-on-click="() => this.loadExplorer()" title="Refresh analysis">
+          <t t-out="icon('refresh', 15)"/> Refresh
+        </button>
+      </header>
+
+      <nav t-if="!isCatalogue" class="pbmi-tabs" aria-label="Insights sections">
+        <button t-foreach="['overview', 'explorer', 'reports']" t-as="tab" t-key="tab"
+                t-att-class="{ 'is-on': state.tab === tab }"
+                t-att-aria-current="state.tab === tab ? 'page' : false"
+                t-on-click="() => this.selectTab(tab)"
+                t-esc="tab.charAt(0).toUpperCase() + tab.slice(1)"/>
+        <button t-foreach="subTabs" t-as="sub" t-key="sub.key"
+                t-att-class="{ 'is-on': state.tab === sub.key }"
+                t-att-aria-current="state.tab === sub.key ? 'page' : false"
+                t-on-click="() => this.selectTab(sub.key)"
+                t-esc="sub.label"/>
+      </nav>
+
+      <div t-if="activeSub" class="pbmi-host">
+        <t t-component="activeSub.Component" t-key="'sub-' + activeSub.key"
+           t-props="activeSub.props"/>
+      </div>
+      <div t-if="state.error and !activeSub" class="pbmi-error" role="alert" t-esc="state.error"/>
+      <p t-if="state.busy and !activeSub" class="pbmi-loading">Reading the latest figures…</p>
+
+      <section t-if="!isCatalogue and state.tab === 'overview'" class="pbmi-section">
+        <PbInsights t-if="isPayroll" embedded="true"/>
+        <t t-else="">
+          <p class="pbmi-intro">A quick view of the work in this module. Select a card to explore its measure.</p>
+          <div class="pbmi-tiles">
+            <button t-foreach="state.overview" t-as="tile" t-key="tile.key"
+                    class="pbmi-tile" t-on-click="() => { this.state.measure = tile.key; this.state.dimension = this.dimensions[0] || 'company'; this.state.result = null; this.selectTab('explorer'); }">
+              <span class="pbmi-tile__label" t-esc="tile.label"/>
+              <strong t-esc="number(tile.value, tile.kind, tile.currency)"/>
+              <small t-esc="tile.note"/>
+              <span class="pbmi-tile__open">Explore <t t-out="icon('arrowRight', 13)"/></span>
+            </button>
+          </div>
+        </t>
+      </section>
+
+      <section t-if="!isCatalogue and state.tab === 'explorer'" class="pbmi-section">
+        <t t-if="isPayroll">
+          <t t-if="props.explorerComponent" t-component="props.explorerComponent" embedded="true"/>
+          <p t-else="">Payroll Explorer is available in the central Insights workspace.</p>
+        </t>
+        <t t-else="">
+          <div class="pbmi-question">Ask of <t t-esc="title"/>: choose a measure, break it down, and see the period behind it.</div>
+          <div class="pbmi-controls">
+            <label>Measure
+              <select aria-label="Measure" t-on-change="(ev) => this.changeMeasure(ev)" t-att-value="state.measure">
+                <option t-foreach="state.measures" t-as="m" t-key="m.key" t-att-value="m.key" t-esc="m.label"/>
+              </select>
+            </label>
+            <label>By
+              <select aria-label="Break down by" t-on-change="(ev) => this.changeDimension(ev)" t-att-value="state.dimension">
+                <option t-foreach="dimensions" t-as="dim" t-key="dim" t-att-value="dim" t-esc="dim.charAt(0).toUpperCase() + dim.slice(1)"/>
+              </select>
+            </label>
+            <label t-if="selectedMeasure and selectedMeasure.has_time">Over
+              <select aria-label="Spread over time" t-on-change="(ev) => this.changeOver(ev)" t-att-value="state.over">
+                <option value="month">Month</option><option value="total">Whole period</option>
+              </select>
+            </label>
+            <label t-if="selectedMeasure and selectedMeasure.has_time">When
+              <select aria-label="Period" t-on-change="(ev) => this.changeMonths(ev)" t-att-value="state.months">
+                <option value="3">Last 3 months</option><option value="6">Last 6 months</option>
+                <option value="12">Last 12 months</option>
+              </select>
+            </label>
+          </div>
+          <div t-if="state.result" class="pbmi-result">
+            <div class="pbmi-result__head">
+              <div><span t-esc="state.result.label"/><strong t-esc="number(state.result.total, state.result.kind, state.result.currency)"/></div>
+              <div class="pbmi-view">
+                <button t-att-class="{ 'is-on': state.chart === 'bars' }" t-on-click="() => this.state.chart = 'bars'" aria-label="Chart">Chart</button>
+                <button t-att-class="{ 'is-on': state.chart === 'table' }" t-on-click="() => this.state.chart = 'table'" aria-label="Table">Table</button>
+              </div>
+            </div>
+            <p class="pbmi-note" t-esc="state.result.note"/>
+            <p t-if="!state.result.rows.length" class="pbmi-empty">No records matched this period and measure.</p>
+            <div t-elif="state.chart === 'bars'" class="pbmi-bars">
+              <div t-foreach="chartRows" t-as="row" t-key="row.key + ':' + row.period" class="pbmi-bar">
+                <span class="pbmi-bar__label"><t t-esc="row.label"/><small t-if="row.period" t-esc="row.period"/></span>
+                <div class="pbmi-bar__track"><div class="pbmi-bar__fill" t-att-style="'width: ' + width(row.value)"/></div>
+                <b t-esc="number(row.value, state.result.kind, state.result.currency)"/>
+              </div>
+            </div>
+            <table t-else="" class="pbmi-table">
+              <thead><tr><th>Breakdown</th><th t-if="state.result.over === 'month'">Month</th><th>Value</th><th>Records</th></tr></thead>
+              <tbody><tr t-foreach="state.result.rows" t-as="row" t-key="row.key + ':' + row.period">
+                <td t-esc="row.label"/><td t-if="state.result.over === 'month'" t-esc="row.period"/>
+                <td t-esc="number(row.value, state.result.kind, state.result.currency)"/><td t-esc="row.records"/>
+              </tr></tbody>
+            </table>
+            <p t-if="hiddenRows and state.chart === 'bars'" class="pbmi-note">Showing the top 24 chart rows; <t t-esc="hiddenRows"/> more are in Table.</p>
+          </div>
+        </t>
+      </section>
+
+      <section t-if="isCatalogue or state.tab === 'reports'" class="pbmi-section pbmi-reports">
+        <div class="pbmi-reporthead">
+          <div><h2>Existing reports</h2><p>Each opens its original screen and keeps its existing export options.</p></div>
+          <input type="search" aria-label="Find a report" placeholder="Find a report…"
+                 t-att-value="state.search" t-on-input="(ev) => this.state.search = ev.target.value"/>
+        </div>
+        <div class="pbmi-reportgrid">
+          <button t-foreach="visibleReports" t-as="report" t-key="report.area + ':' + report.xmlid"
+                  class="pbmi-report" t-on-click="() => this.openReport(report)">
+            <span class="pbmi-report__icon"><t t-out="icon('fileText', 18)"/></span>
+            <span><b t-esc="report.label"/><small t-if="isCatalogue" t-esc="report.area.charAt(0).toUpperCase() + report.area.slice(1)"/></span>
+            <t t-out="icon('arrowRight', 15)"/>
+          </button>
+        </div>
+        <p t-if="!visibleReports.length and !state.busy" class="pbmi-empty">No matching reports are available to you.</p>
+      </section>
+    </div>
+  </t>
+</templates>

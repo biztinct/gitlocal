@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       FS-3: the contract side panel, extended from outside.
+       W22: no double hyphen inside an XML comment. W23: a static class is
+       only ever paired with a t-att-class object. W96: every expression is
+       a component method. Each sentence stays on one line (PO extraction).
+       ================================================================== -->
+
+  <!-- The editor: Yes / No, long text and file, after the stock toggle. -->
+  <t t-name="pb_form_studio_contracts.CdEditor" t-inherit="pb_contracts.CdEditor" t-inherit-mode="extension">
+    <xpath expr="//t[@t-if=&quot;kind === 'toggle'&quot;]" position="after">
+      <t t-elif="kind === 'bool'">
+        <div class="pbc-bool">
+          <button type="button" class="pbc-bool-b" t-att-class="boolClass(true)" t-on-click="() => this.onBool(true)" t-esc="yesLabel"/>
+          <button type="button" class="pbc-bool-b" t-att-class="boolClass(false)" t-on-click="() => this.onBool(false)" t-esc="noLabel"/>
+        </div>
+      </t>
+      <t t-elif="kind === 'longtext'">
+        <textarea t-ref="input" class="pbc-in pbfs3-ta" rows="4" t-att-value="state.draft"
+                  t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+      <t t-elif="kind === 'file'">
+        <label class="pbfs3-file">
+          <t t-out="fsIc('paperclip',14)"/>
+          <span class="t"><span class="a" t-esc="chooseFileLabel"/><span class="h" t-esc="fileHint"/></span>
+          <input t-ref="input" type="file" t-on-change="onFile" t-on-keydown="onKey"/>
+        </label>
+      </t>
+    </xpath>
+  </t>
+
+  <t t-name="pb_form_studio_contracts.Contract360Drawer" t-inherit="pb_contracts.Contract360Drawer" t-inherit-mode="extension">
+    <!-- The wand, beside the close button of the loaded panel. -->
+    <xpath expr="//div[hasclass('pbc-head-side')][div[hasclass('pbc-wage')]]/button[hasclass('pbc-x')]" position="before">
+      <FormStudioWand studio="fs3Studio" compact="true"/>
+    </xpath>
+
+    <!-- The "Company details" group gets its own look. -->
+    <xpath expr="//t[@t-foreach='terms']/div[hasclass('pbc-sec')]" position="attributes">
+      <attribute name="t-att-class">fs3GroupClass(grp)</attribute>
+    </xpath>
+
+    <!-- A file field: a quiet download link under its value. -->
+    <xpath expr="//t[@t-foreach='grp.fields']//span[hasclass('v')]" position="after">
+      <a t-if="fs3FileUrl(f)" class="pbfs3-dl" t-att-href="fs3FileUrl(f)" target="_blank"
+         t-on-click.stop="" t-on-keydown.stop=""><t t-out="fs3Ic('download',12)"/> <span t-esc="fs3DownloadLabel"/></a>
+    </xpath>
+
+    <!-- The administrator's way in while no field of theirs exists yet. -->
+    <xpath expr="//div[hasclass('pbc-stats')][@t-if='readiness.length']" position="before">
+      <button t-if="fs3ShowPrompt" type="button" class="pbfs3-prompt" t-on-click="fs3Open">
+        <span class="ic"><t t-out="fs3Ic('sparkles',16)"/></span>
+        <span class="tx">
+          <span class="h">Add your own fields</span>
+          <span class="s">Uniform size, union number, a signed copy: anything your company keeps on a contract.</span>
+        </span>
+        <span class="go"><t t-out="fs3Ic('wand',14)"/> <span>Form builder</span></span>
+      </button>
+    </xpath>
+
+    <!-- The Studio, over the panel (z-index 1050 above the panel's 1041). -->
+    <xpath expr="//aside[hasclass('pbc-drawer')]" position="after">
+      <FormStudioOverlay t-if="fs3Studio.state.open" t-props="fs3Studio.overlayProps"/>
+    </xpath>
+  </t>
+
+</templates>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The register's day-to-day home is the Assets board on the People hub.
+         These native screens are the fallback door an administrator needs when
+         something has to be corrected in one field, and the form a many-to-one
+         opens into. Deliberately plain. -->
+
+    <record id="view_pb_asset_form" model="ir.ui.view">
+        <field name="name">pb.asset.form</field>
+        <field name="model">pb.asset</field>
+        <field name="arch" type="xml">
+            <form string="Asset">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="What it is"/>
+                        <h1><field name="name" placeholder="e.g. MacBook Air 13"/></h1>
+                        <div class="text-muted"><field name="code" readonly="1"/></div>
+                    </div>
+                    <group>
+                        <group string="What and where">
+                            <field name="category_id"/>
+                            <field name="kind" readonly="1"/>
+                            <field name="country_id" readonly="code != False"/>
+                            <field name="state"/>
+                            <field name="current_employee_id" readonly="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="The item itself">
+                            <field name="serial"/>
+                            <field name="model_name"/>
+                            <field name="is_reused"/>
+                            <field name="purchase_date"/>
+                            <field name="delivery_date"/>
+                            <field name="warranty_end"/>
+                            <field name="warranty_state" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Money">
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="cost"/>
+                            <field name="cost_usd" readonly="1"/>
+                            <field name="invoice_ref"/>
+                            <field name="supplier_note"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="movable_note"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Who has had it" name="history">
+                            <field name="assignment_ids" readonly="1">
+                                <list>
+                                    <field name="employee_id"/>
+                                    <field name="assigned_date"/>
+                                    <field name="returned_date"/>
+                                    <field name="condition_out"/>
+                                    <field name="condition_in"/>
+                                    <field name="receipt_confirmed"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_asset_list" model="ir.ui.view">
+        <field name="name">pb.asset.list</field>
+        <field name="model">pb.asset</field>
+        <field name="arch" type="xml">
+            <list string="Assets">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="kind"/>
+                <field name="state" widget="badge"/>
+                <field name="current_employee_id"/>
+                <field name="country_id"/>
+                <field name="serial" optional="show"/>
+                <field name="cost" optional="hide"/>
+                <field name="warranty_end" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_asset_search" model="ir.ui.view">
+        <field name="name">pb.asset.search</field>
+        <field name="model">pb.asset</field>
+        <field name="arch" type="xml">
+            <search string="Assets">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="serial"/>
+                <field name="current_employee_id"/>
+                <filter name="f_spare" string="Spare"
+                        domain="[('state', '=', 'spare')]"/>
+                <filter name="f_assigned" string="With somebody"
+                        domain="[('state', '=', 'assigned')]"/>
+                <filter name="f_repair" string="Under repair"
+                        domain="[('state', '=', 'repair')]"/>
+                <separator/>
+                <filter name="f_tangible" string="Physical"
+                        domain="[('kind', '=', 'tangible')]"/>
+                <filter name="f_digital" string="Digital"
+                        domain="[('kind', '=', 'digital')]"/>
+                <group>
+                    <filter name="g_category" string="Category"
+                            context="{'group_by': 'category_id'}"/>
+                    <filter name="g_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="g_country" string="Country"
+                            context="{'group_by': 'country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_asset" model="ir.actions.act_window">
+        <field name="name">Asset register</field>
+        <field name="res_model">pb.asset</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_asset_search"/>
+    </record>
+
+    <!-- ==================== categories (configuration) ==================== -->
+
+    <record id="view_pb_asset_category_form" model="ir.ui.view">
+        <field name="name">pb.asset.category.form</field>
+        <field name="model">pb.asset.category</field>
+        <field name="arch" type="xml">
+            <form string="Asset Category">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Category"/>
+                        <h1><field name="name" placeholder="e.g. Laptop"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" placeholder="LT"/>
+                            <field name="kind"/>
+                            <field name="icon"/>
+                        </group>
+                        <group>
+                            <field name="auto_assign_at_joining"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_asset_category_list" model="ir.ui.view">
+        <field name="name">pb.asset.category.list</field>
+        <field name="model">pb.asset.category</field>
+        <field name="arch" type="xml">
+            <list string="Asset Categories" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="kind"/>
+                <field name="icon"/>
+                <field name="auto_assign_at_joining"/>
+                <field name="asset_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_asset_category" model="ir.actions.act_window">
+        <field name="name">Asset categories</field>
+        <field name="res_model">pb.asset.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add the kinds of thing you hand out</p>
+            <p>A category decides the two letters in an asset code, whether the
+               item is physical or digital, and whether every new joiner should
+               get one.</p>
+        </field>
+    </record>
+
+</odoo>

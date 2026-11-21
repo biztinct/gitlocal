@@ -1,0 +1,588 @@
+<title>Payobook Updates Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+/* Layout: one product-style shell. Top switch = Prototype / What others do / Overlaps and plan.
+   Prototype is a 4-step flow whose centre of gravity is the before-and-after review grid. */
+:root{
+  --bg:#F4F5FB; --surface:#FFFFFF; --sunk:#F8F8FC; --ink:#1E1B2E; --muted:#64748B; --line:#E2E8F0;
+  --pri:#5A4BB0; --pri-h:#4A3D96; --pri-soft:#EDEAF8; --on-pri:#FFFFFF;
+  --ok:#2E7D4F; --ok-soft:#E6F4EC; --info:#2563EB; --info-soft:#E3ECFF;
+  --warn:#B45309; --warn-soft:#FEF3C7; --err:#C81E5B; --err-soft:#FCE7EF;
+  --shadow:0 1px 2px rgba(30,27,46,.06),0 8px 24px rgba(30,27,46,.06);
+  --display:"Plus Jakarta Sans","Inter",system-ui,sans-serif; --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#14121F; --surface:#1D1A2C; --sunk:#191727; --ink:#ECEAF6; --muted:#9A9BB5; --line:#322E48;
+  --pri:#8F81E0; --pri-h:#A396EA; --pri-soft:#2A2548; --on-pri:#14121F;
+  --ok:#5CC08A; --ok-soft:#173326; --info:#7FA6FF; --info-soft:#1B2647;
+  --warn:#F0B45A; --warn-soft:#3A2C10; --err:#F27AA6; --err-soft:#3D1626;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#14121F; --surface:#1D1A2C; --sunk:#191727; --ink:#ECEAF6; --muted:#9A9BB5; --line:#322E48;
+  --pri:#8F81E0; --pri-h:#A396EA; --pri-soft:#2A2548; --on-pri:#14121F;
+  --ok:#5CC08A; --ok-soft:#173326; --info:#7FA6FF; --info-soft:#1B2647;
+  --warn:#F0B45A; --warn-soft:#3A2C10; --err:#F27AA6; --err-soft:#3D1626;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3); color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:26px;font-weight:800} h2{font-size:19px;font-weight:700} h3{font-size:15px;font-weight:700}
+p{margin:0} .muted{color:var(--muted)} .small{font-size:12.5px} .num{font-variant-numeric:tabular-nums}
+.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px;border-radius:6px}
+
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.crumb{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px}
+.crumb b{color:var(--ink);font-weight:600}
+.badge-poc{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pri);background:var(--pri-soft);padding:3px 8px;border-radius:999px}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.seg button{border:0;background:transparent;padding:7px 14px;border-radius:9px;font-weight:600;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--pri);color:var(--on-pri)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.pad{padding:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:9px 16px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--pri)}
+.btn:hover{border-color:var(--pri)}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:var(--on-pri)} .btn.pri:hover{background:var(--pri-h)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--sunk);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.chip .ic{width:13px;height:13px}
+.chip.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.chip.info{background:var(--info-soft);color:var(--info);border-color:transparent}
+.chip.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.chip.err{background:var(--err-soft);color:var(--err);border-color:transparent}
+.chip.pri{background:var(--pri-soft);color:var(--pri);border-color:transparent}
+
+/* hero */
+.hero{background:var(--pri-soft);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.hero p{max-width:62ch;color:var(--muted);margin-top:6px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.tile{text-align:left;padding:18px;display:flex;flex-direction:column;gap:8px;transition:transform .15s,border-color .15s}
+.tile:hover{transform:translateY(-2px);border-color:var(--pri)}
+.tile .ib{width:38px;height:38px;border-radius:11px;display:grid;place-items:center}
+.ib.a{background:var(--pri-soft);color:var(--pri)} .ib.b{background:var(--ok-soft);color:var(--ok)} .ib.c{background:var(--info-soft);color:var(--info)} .ib.d{background:var(--warn-soft);color:var(--warn)}
+.tile .rec{align-self:flex-start}
+
+/* stepper */
+.steps{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.step{display:flex;align-items:center;gap:8px;color:var(--muted);font-weight:600;font-size:13px}
+.step .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);font-size:12px;background:var(--surface)}
+.step.on{color:var(--ink)} .step.on .dot{border-color:var(--pri);color:var(--pri)}
+.step.done .dot{background:var(--ok);border-color:var(--ok);color:var(--surface)} .step.done .dot .ic{width:14px;height:14px;stroke-width:3}
+.step + .step::before{content:"";width:28px;height:2px;background:var(--line);margin-right:2px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+
+/* topic picker */
+.topics{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.topic{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-align:left}
+.topic[aria-pressed="true"]{border-color:var(--pri);background:var(--pri-soft)}
+.topic .box{width:18px;height:18px;border-radius:5px;border:2px solid var(--line);flex:none;margin-top:2px;display:grid;place-items:center;color:var(--on-pri)}
+.topic[aria-pressed="true"] .box{background:var(--pri);border-color:var(--pri)} .topic .box .ic{width:12px;height:12px;stroke-width:3.5}
+.topic[disabled]{opacity:.6;cursor:default}
+.drop{border:2px dashed var(--line);border-radius:14px;padding:26px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;background:var(--sunk)}
+
+/* tables */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:700;background:var(--sunk);padding:9px 12px;white-space:nowrap;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px;max-width:100%}
+input[type=text]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;width:100%}
+.sample{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.kind{font-size:11.5px;font-weight:600;display:inline-flex;gap:5px;align-items:center;white-space:nowrap}
+.kind .ic{width:14px;height:14px}
+.k-person{color:var(--info)} .k-ongoing{color:var(--ok)} .k-oneoff{color:var(--warn)} .k-key{color:var(--muted)}
+
+/* review grid */
+.sum{font-family:var(--display);font-size:20px;font-weight:700;text-wrap:balance}
+.sum b{color:var(--pri)} .sum .att{color:var(--err)} .sum .fine{color:var(--ok)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-weight:600;font-size:12.5px;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--pri-soft);color:var(--pri);border-color:transparent}
+.rv td{white-space:nowrap;min-width:108px}
+.rv td.who{min-width:170px;position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--line)}
+.rv th.who{position:sticky;left:0;z-index:2;border-right:1px solid var(--line)}
+.who b{display:block;font-weight:600} .who span{font-size:12px;color:var(--muted)}
+.c-same{color:var(--muted)} .c-blank{color:var(--line)}
+.c-na{background:var(--sunk);color:var(--muted);font-size:12px;font-style:italic}
+.c-change{background:var(--pri-soft)} .c-add{background:var(--ok-soft)} .c-clear{background:var(--warn-soft)}
+.c-error{background:var(--err-soft);cursor:pointer} .c-warn{background:var(--warn-soft);cursor:pointer}
+.c-error:hover,.c-warn:hover{box-shadow:inset 0 0 0 2px currentColor}
+.c-error{color:var(--err)} .c-warn{color:var(--warn)}
+.was{display:block;font-size:11.5px;color:var(--muted);text-decoration:line-through}
+.now{font-weight:600;color:var(--ink)} .c-add .now{color:var(--ok)}
+.cellrow{display:flex;gap:6px;align-items:center} .cellrow .ic{width:14px;height:14px}
+tr.skip td{opacity:.4;text-decoration:line-through}
+.fix td{background:var(--sunk);white-space:normal;padding:14px}
+.fixbox{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;animation:in .18s ease-out}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
+@keyframes in{from{opacity:.4;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* apply */
+.dest{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:12px}
+.dest .ib{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none}
+.dest h3{font-size:14px} .dest .n{margin-left:auto;font-family:var(--display);font-weight:800;font-size:20px}
+.prog{height:8px;background:var(--pri-soft);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--pri);width:0;transition:width .25s}
+.hist{display:flex;flex-direction:column}
+.hrow{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:14px 20px;border-top:1px solid var(--line)}
+.hrow .t{flex:1 1 260px;min-width:0} .hrow .t b{font-weight:600}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--info-soft);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:13px}
+.note .ic{color:var(--info);margin-top:1px}
+.prose{max-width:74ch} .prose p + p{margin-top:10px}
+.ins td{white-space:normal;vertical-align:top;min-width:150px} .ins td:first-child{font-weight:600}
+.verdict{font-weight:700;white-space:nowrap}
+.v-keep{color:var(--ok)} .v-merge{color:var(--pri)} .v-move{color:var(--warn)}
+ol.plan{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="crumb"><span>Payobook</span><span>›</span><span>People</span><span>›</span><b>Updates</b><span class="badge-poc">Concept prototype · sample data</span></div>
+    <div class="seg" role="tablist" id="pageTabs">
+      <button role="tab" data-page="proto" aria-selected="true">Prototype</button>
+      <button role="tab" data-page="others" aria-selected="false">What others do</button>
+      <button role="tab" data-page="plan" aria-selected="false">Overlaps and plan</button>
+    </div>
+  </div>
+  <div id="app" class="stack"></div>
+</div>
+
+<script>
+/* ---------- icons (Lucide paths) ---------- */
+const P={
+ upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+ download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>', x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+ alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+ right:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>', left:'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+ undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+ clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+ user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ money:'<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+ gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
+ shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+ sheet:'<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>',
+ paste:'<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+ cal:'<path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+ history:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+ minus:'<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+ link:'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+ info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>'
+};
+const ic=n=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
+const fmt=v=>typeof v==='number'?v.toLocaleString('en-US'):v;
+const dfmt=d=>d?new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- the field catalogue: every column the sheet can carry ---------- */
+const F=[
+ {k:'job',label:'Job title',kind:'person'},
+ {k:'manager',label:'Manager',kind:'person'},
+ {k:'basic',label:'Basic salary',kind:'ongoing'},
+ {k:'transport',label:'Transport allowance',kind:'ongoing'},
+ {k:'phone',label:'Phone allowance',kind:'ongoing'},
+ {k:'eff',label:'Starts from',kind:'date'},
+ {k:'bonus',label:'Performance bonus',kind:'oneoff'},
+ {k:'bank',label:'Bank account',kind:'person',sensitive:true},
+];
+const KIND={
+ key:{t:'Finds the person',i:'link',c:'k-key'},
+ person:{t:'About the person',i:'user',c:'k-person'},
+ ongoing:{t:'Ongoing pay',i:'money',c:'k-ongoing'},
+ oneoff:{t:'One-off, one pay month',i:'gift',c:'k-oneoff'},
+ date:{t:'Start date for pay changes',i:'cal',c:'k-key'},
+ none:{t:'',i:'x',c:'k-key'}
+};
+/* the client's own file: Indonesian headers, matched to our fields */
+const COLS=[
+ {h:'NIK',s:'ID-0102',f:'id',how:'mem'},
+ {h:'Nama Karyawan',s:'Ayu Pratiwi',f:'name',how:'mem'},
+ {h:'Jabatan',s:'Senior Sales Executive',f:'job',how:'mem'},
+ {h:'Atasan',s:'Budi Santoso',f:'manager',how:'mem'},
+ {h:'Gaji Pokok',s:'9,800,000',f:'basic',how:'mem'},
+ {h:'Tunj. Transport',s:'750,000',f:'transport',how:'mem'},
+ {h:'Tunj. Pulsa',s:'200,000',f:'phone',how:'guess'},
+ {h:'Berlaku Mulai',s:'01/12/2026',f:'eff',how:'mem'},
+ {h:'Bonus Kinerja',s:'1,500,000',f:'bonus',how:'new'},
+ {h:'No. Rekening',s:'BNI 0098 3318',f:'bank',how:'mem'},
+ {h:'Catatan',s:'naik per review',f:'',how:'none'},
+];
+const D1='2026-12-01';
+const R=(id,name,cur,file,issues={},extra={})=>({id,name,cur:{bonus:'',...cur},file:{job:'',manager:'',basic:'',transport:'',phone:'',eff:'',bonus:'',bank:'',...file},issues,...extra});
+let ROWS=[
+ R('ID-0102','Ayu Pratiwi',{job:'Payroll Officer',manager:'Budi Santoso',basic:9200000,transport:750000,phone:200000,bank:'BCA ••••4471'},
+   {job:'Payroll Officer',manager:'Budi Santoso',basic:9800000,transport:750000,phone:200000,eff:D1,bonus:1500000}),
+ R('ID-0118','Rizky Hidayat',{job:'Sales Executive',manager:'Budi Santoso',basic:8500000,transport:750000,phone:200000,bank:'BCA ••••1206'},
+   {job:'Senior Sales Executive',basic:95000000,eff:D1,bonus:2000000},
+   {basic:{level:'warn',msg:'This is 11 times the current salary (8,500,000). It looks like one zero too many.',opts:[['Change to 9,500,000',r=>r.file.basic=9500000],['95,000,000 is right',r=>{}]]}}),
+ R('ID-0125','Siti Rahma',{job:'HR Generalist',manager:'Hendra Wijaya',basic:8900000,transport:750000,phone:150000,bank:'Mandiri ••••7754'},
+   {job:'HR Generalist',manager:'Budi S.',basic:8900000},
+   {manager:{level:'error',msg:'Nobody is called "Budi S." The closest match is Budi Santoso (Sales Manager).',opts:[['Use Budi Santoso',r=>r.file.manager='Budi Santoso'],['Leave the manager as it is',r=>r.file.manager='']]}}),
+ R('ID-0131','Agus Setiawan',{job:'Driver',manager:'Hendra Wijaya',basic:5600000,transport:500000,phone:'',bank:'BRI ••••3390',scheme:'Daily-rate scheme',no:['phone']},
+   {basic:5600000,transport:750000,phone:150000},
+   {eff:{level:'error',msg:'The transport allowance changes, but the file gives no start date. Payobook will not guess one.',opts:[['Start 1 Dec 2026 (next pay month)',r=>r.file.eff=D1],['Start today, 11 Nov 2026',r=>r.file.eff='2026-11-11']]}}),
+ R('ID-0417','Dewi Lestari',{job:'Accountant',manager:'Maya Sari',basic:7400000,transport:750000,phone:150000,bank:'BCA ••••5562'},
+   {basic:7900000,eff:D1},
+   {who:{level:'error',msg:'There is no employee with ID-0417. Dewi Lestari is on file as ID-0147. The two digits look swapped.',opts:[['Yes, this is Dewi Lestari (ID-0147)',r=>r.id='ID-0147'],['Skip this row',r=>r.skip=true]]}}),
+ R('ID-0153','Fajar Nugroho',{job:'IT Support',manager:'Maya Sari',basic:7100000,transport:750000,phone:150000,bank:'Mandiri ••••9020'},
+   {phone:200000,eff:D1,bank:'BNI ••••3318'}),
+ R('ID-0160','Putri Handayani',{job:'Receptionist',manager:'Hendra Wijaya',basic:5900000,transport:500000,phone:100000,bank:'BCA ••••8814'},
+   {job:'Receptionist',manager:'Hendra Wijaya',basic:5900000,transport:500000,phone:100000}),
+ R('ID-0166','Yoga Pradana',{job:'Sales Executive',manager:'Budi Santoso',basic:8200000,transport:750000,phone:200000,bank:'BNI ••••4127'},
+   {bonus:1000000},
+   {bonus:{level:'warn',msg:'Yoga Pradana left on 31 Oct 2026. A bonus would go into a final November payslip.',opts:[['Pay it anyway',r=>{}],['Skip this bonus',r=>r.file.bonus='']]}},{left:true}),
+ R('ID-0172','Maya Sari',{job:'Finance Manager',manager:'Hendra Wijaya',basic:12000000,transport:1000000,phone:300000,bank:'BCA ••••2093'},
+   {job:'Finance Manager',basic:12600000,eff:D1,bonus:3000000}),
+ R('ID-0179','Dimas Saputra',{job:'Warehouse Staff',manager:'Hendra Wijaya',basic:6300000,transport:500000,phone:100000,bank:'BRI ••••6641'},
+   {job:'Warehouse Lead',manager:'Ayu Pratiwi',basic:7000000,eff:'2027-01-01'}),
+ R('ID-0184','Nadia Kusuma',{job:'Marketing Officer',manager:'Budi Santoso',basic:8000000,transport:750000,phone:200000,bank:'Mandiri ••••1178'},
+   {transport:'CLEAR',eff:D1}),
+ R('ID-0190','Bayu Firmansyah',{job:'Sales Executive',manager:'Budi Santoso',basic:8300000,transport:750000,phone:200000,bank:'BCA ••••7430'},
+   {bonus:1250000}),
+];
+const FRESH=JSON.stringify(ROWS.map(r=>({id:r.id,file:r.file})));
+
+/* ---------- state ---------- */
+const S={page:'proto',view:'home',filter:'all',fix:null,topics:{details:true,job:true,salary:true,allow:true,bonus:true,bank:true},
+  partial:false,name:'November pay changes, Jakarta office',prog:0,
+  hist:[
+   {n:'Transport allowance uplift 2027',st:'Scheduled',c:'info',d:'Starts 1 Jan 2027 · 112 people · by Komang A.',act:'Cancel'},
+   {n:'New joiners, November',st:'Applied',c:'ok',d:'3 Nov 2026 · 7 people added · by Komang A.',act:'Undo'},
+   {n:'Bank detail corrections',st:'Draft · 2 rows to fix',c:'warn',d:'Saved 2 Nov 2026 · 14 of 16 rows applied',act:'Open'},
+   {n:'October pay changes, Jakarta office',st:'Applied',c:'ok',d:'28 Oct 2026 · 31 changes for 19 people · approved by Finance',act:null,why:'Used by the October pay run, so it can no longer be undone here.'},
+  ]};
+
+/* ---------- logic ---------- */
+function st(r,f){
+  if(r.skip) return 'skip';
+  if(r.cur.no&&r.cur.no.includes(f.k)) return 'na';
+  const is=r.issues[f.k]; if(is&&!is.done) return is.level;
+  const v=r.file[f.k];
+  if(v===''||v==null) return 'blank';
+  if(f.k==='eff') return 'date';
+  if(v==='CLEAR') return 'clear';
+  if(f.kind==='oneoff') return 'add';
+  return v===r.cur[f.k]?'same':'change';
+}
+const isChange=s=>s==='change'||s==='add'||s==='clear';
+function openIssues(r){return r.skip?[]:Object.entries(r.issues).filter(([k,i])=>!i.done)}
+function tally(){
+  let changes=0,people=0,att=0,byKind={person:0,ongoing:0,oneoff:0},bank=0,bonusSum=0,future=0,same=0;
+  ROWS.forEach(r=>{
+    const held=S.partial&&openIssues(r).length; att+=openIssues(r).length;
+    if(r.skip||held) return;
+    let n=0; F.forEach(f=>{const s=st(r,f); if(isChange(s)){n++;byKind[f.kind]++; if(f.sensitive)bank++; if(f.k==='bonus')bonusSum+=r.file.bonus;}});
+    if(n){people++;changes+=n; if(r.file.eff>'2026-12-01')future++;} else same++;
+  });
+  return {changes,people,att,byKind,bank,bonusSum,future,same};
+}
+function rowHasChange(r){return F.some(f=>isChange(st(r,f)))}
+
+/* ---------- views ---------- */
+function stepper(n){
+  const names=['Start','Match columns','Review changes','Apply'];
+  return `<div class="steps">${names.map((t,i)=>`<div class="step ${i<n?'done':i===n?'on':''}"><span class="dot">${i<n?ic('check'):i+1}</span>${t}</div>`).join('')}</div>`;
+}
+function vHome(){
+  return `
+  <div class="hero">
+    <div><h1>Update many people at once</h1>
+    <p>Change job details, salaries, allowances and bonuses for the whole team from one spreadsheet. Do it any day of the month. You see every change before it happens, and you can undo it afterwards.</p></div>
+    <button class="btn pri" data-go="start">${ic('upload')} New update</button>
+  </div>
+  <div class="tiles">
+    <button class="card tile" data-go="start"><span class="ib a">${ic('download')}</span><h3>Download a ready-to-fill sheet</h3><p class="muted small">Your people and their current values are already in it. Change what you need and send it back.</p><span class="chip pri rec">Safest way</span></button>
+    <button class="card tile" data-go="start"><span class="ib b">${ic('upload')}</span><h3>Upload your own file</h3><p class="muted small">Any layout, any column names. Match the columns once and Payobook remembers them next month.</p></button>
+    <button class="card tile" data-go="start"><span class="ib c">${ic('paste')}</span><h3>Paste from a spreadsheet</h3><p class="muted small">For a quick change to a handful of people. Copy the rows, paste them here.</p></button>
+  </div>
+  <div class="card">
+    <div class="pad bar"><h2>Past updates</h2><span class="muted small">Every update is kept with who sent it, what changed and the original file.</span></div>
+    <div class="hist">${S.hist.map((h,i)=>`
+      <div class="hrow"><span class="ib ${h.c==='ok'?'b':h.c==='info'?'c':h.c==='warn'?'d':'a'}" style="width:34px;height:34px;border-radius:10px;display:grid;place-items:center">${ic(h.c==='info'?'clock':h.c==='warn'?'alert':h.c==='pri'?'undo':'check')}</span>
+        <div class="t"><b>${esc(h.n)}</b><div class="muted small">${esc(h.d)}</div>${h.why?`<div class="muted small">${esc(h.why)}</div>`:''}</div>
+        <span class="chip ${h.c}">${esc(h.st)}</span>
+        ${h.act?`<button class="btn sm" data-hist="${i}">${h.act==='Undo'||h.act==='Cancel'?ic('undo'):''}${h.act}</button>`:''}
+      </div>`).join('')}</div>
+  </div>`;
+}
+const TOPICS=[
+ ['details','Personal details','Name, phone, address, ID numbers'],['job','Job and manager','Job title, department, manager, location'],
+ ['salary','Salary','Basic salary, with a start date'],['allow','Ongoing allowances','Transport, phone, meal, housing'],
+ ['bonus','Bonuses and one-offs','Paid once, in the pay month you choose'],['bank','Bank details','Checked by a second person before use'],
+];
+function vStart(){
+  return `
+  <div class="card pad stack">
+    <div class="bar">${stepper(0)}<button class="btn ghost sm" data-go="home">${ic('x')} Close</button></div>
+    <div><h2>What do you want to update?</h2><p class="muted">Pick the topics. The sheet you download will have exactly these columns, filled with today's values.</p></div>
+    <div class="topics">${TOPICS.map(([k,t,d])=>`<button class="topic" data-topic="${k}" aria-pressed="${!!S.topics[k]}"><span class="box">${S.topics[k]?ic('check'):''}</span><span><b>${t}</b><br><span class="muted small">${d}</span></span></button>`).join('')}
+      <button class="topic" disabled><span class="box"></span><span><b>Timesheets and attendance</b><br><span class="muted small">Has its own sheet: one row per person per day. See "Overlaps and plan".</span></span></button>
+    </div>
+    <div class="grid2">
+      <div class="stack" style="gap:10px"><h3>For whom</h3>
+        <div class="row"><select id="who" aria-label="People"><option>Everyone at DEMO Nusantara (241)</option><option>Jakarta office (86)</option><option>Sales department (34)</option><option>People I pick…</option></select></div>
+        <button class="btn" id="dl">${ic('download')} Download the sheet</button>
+        <p class="muted small" id="dlmsg">One row per person. Leave a cell as it is, or leave it blank, and nothing changes for it.</p>
+      </div>
+      <div class="drop"><span class="ib a" style="width:42px;height:42px;border-radius:12px;display:grid;place-items:center">${ic('sheet')}</span>
+        <b>Drop your filled-in file here</b><span class="muted small">Excel or CSV. Your own layout works too.</span>
+        <button class="btn pri" data-go="match">Use the sample file: "Perubahan Gaji Nov 2026.xlsx"</button></div>
+    </div>
+  </div>`;
+}
+function vMatch(){
+  const o=(v,l,sel)=>`<option value="${v}"${sel===v?' selected':''}>${l}</option>`;
+  const fl=k=>F.find(f=>f.k===k).label;
+  const opts=sel=>`<option value="">Don't bring this column in</option>
+    <optgroup label="Finds the person">${o('id','Employee ID',sel)}${o('name','Employee name',sel)}</optgroup>
+    <optgroup label="Employee and contract">${['job','manager','bank','eff'].map(k=>o(k,fl(k),sel)).join('')}</optgroup>
+    <optgroup label="Pay items in both schemes">${['basic','transport','bonus'].map(k=>o(k,fl(k),sel)).join('')}</optgroup>
+    <optgroup label="Pay items in Monthly staff scheme only">${o('phone',fl('phone'),sel)}</optgroup>`;
+  const how={mem:['ok','link','Remembered from October'],guess:['warn','alert','Best guess. Please check'],new:['info','info','New column, matched by name'],none:['','x','Not brought in'],ok:['ok','check','Confirmed by you']};
+  const toCheck=COLS.filter(c=>c.how==='guess').length;
+  return `
+  <div class="card pad stack">
+    <div class="bar">${stepper(1)}<button class="btn ghost sm" data-go="home">${ic('x')} Close</button></div>
+    <div><h2>Match your columns</h2><p class="muted">Your file has 11 columns and 12 rows. Payobook recognised 9 of them from last month, so there is ${toCheck?`<b>${toCheck} to check</b>`:'nothing left to check'}.</p></div>
+    <div class="note">${ic('info')}<div><b>You did not have to choose a pay scheme.</b> Payobook read it from each person's contract: 11 people are on the Monthly staff scheme and 1 is on the Daily-rate scheme. The "Goes to" lists offer the pay items of those two schemes only. In the next step, a value for a pay item that is not in a person's scheme is greyed out and left alone.</div></div>
+    <div class="scroll"><table>
+      <tr><th>Column in your file</th><th>Example</th><th>Goes to</th><th>What kind of value</th><th>How it was matched</th></tr>
+      ${COLS.map((c,i)=>{const f=F.find(x=>x.k===c.f); const k=KIND[c.f==='id'||c.f==='name'?'key':f?f.kind:'none']; const h=how[c.how];
+        return `<tr><td><b>${esc(c.h)}</b></td><td class="sample">${esc(c.s)}</td><td><select data-col="${i}" aria-label="Goes to">${opts(c.f)}</select></td>
+        <td><span class="kind ${k.c}">${k.t?ic(k.i):''}${k.t}${f&&f.sensitive?' · second check':''}</span></td>
+        <td><span class="chip ${h[0]}">${ic(h[1])}${h[2]}</span>${c.how==='guess'?` <button class="btn sm" data-okcol="${i}">Looks right</button>`:''}</td></tr>`}).join('')}
+    </table></div>
+    <div class="grid2">
+      <div class="note">${ic('info')}<div><b>Three kinds of value, three different behaviours.</b><br>
+        <span class="kind k-person">${ic('user')}About the person</span> changes straight away.<br>
+        <span class="kind k-ongoing">${ic('money')}Ongoing pay</span> starts on a date and stays until changed. The old value is kept in the pay history.<br>
+        <span class="kind k-oneoff">${ic('gift')}One-off</span> is paid once, in one pay month, then it is gone.</div></div>
+      <div class="stack" style="gap:10px">
+        <label class="small muted" for="pm">One-offs in this file are paid in</label>
+        <select id="pm"><option>November 2026 pay run (open)</option><option>December 2026 pay run</option></select>
+        <label class="small muted" for="bl">A blank cell means</label>
+        <select id="bl"><option>Leave the current value alone (recommended)</option><option>Remove the current value</option></select>
+        <p class="muted small">To remove a value on purpose, type CLEAR in the cell.</p>
+      </div>
+    </div>
+    <div class="bar"><button class="btn" data-go="start">${ic('left')} Back</button><button class="btn pri" data-go="review">Show me the changes ${ic('right')}</button></div>
+  </div>`;
+}
+function cell(r,f,i){
+  const s=st(r,f), v=r.file[f.k], c=r.cur[f.k];
+  if(s==='skip') return `<td>${v===''?'':esc(fmt(v))}</td>`;
+  if(s==='na') return `<td class="c-na" title="${esc(f.label)} is not part of the ${esc(r.cur.scheme)}">${v===''?'Not in their scheme':`<span class="was">${esc(fmt(v))}</span>Not in their scheme, left out`}</td>`;
+  if(s==='error'||s==='warn') return `<td class="c-${s}" data-fix="${i}:${f.k}" tabindex="0" role="button"><span class="cellrow">${ic('alert')}<span><span class="now" style="color:inherit">${v===''?'Missing':esc(fmt(v))}</span></span></span></td>`;
+  if(s==='blank') return `<td class="c-blank num" title="Blank in your file, so nothing changes">${c===''||c==null||f.k==='eff'?'':'<span class="c-same">'+esc(fmt(c))+'</span>'}</td>`;
+  if(s==='same') return `<td class="c-same num">${esc(fmt(c))}</td>`;
+  if(s==='date') return `<td class="num">${dfmt(v)}${v>'2026-12-01'?` <span class="chip info">${ic('clock')}Later</span>`:''}</td>`;
+  if(s==='add') return `<td class="c-add num"><span class="now">+ ${esc(fmt(v))}</span></td>`;
+  if(s==='clear') return `<td class="c-clear num"><span class="was">${esc(fmt(c))}</span><span class="cellrow" style="color:var(--warn)">${ic('minus')}<b>Removed</b></span></td>`;
+  return `<td class="c-change num"><span class="was">${esc(fmt(c))}</span><span class="cellrow"><span class="now">${esc(fmt(v))}</span>${f.sensitive?ic('shield'):''}</span></td>`;
+}
+function vReview(){
+  const t=tally();
+  const show=r=>S.filter==='all'||(S.filter==='chg'&&!r.skip&&rowHasChange(r))||(S.filter==='att'&&openIssues(r).length)||(S.filter==='same'&&!r.skip&&!rowHasChange(r)&&!openIssues(r).length);
+  const cnt={all:ROWS.length,chg:ROWS.filter(r=>!r.skip&&rowHasChange(r)).length,att:ROWS.filter(r=>openIssues(r).length).length,same:ROWS.filter(r=>!r.skip&&!rowHasChange(r)&&!openIssues(r).length).length};
+  const body=ROWS.map((r,i)=>{ if(!show(r)) return '';
+    const whoIs=r.issues.who&&!r.issues.who.done&&!r.skip;
+    let h=`<tr class="${r.skip?'skip':''}"><td class="who ${whoIs?'c-error':''}" ${whoIs?`data-fix="${i}:who" tabindex="0" role="button"`:''}><b>${whoIs?'<span class="cellrow">'+ic('alert')+esc(r.name)+'</span>':esc(r.name)}</b><span>${esc(r.id)}${r.cur.scheme?' · '+esc(r.cur.scheme):''}${r.left?' · left 31 Oct':''}${r.skip?' · skipped':''}</span></td>${F.map(f=>cell(r,f,i)).join('')}</tr>`;
+    if(S.fix&&S.fix.i===i&&r.issues[S.fix.k]&&!r.issues[S.fix.k].done){const is=r.issues[S.fix.k];
+      h+=`<tr class="fix"><td colspan="${F.length+1}"><div class="fixbox"><div class="row" style="flex:1 1 320px;min-width:0"><span class="chip ${is.level==='error'?'err':'warn'}">${ic('alert')}${is.level==='error'?'Must fix':'Please confirm'}</span><span>${esc(is.msg)}</span></div>
+      <div class="row">${is.opts.map((o,j)=>`<button class="btn sm ${j===0?'pri':''}" data-opt="${i}:${S.fix.k}:${j}">${esc(o[0])}</button>`).join('')}</div></div></td></tr>`;}
+    return h;}).join('');
+  return `
+  <div class="card pad stack">
+    <div class="bar">${stepper(2)}<button class="btn ghost sm" data-go="home">${ic('x')} Close</button></div>
+    <p class="sum">This file will make <b>${t.changes} changes</b> for <b>${t.people} people</b>. ${t.att?`<span class="att">${t.att} ${t.att===1?'cell needs':'cells need'} your attention.</span>`:'<span class="fine">Everything checks out.</span>'}</p>
+    <div class="bar">
+      <div class="filters">${[['all','Everyone'],['chg','With changes'],['att','Needs attention'],['same','Nothing to change']].map(([k,l])=>`<button data-filter="${k}" aria-pressed="${S.filter===k}">${l} · ${cnt[k]}</button>`).join('')}</div>
+      <div class="legend"><span><i style="background:var(--pri-soft)"></i>Changes</span><span><i style="background:var(--ok-soft)"></i>Added</span><span><i style="background:var(--warn-soft)"></i>Removed or check</span><span><i style="background:var(--err-soft)"></i>Must fix</span><span><i style="background:var(--surface)"></i>Stays the same</span><span><i style="background:var(--sunk)"></i>Not in their pay scheme</span></div>
+    </div>
+    <div class="scroll"><table class="rv">
+      <tr><th class="who">Person</th>${F.map(f=>`<th>${f.label}${f.k==='bonus'?' · Nov':''}</th>`).join('')}</tr>
+      ${body||`<tr><td colspan="${F.length+1}" class="muted" style="text-align:center;padding:26px">No rows in this view.</td></tr>`}
+    </table></div>
+    <p class="muted small">Click a red or amber cell to sort it out here. You do not need to go back to Excel. Grey values are what is on file today and are not touched.</p>
+    <div class="bar"><div class="row"><button class="btn" data-go="match">${ic('left')} Back</button><button class="btn ghost sm" id="reset">Reset the sample</button></div>
+      <div class="row">${t.att?`<button class="btn" id="partial">Apply the clean rows, keep ${cnt.att} as a draft</button>`:''}<button class="btn pri" data-go="apply" ${t.att?'disabled':''}>Continue ${ic('right')}</button></div></div>
+  </div>`;
+}
+function vApply(){
+  const t=tally(); const idr=n=>'IDR '+n.toLocaleString('en-US');
+  return `
+  <div class="card pad stack">
+    <div class="bar">${stepper(3)}<button class="btn ghost sm" data-go="home">${ic('x')} Close</button></div>
+    <div><h2>Where each change goes</h2><p class="muted">One file, sorted into the right places for you. ${S.partial?'Rows that still need attention are kept as a draft.':''}</p></div>
+    <div class="stack" style="gap:10px">
+      <div class="dest"><span class="ib c">${ic('user')}</span><div><h3>About the person</h3><p class="muted small">Job titles, managers. Updated on the employee record as soon as you apply.</p></div><span class="n num">${t.byKind.person-t.bank}</span></div>
+      <div class="dest"><span class="ib b">${ic('money')}</span><div><h3>Ongoing pay</h3><p class="muted small">Salaries and allowances. Each starts on its own date; the old amount stays in the pay history. ${t.future?t.future+' start later than December and will wait until their date. ':''}Goes to Finance for approval first.</p></div><span class="n num">${t.byKind.ongoing}</span></div>
+      <div class="dest"><span class="ib d">${ic('gift')}</span><div><h3>One-offs for the November 2026 pay run</h3><p class="muted small">Bonuses totalling <b class="num">${idr(t.bonusSum)}</b>. They wait in the pay run and are paid once.</p></div><span class="n num">${t.byKind.oneoff}</span></div>
+      <div class="dest"><span class="ib a">${ic('shield')}</span><div><h3>Bank details</h3><p class="muted small">Held until a second person confirms. Nobody is paid into a new account on one person's say-so.</p></div><span class="n num">${t.bank}</span></div>
+    </div>
+    <div class="grid2">
+      <div class="stack" style="gap:8px"><label class="small muted" for="nm">Name this update</label><input type="text" id="nm" value="${esc(S.name)}"></div>
+      <div class="note">${ic('undo')}<div><b>You can undo this.</b> Until a pay run uses these values, one click puts everything back the way it was.</div></div>
+    </div>
+    ${S.prog?`<div class="stack" style="gap:8px"><div class="prog"><i style="width:${S.prog}%"></i></div><p class="muted small">${S.prog<100?'Applying… '+Math.round(S.prog/100*t.changes)+' of '+t.changes+' changes':'Done'}</p></div>`:''}
+    <div class="bar"><button class="btn" data-go="review">${ic('left')} Back</button><button class="btn pri" id="apply" ${S.prog?'disabled':''}>${ic('check')} Apply ${t.changes} changes</button></div>
+  </div>`;
+}
+function vDone(){
+  const t=tally();
+  return `
+  <div class="card pad stack" style="align-items:flex-start">
+    <span class="ib b" style="width:48px;height:48px;border-radius:14px;display:grid;place-items:center">${ic('check')}</span>
+    <h1>${t.changes} changes are in for ${t.people} people</h1>
+    <div class="stack prose" style="gap:8px">
+      <p><span class="chip ok">${ic('check')}Done now</span> ${t.byKind.person-t.bank} employee record changes.</p>
+      <p><span class="chip info">${ic('clock')}Waiting</span> ${t.byKind.ongoing} pay changes are with Finance for approval. ${t.bank} bank change is waiting for a second check.</p>
+      <p><span class="chip warn">${ic('gift')}In the pay run</span> ${t.byKind.oneoff} bonuses are sitting in the November 2026 pay run.</p>
+      ${S.partial?`<p><span class="chip err">${ic('alert')}Draft</span> The rows that needed attention are saved. Open the draft from Past updates to finish them.</p>`:''}
+    </div>
+    <div class="note">${ic('info')}<div>The next time someone opens the November pay run, it will say: <b>"1 update since the last run changed pay for ${t.people} people"</b> with a link back to this page. The pay run no longer needs its own file for these.</div></div>
+    <div class="row"><button class="btn pri" data-go="home">Back to Updates</button><button class="btn" id="undoNow">${ic('undo')} Undo this update</button></div>
+  </div>`;
+}
+
+/* ---------- insight pages ---------- */
+function vOthers(){
+  const rows=[
+   ['A sheet that already holds today\'s values','Employment Hero, Workday','People edit instead of retyping. Nothing gets mismatched because the IDs come from us.','Start tile 1: "Download a ready-to-fill sheet".'],
+   ['Bring any file and match the columns','Remote, Factorial, Personio','Clients keep the spreadsheet they already use.','The Match columns step. The match is remembered per client, so month two is one click.'],
+   ['Colour-coded before and after','Remote (white, green, red, grey), Factorial (blue changed, yellow removed)','The user sees the effect before anything is saved.','The Review grid. Ours also shows the old value in the same cell.'],
+   ['A start date on every pay change','Remote, Justworks, Workday','A raise entered on the 11th usually starts on the 1st of next month.','A "Starts from" column. If it is missing we ask. One system we read silently uses today\'s date, which is how back-pay mistakes happen.'],
+   ['What a blank cell means','Remote treats a blank as "delete this value"','Risky. A half-filled sheet can wipe data.','We do the opposite. Blank means leave alone. Typing CLEAR removes a value, and the grid shows it in amber.'],
+   ['Fix problems on screen','Remote keeps failed rows as a draft. Workable gives a file of failed rows. Personio stops the whole import.','Sending people back to Excel for one typo is the top complaint about imports.','Click the red cell, pick the fix. Clean rows can go ahead while the rest wait as a draft.'],
+   ['Named updates with a history','Remote, Justworks "Bulk Updates Center"','Auditors and managers ask "who changed this and when".','Past updates list, with the original file kept.'],
+   ['Approval for pay changes','Workday, Rippling','A 20% raise for 50 people should not rest on one upload.','Pay changes go through the Approvals inbox you already have.'],
+   ['One template per topic','Workday, Justworks, Employment Hero','Simple to build, but the client ends up juggling five files.','One sheet. Topics are column groups, and Payobook sorts each column to the right place.'],
+   ['Undo','Not described in any help page we read','','Our stand-out feature: one click puts an update back, until a pay run has used it.'],
+  ];
+  return `
+  <div class="card pad stack"><h2>How the best systems handle bulk changes</h2>
+    <p class="muted prose">We read the public help pages of nine HR and payroll products and two specialist import tools. Ten patterns keep coming up. The last column is what this prototype does with each one.</p>
+    <div class="scroll"><table class="ins"><tr><th>Pattern</th><th>Seen in</th><th>Why it matters</th><th>In this prototype</th></tr>
+    ${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div></div>
+  <div class="card pad stack"><h2>Where the built-in import falls short</h2>
+    <div class="scroll"><table class="ins"><tr><th>What a payroll team needs</th><th>Built-in import today</th></tr>
+    <tr><td>One file that updates the person, the contract and the pay items</td><td>One kind of record per file. Three files, in the right order.</td></tr>
+    <tr><td>See what will change</td><td>A test tells you whether the file loads. It does not show old value against new value.</td></tr>
+    <tr><td>A raise that starts on the 1st</td><td>No start dates. The value is overwritten on the spot and the old one is lost.</td></tr>
+    <tr><td>Find people by the client's employee number</td><td>Works best with internal record IDs that clients never see.</td></tr>
+    <tr><td>Approval, history, undo</td><td>None of the three.</td></tr>
+    <tr><td>Plain column names</td><td>Field names written for administrators.</td></tr></table></div>
+    <p class="muted small">It stays available behind the scenes for administrators. It should not be what a client's payroll officer is given.</p></div>`;
+}
+function vPlan(){
+  const ov=[
+   ['Pay data file inside the pay run','Loads the month\'s figures. With "Update Payobook" it also changes employees and contracts for good, and can add new joiners.','move','Keep it for this month\'s figures only (hours, overtime, one-offs). Lasting changes move to Updates.'],
+   ['Records screen','A grid of employee and contract values with its own file upload, a before-and-after check, approval and undo.','merge','This is already 70% of the engine. Updates becomes its front door instead of a second engine.'],
+   ['Pay workbook download and upload','Downloads a workbook of current values for a pay scheme, takes it back, shows a review.','merge','Becomes "Download a ready-to-fill sheet". Same idea, no longer tied to one scheme and one month.'],
+   ['"Keep for future, or this run only?" after a pay run','Asks, value by value, whether what came in the pay file should stick.','keep','Stays as a safety net. It should fire far less once lasting changes arrive through Updates.'],
+   ['Older employee import','An early wizard where column names are typed in by hand.','move','Hide it. Updates covers everything it does.'],
+   ['Pay Review','Plans raises on screen and applies them.','keep','Different job: deciding the raises. Later it can accept a sheet and should record pay history the same way Updates does.'],
+   ['Attendance file import','Loads clock-in data with a trial run first.','keep','Stays separate, as you suggested. It gets the same four steps and look.'],
+   ['Built-in import','Generic, one kind of record per file.','keep','Administrators only. Never shown to a client.'],
+  ];
+  const lab={keep:'Keep',merge:'Merge in',move:'Move out'};
+  return `
+  <div class="card pad stack"><h2>The main finding: most of this already exists, in five different places</h2>
+    <div class="prose"><p>Today a spreadsheet can change employee or pay data from five screens. Each was built for a good reason, but a client cannot tell which one to use, and two of them find the employee in slightly different ways.</p>
+    <p>So the recommendation is not a new import engine. It is <b>one front door called Updates</b>, built on the Records screen that already does upload, review, approval and undo, plus the handful of things that are missing.</p></div>
+    <div class="scroll"><table class="ins"><tr><th>What exists today</th><th>What it does</th><th>Verdict</th><th>Recommendation</th></tr>
+    ${ov.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><span class="verdict v-${r[2]}">${lab[r[2]]}</span></td><td>${r[3]}</td></tr>`).join('')}</table></div></div>
+
+  <div class="grid2">
+    <div class="card pad stack"><h2>The split that removes the double-up</h2>
+      <div class="dest"><span class="ib b">${ic('money')}</span><div><h3>Updates: things that last</h3><p class="muted small">Who people are, what they are paid from now on. Any day of the month. Approved, dated, undoable.</p></div></div>
+      <div class="dest"><span class="ib d">${ic('cal')}</span><div><h3>Pay run: this month only</h3><p class="muted small">Hours, overtime, days absent, one-off amounts. The pay run opens with a line saying what Updates changed since last month.</p></div></div>
+      <p class="muted small">One-off bonuses can come in either way. From Updates they simply wait inside the pay month you name.</p></div>
+    <div class="card pad stack"><h2>What is really new to build</h2>
+      <ol class="plan">
+        <li><b>No need to pick a pay scheme first.</b> Today you choose one scheme and get its columns. Updates reads each person's scheme from their contract, offers the pay items of those schemes, and greys out a value that does not belong to a person's scheme. New joiners need a "Pay scheme" column.</li>
+        <li><b>Start dates, including future ones.</b> Today a change is written the moment you apply and the old value is overwritten.</li>
+        <li><b>New joiners from the sheet.</b> Today that only works through the pay run file.</li>
+        <li><b>One-offs sent to a pay month</b> from the same sheet.</li>
+        <li><b>One way of finding the person</b> instead of two.</li>
+        <li><b>Second-person check on bank details.</b></li>
+        <li><b>One history</b> across every kind of update.</li>
+      </ol></div>
+  </div>
+
+  <div class="card pad stack"><h2>Built to grow: every sheet is the same four steps</h2>
+    <p class="muted prose">A "sheet type" only has to say three things: which columns it has, how to find the record a row belongs to, and which of the three kinds each column is. Start, Match, Review, Apply and the history never change.</p>
+    <div class="scroll"><table class="ins"><tr><th>Sheet type</th><th>Shape</th><th>Status</th></tr>
+      <tr><td>People and pay</td><td>One row per person</td><td><span class="chip pri">This prototype</span></td></tr>
+      <tr><td>Timesheets and attendance</td><td>One row per person per day</td><td><span class="chip ok">Import exists, gets the new look</span></td></tr>
+      <tr><td>Leave balances</td><td>One row per person per leave type</td><td><span class="chip warn">Nothing today</span></td></tr>
+      <tr><td>Year-to-date figures for a mid-year start</td><td>One row per person per pay item</td><td><span class="chip warn">Nothing today</span></td></tr>
+      <tr><td>Departments, jobs, locations</td><td>One row per item</td><td><span class="chip">Later</span></td></tr>
+      <tr><td>Training records, assets, documents due</td><td>One row per person per item</td><td><span class="chip">Later</span></td></tr></table></div></div>
+
+  <div class="card pad stack"><h2>Suggested order of work</h2>
+    <ol class="plan">
+      <li><b>The front door.</b> Updates home, upload your own file, remembered column matching, the review grid, history and undo. Sits on the Records screen's engine. Clients can use it for same-day changes straight away.</li>
+      <li><b>Dates.</b> "Starts from" on pay changes, future-dated updates that wait, pay history kept. One-offs into a named pay month.</li>
+      <li><b>Tidy-up.</b> New joiners from the sheet, bank second check, the "what changed since last run" line in the pay run. The pay run file stops making lasting changes, and the older employee import is hidden.</li>
+      <li><b>More sheet types.</b> Timesheets and attendance in the new look, then leave balances and year-to-date figures.</li>
+    </ol></div>
+
+  <div class="card pad stack"><h2>Decided on 11 Nov 2026</h2>
+    <ol class="plan">
+      <li><b>The pay run file becomes month-only.</b> It carries this month's figures. Lasting changes come through Updates.</li>
+      <li><b>One contract with a pay history.</b> A salary or allowance change adds a dated entry to the history. No new contract each time.</li>
+      <li><b>Approval is split by type.</b> Details about the person apply at once. Anything that changes pay goes to approval. Bank details always need a second person.</li>
+    </ol></div>`;
+}
+
+/* ---------- render + events ---------- */
+const app=document.getElementById('app');
+function render(){
+  document.querySelectorAll('#pageTabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.page===S.page));
+  app.innerHTML = S.page==='others'?vOthers(): S.page==='plan'?vPlan():
+    ({home:vHome,start:vStart,match:vMatch,review:vReview,apply:vApply,done:vDone})[S.view]();
+}
+function resetSample(){const f=JSON.parse(FRESH);ROWS.forEach((r,i)=>{r.id=f[i].id;r.file=f[i].file;r.skip=false;Object.values(r.issues).forEach(x=>x.done=false)});S.fix=null;S.partial=false;S.filter='all';S.prog=0;}
+document.getElementById('pageTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b){S.page=b.dataset.page;render();}});
+app.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset.fix){e.preventDefault();e.target.click();}});
+app.addEventListener('change',e=>{
+  const t=e.target; if(t.dataset.col!==undefined){const c=COLS[+t.dataset.col];c.f=t.value;c.how=t.value?'ok':'none';render();}
+  if(t.id==='nm')S.name=t.value;
+});
+app.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go],[data-topic],[data-okcol],[data-filter],[data-fix],[data-opt],[data-hist],#dl,#reset,#partial,#apply,#undoNow'); if(!t||t.disabled) return;
+  if(t.dataset.go){ if(t.dataset.go==='start'&&S.view==='home')resetSample(); if(t.dataset.go==='review')S.partial=false; S.view=t.dataset.go; S.fix=null; }
+  else if(t.dataset.topic){S.topics[t.dataset.topic]=!S.topics[t.dataset.topic];}
+  else if(t.dataset.okcol){COLS[+t.dataset.okcol].how='ok';}
+  else if(t.dataset.filter){S.filter=t.dataset.filter;S.fix=null;}
+  else if(t.dataset.fix){const [i,k]=t.dataset.fix.split(':');S.fix=(S.fix&&S.fix.i===+i&&S.fix.k===k)?null:{i:+i,k};}
+  else if(t.dataset.opt){const [i,k,j]=t.dataset.opt.split(':');const r=ROWS[+i];r.issues[k].opts[+j][1](r);r.issues[k].done=true;S.fix=null;if(S.filter==='att'&&!ROWS.some(x=>openIssues(x).length))S.filter='all';}
+  else if(t.dataset.hist){const h=S.hist[+t.dataset.hist];
+    if(h.act==='Undo'||h.act==='Cancel'){h.st=h.act==='Undo'?'Undone':'Cancelled';h.c='';h.d+=' · put back 11 Nov 2026';h.act=null;}
+    else if(h.act==='Open'){resetSample();S.view='review';S.filter='att';}}
+  else if(t.id==='dl'){render();document.getElementById('dlmsg').textContent='In the real product this downloads "Payobook update sheet, 11 Nov 2026.xlsx" with '+Object.values(S.topics).filter(Boolean).length+' topic groups for the people you chose.';return;}
+  else if(t.id==='reset'){resetSample();}
+  else if(t.id==='partial'){S.partial=true;S.view='apply';}
+  else if(t.id==='apply'){S.name=(document.getElementById('nm')||{}).value||S.name;S.prog=4;render();
+    const tm=setInterval(()=>{S.prog=Math.min(100,S.prog+16);render();if(S.prog>=100){clearInterval(tm);setTimeout(()=>{const x=tally();
+      S.hist.unshift({n:S.name,st:'Applied · pay changes awaiting approval',c:'ok',d:'11 Nov 2026 · '+x.changes+' changes for '+x.people+' people · by you',act:'Undo'});
+      S.view='done';S.prog=0;render();},350);}},220);return;}
+  else if(t.id==='undoNow'){const h=S.hist[0];h.st='Undone';h.c='';h.act=null;h.d+=' · put back 11 Nov 2026';S.view='home';}
+  render();
+});
+render();
+</script>

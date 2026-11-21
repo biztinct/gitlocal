@@ -1,0 +1,149 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-12 22:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Other request"
+msgstr "Permintaan lain"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Someone writes down what they are asking for"
+msgstr "Seseorang menuliskan apa yang mereka minta"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "An approver sends it back to be changed"
+msgstr "Pemberi persetujuan mengembalikannya untuk diubah"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Someone sends it for a sign-off"
+msgstr "Seseorang mengirimkannya untuk disetujui"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "The last approver says yes"
+msgstr "Pemberi persetujuan terakhir menyetujui"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "An approver says no"
+msgstr "Pemberi persetujuan menolak"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "The person who asked takes it back"
+msgstr "Orang yang meminta menariknya kembali"
+
+# ===================================================================
+#  WORKFLOW-2 P6a — "Other request" status words
+# ===================================================================
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__draft
+msgid "Draft"
+msgstr "Draf"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__pending
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__done
+msgid "Approved and done"
+msgstr "Disetujui dan selesai"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__returned
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__rejected
+msgid "Turned down"
+msgstr "Ditolak"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__cancelled
+msgid "Withdrawn"
+msgstr "Ditarik"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid ""
+"\"%s\" moves money out of the company, so each one is approved on its own. "
+"It cannot be approved several at once."
+msgstr ""
+"\"%s\" mengeluarkan uang dari perusahaan, jadi setiap permintaan disetujui "
+"sendiri-sendiri. Tidak dapat disetujui beberapa sekaligus."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,help:biz_approval_workflow.field_biz_approval_process__bulk_ok
+msgid ""
+"A manager may tick several of these in the Approvals inbox and approve them "
+"together. Never allowed where money leaves the company."
+msgstr ""
+"Manajer dapat mencentang beberapa permintaan jenis ini di kotak Persetujuan "
+"dan menyetujuinya sekaligus. Tidak pernah diizinkan jika uang keluar dari "
+"perusahaan."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_process__bulk_ok
+msgid "Can be approved several at once"
+msgstr "Dapat disetujui beberapa sekaligus"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_process__bulk_confirm
+msgid "Several at once, with an extra confirmation"
+msgstr "Beberapa sekaligus, dengan konfirmasi tambahan"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,help:biz_approval_workflow.field_biz_approval_process__bulk_confirm
+msgid "A manager may tick several of these in the Approvals inbox and approve them together, after a check that counts them and asks them to confirm. Allowed for bank-detail changes even though they decide where pay is sent; never for a kind that pays money out."
+msgstr "Seorang manajer dapat mencentang beberapa permintaan ini di kotak Persetujuan dan menyetujuinya bersama, setelah pemeriksaan yang menghitungnya dan meminta konfirmasi. Diizinkan untuk perubahan rekening bank walaupun menentukan ke mana gaji dikirim; tidak pernah untuk jenis yang membayarkan uang."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_event__kind__setting_changed
+msgid "Setting changed"
+msgstr "Pengaturan diubah"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid "\"%s\" moves money out of the company, so each one is approved on its own, even with an extra confirmation."
+msgstr "\"%s\" mengeluarkan uang dari perusahaan, jadi setiap permintaan disetujui sendiri-sendiri, bahkan dengan konfirmasi tambahan."
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid "Choose one of the three answers."
+msgstr "Pilih salah satu dari tiga jawaban."

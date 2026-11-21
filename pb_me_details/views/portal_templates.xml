@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-A — My details on My Payobook. Pages reuse pb_me_portal's
+       .pbme kit (tokens, buttons, ess_hero, ess_icon); `.pbmd-*` is this
+       module's thin layer (static/src/scss/me_details.scss). Every sentence
+       sits on one line (ledger PRD-3). No %-formatting inside t-att-*
+       (ledger PRB-W5). Loop names: members `fm`, papers `pp`, requests `rq`,
+       checks `ck`, options `op`, rows `rw`. -->
+
+  <template id="portal_breadcrumbs_details" name="My details breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="39">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'my_details'" class="breadcrumb-item active">My details</li>
+      <li t-if="page_name in ('my_details_form', 'my_details_request', 'my_details_bank')" class="breadcrumb-item"><a href="/my/details">My details</a></li>
+      <li t-if="page_name == 'my_details_form'" class="breadcrumb-item active">Change</li>
+      <li t-if="page_name == 'my_details_request'" class="breadcrumb-item active">Your change</li>
+      <li t-if="page_name == 'my_details_bank'" class="breadcrumb-item active">Bank account</li>
+    </xpath>
+  </template>
+
+  <template id="portal_my_home_details" name="My details home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="22">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">My details</t>
+        <t t-set="text">Family, ID papers, photo and bank account</t>
+        <t t-set="url" t-value="'/my/details'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- The profile page's promise ("a separate secure flow") now has a door. -->
+  <template id="portal_my_profile_details" name="My profile: link to My details"
+            inherit_id="pb_me_portal.portal_my_profile" priority="40">
+    <xpath expr="//div[hasclass('pbme-detail-side')]" position="inside">
+      <a class="pbme-card pbmd-door" href="/my/details">
+        <span class="pbmd-door-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user-check'"/><t t-set="isz" t-value="18"/></t></span>
+        <span class="pbmd-door-tx"><b>Family, ID papers, photo and bank account</b><span>See them all and ask for a change</span></span>
+        <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t>
+      </a>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Small parts                                                   -->
+  <!-- ============================================================= -->
+  <template id="pbmd_pill" name="My details: status pill">
+    <span t-att-class="'pbmd-pill pbmd-pill--' + state">
+      <i class="pbmd-pill-dot" aria-hidden="true"/>
+      <t t-if="state == 'draft'">Not sent yet</t>
+      <t t-elif="state == 'sent_back'">Sent back</t>
+      <t t-elif="state in ('hr_review', 'finance_review') and is_bank">Waiting for approval</t>
+      <t t-elif="state in ('hr_review', 'finance_review')">Waiting for HR</t>
+      <t t-elif="state == 'approved'">Approved</t>
+      <t t-else="">Turned down</t>
+    </span>
+  </template>
+
+  <template id="pbmd_toast" name="My details: toast">
+    <div t-if="done" class="pbmd-toast" role="status" aria-live="polite">
+      <span class="pbmd-toast-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></span>
+      <span t-if="done == 'sent'">Sent to HR. Nothing changes on your record until it is approved.</span>
+      <span t-elif="done == 'withdrawn'">Taken back. You can change it and send it again.</span>
+      <span t-elif="done == 'bank_sent'">Sent for approval. Your pay goes to the new account once a second person approves it.</span>
+      <span t-elif="done == 'bank_withdrawn'">Taken back. Your pay keeps going to the account on file.</span>
+      <span t-else="">Saved.</span>
+    </div>
+  </template>
+
+  <template id="pbmd_alert" name="My details: error line">
+    <div t-if="error" class="pbmd-alert" role="alert">
+      <span class="pbmd-alert-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t></span>
+      <span t-esc="error"/>
+    </div>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/details — everything in one place                        -->
+  <!-- ============================================================= -->
+  <template id="portal_my_details" name="My details (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd">
+        <t t-call="pb_me_details.pbmd_toast"/>
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My details</t>
+          <t t-set="hero_sub">Everything your company keeps about you, in one place. Ask for a change here: your record is updated once it is approved.</t>
+        </t>
+
+        <div class="pbmd-grid">
+          <!-- ===== you ===== -->
+          <section class="pbme-card pbmd-card pbmd-you">
+            <div class="pbmd-you-head">
+              <img class="pbme-avatar pbmd-avatar" t-att-src="person['avatar_url']" alt=""/>
+              <div>
+                <div class="pbmd-name" t-esc="person['name']"/>
+                <div class="pbmd-sub"><t t-esc="person['job']"/><t t-if="person['department']"><span class="pbmd-dot" aria-hidden="true"/><t t-esc="person['department']"/></t></div>
+              </div>
+            </div>
+            <dl class="pbmd-kv">
+              <div><dt t-out="person['labels'].get('marital')">Marital status</dt><dd><t t-esc="person['marital'] or '—'"/><span t-if="person['marital_waiting']" class="pbmd-wait">change waiting for HR</span></dd></div>
+              <div><dt>Photo</dt><dd><t t-if="person['photo_waiting']"><span class="pbmd-wait">new photo waiting for HR</span></t><t t-else="">The one on your record</t></dd></div>
+            </dl>
+            <div class="pbmd-actions">
+              <a class="pbme-btn pbme-btn--ghost" href="/my/details/photo"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'image'"/><t t-set="isz" t-value="15"/></t>Change photo</a>
+              <a class="pbme-btn pbme-btn--ghost" href="/my/details/marital"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'heart'"/><t t-set="isz" t-value="15"/></t>Change marital status</a>
+            </div>
+          </section>
+
+          <!-- ===== bank ===== -->
+          <section class="pbme-card pbmd-card pbmd-bank">
+            <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'banknote'"/><t t-set="isz" t-value="17"/></t>Bank account</h2>
+            <p class="pbmd-muted">Where your pay is sent.</p>
+            <div t-if="bank['number']" class="pbmd-acct">
+              <div class="pbmd-acct-n" t-esc="bank['number']"/>
+              <div class="pbmd-acct-b"><t t-esc="bank['bank']"/><t t-if="bank['holder']"><span class="pbmd-dot" aria-hidden="true"/><t t-esc="bank['holder']"/></t></div>
+            </div>
+            <p t-else="" class="pbmd-none">No bank account on file yet.</p>
+            <a t-if="bank['open']" class="pbmd-open" t-att-href="'/my/details/bank/' + str(bank['open']['id'])">
+              <t t-call="pb_me_details.pbmd_pill"><t t-set="state" t-value="bank['open']['state']"/><t t-set="is_bank" t-value="True"/></t>
+              <span>New account <b t-esc="bank['open']['masked']"/></span>
+              <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="15"/></t>
+            </a>
+            <div t-else="" class="pbmd-actions">
+              <a class="pbme-btn pbme-btn--ghost" href="/my/details/bank"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'banknote'"/><t t-set="isz" t-value="15"/></t>Change bank account</a>
+            </div>
+          </section>
+
+          <!-- ===== ID papers ===== -->
+          <section class="pbme-card pbmd-card pbmd-papers">
+            <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="17"/></t>ID papers</h2>
+            <ul class="pbmd-list">
+              <li t-foreach="papers" t-as="pp" class="pbmd-row">
+                <div class="pbmd-row-main">
+                  <div class="pbmd-row-t" t-esc="pp['label']"/>
+                  <div class="pbmd-row-s"><t t-if="pp['has']"><t t-esc="pp['number']"/><t t-if="pp['expiry']"><span class="pbmd-dot" aria-hidden="true"/><span>Valid until</span> <span t-out="pp['expiry']" t-options="{'widget': 'date'}"/></t></t><t t-else="">Not on file</t></div>
+                </div>
+                <a class="pbmd-row-go" t-att-href="'/my/details/papers?kind=' + pp['kind']"><t t-if="pp['has']">Update</t><t t-else="">Add</t></a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- ===== family ===== -->
+          <section class="pbme-card pbmd-card pbmd-family">
+            <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'users'"/><t t-set="isz" t-value="17"/></t>Family</h2>
+            <p t-if="not family" class="pbmd-none">No family members on file.</p>
+            <ul t-else="" class="pbmd-list">
+              <li t-foreach="family" t-as="fm" class="pbmd-row">
+                <div class="pbmd-row-main">
+                  <div class="pbmd-row-t" t-esc="fm['name']"/>
+                  <div class="pbmd-row-s"><t t-esc="fm['relationship']"/><t t-if="fm['birthdate']"><span class="pbmd-dot" aria-hidden="true"/><span>born</span> <span t-out="fm['birthdate']" t-options="{'widget': 'date'}"/></t></div>
+                  <div class="pbmd-chips">
+                    <span t-if="fm['counts_for_tax'] and fm['tax_state'] == 'waiting'" class="pbmd-chip pbmd-chip--wait">Counts for tax · waiting for HR to confirm</span>
+                    <span t-elif="fm['counts_for_tax'] and fm['tax_state'] == 'confirmed'" class="pbmd-chip pbmd-chip--ok">Counts for tax</span>
+                    <span t-elif="fm['counts_for_tax']" class="pbmd-chip">Counts for tax</span>
+                    <span t-if="fm['insured']" class="pbmd-chip">Covered by insurance</span>
+                    <span t-if="fm['waiting']" class="pbmd-chip pbmd-chip--wait">Change waiting for HR</span>
+                  </div>
+                </div>
+                <div t-if="not fm['waiting']" class="pbmd-row-acts">
+                  <a class="pbmd-row-go" t-att-href="'/my/details/family/' + str(fm['id'])">Change</a>
+                  <details class="pbmd-remove">
+                    <summary>Remove</summary>
+                    <form action="/my/details/send" method="post" class="pbmd-remove-f">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="hidden" name="kind" value="family_remove"/>
+                      <input type="hidden" name="member_id" t-att-value="fm['id']"/>
+                      <span>Ask HR to remove <b t-esc="fm['name']"/>?</span>
+                      <button type="submit" class="pbme-btn pbme-btn--primary">Yes, send to HR</button>
+                    </form>
+                  </details>
+                </div>
+              </li>
+            </ul>
+            <div class="pbmd-actions">
+              <a class="pbme-btn pbme-btn--ghost" href="/my/details/family/new"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user-plus'"/><t t-set="isz" t-value="15"/></t>Add a family member</a>
+            </div>
+            <p t-if="vietnam" class="pbmd-fine">A family member who counts for tax changes your pay only after the pay team confirms it.</p>
+          </section>
+        </div>
+
+        <!-- ===== your changes ===== -->
+        <section t-if="requests or bank_requests" class="pbme-card pbmd-card pbmd-changes">
+          <h2 class="pbmd-h2"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="17"/></t>Your changes</h2>
+          <ul class="pbmd-list">
+            <li t-foreach="bank_requests" t-as="rq" class="pbmd-row">
+              <a class="pbmd-row-link" t-att-href="'/my/details/bank/' + str(rq['id'])">
+                <div class="pbmd-row-main">
+                  <div class="pbmd-row-t"><span>New bank account</span> <t t-esc="rq['masked']"/></div>
+                  <div t-if="rq['note'] and rq['state'] in ('sent_back', 'refused')" class="pbmd-row-s pbmd-why"><span>Reason:</span> <t t-esc="rq['note']"/></div>
+                </div>
+                <t t-call="pb_me_details.pbmd_pill"><t t-set="state" t-value="rq['state']"/><t t-set="is_bank" t-value="True"/></t>
+              </a>
+            </li>
+            <li t-foreach="requests" t-as="rq" class="pbmd-row">
+              <a class="pbmd-row-link" t-att-href="'/my/details/request/' + str(rq['id'])">
+                <div class="pbmd-row-main">
+                  <div class="pbmd-row-t" t-esc="rq['title']"/>
+                  <div t-if="rq['note'] and rq['state'] in ('sent_back', 'refused')" class="pbmd-row-s pbmd-why"><span>Reason:</span> <t t-esc="rq['note']"/></div>
+                </div>
+                <t t-call="pb_me_details.pbmd_pill"><t t-set="state" t-value="rq['state']"/><t t-set="is_bank" t-value="False"/></t>
+              </a>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  One form for every kind of change                              -->
+  <!-- ============================================================= -->
+  <template id="portal_details_form" name="My details: change form (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title"><t t-if="kind == 'family_add'">Add a family member</t><t t-elif="kind == 'family_change'">Change a family member</t><t t-elif="kind == 'id_paper'">ID paper</t><t t-elif="kind == 'photo'">Change photo</t><t t-else="">Marital status</t></t>
+          <t t-set="hero_sub">HR checks it first. Nothing changes on your record until it is approved.</t>
+        </t>
+        <section class="pbme-card pbmd-card pbmd-form-card">
+          <div t-if="req and req.decision_note" class="pbmd-back">
+            <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="16"/></t>
+            <div><b>HR sent this back.</b> <span t-esc="req.decision_note"/></div>
+          </div>
+          <t t-call="pb_me_details.pbmd_alert"/>
+          <form action="/my/details/send" method="post" enctype="multipart/form-data" class="pbmd-form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="kind" t-att-value="kind"/>
+            <input t-if="member" type="hidden" name="member_id" t-att-value="member.id"/>
+            <input t-if="req" type="hidden" name="request_id" t-att-value="req.id"/>
+
+            <t t-if="kind in ('family_add', 'family_change')">
+              <div class="pbme-form-grid">
+                <label class="pbme-form-wide"><span>Full name</span><input type="text" name="f_name" required="required" maxlength="120" t-att-value="v.get('f_name') or ''"/></label>
+                <label><span>Relationship</span>
+                  <select name="f_relationship" required="required">
+                    <option value="">Choose…</option>
+                    <option t-foreach="options['relationship']" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == v.get('f_relationship')" t-esc="op[1]"/>
+                  </select>
+                </label>
+                <label><span>Date of birth</span><input type="date" name="f_birthdate" t-att-max="today" t-att-value="v.get('f_birthdate') or ''"/></label>
+                <label class="pbme-form-wide"><span>ID or birth certificate number</span><input type="text" name="f_id_number" maxlength="40" t-att-value="v.get('f_id_number') or ''"/></label>
+              </div>
+              <div class="pbmd-checks">
+                <label class="pbmd-check"><input type="checkbox" name="f_counts_for_tax" value="1" t-att-checked="v.get('f_counts_for_tax') and v.get('f_counts_for_tax') not in ('0', False)"/><span><b>Counts for tax</b><small t-if="vietnam">They depend on you, so they reduce the tax on your pay once the pay team confirms it.</small><small t-else="">They depend on you financially.</small></span></label>
+                <label class="pbmd-check"><input type="checkbox" name="f_insured" value="1" t-att-checked="v.get('f_insured') and v.get('f_insured') not in ('0', False)"/><span><b>Covered by insurance</b><small>Included in your company's insurance cover.</small></span></label>
+              </div>
+            </t>
+
+            <t t-elif="kind == 'id_paper'">
+              <div class="pbme-form-grid">
+                <label><span>Which paper</span>
+                  <select name="paper_kind" required="required">
+                    <option t-foreach="options['paper']" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == v.get('paper_kind')" t-esc="op[1]"/>
+                  </select>
+                </label>
+                <label><span>Valid until</span><input type="date" name="paper_expiry" required="required" t-att-value="v.get('paper_expiry') or ''"/></label>
+                <label class="pbme-form-wide"><span>Number on the paper</span><input type="text" name="paper_number" required="required" maxlength="40" t-att-value="v.get('paper_number') or ''"/></label>
+              </div>
+              <label class="pbmd-drop"><input type="file" name="file" accept="application/pdf,image/png,image/jpeg"/><span class="pbmd-drop-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="16"/></t></span><span class="pbmd-drop-t"><b>A photo or scan of the paper</b><span t-if="req and req.attachment_id">Already added. Choose a file only to replace it.</span><span t-else="">PDF, JPG or PNG, up to 10 MB</span></span></label>
+            </t>
+
+            <t t-elif="kind == 'photo'">
+              <p class="pbmd-muted">A clear photo of your face, looking at the camera. It is shown to your colleagues and on the clock-in screens.</p>
+              <label class="pbmd-drop"><input type="file" name="file" accept="image/png,image/jpeg" required="required"/><span class="pbmd-drop-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'image'"/><t t-set="isz" t-value="16"/></t></span><span class="pbmd-drop-t"><b>Choose a photo</b><span>JPG or PNG, up to 10 MB</span></span></label>
+            </t>
+
+            <t t-else="">
+              <div class="pbme-form-grid">
+                <label><span>Marital status</span>
+                  <select name="marital" required="required">
+                    <option t-foreach="options['marital']" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == v.get('marital')" t-esc="op[1]"/>
+                  </select>
+                </label>
+              </div>
+            </t>
+
+            <label class="pbmd-note"><span>Note to HR (optional)</span><textarea name="note" rows="2" maxlength="500"><t t-esc="v.get('note') or ''"/></textarea></label>
+            <div class="pbmd-actions">
+              <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send to HR</button>
+              <a href="/my/details" class="pbme-btn pbme-btn--ghost">Cancel</a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  One change: where it is                                       -->
+  <!-- ============================================================= -->
+  <template id="portal_details_request" name="My details: one change (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">Your change</t>
+          <t t-set="hero_title" t-value="r['title']"/>
+        </t>
+        <section class="pbme-card pbmd-card">
+          <div class="pbmd-status">
+            <t t-call="pb_me_details.pbmd_pill"><t t-set="state" t-value="r['state']"/><t t-set="is_bank" t-value="False"/></t>
+            <span t-if="r['state'] == 'hr_review'" class="pbmd-muted">HR has it. Nothing changes on your record until it is approved.</span>
+            <span t-elif="r['state'] == 'approved'" class="pbmd-muted">Your record is updated.</span>
+          </div>
+          <div t-if="r['note'] and r['state'] == 'refused'" class="pbmd-back"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t><div><b>Why:</b> <span t-esc="r['note']"/></div></div>
+          <table class="pbme-diff pbmd-diff">
+            <thead><tr><th>Detail</th><th>Now</th><th>Proposed</th></tr></thead>
+            <tbody>
+              <tr t-foreach="rows" t-as="rw" t-att-class="'is-changed' if rw[1] != rw[2] else ''">
+                <td class="pbme-diff-f" t-esc="rw[0]"/>
+                <td class="pbme-diff-cur" t-esc="rw[1] or '—'"/>
+                <td class="pbme-diff-new" t-esc="rw[2] or '—'"/>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pbmd-actions">
+            <form t-if="r['state'] == 'hr_review'" t-att-action="'/my/details/request/' + str(r['id']) + '/withdraw'" method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <button type="submit" class="pbme-btn pbme-btn--ghost"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="15"/></t>Take it back</button>
+            </form>
+            <a href="/my/details" class="pbme-btn pbme-btn--ghost">Back to my details</a>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Bank account: upload the document                             -->
+  <!-- ============================================================= -->
+  <template id="portal_details_bank_new" name="My details: new bank account (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Change bank account</t>
+          <t t-set="hero_sub">Your pay keeps going to the account on file until the new one is approved.</t>
+        </t>
+        <section class="pbme-card pbmd-card pbmd-form-card">
+          <ol class="pbmd-steps">
+            <li><b>Upload a bank document</b><span>A bank letter, a statement, the first page of your passbook or a cancelled cheque showing your name and the account number.</span></li>
+            <li><b>Check what we read</b><span>The document is read for you. Correct anything that is wrong.</span></li>
+            <li><b>A second person approves it</b><span>Somebody in your company who is not you checks it. Then your pay goes to the new account.</span></li>
+          </ol>
+          <p t-if="current" class="pbmd-muted"><span>Account on file now:</span> <b t-esc="current"/></p>
+          <t t-call="pb_me_details.pbmd_alert"/>
+          <form action="/my/details/bank/upload" method="post" enctype="multipart/form-data" class="pbmd-form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <div class="pbme-form-grid">
+              <label><span>What kind of document</span>
+                <select name="doc_kind">
+                  <option t-foreach="kinds" t-as="op" t-att-value="op[0]" t-esc="op[1]"/>
+                </select>
+              </label>
+            </div>
+            <label class="pbmd-drop"><input type="file" name="file" accept="application/pdf,image/png,image/jpeg" required="required"/><span class="pbmd-drop-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="16"/></t></span><span class="pbmd-drop-t"><b>Choose the document</b><span>PDF, JPG or PNG, up to 10 MB</span></span></label>
+            <div class="pbmd-actions">
+              <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="15"/></t>Read the document</button>
+              <a href="/my/details" class="pbme-btn pbme-btn--ghost">Cancel</a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Bank account: check, send, follow                             -->
+  <!-- ============================================================= -->
+  <template id="portal_details_bank" name="My details: bank account change (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmd">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">Bank account</t>
+          <t t-set="hero_title"><t t-if="b['state'] in ('draft', 'sent_back') and mine">Check what we read</t><t t-else="">New bank account</t></t>
+        </t>
+        <section class="pbme-card pbmd-card pbmd-form-card">
+          <div class="pbmd-status">
+            <t t-call="pb_me_details.pbmd_pill"><t t-set="state" t-value="b['state']"/><t t-set="is_bank" t-value="True"/></t>
+            <span t-if="b['state'] in ('hr_review', 'finance_review')" class="pbmd-muted">A second person in your company is checking it. Your pay keeps going to the account on file until then.</span>
+            <span t-elif="b['state'] == 'approved'" class="pbmd-muted">Your pay goes to this account from now on.</span>
+          </div>
+          <div t-if="b['note'] and b['state'] in ('sent_back', 'refused')" class="pbmd-back"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="16"/></t><div><b>Reason:</b> <span t-esc="b['note']"/></div></div>
+          <t t-call="pb_me_details.pbmd_alert"/>
+
+          <t t-if="b['state'] in ('draft', 'sent_back') and mine">
+            <p class="pbmd-muted"><t t-if="b['read_ok']">We read your document. Check every detail against it, correct anything that is wrong, then send it.</t><t t-else="">The document could not be read automatically. Type the details exactly as they appear on it.</t></p>
+            <form t-att-action="'/my/details/bank/' + str(b['id']) + '/send'" method="post" class="pbmd-form">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <div class="pbme-form-grid">
+                <label><span>Bank</span><input type="text" name="x_bank_name" maxlength="120" t-att-value="b['bank']"/></label>
+                <label><span>Branch</span><input type="text" name="x_bank_branch" maxlength="120" t-att-value="b['branch']"/></label>
+                <label class="pbme-form-wide"><span>Name on the account</span><input type="text" name="x_account_name" maxlength="120" t-att-value="b['holder']"/></label>
+                <label class="pbme-form-wide"><span>Account number</span><input type="text" name="x_account_number" inputmode="numeric" autocomplete="off" required="required" maxlength="40" t-att-value="b['number']"/></label>
+              </div>
+              <ul t-if="b['checks']" class="pbmd-checklist">
+                <li t-foreach="b['checks']" t-as="ck" t-att-class="'is-ok' if ck['ok'] else 'is-look'"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle' if ck['ok'] else 'alert'"/><t t-set="isz" t-value="15"/></t><span t-esc="ck['text']"/></li>
+              </ul>
+              <div class="pbmd-actions">
+                <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send for approval</button>
+                <a href="/my/details" class="pbme-btn pbme-btn--ghost">Not now</a>
+              </div>
+            </form>
+          </t>
+
+          <t t-else="">
+            <dl class="pbmd-kv">
+              <div><dt>Bank</dt><dd t-esc="b['bank'] or '—'"/></div>
+              <div t-if="b['branch']"><dt>Branch</dt><dd t-esc="b['branch']"/></div>
+              <div><dt>Name on the account</dt><dd t-esc="b['holder'] or '—'"/></div>
+              <div><dt>Account number</dt><dd t-esc="b['masked'] or '—'"/></div>
+            </dl>
+            <ul t-if="b['checks']" class="pbmd-checklist">
+              <li t-foreach="b['checks']" t-as="ck" t-att-class="'is-ok' if ck['ok'] else 'is-look'"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle' if ck['ok'] else 'alert'"/><t t-set="isz" t-value="15"/></t><span t-esc="ck['text']"/></li>
+            </ul>
+            <div class="pbmd-actions">
+              <form t-if="mine and b['state'] in ('hr_review', 'finance_review')" t-att-action="'/my/details/bank/' + str(b['id']) + '/withdraw'" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <button type="submit" class="pbme-btn pbme-btn--ghost"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="15"/></t>Take it back</button>
+              </form>
+              <a href="/my/details" class="pbme-btn pbme-btn--ghost">Back to my details</a>
+            </div>
+          </t>
+        </section>
+      </div>
+    </t>
+  </template>
+
+</odoo>

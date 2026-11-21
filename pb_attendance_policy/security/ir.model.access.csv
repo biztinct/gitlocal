@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+policy_manager,policy manager,model_pb_attendance_policy,hr_attendance.group_hr_attendance_manager,1,1,1,1
+policy_officer,policy officer,model_pb_attendance_policy,hr_attendance.group_hr_attendance_officer,1,0,0,0
+band_manager,band manager,model_pb_attendance_policy_band,hr_attendance.group_hr_attendance_manager,1,1,1,1
+band_officer,band officer,model_pb_attendance_policy_band,hr_attendance.group_hr_attendance_officer,1,0,0,0
+shift_rule_manager,shift rule manager,model_pb_attendance_policy_shift,hr_attendance.group_hr_attendance_manager,1,1,1,1
+shift_rule_officer,shift rule officer,model_pb_attendance_policy_shift,hr_attendance.group_hr_attendance_officer,1,0,0,0

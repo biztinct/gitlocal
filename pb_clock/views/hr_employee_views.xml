@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The clock number sits with the badge ID in the employee's Settings
+         tab, where the other "how a machine knows this person" numbers live. -->
+    <record id="view_employee_form_pb_clock_code" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb_clock_code</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='identification_group']" position="inside">
+                <field name="pb_clock_code" placeholder="Same as the badge ID"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

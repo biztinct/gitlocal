@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payroll_analytics_public,payroll.analytics.public,model_payroll_analytics,,1,0,0,0
+access_payroll_bank_export_wizard_public,payroll.bank.export.wizard.public,model_payroll_bank_export_wizard,,1,1,1,1
+access_payroll_comparison_public,payroll.comparison.public,model_payroll_comparison,,1,0,0,0
+access_bank_export_log_public,bank.export.log.public,model_bank_export_log,,1,0,0,0
+access_payroll_analytics_settings_public,payroll.analytics.settings.public,model_payroll_analytics_settings,,1,1,1,1
+access_payroll_component_mapping_public,payroll.component.mapping.public,model_payroll_component_mapping,,1,0,0,0
+access_dashboard_tile_config_public,dashboard.tile.config.public,model_dashboard_tile_config,,1,0,0,0
+access_payroll_comparison_wizard_public,payroll.comparison.wizard.public,model_payroll_comparison_wizard,,1,1,1,1

@@ -1,0 +1,6 @@
+{
+  "version": "1.0.2",
+  "sha256": "71a7bc0b6250ac14e804ac08ed9fd4076d5589faca22fa0607e70eaec932983f",
+  "bytes": 11078274,
+  "windows_pilot": "Required: scheduled pythonw run and next automatic run; server and cross-platform tests do not prove Windows desktop behavior."
+}

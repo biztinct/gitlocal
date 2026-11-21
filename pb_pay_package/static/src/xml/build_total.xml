@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WDGAP S8-A — "Build from a total". One card, opened from the contract
+     drawer. Every sentence a person reads sits on one line, so its
+     translation matches (PRD-3). No double hyphen in a comment (W22). -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_pay_package.BuildTotalCard">
+    <div class="pbpk-scrim" t-att-class="{ shown: state.shown }" t-on-click="() => this.close()">
+      <div class="pbpk" role="dialog" aria-modal="true" aria-labelledby="pbpk-title"
+           t-att-class="{ shown: state.shown }" t-on-click.stop="">
+
+        <div class="pbpk-head">
+          <span class="pbpk-badge" t-out="ic('package', 18)"/>
+          <div class="pbpk-titles">
+            <b id="pbpk-title">Build from a total</b>
+            <small t-if="ctx.who">
+              <span><t t-out="ic('user', 13)"/> <t t-esc="ctx.who"/></span>
+              <span class="pbpk-dot">·</span>
+              <span><t t-out="ic('layers', 13)"/> <t t-esc="ctx.scheme and ctx.scheme.name"/></span>
+            </small>
+          </div>
+          <button class="pbpk-x" t-on-click="() => this.close()" title="Close" aria-label="Close"><t t-out="ic('x', 18)"/></button>
+        </div>
+
+        <div t-if="state.loading" class="pbpk-busy"><span class="pbpk-spin"/><span t-if="isOffer">Reading the offer…</span><span t-else="">Reading this person's pay…</span></div>
+        <div t-elif="state.error" class="pbpk-empty"><t t-out="ic('alert', 26)"/><p t-esc="state.error"/></div>
+
+        <div t-else="" class="pbpk-body">
+          <!-- ============ ask ============ -->
+          <div class="pbpk-ask">
+            <label class="pbpk-lbl" for="pbpk-total">Total package</label>
+            <div class="pbpk-amount">
+              <span class="pbpk-sym" t-esc="cur.symbol"/>
+              <input id="pbpk-total" t-ref="amount" class="pbpk-in" type="text" inputmode="decimal" autocomplete="off"
+                     placeholder="0" t-att-value="state.total" t-on-input="onTotal" t-on-keydown="onTotalKey"/>
+            </div>
+            <div class="pbpk-seg">
+              <button type="button" t-att-class="{ 'is-on': state.period === 'year' }" t-on-click="() => this.setPeriod('year')">A year</button>
+              <button type="button" t-att-class="{ 'is-on': state.period === 'month' }" t-on-click="() => this.setPeriod('month')">A month</button>
+            </div>
+            <p class="pbpk-help">Gross pay plus the employer's contributions, as the scheme works them out.</p>
+
+            <label class="pbpk-lbl" for="pbpk-basic">Basic pay</label>
+            <select id="pbpk-basic" class="pbpk-sel" t-on-change="onBasic">
+              <option value="" t-att-selected="!state.basic">Choose a pay item…</option>
+              <option t-foreach="items" t-as="it" t-key="it.code" t-att-value="it.code" t-att-selected="it.code === state.basic" t-esc="it.name"/>
+            </select>
+            <div class="pbpk-seg">
+              <button type="button" t-att-class="{ 'is-on': state.mode === 'share' }" t-on-click="() => this.setMode('share')">Share of the total</button>
+              <button type="button" t-att-class="{ 'is-on': state.mode === 'amount' }" t-on-click="() => this.setMode('amount')">A fixed amount</button>
+            </div>
+            <div class="pbpk-amount sm" t-if="state.mode === 'share'">
+              <input class="pbpk-in" type="text" inputmode="decimal" t-att-value="state.share" t-on-input="onShare"/>
+              <span class="pbpk-sym">% a month</span>
+            </div>
+            <div class="pbpk-amount sm" t-else="">
+              <span class="pbpk-sym" t-esc="cur.symbol"/>
+              <input class="pbpk-in" type="text" inputmode="decimal" t-att-value="state.basicAmount" t-on-input="onBasicAmount"/>
+              <span class="pbpk-sym">a month</span>
+            </div>
+
+            <label class="pbpk-lbl" for="pbpk-balance">Takes the rest</label>
+            <select id="pbpk-balance" class="pbpk-sel" t-on-change="onBalance">
+              <option value="" t-att-selected="!state.balance">Choose a pay item…</option>
+              <option t-foreach="items" t-as="it" t-key="it.code" t-att-value="it.code" t-att-selected="it.code === state.balance" t-esc="it.name"/>
+            </select>
+
+            <t t-if="hasSchemeChoice">
+              <label class="pbpk-lbl" for="pbpk-scheme">Pay scheme</label>
+              <select id="pbpk-scheme" class="pbpk-sel" t-on-change="onScheme">
+                <option t-foreach="schemes" t-as="s" t-key="s.id" t-att-value="s.id" t-att-selected="s.id === state.schemeId" t-esc="s.name"/>
+              </select>
+            </t>
+
+            <div class="pbpk-now" t-if="!isOffer or ctx.same_money">
+              <span class="k">Now</span>
+              <span class="v">Total <b t-esc="money(now.total)"/> a month · <b t-esc="money(now.year)"/> a year</span>
+            </div>
+            <p class="pbpk-help" t-if="isOffer and ctx.note" t-esc="ctx.note"/>
+            <div class="pbpk-src" t-if="ctx.source_label"><t t-out="ic('file', 13)"/> <span t-esc="ctx.source_label"/></div>
+
+            <button class="pbpk-go" t-att-disabled="!canSolve" t-on-click="() => this.solve()">
+              <span t-if="state.busy" class="pbpk-spin sm"/>
+              <t t-else="" t-out="ic('sparkles', 15)"/>
+              <span>Work it out</span>
+            </button>
+            <p class="pbpk-safe">Nothing is saved. This only works the figures out.</p>
+          </div>
+
+          <!-- ============ answer ============ -->
+          <div class="pbpk-res">
+            <div t-if="!r" class="pbpk-wait">
+              <t t-out="ic('package', 28)"/>
+              <p>Type a total, then work it out. Every pay item the scheme works out from basic pay follows by itself.</p>
+            </div>
+            <t t-elif="r.ok === false">
+              <div class="pbpk-ans is-off"><t t-out="ic('alert', 16)"/> <span t-esc="r.msg"/></div>
+            </t>
+            <t t-else="">
+              <div t-att-class="toneClass">
+                <t t-if="answerOk" t-out="ic('checkCircle', 16)"/>
+                <t t-else="" t-out="ic('info', 16)"/>
+                <span t-esc="r.sentence"/>
+              </div>
+              <p class="pbpk-note" t-if="r.note" t-esc="r.note"/>
+
+              <t t-if="r.lines and r.lines.length">
+                <div class="pbpk-tot">
+                  <div><span>Gross pay</span><b t-esc="money(r.after.gross)"/><small>was <t t-esc="money(r.before.gross)"/></small></div>
+                  <div><span>Employer contributions</span><b t-esc="money(r.after.employer)"/><small>was <t t-esc="money(r.before.employer)"/></small></div>
+                  <div class="is-hero"><span>Total a month</span><b t-esc="money(r.after.total)"/><small><t t-esc="money(r.after.year)"/> a year</small></div>
+                  <div><span>Take-home</span><b t-esc="money(r.after.net)"/><small>was <t t-esc="money(r.before.net)"/></small></div>
+                </div>
+
+                <table class="pbpk-table" t-if="rows.length">
+                  <thead><tr><th>Pay item</th><th class="n">Now</th><th class="n">New</th></tr></thead>
+                  <tbody>
+                    <tr t-foreach="rows" t-as="row" t-key="row.code" t-att-class="{ 'is-ch': row.changed }">
+                      <td t-esc="row.name"/>
+                      <td class="n" t-esc="money(row.before)"/>
+                      <td class="n"><b t-esc="money(row.after)"/></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="pbpk-lines-h">
+                  <span>The payslip at these figures</span>
+                  <button type="button" class="pbpk-link" t-on-click="() => this.toggleOnly()">
+                    <t t-if="state.onlyChanged">Show every line</t>
+                    <t t-else="">Only what changed</t>
+                  </button>
+                </div>
+                <table class="pbpk-table sm">
+                  <tbody>
+                    <tr t-foreach="lines" t-as="line" t-key="line.code" t-att-class="{ 'is-ch': line.changed }">
+                      <td t-esc="line.name"/>
+                      <td class="n" t-esc="money(line.before)"/>
+                      <td class="n"><b t-esc="money(line.after)"/></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </t>
+
+              <div class="pbpk-use" t-if="canUse">
+                <button class="pbpk-go" t-att-disabled="state.busy" t-on-click="() => this.use()">
+                  <t t-out="ic('check', 15)"/> <span>Use these figures</span>
+                </button>
+                <p class="pbpk-safe" t-if="isOffer" t-esc="r.use_note"/>
+                <p class="pbpk-safe" t-else="">They go into the contract form. Nothing is saved until you press Save there, and the change then goes for approval like any other pay change.</p>
+              </div>
+              <p class="pbpk-safe" t-if="isOffer and r.can_use and !ctx.editable">This offer has been sent for sign-off, so its figures cannot be changed here.</p>
+            </t>
+          </div>
+        </div>
+        <div class="pbpk-foot" t-if="r and r.evals">Worked out in <t t-esc="r.evals"/> tries</div>
+      </div>
+    </div>
+  </t>
+
+</templates>

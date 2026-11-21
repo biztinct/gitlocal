@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         RECORDS OPEN NATIVELY, SKINNED (Option B: skin, do not rebuild).
+         The board is the screen; these are what a drill-down from it lands
+         on, and what the Settings cog points at.
+
+         Two rules every form here carries:
+           * `nolabel="1"` inside a `<group>` needs `colspan="2"` or the field
+             renders ONE LABEL WIDE (R128) — an inner group is a two-column
+             grid and a label-less field takes the narrow cell;
+           * a search `<group>` takes NO `string` and NO `expand` on Odoo 19 —
+             it fails RNG validation and aborts the whole module load (R129).
+
+         These are `ir.actions.act_window` RECORDS, so the ORM computes their
+         `views` field and R125 does not apply; that rule is about a dict a
+         facade hands to `doAction`, and every one of those in this module
+         goes through `_door()`.
+         ================================================================== -->
+
+    <!-- ================================================================= -->
+    <!--  assignments                                                      -->
+    <!-- ================================================================= -->
+    <record id="view_pb_training_assignment_list" model="ir.ui.view">
+        <field name="name">pb.training.assignment.list</field>
+        <field name="model">pb.training.assignment</field>
+        <field name="arch" type="xml">
+            <list string="Training assignments">
+                <field name="employee_id" width="220px"/>
+                <field name="channel_id" width="260px"/>
+                <field name="reason"/>
+                <field name="due_date"/>
+                <field name="counts_for_probation" optional="show"/>
+                <field name="score" optional="hide"/>
+                <field name="completed_on" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state == 'overdue'"
+                       decoration-warning="state == 'excused'"
+                       decoration-info="state == 'in_progress'"
+                       decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_training_assignment_form" model="ir.ui.view">
+        <field name="name">pb.training.assignment.form</field>
+        <field name="model">pb.training.assignment</field>
+        <field name="arch" type="xml">
+            <form string="Training assignment">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name" readonly="1"/></h1>
+                    </div>
+                    <div class="alert alert-warning" role="status"
+                         invisible="state != 'overdue'">
+                        <strong>This one is past its date.</strong>
+                        The person has been told, and their manager and the HR
+                        lead are told too once it stays late.
+                    </div>
+                    <div class="alert alert-info" role="status"
+                         invisible="state != 'excused'">
+                        <strong>More time has been agreed.</strong>
+                        Nothing chases this one before the date below.
+                    </div>
+                    <group>
+                        <group string="Who and what">
+                            <field name="employee_id"/>
+                            <field name="channel_id"/>
+                            <field name="reason"/>
+                            <field name="counts_for_probation"/>
+                        </group>
+                        <group string="By when">
+                            <field name="due_date"/>
+                            <field name="excused_until" readonly="1"
+                                   invisible="not excused_until"/>
+                            <field name="state" readonly="1"/>
+                            <field name="completed_on" readonly="1"
+                                   invisible="not completed_on"/>
+                            <field name="score" readonly="1"
+                                   invisible="not score"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Where it came from">
+                            <field name="assigned_by_id" readonly="1"/>
+                            <field name="assigned_on" readonly="1"/>
+                            <field name="schedule_id" readonly="1"
+                                   invisible="not schedule_id"/>
+                            <field name="rule_id" readonly="1"
+                                   invisible="not rule_id"/>
+                            <field name="status_id" readonly="1"
+                                   invisible="not status_id"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Requests for more time"
+                              name="delays">
+                            <field name="delay_ids" readonly="1">
+                                <list>
+                                    <field name="reason_kind"/>
+                                    <field name="days_asked"/>
+                                    <field name="old_due_date"/>
+                                    <field name="new_due_date"/>
+                                    <field name="state" widget="badge"
+                                           decoration-warning="state == 'submitted'"
+                                           decoration-success="state == 'approved'"
+                                           decoration-danger="state == 'refused'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_training_assignment_search" model="ir.ui.view">
+        <field name="name">pb.training.assignment.search</field>
+        <field name="model">pb.training.assignment</field>
+        <field name="arch" type="xml">
+            <search string="Training assignments">
+                <field name="employee_id"/>
+                <field name="channel_id"/>
+                <filter name="f_overdue" string="Past its date"
+                        domain="[('state', '=', 'overdue')]"/>
+                <filter name="f_open" string="Still to do"
+                        domain="[('state', 'in', ['assigned', 'in_progress', 'overdue', 'excused'])]"/>
+                <filter name="f_done" string="Finished"
+                        domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="f_probation" string="Trial period waits for it"
+                        domain="[('counts_for_probation', '=', True)]"/>
+                <group name="group_by">
+                    <filter name="g_state" string="How far it has got"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="g_reason" string="Why"
+                            context="{'group_by': 'reason'}"/>
+                    <filter name="g_course" string="Course"
+                            context="{'group_by': 'channel_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_training_assignments" model="ir.actions.act_window">
+        <field name="name">Training assignments</field>
+        <field name="res_model">pb.training.assignment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody has been put on a course yet</p>
+            <p>An assignment is a course somebody has to finish by a date. Open
+               the Training screen, pick a course, choose the people and say by
+               when — everybody you pick sees it on their own training page and
+               is reminded as the date comes up.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!--  requests for more time                                           -->
+    <!-- ================================================================= -->
+    <record id="view_pb_training_delay_list" model="ir.ui.view">
+        <field name="name">pb.training.delay.list</field>
+        <field name="model">pb.training.delay</field>
+        <field name="arch" type="xml">
+            <list string="Requests for more time">
+                <field name="employee_id" width="220px"/>
+                <field name="channel_id" width="260px"/>
+                <field name="reason_kind"/>
+                <field name="days_asked"/>
+                <field name="old_due_date" optional="hide"/>
+                <field name="new_due_date" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'submitted'"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_training_delay_form" model="ir.ui.view">
+        <field name="name">pb.training.delay.form</field>
+        <field name="model">pb.training.delay</field>
+        <field name="arch" type="xml">
+            <form string="More time on a course">
+                <header>
+                    <button name="action_submit" type="object"
+                            string="Send it to be agreed" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object"
+                            string="Agree the extra time" class="btn-primary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_refuse" type="object"
+                            string="Turn it down"
+                            invisible="state != 'submitted'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="What is being asked">
+                            <field name="assignment_id" readonly="1"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="channel_id" readonly="1"/>
+                            <field name="reason_kind"/>
+                            <field name="days_asked"/>
+                        </group>
+                        <group string="The dates">
+                            <field name="old_due_date" readonly="1"/>
+                            <field name="new_due_date" readonly="1"/>
+                            <field name="decided_on" readonly="1"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="What they said">
+                        <!-- colspan="2" or a label-less box renders one label
+                             wide, with a thousand pixels of empty row beside
+                             it (R128). -->
+                        <field name="note" nolabel="1" colspan="2"
+                               placeholder="Anything they want to add."/>
+                    </group>
+                    <group string="Why it was turned down"
+                           invisible="state != 'refused'">
+                        <field name="refuse_note" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_training_delays" model="ir.actions.act_window">
+        <field name="name">Requests for more time</field>
+        <field name="res_model">pb.training.delay</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody has asked for more time</p>
+            <p>When somebody cannot finish a course by its date they ask their
+               manager for longer from their own training page, and say why.
+               The request appears here and in the manager's approvals.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!--  compliance schedules                                             -->
+    <!-- ================================================================= -->
+    <record id="view_pb_training_schedule_list" model="ir.ui.view">
+        <field name="name">pb.training.schedule.list</field>
+        <field name="model">pb.training.schedule</field>
+        <field name="arch" type="xml">
+            <list string="Compliance schedules">
+                <field name="name" width="260px"/>
+                <field name="channel_id" width="240px"/>
+                <field name="audience"/>
+                <field name="every_months"/>
+                <field name="due_days"/>
+                <field name="next_run"/>
+                <field name="last_run" optional="show"/>
+                <field name="last_count" optional="show"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_training_schedule_form" model="ir.ui.view">
+        <field name="name">pb.training.schedule.form</field>
+        <field name="model">pb.training.schedule</field>
+        <field name="arch" type="xml">
+            <form string="Compliance schedule">
+                <sheet>
+                    <widget name="web_ribbon" title="Switched off"
+                            bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name"
+                                   placeholder="Fire safety, every year"/></h1>
+                    </div>
+                    <group>
+                        <group string="What and who">
+                            <field name="channel_id"/>
+                            <field name="audience"/>
+                            <field name="department_id"
+                                   invisible="audience != 'department'"
+                                   required="audience == 'department'"/>
+                            <field name="job_id"
+                                   invisible="audience != 'job'"
+                                   required="audience == 'job'"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group string="How often">
+                            <field name="every_months"/>
+                            <field name="due_days"/>
+                            <field name="next_run"/>
+                            <field name="last_run" readonly="1"/>
+                            <field name="last_count" readonly="1"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="status">
+                        On the date above, everybody this is about who is not
+                        already doing the course is put on it and given the
+                        number of days below. The date then moves on by the
+                        number of months. Nobody is put on it twice.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_training_schedules" model="ir.actions.act_window">
+        <field name="name">Compliance schedules</field>
+        <field name="res_model">pb.training.schedule</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Set up a course that comes round again</p>
+            <p>A schedule is for the training that has to be done again and
+               again — fire safety every year, food handling every two. Say
+               which course, who it is for and how often, and it assigns itself
+               from then on.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!--  day-one rules                                                    -->
+    <!-- ================================================================= -->
+    <record id="view_pb_training_rule_list" model="ir.ui.view">
+        <field name="name">pb.training.rule.list</field>
+        <field name="model">pb.training.rule</field>
+        <field name="arch" type="xml">
+            <list string="Day-one courses">
+                <field name="name" width="260px"/>
+                <field name="channel_ids" widget="many2many_tags"/>
+                <field name="due_days"/>
+                <field name="department_ids" widget="many2many_tags"
+                       optional="show"/>
+                <field name="job_ids" widget="many2many_tags" optional="hide"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_training_rule_form" model="ir.ui.view">
+        <field name="name">pb.training.rule.form</field>
+        <field name="model">pb.training.rule</field>
+        <field name="arch" type="xml">
+            <form string="Day-one courses">
+                <sheet>
+                    <widget name="web_ribbon" title="Switched off"
+                            bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Induction"/></h1>
+                    </div>
+                    <group>
+                        <group string="What they are put on">
+                            <field name="channel_ids"
+                                   widget="many2many_tags"/>
+                            <field name="due_days"/>
+                            <field name="company_id"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Who it is about">
+                            <field name="department_ids"
+                                   widget="many2many_tags"/>
+                            <field name="job_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="status">
+                        Leave both lists on the right empty and the rule is
+                        about everybody who joins. It runs on the joining day,
+                        from the step on the joining checklist — and only when
+                        day-one courses are switched on.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_training_rules" model="ir.actions.act_window">
+        <field name="name">Day-one courses</field>
+        <field name="res_model">pb.training.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Say what a new joiner does first</p>
+            <p>A day-one rule is the induction: the courses everybody — or
+               everybody in one part of the business — is put on when they
+               arrive, and how long they get. It runs from the joining
+               checklist, on their first day.</p>
+        </field>
+    </record>
+
+</odoo>

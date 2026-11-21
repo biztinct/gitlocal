@@ -1,0 +1,174 @@
+// =====================================================================
+//  LEARNING L7 — the learner's phone (.pbtr-*).
+//
+//  Phone first: every control a thumb presses is at least 48 px tall on a
+//  phone, the lesson's frame never takes the whole screen (so the page can
+//  always be scrolled past it), and the cards stack. Light-only like the
+//  rest of /my (every colour is a literal, R39). No `min()`/`max()` with
+//  mixed units (it kills the whole bundle).
+// =====================================================================
+
+@keyframes pbtr-l7-in {
+    from { transform: translateY(6px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+
+.pbtr {
+    // ------------------------------------------------- the offline banner
+    .pbtr-offline {
+        display: flex; gap: 10px; align-items: center;
+        padding: 12px 16px; margin-bottom: 16px; border-radius: 12px;
+        background: #F8FAFC; color: #334155; border: 1px solid #E2E8F0;
+        font-size: 13.5px; font-weight: 600; line-height: 1.45;
+
+        &[hidden] { display: none; }
+        &.is-wait { background: #FFFBEB; color: #92400E; border-color: #FDE68A; }
+        &.is-ok   { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
+        .pbtr-offline-ic { flex: 0 0 auto; display: inline-flex; }
+        .pbtr-offline-ic--ok { display: none; }
+        &.is-ok .pbtr-offline-ic--ok { display: inline-flex; }
+        &.is-ok .pbtr-offline-ic--wait { display: none; }
+        .pbtr-offline-say { flex: 1 1 auto; }
+        ul { margin: 6px 0 0; padding-left: 18px; font-weight: 550; }
+        a { color: inherit; text-decoration: underline; }
+    }
+    .pbtr-words { display: none; }
+
+    // ------------------------------------------------- next for you
+    .pbtr-next {
+        display: flex; align-items: center; gap: 18px;
+        padding: 20px 22px; margin-bottom: 14px;
+        border: 1px solid #DDD8F5; background: #FBFAFF;
+
+        &.pbtr-next--overdue, &.pbtr-next--renewal {
+            border-color: #FDE68A; background: #FFFDF5;
+            .pbtr-next-eyebrow { color: #B45309; }
+        }
+        &.pbtr-next--none {
+            border-color: #E2E8F0; background: #FFFFFF;
+            .pbtr-next-eyebrow { color: #64748B; }
+        }
+    }
+    .pbtr-next-main { flex: 1 1 auto; min-width: 0; }
+    .pbtr-next-eyebrow {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11px; font-weight: 750; letter-spacing: .06em;
+        text-transform: uppercase; color: #5A4BB0;
+    }
+    .pbtr-next-title {
+        margin: 6px 0 4px; font-size: 20px; font-weight: 760; color: #0F172A;
+        line-height: 1.3; overflow-wrap: anywhere;
+    }
+    .pbtr-next-line { margin: 0; font-size: 13.5px; color: #475569; }
+    .pbtr-next-why { margin: 6px 0 0; font-size: 13px; color: #64748B; }
+    .pbtr-next .pbtr-bar { margin-top: 12px; }
+    .pbtr-next-go { flex: 0 0 auto; }
+
+    // ------------------------------------------------- three minutes today
+    .pbtr-three {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 18px; margin-bottom: 14px; text-decoration: none;
+        color: inherit; border: 1px solid #E2E8F0;
+
+        &:hover { border-color: #C7C2EE; text-decoration: none; }
+    }
+    .pbtr-three-ic {
+        flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #F1EFFC; color: #5A4BB0;
+    }
+    .pbtr-three-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbtr-three-l {
+        font-size: 11px; font-weight: 750; letter-spacing: .06em;
+        text-transform: uppercase; color: #5A4BB0;
+    }
+    .pbtr-three-name { font-size: 15px; color: #0F172A; overflow-wrap: anywhere; }
+    .pbtr-three-go {
+        flex: 0 0 auto; padding: 9px 16px; border-radius: 10px;
+        background: #5A4BB0; color: #FFFFFF; font-weight: 700; font-size: 13.5px;
+    }
+
+    // ------------------------------------------------- the streak
+    .pbtr-streak {
+        display: inline-flex; align-items: center; gap: 8px;
+        margin: 0 0 16px; padding: 6px 12px; border-radius: 999px;
+        background: #ECFDF5; color: #047857; font-size: 13px; font-weight: 650;
+    }
+
+    // ------------------------------------------------- the certificate badge
+    .pbtr-badge-wrap { flex: 0 0 auto; display: inline-flex; margin-right: 4px; }
+    .pbtr-cert .pbtr-course-top { justify-content: flex-start; }
+    .pbtr-cert .pbtr-course-id { flex: 1 1 auto; }
+
+    // ------------------------------------------------- both languages
+    .pbtr-langchip {
+        display: inline-block; margin-right: 8px; padding: 2px 7px;
+        border-radius: 6px; background: #EEF2FF; color: #4338CA;
+        font-size: 11px; font-weight: 750; letter-spacing: .04em;
+        vertical-align: middle;
+    }
+    // Hidden until "Show both languages" (chips included: a chip's own
+    // inline-block must not win over the hiding).
+    .pbtr-both-only, .pbtr-langchip.pbtr-both-only { display: none; }
+    &.is-both .pbtr-both-only { display: block; }
+    &.is-both .pbtr-langchip.pbtr-both-only { display: inline-block; }
+    .pbtr-both-name { margin: 4px 0 0; font-size: 17px; font-weight: 650; color: #475569; }
+    .pbtr-both-rule {
+        display: flex; align-items: center; gap: 10px; margin: 0 0 12px;
+
+        &::after { content: ""; flex: 1 1 auto; height: 1px; background: #E2E8F0; }
+    }
+    .pbtr-both-article { margin-top: 26px; }
+    .pbtr-both-bar { margin: 0 0 14px; }
+    .pbtr-both-toggle {
+        display: inline-flex; align-items: center; gap: 8px;
+        min-height: 40px; padding: 8px 14px; border-radius: 10px;
+        border: 1px solid #E2E8F0; background: #FFFFFF; color: #334155;
+        font-size: 13.5px; font-weight: 650; text-decoration: none;
+
+        &:hover { border-color: #C7D2FE; color: #4338CA; text-decoration: none; }
+        .pbtr-both-off-label { display: inline; }
+        .pbtr-both-on-label { display: none; }
+    }
+    &.is-both .pbtr-both-toggle {
+        background: #EEF2FF; border-color: #C7D2FE; color: #3730A3;
+        .pbtr-both-on-label { display: inline; }
+        .pbtr-both-off-label { display: none; }
+    }
+
+    // ------------------------------------------------- the file link
+    .pbtr-openfile { margin: 0; padding: 12px 16px; border-top: 1px solid #E2E8F0; background: #FFFFFF; }
+
+    // ------------------------------------------------- a saved, unsent press
+    .pbtr-btn--saved, .pbtr-btn--saved:hover {
+        background: #FFFBEB !important; color: #92400E !important;
+        border-color: #FDE68A !important; cursor: default;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbtr-next, .pbtr-three, .pbtr-offline { animation: pbtr-l7-in .28s ease both; }
+    }
+
+    // ================================================= the phone surface
+    @media (max-width: 700px) {
+        .pbtr-next { flex-direction: column; align-items: stretch; gap: 14px; padding: 18px; }
+        .pbtr-next-title { font-size: 18px; }
+        .pbtr-next-go { justify-content: center; width: 100%; }
+
+        // Thumb-sized: every button the lesson page asks a thumb to press.
+        .pbtr-foot .pbme-btn, .pbtr-foot button, .pbtr-next-go,
+        .pbtr-quiz button[type="submit"], .pbtr-openfile .pbme-btn,
+        .pbtr-course-act .pbme-btn {
+            min-height: 48px;
+        }
+        .pbtr-openfile .pbme-btn { width: 100%; justify-content: center; }
+        .pbtr-a { min-height: 44px; align-items: center; padding: 10px 12px; }
+        .pbtr-a input { width: 20px; height: 20px; margin-top: 0; }
+
+        // The frame never takes the whole screen: there is always page left
+        // above and below it to scroll with (a frame swallows the swipe).
+        .pbtr-frame.pbtr-frame--doc { padding-top: 0; height: 70vh; }
+        .pbtr-frame.pbtr-frame--doc iframe { position: absolute; }
+        .pbtr-three { padding: 12px 14px; }
+    }
+}

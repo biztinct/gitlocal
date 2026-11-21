@@ -1,0 +1,772 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:08+0000\n"
+"PO-Revision-Date: 2026-11-15 16:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "%s has no published privacy notice yet."
+msgstr "%s belum menerbitkan pemberitahuan privasi."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "<span>Answered on</span>"
+msgstr "<span>Dijawab pada</span>"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "<span>Version</span>"
+msgstr "<span>Versi</span>"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "<span>Your answer is kept with today's date, and HR can see it. You continue to My Payobook whichever you choose.</span>"
+msgstr "<span>Jawaban Anda disimpan dengan tanggal hari ini dan HR dapat melihatnya. Apa pun pilihan Anda, Anda tetap lanjut ke My Payobook.</span>"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "A notice people have seen is kept as a record and cannot be deleted."
+msgstr "Pemberitahuan yang sudah dilihat orang disimpan sebagai catatan dan tidak dapat dihapus."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "A published notice cannot be changed, because people have answered it. Use \"Write a new version\" to change the words; everybody is then asked again."
+msgstr "Pemberitahuan yang sudah terbit tidak dapat diubah karena orang sudah menjawabnya. Gunakan \"Tulis versi baru\" untuk mengubah isinya; semua orang akan ditanya lagi."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "A published notice cannot be changed, because people have answered it. Write a new version instead."
+msgstr "Pemberitahuan yang sudah terbit tidak dapat diubah karena orang sudah menjawabnya. Tulis versi baru."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_needaction
+msgid "Action Needed"
+msgstr "Perlu tindakan"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Agreed"
+msgstr "Setuju"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Agreed on paper"
+msgstr "Setuju di atas kertas"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "An answer is a record and cannot be changed. A new answer is added instead."
+msgstr "Jawaban adalah catatan dan tidak dapat diubah. Jawaban baru akan ditambahkan."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "An answer is a record and cannot be deleted."
+msgstr "Jawaban adalah catatan dan tidak dapat dihapus."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__answer
+msgid "Answer"
+msgstr "Jawaban"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__user_id
+msgid "Answered with the login"
+msgstr "Dijawab dengan akun"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__consent_ids
+msgid "Answers"
+msgstr "Jawaban"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "Answers are recorded by My Payobook or by HR's paper consent button only."
+msgstr "Jawaban hanya dicatat melalui My Payobook atau tombol persetujuan kertas milik HR."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Ask HR about it"
+msgstr "Tanya HR"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Asked once per version. A new version asks everybody again."
+msgstr "Ditanyakan sekali per versi. Versi baru menanyai semua orang lagi."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_attachment_count
+msgid "Attachment Count"
+msgstr "Jumlah lampiran"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "Before you continue, please read how"
+msgstr "Sebelum melanjutkan, bacalah bagaimana"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Carry on writing the notice"
+msgstr "Lanjutkan menulis pemberitahuan"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "Choose one of the two answers."
+msgstr "Pilih salah satu dari dua jawaban."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__company_id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__create_uid model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__create_date model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_ir_http__display_name model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_board__display_name model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__display_name model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "Everybody in this company will be asked to read this notice and answer it on their next visit to My Payobook. Publish it now?"
+msgstr "Semua orang di perusahaan ini akan diminta membaca dan menjawab pemberitahuan ini saat berikutnya membuka My Payobook. Terbitkan sekarang?"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Find a person"
+msgstr "Cari seseorang"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Find a person…"
+msgstr "Cari seseorang…"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_follower_ids
+msgid "Followers"
+msgstr "Pengikut"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Pengikut (Mitra)"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__version
+msgid "Given when the notice is published."
+msgstr "Diberikan saat pemberitahuan diterbitkan."
+
+#. module: pb_me_privacy
+#: model:ir.model,name:pb_me_privacy.model_ir_http
+msgid "HTTP Routing"
+msgstr "Perutean HTTP"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__has_message
+msgid "Has Message"
+msgstr "Ada pesan"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__how
+msgid "How"
+msgstr "Cara"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0 model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "How we use your personal details"
+msgstr "Cara kami menggunakan data pribadi Anda"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "How your company uses your personal details, and the answer you gave."
+msgstr "Cara perusahaan menggunakan data pribadi Anda, dan jawaban yang Anda berikan."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_consent__answer__disagree model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "I do not agree"
+msgstr "Saya tidak setuju"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_consent__answer__agree model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "I have read and agree"
+msgstr "Saya sudah membaca dan setuju"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "I no longer agree"
+msgstr "Saya tidak lagi setuju"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_ir_http__id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_board__id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_has_error model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jika dicentang, beberapa pesan gagal terkirim."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_is_follower
+msgid "Is Follower"
+msgstr "Adalah pengikut"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__lang
+msgid "Language"
+msgstr "Bahasa"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__write_uid model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__write_date model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_has_error
+msgid "Message Delivery error"
+msgstr "Kesalahan pengiriman pesan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_ids
+msgid "Messages"
+msgstr "Pesan"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "No login"
+msgstr "Tanpa akun"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "No privacy notice is published for"
+msgstr "Belum ada pemberitahuan privasi yang terbit untuk"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Nobody here"
+msgstr "Tidak ada siapa pun"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Nobody is locked out: either answer continues to My Payobook."
+msgstr "Tidak ada yang terkunci: jawaban apa pun tetap lanjut ke My Payobook."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Nobody matches what you picked. Clear the search or press the number again."
+msgstr "Tidak ada yang cocok dengan pilihan Anda. Kosongkan pencarian atau tekan angkanya lagi."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0 model_terms:ir.ui.view,arch_db:pb_me_privacy.pbpv_status
+msgid "Not answered yet"
+msgstr "Belum dijawab"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_notice__state__draft
+msgid "Not published yet"
+msgstr "Belum diterbitkan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__note
+msgid "Note"
+msgstr "Catatan"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Nothing to read here yet"
+msgstr "Belum ada yang perlu dibaca"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__notice_id model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__body
+msgid "Notice"
+msgstr "Pemberitahuan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Jumlah tindakan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_has_error_counter
+msgid "Number of errors"
+msgstr "Jumlah kesalahan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Jumlah pesan yang perlu tindakan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Jumlah pesan yang gagal terkirim"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_consent__how__screen
+msgid "On My Payobook"
+msgstr "Di My Payobook"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "On paper, recorded by"
+msgstr "Di atas kertas, dicatat oleh"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_consent__how__paper
+msgid "On paper, recorded by HR"
+msgstr "Di atas kertas, dicatat oleh HR"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/board.py:0 code:addons/pb_me_privacy/models/notice.py:0
+msgid "Only HR can change the privacy notice."
+msgstr "Hanya HR yang dapat mengubah pemberitahuan privasi."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/board.py:0 code:addons/pb_me_privacy/models/consent.py:0
+msgid "Only HR can record paper consent."
+msgstr "Hanya HR yang dapat mencatat persetujuan kertas."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/board.py:0
+msgid "Only HR can see who has answered the privacy notice."
+msgstr "Hanya HR yang dapat melihat siapa yang sudah menjawab pemberitahuan privasi."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "Only the people whose job needs your details can see them. We share them only where we have to, for example with the tax office, social insurance, and the bank that pays your salary."
+msgstr "Hanya orang yang pekerjaannya membutuhkan data Anda yang dapat melihatnya. Kami membagikannya hanya bila wajib, misalnya kepada kantor pajak, jaminan sosial, dan bank yang membayar gaji Anda."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Paper consent recorded for %s."
+msgstr "Persetujuan kertas dicatat untuk %s."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0 code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_breadcrumbs_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_home_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Privacy"
+msgstr "Privasi"
+
+#. module: pb_me_privacy
+#: model:ir.model,name:pb_me_privacy.model_pb_privacy_board
+msgid "Privacy consent board"
+msgstr "Papan persetujuan privasi"
+
+#. module: pb_me_privacy
+#: model:ir.model,name:pb_me_privacy.model_pb_privacy_notice model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_breadcrumbs_privacy model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "Privacy notice"
+msgstr "Pemberitahuan privasi"
+
+#. module: pb_me_privacy
+#: model:ir.model,name:pb_me_privacy.model_pb_privacy_consent
+msgid "Privacy notice answer"
+msgstr "Jawaban pemberitahuan privasi"
+
+#. module: pb_me_privacy
+#: model:ir.actions.act_window,name:pb_me_privacy.action_pb_privacy_notice model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_list
+msgid "Privacy notices"
+msgstr "Pemberitahuan privasi"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Privacy · who has answered the notice"
+msgstr "Privasi · siapa yang sudah menjawab"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "Publish"
+msgstr "Terbitkan"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_notice__state__published
+msgid "Published"
+msgstr "Diterbitkan"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__published_by
+msgid "Published by"
+msgstr "Diterbitkan oleh"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__published_on
+msgid "Published on"
+msgstr "Diterbitkan pada"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__rating_ids
+msgid "Ratings"
+msgstr "Penilaian"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Read the answers again"
+msgstr "Baca ulang jawaban"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Read the notice"
+msgstr "Baca pemberitahuan"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Reading the answers…"
+msgstr "Membaca jawaban…"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Record paper consent"
+msgstr "Catat persetujuan kertas"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__recorded_by
+msgid "Recorded by"
+msgstr "Dicatat oleh"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields.selection,name:pb_me_privacy.selection__pb_privacy_notice__state__replaced
+msgid "Replaced by a newer version"
+msgstr "Diganti versi yang lebih baru"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__replaced_on
+msgid "Replaced on"
+msgstr "Diganti pada"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Kesalahan pengiriman SMS"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "Said no"
+msgstr "Tidak setuju"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "See the notice"
+msgstr "Lihat pemberitahuan"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Signed paper form seen?"
+msgstr "Formulir kertas bertanda tangan sudah dilihat?"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Start from a plain, neutral wording and change it to say what your company really does."
+msgstr "Mulailah dari kata-kata yang sederhana dan netral, lalu ubah agar sesuai dengan yang benar-benar dilakukan perusahaan Anda."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Thank you. Your answer is saved: you agree."
+msgstr "Terima kasih. Jawaban Anda tersimpan: Anda setuju."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "That did not go through. Please try again."
+msgstr "Belum berhasil. Silakan coba lagi."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/board.py:0
+msgid "That person could not be found."
+msgstr "Orang tersebut tidak ditemukan."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "The answers could not be read just now. Try again in a moment."
+msgstr "Jawaban belum dapat dibaca saat ini. Coba lagi sebentar lagi."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "The first 200 people are shown. Search for a name to find somebody further down."
+msgstr "200 orang pertama ditampilkan. Cari nama untuk menemukan orang lainnya."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "This is a starting point. Read it carefully and change it so that it says what your company really does with people's details, then publish it."
+msgstr "Ini adalah titik awal. Baca dengan teliti dan ubah agar sesuai dengan yang benar-benar dilakukan perusahaan Anda dengan data orang, lalu terbitkan."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "This notice has been replaced. Please read the new one."
+msgstr "Pemberitahuan ini sudah diganti. Silakan baca yang baru."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "This notice is not for you."
+msgstr "Pemberitahuan ini bukan untuk Anda."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "This one is for HR"
+msgstr "Bagian ini untuk HR"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/consent.py:0
+msgid "This person is in a company you cannot see."
+msgstr "Orang ini ada di perusahaan yang tidak dapat Anda lihat."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "This version is already published."
+msgstr "Versi ini sudah diterbitkan."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__name
+msgid "Title"
+msgstr "Judul"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Until you publish one, nobody is asked anything. When you publish it, each employee reads it the next time they open My Payobook and answers \"I have read and agree\" or \"I do not agree\"."
+msgstr "Sebelum Anda menerbitkannya, tidak ada yang ditanya. Setelah terbit, setiap karyawan membacanya saat berikutnya membuka My Payobook dan menjawab \"Saya sudah membaca dan setuju\" atau \"Saya tidak setuju\"."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__version model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__version
+msgid "Version"
+msgstr "Versi"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "Version %s published. Everybody in %s is asked to read it on their next visit to My Payobook."
+msgstr "Versi %s diterbitkan. Semua orang di %s diminta membacanya saat berikutnya membuka My Payobook."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "We keep the personal details you give us, and the details of your work with us, so that we can employ you, pay you correctly and meet our duties to the tax office and social insurance."
+msgstr "Kami menyimpan data pribadi yang Anda berikan dan data pekerjaan Anda bersama kami, agar kami dapat mempekerjakan Anda, membayar Anda dengan benar, dan memenuhi kewajiban kepada kantor pajak dan jaminan sosial."
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "We keep your details while you work with us, and afterwards for as long as the rules we follow require."
+msgstr "Kami menyimpan data Anda selama Anda bekerja dengan kami, dan sesudahnya selama yang diwajibkan oleh aturan yang kami ikuti."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_notice__website_message_ids
+msgid "Website Messages"
+msgstr "Pesan situs web"
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__website_message_ids
+msgid "Website communication history"
+msgstr "Riwayat komunikasi situs web"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_home_privacy
+msgid "What we keep about you, and your answer"
+msgstr "Apa yang kami simpan tentang Anda, dan jawaban Anda"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__answered_on
+msgid "When"
+msgstr "Kapan"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "When your company publishes its privacy notice, you will find it here with your answer."
+msgstr "Saat perusahaan menerbitkan pemberitahuan privasinya, Anda akan menemukannya di sini bersama jawaban Anda."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Who has read your privacy notice and given an answer. Record paper consent for people without a login."
+msgstr "Siapa yang sudah membaca pemberitahuan privasi dan menjawab. Catat persetujuan kertas untuk orang tanpa akun."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,field_description:pb_me_privacy.field_pb_privacy_consent__wording
+msgid "Wording shown"
+msgstr "Kata-kata yang ditampilkan"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_privacy.view_pb_privacy_notice_form
+msgid "Write a new version"
+msgstr "Tulis versi baru"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Write the notice"
+msgstr "Tulis pemberitahuan"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "Write the notice before publishing it."
+msgstr "Tulis pemberitahuan sebelum menerbitkannya."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "Yes, record it"
+msgstr "Ya, catat"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.pbpv_status
+msgid "You agreed"
+msgstr "Anda setuju"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.pbpv_status
+msgid "You agreed on paper"
+msgstr "Anda setuju di atas kertas"
+
+#. module: pb_me_privacy
+#. odoo-python
+#: code:addons/pb_me_privacy/models/notice.py:0
+msgid "You can ask HR at any time to see the details we keep about you, to correct them, or to explain how they are used."
+msgstr "Anda dapat meminta HR kapan saja untuk melihat data yang kami simpan tentang Anda, memperbaikinya, atau menjelaskan penggunaannya."
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.pbpv_status
+msgid "You did not agree"
+msgstr "Anda tidak setuju"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_my_privacy
+msgid "Your answer is saved: you do not agree. HR can see it and may contact you."
+msgstr "Jawaban Anda tersimpan: Anda tidak setuju. HR dapat melihatnya dan mungkin menghubungi Anda."
+
+#. module: pb_me_privacy
+#: model:ir.model.fields,help:pb_me_privacy.field_pb_privacy_notice__body
+msgid "Your company's own wording. Employees read exactly this, in their language, before they answer."
+msgstr "Kata-kata milik perusahaan Anda. Karyawan membaca persis ini, dalam bahasa mereka, sebelum menjawab."
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "agreed on My Payobook"
+msgstr "setuju di My Payobook"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "agreed on paper"
+msgstr "setuju di atas kertas"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "not answered yet"
+msgstr "belum menjawab"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/xml/privacy_lens.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_me_privacy
+#. odoo-javascript
+#: code:addons/pb_me_privacy/static/src/js/privacy_lens.js:0
+msgid "said no"
+msgstr "tidak setuju"
+
+#. module: pb_me_privacy
+#: model_terms:ir.ui.view,arch_db:pb_me_privacy.portal_privacy_notice
+msgid "uses your personal details, then give your answer."
+msgstr "menggunakan data pribadi Anda, lalu berikan jawaban Anda."

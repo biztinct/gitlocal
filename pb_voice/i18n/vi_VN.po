@@ -1,0 +1,2019 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 12:47+0000\n"
+"PO-Revision-Date: 2026-11-16 12:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "% no"
+msgstr "% không"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "% yes,"
+msgstr "% có,"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%(company)s would like to hear from you"
+msgstr "%(company)s muốn lắng nghe bạn"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "%(n)s action plans from surveys are yours"
+msgstr "%(n)s kế hoạch hành động từ khảo sát là của bạn"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "%(n)s short surveys are waiting"
+msgstr "%(n)s khảo sát ngắn đang chờ bạn"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%(name)s's team"
+msgstr "Nhóm của %(name)s"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%s (copy)"
+msgstr "%s (bản sao)"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid ". Once sent, answers cannot be changed — not even by you, because nothing links them to you."
+msgstr ". Sau khi gửi, câu trả lời không thể thay đổi — kể cả bởi bạn, vì không có gì liên kết chúng với bạn."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "<b>Action plans you own</b>"
+msgstr "<b>Kế hoạch hành động bạn phụ trách</b>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "<b>Your answers are anonymous.</b>"
+msgstr "<b>Câu trả lời của bạn là ẩn danh.</b>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "<span class=\"pbv-k\">Would recommend working here</span>"
+msgstr "<span class=\"pbv-k\">Sẽ giới thiệu nơi làm việc này</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span class=\"pbv-label\">Progress so far</span>"
+msgstr "<span class=\"pbv-label\">Tiến độ đến nay</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span class=\"pbv-label\">Status</span>"
+msgstr "<span class=\"pbv-label\">Trạng thái</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span class=\"pbv-round-d\">Closed. HR shares what was heard and what happens next.</span>"
+msgstr "<span class=\"pbv-round-d\">Đã đóng. Phòng nhân sự sẽ chia sẻ những gì đã nghe và bước tiếp theo.</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "<span>Anonymous: nobody, not even HR, can see who said what.</span>"
+msgstr "<span>Ẩn danh: không ai, kể cả phòng nhân sự, biết ai đã nói gì.</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "<span>Answers are anonymous: nobody, not even HR, can see who said what. Results and comments show only for groups with at least the number of answers below (never fewer than 5), and only after the survey closes.</span>"
+msgstr "<span>Câu trả lời là ẩn danh: không ai, kể cả phòng nhân sự, biết ai đã nói gì. Kết quả và nhận xét chỉ hiển thị cho các nhóm có ít nhất số câu trả lời dưới đây (không bao giờ dưới 5), và chỉ sau khi khảo sát đóng.</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "<span>Open until</span>"
+msgstr "<span>Mở đến</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span>Saved.</span>"
+msgstr "<span>Đã lưu.</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span>Thank you. Your answers are in, and nobody can see they are yours.</span>"
+msgstr "<span>Cảm ơn bạn. Câu trả lời đã được ghi nhận và không ai biết đó là của bạn.</span>"
+
+#. module: pb_voice
+#: model:ir.model.constraint,message:pb_voice.constraint_pb_voice_invite_one_per_round
+msgid "A person is asked once per round."
+msgstr "Mỗi người chỉ được hỏi một lần trong mỗi đợt."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A reminder: %(name)s"
+msgstr "Nhắc nhở: %(name)s"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A round can hold at most %(n)s questions."
+msgstr "Một đợt khảo sát có tối đa %(n)s câu hỏi."
+
+#. module: pb_voice
+#: model:ir.model.constraint,message:pb_voice.constraint_pb_voice_box_round_unique
+msgid "A round has one answer box."
+msgstr "Mỗi đợt có một hộp câu trả lời."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A round needs at least %(n)s people, so nobody's answers can be picked out. This one would ask %(m)s."
+msgstr "Một đợt khảo sát cần ít nhất %(n)s người để không ai bị nhận ra qua câu trả lời. Đợt này chỉ hỏi %(m)s người."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A short survey is open: %(name)s."
+msgstr "Một khảo sát ngắn đang mở: %(name)s."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "A short survey is waiting"
+msgstr "Một khảo sát ngắn đang chờ bạn"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "A survey needs at least"
+msgstr "Một khảo sát cần ít nhất"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__intro
+msgid "A word to everyone"
+msgstr "Lời nhắn đến mọi người"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "A word to everyone, shown at the top of the survey (optional)."
+msgstr "Lời nhắn đến mọi người, hiển thị ở đầu khảo sát (không bắt buộc)."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "Action plan"
+msgstr "Kế hoạch hành động"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/js/voice_palette.js:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__action_ids model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_list
+msgid "Action plans"
+msgstr "Kế hoạch hành động"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "Action plans are set up by HR."
+msgstr "Kế hoạch hành động do phòng nhân sự lập."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Action plans you own"
+msgstr "Kế hoạch hành động bạn phụ trách"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Add at least one question people answer with a rating or a choice."
+msgstr "Thêm ít nhất một câu hỏi trả lời bằng thang điểm hoặc lựa chọn."
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_library_pick model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Add from the library"
+msgstr "Thêm từ thư viện"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Add our company values"
+msgstr "Thêm giá trị cốt lõi của công ty"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_library_pick
+msgid "Add questions from the library"
+msgstr "Thêm câu hỏi từ thư viện"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Agree"
+msgstr "Đồng ý"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__scale model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__scale
+msgid "Agree or disagree (5 steps)"
+msgstr "Đồng ý hay không (5 mức)"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "An action plan from a survey is yours"
+msgstr "Một kế hoạch hành động từ khảo sát là của bạn"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Anonymous. Open until %(date)s."
+msgstr "Ẩn danh. Mở đến %(date)s."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Answer"
+msgstr "Trả lời"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "Answer now"
+msgstr "Trả lời ngay"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Answer the survey"
+msgstr "Trả lời khảo sát"
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Answered"
+msgstr "Đã trả lời"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__answered_count
+msgid "Answered (at close)"
+msgstr "Đã trả lời (khi đóng)"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__kind model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__kind
+msgid "Answered as"
+msgstr "Cách trả lời"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Answered, still open"
+msgstr "Đã trả lời, vẫn đang mở"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Answers"
+msgstr "Câu trả lời"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__date_end
+msgid "Answers are taken until the end of this day. Results open the day after, or when you close it earlier."
+msgstr "Nhận câu trả lời đến hết ngày này. Kết quả mở vào ngày hôm sau, hoặc khi bạn đóng sớm hơn."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Answers wait sealed until the survey closes, then go in all at once. Results open then."
+msgstr "Câu trả lời được niêm phong đến khi khảo sát đóng, rồi được ghi nhận cùng lúc. Kết quả mở khi đó."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Ask HR to link it, then the surveys you are asked in appear here."
+msgstr "Hãy nhờ phòng nhân sự liên kết, khi đó các khảo sát dành cho bạn sẽ hiện ở đây."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Ask how it is going: pick a few questions from the library, choose who is asked and when it closes. People answer on My Payobook, anonymously."
+msgstr "Hỏi mọi việc thế nào: chọn vài câu hỏi từ thư viện, chọn người được hỏi và ngày đóng. Mọi người trả lời ẩn danh trên My Payobook."
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__invited model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__invited_count
+msgid "Asked"
+msgstr "Được hỏi"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Average (1 to 5)"
+msgstr "Trung bình (1 đến 5)"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Back to my home"
+msgstr "Về trang chủ của tôi"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Back to surveys"
+msgstr "Quay lại khảo sát"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__draft
+msgid "Being set up"
+msgstr "Đang thiết lập"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__remind
+msgid "By email when this system sends email; on My Payobook the \"Needs you\" row stays until they answer, either way."
+msgstr "Qua email khi hệ thống gửi email; trên My Payobook, dòng \"Đang chờ bạn\" vẫn hiện cho đến khi họ trả lời."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "By theme"
+msgstr "Theo chủ đề"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Can sign in"
+msgstr "Có thể đăng nhập"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__cell
+msgid "Cell"
+msgstr "Ô nhóm"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Close now"
+msgstr "Đóng ngay"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Close this survey now?"
+msgstr "Đóng khảo sát này ngay?"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Close this survey now? Nobody can answer afterwards, and the results open."
+msgstr "Đóng khảo sát này ngay? Sau đó không ai trả lời được nữa và kết quả sẽ mở."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__closed model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_closed
+msgid "Closed on"
+msgstr "Đóng ngày"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Closed. Fewer than %(n)s people answered, so nothing was kept."
+msgstr "Đã đóng. Dưới %(n)s người trả lời nên không lưu gì cả."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Closed. The results are ready."
+msgstr "Đã đóng. Kết quả đã sẵn sàng."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Closes"
+msgstr "Đóng"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_end
+msgid "Closes on"
+msgstr "Đóng ngày"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Comment"
+msgstr "Nhận xét"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Comments"
+msgstr "Nhận xét"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__communication model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__communication model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__communication
+msgid "Communication"
+msgstr "Thông tin nội bộ"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__company_ids
+msgid "Companies asked"
+msgstr "Các công ty được hỏi"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__company_id model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__company
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Copied. Change it, then send it out."
+msgstr "Đã sao chép. Hãy chỉnh sửa rồi gửi đi."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Copy"
+msgstr "Sao chép"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Copy this survey?"
+msgstr "Sao chép khảo sát này?"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__create_date
+msgid "Created on"
+msgstr "Tạo lúc"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Delete this survey?"
+msgstr "Xóa khảo sát này?"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Deleted."
+msgstr "Đã xóa."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__department_id model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__department
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Disagree"
+msgstr "Không đồng ý"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__done model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__date_due
+msgid "Due"
+msgstr "Hạn"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Edit"
+msgstr "Sửa"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Thông tin trang chủ nhân viên"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_round
+msgid "Employee survey round"
+msgstr "Đợt khảo sát nhân viên"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Employee surveys"
+msgstr "Khảo sát nhân viên"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/models/voice_round.py:0
+msgid "Employee surveys are run by HR."
+msgstr "Khảo sát nhân viên do phòng nhân sự thực hiện."
+
+#. module: pb_voice
+#: model:ir.actions.server,name:pb_voice.cron_voice_daily_ir_actions_server
+msgid "Employee surveys: close, remind, tidy"
+msgstr "Khảo sát nhân viên: đóng, nhắc, dọn dẹp"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.actions.client,name:pb_voice.action_pb_voice_board
+msgid "Employee voice"
+msgstr "Tiếng nói nhân viên"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice
+msgid "Employee voice board and results"
+msgstr "Bảng và kết quả tiếng nói nhân viên"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__remind_every
+msgid "Every (days)"
+msgstr "Mỗi (ngày)"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Everyone asked"
+msgstr "Tất cả người được hỏi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Extremely likely"
+msgstr "Rất có thể"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Favourable %"
+msgstr "% đồng ý"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__engagement model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__engagement model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__engagement
+msgid "Feeling about working here"
+msgstr "Cảm nhận khi làm việc ở đây"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Fewer than %(n)s people answered, so nothing was kept and there are no results."
+msgstr "Dưới %(n)s người trả lời nên không lưu gì và không có kết quả."
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng Font Awesome, ví dụ fa-tasks"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_library__options model:ir.model.fields,help:pb_voice.field_pb_voice_question__options
+msgid "For \"Pick one option\": one option per line."
+msgstr "Với \"Chọn một phương án\": mỗi dòng một phương án."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__library_id
+msgid "From the library"
+msgstr "Từ thư viện"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "From the survey \"%(name)s\"."
+msgstr "Từ khảo sát \"%(name)s\"."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Group"
+msgstr "Nhóm"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__group_ids
+msgid "Groups"
+msgstr "Nhóm"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "HR only"
+msgstr "Chỉ phòng nhân sự"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__has_values
+msgid "Has Values"
+msgstr "Có giá trị cốt lõi"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Hidden"
+msgstr "Ẩn"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Hidden to keep answers private: fewer than %(n)s answers, or the figures could be worked out from the groups shown beside it."
+msgstr "Ẩn để giữ kín câu trả lời: dưới %(n)s câu trả lời, hoặc số liệu có thể suy ra từ các nhóm hiển thị bên cạnh."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "How are we doing?"
+msgstr "Chúng ta đang thế nào?"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_enps
+msgid "How likely are you to recommend working here to a friend?"
+msgstr "Bạn có sẵn lòng giới thiệu nơi làm việc này cho bạn bè không?"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__answered_count
+msgid "How many people answered, counted when the round closed."
+msgstr "Số người đã trả lời, đếm khi đợt khảo sát đóng."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_proud
+msgid "I am proud to work here."
+msgstr "Tôi tự hào khi làm việc ở đây."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_time_off
+msgid "I can take time off when I need it."
+msgstr "Tôi có thể nghỉ khi cần."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_recognised
+msgid "I get recognised when I do good work."
+msgstr "Tôi được ghi nhận khi làm tốt."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_grow
+msgid "I have chances to learn and grow here."
+msgstr "Tôi có cơ hội học hỏi và phát triển ở đây."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_expected
+msgid "I know what is expected of me at work."
+msgstr "Tôi biết công việc mong đợi gì ở tôi."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_informed
+msgid "I know what is going on in the company."
+msgstr "Tôi biết những gì đang diễn ra trong công ty."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_stay
+msgid "I see myself still working here in two years."
+msgstr "Tôi thấy mình vẫn làm việc ở đây sau hai năm nữa."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_me_home__id model:ir.model.fields,field_description:pb_voice.field_pb_voice__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng chỉ hoạt động ngoại lệ."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_anything
+msgid "Is there anything else you would like to tell us?"
+msgstr "Bạn còn điều gì muốn chia sẻ với chúng tôi không?"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "It has not been sent out, so nobody has seen it."
+msgstr "Khảo sát chưa được gửi nên chưa ai thấy."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__last_reminded
+msgid "Last reminder"
+msgstr "Lần nhắc gần nhất"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Late"
+msgstr "Trễ hạn"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__growth model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__growth model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__growth
+msgid "Learning and growth"
+msgstr "Học hỏi và phát triển"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_library__company_id
+msgid "Leave empty for a question every company can use."
+msgstr "Để trống nếu mọi công ty đều dùng được câu hỏi này."
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__department_ids
+msgid "Leave empty to ask everyone in the companies above."
+msgstr "Để trống để hỏi tất cả mọi người trong các công ty trên."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Make sign-in slips"
+msgstr "Tạo phiếu đăng nhập"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__marks
+msgid "Marks"
+msgstr "Dấu đã trả lời"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Monthly team catch-ups with every manager"
+msgstr "Họp nhóm hằng tháng với mỗi quản lý"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Hạn hoạt động của tôi"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_manager_cares
+msgid "My manager cares about me as a person."
+msgstr "Quản lý của tôi quan tâm đến tôi như một con người."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_manager_feedback
+msgid "My manager gives me useful feedback."
+msgstr "Quản lý của tôi cho tôi những góp ý hữu ích."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_workload
+msgid "My workload is manageable."
+msgstr "Khối lượng công việc của tôi vừa sức."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Neither agree nor disagree"
+msgstr "Không đồng ý cũng không phản đối"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "New action plan"
+msgstr "Kế hoạch hành động mới"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "New survey"
+msgstr "Khảo sát mới"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Sự kiện lịch hoạt động tiếp theo"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Hạn hoạt động tiếp theo"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No action plan yet. Pick a theme in the results and press +, or start one here."
+msgstr "Chưa có kế hoạch hành động. Chọn một chủ đề trong kết quả và nhấn +, hoặc tạo ở đây."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "No company values are set up."
+msgstr "Chưa thiết lập giá trị cốt lõi nào."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "No company values are set up. Add them under Praise first."
+msgstr "Chưa thiết lập giá trị cốt lõi nào. Hãy thêm ở mục Khen ngợi trước."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No email here: people see the survey under \"Needs you\" on their home page until they answer."
+msgstr "Hệ thống không gửi email: mọi người thấy khảo sát ở mục \"Đang chờ bạn\" trên trang chủ cho đến khi trả lời."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No login yet"
+msgstr "Chưa có tài khoản đăng nhập"
+
+#. module: pb_voice
+#: model_terms:ir.actions.act_window,help:pb_voice.action_pb_voice_library
+msgid "No questions in the library"
+msgstr "Thư viện chưa có câu hỏi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No questions yet. Press Edit, then \"Add from the library\"."
+msgstr "Chưa có câu hỏi. Nhấn Sửa, rồi \"Thêm từ thư viện\"."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No survey matches. Press the number again to see every survey."
+msgstr "Không có khảo sát phù hợp. Nhấn lại con số để xem tất cả."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "No survey right now"
+msgstr "Hiện chưa có khảo sát"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No survey yet"
+msgstr "Chưa có khảo sát"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Nobody can answer afterwards. The answers go in all at once and the results open."
+msgstr "Sau đó không ai trả lời được nữa. Câu trả lời được ghi nhận cùng lúc và kết quả sẽ mở."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Nobody, not even HR, can see who said what. Your answers are not stored with your name, and results show only for groups of"
+msgstr "Không ai, kể cả phòng nhân sự, biết ai đã nói gì. Câu trả lời không được lưu kèm tên bạn, và kết quả chỉ hiển thị cho nhóm từ"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Not at all likely"
+msgstr "Hoàn toàn không"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__none
+msgid "Not closed yet"
+msgstr "Chưa đóng"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Not sent out yet"
+msgstr "Chưa gửi đi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "On the Access screen, open People and press \"Logins for workers\": each person signs in with their employee code and a first password printed on a slip."
+msgstr "Trên màn hình Quyền truy cập, mở Nhân sự và nhấn \"Tài khoản cho công nhân\": mỗi người đăng nhập bằng mã nhân viên và mật khẩu đầu tiên in trên phiếu."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "One option per line"
+msgstr "Mỗi dòng một phương án"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Only a round that has not been sent out can be deleted."
+msgstr "Chỉ xóa được đợt khảo sát chưa gửi đi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Only an open round can be closed."
+msgstr "Chỉ đóng được đợt khảo sát đang mở."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__department_ids
+msgid "Only these departments"
+msgstr "Chỉ các phòng ban này"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__open
+msgid "Open for answers"
+msgstr "Đang nhận câu trả lời"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Open for answers until %(date)s."
+msgstr "Nhận câu trả lời đến %(date)s."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Open until"
+msgstr "Mở đến"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Optional. Please leave out names and details that could show who you are."
+msgstr "Không bắt buộc. Vui lòng không ghi tên hay chi tiết có thể cho biết bạn là ai."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__options model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__options
+msgid "Options"
+msgstr "Phương án"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__other model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__other model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__values model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__values model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__values
+msgid "Our values"
+msgstr "Giá trị cốt lõi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Overview"
+msgstr "Tổng quan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__owner_id
+msgid "Owner"
+msgstr "Người phụ trách"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__parent_id
+msgid "Parent"
+msgstr "Nhóm cha"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Part of"
+msgstr "Thuộc"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "People answer on My Payobook only. Somebody with no login cannot answer until they get one."
+msgstr "Mọi người chỉ trả lời trên My Payobook. Ai chưa có tài khoản thì chưa thể trả lời."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__invite_ids
+msgid "People asked"
+msgstr "Người được hỏi"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_values
+msgid "People here live our company values."
+msgstr "Mọi người ở đây sống theo giá trị cốt lõi của công ty."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "People here live our value: %(v)s"
+msgstr "Mọi người ở đây sống theo giá trị: %(v)s"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_team_help
+msgid "People in my team help each other."
+msgstr "Mọi người trong nhóm tôi giúp đỡ lẫn nhau."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "People see it on My Payobook at once. Its questions and who is asked cannot change afterwards."
+msgstr "Mọi người thấy ngay trên My Payobook. Sau đó không thể đổi câu hỏi và người được hỏi."
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_invite
+msgid "Person asked in a survey round"
+msgstr "Người được hỏi trong đợt khảo sát"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__choice model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__choice
+msgid "Pick one option"
+msgstr "Chọn một phương án"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Pick who owns it."
+msgstr "Chọn người phụ trách."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Plan an action on this theme"
+msgstr "Lập kế hoạch hành động cho chủ đề này"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Please answer: \"%(q)s\"."
+msgstr "Vui lòng trả lời: \"%(q)s\"."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__progress
+msgid "Progress note"
+msgstr "Ghi chú tiến độ"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "Progress so far"
+msgstr "Tiến độ đến nay"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__text model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__text
+msgid "Question"
+msgstr "Câu hỏi"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__question_count
+msgid "Question Count"
+msgstr "Số câu hỏi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Question by question"
+msgstr "Từng câu hỏi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_list
+msgid "Question library"
+msgstr "Thư viện câu hỏi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__library_ids model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__question_ids model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Questions"
+msgstr "Câu hỏi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Read the board again"
+msgstr "Tải lại bảng"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Reading the surveys…"
+msgstr "Đang đọc các khảo sát…"
+
+#. module: pb_voice
+#: model_terms:ir.actions.act_window,help:pb_voice.action_pb_voice_library
+msgid "Ready-made questions HR can add to a survey. Every company can add its own."
+msgstr "Câu hỏi soạn sẵn mà phòng nhân sự có thể thêm vào khảo sát. Mỗi công ty có thể thêm câu hỏi riêng."
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__recognition model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__recognition model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__recognition
+msgid "Recognition"
+msgstr "Ghi nhận"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Remind every 1 to 30 days."
+msgstr "Nhắc mỗi 1 đến 30 ngày."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__remind
+msgid "Remind people who have not answered"
+msgstr "Nhắc những người chưa trả lời"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Reminders by email every"
+msgstr "Nhắc qua email mỗi"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_user_id
+msgid "Responsible User"
+msgstr "Người chịu trách nhiệm"
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/js/voice_board.js:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__result_state
+msgid "Results"
+msgstr "Kết quả"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__floor
+msgid "Results and comments show only for groups with at least this many answers. It can never be lower than 5."
+msgstr "Kết quả và nhận xét chỉ hiển thị cho nhóm có ít nhất số câu trả lời này. Không bao giờ dưới 5."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Results open when the round closes, so nobody can work out an answer by watching the numbers change."
+msgstr "Kết quả mở khi đợt khảo sát đóng, để không ai suy ra câu trả lời bằng cách theo dõi số liệu thay đổi."
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__kept
+msgid "Results ready"
+msgstr "Đã có kết quả"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__round_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__round_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__round_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__round_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__round_id
+msgid "Round"
+msgstr "Đợt"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Same questions and people, as a new survey being set up."
+msgstr "Cùng câu hỏi và người được hỏi, thành một khảo sát mới đang thiết lập."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Saved. The owner sees it on their home page."
+msgstr "Đã lưu. Người phụ trách thấy trên trang chủ của họ."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_home_voice
+msgid "Say how it is going, anonymously"
+msgstr "Chia sẻ mọi việc thế nào, ẩn danh"
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Say what will be done, in a few words."
+msgstr "Ghi ngắn gọn việc sẽ làm."
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Score"
+msgstr "Điểm"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__sealed
+msgid "Sealed"
+msgstr "Niêm phong"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Send my answers"
+msgstr "Gửi câu trả lời"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Send out"
+msgstr "Gửi đi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Send this survey out now?"
+msgstr "Gửi khảo sát này ngay?"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Send this survey out now? Its questions and who is asked cannot change afterwards."
+msgstr "Gửi khảo sát này ngay? Sau đó không thể đổi câu hỏi và người được hỏi."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_start
+msgid "Sent out on"
+msgstr "Gửi ngày"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Sent out. People see it on My Payobook now."
+msgstr "Đã gửi. Mọi người thấy ngay trên My Payobook."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__sequence model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Share of people who agree. Groups of fewer than"
+msgstr "Tỷ lệ người đồng ý. Nhóm dưới"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Short anonymous surveys. Nobody, not even HR, can see who said what; results show only for groups of 5 or more answers."
+msgstr "Khảo sát ngắn, ẩn danh. Không ai, kể cả phòng nhân sự, biết ai đã nói gì; kết quả chỉ hiển thị cho nhóm từ 5 câu trả lời trở lên."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Show results for"
+msgstr "Xem kết quả cho"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__intro
+msgid "Shown at the top of the survey on My Payobook."
+msgstr "Hiển thị ở đầu khảo sát trên My Payobook."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__floor
+msgid "Smallest group shown"
+msgstr "Nhóm nhỏ nhất được hiển thị"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__state model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái theo hoạt động\n"
+"Quá hạn: Đã qua hạn\n"
+"Hôm nay: Hoạt động diễn ra hôm nay\n"
+"Đã lên kế hoạch: Hoạt động sắp tới."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0 code:addons/pb_voice/tests/test_voice_po.py:0
+msgid "Strongly agree"
+msgstr "Hoàn toàn đồng ý"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Strongly disagree"
+msgstr "Hoàn toàn không đồng ý"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__round_id model_terms:ir.ui.view,arch_db:pb_voice.portal_breadcrumbs_voice model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Survey"
+msgstr "Khảo sát"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_action
+msgid "Survey action plan"
+msgstr "Kế hoạch hành động sau khảo sát"
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_action
+msgid "Survey action plans"
+msgstr "Kế hoạch hành động sau khảo sát"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_box
+msgid "Survey answers (sealed)"
+msgstr "Câu trả lời khảo sát (niêm phong)"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__round_name
+msgid "Survey name"
+msgstr "Tên khảo sát"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_question
+msgid "Survey question"
+msgstr "Câu hỏi khảo sát"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0 model:ir.actions.act_window,name:pb_voice.action_pb_voice_library model:ir.model,name:pb_voice.model_pb_voice_library
+msgid "Survey question library"
+msgstr "Thư viện câu hỏi khảo sát"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_group
+msgid "Survey results group"
+msgstr "Nhóm kết quả khảo sát"
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_round model_terms:ir.ui.view,arch_db:pb_voice.portal_breadcrumbs_voice model_terms:ir.ui.view,arch_db:pb_voice.portal_my_home_voice model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_list
+msgid "Surveys"
+msgstr "Khảo sát"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Switch questions off, change their words, or add your own."
+msgstr "Tắt câu hỏi, sửa nội dung, hoặc thêm câu hỏi riêng."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_search
+msgid "Switched off"
+msgstr "Đã tắt"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Talent"
+msgstr "Nhân tài"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__team
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__manager_id
+msgid "Team of"
+msgstr "Nhóm của"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Team voice"
+msgstr "Tiếng nói của nhóm"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__teamwork model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__teamwork model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__teamwork
+msgid "Teamwork"
+msgstr "Làm việc nhóm"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Tell the company how it is going. Your answers are anonymous."
+msgstr "Cho công ty biết mọi việc thế nào. Câu trả lời của bạn là ẩn danh."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Tell us how it is going. It is anonymous."
+msgstr "Cho chúng tôi biết mọi việc thế nào. Hoàn toàn ẩn danh."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "That cannot be done here."
+msgstr "Không thể thực hiện việc này ở đây."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "That could not be done."
+msgstr "Không thực hiện được."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/controllers/portal.py:0
+msgid "That did not go through. Nothing was saved — please try again."
+msgstr "Chưa gửi được. Chưa có gì được lưu — vui lòng thử lại."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The action plan could not be saved."
+msgstr "Không lưu được kế hoạch hành động."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The closing date is in the past."
+msgstr "Ngày đóng đã qua."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The groups could not be worked out."
+msgstr "Không xác định được các nhóm."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "The owner needs a staff login to follow it up."
+msgstr "Người phụ trách cần có tài khoản nhân sự văn phòng để theo dõi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The question \"%(q)s\" needs at least two options, one per line."
+msgstr "Câu hỏi \"%(q)s\" cần ít nhất hai phương án, mỗi dòng một."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "The ready-made questions HR can add to a survey, in every language this system uses."
+msgstr "Câu hỏi soạn sẵn mà phòng nhân sự có thể thêm vào khảo sát, bằng mọi ngôn ngữ hệ thống dùng."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The results could not be read."
+msgstr "Không đọc được kết quả."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The round's own company must be one of the companies asked."
+msgstr "Công ty của đợt khảo sát phải là một trong các công ty được hỏi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The smallest group shown can never be lower than %(n)s."
+msgstr "Nhóm nhỏ nhất được hiển thị không bao giờ dưới %(n)s."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The survey \"%(name)s\" is still open."
+msgstr "Khảo sát \"%(name)s\" vẫn đang mở."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The surveys could not be read just now."
+msgstr "Hiện không đọc được các khảo sát."
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__theme model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__theme model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__theme model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_search
+msgid "Theme"
+msgstr "Chủ đề"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "There are no results."
+msgstr "Không có kết quả."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This action plan no longer exists."
+msgstr "Kế hoạch hành động này không còn tồn tại."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "This one is for HR"
+msgstr "Mục này dành cho phòng nhân sự"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has already been sent out."
+msgstr "Đợt khảo sát này đã được gửi đi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so its questions and who is asked can no longer change. Make a copy to ask again."
+msgstr "Đợt khảo sát này đã gửi đi nên không thể đổi câu hỏi và người được hỏi. Hãy sao chép để hỏi lại."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so its questions can no longer change."
+msgstr "Đợt khảo sát này đã gửi đi nên không thể đổi câu hỏi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so its questions stay."
+msgstr "Đợt khảo sát này đã gửi đi nên giữ nguyên câu hỏi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0 code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so no question can be added."
+msgstr "Đợt khảo sát này đã gửi đi nên không thể thêm câu hỏi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round is closed."
+msgstr "Đợt khảo sát này đã đóng."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This survey asked people in a company you cannot see."
+msgstr "Khảo sát này hỏi người ở công ty mà bạn không được xem."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "This survey could not be opened."
+msgstr "Không mở được khảo sát này."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This survey is closed. Thank you."
+msgstr "Khảo sát này đã đóng. Cảm ơn bạn."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This survey is not open."
+msgstr "Khảo sát này chưa mở."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This survey no longer exists."
+msgstr "Khảo sát này không còn tồn tại."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "This system does not send email, so invitations and reminders show on people's My Payobook home, under \"Needs you\", until they answer."
+msgstr "Hệ thống này không gửi email, nên lời mời và nhắc nhở hiện trên trang chủ My Payobook của mọi người, ở mục \"Đang chờ bạn\", cho đến khi họ trả lời."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Tick the questions to add. Their words come in every language this system uses."
+msgstr "Đánh dấu câu hỏi cần thêm. Nội dung có sẵn bằng mọi ngôn ngữ hệ thống dùng."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__open model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "To do"
+msgstr "Cần làm"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__too_few
+msgid "Too few answers, nothing kept"
+msgstr "Quá ít câu trả lời, không lưu gì"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Too few people answered the last survey to show any results."
+msgstr "Quá ít người trả lời khảo sát gần nhất nên không có kết quả để hiển thị."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Type a name"
+msgstr "Nhập tên"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ trên bản ghi."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__doing model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Under way"
+msgstr "Đang thực hiện"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Update"
+msgstr "Cập nhật"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Update its progress when you can."
+msgstr "Cập nhật tiến độ khi bạn có thể."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Voice"
+msgstr "Tiếng nói"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Waiting for your answers"
+msgstr "Đang chờ câu trả lời của bạn"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__wellbeing model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__wellbeing model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__wellbeing
+msgid "Wellbeing and workload"
+msgstr "Sức khỏe tinh thần và khối lượng công việc"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_start_stop
+msgid "What is one thing we should start, stop or keep doing?"
+msgstr "Một điều chúng ta nên bắt đầu, dừng lại hoặc tiếp tục làm là gì?"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "What the company said it would do after a survey. Update the progress as you go."
+msgstr "Những việc công ty cam kết làm sau khảo sát. Hãy cập nhật tiến độ khi thực hiện."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "What the company said it would do after each survey."
+msgstr "Những việc công ty cam kết làm sau mỗi khảo sát."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__name model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "What we will do"
+msgstr "Việc chúng ta sẽ làm"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "When"
+msgstr "Thời gian"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "When the company asks how it is going, the survey appears here and on your home page."
+msgstr "Khi công ty hỏi mọi việc thế nào, khảo sát sẽ hiện ở đây và trên trang chủ của bạn."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Who can answer"
+msgstr "Ai có thể trả lời"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Who is asked"
+msgstr "Ai được hỏi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Would recommend"
+msgstr "Sẽ giới thiệu"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__enps model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__enps
+msgid "Would recommend (0 to 10)"
+msgstr "Sẽ giới thiệu (0 đến 10)"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__text model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__text
+msgid "Written comment"
+msgstr "Nhận xét bằng chữ"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Written comments"
+msgstr "Nhận xét bằng chữ"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/controllers/portal.py:0 code:addons/pb_voice/models/voice_round.py:0
+msgid "You are not asked in this survey."
+msgstr "Bạn không nằm trong danh sách được hỏi của khảo sát này."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "You can only ask people in companies you can see."
+msgstr "Bạn chỉ có thể hỏi người trong các công ty bạn được xem."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "You can update the progress of your own action plans only."
+msgstr "Bạn chỉ có thể cập nhật tiến độ kế hoạch hành động của mình."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "You have answered this survey. Thank you."
+msgstr "Bạn đã trả lời khảo sát này. Cảm ơn bạn."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "You have answered. Thank you. It closes on"
+msgstr "Bạn đã trả lời. Cảm ơn bạn. Khảo sát đóng ngày"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Your answers are anonymous: nobody, not even HR, can see who said what. Results show only for groups of %(n)s or more people."
+msgstr "Câu trả lời của bạn là ẩn danh: không ai, kể cả phòng nhân sự, biết ai đã nói gì. Kết quả chỉ hiển thị cho nhóm từ %(n)s người trở lên."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Your login is not linked to an employee record"
+msgstr "Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__manager model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__manager model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__manager
+msgid "Your manager"
+msgstr "Quản lý của bạn"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Your team"
+msgstr "Nhóm của bạn"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Your team's answers are counted in the company's results. Results show only for groups of %(n)s or more answers, so nobody's answers can be picked out."
+msgstr "Câu trả lời của nhóm bạn được tính vào kết quả của công ty. Kết quả chỉ hiển thị cho nhóm từ %(n)s câu trả lời trở lên, để không ai bị nhận ra."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "Your voice"
+msgstr "Tiếng nói của bạn"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "action plans to do"
+msgstr "kế hoạch hành động cần làm"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "action plans, some late"
+msgstr "kế hoạch hành động, có việc trễ hạn"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "agree · average"
+msgstr "đồng ý · trung bình"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "and"
+msgstr "và"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "answered ("
+msgstr "đã trả lời ("
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "answered ·"
+msgstr "đã trả lời ·"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "answers are never shown, and written comments go to HR only."
+msgstr "câu trả lời không bao giờ được hiển thị, và nhận xét bằng chữ chỉ gửi đến phòng nhân sự."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "being set up"
+msgstr "đang thiết lập"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "days to people who have not answered."
+msgstr "ngày đến những người chưa trả lời."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "hidden"
+msgstr "ẩn"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "maybe ·"
+msgstr "có thể ·"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "more."
+msgstr "người nữa."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "no"
+msgstr "không"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "of"
+msgstr "trên"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "of 5"
+msgstr "trên 5"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "open for answers"
+msgstr "đang nhận câu trả lời"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "or more people, after the survey closes. Written comments are read by HR only. You can answer once."
+msgstr "người trở lên, sau khi khảo sát đóng. Nhận xét bằng chữ chỉ phòng nhân sự đọc. Bạn chỉ trả lời được một lần."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "people with a login have no email: they see the survey on their home page."
+msgstr "người có tài khoản nhưng không có email: họ thấy khảo sát trên trang chủ."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "people, so nobody's answers can be picked out."
+msgstr "người, để không ai bị nhận ra qua câu trả lời."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "questions"
+msgstr "câu hỏi"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "questions · open until"
+msgstr "câu hỏi · mở đến"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "share who agree"
+msgstr "tỷ lệ đồng ý"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "with results"
+msgstr "có kết quả"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "would not (0-6)"
+msgstr "sẽ không (0-6)"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "would recommend (9-10),"
+msgstr "sẽ giới thiệu (9-10),"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "yes ·"
+msgstr "có ·"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "· closed"
+msgstr "· đóng"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "· due"
+msgstr "· hạn"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "· sent out"
+msgstr "· gửi ngày"

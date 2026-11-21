@@ -55,7 +55,7 @@
     <record id="action_hr_payroll_structure_india" model="ir.actions.act_window">
         <field name="name">India Payroll Structures</field>
         <field name="res_model">hr.payroll.structure</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_hr_payroll_structure_tree_india"/>
         <field name="domain">[('country_id.code', '=', 'IN')]</field>
         <field name="context">{'default_country_id': %(base.in)d}</field>

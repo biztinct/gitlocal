@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         ONE MORE STEP ON THE JOINING CHECKLIST, and it runs itself.
+
+         It is added to the template the joining checklist already uses, FROM
+         THIS MODULE, because the key is the contract: nothing in the
+         onboarding module has to know goals exist.
+
+         SEQUENCE 75, AND THE DAY AFTER THEY ARRIVE. The checklist runs
+         buddy 10, laptop 20, access 30, introduction form 40, poster 50,
+         day-one invitation 60, first courses 65, sign-in details 70, data 80,
+         orientation 90 — so 75 is the free slot straight after the sign-in
+         details, which is the right place: goals are the second thing anybody
+         does, not the first, and `offset_days` of 1 means the sheet is opened
+         on their second day rather than in the middle of their induction.
+
+         `noupdate="1"` so a business that has reworded, re-sequenced or
+         switched this step off on a live database keeps its own version.
+
+         EXISTING RUNNING CHECKLISTS DO NOT GET IT (R31): a case copies its
+         steps when it opens, so somebody who joined last week keeps the
+         checklist they were given. Only checklists opened after this module is
+         installed carry the step — which is the right behaviour and is said
+         out loud here because the first question anybody asks is "why is it
+         not on Mai's list".
+         ================================================================== -->
+
+    <record id="step_rize_goals" model="pb.journey.template.step">
+        <field name="template_id" ref="pb_onboarding.journey_template_rize_onboarding"/>
+        <field name="sequence">75</field>
+        <field name="name">Open their goals for the year</field>
+        <field name="description">Runs itself the day after they join: a goal sheet is opened for them in whichever goal year is open, with a fortnight to write it, and they get an email saying so. If no goal year is open yet, the step simply says so.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">1</field>
+        <field name="step_kind">task</field>
+        <field name="automation_key">goals_kickoff</field>
+    </record>
+
+</data>
+</odoo>

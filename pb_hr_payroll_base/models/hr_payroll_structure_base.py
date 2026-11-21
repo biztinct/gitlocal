@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class HrContractType(models.Model):
     """Extend existing contract type for payroll integration"""
-    _inherit = 'hr.contract.type'
+    _inherit = ['hr.contract.type']
     
     # Payroll-specific enhancements
     payroll_schedule = fields.Selection([
@@ -40,7 +40,7 @@ class HrContractType(models.Model):
 
 class HrPayrollStructure(models.Model):
     """Extend base payroll structure with multi-country support"""
-    _inherit = 'hr.payroll.structure'
+    _inherit = ['hr.payroll.structure']
     
     # === MULTI-COUNTRY EXTENSIONS ===
     
@@ -147,11 +147,16 @@ class HrPayrollStructure(models.Model):
             
             if currency_code:
                 try:
-                    currency = self.env['res.currency'].search([
-                        ('name', '=', currency_code),
-                        ('active', '=', True)
-                    ], limit=1)
-                    
+                    # SCHEMECTX P1 / SC1 — base data ships every currency but
+                    # the company's own as inactive, so the old
+                    # ('active','=',True) clause found no INR and the field
+                    # kept whatever it already held. Never activate one:
+                    # that flips the multi-currency switch for every user.
+                    currency = self.env['res.currency'].sudo().with_context(
+                        active_test=False).search([
+                            ('name', '=', currency_code),
+                        ], limit=1)
+
                     if currency:
                         self.currency_id = currency.id
                 except Exception as e:
@@ -167,7 +172,7 @@ class HrPayrollStructure(models.Model):
                 'type': 'ir.actions.act_window',
                 'name': f'Employees - {self.name}',
                 'res_model': 'hr.employee',
-                'view_mode': 'tree,form',
+                'view_mode': 'list,form',
                 'domain': [('id', 'in', employee_ids)],
                 'context': {'create': False}
             }
@@ -187,7 +192,7 @@ class HrPayrollStructure(models.Model):
 
 class HrSalaryRule(models.Model):
     """Extend salary rules for multi-country support"""
-    _inherit = 'hr.salary.rule'
+    _inherit = ['hr.salary.rule']
     
     # Enhanced rule configuration
     is_country_specific = fields.Boolean('Country Specific', default=False)
@@ -218,7 +223,7 @@ class HrSalaryRule(models.Model):
 
 class HrSalaryRuleCategory(models.Model):
     """Extend salary rule categories for multi-country support"""
-    _inherit = 'hr.salary.rule.category'
+    _inherit = ['hr.salary.rule.category']
     
     # Enhanced category fields
     category_type = fields.Selection([
@@ -255,7 +260,7 @@ class HrSalaryRuleCategory(models.Model):
 
 class HrEmployee(models.Model):
     """Extend employees with payroll country information"""
-    _inherit = 'hr.employee'
+    _inherit = ['hr.employee']
     
     # Regular field - no computation
     payroll_country = fields.Selection([
@@ -268,7 +273,7 @@ class HrEmployee(models.Model):
 
 class HrContract(models.Model):
     """Extend contracts with enhanced payroll integration"""
-    _inherit = 'hr.contract'
+    _inherit = ['hr.contract']
     
     # All regular fields - no related or computed fields
     payroll_country = fields.Selection([
@@ -278,6 +283,24 @@ class HrContract(models.Model):
         ('SG', 'Singapore'),
         ('MY', 'Malaysia'),
     ], string='Payroll Country')
+
+    # A company can host several country payrolls. The inherited currency was
+    # related only to company_id.currency_id, which also made Monetary round an
+    # INR wage to whole dong before it was stored. This remains a non-stored
+    # denomination field: no amounts are converted or rewritten on upgrade.
+    currency_id = fields.Many2one(
+        'res.currency', string='Currency', related=False,
+        compute='_compute_contract_payroll_currency', compute_sudo=True,
+        readonly=True, store=False)
+
+    @api.depends('payroll_country', 'company_id.currency_id')
+    def _compute_contract_payroll_currency(self):
+        names={'VN':'VND','ID':'IDR','IN':'INR','SG':'SGD','MY':'MYR'}
+        wanted={names[c.payroll_country] for c in self if c.payroll_country in names}
+        currencies={c.name:c for c in self.env['res.currency'].with_context(active_test=False).search([('name','in',list(wanted))])}
+        for contract in self:
+            contract.currency_id=currencies.get(names.get(contract.payroll_country)) \
+                or contract.company_id.currency_id or self.env.company.currency_id
     
     # Enhanced salary breakdown
     basic_salary = fields.Monetary('Basic Salary', currency_field='currency_id')

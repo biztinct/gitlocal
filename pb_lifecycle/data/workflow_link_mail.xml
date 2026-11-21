@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WF2 P4a (R5, D16): the one email this phase adds. A private link for
+         someone with no login, sent once when their step starts (and again,
+         with a NEW link, when a designer presses "Send the link again").
+         The company is the sender; no product or framework name anywhere.
+         The link itself only travels in this email (auto-deleted once sent). -->
+    <record id="mail_template_workflow_link" model="mail.template">
+        <field name="name">Workflow: something for you to do (link)</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_workflow_step"/>
+        <field name="subject">You have something to do: {{ object.name }}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html" type="html">
+<div style="margin:0;padding:24px 0;background:#f6f7fc;font-family:Inter,Segoe UI,Arial,sans-serif;color:#1f1d2b">
+  <div style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e6e4f2;border-radius:16px;padding:32px">
+    <p style="margin:0 0 4px;font-size:13px;color:#6b6880" t-out="ctx.get('link_company') or ''"/>
+    <h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:#1f1d2b" t-out="object.name or ''"/>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55">
+      <t t-if="ctx.get('link_name')">Hello <t t-out="ctx.get('link_name')"/>, </t>there is one thing for you to do. It takes a minute and you do not need to sign in.
+    </p>
+    <p t-if="ctx.get('link_due')" style="margin:0 0 20px;font-size:14px;color:#6b6880">Needed by <t t-out="ctx.get('link_due')"/>.</p>
+    <p style="margin:0 0 24px">
+      <a t-att-href="ctx.get('link_url')" style="display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px">Open it</a>
+    </p>
+    <p style="margin:0;font-size:12px;line-height:1.5;color:#6b6880">
+      This link is just for you and works until <t t-out="ctx.get('link_until') or ''"/>. Please do not forward it. If you were not expecting this, you can ignore it.
+    </p>
+  </div>
+</div>
+        </field>
+    </record>
+</odoo>

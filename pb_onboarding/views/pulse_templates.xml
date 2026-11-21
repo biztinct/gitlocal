@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ============================================================= -->
+  <!--  "How is it going?" — one question, five taps, no login.       -->
+  <!--                                                                -->
+  <!--  ONE template, four outcomes. The status IS the page: a        -->
+  <!--  separate page per status would drift, and a stranger probing  -->
+  <!--  the URL space must not be able to tell an unknown link from   -->
+  <!--  a used one.                                                   -->
+  <!--                                                                -->
+  <!--  It reuses pb_lifecycle's .pblc card so the three login-less   -->
+  <!--  pages in this product are visibly the same product.           -->
+  <!-- ============================================================= -->
+  <template id="newhire_pulse_page" name="How is it going?">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pblc pblc-page pbpulse">
+        <div class="pblc-card">
+
+          <div class="pblc-card__brand">Payobook</div>
+
+          <!-- ==================== ask ==================== -->
+          <t t-if="status == 'ok'">
+            <div class="pblc-card__ic">
+              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'heart'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>How is it going?</h1>
+            <p class="pblc-card__sub" t-if="greeting">
+              <t t-esc="greeting"/> — you have been with us a little while now.
+              One tap is the whole of what we are asking.
+            </p>
+            <form t-attf-action="/journey/p/#{token}/submit" method="post">
+              <div class="pbpulse-scale">
+                <t t-foreach="scores" t-as="sc">
+                  <label class="pbpulse-opt">
+                    <input type="radio" name="score" t-att-value="sc['value']"
+                           t-att-required="'required' if sc_index == 0 else None"/>
+                    <span class="pbpulse-opt-n" t-esc="sc['value']"/>
+                    <span class="pbpulse-opt-w" t-esc="sc['word']"/>
+                  </label>
+                </t>
+              </div>
+              <label class="pblc-label" for="comment">
+                Anything you want to say? (optional)
+              </label>
+              <textarea class="pblc-input" id="comment" name="comment" rows="3"
+                        placeholder="Leave this empty if there is nothing."/>
+              <button type="submit" class="pblc-btn pblc-btn--primary">
+                <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>
+                Send it
+              </button>
+            </form>
+            <p class="pblc-card__fine">
+              This is not anonymous, on purpose. If something is not right we
+              would rather call you about it than read a number.
+            </p>
+          </t>
+
+          <!-- ==================== just answered ==================== -->
+          <t t-elif="status == 'thanks'">
+            <div class="pblc-card__ic pblc-card__ic--ok">
+              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Thank you</h1>
+            <p class="pblc-card__sub">That is with the HR team. If you said
+              something was not right, expect to hear from somebody — not a
+              form.</p>
+          </t>
+
+          <!-- ==================== already answered ==================== -->
+          <t t-elif="status == 'used'">
+            <div class="pblc-card__ic pblc-card__ic--ok">
+              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Already answered</h1>
+            <p class="pblc-card__sub">You have told us about this one, so the
+              link has closed itself. Nothing is missing.</p>
+          </t>
+
+          <!-- =========== unknown, cancelled or superseded =========== -->
+          <t t-else="">
+            <div class="pblc-card__ic pblc-card__ic--warn">
+              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>This link has closed</h1>
+            <p class="pblc-card__sub">It may already have been answered, or it
+              may have been replaced. If you still want to tell us something,
+              reply to the email that brought you here.</p>
+          </t>
+
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

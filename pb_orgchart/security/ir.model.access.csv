@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_orgchart_plan_user,Org chart plan: asked to decide,model_pb_orgchart_plan,base.group_user,1,0,0,0
+access_pb_orgchart_plan_hr,Org chart plan: HR,model_pb_orgchart_plan,hr.group_hr_user,1,1,1,0
+access_pb_orgchart_plan_system,Org chart plan: system,model_pb_orgchart_plan,base.group_system,1,1,1,1
+access_pb_orgchart_plan_change_user,Org chart plan change: asked to decide,model_pb_orgchart_plan_change,base.group_user,1,0,0,0
+access_pb_orgchart_plan_change_hr,Org chart plan change: HR,model_pb_orgchart_plan_change,hr.group_hr_user,1,1,1,1
+access_pb_orgchart_plan_change_system,Org chart plan change: system,model_pb_orgchart_plan_change,base.group_system,1,1,1,1

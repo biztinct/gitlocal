@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F114 — 4-step connect-your-HR-system onboarding wizard -->
+    <record id="view_hr_integration_onboarding_form" model="ir.ui.view">
+        <field name="name">hr.integration.onboarding.wizard.form</field>
+        <field name="model">hr.integration.onboarding.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Connect an HR / Timesheet System">
+                <field name="step" invisible="1"/>
+                <field name="connector_id" invisible="1"/>
+                <sheet>
+                    <div class="oe_title">
+                        <h2>Connect your HR / timesheet system</h2>
+                        <p class="text-muted">
+                            <b invisible="step != 'vendor'">Step 1 of 4 · Choose the system</b>
+                            <b invisible="step != 'auth'">Step 2 of 4 · Connect</b>
+                            <b invisible="step != 'mappings'">Step 3 of 4 · Field mapping</b>
+                            <b invisible="step != 'activate'">Step 4 of 4 · Activate</b>
+                        </p>
+                    </div>
+
+                    <!-- Step 1: vendor + config -->
+                    <group invisible="step != 'vendor'">
+                        <field name="connector_type" widget="radio"/>
+                        <field name="config_id" options="{'no_create': True}"
+                               help="The configuration whose input components these fields will feed."/>
+                    </group>
+
+                    <!-- Step 2: auth -->
+                    <div invisible="step != 'auth'">
+                        <div class="alert alert-info" role="alert" invisible="not connector_type">
+                            <b><field name="badge_display" nolabel="1" readonly="1"/></b>
+                            <field name="guide_display" nolabel="1" readonly="1"/>
+                        </div>
+                        <group>
+                            <field name="name"/>
+                            <field name="api_endpoint" placeholder="https://…"/>
+                            <field name="auth_type"/>
+                            <field name="api_key" password="True" invisible="auth_type not in ('api_key','bearer')"/>
+                            <field name="client_id" invisible="auth_type != 'oauth2'"/>
+                            <field name="client_secret" password="True" invisible="auth_type != 'oauth2'"/>
+                            <field name="connection_status"/>
+                        </group>
+                    </div>
+
+                    <!-- Step 3: mappings -->
+                    <div invisible="step != 'mappings'">
+                        <field name="summary_html" nolabel="1" readonly="1"/>
+                    </div>
+
+                    <!-- Step 4: activate -->
+                    <div invisible="step != 'activate'" class="text-center" style="padding:20px">
+                        <h3>Ready to go</h3>
+                        <p class="text-muted">Your connector and field mappings are set up.
+                            Suggested fields stay excluded from sync until you confirm them.
+                            Activate to start using this connection in payroll imports.</p>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_back" string="← Back" type="object" invisible="step == 'vendor'"/>
+                    <button name="action_to_auth" string="Next →" type="object" class="btn-primary" invisible="step != 'vendor'"/>
+                    <button name="action_test_connection" string="Test connection" type="object" invisible="step != 'auth'"/>
+                    <button name="action_apply_template" string="Load field template →" type="object" class="btn-primary" invisible="step != 'auth'"/>
+                    <button name="action_to_activate" string="Next →" type="object" class="btn-primary" invisible="step != 'mappings'"/>
+                    <button name="action_finish" string="Finish &amp; activate" type="object" class="btn-primary" invisible="step != 'activate'"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_integration_onboarding" model="ir.actions.act_window">
+        <field name="name">Connect an HR / Timesheet System</field>
+        <field name="res_model">hr.integration.onboarding.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Templates list (for bureaus who want to inspect/edit the seeded rows) -->
+    <record id="view_hr_integration_mapping_template_list" model="ir.ui.view">
+        <field name="name">hr.integration.mapping.template.list</field>
+        <field name="model">hr.integration.mapping.template</field>
+        <field name="arch" type="xml">
+            <list string="Vendor Field Templates">
+                <field name="connector_type"/>
+                <field name="source_path"/>
+                <field name="target_code"/>
+                <field name="target_label"/>
+                <field name="transformation_type"/>
+                <field name="verify"/>
+                <field name="note"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_hr_integration_mapping_template" model="ir.actions.act_window">
+        <field name="name">Vendor Field Templates</field>
+        <field name="res_model">hr.integration.mapping.template</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

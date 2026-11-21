@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › Paths (LEARNING L3). Section comments use `=` rules and
+       never a doubled hyphen (R35). Loop variables avoid OWL's reserved
+       words (R1) and QuietSteps' own `st`: `pcard`, `prow`, `dot`, `sc`,
+       `stp`, `cm`, `dp`, `jb`, `emp`, `ar`, `rs`, `pp`. Every translatable
+       text node is on one line (ledger LN13).
+       ==================================================================== -->
+  <t t-name="pb_training.PbPathsLens">
+    <div class="pbpt" t-att-class="{ 'pbpt--embedded': props.embedded }">
+      <div class="pbpt-wrap">
+
+        <!-- ============ reading ============ -->
+        <t t-if="!state.loaded">
+          <div class="pbpt-hero pbpt-skel" aria-busy="true">
+            <div class="pbpt-skel-line pbpt-skel-line--s"/>
+            <div class="pbpt-skel-line"/>
+          </div>
+        </t>
+
+        <!-- ============ could not read ============ -->
+        <div t-elif="state.failed" class="pbpt-panel pbpt-empty">
+          <div class="pbpt-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The learning paths could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
+        <!-- ============ not for this reader ============ -->
+        <div t-elif="!allowed" class="pbpt-panel pbpt-empty">
+          <div class="pbpt-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>Learning paths are looked after by the training team</h2>
+          <p>A path you are on shows on My learning, with the step you are at.</p>
+        </div>
+
+        <!-- ============ one path ============ -->
+        <t t-elif="page">
+          <t t-if="page.loading">
+            <div class="pbpt-hero pbpt-skel" aria-busy="true">
+              <div class="pbpt-skel-line pbpt-skel-line--s"/>
+              <div class="pbpt-skel-line"/>
+            </div>
+          </t>
+          <t t-else="">
+            <button class="pbim-btn ghost pbpt-back" t-on-click="closePage"><t t-out="ic('chevronLeft',15)"/> Every path</button>
+            <section class="pbpt-hero">
+              <div class="pbpt-hero-top">
+                <div class="pbpt-hero-id">
+                  <div class="pbpt-eyebrow"><t t-out="ic('route',14)"/> <t t-esc="page.purpose_word"/></div>
+                  <h2 class="pbpt-title" t-esc="page.name"/>
+                  <p t-if="page.blurb" class="pbpt-blurb" t-esc="page.blurb"/>
+                  <div class="pbpt-chips">
+                    <span class="pbpt-chip"><t t-out="ic('users',12)"/> <t t-esc="page.people_words"/></span>
+                    <span t-if="page.hours_words" class="pbpt-chip"><t t-out="ic('clock',12)"/> <t t-esc="page.hours_words"/></span>
+                    <span t-if="page.audience_words" class="pbpt-chip is-go"><t t-out="ic('calendar',12)"/> <t t-esc="page.audience_words"/></span>
+                    <span t-if="!page.active" class="pbpt-chip is-warn"><t t-out="ic('archive',12)"/> Archived</span>
+                  </div>
+                </div>
+                <div class="pbpt-hero-act">
+                  <button t-if="page.can_write and page.active" class="pbim-btn primary" t-on-click="() => this.openEnrol(page)"><t t-out="ic('userPlus',15)"/> Enrol people</button>
+                  <button t-if="page.can_manage" class="pbim-btn ghost" t-on-click="() => this.editPath(page)"><t t-out="ic('pencil',15)"/> Edit path</button>
+                  <button t-if="page.can_manage" class="pbim-btn ghost" t-att-disabled="state.acting === page.id" t-on-click="() => this.archive(page)"><t t-out="ic('archive',15)"/> <t t-if="page.active">Archive</t><t t-else="">Bring back</t></button>
+                </div>
+              </div>
+              <div class="pbpt-line pbpt-line--big">
+                <t t-call="pb_import_kit.QuietSteps">
+                  <t t-set="qSteps" t-value="page.stations"/>
+                  <t t-set="qStepsLabel" t-value="page.name"/>
+                  <t t-set="qStepPick" t-value="(key) => this.pickStation(key)"/>
+                </t>
+              </div>
+            </section>
+
+            <div class="pbpt-bar">
+              <button t-foreach="stateChips" t-as="sc" t-key="sc.key" class="pbpt-filter" t-att-class="{ 'is-on': state.pf.state === sc.key, 'is-zero': !sc.n, 'is-bad': sc.key === 'overdue' and sc.n }" t-att-aria-pressed="state.pf.state === sc.key ? 'true' : 'false'" t-on-click="() => this.setStateFilter(sc.key)">
+                <t t-esc="sc.label"/> <b t-esc="sc.n"/>
+              </button>
+              <label class="pbpt-search">
+                <t t-out="ic('search',14)"/>
+                <input type="search" placeholder="Search a name" t-att-value="state.pf.q" t-on-input="onPageSearch"/>
+              </label>
+              <button t-if="anyPageFilter" class="pbim-btn ghost" t-on-click="clearPageFilters"><t t-out="ic('x',14)"/> Show everybody</button>
+            </div>
+
+            <!-- nobody on it yet -->
+            <div t-if="!page.people" class="pbpt-panel pbpt-empty">
+              <div class="pbpt-empty-ic"><t t-out="ic('users',26)"/></div>
+              <h2>Nobody is on this path yet</h2>
+              <p>Put one person, a department, a job or everybody on it. Each course opens when it is due.</p>
+              <button t-if="page.can_write and page.active" class="pbim-btn primary" t-on-click="() => this.openEnrol(page)"><t t-out="ic('userPlus',15)"/> Enrol people</button>
+            </div>
+            <p t-elif="!page.rows.length" class="pbpt-calm"><t t-out="ic('info',14)"/> Nobody matches. Press the filter again, or Show everybody.</p>
+
+            <section t-else="" class="pbpt-panel pbpt-table-wrap" t-att-class="{ 'is-busy': state.pageBusy }">
+              <div class="pbpt-scroll">
+                <table class="pbpt-table">
+                  <thead>
+                    <tr>
+                      <th>Person</th>
+                      <th>Where they are</th>
+                      <th class="pbpt-th-rail">Steps</th>
+                      <th>Due</th>
+                      <th class="pbpt-th-act"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="page.rows" t-as="prow" t-key="prow.enrolment_id">
+                      <td>
+                        <b class="pbpt-who" t-esc="prow.employee"/>
+                        <span class="pbpt-dim"><t t-esc="prow.department"/><t t-if="prow.department and prow.job"> · </t><t t-esc="prow.job"/></span>
+                      </td>
+                      <td>
+                        <span class="pbpt-state" t-att-class="stateClass(prow.state)" t-esc="prow.state_words"/>
+                        <span class="pbpt-where" t-esc="prow.where_words"/>
+                      </td>
+                      <td>
+                        <div class="pbpt-rail" t-att-style="railStyle(prow)" role="img" t-att-aria-label="prow.where_words">
+                          <span t-foreach="prow.rail" t-as="dot" t-key="dot_index" class="pbpt-dot" t-att-class="'pbpt-dot--' + dot.state" t-att-title="railTitle(dot)">
+                            <span class="pbpt-dot-c"><t t-if="dot.state === 'done'"><t t-out="ic('check',10)"/></t></span>
+                          </span>
+                        </div>
+                        <span class="pbpt-dim"><t t-esc="prow.percent"/>%</span>
+                      </td>
+                      <td class="pbpt-nowrap">
+                        <span t-att-class="{ 'pbpt-late': prow.late }" t-esc="prow.due_words"/>
+                        <span t-if="prow.path_due_words" class="pbpt-dim" t-esc="prow.path_due_words"/>
+                        <span class="pbpt-dim" t-esc="prow.reason_word"/>
+                      </td>
+                      <td class="pbpt-act">
+                        <button class="pbim-btn ghost" t-on-click="() => this.openCourses(prow)" title="Their courses on Assigned"><t t-out="ic('userCheck',14)"/> Open their courses</button>
+                        <button t-if="page.can_write and prow.state !== 'done'" class="pbim-btn ghost pbpt-ic-btn" t-att-disabled="state.acting === prow.enrolment_id" t-on-click="() => this.unenrol(prow)" title="Remove from path"><t t-out="ic('userX',14)"/></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pbpt-foot"><span class="pbpt-dim" t-esc="shownWords"/></div>
+            </section>
+          </t>
+        </t>
+
+        <!-- ============ every path ============ -->
+        <t t-else="">
+          <section class="pbpt-hero">
+            <div class="pbpt-hero-top">
+              <div class="pbpt-hero-id">
+                <div class="pbpt-eyebrow"><t t-out="ic('route',14)"/> Learning paths</div>
+                <p class="pbpt-headline" t-esc="data.headline"/>
+              </div>
+              <button t-if="data.can_manage" class="pbim-btn primary" t-on-click="newPath"><t t-out="ic('plus',15)"/> New path</button>
+            </div>
+          </section>
+
+          <p t-if="state.onlyLate" class="pbpt-showing">
+            <t t-out="ic('filter',14)"/>
+            <span>Showing the paths where somebody is late.</span>
+            <button class="pbim-btn ghost" t-on-click="showEveryPath"><t t-out="ic('x',13)"/> Show every path</button>
+          </p>
+
+          <div t-if="!(data.paths or []).length" class="pbpt-panel pbpt-empty">
+            <div class="pbpt-empty-ic"><t t-out="ic('route',26)"/></div>
+            <h2>No paths yet</h2>
+            <p>A path puts several courses in order — for a role, a career move or a skill. People are put on it as one thing, and each course opens when it is due.</p>
+            <button t-if="data.can_manage" class="pbim-btn primary" t-on-click="newPath"><t t-out="ic('plus',15)"/> New path</button>
+            <p t-else="" class="pbpt-dim">A training manager can make the first one.</p>
+          </div>
+          <p t-elif="!cards.length" class="pbpt-calm"><t t-out="ic('checkCircle',14)"/> Nobody is late on any path.</p>
+
+          <div t-else="" class="pbpt-cards">
+            <article t-foreach="cards" t-as="pcard" t-key="pcard.id" class="pbpt-card">
+              <div class="pbpt-card-top">
+                <div class="pbpt-card-id">
+                  <h3 class="pbpt-card-name"><button class="pbpt-link" t-on-click="() => this.openPath(pcard.id)" t-esc="pcard.name"/></h3>
+                  <div class="pbpt-chips">
+                    <span class="pbpt-chip is-purpose" t-esc="pcard.purpose_word"/>
+                    <span class="pbpt-chip"><t t-out="ic('users',12)"/> <t t-esc="pcard.people_words"/></span>
+                    <span t-if="pcard.hours_words" class="pbpt-chip"><t t-out="ic('clock',12)"/> <t t-esc="pcard.hours_words"/></span>
+                    <span t-if="pcard.audience_words" class="pbpt-chip is-go"><t t-out="ic('calendar',12)"/> <t t-esc="pcard.audience_words"/></span>
+                    <span t-if="pcard.unpublished" class="pbpt-chip is-warn" title="A learner cannot open a course that is not published"><t t-out="ic('triangleAlert',12)"/> A course on it is not published</span>
+                  </div>
+                  <p t-if="pcard.blurb" class="pbpt-blurb" t-esc="pcard.blurb"/>
+                </div>
+                <div class="pbpt-card-act">
+                  <button class="pbim-btn ghost" t-on-click="() => this.openPath(pcard.id)">Open <t t-out="ic('chevron',13)"/></button>
+                  <button t-if="data.can_write" class="pbim-btn ghost" t-on-click="() => this.openEnrol(pcard)"><t t-out="ic('userPlus',14)"/> Enrol people</button>
+                  <button t-if="data.can_manage" class="pbim-btn ghost pbpt-ic-btn" t-on-click="() => this.editPath(pcard)" title="Edit path"><t t-out="ic('pencil',14)"/></button>
+                </div>
+              </div>
+              <div class="pbpt-line">
+                <t t-call="pb_import_kit.QuietSteps">
+                  <t t-set="qSteps" t-value="pcard.stations"/>
+                  <t t-set="qStepsLabel" t-value="pcard.name"/>
+                  <t t-set="qStepPick" t-value="stationPicker(pcard.id)"/>
+                </t>
+              </div>
+            </article>
+          </div>
+
+          <div t-if="(data.archived or []).length and data.can_manage" class="pbpt-archived">
+            <span class="pbpt-dim">Archived:</span>
+            <button t-foreach="data.archived" t-as="ar" t-key="ar.id" class="pbpt-chip pbpt-chip-btn" t-att-disabled="state.acting === ar.id" t-on-click="() => this.restore(ar)" title="Bring it back"><t t-out="ic('undo',12)"/> <t t-esc="ar.name"/></button>
+          </div>
+        </t>
+
+      </div>
+
+      <!-- ================================================================
+           THE PATH DRAWER. A direct child of the root (R114).
+           ================================================================ -->
+      <div t-if="state.drawer === 'path'" class="pbim-modal-scrim pbpt-scrim" t-on-click="closeDrawer">
+        <div class="pbpt-drawer" t-on-click.stop="() => {}">
+          <div class="pbpt-drawer-head">
+            <div>
+              <div class="pbpt-eyebrow"><t t-if="state.form.id">Edit path</t><t t-else="">New path</t></div>
+              <h2 class="pbpt-drawer-title">Courses in order, given as one thing</h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbpt-drawer-body">
+            <label class="pbpt-f pbpt-f--wide">
+              <span class="pbpt-f-l">What it is called</span>
+              <input class="pbpt-in" type="text" maxlength="200" placeholder="New agronomist" t-att-value="state.form.name" t-on-input="(ev) => this.setField('name', ev)"/>
+            </label>
+            <label class="pbpt-f">
+              <span class="pbpt-f-l">What it is for</span>
+              <select class="pbpt-in" t-on-change="(ev) => this.setField('purpose', ev)">
+                <t t-foreach="lists.purposes" t-as="pp" t-key="pp.key">
+                  <option t-att-value="pp.key" t-att-selected="state.form.purpose === pp.key" t-esc="pp.label"/>
+                </t>
+              </select>
+            </label>
+            <label class="pbpt-f">
+              <span class="pbpt-f-l">Days for the whole path</span>
+              <input class="pbpt-in" type="number" min="1" t-att-value="state.form.due_days" t-on-input="(ev) => this.setField('due_days', ev, 'int')"/>
+            </label>
+            <label class="pbpt-f pbpt-f--wide">
+              <span class="pbpt-f-l">In one sentence</span>
+              <textarea class="pbpt-in" rows="2" maxlength="400" placeholder="What somebody can do once they have finished it." t-att-value="state.form.blurb" t-on-input="(ev) => this.setField('blurb', ev)"/>
+            </label>
+
+            <!-- the steps -->
+            <div class="pbpt-f pbpt-f--wide">
+              <span class="pbpt-f-l">The courses, in order</span>
+              <p t-if="!state.form.steps.length" class="pbpt-calm"><t t-out="ic('info',14)"/> Add the first course below. Drag a course to move it, or use the arrows.</p>
+              <ol t-else="" class="pbpt-steps">
+                <li t-foreach="state.form.steps" t-as="stp" t-key="stp.channel_id" class="pbpt-step" t-att-class="{ 'is-gate': stp.gate }" draggable="true" t-on-dragstart="(ev) => this.onDragStart(stp_index, ev)" t-on-dragover="onDragOver" t-on-drop="(ev) => this.onDrop(stp_index, ev)">
+                  <span class="pbpt-step-grip" aria-hidden="true"><t t-out="ic('grip',14)"/></span>
+                  <span class="pbpt-step-n" t-esc="stp_index + 1"/>
+                  <div class="pbpt-step-main">
+                    <b t-esc="course(stp.channel_id).name"/>
+                    <span t-if="!course(stp.channel_id).published" class="pbpt-chip is-warn"><t t-out="ic('triangleAlert',11)"/> Not published</span>
+                    <label class="pbpt-gate">
+                      <input type="checkbox" t-att-checked="stp.gate" t-on-change="() => this.toggleGate(stp_index)"/>
+                      <span>Later steps wait for this one</span>
+                    </label>
+                    <label class="pbpt-days">
+                      <span>Days for this step</span>
+                      <input class="pbpt-in pbpt-in--s" type="number" min="0" placeholder="14" t-att-value="stp.due_days || ''" t-on-input="(ev) => this.setStepDays(stp_index, ev)"/>
+                    </label>
+                  </div>
+                  <div class="pbpt-step-act">
+                    <button class="pbim-btn ghost pbpt-ic-btn" t-att-disabled="stp_index === 0" t-on-click="() => this.moveStep(stp_index, -1)" title="Move up"><t t-out="ic('chevronUp',14)"/></button>
+                    <button class="pbim-btn ghost pbpt-ic-btn" t-att-disabled="stp_index === state.form.steps.length - 1" t-on-click="() => this.moveStep(stp_index, 1)" title="Move down"><t t-out="ic('chevronDown',14)"/></button>
+                    <button class="pbim-btn ghost pbpt-ic-btn" t-on-click="() => this.removeStep(stp_index)" title="Take it off the path"><t t-out="ic('trash',14)"/></button>
+                  </div>
+                </li>
+              </ol>
+              <div class="pbpt-addcourse">
+                <label class="pbpt-search">
+                  <t t-out="ic('plus',14)"/>
+                  <input type="search" placeholder="Add a course — type to find it" t-att-value="state.courseTerm" t-on-input="onCourseTerm"/>
+                </label>
+                <div t-if="state.courseTerm" class="pbpt-picklist">
+                  <button t-foreach="courseMatches" t-as="cm" t-key="cm.id" class="pbpt-pick" t-on-click="() => this.addStep(cm)">
+                    <b t-esc="cm.name"/>
+                    <span class="pbpt-dim"><t t-esc="cm.hours_words"/><t t-if="!cm.published"> · </t><t t-if="!cm.published">Not published</t></span>
+                  </button>
+                  <p t-if="!courseMatches.length" class="pbpt-dim">No course matches that.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- day one -->
+            <label class="pbpt-f pbpt-f--wide pbpt-check">
+              <input type="checkbox" t-att-checked="state.form.day_one" t-on-change="(ev) => this.setField('day_one', ev, 'bool')"/>
+              <span>Give it to new joiners on their first day</span>
+            </label>
+            <t t-if="state.form.day_one">
+              <div class="pbpt-f">
+                <span class="pbpt-f-l">Departments</span>
+                <select class="pbpt-in" t-on-change="(ev) => this.addTo('department_ids', ev)">
+                  <option value="0">Add a department</option>
+                  <t t-foreach="lists.departments" t-as="dp" t-key="dp.id"><option t-att-value="dp.id" t-esc="dp.name"/></t>
+                </select>
+                <div class="pbpt-chips">
+                  <span t-foreach="state.form.department_ids" t-as="did" t-key="did" class="pbpt-chip"><t t-esc="nameOf('departments', did)"/> <button class="pbpt-x" t-on-click="() => this.removeFrom('department_ids', did)" title="Remove"><t t-out="ic('x',11)"/></button></span>
+                </div>
+              </div>
+              <div class="pbpt-f">
+                <span class="pbpt-f-l">Jobs</span>
+                <select class="pbpt-in" t-on-change="(ev) => this.addTo('job_ids', ev)">
+                  <option value="0">Add a job</option>
+                  <t t-foreach="lists.jobs" t-as="jb" t-key="jb.id"><option t-att-value="jb.id" t-esc="jb.name"/></t>
+                </select>
+                <div class="pbpt-chips">
+                  <span t-foreach="state.form.job_ids" t-as="jid" t-key="jid" class="pbpt-chip"><t t-esc="nameOf('jobs', jid)"/> <button class="pbpt-x" t-on-click="() => this.removeFrom('job_ids', jid)" title="Remove"><t t-out="ic('x',11)"/></button></span>
+                </div>
+              </div>
+              <p class="pbpt-note pbpt-f--wide">A department includes every department under it. With none picked, everybody in the company gets it on their first day. It works while day-one training is switched on.</p>
+            </t>
+            <label class="pbpt-f pbpt-f--wide pbpt-check">
+              <input type="checkbox" t-att-checked="state.form.counts_for_probation" t-on-change="(ev) => this.setField('counts_for_probation', ev, 'bool')"/>
+              <span>Their trial period waits for every course on it</span>
+            </label>
+          </div>
+          <div class="pbpt-drawer-foot">
+            <span t-if="pathHint" class="pbpt-hint" t-esc="pathHint"/>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canSavePath" t-on-click="savePath"><t t-out="ic('check',15)"/> Save the path</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================
+           THE ENROL DRAWER.
+           ================================================================ -->
+      <div t-if="state.drawer === 'enrol'" class="pbim-modal-scrim pbpt-scrim" t-on-click="closeDrawer">
+        <div class="pbpt-drawer" t-on-click.stop="() => {}">
+          <div class="pbpt-drawer-head">
+            <div>
+              <div class="pbpt-eyebrow">Enrol people</div>
+              <h2 class="pbpt-drawer-title" t-esc="state.enrolPath.name"/>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbpt-drawer-body">
+            <div class="pbpt-f pbpt-f--wide">
+              <span class="pbpt-f-l">Who</span>
+              <div class="pbpt-modes" role="group">
+                <button class="pbpt-filter" t-att-class="{ 'is-on': state.enrol.mode === 'people' }" t-on-click="() => this.setMode('people')">People</button>
+                <button class="pbpt-filter" t-att-class="{ 'is-on': state.enrol.mode === 'department' }" t-on-click="() => this.setMode('department')">A department</button>
+                <button class="pbpt-filter" t-att-class="{ 'is-on': state.enrol.mode === 'job' }" t-on-click="() => this.setMode('job')">A job</button>
+                <button class="pbpt-filter" t-att-class="{ 'is-on': state.enrol.mode === 'everyone' }" t-on-click="() => this.setMode('everyone')">Everybody</button>
+              </div>
+            </div>
+            <div t-if="state.enrol.mode === 'people'" class="pbpt-f pbpt-f--wide">
+              <input class="pbpt-in" type="search" placeholder="Type a name — accents do not matter" t-att-value="state.peopleTerm" t-on-input="onPeopleTerm"/>
+              <div t-if="state.enrol.picked.length" class="pbpt-chips">
+                <span t-foreach="state.enrol.picked" t-as="emp" t-key="emp.id" class="pbpt-chip is-go"><t t-esc="emp.name"/> <button class="pbpt-x" t-on-click="() => this.togglePerson(emp)" title="Remove"><t t-out="ic('x',11)"/></button></span>
+              </div>
+              <div class="pbpt-picklist">
+                <button t-foreach="state.people" t-as="emp" t-key="emp.id" class="pbpt-pick" t-att-class="{ 'is-on': isPicked(emp) }" t-on-click="() => this.togglePerson(emp)">
+                  <span class="pbpt-pick-box"><t t-if="isPicked(emp)"><t t-out="ic('check',12)"/></t></span>
+                  <b t-esc="emp.name"/>
+                </button>
+                <p t-if="!state.people.length" class="pbpt-dim">Nobody with a login matches that.</p>
+              </div>
+            </div>
+            <label t-if="state.enrol.mode === 'department'" class="pbpt-f pbpt-f--wide">
+              <span class="pbpt-f-l">Department (with every department under it)</span>
+              <select class="pbpt-in" t-on-change="(ev) => this.setEnrol('department_id', ev, 'int')">
+                <option value="0">Pick a department</option>
+                <t t-foreach="lists.departments" t-as="dp" t-key="dp.id"><option t-att-value="dp.id" t-att-selected="state.enrol.department_id === dp.id" t-esc="dp.name"/></t>
+              </select>
+            </label>
+            <label t-if="state.enrol.mode === 'job'" class="pbpt-f pbpt-f--wide">
+              <span class="pbpt-f-l">Job</span>
+              <select class="pbpt-in" t-on-change="(ev) => this.setEnrol('job_id', ev, 'int')">
+                <option value="0">Pick a job</option>
+                <t t-foreach="lists.jobs" t-as="jb" t-key="jb.id"><option t-att-value="jb.id" t-att-selected="state.enrol.job_id === jb.id" t-esc="jb.name"/></t>
+              </select>
+            </label>
+            <p t-if="state.enrol.mode === 'everyone'" class="pbpt-note pbpt-f--wide">Everybody in your company with a login. People already on the path are left as they are.</p>
+            <label class="pbpt-f">
+              <span class="pbpt-f-l">Why</span>
+              <select class="pbpt-in" t-on-change="(ev) => this.setEnrol('reason', ev)">
+                <t t-foreach="lists.reasons" t-as="rs" t-key="rs.key"><option t-att-value="rs.key" t-att-selected="state.enrol.reason === rs.key" t-esc="rs.label"/></t>
+              </select>
+            </label>
+            <label class="pbpt-f">
+              <span class="pbpt-f-l">Whole path due by</span>
+              <input class="pbpt-in" type="date" t-att-value="state.enrol.due_date" t-on-change="(ev) => this.setEnrol('due_date', ev)"/>
+            </label>
+            <p class="pbpt-note pbpt-f--wide"><t t-esc="dueHint"/> The first course opens today; a course after a step that others wait for opens when that step is finished. People with no login are left out and named.</p>
+          </div>
+          <div class="pbpt-drawer-foot">
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canEnrol" t-on-click="saveEnrol"><t t-out="ic('check',15)"/> Put them on the path</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

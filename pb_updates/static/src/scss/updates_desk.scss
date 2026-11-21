@@ -1,0 +1,1324 @@
+// =====================================================================
+//  People › Updates — .pbu-*
+//
+//  Built on the shared kit: root class "pbim pbim-page pbu-root", every
+//  colour a `--pbim-*` token (indigo #5A4BB0 primary, white cards, semantic
+//  green / blue / amber / rose / slate). No gradients, no emoji, one solid
+//  primary button per bar. Motion only where it says something: a view
+//  arriving, a fix row opening, a fixed cell settling, work in progress.
+//
+//  Width rules: the page never scrolls sideways. Wide content (the match
+//  table, the review grid) scrolls inside its own container, with the
+//  person column pinned.
+//
+//  Sass note (ledger): never `min()`/`max()` with mixed units here — Dart
+//  Sass evaluates them itself and one bad call breaks the whole bundle.
+// =====================================================================
+
+$pbu-who-w: 210px;
+
+.pbim.pbu-root {
+    --pbu-change: var(--pbim-soft);
+    --pbu-fix: var(--pbim-rose-soft);
+    --pbu-left: var(--pbim-slate-soft);
+    --pbu-off: #F1F1F5;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 22px 24px 40px;
+    background: var(--pbim-bg);
+
+    &.pbu-root--embedded { padding-top: 16px; }
+
+    .pbu-wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .pbu-view {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        animation: pbu-in .22s ease-out;
+    }
+
+    // ------------------------------------------------------------ type
+    .pbu-h1 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin: 0; color: var(--pbim-ink); }
+    .pbu-h2 { font-size: 18px; font-weight: 800; margin: 0; color: var(--pbim-ink); }
+    .pbu-h3 { font-size: 14px; font-weight: 800; margin: 0; color: var(--pbim-ink); display: flex; align-items: center; gap: 6px; }
+    .pbu-lead { font-size: 14px; color: var(--pbim-muted); margin: 6px 0 0; max-width: 68ch; line-height: 1.55; }
+    .pbu-sub { font-size: 12.5px; color: var(--pbim-muted); margin: 0; line-height: 1.5; }
+    .pbu-faint { color: #94A3B8; font-style: italic; }
+    .pbu-hint { font-size: 12.5px; color: var(--pbim-muted); margin: 0; line-height: 1.5; }
+    .pbu-warn-text { color: var(--pbim-amber); }
+    .pbu-hidden { display: none; }
+
+    // ------------------------------------------------------------ surfaces
+    .pbu-card {
+        background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg);
+        box-shadow: 0 1px 2px rgba(30, 27, 46, .05), 0 8px 24px rgba(30, 27, 46, .05);
+    }
+    .pbu-card-h { padding: 18px 22px 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .pbu-card-f { padding: 12px 22px; border-top: 1px solid var(--pbim-line); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .pbu-flow { padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; position: relative; }
+    .pbu-flow-h { display: flex; flex-direction: column; gap: 4px; }
+
+    .pbu-loading, .pbu-fail { padding: 28px; display: flex; align-items: center; gap: 14px; color: var(--pbim-muted); }
+    .pbu-fail p { margin: 4px 0 0; color: var(--pbim-muted); }
+
+    // ------------------------------------------------------------ icon badges
+    .pbu-ib {
+        width: 38px; height: 38px; border-radius: 11px; flex: none;
+        display: inline-grid; place-items: center;
+        &.sm { width: 30px; height: 30px; border-radius: 9px; }
+    }
+    .pbu-ib--pri { background: var(--pbim-soft); color: var(--pbim-primary); }
+    .pbu-ib--ok { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbu-ib--info { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+    .pbu-ib--warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbu-ib--err { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbu-ib--muted { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+
+    // ------------------------------------------------------------ chips
+    .pbu-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 11.5px; font-weight: 700; line-height: 1;
+        padding: 5px 9px; border-radius: 999px; white-space: nowrap;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        svg { flex: none; }
+    }
+    .pbu-chip--ok { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbu-chip--info { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+    .pbu-chip--warn { background: var(--pbim-amber-soft); color: #B45309; }
+    .pbu-chip--err { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbu-chip--pri { background: var(--pbim-soft); color: var(--pbim-primary); }
+    .pbu-chip--muted { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+    .pbu-count-pill {
+        display: inline-block; min-width: 20px; padding: 1px 7px; margin-left: 4px;
+        border-radius: 999px; background: var(--pbim-line-2); color: var(--pbim-muted);
+        font-size: 11px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums;
+    }
+    .pbu-tag { font-size: 11px; font-weight: 700; color: var(--pbim-primary); }
+    .pbu-tag--warn { color: #B45309; }
+
+    // ------------------------------------------------------------ buttons
+    .pbu-btn-lg { padding: 11px 20px; font-size: 14px; }
+    .pbu-link {
+        border: 0; background: transparent; padding: 0; font: inherit; font-size: 12.5px;
+        font-weight: 700; color: var(--pbim-primary); cursor: pointer;
+        text-decoration: underline; text-underline-offset: 3px;
+        &:hover { color: var(--pbim-primary-hover); }
+    }
+    .pbu-x {
+        border: 0; background: transparent; color: var(--pbim-muted); cursor: pointer;
+        width: 30px; height: 30px; border-radius: 8px; display: inline-grid; place-items: center; flex: none;
+        &:hover { background: var(--pbim-line-2); color: var(--pbim-ink); }
+    }
+    .pbim-btn { gap: 7px; }
+    :focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+
+    // ------------------------------------------------------------ spinner, progress
+    .pbu-spin {
+        width: 18px; height: 18px; border-radius: 50%; flex: none; display: inline-block;
+        border: 2px solid var(--pbim-soft2); border-top-color: var(--pbim-primary);
+        animation: pbu-spin .8s linear infinite;
+        &.sm { width: 14px; height: 14px; }
+        &.lg { width: 30px; height: 30px; border-width: 3px; }
+        &.on-dark { border-color: rgba(255, 255, 255, .35); border-top-color: #fff; }
+    }
+    .pbu-prog {
+        display: block; height: 6px; width: 100%; max-width: 360px;
+        border-radius: 99px; background: var(--pbim-soft); overflow: hidden;
+        i { display: block; height: 100%; width: 0; background: var(--pbim-primary); border-radius: 99px; }
+        &.pbu-prog--run i { animation: pbu-fill 8s cubic-bezier(.1, .7, .3, 1) forwards; }
+    }
+
+    // ------------------------------------------------------------ notes
+    .pbu-note {
+        display: flex; gap: 10px; align-items: flex-start;
+        background: var(--pbim-cyan-soft); border-radius: 12px; padding: 12px 14px;
+        font-size: 13px; color: var(--pbim-ink); line-height: 1.5;
+        > svg { color: var(--pbim-cyan); flex: none; margin-top: 2px; }
+        &.pbu-note--warn { background: var(--pbim-amber-soft); > svg { color: var(--pbim-amber); } }
+        &.pbu-note--ok { background: var(--pbim-green-soft); > svg { color: var(--pbim-green); } }
+    }
+    .pbu-inline-note {
+        display: flex; gap: 6px; align-items: flex-start; margin: 8px 0 0;
+        font-size: 12.5px; color: var(--pbim-muted);
+        svg { flex: none; margin-top: 2px; color: var(--pbim-cyan); }
+    }
+    .pbu-refuse {
+        display: flex; gap: 8px; align-items: flex-start; margin: 0;
+        font-size: 13px; font-weight: 600; color: var(--pbim-rose);
+        svg { flex: none; margin-top: 2px; }
+        animation: pbu-in .18s ease-out;
+    }
+    .pbu-msg {
+        display: flex; gap: 7px; align-items: flex-start; margin: 0; font-size: 12.5px; line-height: 1.5;
+        svg { flex: none; margin-top: 2px; }
+        &.pbu-msg--ok { color: var(--pbim-green); }
+        &.pbu-msg--warn { color: #B45309; }
+        &.pbu-msg--err { color: var(--pbim-rose); }
+    }
+
+    // ------------------------------------------------------------ home
+    .pbu-hero {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 18px;
+        background: var(--pbim-soft); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); padding: 22px 24px;
+    }
+    .pbu-hero-av {
+        width: 56px; height: 56px; border-radius: 16px; flex: none;
+        display: grid; place-items: center; background: var(--pbim-surface); color: var(--pbim-primary);
+    }
+    .pbu-hero-id { flex: 1 1 320px; min-width: 0; }
+
+    .pbu-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+    .pbu-tile {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-lg);
+        padding: 18px; cursor: pointer; font: inherit; color: inherit;
+        transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+        &:hover { transform: translateY(-2px); border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+        &.is-off { opacity: .8; }
+    }
+    .pbu-tile-t { font-size: 15px; font-weight: 800; color: var(--pbim-ink); }
+    .pbu-tile-d { font-size: 13px; color: var(--pbim-muted); line-height: 1.5; }
+    .pbu-tile-off { display: inline-flex; gap: 5px; align-items: center; font-size: 12px; font-weight: 600; color: var(--pbim-muted); }
+
+    .pbu-empty {
+        display: flex; gap: 14px; align-items: flex-start; padding: 18px 22px 22px;
+        border-top: 1px solid var(--pbim-line);
+        b { display: block; color: var(--pbim-ink); }
+        p { margin: 4px 0 0; color: var(--pbim-muted); font-size: 13px; max-width: 70ch; line-height: 1.5; }
+    }
+    .pbu-hist { list-style: none; margin: 0; padding: 0; }
+    .pbu-hrow {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+        padding: 13px 22px; border-top: 1px solid var(--pbim-line);
+        animation: pbu-in .2s ease-out;
+    }
+    .pbu-hrow-t {
+        flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+        b { font-weight: 700; color: var(--pbim-ink); overflow-wrap: anywhere; }
+    }
+    .pbu-file {
+        display: inline-flex; gap: 6px; align-items: center; max-width: 220px;
+        font-size: 12px; font-weight: 600; color: var(--pbim-primary); text-decoration: none;
+        span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        &:hover span { text-decoration: underline; }
+    }
+
+    // ------------------------------------------------------------ stepper
+    .pbu-steps-bar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+    .pbu-steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; list-style: none; margin: 0; padding: 0; }
+    .pbu-step {
+        display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--pbim-muted);
+        & + .pbu-step::before { content: ""; width: 26px; height: 2px; background: var(--pbim-line); margin-right: 2px; }
+        &.is-on { color: var(--pbim-ink); .pbu-dot { border-color: var(--pbim-primary); color: var(--pbim-primary); } }
+        &.is-done .pbu-dot, &.is-skip .pbu-dot { background: var(--pbim-green); border-color: var(--pbim-green); color: #fff; }
+        &.is-skip .pbu-step-l { text-decoration: line-through; text-decoration-color: rgba(100, 116, 139, .5); }
+    }
+    .pbu-dot {
+        width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+        border: 2px solid var(--pbim-line); background: var(--pbim-surface); font-size: 12px;
+        transition: background .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    // ------------------------------------------------------------ start
+    .pbu-topics { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+    .pbu-topic {
+        display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 12px 14px;
+        border: 1px solid var(--pbim-line); border-radius: 12px; background: var(--pbim-surface);
+        font: inherit; color: inherit; cursor: pointer;
+        transition: border-color .15s ease, background .15s ease;
+        &:hover { border-color: var(--pbim-primary); }
+        &[aria-pressed="true"] { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+        &[aria-pressed="true"] .pbu-box { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; }
+    }
+    .pbu-box {
+        width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--pbim-line); flex: none;
+        display: grid; place-items: center; margin-top: 2px; transition: background .15s ease;
+    }
+    .pbu-topic-t { display: flex; flex-direction: column; gap: 3px; min-width: 0; b { color: var(--pbim-ink); } }
+    .pbu-topic-warn { display: inline-flex; gap: 4px; align-items: center; font-size: 11.5px; color: var(--pbim-slate); }
+
+    .pbu-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .pbu-dl { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+    .pbu-forwhom { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; color: var(--pbim-ink); font-size: 13.5px; }
+
+    .pbu-drop {
+        position: relative; min-height: 190px;
+        border: 2px dashed var(--pbim-line); border-radius: 14px; background: #FAFAFD;
+        padding: 24px; text-align: center;
+        display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;
+        transition: border-color .15s ease, background .15s ease;
+        b { color: var(--pbim-ink); font-size: 14px; }
+        &.is-over { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+        &.is-err { border-color: #F3C7D6; background: #FFF8FA; }
+    }
+    .pbu-drop-err { font-size: 13px; color: var(--pbim-rose); max-width: 46ch; line-height: 1.5; }
+    .pbu-drop-over {
+        position: absolute; inset: 0; border-radius: 12px; pointer-events: none;
+        display: flex; gap: 8px; align-items: center; justify-content: center;
+        background: rgba(237, 234, 248, .94); color: var(--pbim-primary); font-weight: 800;
+        animation: pbu-in .12s ease-out;
+    }
+
+    // ------------------------------------------------------------ tables
+    .pbu-scroll { overflow: auto; border: 1px solid var(--pbim-line); border-radius: 12px; max-width: 100%; }
+    .pbu-select, .pbu-input {
+        font: inherit; font-size: 13px; color: var(--pbim-ink); background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line); border-radius: 9px; padding: 7px 10px; max-width: 100%;
+        &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbu-select { min-width: 210px; }
+    .pbu-mt {
+        width: 100%; border-collapse: collapse; font-size: 13px;
+        th, td { display: table-cell; }
+        th {
+            font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--pbim-muted);
+            text-align: left; font-weight: 700; background: #F8F8FC; padding: 9px 12px;
+            white-space: nowrap; border-bottom: 1px solid var(--pbim-line);
+        }
+        td { padding: 9px 12px; border-bottom: 1px solid var(--pbim-line); vertical-align: middle; }
+        tr:last-child td { border-bottom: 0; }
+        tr.is-off .pbu-mt-head b { color: var(--pbim-muted); }
+    }
+    .pbu-mt-head b { overflow-wrap: anywhere; }
+    .pbu-mt-how { white-space: nowrap; .pbim-btn { margin-left: 6px; } }
+    .pbu-samples {
+        max-width: 260px;
+        span { display: inline-block; margin: 0 6px 2px 0; padding: 1px 7px; border-radius: 6px;
+               background: var(--pbim-line-2); color: var(--pbim-muted); font-size: 12px;
+               max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+        .pbu-faint { background: transparent; padding: 0; }
+    }
+    .pbu-kind {
+        display: inline-flex; gap: 5px; align-items: center; font-size: 12px; font-weight: 700; white-space: nowrap;
+        &.pbu-kind--key { color: var(--pbim-slate); }
+        &.pbu-kind--person { color: var(--pbim-cyan); }
+        &.pbu-kind--contract { color: var(--pbim-teal); }
+        &.pbu-kind--bank { color: var(--pbim-primary); }
+        &.pbu-kind--pay { color: var(--pbim-green); }
+    }
+
+    .pbu-bar {
+        display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;
+        // A long promise ("Continue without the 3 that need attention") wraps
+        // inside its button instead of pushing the page sideways.
+        .pbim-btn { white-space: normal; max-width: 100%; text-align: left; }
+    }
+    .pbu-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    // ------------------------------------------------------------ review
+    .pbu-review { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+    .pbu-sum {
+        font-size: 21px; font-weight: 800; line-height: 1.35; margin: 0; color: var(--pbim-ink);
+        letter-spacing: -.01em; text-wrap: balance;
+        .pbu-sum-tail { color: var(--pbim-green); }
+        &.is-att .pbu-sum-tail { color: var(--pbim-rose); }
+    }
+    .pbu-toolbar { display: flex; flex-wrap: wrap; gap: 10px 16px; justify-content: space-between; align-items: center; }
+    .pbu-filters {
+        display: flex; flex-wrap: wrap; gap: 6px;
+        button {
+            border: 1px solid var(--pbim-line); background: var(--pbim-surface); border-radius: 999px;
+            padding: 5px 12px; font: inherit; font-weight: 700; font-size: 12.5px; color: var(--pbim-muted); cursor: pointer;
+            transition: background .15s ease, color .15s ease;
+            &[aria-pressed="true"] { background: var(--pbim-soft); color: var(--pbim-primary); border-color: transparent;
+                                      .pbu-count-pill { background: var(--pbim-surface); color: var(--pbim-primary); } }
+        }
+    }
+    .pbu-legend {
+        display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--pbim-muted);
+        i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px;
+            vertical-align: -1px; border: 1px solid var(--pbim-line); }
+        .lg-change { background: var(--pbu-change); border-color: var(--pbim-primary-light); }
+        .lg-fix { background: var(--pbu-fix); border-color: #F3C7D6; }
+        .lg-left { background: var(--pbu-left); }
+        .lg-same { background: var(--pbim-surface); }
+        .lg-blank { background: #FAFAFD; border-style: dashed; }
+    }
+
+    .pbu-grid-wrap { max-height: 62vh; }
+    .pbu-grid {
+        border-collapse: separate; border-spacing: 0; font-size: 13px; min-width: 100%;
+        // A global theme rule turns some `th` into flex boxes; a grid cell is
+        // a table cell, whatever the theme says.
+        th, td { display: table-cell; }
+        thead th {
+            position: sticky; top: 0; z-index: 2;
+            font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--pbim-muted);
+            text-align: left; font-weight: 700; background: #F8F8FC; padding: 9px 12px;
+            white-space: nowrap; border-bottom: 1px solid var(--pbim-line);
+            small { display: block; text-transform: none; letter-spacing: 0; font-weight: 600; color: #94A3B8; font-size: 11px; }
+        }
+        th.pbu-who { position: sticky; left: 0; z-index: 1; }
+        thead th.pbu-who { z-index: 3; }
+        tbody th.pbu-who {
+            background: var(--pbim-surface); text-align: left; font-weight: 400;
+            min-width: $pbu-who-w; max-width: 280px; padding: 9px 12px;
+            border-bottom: 1px solid var(--pbim-line); border-right: 1px solid var(--pbim-line);
+            b { display: block; font-weight: 700; color: var(--pbim-ink); overflow-wrap: anywhere; }
+            > span { font-size: 12px; color: var(--pbim-muted); }
+        }
+        thead th.pbu-who { border-right: 1px solid var(--pbim-line); }
+        td {
+            padding: 8px 12px; border-bottom: 1px solid var(--pbim-line); vertical-align: middle;
+            min-width: 128px; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-variant-numeric: tabular-nums; transition: background .25s ease, box-shadow .15s ease;
+        }
+        tr.is-bound th.pbu-who { box-shadow: inset 3px 0 0 var(--pbim-primary); }
+        tr.is-open > td, tr.is-open > th { border-bottom-color: transparent; }
+    }
+    .pbu-rowno { font-size: 11.5px; color: #94A3B8; font-weight: 600; }
+    .pbu-c { position: relative; }
+    .pbu-c--blank { background: #FAFAFD; }
+    .pbu-c--same .pbu-same { color: var(--pbim-muted); }
+    .pbu-c--dup { background: var(--pbu-left); color: var(--pbim-muted); }
+    .pbu-c--change { background: var(--pbu-change); cursor: pointer; }
+    .pbu-c--fix { background: var(--pbu-fix); color: var(--pbim-rose); cursor: pointer; font-weight: 700; }
+    .pbu-c--left { background: var(--pbu-left); cursor: pointer; }
+    .pbu-c--change, .pbu-c--fix, .pbu-c--left {
+        &:hover, &:focus-visible { box-shadow: inset 0 0 0 2px currentColor; outline: none; }
+        &.is-open { box-shadow: inset 0 0 0 2px var(--pbim-primary); }
+    }
+    .pbu-c--change:hover, .pbu-c--change:focus-visible, .pbu-c--left:hover, .pbu-c--left:focus-visible {
+        box-shadow: inset 0 0 0 2px var(--pbim-primary);
+    }
+    .pbu-c.is-flash { animation: pbu-settle .9s ease-out; }
+    .pbu-was {
+        display: block; font-size: 11.5px; color: var(--pbim-muted); text-decoration: line-through;
+        overflow: hidden; text-overflow: ellipsis;
+        &.pbu-was--empty { text-decoration: none; font-style: italic; color: #94A3B8; }
+    }
+    .pbu-now {
+        display: inline-flex; gap: 5px; align-items: center; font-weight: 700; color: var(--pbim-ink);
+        svg { color: var(--pbim-green); }
+    }
+    .pbu-fixval { display: inline-flex; gap: 6px; align-items: center; svg { flex: none; } }
+    .pbu-lo { display: block; font-size: 11.5px; font-weight: 700; color: var(--pbim-slate); }
+
+    .pbu-fixrow td {
+        background: #F8F8FC; padding: 0; white-space: normal; max-width: none; overflow: visible;
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .pbu-fixbox {
+        position: sticky; left: 0; width: 100%; max-width: 900px; box-sizing: border-box;
+        display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: space-between;
+        padding: 14px 16px; animation: pbu-open .18s ease-out;
+    }
+    .pbu-fix-msg { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+    .pbu-fix-who { font-size: 12.5px; color: var(--pbim-muted); b { color: var(--pbim-ink); } }
+    .pbu-fix-why { margin: 0; font-size: 13.5px; color: var(--pbim-ink); line-height: 1.5; white-space: normal; }
+    .pbu-fix-act {
+        display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+        .pbu-input { width: 220px; }
+    }
+    .pbu-empty-row { text-align: center; color: var(--pbim-muted); padding: 28px !important; white-space: normal !important; }
+    .pbu-grid-foot { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+    .pbu-band {
+        border: 1px solid #F3C7D6; background: #FFF8FA; border-radius: 14px; padding: 12px 14px;
+        display: flex; flex-direction: column; gap: 10px; animation: pbu-in .2s ease-out;
+    }
+    .pbu-band-h { display: flex; gap: 10px; align-items: center; b { display: block; color: var(--pbim-ink); } }
+    .pbu-um { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .pbu-um li {
+        display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; justify-content: space-between;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: 12px; padding: 10px 12px;
+        &.is-skipped { opacity: .6; .pbu-um-id b { text-decoration: line-through; } }
+    }
+    .pbu-um-id {
+        flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+        b { color: var(--pbim-ink); overflow-wrap: anywhere; }
+    }
+    .pbu-um-why { font-size: 12.5px; color: var(--pbim-rose); font-weight: 600; }
+    .pbu-um-act { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+    .pbu-finder { position: relative; min-width: 280px; }
+    .pbu-finder-in {
+        display: flex; gap: 6px; align-items: center; border: 1px solid var(--pbim-primary);
+        border-radius: 9px; padding: 3px 4px 3px 10px; background: var(--pbim-surface);
+        box-shadow: 0 0 0 3px var(--pbim-ring); color: var(--pbim-muted);
+        input { border: 0; outline: none; font: inherit; font-size: 13px; flex: 1; min-width: 0; color: var(--pbim-ink); background: transparent; }
+    }
+    .pbu-finder-list {
+        position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 20; list-style: none; margin: 0; padding: 4px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: 10px;
+        box-shadow: var(--pbim-sh-lg); max-height: 260px; overflow-y: auto; animation: pbu-open .14s ease-out;
+        button {
+            display: block; width: 100%; text-align: left; border: 0; background: transparent; font: inherit;
+            font-size: 13px; padding: 8px 10px; border-radius: 7px; cursor: pointer; color: var(--pbim-ink);
+            &.is-on { background: var(--pbim-soft); color: var(--pbim-primary); }
+        }
+    }
+    .pbu-finder-none { margin: 6px 0 0; font-size: 12.5px; color: var(--pbim-muted); }
+
+    // ------------------------------------------------------------ apply
+    .pbu-apply { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .pbu-apply .pbu-note { grid-column: 1 / -1; }
+    .pbu-field { display: flex; flex-direction: column; gap: 8px; .pbu-input { width: 100%; padding: 10px 12px; font-size: 14px; } }
+    .pbu-label { font-size: 12.5px; font-weight: 700; color: var(--pbim-muted); }
+    .pbu-counts { display: flex; flex-direction: column; gap: 8px; }
+    .pbu-count {
+        display: flex; gap: 12px; align-items: center; padding: 12px 14px;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; b { color: var(--pbim-ink); } }
+    }
+    .pbu-n { font-size: 22px; font-weight: 800; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+
+    // ------------------------------------------------------------ done
+    .pbu-done { align-items: flex-start; }
+    .pbu-done-ic { width: 52px; height: 52px; border-radius: 15px; animation: pbu-pop .35s cubic-bezier(.2, 1.4, .4, 1); }
+    .pbu-route {
+        list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;
+        li { display: flex; gap: 10px; align-items: flex-start; b { display: block; color: var(--pbim-ink); } }
+        li.is-info .pbu-route-dot { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+        li.is-ok .pbu-route-dot { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    }
+    .pbu-route-dot {
+        width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; flex: none;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+    }
+    .pbu-refused {
+        width: 100%; border: 1px solid #F3C7D6; background: #FFF8FA; border-radius: 12px; padding: 12px 14px;
+        h3 { color: var(--pbim-rose); }
+        ul { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+        li { font-size: 13px; b { color: var(--pbim-ink); } .pbu-sub { display: block; } }
+    }
+
+    // ------------------------------------------------------------ pay schemes (P2b)
+    //  A pay item that is not in the person's pay scheme is GREY and quiet —
+    //  never red, never amber: it is not a problem to fix, it is skipped.
+    .pbu-schemes {
+        display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+        padding: 10px 14px; border: 1px solid var(--pbim-line); border-radius: 12px; background: #FAFAFD;
+    }
+    .pbu-schemes-l {
+        display: inline-flex; gap: 7px; align-items: center; font-size: 12.5px; font-weight: 600; color: var(--pbim-muted);
+        svg { flex: none; color: var(--pbim-primary); }
+    }
+    .pbu-schemes--strip .pbu-schemes-l { color: var(--pbim-ink); font-weight: 700; }
+    .pbu-schemes-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pbu-sch {
+        display: inline-flex; align-items: center; gap: 7px; max-width: 320px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface); border-radius: 999px;
+        padding: 4px 6px 4px 11px; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--pbim-ink);
+        white-space: nowrap; cursor: pointer;
+        .pbu-sch-l { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+        b { flex: none; min-width: 20px; padding: 1px 7px; border-radius: 999px; background: var(--pbim-soft); text-align: center; }
+        transition: background .15s ease, border-color .15s ease, color .15s ease;
+        b { font-variant-numeric: tabular-nums; color: var(--pbim-primary); font-size: 11.5px; }
+        &:hover { border-color: var(--pbim-primary); }
+        &[aria-pressed="true"] { background: var(--pbim-soft); border-color: var(--pbim-primary); color: var(--pbim-primary);
+                                 b { background: var(--pbim-surface); } }
+        &.pbu-sch--warn b { color: #B45309; background: var(--pbim-amber-soft); }
+        &.pbu-sch--warn[aria-pressed="true"] { background: var(--pbim-amber-soft); border-color: #F5C26B; color: #B45309; }
+        &.is-static { cursor: default; &:hover { border-color: var(--pbim-line); } }
+    }
+    .pbu-filters button.is-quiet { color: var(--pbim-slate); }
+    .pbu-filters button.is-quiet[aria-pressed="true"] { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+    .pbu-legend .lg-off { background: var(--pbu-off); border-color: #DADAE3; }
+
+    .pbu-c--off { background: var(--pbu-off); color: #8A8FA3; cursor: help; }
+    .pbu-offval {
+        display: inline-flex; gap: 6px; align-items: center;
+        > span { text-decoration: line-through; text-decoration-color: rgba(138, 143, 163, .6); overflow: hidden; text-overflow: ellipsis; }
+        svg { flex: none; color: #A3A8B8; }
+    }
+    .pbu-now--clear { color: #B45309; svg { color: #B45309; } }
+    .pbu-same--clear { display: inline-flex; gap: 5px; align-items: center; font-style: italic; svg { flex: none; } }
+
+    // The person cell's scheme line: present on EVERY row of a file that
+    // brings pay items in, so rows never change height between them.
+    .pbu-grid tbody th.pbu-who .pbu-who-sch {
+        display: block; max-width: 250px; margin-top: 1px;
+        font-size: 11.5px; color: #8A8FA3; font-weight: 600;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbu-dot-amber {
+        display: inline-block; width: 8px; height: 8px; margin-left: 6px; border-radius: 50%;
+        vertical-align: 1px; background: var(--pbim-amber); box-shadow: 0 0 0 3px var(--pbim-amber-soft);
+        cursor: help;
+    }
+    .pbu-apply-off { grid-column: 1 / -1; margin: 0; }
+    .pbu-select optgroup.pbu-divider { color: #94A3B8; font-style: normal; }
+
+    // ------------------------------------------------------------ start dates (P2c)
+    //  Indigo = waits for its day. Amber = recorded in the past (a record,
+    //  nothing recalculated). Muted = today. Rose only for a date that
+    //  cannot be read.
+    .pbu-kind.pbu-kind--when { color: var(--pbim-primary); }
+
+    // The review's "Starts" column, pinned beside the person.
+    $pbu-starts-w: 124px;
+    .pbu-grid.has-starts {
+        thead th.pbu-who, tbody th.pbu-who { width: $pbu-who-w; min-width: $pbu-who-w; max-width: $pbu-who-w; }
+        th.pbu-starts, td.pbu-starts {
+            // The theme sizes cells border-box: the person column is exactly
+            // $pbu-who-w wide, padding and border included.
+            position: sticky; left: $pbu-who-w; z-index: 1;
+            width: $pbu-starts-w; min-width: $pbu-starts-w; max-width: $pbu-starts-w;
+            border-right: 1px solid var(--pbim-line);
+        }
+        td.pbu-starts { background: var(--pbim-surface); }
+        thead th.pbu-starts { z-index: 3; }
+    }
+    .pbu-when {
+        display: inline-flex; gap: 5px; align-items: center; font-size: 12.5px; font-weight: 700;
+        white-space: nowrap; font-variant-numeric: tabular-nums;
+        svg { flex: none; }
+        &.pbu-when--today { color: #94A3B8; font-weight: 600; }
+        &.pbu-when--past { color: #B45309; cursor: help; }
+        &.pbu-when--future { color: var(--pbim-primary); cursor: help; }
+        &.pbu-when--error { color: var(--pbim-rose); cursor: help; }
+    }
+    .pbu-filters button.is-later, .pbu-filters button.is-past {
+        display: inline-flex; gap: 5px; align-items: center;
+        svg { flex: none; }
+    }
+    .pbu-filters button.is-later { color: var(--pbim-primary); }
+    .pbu-filters button.is-past { color: #B45309; }
+    .pbu-filters button.is-past[aria-pressed="true"] { background: var(--pbim-amber-soft); color: #B45309; }
+
+    // The Apply step's "When do these changes start?" card.
+    .pbu-when-card {
+        grid-column: 1 / -1; display: flex; flex-direction: column; gap: 12px;
+        border: 1px solid var(--pbim-line); border-radius: 14px; padding: 14px 16px;
+        background: var(--pbim-surface); animation: pbu-in .2s ease-out;
+    }
+    .pbu-when-head { display: flex; gap: 12px; align-items: flex-start; }
+    .pbu-when-pick { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .pbu-seg {
+        display: inline-flex; padding: 3px; border-radius: 11px; background: var(--pbim-line-2);
+        button {
+            border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 700;
+            color: var(--pbim-muted); padding: 7px 14px; border-radius: 8px; cursor: pointer;
+            display: inline-flex; gap: 6px; align-items: center;
+            transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+            &[aria-checked="true"] { background: var(--pbim-surface); color: var(--pbim-primary);
+                                     box-shadow: 0 1px 2px rgba(30, 27, 46, .12); }
+        }
+    }
+    .pbu-date { width: 170px; animation: pbu-open .16s ease-out; }
+    .pbu-hold {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px;
+        animation: pbu-open .18s ease-out;
+        label {
+            display: flex; gap: 10px; align-items: flex-start; margin: 0; cursor: pointer;
+            border: 1px solid var(--pbim-line); border-radius: 12px; padding: 10px 12px;
+            transition: border-color .15s ease, background .15s ease;
+            input { margin-top: 3px; accent-color: var(--pbim-primary); }
+            b { display: block; font-size: 13px; color: var(--pbim-ink); }
+            small { display: block; font-size: 12px; color: var(--pbim-muted); margin-top: 2px; }
+            &.is-on { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+        }
+    }
+    .pbu-when-sum {
+        display: flex; gap: 7px; align-items: flex-start; margin: 0;
+        font-size: 13px; font-weight: 700; color: var(--pbim-ink); line-height: 1.5;
+        svg { flex: none; margin-top: 3px; color: var(--pbim-primary); }
+    }
+
+    // Home — "Coming up": a small calendar leaf per scheduled change.
+    .pbu-coming .pbu-h2 { display: inline-flex; gap: 8px; align-items: center; svg { color: var(--pbim-primary); } }
+    .pbu-cal { list-style: none; margin: 0; padding: 0; }
+    .pbu-cal-row {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+        padding: 13px 22px; border-top: 1px solid var(--pbim-line); animation: pbu-in .2s ease-out;
+    }
+    .pbu-cal-day {
+        width: 52px; flex: none; border-radius: 12px; overflow: hidden; text-align: center;
+        border: 1px solid var(--pbim-primary-light, #C9C2EC); background: var(--pbim-surface);
+        small { display: block; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+        small:first-child { background: var(--pbim-primary); color: #fff; padding: 2px 0; }
+        small:last-child { color: var(--pbim-muted); padding-bottom: 3px; letter-spacing: 0; }
+        b { display: block; font-size: 20px; font-weight: 800; line-height: 1.1; color: var(--pbim-ink); padding-top: 2px; }
+    }
+    .pbu-cal-when {
+        display: inline-flex; gap: 5px; align-items: center; font-size: 12px; font-weight: 700;
+        color: var(--pbim-primary); svg { flex: none; }
+    }
+
+    // ------------------------------------------------------------ one-off pay (P2d)
+    .pbu-kinds { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .pbu-kind-card {
+        display: flex; gap: 12px; align-items: flex-start; text-align: left; padding: 14px 16px;
+        border: 1px solid var(--pbim-line); border-radius: 14px; background: var(--pbim-surface);
+        font: inherit; color: inherit; cursor: pointer;
+        transition: border-color .15s ease, background .15s ease, box-shadow .15s ease, transform .15s ease;
+        &:hover:not([disabled]) { border-color: var(--pbim-primary); transform: translateY(-1px); }
+        &[aria-checked="true"] { border-color: var(--pbim-primary); background: var(--pbim-soft);
+                                 box-shadow: 0 0 0 3px var(--pbim-ring); }
+        &[disabled] { cursor: not-allowed; opacity: .7; }
+    }
+    .pbu-kind-t { display: flex; flex-direction: column; gap: 3px; min-width: 0;
+                  b { color: var(--pbim-ink); font-size: 14.5px; } }
+    .pbu-month {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+        padding: 12px 16px; border-radius: 12px; background: var(--pbim-soft);
+        border: 1px solid var(--pbim-line); animation: pbu-open .18s ease-out;
+        .pbu-label { margin: 0; }
+    }
+    .pbu-month-pick { width: auto; min-width: 220px; max-width: 320px; flex: 0 0 auto; font-weight: 700; }
+    .pbu-month-line { display: inline-flex; gap: 6px; align-items: center; margin: 0;
+                      svg { flex: none; color: var(--pbim-primary); } }
+    .pbu-tile--oneoff:hover { border-color: var(--pbim-primary); }
+
+    // ------------------------------------------------------------ leave balances (P4)
+    .pbu-tile--leave:hover { border-color: var(--pbim-primary); }
+    .pbu-kind.pbu-kind--leave { color: var(--pbim-primary); }
+    .pbu-leave-date .pbu-date { width: auto; min-width: 180px; flex: 0 0 auto; font-weight: 700; }
+    .pbu-leave-types .pbu-topic { padding: 10px 12px; }
+    .pbu-leave-sum { font-size: 13px; font-weight: 700; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    .pbu-leave-card .pbu-total.is-earn b { color: var(--pbim-primary); }
+    .pbu-leave-card .pbu-total.is-earn { background: var(--pbim-soft); }
+    // The quiet way to the attendance file screen (D17): secondary, never a kind.
+    .pbu-attend {
+        display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+        padding: 10px 14px; border-radius: 12px; border: 1px dashed var(--pbim-line);
+        background: transparent; font: inherit; color: var(--pbim-muted); cursor: pointer;
+        transition: border-color .15s ease, background .15s ease, color .15s ease;
+        > svg { margin-left: auto; flex: none; transition: transform .15s ease; }
+        &:hover { border-color: var(--pbim-primary); border-style: solid; background: var(--pbim-surface);
+                  color: var(--pbim-primary); > svg { transform: translateX(3px); } }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+    .pbu-attend-t { display: flex; flex-direction: column; gap: 1px; min-width: 0;
+                    b { font-size: 13.5px; color: var(--pbim-ink); } }
+
+    .pbu-totals, .pbu-oneoff-strip { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .pbu-oneoff-strip {
+        padding: 10px 14px; border-radius: 12px; background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line);
+    }
+    .pbu-oneoff-month { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--pbim-ink);
+                        margin-right: auto; svg { color: var(--pbim-primary); } }
+    .pbu-total {
+        display: inline-flex; flex-direction: column; gap: 1px; padding: 6px 12px; border-radius: 10px;
+        min-width: 130px;
+        small { font-size: 11px; font-weight: 700; letter-spacing: .02em; color: var(--pbim-muted); }
+        b { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        &.is-earn { background: var(--pbim-green-soft); b { color: var(--pbim-green); } }
+        &.is-take { background: var(--pbim-slate-soft); b { color: var(--pbim-ink); } }
+    }
+    .pbu-coltag {
+        display: block; margin-top: 2px; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums;
+        &.is-earn { color: var(--pbim-green); }
+        &.is-take { color: var(--pbim-slate); }
+    }
+
+    // Home — "Waiting for a pay run"
+    .pbu-waiting .pbu-h2 { display: inline-flex; gap: 8px; align-items: center; svg { color: var(--pbim-primary); } }
+    .pbu-cal-day--month b { display: grid; place-items: center; padding: 3px 0 1px; color: var(--pbim-primary); }
+    .pbu-wait { list-style: none; }
+    .pbu-wait-money { font-size: 12.5px; font-weight: 700; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    .pbu-wait-list { padding: 0 22px 14px 90px; animation: pbu-open .16s ease-out; }
+    .pbu-wait-t {
+        width: 100%; border-collapse: collapse; font-size: 13px;
+        th { text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+             color: var(--pbim-muted); padding: 6px 8px; border-bottom: 1px solid var(--pbim-line); }
+        td { padding: 7px 8px; border-bottom: 1px solid var(--pbim-line); color: var(--pbim-ink); }
+        .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    }
+    .pbu-wait-batches { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; }
+    .pbu-wait-b { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--pbim-muted);
+                  svg { color: var(--pbim-primary); } }
+
+    // D11 — two amounts for one pay item
+    .pbu-clash { margin: 0 22px 12px; border: 1px solid var(--pbim-amber); border-radius: 14px;
+                 background: var(--pbim-amber-soft); overflow: hidden; }
+    .pbu-clash-h { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px;
+                   b { display: block; color: var(--pbim-ink); } }
+    .pbu-clash-list { list-style: none; margin: 0; padding: 0; background: var(--pbim-surface); }
+    .pbu-clash-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 14px;
+                     border-top: 1px solid var(--pbim-line); }
+    .pbu-clash-amts { display: inline-flex; align-items: center; gap: 8px; }
+    .pbu-amt {
+        display: inline-flex; flex-direction: column; padding: 5px 10px; border-radius: 10px;
+        border: 1px solid var(--pbim-line); min-width: 120px;
+        small { font-size: 10.5px; font-weight: 700; color: var(--pbim-muted); }
+        b { font-size: 14px; font-weight: 800; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+        &.is-upd { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+    }
+    .pbu-amt-vs { font-size: 11px; font-weight: 800; color: var(--pbim-muted); text-transform: uppercase; }
+
+    // ------------------------------------------------------------ narrow
+    @media (max-width: 720px) {
+        padding: 14px 12px 32px;
+        .pbu-flow { padding: 16px 14px; }
+        .pbu-hero { padding: 18px 16px; }
+        .pbu-step + .pbu-step::before { width: 12px; }
+        .pbu-step-l { display: none; }
+        .pbu-step.is-on .pbu-step-l { display: inline; }
+        .pbu-sum { font-size: 18px; }
+        .pbu-fix-act .pbu-input { width: 100%; }
+        .pbu-select { min-width: 170px; }
+        .pbu-apply { grid-template-columns: minmax(0, 1fr); }
+        .pbu-grid tbody th.pbu-who { min-width: 150px; }
+        .pbu-wait-list { padding: 0 14px 12px; }
+        .pbu-clash { margin: 0 12px 12px; }
+    }
+}
+
+@keyframes pbu-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pbu-open { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes pbu-spin { to { transform: rotate(360deg); } }
+@keyframes pbu-fill { from { width: 4%; } to { width: 92%; } }
+@keyframes pbu-pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pbu-settle {
+    0% { box-shadow: inset 0 0 0 2px var(--pbim-green); background: var(--pbim-green-soft); }
+    100% { box-shadow: inset 0 0 0 0 transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbim.pbu-root, .pbim.pbu-root * { animation: none !important; transition: none !important; }
+}
+
+// =====================================================================
+//  UPDATES P2d — on the Run Payroll screen (pb_payrun_wizard), outside the
+//  Updates root: one line under the pay scheme, and the D11 choice on the
+//  review step. Same tokens as the wizard (indigo, amber for "choose").
+// =====================================================================
+.pbu-pw-line {
+    display: flex; gap: 7px; align-items: flex-start; margin: 8px 0 0;
+    font-size: 12.5px; font-weight: 600; line-height: 1.45; color: #3B3470;
+    padding: 8px 10px; border-radius: 10px; background: #F3F1FB; border: 1px solid #E2DDF5;
+    .pbu-pw-line__ic { flex: none; color: #5A4BB0; display: inline-flex; margin-top: 1px; }
+    &.is-application { background: #F6F7F9; border-color: #E4E7EC; color: #475467;
+                       .pbu-pw-line__ic { color: #667085; } }
+}
+.pbu-pw-clash {
+    margin: 0 0 14px; border: 1px solid #F2C46D; border-radius: 14px; background: #FFF8EB; overflow: hidden;
+    animation: pbu-in .2s ease-out;
+    h3 { margin: 0 0 2px; font-size: 15px; font-weight: 800; color: #1E1B2E; }
+    p { margin: 0; }
+}
+.pbu-pw-clash__h { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; }
+.pbu-pw-clash__ic { flex: none; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center;
+                    background: #FDEBC8; color: #B54708; }
+.pbu-pw-clash__row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 14px;
+    background: #fff; border-top: 1px solid #F3E3BF;
+}
+.pbu-pw-clash__who { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+                     b { color: #1E1B2E; } span { font-size: 12.5px; color: #667085; } }
+.pbu-pw-clash__amts { display: inline-flex; align-items: center; gap: 8px; }
+.pbu-pw-amt {
+    display: inline-flex; flex-direction: column; padding: 5px 10px; border-radius: 10px;
+    border: 1px solid #E4E7EC; min-width: 120px;
+    small { font-size: 10.5px; font-weight: 700; color: #667085; }
+    b { font-size: 14px; font-weight: 800; color: #1E1B2E; font-variant-numeric: tabular-nums; }
+    &.is-upd { border-color: #5A4BB0; background: #F3F1FB; }
+}
+.pbu-pw-amt__vs { font-size: 11px; font-weight: 800; color: #98A2B3; text-transform: uppercase; }
+.pbu-pw-clash__act { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+@media (prefers-reduced-motion: reduce) { .pbu-pw-clash { animation: none; } }
+
+// =====================================================================
+//  UPDATES P3a — three lanes: personal details (teal), pay and contract
+//  (indigo), bank details (amber: always a second person).
+// =====================================================================
+.pbim.pbu-root {
+    --pbu-lane-details: var(--pbim-teal);
+    --pbu-lane-details-soft: var(--pbim-teal-soft);
+    --pbu-lane-pay: var(--pbim-primary);
+    --pbu-lane-pay-soft: var(--pbim-soft);
+    --pbu-lane-bank: var(--pbim-amber);
+    --pbu-lane-bank-soft: var(--pbim-amber-soft);
+
+    // Review — the legend strip
+    .pbu-lanes { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pbu-lane {
+        flex: 1 1 220px; min-width: 0; display: flex; align-items: center; gap: 10px;
+        padding: 10px 12px; border: 1px solid var(--pbim-line); border-radius: 12px; background: #fff;
+        animation: pbu-in .18s ease-out;
+    }
+    .pbu-lane-ic { flex: none; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; }
+    .pbu-lane-t { min-width: 0; display: flex; flex-direction: column; gap: 1px;
+                  b { font-size: 13px; color: var(--pbim-ink); }
+                  .pbu-sub { font-size: 12px; } }
+    .pbu-lane-n { display: inline-block; margin-left: 4px; padding: 0 7px; border-radius: 999px;
+                  font-size: 11.5px; font-variant-numeric: tabular-nums; background: var(--pbim-line-2); }
+    @each $lane in details, pay, bank {
+        .pbu-lane--#{$lane} .pbu-lane-ic { background: var(--pbu-lane-#{$lane}-soft); color: var(--pbu-lane-#{$lane}); }
+        .pbu-lanetag--#{$lane} { color: var(--pbu-lane-#{$lane}); }
+        .pbu-hlane--#{$lane} .pbu-hlane-ic { background: var(--pbu-lane-#{$lane}-soft); color: var(--pbu-lane-#{$lane}); }
+        .pbu-lanecard--#{$lane} .pbu-lanecard-ic { background: var(--pbu-lane-#{$lane}-soft); color: var(--pbu-lane-#{$lane}); }
+    }
+    .pbu-lanetag {
+        display: inline-flex; align-items: center; gap: 4px; margin-top: 3px;
+        font-size: 10.5px; font-weight: 700; letter-spacing: .01em; white-space: nowrap;
+        svg { flex: none; }
+    }
+
+    // Apply — one card per lane, saying what will happen
+    .pbu-lanecards { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .pbu-lanecards-h { grid-column: 1 / -1; }
+    @media (max-width: 1100px) { .pbu-lanecards { grid-template-columns: minmax(0, 1fr); } }
+    .pbu-lanecards-h { margin: 0; font-size: 13px; font-weight: 800; color: var(--pbim-ink); }
+    .pbu-lanecard {
+        display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px 12px;
+        padding: 12px 14px; border: 1px solid var(--pbim-line); border-radius: 12px; background: #fff;
+        animation: pbu-in .18s ease-out;
+        &.is-warn { border-color: #F2C46D; background: #FFF8EB; }
+    }
+    .pbu-lanecard-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; }
+    .pbu-lanecard-t { min-width: 0; display: flex; flex-direction: column; gap: 1px;
+                      b { font-size: 14px; color: var(--pbim-ink); } }
+    .pbu-lanecard-out {
+        grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 6px;
+        padding-top: 8px; border-top: 1px solid var(--pbim-line-2);
+        font-size: 12.5px; font-weight: 700;
+        &.is-now { color: var(--pbim-green); }
+        &.is-approval { color: var(--pbim-primary-strong); }
+        &.is-second { color: var(--pbu-lane-bank); }
+        &.is-nobody { color: #B54708; font-weight: 600; }
+        svg { flex: none; margin-top: 2px; }
+    }
+
+    // Done and Past updates — one line per lane, with its own state
+    .pbu-hlanes { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .pbu-hlane {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+        padding: 7px 10px; border-radius: 10px; background: var(--pbim-line-2);
+    }
+    .pbu-hlane-ic { flex: none; width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; }
+    .pbu-hlane-t { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column;
+                   b { font-size: 12.5px; color: var(--pbim-ink); }
+                   .pbu-sub { font-size: 12px; } }
+    .pbu-done .pbu-hlanes { max-width: 640px; margin: 4px 0 0; text-align: left; }
+
+    // Home — the company switch
+    .pbu-switch {
+        display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+        border: 1px solid var(--pbim-line); border-radius: 12px; background: #fff;
+    }
+    .pbu-switch-t { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+                    b { font-size: 13.5px; color: var(--pbim-ink); } }
+    .pbu-toggle {
+        flex: none; position: relative; width: 40px; height: 22px; border-radius: 999px; border: 0;
+        background: #D0D5DD; cursor: pointer; transition: background .15s ease;
+        &::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+                   border-radius: 50%; background: #fff; transition: transform .15s ease;
+                   box-shadow: 0 1px 2px rgba(16, 24, 40, .2); }
+        &[aria-checked="true"] { background: var(--pbim-primary); &::after { transform: translateX(18px); } }
+        &:disabled { opacity: .55; cursor: default; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary-light); outline-offset: 2px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .pbu-lane, .pbu-lanecard { animation: none; }
+        .pbu-toggle, .pbu-toggle::after { transition: none; }
+    }
+}
+
+// UPDATES P3a (D1) — the month-only line on the pay-file screens.
+.pbu-monthonly { margin: 10px 0 0; }
+.pbu-monthonly__go {
+    border: 0; background: none; padding: 0 0 0 4px; font: inherit; font-weight: 800;
+    color: #5A4BB0; text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+    &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: 2px; border-radius: 4px; }
+}
+.pbu-monthonly__nobody { margin: 8px 0 0; font-size: 12.5px; color: #667085; }
+
+// =====================================================================
+//  UPDATES P3b — new employees (green: somebody joining), drafts, and the
+//  pay run's "Since the last pay run" panel.
+// =====================================================================
+.pbim.pbu-root {
+    --pbu-new: var(--pbim-green);
+    --pbu-new-soft: var(--pbim-green-soft);
+
+    // Review — the add-as-new choice
+    .pbu-newchoice {
+        display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+        border: 1px dashed #B7E4CB; border-radius: 14px; background: #FBFEFC;
+        transition: background .15s ease, border-color .15s ease;
+        &.is-on { border-style: solid; border-color: var(--pbu-new); background: var(--pbu-new-soft); }
+        .pbu-refuse { margin-top: 6px; }
+    }
+    .pbu-newchoice-ic {
+        flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+        background: var(--pbu-new-soft); color: var(--pbu-new);
+    }
+    .pbu-newchoice.is-on .pbu-newchoice-ic { background: #fff; }
+    .pbu-newchoice-t { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px;
+                       b { font-size: 14.5px; color: var(--pbim-ink); } }
+    .pbu-newchoice .pbu-toggle[aria-checked="true"] { background: var(--pbu-new); }
+    .pbu-um-new {
+        display: inline-flex; align-items: flex-start; gap: 5px; font-size: 12px; font-weight: 600;
+        color: #B54708; svg { flex: none; margin-top: 2px; }
+    }
+
+    // Review — the "New employees" group in the grid
+    .pbu-grid tr.pbu-grouprow th {
+        position: sticky; left: 0; text-align: left; padding: 9px 12px; background: var(--pbim-line-2);
+        font-size: 12.5px; color: var(--pbim-ink); border-bottom: 1px solid var(--pbim-line);
+        b { font-weight: 800; margin: 0 4px 0 2px; }
+        .pbu-sub { display: inline; margin-left: 8px; }
+    }
+    .pbu-grid tr.pbu-grouprow--new th { background: var(--pbu-new-soft); }
+    .pbu-grouprow-ic { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px;
+                       vertical-align: middle; background: #fff; color: var(--pbim-slate); }
+    .pbu-grouprow--new .pbu-grouprow-ic { color: var(--pbu-new); }
+    .pbu-grid tr.is-new th.pbu-who { box-shadow: inset 3px 0 0 var(--pbu-new); }
+    .pbu-grid tr.is-skipped td, .pbu-grid tr.is-skipped th.pbu-who > b { opacity: .45; }
+    .pbu-who--new {
+        .pbu-who-note { display: flex; align-items: flex-start; gap: 4px; margin-top: 3px; font-size: 11px;
+                        line-height: 1.4; color: var(--pbim-muted); white-space: normal;
+                        svg { flex: none; margin-top: 2px; }
+                        &.is-warn { color: #B54708; } &.is-err { color: #C01048; } }
+        .pbu-who-act { display: block; margin-top: 4px; font-size: 11.5px; }
+    }
+    .pbu-tag--new {
+        display: inline-flex; align-items: center; gap: 3px; color: var(--pbu-new);
+        &.is-fix { color: #C01048; } &.is-skipped, &.is-blocked { color: var(--pbim-slate); }
+    }
+
+    // Apply — the fourth card
+    .pbu-lanecards--new { margin-top: 0; }
+    .pbu-lanecard--new .pbu-lanecard-ic, .pbu-hlane--new .pbu-hlane-ic { background: var(--pbu-new-soft); color: var(--pbu-new); }
+    .pbu-hjoiners-note { display: flex; align-items: center; gap: 5px; padding: 2px 4px; font-size: 11.5px; color: var(--pbim-muted); }
+
+    // Start — the blank sheet for new employees
+    .pbu-newsheet {
+        border: 1px solid var(--pbim-line); border-radius: 14px; background: #fff; overflow: hidden;
+        &.is-open { border-color: #B7E4CB; }
+    }
+    .pbu-newsheet-h {
+        width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 0;
+        background: none; text-align: left; cursor: pointer; color: var(--pbim-muted);
+        &:hover { background: #FBFEFC; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary-light); outline-offset: -2px; }
+        .pbu-ib { background: var(--pbu-new-soft); color: var(--pbu-new); }
+    }
+    .pbu-newsheet-t { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+                      b { font-size: 14px; color: var(--pbim-ink); } }
+    .pbu-newsheet-b { padding: 4px 14px 14px 60px; display: flex; flex-direction: column; gap: 8px;
+                      .pbu-select { max-width: 360px; } }
+    @media (max-width: 720px) { .pbu-newsheet-b { padding-left: 14px; } }
+
+    // Home — drafts
+    .pbu-draftlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .pbu-draft {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 10px 12px;
+        border: 1px solid var(--pbim-line); border-radius: 12px; background: #fff;
+        animation: pbu-in .18s ease-out;
+        .pbu-hrow-t { flex: 1 1 240px; min-width: 0; b { overflow-wrap: anywhere; } }
+    }
+    .pbu-draft-age {
+        display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums;
+        &.is-old { color: #B54708; font-weight: 700; }
+    }
+    .pbu-draftsaved {
+        display: inline-flex; align-items: center; gap: 4px; margin-left: auto; margin-right: 8px;
+        font-size: 11.5px; color: var(--pbim-muted);
+    }
+    .pbu-note--draft {
+        align-items: flex-start;
+        ul { margin: 4px 0 0; padding-left: 18px; font-size: 12.5px; color: var(--pbim-muted); }
+        .pbu-x { margin-left: auto; }
+    }
+    .pbu-joiners .pbu-hrow { align-items: center; }
+    @media (prefers-reduced-motion: reduce) {
+        .pbu-draft { animation: none; }
+        .pbu-newchoice { transition: none; }
+    }
+}
+
+// The pay run's "Review pay data" dialog — outside the Updates root, so the
+// palette is spelled out (indigo #5A4BB0, slate ink, semantic tints).
+.pr-review { position: relative; }
+.pbu-since-line .pr-link { margin-left: 6px; }
+.pbu-since {
+    position: absolute; top: 0; right: 0; bottom: 0; z-index: 20;
+    width: 440px; max-width: 100%; display: flex; flex-direction: column;
+    background: #fff; border-left: 1px solid #E4E7EC;
+    box-shadow: -18px 0 40px -24px rgba(16, 24, 40, .35);
+    animation: pbu-since-in .2s ease-out;
+}
+@keyframes pbu-since-in { from { transform: translateX(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pbu-since { animation: none; } }
+.pbu-since__h {
+    display: flex; align-items: flex-start; gap: 12px; padding: 16px 16px 12px; border-bottom: 1px solid #F2F4F7;
+}
+.pbu-since__ic {
+    flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+    background: #EEEBFA; color: #5A4BB0;
+}
+.pbu-since__t { flex: 1 1 auto; min-width: 0;
+    h3 { margin: 0; font-size: 15px; font-weight: 800; color: #101828; }
+    p { margin: 2px 0 0; font-size: 12.5px; color: #667085; line-height: 1.45; }
+}
+.pbu-since__x {
+    flex: none; border: 0; background: none; color: #667085; padding: 4px; border-radius: 8px; cursor: pointer;
+    &:hover { background: #F2F4F7; color: #101828; }
+    &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: 1px; }
+}
+.pbu-since__tools { padding: 12px 16px 8px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #F2F4F7; }
+.pbu-since__search {
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px; margin: 0;
+    border: 1px solid #D0D5DD; border-radius: 10px; color: #667085;
+    &:focus-within { border-color: #5A4BB0; box-shadow: 0 0 0 3px #EEEBFA; }
+    input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; font-size: 13px; background: none; color: #101828; }
+}
+.pbu-since__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pbu-since__chip {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid #E4E7EC; background: #fff; font-size: 12px; font-weight: 600; color: #344054; cursor: pointer;
+    b { font-variant-numeric: tabular-nums; color: #667085; }
+    &[aria-pressed="true"] { background: #5A4BB0; border-color: #5A4BB0; color: #fff; b { color: #E4E0F7; } }
+    &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: 1px; }
+}
+.pbu-since__shown { margin: 0; font-size: 11.5px; color: #667085; }
+.pbu-since__list { list-style: none; margin: 0; padding: 8px 10px 12px; flex: 1 1 auto; overflow-y: auto; }
+.pbu-since__person { border-radius: 12px; margin-bottom: 4px;
+    &.is-open { background: #F9FAFB; }
+}
+.pbu-since__who {
+    width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px; border: 0; background: none;
+    border-radius: 10px; cursor: pointer; text-align: left; color: #667085;
+    b { flex: 1 1 auto; min-width: 0; font-size: 13px; color: #101828; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    &:hover { background: #F2F4F7; }
+    &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: -2px; }
+}
+.pbu-since__av {
+    flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    background: #EEEBFA; color: #5A4BB0; font-size: 12px; font-weight: 800; text-transform: uppercase;
+}
+.pbu-since__kinds { display: inline-flex; gap: 3px; }
+.pbu-since__dot { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; }
+.pbu-since__items { list-style: none; margin: 0; padding: 0 8px 8px 44px; display: flex; flex-direction: column; gap: 5px; }
+.pbu-since__item { display: flex; align-items: flex-start; gap: 7px; font-size: 12.5px; color: #344054; line-height: 1.45; }
+.pbu-since__iic { flex: none; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; margin-top: 1px; }
+$pbu-since-kinds: (pay: (#5A4BB0, #EEEBFA), contract: (#3E4784, #EEF0FA), bank: (#B54708, #FEF6E7),
+                   details: (#0E7090, #E7F6FA), oneoff: (#6941C6, #F4EBFF), scheduled: (#175CD3, #EFF8FF),
+                   new: (#067647, #ECFDF3));
+@each $kind, $pair in $pbu-since-kinds {
+    .pbu-since__dot.is-#{$kind}, .pbu-since__item.is-#{$kind} .pbu-since__iic {
+        color: nth($pair, 1); background: nth($pair, 2);
+    }
+}
+.pbu-since__none { padding: 18px 10px; font-size: 12.5px; color: #667085; text-align: center; }
+.pbu-since__f {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid #F2F4F7;
+    .pr-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+}
+.pbu-since__note { display: inline-flex; align-items: flex-start; gap: 5px; font-size: 11.5px; color: #667085;
+                   svg { flex: none; margin-top: 2px; } }
+
+// =====================================================================
+//  UPDATES P5 — year-to-date figures before Payobook, and the way out
+//  under "Nobody else … can approve bank details yet".
+// =====================================================================
+.pbim.pbu-root {
+    // ------------------------------------------------------------ home door
+    .pbu-ytd-door {
+        display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+        padding: 12px 16px; border-radius: var(--pbim-r-lg); border: 1px solid var(--pbim-line);
+        background: var(--pbim-surface); font: inherit; color: var(--pbim-muted); cursor: pointer;
+        transition: border-color .15s ease, box-shadow .15s ease;
+        > svg { margin-left: auto; flex: none; color: var(--pbim-primary); transition: transform .15s ease; }
+        &:hover { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring);
+                  > svg { transform: translateX(3px); } }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+    .pbu-ytd-door-t { display: flex; flex-direction: column; gap: 2px; min-width: 0;
+                      b { font-size: 14px; color: var(--pbim-ink); } }
+
+    // ------------------------------------------------------------ start
+    .pbu-ytd-date { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+                    .pbu-month-line { flex-basis: 100%; } }
+    .pbu-ytd-figs { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    // ------------------------------------------------------------ apply
+    .pbu-ytd-totals .pbu-total { min-width: 150px; }
+
+    // ------------------------------------------------------------ the view
+    .pbu-ytd { gap: 14px; }
+    .pbu-ytd-head { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .pbu-ytd-title { display: flex; gap: 14px; align-items: flex-start; }
+    .pbu-ytd-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .pbu-ytd-gap { flex: 1 1 auto; }
+    .pbu-ytd-search {
+        display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; margin: 0;
+        border: 1px solid var(--pbim-line); border-radius: 10px; background: var(--pbim-surface);
+        color: var(--pbim-muted); min-width: 260px;
+        .pbu-input { border: 0; box-shadow: none; padding: 8px 0; background: transparent; width: 100%; }
+        &:focus-within { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbu-ytd-strip { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pbu-ytd-wrap { border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-lg); transition: opacity .15s ease;
+                    &.is-busy { opacity: .55; } }
+    .pbu-ytd-t {
+        width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px;
+        th, td { padding: 10px 14px; border-bottom: 1px solid var(--pbim-line); vertical-align: top; }
+        thead th { position: sticky; top: 0; background: var(--pbim-bg); font-size: 12px; font-weight: 700;
+                   color: var(--pbim-muted); text-align: left; white-space: nowrap; z-index: 1; }
+        th.num, td.num { text-align: right; white-space: nowrap; }
+        tbody tr:hover { background: var(--pbim-soft); }
+        tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+    }
+    .pbu-ytd-who {
+        position: sticky; left: 0; background: var(--pbim-surface); min-width: 220px; text-align: left;
+        display: table-cell;
+        b { display: block; color: var(--pbim-ink); font-size: 13.5px; }
+        .pbu-sub { display: block; margin: 2px 0 4px; }
+    }
+    thead .pbu-ytd-who { background: var(--pbim-bg); z-index: 2; }
+    .pbu-ytd-total { display: block; color: var(--pbim-ink); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+    .pbu-ytd-parts { display: inline-flex; gap: 4px; font-size: 11.5px; color: var(--pbim-muted);
+                     font-variant-numeric: tabular-nums; }
+    .pbu-ytd-plus { color: #94A3B8; }
+    .pbu-ytd-parts, .pbu-ytd-legend {
+        .is-before { color: var(--pbim-primary); }
+        .is-paid { color: #067647; }
+        .is-none { color: #94A3B8; }
+    }
+    .pbu-ytd-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .pbu-ytd-legend b { color: var(--pbim-ink); }
+
+    // ---- UPDATES P5c: a sum that is not a year total says so, quietly.
+    .pbu-ytd-cell {
+        .pbu-ytd-chip { margin-top: 5px; font-size: 10.5px; padding: 4px 7px; white-space: normal;
+                        text-align: left; line-height: 1.2; max-width: 210px; margin-left: auto; }
+        &.is-open { background: rgba(254, 243, 199, .38); }
+    }
+    .pbu-ytd-cell > .pbu-ytd-chip, .pbu-ytd-cell > .pbu-ytd-adv { display: flex; }
+    .pbu-ytd-total.is-open {
+        color: var(--pbim-ink); font-weight: 600;
+        small { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .02em;
+                text-transform: uppercase; color: var(--pbim-muted); margin-bottom: 1px; }
+    }
+    .pbu-ytd-cell.is-open .pbu-ytd-total.is-open { color: #8A5A0B; small { color: #B45309; } }
+    .pbu-ytd-adv { justify-content: flex-end; margin-top: 4px; font-size: 11px; color: #8A5A0B;
+                   white-space: normal; max-width: 210px; margin-left: auto; text-align: right; }
+    .pbu-ytd-how {
+        display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px; margin: -1px -6px;
+        border: 1px solid transparent; border-radius: 6px; background: transparent;
+        font: inherit; color: inherit; cursor: pointer; font-variant-numeric: tabular-nums;
+        transition: background .15s ease, border-color .15s ease;
+        svg { opacity: .55; transition: opacity .15s ease; }
+        &:hover, &[aria-expanded="true"] { background: var(--pbim-soft); border-color: var(--pbim-primary-light);
+                                           svg { opacity: 1; } }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 1px; }
+        &.is-paid { color: #067647; }
+        &.is-none { color: #94A3B8; }
+    }
+    .pbu-ytd-pop {
+        position: fixed; z-index: 1050; display: flex; flex-direction: column; gap: 10px;
+        max-height: 70vh; overflow-y: auto; padding: 14px 16px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-lg);
+        box-shadow: 0 18px 40px rgba(36, 31, 82, .16), 0 2px 6px rgba(36, 31, 82, .08);
+        animation: pbu-pop-in .16s ease-out;
+        text-align: left; white-space: normal;
+    }
+    .pbu-ytd-pop-head { display: flex; align-items: flex-start; gap: 10px; }
+    .pbu-ytd-pop-t { flex: 1 1 auto; min-width: 0; .pbu-h3 { margin: 0; } .pbu-sub { margin: 2px 0 0; } }
+    .pbu-ytd-pop-x {
+        flex: none; display: inline-flex; padding: 5px; border: 0; border-radius: 8px; background: transparent;
+        color: var(--pbim-muted); cursor: pointer;
+        &:hover { background: var(--pbim-slate-soft); color: var(--pbim-ink); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); }
+    }
+    .pbu-ytd-pop-items { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12px; color: var(--pbim-muted); }
+    .pbu-ytd-pop-list { display: flex; flex-direction: column; border: 1px solid var(--pbim-line); border-radius: 10px; }
+    .pbu-ytd-pop-row {
+        display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; font-size: 12.5px;
+        & + & { border-top: 1px solid var(--pbim-line); }
+        &.is-missing { background: var(--pbim-amber-soft); }
+        &.is-below .pbu-ytd-pop-amt { color: var(--pbim-rose); }
+        &.is-left { padding: 6px 2px; border-top: 0; }
+    }
+    .pbu-ytd-pop-mark { flex: none; display: inline-flex; margin-top: 2px; color: var(--pbim-green);
+                        .is-missing & { color: #B45309; } .is-left & { color: #94A3B8; } }
+    .pbu-ytd-pop-what { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px;
+                        b { color: var(--pbim-ink); font-weight: 600; } small { color: var(--pbim-muted); font-size: 11.5px; } }
+    .pbu-ytd-pop-why { color: #8A5A0B !important; }
+    .pbu-ytd-pop-amt { flex: none; font-variant-numeric: tabular-nums; color: var(--pbim-ink); font-weight: 600;
+                       &.is-none { color: #94A3B8; font-weight: 500; } }
+    .pbu-ytd-pop-sum {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px;
+        span { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 10px;
+               background: var(--pbim-bg); }
+        small { font-size: 11px; color: var(--pbim-muted); }
+        b { font-size: 13.5px; color: var(--pbim-ink); font-variant-numeric: tabular-nums;
+            &.is-before { color: var(--pbim-primary); } &.is-paid { color: #067647; } }
+    }
+    .pbu-ytd-pop-note { margin: 0; }
+    // ---- UPDATES P5d (D31): paid in Payobook alone, for a person who joined this year.
+    .pbu-ytd-cell .pbu-ytd-joined { gap: 4px; align-items: center; }
+    .pbu-ytd-pop-joined {
+        margin: 0; padding: 8px 10px; border-radius: 10px; gap: 8px;
+        background: var(--pbim-soft); color: var(--pbim-primary); font-weight: 600;
+        border: 1px solid var(--pbim-primary-light);
+        svg { color: var(--pbim-primary); }
+    }
+    .pbu-ytd-pop-left {
+        font-size: 12px; color: var(--pbim-muted);
+        summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600;
+                  list-style: none; &::-webkit-details-marker { display: none; } }
+        &[open] summary { margin-bottom: 4px; }
+    }
+    @keyframes pbu-pop-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .pbu-ytd-pop { animation: none; } }
+
+    .pbu-ytd-payrun {
+        display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-lg); background: var(--pbim-surface);
+        .pbu-row { margin-top: 8px; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px;
+                   .pbu-select { flex: 1 1 220px; width: auto; max-width: 340px; } }
+    }
+    .pbu-ytd-payrun-t { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 auto; }
+
+    // ------------------------------------------------------------ set-up
+    .pbu-ytd-setup {
+        display: flex; flex-direction: column; gap: 12px; padding: 16px;
+        border: 1px solid var(--pbim-primary-light); border-radius: var(--pbim-r-lg); background: var(--pbim-soft);
+        animation: pbu-in .18s ease-out;
+    }
+    .pbu-ytd-sgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px; }
+    .pbu-ytd-sbox { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 12px;
+                    background: var(--pbim-surface); border: 1px solid var(--pbim-line); min-width: 0; }
+    .pbu-ytd-figlist, .pbu-ytd-maps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .pbu-ytd-figlist li, .pbu-ytd-maps li {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px;
+        border: 1px solid var(--pbim-line); border-radius: 10px; font-size: 13px;
+        > b { min-width: 170px; color: var(--pbim-ink); }
+    }
+    .pbu-ytd-codes { display: inline-flex; flex-wrap: wrap; gap: 6px; flex: 1 1 auto; }
+    .pbu-chip-x { display: inline-grid; place-items: center; border: 0; background: none; padding: 0 0 0 4px;
+                  color: inherit; cursor: pointer; opacity: .7; &:hover { opacity: 1; } }
+    .pbu-select-sm { max-width: 220px; }
+    .pbu-ytd-scheme { display: flex; flex-direction: column; gap: 8px; padding-top: 8px; border-top: 1px solid var(--pbim-line);
+                      &:first-of-type { border-top: 0; padding-top: 0; } }
+    .pbu-ytd-scheme-h { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--pbim-ink);
+                        svg { color: var(--pbim-primary); } }
+    .pbu-ytd-maps li { flex-wrap: nowrap; > .pbim-btn { flex: none; } }
+    .pbu-ytd-map-t { flex: 1 1 auto; min-width: 0; b { color: var(--pbim-ink); } }
+    .pbu-ytd-addmap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+                      .pbu-select { flex: 1 1 150px; width: auto; max-width: none; min-width: 0; } }
+
+    // ------------------------------------------------------------ way out (P6 deviation 1)
+    .pbu-wayout { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .pbu-wayout-link {
+        display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px;
+        border: 1px solid var(--pbim-primary-light); background: var(--pbim-surface); color: var(--pbim-primary);
+        font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+        transition: background .15s ease, color .15s ease;
+        &.is-pri { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; }
+        &:hover { background: var(--pbim-soft); color: var(--pbim-primary); }
+        &.is-pri:hover { background: var(--pbim-primary-dark, #4A3D96); color: #fff; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+    .pbu-wayout-ask { display: inline-flex; align-items: flex-start; gap: 6px; font-size: 12.5px; color: var(--pbim-muted);
+                      svg { flex: none; margin-top: 2px; } }
+    .pbu-lanecard .pbu-wayout { grid-column: 1 / -1; }
+}

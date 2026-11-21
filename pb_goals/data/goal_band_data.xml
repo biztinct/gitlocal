@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         WHAT A NUMBER OUT OF FIVE IS CALLED.
+
+         Four bands, shipped so every company has words from the first day and
+         nobody ever sees a score with an empty space beside it. A company that
+         wants different words edits these; a goal year that is scored
+         differently fills in its own list on the year itself.
+
+         COMPANY-LESS, DELIBERATELY (R8). `company_id` defaults to the company
+         of whoever ran the install, so a seeded record without
+         `eval="False"` lands in one company and the standard
+         `['|', ('company_id','=',False), …]` rule then hides it from everybody
+         else — which here would mean three companies out of four scoring
+         people and having no word for the answer.
+
+         `noupdate="1"` so a business that has reworded or re-banded these on
+         a live database keeps its own version.
+
+         THE FLOORS ARE WHAT MATTER. `_band_for` walks the table highest first
+         and takes the first band a score reaches, so the tops below are there
+         to make the table readable to the person editing it rather than to be
+         asked. A table with a gap in it therefore cannot leave a score with no
+         name.
+         ================================================================== -->
+
+    <record id="band_outstanding" model="pb.goal.band">
+        <field name="name">Outstanding</field>
+        <field name="min_score">4.5</field>
+        <field name="max_score">5.0</field>
+        <field name="tone">good</field>
+        <field name="sequence">10</field>
+        <field name="description">Went well beyond what was asked, on the things that mattered most.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="band_strong" model="pb.goal.band">
+        <field name="name">Strong</field>
+        <field name="min_score">3.5</field>
+        <field name="max_score">4.5</field>
+        <field name="tone">good</field>
+        <field name="sequence">20</field>
+        <field name="description">Did what was asked and more of it than not.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="band_solid" model="pb.goal.band">
+        <field name="name">Solid</field>
+        <field name="min_score">2.5</field>
+        <field name="max_score">3.5</field>
+        <field name="tone">ok</field>
+        <field name="sequence">30</field>
+        <field name="description">Did what was asked.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="band_attention" model="pb.goal.band">
+        <field name="name">Needs attention</field>
+        <field name="min_score">0.0</field>
+        <field name="max_score">2.5</field>
+        <field name="tone">bad</field>
+        <field name="sequence">40</field>
+        <field name="description">Less happened than was planned. Worth a conversation about why.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</data>
+</odoo>

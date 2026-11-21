@@ -18,9 +18,9 @@
                             <field name="import_source"/>
                             <field name="country_code" required="1"/>
                             <field name="data_source_url" 
-                                   attrs="{'invisible': [('import_source', '!=', 'api')], 'required': [('import_source', '=', 'api')]}"/>
+                                   invisible="import_source != 'api'" required="('import_source', '=', 'api')"/>
                             <field name="import_file" filename="import_filename"
-                                   attrs="{'invisible': [('import_source', '!=', 'file')], 'required': [('import_source', '=', 'file')]}"/>
+                                   invisible="import_source != 'file'" required="('import_source', '=', 'file')"/>
                             <field name="import_filename" invisible="1"/>
                         </group>
                         <group string="Processing Options">
@@ -31,7 +31,7 @@
                         </group>
                     </group>
                     
-                    <group string="Zoho Integration" attrs="{'invisible': [('import_source', '!=', 'zoho')]}">
+                    <group string="Zoho Integration" invisible="import_source != 'zoho'">
                         <group>
                             <field name="zoho_api_key"/>
                             <field name="zoho_org_id"/>
@@ -50,7 +50,7 @@
                     <notebook>
                         <page string="Field Mapping" name="mapping">
                             <div class="alert alert-info">
-                                <strong>Field Mapping:</strong> Configure how external data maps to Odoo employee fields.
+                                <strong>Field Mapping:</strong> Configure how external data maps to Payobook employee fields.
                             </div>
                             
                             <group>
@@ -84,12 +84,12 @@
                             </group>
                             
                             <field name="custom_field_mappings">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="source_field"/>
                                     <field name="target_field"/>
                                     <field name="field_type"/>
                                     <field name="transformation_rule"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         
@@ -114,7 +114,7 @@
                             </group>
                         </page>
                         
-                        <page string="Contract Creation" name="contracts" attrs="{'invisible': [('create_contracts', '=', False)]}">
+                        <page string="Contract Creation" name="contracts" invisible="not create_contracts">
                             <group>
                                 <group string="Default Contract Settings">
                                     <field name="default_contract_type"/>
@@ -151,7 +151,7 @@
                             </group>
                         </page>
                         
-                        <page string="Import Results" name="results" attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <page string="Import Results" name="results" invisible="state == 'draft'">
                             <group>
                                 <group string="Import Statistics">
                                     <field name="imported_count" readonly="1"/>
@@ -169,7 +169,7 @@
                             <field name="import_log" readonly="1" widget="text"/>
                             
                             <field name="error_details" readonly="1" 
-                                   attrs="{'invisible': [('failed_count', '=', 0)]}"/>
+                                   invisible="failed_count == 0"/>
                         </page>
                     </notebook>
                     
@@ -180,7 +180,7 @@
                             string="Start Import" 
                             type="object" 
                             class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                            invisible="state != 'draft'"/>
                     <button name="action_download_template" 
                             string="Download Template" 
                             type="object" 
@@ -189,12 +189,12 @@
                             string="Download Error Report" 
                             type="object" 
                             class="btn-warning"
-                            attrs="{'invisible': [('failed_count', '=', 0)]}"/>
+                            invisible="failed_count == 0"/>
                     <button name="action_view_imported_employees" 
                             string="View Imported Employees" 
                             type="object" 
                             class="btn-primary"
-                            attrs="{'invisible': [('imported_count', '=', 0)]}"/>
+                            invisible="imported_count == 0"/>
                     <button string="Close" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

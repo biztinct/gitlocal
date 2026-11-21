@@ -1,0 +1,102 @@
+Payroll source experience and monthly workbooks — 2026-10-21
+
+Implementation commits
+- 3f3dd4fa37698d8009b0f308b0d5f03b491565fd: protected/prefilled monthly workbooks,
+  business-facing payroll source settings, logical Journey owners, grouped readiness
+  and scoped source-record actions.
+- a811da9e8: compatible source suggestions; explicit advanced catalogue browsing.
+- 1459482619788b6d7acf64bee225461baa4c738f: preserve selected payroll period and
+  employee scope when returning from source settings; issue records open in a dialog.
+
+Deployment
+- SSH Payobook19v2; sole addons root /odoo/odoo-server/addons.
+- Active databases: p0clone, payobook, payobook_template, rize. ABM untouched.
+- Initial release under flock /tmp/payobook-studio-deploy.lock, with START/DONE in
+  /opt/deploy-notes.md. Fresh backups; p0clone upgrade and tests before other DBs.
+- Initial release source 3f3dd4fa3. Service downtime 371 seconds. All sites warmed.
+- Coordinated with the separate Learning L1 deployment (START 10:12, DONE 10:17 UTC).
+  No code replacement or restart while its START was open.
+- Final static-only release source 145948261 (includes committed Learning L1).
+  START/DONE 10:22 UTC; zero additional downtime. No business-record writes.
+- All 152 custom module trees and installed versions verified against the combined
+  release baseline on all four databases. Standard Odoo addon folders preserved.
+- Exact active cron sets restored/preserved: p0clone 26, payobook 37,
+  payobook_template 0, rize 69.
+- Assets invalidated on all four; payobook.com, rize.payobook.com and
+  p0clone.payobook.com returned HTTP 200 after warming.
+- Module versions: pb_hr_payroll_formula 19.0.1.152.0;
+  pb_formula_studio 19.0.1.208.0; pb_payroll_templates 19.0.1.4.0;
+  pb_payrun_wizard 19.0.1.34.0. Follow-up changes were static files only.
+
+Backup and server evidence
+- Permanent Rize backup: /odoo/archives/rize-payroll-source-ux-20261021T100446Z
+  (explicit never-auto-delete retention).
+- Nonproduction backups: /odoo/backups/payroll-source-ux-20261021T100446Z
+  (seven days, preserve latest usable).
+- Initial receipt: /tmp/payroll-source-ux-3f3dd4fa3/receipt.json
+- Final receipt: /tmp/payroll-source-ux-145948261/receipt.json
+- Initial p0clone upgrade/test logs were captured in process stdout because of a
+  staging-directory traversal permission. Group traversal was corrected; expected
+  log paths point to the genuine captured output. No test output was fabricated.
+
+Validation
+- 168 deployed Odoo regression tests passed on p0clone, zero failures/errors.
+  Covers workbook round trips, protection/tampering, record movement, approved
+  source prefilling, period isolation, saved override precedence, approval gates,
+  monthly input reservations, source ownership, authorization, and scoped links.
+- Local broad suite: 215 cases; one new fixture omitted the required effective date.
+  Fixture corrected; 36 affected/new cases rerun with zero failures/errors.
+- Five frontend regression cases passed through Node: compatible-source filtering,
+  advanced restrictions, preserving unusual current mappings, return scope, dialogs.
+- New source workspace mounted successfully in jsdom; search and save payload checked.
+- Eight affected Owl templates compiled. Changed JS syntax and SCSS compilation passed.
+
+Chrome end-to-end checks on Rize
+- October, Vietnam: 50 employees checked; one setup action explains the 2026-11-01
+  activation date instead of repeating that cause for each employee.
+- November, Vietnam: 47 employees checked; 31 grouped actions. Search for Variable
+  Bonus isolates its issue. Its action opens Monthly adjustments in a dialog;
+  closing preserves the review and triggers a fresh readiness check.
+- Source settings: calculation cards and business owner labels render correctly;
+  technical information is collapsed. Bonus chooser shows five compatible sources
+  by default instead of unrelated employee fields and historical totals.
+- Return from source settings restores Vietnam payroll, 2026-11-01 through
+  2026-11-30, and the Pay data step. Certifications are not implicitly carried over.
+- Configure Templates retains pay month 2026-11 and describes editable prefilled
+  Time/Monthly adjustments and locked Employee records.
+- Journey shows logical ownership groups, including Monthly adjustments,
+  Offboarding, Overtime, Time off, Work calendar and Leave balances.
+- Browser console: no runtime errors in final checked tab.
+- No payroll runs, real approvals, mapping changes, or employee-record updates
+  were submitted during UI verification. Actual workbook data/protection verified
+  with synthetic fixtures, without exporting production employee workbooks.
+- Browser review was paused during concurrent deployment; resumed after DONE.
+
+Behavior and limits
+- Employee records worksheet is protected on monthly downloads and ignored by the
+  server during monthly upload, even if Excel protection is removed.
+- Mapped records deliberately moved into Monthly adjustments remain editable and
+  eligible for the existing explicit, reviewed master-record update workflow.
+- Approved connected values prefill the selected month. Saved monthly overrides
+  take priority; unrelated months, missing values and conflicting approvals do not
+  become fabricated values. Previewing a workbook does not certify completeness,
+  approve records, reserve monthly adjustments, or run payroll.
+- Zero confirmations apply only to eligible missing monthly items; approved amounts
+  remain authoritative, and pending/conflicting records cannot be waived.
+- Grouping changes presentation, not the payroll computation gate. Genuine missing
+  data, source reviews and HR/payroll settlement decisions remain actionable.
+- Existing activation dates and country/settlement policy decisions are unchanged.
+
+Cleanup
+- No PNG or screenshot files were saved by this test run. Inline browser inspection
+  only; temporary QA directory scanned with zero PNG files. Existing product assets,
+  user images and other sessions' files preserved.
+
+Concurrent release boundary
+- Final branch check found Learning-only commit f7182ccde after our 10:22 release.
+  Its L1_REPORT.md section 10 explicitly records coordinator scope as commit-only,
+  to ride the next pb_training upgrade. It is intentionally not deployed by this
+  payroll release. No payroll runtime changes remain undeployed.
+- The verified combined deployment baseline remains 145948261; the subsequent
+  documentation commits do not change runtime content. Other sessions' working
+  files, deleted output files and staged future Learning work were left untouched.

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › SKILLS (LEARNING L5). The hero sentence, the quiet
+       numbers, two inner views (People · By skill). Rows become cards on a
+       phone. `=` rules (R35); text nodes on one line (LN13).
+       ==================================================================== -->
+  <t t-name="pb_training.PbSkillsLens">
+    <div class="pbim pbss pbss-vars pbcl pbsk" t-att-class="{ 'pbss--embedded': props.embedded }">
+      <div class="pbss-wrap">
+
+        <div t-if="!state.loaded" class="pbss-hero pbss-skel" aria-busy="true"><div class="pbss-skel-line"/></div>
+
+        <div t-elif="state.failed" class="pbss-panel pbss-empty">
+          <div class="pbss-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The skills could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
+        <div t-elif="!allowed" class="pbss-panel pbss-empty">
+          <div class="pbss-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>Skills shows the people you look after</h2>
+          <p>Your own skills are on My learning.</p>
+        </div>
+
+        <t t-else="">
+          <section class="pbss-hero">
+            <div class="pbss-hero-top">
+              <div class="pbss-hero-id">
+                <div class="pbss-eyebrow"><t t-out="ic('sparkles',13)"/> <t t-if="data.team">Skills · your team</t><t t-else="">Skills</t></div>
+                <p class="pbss-headline" t-esc="data.headline"/>
+                <p class="pbss-note">Each person against the skills their job needs. A course that gives a skill closes the gap when they finish it.</p>
+              </div>
+            </div>
+          </section>
+
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.f.only_gaps ? 'gaps' : ''"/>
+          </t>
+
+          <div class="pbss-bar">
+            <label class="pbss-search"><t t-out="ic('search',14)"/><input type="search" placeholder="Find a person" t-att-value="state.f.q" t-on-input="onSearch"/></label>
+            <select t-if="lists.departments.length" class="pbss-in pbcl-select" t-on-change="(ev) => this.setFilter('department_id', ev)" aria-label="Department">
+              <option value="0">Every department</option>
+              <t t-foreach="lists.departments" t-as="dp" t-key="dp.id"><option t-att-value="dp.id" t-att-selected="state.f.department_id === dp.id" t-esc="dp.name"/></t>
+            </select>
+            <select t-if="lists.jobs.length" class="pbss-in pbcl-select" t-on-change="(ev) => this.setFilter('job_id', ev)" aria-label="Job">
+              <option value="0">Every job</option>
+              <t t-foreach="lists.jobs" t-as="jb" t-key="jb.id"><option t-att-value="jb.id" t-att-selected="state.f.job_id === jb.id" t-esc="jb.name"/></t>
+            </select>
+            <select t-if="lists.skills.length" class="pbss-in pbcl-select" t-on-change="(ev) => this.setFilter('skill_id', ev)" aria-label="Skill">
+              <option value="0">Every skill</option>
+              <t t-foreach="lists.skills" t-as="sk" t-key="sk.id"><option t-att-value="sk.id" t-att-selected="state.f.skill_id === sk.id" t-esc="sk.name"/></t>
+            </select>
+            <button class="pbss-filter" t-att-class="{ 'is-on': state.f.only_gaps }" t-on-click="toggleGaps">Only gaps</button>
+            <button t-if="anyFilter" class="pbim-btn ghost" t-on-click="clearFilters"><t t-out="ic('x',14)"/> Show everybody</button>
+          </div>
+
+          <div class="pbss-modes pbcl-views" role="tablist">
+            <button class="pbss-filter" t-att-class="{ 'is-on': state.tab === 'people' }" t-on-click="() => this.setTab('people')"><t t-out="ic('users',13)"/> People</button>
+            <button class="pbss-filter" t-att-class="{ 'is-on': state.tab === 'skills' }" t-on-click="() => this.setTab('skills')"><t t-out="ic('sparkles',13)"/> By skill</button>
+          </div>
+
+          <div t-if="!kpis.people and !anyFilter" class="pbss-panel pbss-empty">
+            <div class="pbss-empty-ic"><t t-out="ic('sparkles',26)"/></div>
+            <h2>No job lists the skills it needs yet</h2>
+            <p>Open a job (Employees › Jobs), add the skills it needs and the level for each. Then add "Skills it gives" to the courses that teach them. This board shows who has what, the gaps, and the course that closes each one.</p>
+          </div>
+
+          <t t-elif="state.tab === 'people'">
+            <div t-if="!people.length" class="pbss-panel pbss-empty">
+              <div class="pbss-empty-ic"><t t-out="ic('search',26)"/></div>
+              <h2 t-if="state.f.only_gaps">Nobody has a gap here</h2>
+              <h2 t-else="">Nobody matches that</h2>
+              <button class="pbim-btn ghost" t-on-click="clearFilters">Show everybody</button>
+            </div>
+            <div t-else="" class="pbsk-people">
+              <div t-foreach="people" t-as="per" t-key="per.employee_id" class="pbss-panel pbsk-person" t-att-class="{ 'has-gap': per.gap_count }">
+                <div class="pbsk-person-id">
+                  <b t-esc="per.employee"/>
+                  <span class="pbss-dim"><t t-esc="per.job"/><t t-if="per.department"> · <t t-esc="per.department"/></t></span>
+                  <span class="pbss-state" t-att-class="per.gap_count ? 'is-warn' : 'is-ok'" t-esc="gapWords(per)"/>
+                </div>
+                <div class="pbsk-person-skills">
+                  <span t-foreach="per.required" t-as="rq" t-key="rq.skill_id" class="pbss-state pbcl-sk" t-att-class="chipClass(rq)" t-att-title="chipTitle(rq)"><t t-esc="rq.skill"/> · <t t-esc="rq.state === 'missing' ? '—' : rq.have_level"/></span>
+                </div>
+                <div t-if="gaps(per).length" class="pbsk-person-close">
+                  <t t-foreach="gaps(per)" t-as="gp" t-key="gp.skill_id">
+                    <div class="pbcl-close-row">
+                      <span class="pbss-dim-i pbcl-close-need" t-esc="needWords(gp)"/>
+                      <t t-if="gp.courses.length">
+                        <button t-if="data.can_close" class="pbim-btn ghost" t-att-disabled="state.busy === per.employee_id + '-' + gp.skill_id" t-on-click="() => this.closeIt(per, gp, gp.courses[0])"><t t-out="ic('arrowRight',13)"/> <t t-esc="closeWords(gp.courses[0])"/></button>
+                        <span t-else="" class="pbss-chip is-go"><t t-out="ic('bookOpen',12)"/> <t t-esc="closesWords(gp.courses[0])"/></span>
+                      </t>
+                      <span t-else="" class="pbss-chip">No course gives it yet</span>
+                    </div>
+                  </t>
+                </div>
+              </div>
+              <p t-if="data.matching > data.shown" class="pbss-note" t-esc="capWords"/>
+            </div>
+          </t>
+
+          <section t-else="" class="pbss-panel">
+            <div t-if="!bySkill.length" class="pbss-calm"><t t-out="ic('info',14)"/> Nothing to show for these filters.</div>
+            <div t-else="" class="pbss-scroll">
+              <table class="pbss-table">
+                <thead><tr><th>Skill</th><th>People who need it</th><th>At the level</th><th>Below</th><th>Missing</th><th>Covered</th><th>Course that gives it</th></tr></thead>
+                <tbody>
+                  <tr t-foreach="bySkill" t-as="bs" t-key="bs.skill_id">
+                    <td><b t-esc="bs.skill"/></td>
+                    <td t-esc="bs.employees"/>
+                    <td t-esc="bs.ok"/>
+                    <td t-att-class="{ 'pbcl-zero': !bs.below }" t-esc="bs.below"/>
+                    <td t-att-class="{ 'pbcl-zero': !bs.missing }" t-esc="bs.missing"/>
+                    <td><span class="pbss-state" t-att-class="coverageClass(bs)"><t t-esc="bs.coverage_pct"/>%</span></td>
+                    <td><t t-if="bs.courses.length" t-esc="bs.courses[0].name"/><span t-else="" class="pbcl-zero">—</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

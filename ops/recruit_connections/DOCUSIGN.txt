@@ -1,0 +1,88 @@
+DocuSign recruitment connector — activation and acceptance
+
+Payobook uses DocuSign eSignature REST API v2.1. Signing runs in DocuSign's
+cloud. No self-hosted signing engine, signing certificate or extra signing
+server is needed. The connector uses requests and cryptography already on the
+Odoo host. CV extraction hosting is separate and remains unapproved.
+
+Account owner / DocuSign administrator
+1. Confirm eSignature API entitlement and Connect availability. Start with a
+   developer demo account. Production requires the applicable API subscription
+   and DocuSign integration go-live review; an ordinary web signing login alone
+   does not establish these entitlements.
+2. Register an integration in Apps and Keys. Record integration key, sender
+   user GUID and API account GUID. Register an RSA key pair (>=2048 bits).
+   Keep the private key in the approved secret store; never send it in chat,
+   commit it or put it in a URL.
+3. Grant the configured sender signature and impersonation consent for JWT.
+   Follow DocuSign's JWT consent procedure and the application's registered
+   redirect URI. Payobook does not automatically grant consent or broaden a
+   user's DocuSign rights. The sender must be permitted to create/send envelopes
+   in the selected account. The reviewer needs access to that sender's drafts.
+4. Enable Connect HMAC in that account. Copy its HMAC key into Payobook.
+   Use the account's HMAC key, not a newly invented unmatched value.
+
+Talent Lead / administrator in Payobook
+5. Set up hiring > Hiring connections > DocuSign offer signing. Select Demo
+   or Production explicitly. Enter the integration, user and account IDs, PEM
+   private key (including its line breaks) and Connect HMAC key. Values are
+   company-scoped; keys and cached access tokens are encrypted in the database.
+   Blank secret inputs retain the saved secret. Saving pauses the connection
+   and clears cached OAuth credentials; Check must succeed before Enable.
+6. Check verifies JWT authentication, the precise user/account membership,
+   discovered account API hostname, and read access to envelopes. It sends no
+   documents or invitations. A successful check does not verify webhook delivery
+   or signed-document filing. Invalid setup remains disabled with a next action.
+7. Ensure web.base.url is the correct public HTTPS host for this Odoo database.
+   The displayed callback must route to that database. New envelopes include
+   the callback, JSON SIM events and HMAC automatically; account-level duplicate
+   subscriptions are unnecessary. Payloads omit document contents. Do not use a
+   callback URL from a different database/company or a restored clone.
+
+Controlled acceptance — required before real offers
+8. Use a synthetic approved offer and explicitly approved test recipients.
+   Prepare creates a draft only. Open the provider workspace, sign in as the
+   configured sender, locate the subject/reference shown in Payobook, and place
+   a REQUIRED Sign Here field for each signer. Candidate is first; configured
+   company counter-signatory is second. Review the PDF, recipients and fields,
+   save the draft, return to Payobook and tick reviewed. Send from Payobook.
+   Direct sending/correction in the DocuSign console bypasses Payobook's send
+   button, so restrict that console access through the account's own policies.
+9. Verify each signer receives the invitation, completes signing, and the
+   final status callback reaches Payobook. Verify the signed PDF plus completion
+   certificate is filed once and the existing signed-offer workflow runs once.
+   Signed is not joined: employee creation still requires Confirm they joined.
+10. Test decline, draft cancellation, voiding a sent envelope, fresh revision,
+    absent counter-signatory email, unexpected recipients/CCs, missing signature
+    fields, changed PDF, expired token, callback replay and service outage.
+    Tests with mocked API responses do not replace this provider round trip.
+
+Recovery and boundaries
+- Deterministic transaction IDs protect creation retries for DocuSign's seven-day
+  window; persistent payobook_reference metadata also searches older envelopes.
+  Recovered drafts must match the saved PDF digest. Multiple matches stop work.
+  Never manually delete/change the reference metadata to force a retry.
+- HMAC authenticates exact raw callback bytes. Matching account, company,
+  connection and envelope only queue verification; callbacks cannot mark signed.
+  Payobook re-reads status/recipients/metadata/documents via the authenticated API
+  and downloads the combined PDF with certificate. Invalid PDFs are not filed.
+- Required signers/order and unexpected recipient types are checked. The human
+  review still verifies document contents and field positions in DocuSign.
+- Cron processes verified event signals, with a 15-minute fallback status check
+  per DocuSign envelope (up to ten offers per job). Paused connections do not
+  auto-sync. Use Check signing status for an explicit reconciliation.
+- Account/environment/sender/integration identity cannot change while active
+  envelopes reference that connection. Finish/void them first. Secret rotation
+  pauses the connection and requires a fresh check.
+- Limits: one offer PDF up to 10 MB; downloaded responses up to 15 MB. No bulk
+  send, embedded recipient signing, SMS authentication, template library or
+  document generation inside DocuSign is claimed by this connector.
+- Keep production credentials absent from test clones. Use only a dedicated demo
+  account for live provider acceptance on a nonproduction database.
+
+Official references used
+https://developers.docusign.com/platform/auth/jwt-get-token/
+https://developers.docusign.com/platform/webhooks/connect/hmac/
+https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/envelopes/create/
+https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/envelopes/liststatuschanges/
+https://github.com/docusign/OpenAPI-Specifications/blob/master/esignature.rest.swagger-v2.1.json

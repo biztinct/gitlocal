@@ -1,0 +1,27 @@
+# Translation of Payobook.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Payobook\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_talent_hub
+#. odoo-javascript
+#: code:addons/pb_talent_hub/static/src/js/talent_hub.js:0
+#: code:addons/pb_talent_hub/static/src/js/talent_hub_palette.js:0
+#: model:pb.sidebar.item,name:pb_talent_hub.item_talent
+#: model:ir.actions.client,name:pb_talent_hub.action_pb_talent_hub
+msgid "Talent"
+msgstr "Nhân tài"
+
+#. module: pb_talent_hub
+#. odoo-javascript
+#: code:addons/pb_talent_hub/static/src/js/talent_hub_palette.js:0
+msgid "Goals, growth and praise"
+msgstr "Mục tiêu, phát triển và khen ngợi"

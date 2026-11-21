@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIZE HR Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F6F7FB; --surface:#FFFFFF; --surface2:#FAFAFE;
+    --ink:#1E1B2E; --muted:#5B6478; --faint:#8A91A5;
+    --brand:#5A4BB0; --brand-deep:#241F52; --brand-hov:#4A3D96;
+    --brand-soft:#EDEAF8; --brand-mid:#CBC2EE;
+    --good:#2E7D4F; --good-soft:#E7F3EC;
+    --info:#2563EB; --info-soft:#E8EFFD;
+    --warn:#B45309; --warn-soft:#FBF0E1;
+    --bad:#DC2668;  --bad-soft:#FCE9F0;
+    --border:#E2E8F0; --border2:#D6DBE8;
+    --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px -12px rgba(30,27,46,.12);
+    --r:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+      --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+      --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-hov:#BCB1EE;
+      --brand-soft:#2B2648; --brand-mid:#3D3766;
+      --good:#5CBF8A; --good-soft:#1D3229;
+      --info:#7CA5F5; --info-soft:#1E2A44;
+      --warn:#E5A455; --warn-soft:#3A2C18;
+      --bad:#F07AA4;  --bad-soft:#3D2030;
+      --border:#33304D; --border2:#403C5E;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+    --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+    --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-hov:#BCB1EE;
+    --brand-soft:#2B2648; --brand-mid:#3D3766;
+    --good:#5CBF8A; --good-soft:#1D3229;
+    --info:#7CA5F5; --info-soft:#1E2A44;
+    --warn:#E5A455; --warn-soft:#3A2C18;
+    --bad:#F07AA4;  --bad-soft:#3D2030;
+    --border:#33304D; --border2:#403C5E;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Public Sans",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Sora",sans-serif;margin:0}
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 24px 40px}
+  svg.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+  /* hero */
+  .hero{margin-bottom:8px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);background:var(--brand-soft);border-radius:999px;padding:7px 14px;margin-bottom:18px}
+  .hero h1{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+  .lede{font-size:18px;color:var(--muted);max-width:66ch;margin:0}
+  .lede strong{color:var(--ink)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .legend span{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow)}
+  .dot{width:10px;height:10px;border-radius:3px;flex:none}
+  .dot.zoho{background:#9aa3b5}.dot.hybrid{background:#e0a53a}.dot.pobo{background:#4caf72}
+
+  /* jump chips */
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+  .toc a{text-decoration:none;color:var(--muted);border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600}
+  .toc a:hover{color:var(--brand);border-color:var(--brand-mid)}
+
+  /* sections */
+  section{margin-top:60px}
+  .sechead{display:flex;align-items:flex-start;gap:14px;margin-bottom:8px}
+  .secnum{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-soft);border-radius:8px;padding:5px 9px;margin-top:4px;flex:none}
+  .sechead h2{font-size:25px;font-weight:700;letter-spacing:-.01em}
+  .secsub{color:var(--muted);max-width:72ch;margin:6px 0 22px;font-size:15.5px}
+  .secsub b{color:var(--ink)}
+
+  /* ownership columns */
+  .own3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+  .owncol{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .owncol .cap{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:12px 18px;border-bottom:1px solid var(--border)}
+  .owncol.zoho .cap{color:var(--muted);background:var(--surface2)}
+  .owncol.hybrid .cap{color:var(--warn);background:var(--warn-soft)}
+  .owncol.pobo .cap{color:var(--good);background:var(--good-soft)}
+  .owncol ul{margin:0;padding:14px 18px 16px;list-style:none;display:flex;flex-direction:column;gap:7px}
+  .owncol li{font-size:14px;display:flex;gap:8px;align-items:baseline}
+  .owncol li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--faint);flex:none;position:relative;top:-2px}
+  .owncol li small{color:var(--faint)}
+  .flownote{margin-top:16px;font-size:14.5px;background:var(--brand-soft);border:1px solid var(--brand-mid);border-radius:10px;padding:13px 17px}
+  .flownote b{color:var(--brand-deep)}
+
+  /* tags */
+  .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .tag.green{color:var(--good);background:var(--good-soft)}
+  .tag.amber{color:var(--warn);background:var(--warn-soft)}
+  .tag.brand{color:var(--brand);background:var(--brand-soft)}
+  .tag.grey{color:var(--muted);background:var(--surface2);border:1px solid var(--border)}
+  .tag.blue{color:var(--info);background:var(--info-soft)}
+
+  /* tables */
+  .mtxwrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);background:var(--surface)}
+  table.mtx{border-collapse:collapse;width:100%;min-width:720px;font-size:13.8px}
+  table.mtx th{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+  table.mtx td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  table.mtx tr:last-child td{border-bottom:none}
+  table.mtx td.what{font-weight:600;min-width:150px}
+  table.mtx td.td-today{min-width:140px}
+  td .why{display:block;color:var(--muted);font-size:12.8px;font-weight:400;margin-top:2px}
+  .where{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--info);background:var(--info-soft);border-radius:6px;padding:2px 8px;margin-top:5px}
+  .where svg.ic{width:12px;height:12px}
+
+  /* module card wrapper */
+  .modcard{border-left:4px solid var(--brand);padding-left:0;margin-top:14px}
+  .modmeta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .modmeta span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 12px}
+  .modmeta svg.ic{width:13px;height:13px;color:var(--brand)}
+
+  /* approval strip */
+  .approve{display:flex;flex-wrap:wrap;gap:18px;align-items:center;background:var(--surface);border:1px dashed var(--border2);border-radius:10px;padding:11px 16px;margin-top:12px;font-size:13.5px;color:var(--muted)}
+  .approve b{color:var(--ink);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  label.chk{display:flex;gap:7px;align-items:center;cursor:pointer;user-select:none}
+  label.chk input{accent-color:var(--brand);width:15px;height:15px;margin:0}
+
+  /* guarantees / idea cards */
+  .guar{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .g{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+  .g .gi{width:36px;height:36px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .g h3{font-size:15.5px;font-weight:700;margin-bottom:6px}
+  .g p{margin:0;font-size:14px;color:var(--muted)}
+
+  /* rail mock */
+  .navwrap{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:start}
+  @media (max-width:760px){.navwrap{grid-template-columns:1fr}}
+  .railmock{background:var(--brand-deep);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 12px;display:flex;flex-direction:column;gap:3px}
+  :root[data-theme="dark"] .railmock{background:#2B2648}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .railmock{background:#2B2648}}
+  .railitem{display:flex;align-items:center;gap:10px;color:#CDC7EC;font-size:13.5px;font-weight:600;border-radius:9px;padding:8px 11px}
+  .railitem svg.ic{width:15px;height:15px}
+  .railitem.new{background:rgba(255,255,255,.13);color:#fff;position:relative}
+  .railitem.new::after{content:"NEW";font-size:9px;font-weight:800;letter-spacing:.08em;background:#4caf72;color:#fff;border-radius:5px;padding:2px 6px;margin-left:auto}
+  .raillab{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8F87BD;padding:10px 11px 3px}
+  .lensbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:13px}
+  .lensrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .lensrow .hublab{font-weight:700;font-size:13.5px;min-width:104px}
+  .lens{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border2);background:var(--surface2);border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--muted)}
+  .lens.new{border-color:var(--good);color:var(--good);background:var(--good-soft)}
+  .lens svg.ic{width:12px;height:12px}
+
+  /* portal pages */
+  .portalgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-top:16px}
+  .pp{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .pp .ppurl{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--brand);margin-bottom:5px}
+  .pp p{margin:0;font-size:13px;color:var(--muted)}
+
+  /* phases */
+  .phasewrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);background:var(--surface)}
+  table.ph{border-collapse:collapse;width:100%;min-width:760px;font-size:13.8px}
+  table.ph th{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+  table.ph td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  table.ph tr:last-child td{border-bottom:none}
+  .phno{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--brand);white-space:nowrap}
+
+  /* decisions */
+  .dec{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-top:14px}
+  .dec h3{font-size:15.5px;font-weight:700;display:flex;gap:10px;align-items:baseline}
+  .dec h3 .dno{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--brand);background:var(--brand-soft);border-radius:7px;padding:2px 8px;flex:none}
+  .dec p{margin:8px 0 0;font-size:14px;color:var(--muted)}
+  .dec p b{color:var(--ink)}
+  .rec{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;font-weight:600;color:var(--good);background:var(--good-soft);border-radius:8px;padding:5px 11px}
+  .rec svg.ic{width:13px;height:13px}
+
+  footer{margin-top:72px;padding-top:24px;border-top:1px solid var(--border);color:var(--faint);font-size:13px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.94a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+    <symbol id="i-laptop" viewBox="0 0 24 24"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-brief" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect x="2" y="6" width="20" height="14" rx="2"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-ucheck" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+    <symbol id="i-package" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 8.7 5 8.7-5"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></symbol>
+    <symbol id="i-cog" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></symbol>
+    <symbol id="i-tree" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="5" rx="1"/><rect x="14" y="16" width="7" height="5" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/><path d="M6.5 8v4h11v4"/><path d="M6.5 12v4"/><path d="M12 12h5.5"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<header class="hero">
+  <span class="eyebrow"><svg class="ic"><use href="#i-shield"/></svg>Design proposal · Payobook × RIZE</span>
+  <h1>RIZE HR Blueprint</h1>
+  <p class="lede">Everything RIZE asked for in the HR proposal, mapped against <strong>what Payobook already does, what needs building, and how it will look on screen.</strong> Each module below ends with an approval strip — tick your answer, or send me notes, and the build starts in that order.</p>
+  <div class="legend">
+    <span><span class="dot zoho"></span>Stays in Zoho — nothing to build</span>
+    <span><span class="dot hybrid"></span>Hybrid — Zoho starts it, Payobook finishes it</span>
+    <span><span class="dot pobo"></span>Payobook owns it end to end</span>
+  </div>
+  <nav class="toc">
+    <a href="#s1">Big picture</a><a href="#s2">Scorecard</a><a href="#s3">Onboarding</a><a href="#s4">Offboarding</a><a href="#s5">Assets</a><a href="#s6">Probation</a><a href="#s7">PIP</a><a href="#s8">Payroll &amp; Comp</a><a href="#s9">Vendors &amp; Access</a><a href="#s10">Recognition</a><a href="#s11">Budgets</a><a href="#s12">Contracts &amp; Interns</a><a href="#s13">Where it lives</a><a href="#s14">The Zoho link</a><a href="#s15">Build order</a><a href="#s16">Your decisions</a><a href="#s17">Going further</a>
+  </nav>
+</header>
+
+<!-- ============ 01 BIG PICTURE ============ -->
+<section id="s1">
+  <div class="sechead"><span class="secnum">01</span><h2>The big picture</h2></div>
+  <p class="secsub">Zoho People remains the <b>employee master</b> — people are created there, and their basic record flows into Payobook automatically. Payobook is the <b>operations and money platform</b>: everything that touches assets, evaluations, payroll, budgets and vendors happens here. Employees see one portal for their own stuff.</p>
+  <div class="own3">
+    <div class="owncol zoho">
+      <div class="cap"><span class="dot zoho"></span>Zoho keeps</div>
+      <ul>
+        <li>Employee master record &amp; ID</li>
+        <li>Departments &amp; reporting lines</li>
+        <li>Hiring &amp; recruitment</li>
+        <li>Time, attendance &amp; leave</li>
+        <li>Goal setting &amp; reviews</li>
+        <li>HR communications</li>
+        <li>Learning &amp; development</li>
+        <li>HR document collection</li>
+      </ul>
+    </div>
+    <div class="owncol hybrid">
+      <div class="cap"><span class="dot hybrid"></span>Shared journeys</div>
+      <ul>
+        <li>Onboarding &amp; orientation <small>— Zoho creates the person; Payobook runs the buddy, laptop, access and check-in journey</small></li>
+        <li>Offboarding &amp; exit <small>— resignation can start either side; Payobook runs clearances, asset recovery and final pay</small></li>
+      </ul>
+    </div>
+    <div class="owncol pobo">
+      <div class="cap"><span class="dot pobo"></span>Payobook owns</div>
+      <ul>
+        <li>Payroll, compensation &amp; benefits</li>
+        <li>Asset management</li>
+        <li>Probation evaluations</li>
+        <li>Performance improvement (PIP)</li>
+        <li>Vendors &amp; access control</li>
+        <li>Rewards &amp; recognition</li>
+        <li>Budget management</li>
+        <li>Contract &amp; intern management</li>
+      </ul>
+    </div>
+  </div>
+  <p class="flownote"><b>Data flows one way at a time.</b> Zoho → Payobook is live in this build: new joiners, changes and resignations arrive automatically (with a file-upload backup until the live hookup is switched on). Payobook → Zoho is <b>on hold</b>, as agreed — designed for, not built.</p>
+</section>
+
+<!-- ============ 02 SCORECARD ============ -->
+<section id="s2">
+  <div class="sechead"><span class="secnum">02</span><h2>Scorecard — what exists, what's new</h2></div>
+  <p class="secsub">The honest picture before any building starts. <span class="tag green">Already there</span> means it works today and RIZE just uses it. <span class="tag amber">Partly there</span> means a real foundation exists and gets extended. <span class="tag brand">New build</span> means it doesn't exist yet.</p>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>Area</th><th>Today</th><th>What that means</th></tr>
+    <tr><td class="what">Payroll engine &amp; payslips</td><td><span class="tag green">Already there</span></td><td>Full pay-run pipeline, three-step approval, payslip PDFs, password-protected email delivery, bank payment files, statutory rules for India / Singapore / Vietnam / Indonesia. RIZE's pay is computed here, as agreed.</td></tr>
+    <tr><td class="what">Payroll, Comp &amp; Ben — the gaps</td><td><span class="tag amber">Partly there</span></td><td>Missing pieces: an employee's own salary-package view, a bonus &amp; incentive ledger with letters, payroll cut-off dates with reminders, and a benefits/insurance page. All designed below.</td></tr>
+    <tr><td class="what">Contracts</td><td><span class="tag amber">Partly there</span></td><td>Contract screens and a 30-day expiry warning exist. The act-on-it workflow (terminate / extend / convert, two months ahead) is new.</td></tr>
+    <tr><td class="what">Final settlement (F&amp;F)</td><td><span class="tag green">Already there</span></td><td>Full &amp; final calculation with a printable statement exists — the new exit journey plugs straight into it.</td></tr>
+    <tr><td class="what">Onboarding</td><td><span class="tag brand">New build</span></td><td>A create-employee wizard exists; the journey (buddy, laptop, access, check-ins, orientation) is new.</td></tr>
+    <tr><td class="what">Offboarding</td><td><span class="tag brand">New build</span></td><td>Resignation, approvals, handover tracking, clearances and letters are new — final pay already works.</td></tr>
+    <tr><td class="what">Probation</td><td><span class="tag brand">New build</span></td><td>The probation end-date field exists on contracts; the whole evaluation workflow is new.</td></tr>
+    <tr><td class="what">PIP</td><td><span class="tag brand">New build</span></td><td>Nothing exists. Built new, with strict visibility.</td></tr>
+    <tr><td class="what">Asset management</td><td><span class="tag brand">New build</span></td><td>Nothing exists. Built new for tangible and non-tangible assets.</td></tr>
+    <tr><td class="what">Vendors &amp; access</td><td><span class="tag brand">New build</span></td><td>Nothing exists for supplier tracking or delegation. Built new.</td></tr>
+    <tr><td class="what">Rewards &amp; recognition</td><td><span class="tag brand">New build</span></td><td>Nothing exists. Built new, with cash awards feeding payroll.</td></tr>
+    <tr><td class="what">Budgets</td><td><span class="tag amber">Partly there</span></td><td>A department budget-vs-actual engine and cost analytics already exist. RIZE's upload, scoping and currency needs are added on top — no duplicate system.</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ 03 ONBOARDING ============ -->
+<section id="s3">
+  <div class="sechead"><span class="secnum">03</span><h2>Onboarding &amp; orientation</h2></div>
+  <p class="secsub"><span class="dot hybrid"></span>&nbsp;Hybrid. Zoho creates the person and collects HR documents. The moment the offer is accepted, Payobook opens a <b>new-joiner journey</b> — a visible checklist of every step below, each with an owner, a due date, automatic emails and escalation if it goes quiet.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-compass"/></svg>Lifecycle → Journeys</span>
+    <span><svg class="ic"><use href="#i-user"/></svg>Employee portal: My journey</span>
+    <span><svg class="ic"><use href="#i-mail"/></svg>Automatic emails &amp; reminders</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Pre-onboarding trigger</td><td class="td-today"><span class="tag brand">New build</span></td><td>When Zoho marks the offer accepted (or HR presses "Start onboarding"), the journey opens and the hiring manager gets the buddy-nomination email automatically.<span class="where"><svg class="ic"><use href="#i-compass"/></svg>Lifecycle → Journeys</span></td></tr>
+    <tr><td class="what">Buddy nomination</td><td class="td-today"><span class="tag brand">New build</span></td><td>Manager picks 1–2 buddies from a pre-filtered list. Location-based pick supported for field roles.</td></tr>
+    <tr><td class="what">Buddy eligibility check</td><td class="td-today"><span class="tag brand">New build</span></td><td>The picker only offers people with 6+ months tenure, full-time, past probation. Different location shows a warning, not a block.</td></tr>
+    <tr><td class="what">Buddy notifications</td><td class="td-today"><span class="tag brand">New build</span></td><td>Separate automatic emails: buddy gets responsibilities &amp; schedule; the new hire learns who their buddy is.</td></tr>
+    <tr><td class="what">Buddy connects &amp; tracking</td><td class="td-today"><span class="tag brand">New build</span></td><td>Recurring connects are scheduled; the buddy logs each one and can raise a red flag HR sees immediately. Buddy on leave → temporary buddy in two clicks.<span class="where"><svg class="ic"><use href="#i-user"/></svg>Portal: My buddy</span></td></tr>
+    <tr><td class="what">Laptop procurement</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">approval engine exists</span></td><td>10–15 days before joining, a laptop request opens automatically. It first searches the spare pool; buying starts only after approval. Full trail of who approved what.<span class="where"><svg class="ic"><use href="#i-laptop"/></svg>Assets module</span></td></tr>
+    <tr><td class="what">Asset tracker fields</td><td class="td-today"><span class="tag brand">New build</span></td><td>Model, serial number, price in local currency + USD, new vs reused, delivery date, assigned person — all mandatory on the asset record. Designed fully in the Assets module (section 05).</td></tr>
+    <tr><td class="what">Laptop delivery confirmation</td><td class="td-today"><span class="tag brand">New build</span></td><td>The candidate confirms receipt, condition and date through a personal link — no login needed before day one.</td></tr>
+    <tr><td class="what">Tool access setup</td><td class="td-today"><span class="tag brand">New build</span></td><td>A checklist task for IT: email format, groups, system access — recorded per tool so exit day knows exactly what to switch off.</td></tr>
+    <tr><td class="what">Pre-joining intro form</td><td class="td-today"><span class="tag brand">New build</span></td><td>Automatic email one day before joining with a short fun form, via the same personal link.</td></tr>
+    <tr><td class="what">Welcome poster</td><td class="td-today"><span class="tag brand">New build</span></td><td>A welcome card is generated from the intro form and emailed to the team on day one. (Slack posting is designed but switched off, as agreed.)</td></tr>
+    <tr><td class="what">Day-1 manager intro call</td><td class="td-today"><span class="tag brand">New build</span></td><td>Automatic invite email to manager + new hire with a calendar attachment that lands in any calendar app. See decision 3.</td></tr>
+    <tr><td class="what">Credentials released</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">login system exists</span></td><td>Login is created automatically and the credentials email goes out on joining day.</td></tr>
+    <tr><td class="what">Basic access on first login</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">payslips &amp; profile exist</span></td><td>From day one the new hire sees: their manager and team, the org chart (new — see section 17), salary structure (new — section 08), tasks assigned to them, and their HRBP card. Leave balances stay in Zoho.</td></tr>
+    <tr><td class="what">HRBP assignment</td><td class="td-today"><span class="tag brand">New build</span></td><td>An HRBP is auto-assigned by country/team rule the moment the person exists, with name, photo and contact on the employee's home page.</td></tr>
+    <tr><td class="what">Employee data completion</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">profile requests exist</span></td><td>Within 2–3 days the new hire completes photo, address, emergency contacts, dependants, blood group, experience letters. Automatic reminders; HR escalation if late.</td></tr>
+    <tr><td class="what">Orientation cycle</td><td class="td-today"><span class="tag brand">New build</span></td><td>Joiners are auto-bucketed into the next orientation batch (weekly or bi-weekly — your setting) by joining date; HR sees the roster per batch.</td></tr>
+    <tr><td class="what">Probation items on this sheet</td><td class="td-today"><span class="tag grey">See section 06</span></td><td>The seven probation rows on the onboarding sheet (timeline, peer feedback, manager 1:1, outcome, agronomist training, 30-60-90 loop, post-probation) are designed once, in the Probation module.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 04 OFFBOARDING ============ -->
+<section id="s4">
+  <div class="sechead"><span class="secnum">04</span><h2>Offboarding &amp; exit</h2></div>
+  <p class="secsub"><span class="dot hybrid"></span>&nbsp;Hybrid. A resignation can start in the Payobook portal or arrive from Zoho — either way one <b>exit journey</b> opens, and final pay cannot be closed until every clearance and every asset is back. That last part is enforced, not hoped for.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-out"/></svg>Lifecycle → Journeys</span>
+    <span><svg class="ic"><use href="#i-user"/></svg>Employee portal: My resignation</span>
+    <span><svg class="ic"><use href="#i-shield"/></svg>Blocks final pay until cleared</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Resignation request</td><td class="td-today"><span class="tag brand">New build</span></td><td>Employee submits in the portal; manager, country HR and head HR are notified; status visible to everyone involved. Withdrawal possible until approved.<span class="where"><svg class="ic"><use href="#i-user"/></svg>Portal: My resignation</span></td></tr>
+    <tr><td class="what">Resignation approval</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">approval engine exists</span></td><td>Manager, then HR, accept or reject in the portal with the standard approval trail; the employee is notified at each step. Notice period and agreed last working day are recorded.</td></tr>
+    <tr><td class="what">Knowledge transfer &amp; handover</td><td class="td-today"><span class="tag brand">New build</span></td><td>A handover list (topic, from, to, status) tracked by manager and employee; HR gets an automatic nudge every 15 days while items stay open.</td></tr>
+    <tr><td class="what">Exit &amp; feedback forms</td><td class="td-today"><span class="tag brand">New build</span></td><td>Employee fills the exit form online; HR tracks completion; manager marks regrettable / non-regrettable (visible to HR only).</td></tr>
+    <tr><td class="what">Asset &amp; document recovery</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">document downloads exist</span></td><td>Every assigned asset — laptop, phone, cards, IDs, email access — appears as a return item with condition check. The employee can download their own documents (payslips, letters) before access ends.</td></tr>
+    <tr><td class="what">No-due clearance &amp; settlement</td><td class="td-today"><span class="tag brand">New build</span></td><td>Per-department clearances (IT, HR, finance, admin), each with an owner. All must be green before final pay closes.</td></tr>
+    <tr><td class="what">Experience letter &amp; F&amp;F</td><td class="td-today"><span class="tag green">Already there</span><span class="why">F&amp;F works today</span></td><td>Final settlement is generated by the existing engine. New: the experience letter is produced from a template and both are delivered by portal + email automatically.</td></tr>
+    <tr><td class="what">Post-exit compliance</td><td class="td-today"><span class="tag brand">New build</span></td><td>Scheduled after-exit tasks (tax forms and similar) trigger HR at the right time and notify the former employee by email.</td></tr>
+    <tr><td class="what">Communication &amp; farewell</td><td class="td-today"><span class="tag brand">New build</span></td><td>An automatic farewell email to the team on the last day; HR can edit the message first.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 05 ASSETS ============ -->
+<section id="s5">
+  <div class="sechead"><span class="secnum">05</span><h2>Asset management</h2></div>
+  <p class="secsub"><span class="dot pobo"></span>&nbsp;Payobook-owned, built new. One global register for everything the company hands out — laptops and SIM cards, but equally email IDs, logins, phone numbers and software licences. Every item has a lifetime story: who had it, in what condition, in which country.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-package"/></svg>People → Assets</span>
+    <span><svg class="ic"><use href="#i-user"/></svg>Employee portal: My assets</span>
+    <span><svg class="ic"><use href="#i-file"/></svg>Excel exports everywhere</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Types &amp; categorisation</td><td class="td-today"><span class="tag brand">New build</span></td><td>Two clear families — physical items and digital items (email IDs, system logins, phone numbers, licences) — with categories you define.</td></tr>
+    <tr><td class="what">Global master list</td><td class="td-today"><span class="tag brand">New build</span></td><td>Every asset across India, Singapore, Vietnam and Indonesia in one sortable, downloadable board: assigned person, country, status, availability.<span class="where"><svg class="ic"><use href="#i-users"/></svg>People → Assets</span></td></tr>
+    <tr><td class="what">Assignment at joining</td><td class="td-today"><span class="tag brand">New build</span></td><td>New joiner → automatic task for the responsible person; once allocated, the asset shows on the employee's profile with date, model, condition, cost, invoice, warranty.</td></tr>
+    <tr><td class="what">Transfer / reassignment</td><td class="td-today"><span class="tag brand">New build</span></td><td>Every hand-over is a history line: previous owner, new owner, date, condition in and out. The full timeline lives on the asset.</td></tr>
+    <tr><td class="what">Asset ID &amp; tracking</td><td class="td-today"><span class="tag brand">New build</span></td><td>Auto-generated unique ID per asset (per-country numbering, e.g. IN-LT-00042), traceable for its whole life.</td></tr>
+    <tr><td class="what">Inventory status &amp; lifecycle</td><td class="td-today"><span class="tag brand">New build</span></td><td>Statuses: Assigned / Spare / Under repair / To scrap — with counts by country so the spare pool is always visible before buying.</td></tr>
+    <tr><td class="what">Non-tangible assets</td><td class="td-today"><span class="tag brand">New build</span></td><td>Digital items track activation and deactivation dates; they show on the employee profile and get an automatic switch-off task at exit.</td></tr>
+    <tr><td class="what">Exit-related recovery</td><td class="td-today"><span class="tag brand">New build</span></td><td>The mandatory return checklist from section 04: every open assignment must be marked returned (with condition) before final pay closes.</td></tr>
+    <tr><td class="what">Country ownership &amp; cost</td><td class="td-today"><span class="tag brand">New build</span></td><td>Country tag, movable-or-not note, and cost held in local currency plus USD.</td></tr>
+    <tr><td class="what">Reports &amp; downloads</td><td class="td-today"><span class="tag brand">New build</span></td><td>Excel export of allocation, history, inventory status, employee-wise and country-wise lists.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 06 PROBATION ============ -->
+<section id="s6">
+  <div class="sechead"><span class="secnum">06</span><h2>Probation</h2></div>
+  <p class="secsub"><span class="dot pobo"></span>&nbsp;Payobook-owned. The probation end date already lives on the contract — everything around it is new: a per-country clock, an evaluation that starts itself three weeks early, peer feedback with real deadlines, and an outcome that updates the employee's status and sends the right letter without HR chasing anyone.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-ucheck"/></svg>Lifecycle → Probation</span>
+    <span><svg class="ic"><use href="#i-clock"/></svg>Runs itself on the calendar</span>
+    <span><svg class="ic"><use href="#i-mail"/></svg>Outcome letters automatic</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Status tracking</td><td class="td-today"><span class="tag brand">New build</span></td><td>Every employee shows one of: In probation / Passed / Extended / Failed — visible to HR, the manager, and the employee themselves.</td></tr>
+    <tr><td class="what">Timeline per country</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">end-date field exists</span></td><td>Probation length is set per country; the end date is calculated automatically from the joining date and written to the contract.</td></tr>
+    <tr><td class="what">Evaluation start trigger</td><td class="td-today"><span class="tag brand">New build</span></td><td>20–21 days before the end date, the evaluation opens itself and the manager is emailed. HR is nudged at 15 days and again at 5.</td></tr>
+    <tr><td class="what">Peer nomination</td><td class="td-today"><span class="tag brand">New build</span></td><td>Manager nominates 3–5 peers through a link; HR sees the names as they land.</td></tr>
+    <tr><td class="what">Peer feedback form</td><td class="td-today"><span class="tag brand">New build</span></td><td>Peers get a personal link with a structured form aligned to your policy; 2–3 working days to complete.</td></tr>
+    <tr><td class="what">Progress alerts</td><td class="td-today"><span class="tag brand">New build</span></td><td>Automatic alerts when nomination or feedback is pending, a final alert 2 hours before deadline, and a one-day extension button.</td></tr>
+    <tr><td class="what">Consolidated feedback</td><td class="td-today"><span class="tag brand">New build</span></td><td>Peer + manager input is consolidated into one review page and emailed to the manager.</td></tr>
+    <tr><td class="what">Manager review &amp; 1:1</td><td class="td-today"><span class="tag brand">New build</span></td><td>Guided flow: read the consolidated report → hold the 1:1 (2-day window) → record strengths, improvement areas and the verdict.</td></tr>
+    <tr><td class="what">Outcome (pass / extend / fail)</td><td class="td-today"><span class="tag brand">New build</span></td><td>Pass → congratulations email + status update. Extend → structured improvement areas, new end date, a fresh cycle. Fail → HR guided into the exit journey per local labour law.</td></tr>
+    <tr><td class="what">HR notification &amp; letters</td><td class="td-today"><span class="tag brand">New build</span></td><td>HR is notified of every outcome; the matching letter template goes to the employee automatically.</td></tr>
+    <tr><td class="what">Agronomist training gate</td><td class="td-today"><span class="tag brand">New build</span></td><td>For roles you flag (e.g. Agronomist), a mandatory training checklist with scores must be complete before probation can be passed. Fully configurable per role.</td></tr>
+    <tr><td class="what">30-60-90 day check-ins</td><td class="td-today"><span class="tag brand">New build</span></td><td>Three HRBP check-ins auto-scheduled from day one — settling in, adaptation, final readiness — each logged with notes and red flags.</td></tr>
+    <tr><td class="what">Post-probation engagement</td><td class="td-today"><span class="tag brand">New build</span></td><td>On completion the onboarding file is archived; HRBP and manager continue normal cycles.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 07 PIP ============ -->
+<section id="s7">
+  <div class="sechead"><span class="secnum">07</span><h2>Performance improvement (PIP)</h2></div>
+  <p class="secsub"><span class="dot pobo"></span>&nbsp;Payobook-owned, built new. Deliberately quiet: locked to HR and Head of HR by country, with the employee seeing exactly their own plan and nothing more. A coaching stage comes first — a PIP is the second step, not the first.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-target"/></svg>Lifecycle → PIP (restricted)</span>
+    <span><svg class="ic"><use href="#i-eye"/></svg>Strict visibility by country</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Initiation</td><td class="td-today"><span class="tag brand">New build</span></td><td>Manager requests a PIP; HR receives it and sets up the conversation to understand the reason before anything formal starts.</td></tr>
+    <tr><td class="what">Coaching plan</td><td class="td-today"><span class="tag brand">New build</span></td><td>A structured coaching template — focus areas and timelines — runs before a PIP is opened. Many cases should end here.</td></tr>
+    <tr><td class="what">PIP setup</td><td class="td-today"><span class="tag brand">New build</span></td><td>Template-based plan with focus areas, success measures and timelines; the employee acknowledges it in the portal.</td></tr>
+    <tr><td class="what">Check-ins &amp; monitoring</td><td class="td-today"><span class="tag brand">New build</span></td><td>Weekly or bi-weekly check-ins auto-scheduled with employee and HR; manager updates recorded each time.</td></tr>
+    <tr><td class="what">Evaluation &amp; outcome</td><td class="td-today"><span class="tag brand">New build</span></td><td>At the end, evaluations are collected automatically and the pass/fail decision recorded; HR notified.</td></tr>
+    <tr><td class="what">Exit management</td><td class="td-today"><span class="tag brand">New build</span></td><td>If the employee resigns mid-PIP, the PIP closes itself and the exit journey takes over — no loose ends.</td></tr>
+    <tr><td class="what">Post-PIP follow-up</td><td class="td-today"><span class="tag brand">New build</span></td><td>On success, status returns to normal and both employee and manager are notified automatically.</td></tr>
+    <tr><td class="what">Visibility &amp; access</td><td class="td-today"><span class="tag brand">New build</span></td><td>HR and Head of HR per country by default; you can widen or narrow it. See decision 5 for the employee's own view.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 08 PAYROLL COMP BEN ============ -->
+<section id="s8">
+  <div class="sechead"><span class="secnum">08</span><h2>Payroll, Comp &amp; Ben — gap analysis</h2></div>
+  <p class="secsub"><span class="dot pobo"></span>&nbsp;This is where Payobook is already strongest. RIZE's pay is calculated by Payobook's own engine, as agreed — so several rows below are simply <b>already done</b>. The genuine gaps: the employee's own package view, a bonus &amp; incentive ledger with letters, cut-off dates with reminders, and a benefits page.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-zap"/></svg>Pay Run mission (existing)</span>
+    <span><svg class="ic"><use href="#i-wallet"/></svg>Employee portal: My compensation</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Employee compensation view</td><td class="td-today"><span class="tag brand">New build</span></td><td>A "My compensation" page: offered package, salary breakup, benefits and allowances — versioned, so a revision shows old vs new with its effective date.<span class="where"><svg class="ic"><use href="#i-user"/></svg>Portal: My compensation</span></td></tr>
+    <tr><td class="what">Payslips &amp; payroll</td><td class="td-today"><span class="tag green">Already there</span></td><td>Employees see their payslips in the portal today; HR controls visibility by country; delivery by password-protected email also works.</td></tr>
+    <tr><td class="what">Calculation &amp; processing</td><td class="td-today"><span class="tag green">Already there</span></td><td>Payobook computes RIZE's pay with its own engine (your decision). The sheet's "send inputs to an outside vendor" lane stays available as an optional extra — the input/output file screens already exist.</td></tr>
+    <tr><td class="what">Approval workflow</td><td class="td-today"><span class="tag green">Already there</span></td><td>Three-step approval — payroll officer → HR manager → final approver — with a review screen at each step, works today.</td></tr>
+    <tr><td class="what">Incentive &amp; bonus tracking</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">one-off pay lane exists</span></td><td>New incentive ledger: record a bonus/incentive with amount and period, route it through approval, generate the incentive letter, and feed it into the next pay run automatically through the existing one-off lane.</td></tr>
+    <tr><td class="what">Payroll cut-off management</td><td class="td-today"><span class="tag brand">New build</span></td><td>A payroll calendar per country: input cut-off day, target pay day, and automatic reminders to HR and managers as the cut-off approaches.<span class="where"><svg class="ic"><use href="#i-zap"/></svg>Pay Run → Calendar</span></td></tr>
+    <tr><td class="what">Benefits &amp; insurance</td><td class="td-today"><span class="tag brand">New build</span><span class="why">statutory side is deep</span></td><td>A benefits page per employee: plan, coverage, dependants, and a "go to provider" button. True single-sign-on into insurers comes later; the page and links come now.</td></tr>
+    <tr><td class="what">Finance integration</td><td class="td-today"><span class="tag amber">Partly there</span></td><td>On final approval the finance pack (bank file + summaries) is produced and emailed/attached automatically. Posting into a general ledger stays off, as it is today, until you say otherwise.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 09 VENDORS & ACCESS ============ -->
+<section id="s9">
+  <div class="sechead"><span class="secnum">09</span><h2>Vendors &amp; access control</h2></div>
+  <p class="secsub"><span class="dot pobo"></span>&nbsp;Payobook-owned, built new. Two halves: a vendor register (recruiters, trainers, test providers, committees) with agreement dates that warn you before they lapse — and an access panel where roles and temporary delegation are managed in plain language instead of technical settings.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-brief"/></svg>Settings → Vendors</span>
+    <span><svg class="ic"><use href="#i-cog"/></svg>Settings → Access &amp; delegation</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Vendor onboarding</td><td class="td-today"><span class="tag brand">New build</span></td><td>Add a vendor with type, contact person, department, and agreement start/end dates. Attachments for the agreement itself.</td></tr>
+    <tr><td class="what">Agreement tracking</td><td class="td-today"><span class="tag brand">New build</span></td><td>Creation, expiry and renewal dates on every agreement, with a countdown view.</td></tr>
+    <tr><td class="what">Responsible person</td><td class="td-today"><span class="tag brand">New build</span></td><td>Each vendor has one accountable owner in HR.</td></tr>
+    <tr><td class="what">Role-based access (vendors)</td><td class="td-today"><span class="tag brand">New build</span></td><td>Only HR or the assigned owner can open vendor details.</td></tr>
+    <tr><td class="what">Notifications &amp; alerts</td><td class="td-today"><span class="tag brand">New build</span></td><td>Automatic emails ahead of expiry and renewal, and for pending approvals.</td></tr>
+    <tr><td class="what">Access management</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">role groups exist</span></td><td>A readable roles board: who holds which role, by department and responsibility — built on the existing permission system, presented in plain language.</td></tr>
+    <tr><td class="what">Delegation</td><td class="td-today"><span class="tag brand">New build</span></td><td>Hand a role to someone else temporarily (with an end date — it switches back automatically) or permanently.</td></tr>
+    <tr><td class="what">Eligibility &amp; visibility</td><td class="td-today"><span class="tag brand">New build</span></td><td>Define which screens and data each role can see, as a simple matrix.</td></tr>
+    <tr><td class="what">Delegation notifications</td><td class="td-today"><span class="tag brand">New build</span></td><td>The delegated person and HR are emailed automatically when a delegation starts or ends.</td></tr>
+    <tr><td class="what">Access reporting</td><td class="td-today"><span class="tag brand">New build</span></td><td>Downloadable report of role assignments and the full delegation history.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 10 RNR ============ -->
+<section id="s10">
+  <div class="sechead"><span class="secnum">10</span><h2>Rewards &amp; recognition</h2></div>
+  <p class="secsub"><span class="dot pobo"></span>&nbsp;Payobook-owned, built new. Anyone can recognise a colleague against your company values with a real example. Approved cash awards don't need re-typing anywhere — they flow into the next pay run on their own.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-award"/></svg>People → Recognition</span>
+    <span><svg class="ic"><use href="#i-user"/></svg>Employee portal: My recognition</span>
+    <span><svg class="ic"><use href="#i-coins"/></svg>Cash awards feed payroll</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Employee nominations</td><td class="td-today"><span class="tag brand">New build</span></td><td>Pick a colleague, pick the company value, tell the story. Submitted from the portal in under a minute.<span class="where"><svg class="ic"><use href="#i-user"/></svg>Portal: My recognition</span></td></tr>
+    <tr><td class="what">HR notification</td><td class="td-today"><span class="tag brand">New build</span></td><td>HR is alerted automatically on every submission.</td></tr>
+    <tr><td class="what">Manager access</td><td class="td-today"><span class="tag brand">New build</span></td><td>Managers comment on and approve nominations for their people.</td></tr>
+    <tr><td class="what">Recognition tracking</td><td class="td-today"><span class="tag brand">New build</span></td><td>A running register of nominations, values cited, and outcomes.</td></tr>
+    <tr><td class="what">Mood board</td><td class="td-today"><span class="tag brand">New build</span></td><td>A monthly recognition digest goes out by email highlighting nominated people. (Slack version designed, switched off for now.)</td></tr>
+    <tr><td class="what">Quarterly rewards</td><td class="td-today"><span class="tag brand">New build</span></td><td>Each quarter, nominations are rolled up so top performers can be selected and awarded.</td></tr>
+    <tr><td class="what">Automation &amp; workflow</td><td class="td-today"><span class="tag brand">New build</span></td><td>Nomination → review → approval → reward is one connected flow; an approved cash reward lands in the next pay run automatically via the one-off lane.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 11 BUDGET ============ -->
+<section id="s11">
+  <div class="sechead"><span class="secnum">11</span><h2>Budget management</h2></div>
+  <p class="secsub"><span class="dot pobo"></span>&nbsp;Payobook-owned. Important honesty here: Payobook already has a department budget-vs-actual engine and detailed cost analytics. So RIZE's budgets are built <b>on the existing engine</b>, not as a duplicate — you upload the approved budget, the pay runs fill in the actuals by themselves.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-chart"/></svg>Insights → Budget</span>
+    <span><svg class="ic"><use href="#i-eye"/></svg>Scoped visibility per function</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Function-wise manpower budget</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">budget engine exists</span></td><td>Upload the approved budget per function from your Excel template; each month's payroll actuals post themselves against it; utilised and remaining update automatically.<span class="where"><svg class="ic"><use href="#i-trend"/></svg>Insights → Budget</span></td></tr>
+    <tr><td class="what">HR operations &amp; admin budget</td><td class="td-today"><span class="tag brand">New build</span></td><td>A second budget type for HR operating spend and vendor payments: upload expenses, utilisation tracked, remaining auto-calculated.</td></tr>
+    <tr><td class="what">Visibility &amp; access</td><td class="td-today"><span class="tag brand">New build</span></td><td>Function heads see only their function; HR admins see their country; finance gets its own restricted view. Enforced by the system, not by discipline.</td></tr>
+    <tr><td class="what">Reporting &amp; export</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">export engine exists</span></td><td>Monthly and yearly budget-vs-actual reports, downloadable as Excel or PDF, always current with the latest pay run.</td></tr>
+    <tr><td class="what">Currency &amp; conversion</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">group-currency view exists</span></td><td>Each country's budget in local currency, converted to one internal reporting currency with a manually set rate you control.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 12 CONTRACTS & INTERNS ============ -->
+<section id="s12">
+  <div class="sechead"><span class="secnum">12</span><h2>Contract &amp; intern management</h2></div>
+  <p class="secsub"><span class="dot pobo"></span>&nbsp;Payobook-owned. Contract screens and a 30-day expiry warning already exist — what's new is the <b>decision workflow</b>: two months before an end date, the system forces the question "terminate, extend, or convert?" and escalates until someone answers it.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-file"/></svg>Lifecycle → Contracts &amp; interns</span>
+    <span><svg class="ic"><use href="#i-clock"/></svg>Two-month early warning</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Contract / intern database</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">contract screens exist</span></td><td>Interns and contractors become first-class types (today they aren't distinguished properly). One board: start, end, role, manager, terms, timeline.</td></tr>
+    <tr><td class="what">Expiry alerts</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">30-day warning exists</span></td><td>Alerts to HR and the manager at least two months before the end date (configurable per notice period), each offering the three choices: terminate / extend / convert.</td></tr>
+    <tr><td class="what">Extension requests</td><td class="td-today"><span class="tag brand">New build</span></td><td>HR records the reason; the manager approves or rejects within a set window; the end date updates with a full trail.</td></tr>
+    <tr><td class="what">Conversion to full-time</td><td class="td-today"><span class="tag brand">New build</span></td><td>Convert triggers a probation-style evaluation (same engine as section 06); the manager acts within the window; HR gets the decision automatically.</td></tr>
+    <tr><td class="what">Timeline &amp; workflow</td><td class="td-today"><span class="tag brand">New build</span></td><td>Every step has a clock; overdue actions escalate up the chain automatically.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 13 WHERE IT LIVES ============ -->
+<section id="s13">
+  <div class="sechead"><span class="secnum">13</span><h2>Where it all lives</h2></div>
+  <p class="secsub">Same navigation philosophy you have today: <b>few doors, rich rooms</b>. One new mission — <b>Lifecycle</b> — joins the left rail; everything else lands as new panels inside the missions that already exist. Employees get their pages in the same personal portal they use for payslips.</p>
+  <div class="navwrap">
+    <div class="railmock" aria-label="Left rail preview">
+      <div class="railitem"><svg class="ic"><use href="#i-home"/></svg>Home</div>
+      <div class="raillab">Operate</div>
+      <div class="railitem"><svg class="ic"><use href="#i-zap"/></svg>Pay Run</div>
+      <div class="railitem"><svg class="ic"><use href="#i-users"/></svg>People</div>
+      <div class="railitem new"><svg class="ic"><use href="#i-refresh"/></svg>Lifecycle</div>
+      <div class="railitem"><svg class="ic"><use href="#i-compass"/></svg>Workforce</div>
+      <div class="raillab">Understand</div>
+      <div class="railitem"><svg class="ic"><use href="#i-trend"/></svg>Insights</div>
+      <div class="railitem"><svg class="ic"><use href="#i-shield"/></svg>Compliance</div>
+      <div class="raillab">Learn</div>
+      <div class="railitem"><svg class="ic"><use href="#i-book"/></svg>Learn</div>
+      <div class="railitem"><svg class="ic"><use href="#i-cog"/></svg>Settings</div>
+    </div>
+    <div class="lensbox">
+      <div class="lensrow"><span class="hublab">Lifecycle <span class="tag green">new</span></span>
+        <span class="lens new"><svg class="ic"><use href="#i-compass"/></svg>Journeys</span>
+        <span class="lens new"><svg class="ic"><use href="#i-ucheck"/></svg>Probation</span>
+        <span class="lens new"><svg class="ic"><use href="#i-target"/></svg>PIP</span>
+        <span class="lens new"><svg class="ic"><use href="#i-file"/></svg>Contracts &amp; interns</span>
+      </div>
+      <div class="lensrow"><span class="hublab">People</span>
+        <span class="lens">Roster</span><span class="lens">Records</span>
+        <span class="lens new"><svg class="ic"><use href="#i-package"/></svg>Assets</span>
+        <span class="lens new"><svg class="ic"><use href="#i-award"/></svg>Recognition</span>
+      </div>
+      <div class="lensrow"><span class="hublab">Pay Run</span>
+        <span class="lens">Run payroll</span><span class="lens">Approvals</span>
+        <span class="lens new"><svg class="ic"><use href="#i-cal"/></svg>Payroll calendar</span>
+        <span class="lens new"><svg class="ic"><use href="#i-coins"/></svg>Incentives</span>
+      </div>
+      <div class="lensrow"><span class="hublab">Insights</span>
+        <span class="lens">Explorer</span>
+        <span class="lens new"><svg class="ic"><use href="#i-chart"/></svg>Budget vs actual</span>
+      </div>
+      <div class="lensrow"><span class="hublab">Settings</span>
+        <span class="lens">Existing panels</span>
+        <span class="lens new"><svg class="ic"><use href="#i-brief"/></svg>Vendors</span>
+        <span class="lens new"><svg class="ic"><use href="#i-cog"/></svg>Access &amp; delegation</span>
+        <span class="lens new"><svg class="ic"><use href="#i-list"/></svg>Journey templates</span>
+      </div>
+    </div>
+  </div>
+  <h3 style="font-size:17px;margin-top:26px">The employee's own pages</h3>
+  <div class="portalgrid">
+    <div class="pp"><div class="ppurl">My journey</div><p>Onboarding tasks, HRBP card, team &amp; manager, org chart.</p></div>
+    <div class="pp"><div class="ppurl">My compensation</div><p>Package, salary breakup, benefits, insurance links.</p></div>
+    <div class="pp"><div class="ppurl">My resignation</div><p>Submit, track or withdraw; exit checklist and forms.</p></div>
+    <div class="pp"><div class="ppurl">My assets</div><p>What I hold, confirm receipt, return status at exit.</p></div>
+    <div class="pp"><div class="ppurl">My recognition</div><p>Nominate a colleague; my nominations and awards.</p></div>
+    <div class="pp"><div class="ppurl">My buddy</div><p>Connect log, next call, raise a flag (buddies only).</p></div>
+    <div class="pp"><div class="ppurl">Personal links</div><p>Pre-joiners &amp; peer feedback open one-time links — no login needed.</p></div>
+    <div class="pp"><div class="ppurl">Already there</div><p>My payslips, my tax sheet, my documents, my profile.</p></div>
+  </div>
+</section>
+
+<!-- ============ 14 ZOHO CONNECTION ============ -->
+<section id="s14">
+  <div class="sechead"><span class="secnum">14</span><h2>The Zoho connection</h2></div>
+  <p class="secsub">Built <b>ready-to-connect</b>, as agreed: Payobook's receiving door is real and tested with sample data; flipping Zoho's switch later is configuration, not new development. Until then, a file upload does the same job. Every field has exactly one boss — so the two systems can never fight over a value.</p>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>When this happens in Zoho</th><th>Payobook reacts by</th></tr>
+    <tr><td class="what">Offer accepted / employee created</td><td>Creating the person and opening the <b>onboarding journey</b> — buddy nomination email goes out the same minute.</td></tr>
+    <tr><td class="what">Department, manager or role changes</td><td>Updating the employee record automatically (with the change history kept).</td></tr>
+    <tr><td class="what">Resignation / notice period starts</td><td>Opening the <b>exit journey</b>: clearances, asset recovery, final pay preparation.</td></tr>
+    <tr><td class="what">Status set to terminated</td><td>Checking the exit journey is complete and switching off digital assets that are still active.</td></tr>
+    <tr><td class="what">Anything unrecognised</td><td>Logging it for HR review — never guessing.</td></tr>
+  </table></div>
+  <div class="mtxwrap" style="margin-top:16px"><table class="mtx">
+    <tr><th>Information</th><th>Who is the boss</th><th>Direction</th></tr>
+    <tr><td class="what">Employee basics (name, ID, joining date, department, manager)</td><td><span class="tag grey">Zoho</span></td><td>Zoho → Payobook, automatic</td></tr>
+    <tr><td class="what">Employment status (active, notice, exited)</td><td><span class="tag grey">Zoho</span></td><td>Zoho → Payobook, automatic</td></tr>
+    <tr><td class="what">Salary, payslips, incentives, final pay</td><td><span class="tag green">Payobook</span></td><td>Stays here (link-back to Zoho on hold)</td></tr>
+    <tr><td class="what">Probation &amp; PIP outcomes</td><td><span class="tag green">Payobook</span></td><td>Stays here (update to Zoho on hold)</td></tr>
+    <tr><td class="what">Assets, vendors, budgets</td><td><span class="tag green">Payobook</span></td><td>Payobook only</td></tr>
+  </table></div>
+  <p class="flownote" style="margin-top:16px"><b>Backup lane:</b> until the live hookup, HR uploads a Zoho employee export file — the same journeys open, the same rules run. And HR can always press "Start onboarding" / "Start offboarding" by hand.</p>
+</section>
+
+<!-- ============ 15 BUILD ORDER ============ -->
+<section id="s15">
+  <div class="sechead"><span class="secnum">15</span><h2>Build order</h2></div>
+  <p class="secsub">Twelve steps in three lanes. Each step is one self-contained build cycle that ends with tested, working screens — you'll see progress module by module, not one big reveal at the end. Lanes B and C run alongside lane A, so money features don't wait for lifecycle features.</p>
+  <div class="phasewrap"><table class="ph">
+    <tr><th>Step</th><th>What ships</th><th>Lane</th><th>Needs first</th></tr>
+    <tr><td class="phno">1</td><td><b>The journey engine</b> — checklists, templates, check-ins, letters, reminders + the new Lifecycle mission</td><td><span class="tag brand">A · Lifecycle</span></td><td>—</td></tr>
+    <tr><td class="phno">2</td><td><b>The Zoho receiving door</b> + file-upload backup + event rules</td><td><span class="tag brand">A · Lifecycle</span></td><td>Step 1</td></tr>
+    <tr><td class="phno">3</td><td><b>Assets</b> — register, assignment, history, requests, employee page</td><td><span class="tag brand">A · Lifecycle</span></td><td>—</td></tr>
+    <tr><td class="phno">4</td><td><b>Onboarding</b> — buddy, HRBP, orientation, data completion, welcome</td><td><span class="tag brand">A · Lifecycle</span></td><td>Steps 1, 3</td></tr>
+    <tr><td class="phno">5</td><td><b>Offboarding</b> — resignation, handover, clearances, letters, final-pay guard</td><td><span class="tag brand">A · Lifecycle</span></td><td>Steps 1, 3</td></tr>
+    <tr><td class="phno">6</td><td><b>Probation</b> — country clocks, peer feedback, verdicts, training gate, 30-60-90</td><td><span class="tag brand">A · Lifecycle</span></td><td>Step 1</td></tr>
+    <tr><td class="phno">7</td><td><b>PIP</b> — coaching, plans, check-ins, outcomes, strict visibility</td><td><span class="tag brand">A · Lifecycle</span></td><td>Step 6</td></tr>
+    <tr><td class="phno">8</td><td><b>Comp &amp; Ben gaps</b> — payroll calendar, incentives + letters, My compensation, benefits page</td><td><span class="tag blue">B · Money</span></td><td>Step 1 (letters)</td></tr>
+    <tr><td class="phno">9</td><td><b>Recognition</b> — nominations, mood board, quarterly awards, cash → payroll</td><td><span class="tag blue">B · Money</span></td><td>Step 8</td></tr>
+    <tr><td class="phno">10</td><td><b>Budgets</b> — upload, auto-actuals, scoped views, currency, exports</td><td><span class="tag blue">B · Money</span></td><td>—</td></tr>
+    <tr><td class="phno">11</td><td><b>Contracts &amp; interns</b> — typing, two-month alerts, extend/convert flows</td><td><span class="tag green">C · Admin</span></td><td>Step 6</td></tr>
+    <tr><td class="phno">12</td><td><b>Vendors &amp; access</b> — register, agreement alerts, delegation</td><td><span class="tag green">C · Admin</span></td><td>—</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ 16 DECISIONS ============ -->
+<section id="s16">
+  <div class="sechead"><span class="secnum">16</span><h2>Decisions I need from you</h2></div>
+  <p class="secsub">Eight calls that shape the build. Each has my recommendation — a simple "go with all recommendations" answer works too.</p>
+
+  <div class="dec"><h3><span class="dno">D1</span>When a contract is extended, keep one contract or start a new one?</h3>
+    <p>Today the contract screen edits values in place (a rule you set earlier). Extensions and conversions are cleaner as a <b>new linked contract</b>, so history reads "contract 1 ended, contract 2 began". Probation end-date changes would still edit in place.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: new contract for extensions &amp; conversions; in-place only for probation dates</span></div>
+
+  <div class="dec"><h3><span class="dno">D2</span>One budget system, not five</h3>
+    <p>Payobook has accumulated four budget-shaped features from earlier programmes. RIZE's budgets will be built on the strongest one (the department budget-vs-actual engine), and the others stay for their own niches but are <b>not</b> used for RIZE reporting. Also: the group-currency converter currently lives inside the demo package — it should be promoted into the real product.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: yes to both</span></div>
+
+  <div class="dec"><h3><span class="dno">D3</span>"Calendar invites" arrive as email + attachment</h3>
+    <p>There's no Google/Zoho calendar integration in this build. Day-1 intro calls and check-ins go out as emails with a standard calendar attachment — one tap adds it to any calendar. A live calendar integration can come later.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: accept for now</span></div>
+
+  <div class="dec"><h3><span class="dno">D4</span>Org chart: build our own view</h3>
+    <p>New hires should see the org chart on day one. I recommend building a clean Payobook org-chart panel in our own style rather than switching on an old stock widget that won't match the app.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: build our own</span></div>
+
+  <div class="dec"><h3><span class="dno">D5</span>Does an employee see their own PIP?</h3>
+    <p>Strict visibility is the rule (HR + Head HR per country). The open question is the employee themselves: I recommend they <b>do</b> see their own plan and check-ins — they have to acknowledge it anyway, and hidden PIPs create legal risk. A switch lets you turn this off.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: employee sees own plan, switchable</span></div>
+
+  <div class="dec"><h3><span class="dno">D6</span>Every employee gets a login automatically</h3>
+    <p>You said yes to day-one access for everyone — confirming the mechanics: the login is created the moment the employee record arrives from Zoho, and the credentials email is held until joining day.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: confirm as described</span></div>
+
+  <div class="dec"><h3><span class="dno">D7</span>Welcome poster format</h3>
+    <p>Without Slack, the welcome poster becomes a designed card in the day-one team email, generated from the fun intro form. Same content, different channel.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: accept email format</span></div>
+
+  <div class="dec"><h3><span class="dno">D8</span>Sign off the "who is the boss" table</h3>
+    <p>Section 14 fixes which system owns which information. Once you sign it off, it becomes the law of the build — any later change is a deliberate decision, not a drift.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: sign off as shown</span></div>
+</section>
+
+<!-- ============ 17 GOING FURTHER ============ -->
+<section id="s17">
+  <div class="sechead"><span class="secnum">17</span><h2>Going further — optional wow</h2></div>
+  <p class="secsub">Not in the quoted scope — but cheap to add while the foundations are being poured, and each one borrowed from the best products in its category. Say the word on any of these.</p>
+  <div class="guar">
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-compass"/></svg></div><h3>Journey timeline</h3><p>The new joiner sees their whole first 90 days as a beautiful visual timeline — done, current, coming up — the way the best onboarding products do it.</p></div>
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-award"/></svg></div><h3>Recognition wall</h3><p>A live public wall of shout-outs on the Home mission — values, faces, stories — instead of recognition living only in emails.</p></div>
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-heart"/></svg></div><h3>New-hire pulse</h3><p>A one-tap anonymous "how's it going?" at days 7, 30 and 60 — early-warning radar for HR, borrowed from your existing anonymous pulse.</p></div>
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-tree"/></svg></div><h3>Living org chart</h3><p>The org chart from decision D4, but interactive: search a name, see the team, click through to profiles.</p></div>
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-trend"/></svg></div><h3>Budget heat view</h3><p>Functions coloured by how fast they're burning budget vs the year's pace — one glance instead of one spreadsheet.</p></div>
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-gift"/></svg></div><h3>Anniversary engine</h3><p>Birthdays and work anniversaries surfaced automatically to managers and the mood board — small touch, outsized effect.</p></div>
+  </div>
+</section>
+
+<footer>
+  <span>RIZE HR Blueprint · Payobook design proposal</span>
+  <span>Prepared 31 Aug 2026 · awaiting your approvals</span>
+</footer>
+
+</div>
+</body>
+</html>

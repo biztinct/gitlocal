@@ -1,0 +1,183 @@
+// =====================================================================
+//  RECRUIT P3 — requests without friction, on the Hiring board and in
+//  Hiring set-up (Who does what).
+//
+//  Written in the `--pbim-*` tokens only, so the dark palette P1 set on
+//  `.pbhr` (hiring_board_p1.scss, R134) covers every rule here. Keyframes
+//  at the top level with an explicit `to` (R85/R156); motion only inside
+//  `prefers-reduced-motion: no-preference`; no mixed-unit min()/max().
+// =====================================================================
+
+@keyframes pbhr-p3-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.pbhr {
+    .pbhr-pill.is-rose { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+
+    // ------------------------------------------------ the home card chip
+    .pbim-badge.pbhr-reqchip {
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        &.is-amber { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+        &.is-green { background: var(--pbim-green-soft); color: var(--pbim-green); }
+        &.is-info { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+        &.is-rose { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    }
+
+    // ------------------------------------------- the role page's Next box
+    .pbhr-p3-next {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        padding: 14px 16px; margin-bottom: 12px; border-left: 3px solid var(--pbim-primary);
+    }
+    .pbhr-p3-next-ic { display: inline-flex; width: 36px; height: 36px; border-radius: 10px; align-items: center; justify-content: center;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong); flex: 0 0 auto; }
+    .pbhr-p3-next-tx { flex: 1 1 320px; display: flex; flex-direction: column; gap: 2px; min-width: 0;
+        b { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--pbim-primary-strong); }
+        span { color: var(--pbim-ink); font-weight: 600; line-height: 1.45; }
+    }
+    .pbhr-p3-next-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    // ---------------------------------------------- Details → Request
+    .pbhr-p3-req { display: flex; flex-direction: column; gap: 12px; margin: 4px 0 18px; }
+    .pbhr-p3-req-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .pbhr-p3-req-line { color: var(--pbim-text); font-size: 13px;
+        b { color: var(--pbim-ink); }
+    }
+    .pbhr-p3-live { display: inline-flex; align-items: center; gap: 4px; color: var(--pbim-green); font-weight: 600; }
+    .pbhr-p3-rule {
+        display: flex; gap: 10px; align-items: flex-start; padding: 11px 14px; border-radius: 12px;
+        background: var(--pbim-amber-soft); color: var(--pbim-ink); font-size: 13px; line-height: 1.45;
+        svg { color: var(--pbim-amber); flex: 0 0 auto; margin-top: 1px; }
+        b { color: var(--pbim-ink); }
+        &.is-ok { background: var(--pbim-green-soft); svg { color: var(--pbim-green); } }
+        &.is-info { background: var(--pbim-cyan-soft); svg { color: var(--pbim-cyan); } }
+    }
+    .pbhr-p3-trail { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid var(--pbim-line); display: flex; flex-direction: column; gap: 6px;
+        li { position: relative; font-size: 13px; color: var(--pbim-text);
+            &::before { content: ''; position: absolute; left: -21px; top: 4px; width: 12px; height: 12px; border-radius: 50%;
+                background: var(--pbim-green); box-shadow: 0 0 0 3px var(--pbim-surface, #fff); }
+            &.is-wait::before { background: var(--pbim-amber); }
+            &.is-rose::before { background: var(--pbim-rose); }
+            b { color: var(--pbim-ink); }
+        }
+    }
+    .pbhr-p3-when { color: var(--pbim-muted); }
+    .pbhr-p3-msg { margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: 13px; color: var(--pbim-text); white-space: pre-line;
+        &.is-rose svg { color: var(--pbim-rose); }
+    }
+    .pbhr-p3-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbhr-p3-hint { margin: 0; font-size: 12px; color: var(--pbim-muted); }
+
+    .pbhr-p3-money { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;
+        padding: 12px; border: 1px solid var(--pbim-line); border-radius: 14px; }
+    .pbhr-p3-fig { display: flex; flex-direction: column; gap: 3px;
+        .k { font-size: 11.5px; color: var(--pbim-muted); font-weight: 600; }
+        .v { font-size: 15px; font-weight: 750; color: var(--pbim-ink); font-variant-numeric: tabular-nums; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+    }
+    .pbhr-p3-seg { display: inline-flex !important; gap: 0 !important; border: 1px solid var(--pbim-line); border-radius: 999px; overflow: hidden; width: fit-content;
+        button { border: 0; background: transparent; padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 650; color: var(--pbim-text); cursor: pointer;
+            &.on { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+            &:disabled { cursor: default; }
+            & + button { border-left: 1px solid var(--pbim-line); }
+        }
+    }
+    .pbhr-p3-budget { grid-column: 1 / -1; margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 13px; padding: 9px 12px; border-radius: 10px;
+        background: var(--pbim-line-2); color: var(--pbim-text);
+        &.is-over { background: var(--pbim-amber-soft); svg { color: var(--pbim-amber); } }
+        &.is-within { background: var(--pbim-green-soft); svg { color: var(--pbim-green); } }
+    }
+    .pbhr-p3-watchers { grid-column: 1 / -1; margin: 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12.5px; color: var(--pbim-muted);
+        b { color: var(--pbim-ink); }
+        .is-warn { color: var(--pbim-amber); font-weight: 600; }
+    }
+    .pbhr-linkish { border: 0; background: transparent; padding: 0; font: inherit; font-size: 12.5px; font-weight: 650; color: var(--pbim-primary-strong); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+
+    .pbhr-p3-conf { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--pbim-line); border-radius: 14px; cursor: pointer;
+        input { position: absolute; opacity: 0; pointer-events: none; }
+        > span:last-child { display: flex; flex-direction: column; gap: 2px;
+            b { color: var(--pbim-ink); font-size: 13.5px; }
+            small { color: var(--pbim-muted); font-size: 12px; line-height: 1.45; }
+        }
+        &.on { border-color: var(--pbim-rose); background: var(--pbim-rose-soft); }
+        &:focus-within { box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbhr-p3-switch { flex: 0 0 38px; height: 22px; border-radius: 999px; background: var(--pbim-line); position: relative; margin-top: 1px;
+        span { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--pbim-surface, #fff); box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+    }
+    .pbhr-p3-conf.on .pbhr-p3-switch { background: var(--pbim-rose); span { left: 19px; } }
+
+    // ------------------------------------------------- Details → Advert
+    .pbhr-p3-sec-acts { display: inline-flex; gap: 6px; margin-left: auto; align-items: center; }
+    .pbhr-p3-tpl { width: auto; min-width: 170px; padding: 5px 8px; font-size: 12.5px; }
+    .pbhr-p3-comment { font-size: 12.5px; color: var(--pbim-text); margin-top: 4px; display: flex; gap: 6px; align-items: flex-start;
+        b { color: var(--pbim-ink); }
+    }
+    .pbim-badge.pbhr-draft { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+
+    // ------------------------------------------------------ the sheets
+    .pbhr-p3-sheet { max-width: 640px;
+        &.is-small { max-width: 480px; }
+    }
+    .pbhr-p3-search { width: 100%; }
+    .pbhr-p3-people { display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow-y: auto; margin-top: 8px; }
+    .pbhr-p3-person { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--pbim-line); border-radius: 10px;
+        background: var(--pbim-surface, #fff); text-align: left; cursor: pointer; font: inherit;
+        &:hover, &:focus-visible { border-color: var(--pbim-primary); box-shadow: 0 0 0 2px var(--pbim-ring); outline: 0; }
+        .pbim-badge { margin-left: auto; }
+    }
+    .pbhr-p3-person-tx { display: flex; flex-direction: column; min-width: 0;
+        b { color: var(--pbim-ink); font-size: 13px; }
+        small { color: var(--pbim-muted); font-size: 11.5px; }
+    }
+    .pbhr-p3-av { flex: 0 0 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong); font-weight: 750; font-size: 11.5px; }
+    .pbhr-p3-picked { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 10px; border: 1px solid var(--pbim-primary); border-radius: 10px; background: var(--pbim-soft);
+        b { color: var(--pbim-ink); }
+    }
+    .pbhr-p3-noemail { display: inline-flex; gap: 4px; align-items: center; color: var(--pbim-amber); font-size: 12px; font-weight: 600; }
+    .pbhr-p3-link { display: flex; gap: 8px; align-items: center; flex-direction: row;
+        code { flex: 1 1 auto; padding: 8px 10px; border-radius: 8px; background: var(--pbim-line-2); color: var(--pbim-ink); font-size: 12px; overflow-wrap: anywhere; }
+    }
+
+    // ------------------------------------------ Hiring set-up: Who does what
+    .pbhr-su-who .pbhr-su-h { flex-direction: column; align-items: flex-start; gap: 4px;
+        p { margin: 0; font-size: 12.5px; color: var(--pbim-muted); max-width: 90ch; }
+    }
+    .pbhr-su-who-row { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(240px, 1.2fr); gap: 16px; align-items: start;
+        padding: 14px 0; border-bottom: 1px solid var(--pbim-line-2);
+        &:last-child { border-bottom: 0; }
+    }
+    .pbhr-su-who-tx { display: flex; flex-direction: column; gap: 3px;
+        b { display: inline-flex; gap: 6px; align-items: center; font-size: 13.5px; color: var(--pbim-ink); }
+        small { font-size: 12px; color: var(--pbim-muted); line-height: 1.45; }
+    }
+    .pbhr-su-who-ctl { display: flex; flex-direction: column; gap: 8px; }
+    .pbhr-su-people { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .pbhr-su-person { display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 10px; border-radius: 999px;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong); font-size: 12.5px; font-weight: 650; }
+    .pbhr-su-person-x { border: 0; background: transparent; color: inherit; display: inline-flex; padding: 2px; border-radius: 50%; cursor: pointer;
+        &:hover { background: var(--pbim-surface, #fff); }
+    }
+    .pbhr-su-warn { display: inline-flex; gap: 6px; align-items: center; color: var(--pbim-amber); font-size: 12.5px; font-weight: 600; }
+    .pbhr-su-who-add { position: relative; }
+    .pbhr-su-who-list { position: absolute; z-index: 5; left: 0; right: 0; top: 100%; margin-top: 4px; padding: 4px; border: 1px solid var(--pbim-line);
+        border-radius: 10px; background: var(--pbim-surface, #fff); box-shadow: var(--pbim-sh-lg);
+        button { display: flex; gap: 6px; align-items: center; width: 100%; border: 0; background: transparent; padding: 7px 8px; border-radius: 7px; font: inherit; font-size: 13px; color: var(--pbim-ink); cursor: pointer; text-align: left;
+            &:hover, &:focus-visible { background: var(--pbim-soft); outline: 0; }
+        }
+    }
+    .pbhr-su-seg { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+    .pbhr-su-seg-b { border: 1px solid var(--pbim-line); background: var(--pbim-surface, #fff); color: var(--pbim-text); padding: 6px 12px; border-radius: 999px;
+        font: inherit; font-size: 12.5px; font-weight: 650; cursor: pointer;
+        &.on { background: var(--pbim-soft); border-color: var(--pbim-primary); color: var(--pbim-primary-strong); }
+        &:disabled { cursor: default; }
+    }
+    .pbhr-su-sender { padding: 6px 10px; border-radius: 8px; background: var(--pbim-line-2); color: var(--pbim-ink); font-size: 12.5px; width: fit-content; overflow-wrap: anywhere; }
+    @media (max-width: 800px) {
+        .pbhr-su-who-row { grid-template-columns: 1fr; }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbhr .pbhr-p3-next, .pbhr .pbhr-p3-req { animation: pbhr-p3-in .2s ease-out both; }
+    .pbhr .pbhr-p3-switch span { transition: left .18s ease; }
+    .pbhr .pbhr-p3-switch { transition: background .18s ease; }
+}

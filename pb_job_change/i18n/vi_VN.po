@@ -1,0 +1,1793 @@
+# Translation of Payobook module pb_job_change (Vietnamese).
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(co)s pays in %(cur)s. Type the new monthly pay in %(cur)s too."
+msgstr "%(co)s trả lương bằng %(cur)s. Hãy nhập lương tháng mới bằng %(cur)s."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(m)s reports to %(p)s, so %(p)s cannot report to %(m)s."
+msgstr "%(m)s báo cáo cho %(p)s, nên %(p)s không thể báo cáo cho %(m)s."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(what)s belongs to %(co)s, not %(target)s."
+msgstr "%(what)s thuộc %(co)s, không thuộc %(target)s."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(who)s already has a job change waiting (%(ref)s). Finish or cancel that one first."
+msgstr "%(who)s đã có một thay đổi công việc đang chờ (%(ref)s). Hãy hoàn tất hoặc hủy thay đổi đó trước."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%s has no running contract, so their pay cannot be changed here."
+msgstr "%s không có hợp đồng đang hiệu lực, nên không thể đổi lương ở đây."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "(written automatically on its start date)"
+msgstr "(được ghi tự động vào ngày bắt đầu)"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ", a date in the past. It is written when it is signed off and recorded as starting that day."
+msgstr ", một ngày trong quá khứ. Thay đổi được ghi khi được duyệt và ghi nhận là bắt đầu từ ngày đó."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ", early that morning. Nothing has changed yet."
+msgstr ", vào sáng sớm hôm đó. Chưa có gì thay đổi."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ". Check their next payslip with the pay team."
+msgstr ". Hãy cùng bộ phận lương kiểm tra phiếu lương kế tiếp của họ."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ". Once it is signed off it waits, and is written that morning."
+msgstr ". Sau khi được duyệt, thay đổi sẽ chờ và được ghi vào sáng hôm đó."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ". The person, their contract and their pay now read the new details."
+msgstr ". Nhân viên, hợp đồng và lương của họ giờ đã theo thông tin mới."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "A change can start at most a year ahead."
+msgstr "Thay đổi chỉ có thể bắt đầu tối đa một năm tới."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "A change can start at most a year back."
+msgstr "Thay đổi chỉ có thể bắt đầu tối đa một năm trước."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "A job change was not made: %s"
+msgstr "Một thay đổi công việc chưa được thực hiện: %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "A new job or job title"
+msgstr "Công việc hoặc chức danh mới"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "A pay line cannot be below zero."
+msgstr "Khoản lương không thể nhỏ hơn 0."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "A promotion, a move and a pay rise: one request"
+msgstr "Thăng chức, điều chuyển và tăng lương: một yêu cầu"
+
+#. module: pb_job_change
+#: model:biz.approval.process,description:pb_job_change.process_jobchange
+msgid "A promotion, a transfer or a pay change for one person, signed off once for the whole change: their manager, then HR, then Finance when the rise is above the guidance."
+msgstr "Thăng chức, điều chuyển hoặc thay đổi lương cho một người, duyệt một lần cho toàn bộ thay đổi: quản lý của họ, rồi Nhân sự, rồi Tài chính khi mức tăng vượt hướng dẫn."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "A reason was written down"
+msgstr "Đã ghi lý do"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "A start date in a month already paid is allowed, and the pay team can re-work that month."
+msgstr "Được phép chọn ngày bắt đầu trong tháng đã trả lương, và bộ phận lương có thể tính lại tháng đó."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Above the top of the band"
+msgstr "Cao hơn mức trần của khung"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Add a pay line from their scheme…"
+msgstr "Thêm khoản lương từ chính sách lương của họ…"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "After"
+msgstr "Sau"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "All job changes"
+msgstr "Mọi thay đổi công việc"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__approval_state
+msgid "Approval status"
+msgstr "Trạng thái phê duyệt"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__scheduled
+msgid "Approved, starts later"
+msgstr "Đã duyệt, bắt đầu sau"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Approved. It starts on %s and is written that morning."
+msgstr "Đã duyệt. Thay đổi bắt đầu ngày %s và được ghi vào sáng hôm đó."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được đề nghị quyết định"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Before"
+msgstr "Trước"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__draft
+msgid "Being prepared"
+msgstr "Đang chuẩn bị"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Bigger than the guidance allows"
+msgstr "Lớn hơn mức hướng dẫn cho phép"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__undo_until
+msgid "Can be taken back until"
+msgstr "Có thể hoàn tác đến"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Cancel it"
+msgstr "Hủy"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Cancelled from the job change."
+msgstr "Đã hủy từ thay đổi công việc."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Cancelled. Nothing was changed."
+msgstr "Đã hủy. Không có gì thay đổi."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__change_id
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Change it"
+msgstr "Sửa"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/js/job_change_patches.js:0 code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0 model:ir.actions.client,name:pb_job_change.action_pb_job_change_new
+msgid "Change job"
+msgstr "Đổi công việc"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Change job %(ref)s, from %(day)s"
+msgstr "Đổi công việc %(ref)s, từ %(day)s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Change job %(ref)s: %(who)s's change starts on %(day)s, in a month already paid."
+msgstr "Đổi công việc %(ref)s: thay đổi của %(who)s bắt đầu ngày %(day)s, trong tháng đã trả lương."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Change job ·"
+msgstr "Đổi công việc ·"
+
+#. module: pb_job_change
+#: model:ir.model,name:pb_job_change.model_pb_job_change_board
+msgid "Change job — screen data"
+msgstr "Đổi công việc — dữ liệu màn hình"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0
+msgid "Change job: promotion, transfer or pay change, signed off once"
+msgstr "Đổi công việc: thăng chức, điều chuyển hoặc đổi lương, duyệt một lần"
+
+#. module: pb_job_change
+#: model:ir.actions.server,name:pb_job_change.ir_cron_job_change_start_due_ir_actions_server
+msgid "Change job: start approved changes on their day"
+msgstr "Đổi công việc: bắt đầu các thay đổi đã duyệt vào đúng ngày"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_palette.js:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Change someone's job"
+msgstr "Đổi công việc của một người"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Changes"
+msgstr "Thay đổi"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Changes (shown to the pay team)"
+msgstr "Có thay đổi (hiển thị cho bộ phận lương)"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__change_pay
+msgid "Changes pay"
+msgstr "Thay đổi lương"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Changing somebody's job is for HR and the pay team. Ask your administrator for the HR manager role to see this screen."
+msgstr "Đổi công việc của nhân viên là việc của Nhân sự và bộ phận lương. Hãy đề nghị quản trị viên cấp vai trò quản lý nhân sự để xem màn hình này."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Changing somebody's job is for HR and the pay team. Ask your administrator for the HR manager role."
+msgstr "Đổi công việc của nhân viên là việc của Nhân sự và bộ phận lương. Hãy đề nghị quản trị viên cấp vai trò quản lý nhân sự."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Choose the day the change starts."
+msgstr "Chọn ngày thay đổi bắt đầu."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Could not be started on %s; it will be tried again."
+msgstr "Không thể bắt đầu vào %s; sẽ thử lại."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Could not be started on three different days, so nothing was written. Prepare it again."
+msgstr "Không thể bắt đầu trong ba ngày khác nhau nên chưa ghi gì. Hãy chuẩn bị lại."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__applied
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__applied_by
+msgid "Done by"
+msgstr "Thực hiện bởi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__applied_at
+msgid "Done on"
+msgstr "Hoàn tất ngày"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Done. %(who)s's change from %(day)s is in place."
+msgstr "Hoàn tất. Thay đổi của %(who)s từ %(day)s đã có hiệu lực."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Done. %s's new job details are in place."
+msgstr "Hoàn tất. Thông tin công việc mới của %s đã có hiệu lực."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Every job change"
+msgstr "Mọi thay đổi công việc"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Finance signs too, because the rise is above the guidance."
+msgstr "Tài chính cũng duyệt, vì mức tăng vượt hướng dẫn."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Find a job change by person or reference…"
+msgstr "Tìm thay đổi công việc theo người hoặc mã…"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_inherits.py:0
+msgid "From %s"
+msgstr "Từ %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "How big the rise is"
+msgstr "Mức tăng lớn bao nhiêu"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "It could not be sent: %s"
+msgstr "Không gửi được: %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Its day has not come yet."
+msgstr "Chưa đến ngày."
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Job"
+msgstr "Công việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Job and title"
+msgstr "Công việc và chức danh"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model,name:pb_job_change.model_pb_job_change model:ir.model.fields,field_description:pb_job_change.field_pb_pay_apply__job_change_id model_terms:ir.ui.view,arch_db:pb_job_change.view_pb_job_change_form
+msgid "Job change"
+msgstr "Thay đổi công việc"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Job change from %s"
+msgstr "Thay đổi công việc từ %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_letter_template__letter_type__job_change
+msgid "Job change letter"
+msgstr "Thư thay đổi công việc"
+
+#. module: pb_job_change
+#: model:ir.model,name:pb_job_change.model_pb_job_change_line
+msgid "Job change pay line"
+msgstr "Khoản lương của thay đổi công việc"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_inherits.py:0
+msgid "Job change taken back — %s"
+msgstr "Đã hoàn tác thay đổi công việc — %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Job change waiting for approval"
+msgstr "Thay đổi công việc đang chờ duyệt"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_inherits.py:0
+msgid "Job changed — %s"
+msgstr "Đã đổi công việc — %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_palette.js:0 code:addons/pb_job_change/static/src/js/job_change_patches.js:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:biz.approval.process,name:pb_job_change.process_jobchange model:ir.actions.client,name:pb_job_change.action_pb_job_change model_terms:ir.ui.view,arch_db:pb_job_change.view_pb_job_change_list
+msgid "Job changes"
+msgstr "Thay đổi công việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Job title"
+msgstr "Chức danh"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__letter_id
+msgid "Letter"
+msgstr "Thư"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Loading"
+msgstr "Đang tải"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Looking…"
+msgstr "Đang tìm…"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Monthly pay"
+msgstr "Lương tháng"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Monthly pay and pay lines"
+msgstr "Lương tháng và các khoản lương"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Moves them to another pay scheme"
+msgstr "Chuyển họ sang chính sách lương khác"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Moves them to another team or manager"
+msgstr "Chuyển họ sang nhóm hoặc quản lý khác"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__new_amount model_terms:ir.ui.view,arch_db:pb_job_change.view_pb_job_change_form
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_company_id
+msgid "New company"
+msgstr "Công ty mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_job_id
+msgid "New job"
+msgstr "Công việc mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_job_title
+msgid "New job title"
+msgstr "Chức danh mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_parent_id
+msgid "New manager"
+msgstr "Quản lý mới"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_wage
+msgid "New monthly pay"
+msgstr "Lương tháng mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_work_location_id
+msgid "New place of work"
+msgstr "Nơi làm việc mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_department_id
+msgid "New team"
+msgstr "Nhóm mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_resource_calendar_id
+msgid "New working hours"
+msgstr "Giờ làm việc mới"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Newest first"
+msgstr "Mới nhất trước"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Next"
+msgstr "Tiếp"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "No job changes match these filters"
+msgstr "Không có thay đổi công việc nào khớp bộ lọc"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "No month already paid is affected."
+msgstr "Không ảnh hưởng tháng nào đã trả lương."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "No sign-off was needed."
+msgstr "Không cần duyệt."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Nobody by that name in your companies."
+msgstr "Không có ai tên như vậy trong các công ty của bạn."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Not done yet"
+msgstr "Chưa hoàn tất"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Not sent yet."
+msgstr "Chưa gửi."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Nothing changes yet."
+msgstr "Chưa có gì thay đổi."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Nothing changes yet. Choose a new job, team, manager or pay."
+msgstr "Chưa có gì thay đổi. Hãy chọn công việc, nhóm, quản lý hoặc lương mới."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Nothing is paid back by itself: the pay team works out any difference on the next pay run."
+msgstr "Không có khoản truy lĩnh nào tự động: bộ phận lương tính phần chênh lệch ở kỳ lương sau."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Nothing is written before the start date."
+msgstr "Không ghi gì trước ngày bắt đầu."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Nothing was changed: %s's running contract is not the one this change was prepared on."
+msgstr "Không có gì thay đổi: hợp đồng đang hiệu lực của %s không phải hợp đồng dùng khi chuẩn bị thay đổi này."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Nothing was changed: somebody else changed %s since this was sent in. Send it back and prepare it again against what is there now."
+msgstr "Không có gì thay đổi: người khác đã đổi %s sau khi yêu cầu này được gửi. Hãy trả lại và chuẩn bị lại theo dữ liệu hiện tại."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__old_amount
+msgid "Now"
+msgstr "Hiện tại"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Only a change that has not been written yet can be cancelled."
+msgstr "Chỉ hủy được thay đổi chưa được ghi."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Only the person who prepared it, HR or the pay team can cancel a job change."
+msgstr "Chỉ người chuẩn bị, Nhân sự hoặc bộ phận lương mới hủy được thay đổi công việc."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Only the person who prepared it, HR or the pay team can take a job change back."
+msgstr "Chỉ người chuẩn bị, Nhân sự hoặc bộ phận lương mới hoàn tác được thay đổi công việc."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0
+msgid "Open the job change"
+msgstr "Mở thay đổi công việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Open the re-work"
+msgstr "Mở bản tính lại"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Paid by"
+msgstr "Trả lương theo"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Paid by changes from"
+msgstr "Chính sách trả lương đổi từ"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0 code:addons/pb_job_change/static/src/js/job_change_patches.js:0
+msgid "Past-month re-work"
+msgstr "Tính lại tháng trước"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Past-month re-work is not part of this database. Tell the pay team: they can work out any difference by hand on the next pay run."
+msgstr "Hệ thống này chưa có Tính lại tháng trước. Hãy báo bộ phận lương: họ có thể tự tính phần chênh lệch ở kỳ lương sau."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_patches.js:0
+msgid "Past-month re-work is not part of this database. The pay team can work out any difference by hand on the next pay run."
+msgstr "Hệ thống này chưa có Tính lại tháng trước. Bộ phận lương có thể tự tính phần chênh lệch ở kỳ lương sau."
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__reason_kind__pay
+msgid "Pay change"
+msgstr "Thay đổi lương"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Pay changed"
+msgstr "Đã đổi lương"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Pay is changed by the pay team. Leave pay unchanged and ask them to add it."
+msgstr "Lương do bộ phận lương thay đổi. Hãy giữ nguyên lương và nhờ họ thêm vào."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__name
+msgid "Pay item"
+msgstr "Khoản lương"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change_line__code
+msgid "Pay item code"
+msgstr "Mã khoản lương"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__line_ids
+msgid "Pay lines"
+msgstr "Các khoản lương"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Pay scheme"
+msgstr "Chính sách lương"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__apply_ids
+msgid "Pay written"
+msgstr "Lương đã ghi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_palette.js:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "People could not be read just now."
+msgstr "Chưa đọc được danh sách nhân viên."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__employee_id
+msgid "Person"
+msgstr "Nhân viên"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Person, A to Z"
+msgstr "Nhân viên, A đến Z"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Pick everything that changes. It all starts on the same day and is signed off once."
+msgstr "Chọn mọi thứ thay đổi. Tất cả bắt đầu cùng một ngày và được duyệt một lần."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Pick somebody who still works here."
+msgstr "Chọn người vẫn đang làm việc tại đây."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Pick the person, say what changes and from which day. Their manager, HR and, when the rise is above the guidance, Finance sign it off once. Everything is written together on the start date, with one letter and one line on their timeline."
+msgstr "Chọn người, nêu điều gì thay đổi và từ ngày nào. Quản lý của họ, Nhân sự và, khi mức tăng vượt hướng dẫn, Tài chính duyệt một lần. Mọi thứ được ghi cùng lúc vào ngày bắt đầu, kèm một thư và một dòng trên dòng thời gian của họ."
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Place of work"
+msgstr "Nơi làm việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__user_id
+msgid "Prepared by"
+msgstr "Người chuẩn bị"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__reason_kind__promotion
+msgid "Promotion"
+msgstr "Thăng chức"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_letter_template__letter_type__promotion
+msgid "Promotion letter"
+msgstr "Thư thăng chức"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Promotions, transfers and pay changes, each one signed off once and written on its start date."
+msgstr "Thăng chức, điều chuyển và đổi lương, mỗi thay đổi duyệt một lần và được ghi vào ngày bắt đầu."
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__rework_id
+msgid "Re-work"
+msgstr "Tính lại"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Re-work those months"
+msgstr "Tính lại các tháng đó"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Read the board again"
+msgstr "Đọc lại bảng"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Reading the job changes…"
+msgstr "Đang đọc các thay đổi công việc…"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__name
+msgid "Reference"
+msgstr "Mã"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Remove a filter, or start again from every job change."
+msgstr "Bỏ một bộ lọc, hoặc bắt đầu lại từ mọi thay đổi công việc."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Rise"
+msgstr "Mức tăng"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__contract_id
+msgid "Running contract"
+msgstr "Hợp đồng đang hiệu lực"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Save for later"
+msgstr "Lưu để làm sau"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Saved. It stays here until you send it."
+msgstr "Đã lưu. Thay đổi nằm ở đây cho đến khi bạn gửi."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Say why, in a few words. The people who sign it off read this first."
+msgstr "Nêu lý do bằng vài từ. Người duyệt sẽ đọc phần này đầu tiên."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Send for sign-off"
+msgstr "Gửi duyệt"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__returned
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Sent for approval — %s"
+msgstr "Đã gửi duyệt — %s"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Sent for approval."
+msgstr "Đã gửi duyệt."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Sent."
+msgstr "Đã gửi."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Show every job change"
+msgstr "Hiện mọi thay đổi công việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Sign-off"
+msgstr "Duyệt"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Signed off. It is written on"
+msgstr "Đã duyệt. Thay đổi được ghi vào"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Somebody cannot be their own manager."
+msgstr "Một người không thể là quản lý của chính mình."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Somebody has changed %s's details since, so this cannot be taken back here."
+msgstr "Đã có người đổi thông tin của %s sau đó, nên không thể hoàn tác ở đây."
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__reason_kind__other
+msgid "Something else"
+msgstr "Khác"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__started_by_job
+msgid "Started automatically"
+msgstr "Bắt đầu tự động"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__source
+msgid "Started from"
+msgstr "Bắt đầu từ"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__source_ref
+msgid "Started from (reference)"
+msgstr "Bắt đầu từ (mã)"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Starting soonest"
+msgstr "Bắt đầu sớm nhất"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Starts in a month already paid"
+msgstr "Bắt đầu trong tháng đã trả lương"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Starts later"
+msgstr "Bắt đầu sau"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__effective_date
+msgid "Starts on"
+msgstr "Bắt đầu ngày"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Starts today: written as soon as it is signed off."
+msgstr "Bắt đầu hôm nay: được ghi ngay khi được duyệt."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Steps"
+msgstr "Các bước"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Take it back"
+msgstr "Hoàn tác"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__undone
+msgid "Taken back"
+msgstr "Đã hoàn tác"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__undone_by
+msgid "Taken back by"
+msgstr "Hoàn tác bởi"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__undone_at
+msgid "Taken back on"
+msgstr "Hoàn tác ngày"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Taken back. The old details are in place again."
+msgstr "Đã hoàn tác. Thông tin cũ đã được khôi phục."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Taken back: change job %s"
+msgstr "Đã hoàn tác: đổi công việc %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Team and place"
+msgstr "Nhóm và nơi làm việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Team, manager, place of work, working hours or company"
+msgstr "Nhóm, quản lý, nơi làm việc, giờ làm việc hoặc công ty"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Tell the pay team: they can work out any difference by hand on the next pay run."
+msgstr "Hãy báo bộ phận lương: họ có thể tự tính phần chênh lệch ở kỳ lương sau."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "That cannot be done here."
+msgstr "Không thể làm việc đó ở đây."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "That could not be done."
+msgstr "Không thực hiện được."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "That person is not in a company you work in."
+msgstr "Người này không thuộc công ty bạn làm việc."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "That person is not on the system any more."
+msgstr "Người này không còn trên hệ thống."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể kết nối bị gián đoạn. Bộ lọc của bạn vẫn được giữ."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The contract has changed since, so this cannot be taken back here."
+msgstr "Hợp đồng đã thay đổi sau đó, nên không thể hoàn tác ở đây."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The details"
+msgstr "Chi tiết"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "The job changes could not be read just now."
+msgstr "Chưa đọc được các thay đổi công việc."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The job changes could not load"
+msgstr "Không tải được các thay đổi công việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The letter"
+msgstr "Thư"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "The letter could not be opened."
+msgstr "Không mở được thư."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new job"
+msgstr "Công việc mới"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new manager"
+msgstr "Quản lý mới"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new monthly pay cannot be below zero."
+msgstr "Lương tháng mới không thể nhỏ hơn 0."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The new pay is above the top of the band for this job."
+msgstr "Lương mới cao hơn mức trần của khung cho công việc này."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new place of work"
+msgstr "Nơi làm việc mới"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new team"
+msgstr "Nhóm mới"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The new working hours"
+msgstr "Giờ làm việc mới"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The paid months have no pay scheme on them, so they cannot be re-worked here."
+msgstr "Các tháng đã trả lương không có chính sách lương, nên không thể tính lại ở đây."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The pay on the contract has changed since, so this cannot be taken back here."
+msgstr "Lương trên hợp đồng đã thay đổi sau đó, nên không thể hoàn tác ở đây."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The pay team adds pay changes"
+msgstr "Bộ phận lương thêm thay đổi lương"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "The people who approve pay runs can re-work those months from here."
+msgstr "Người duyệt kỳ lương có thể tính lại các tháng đó từ đây."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "The time to take this back ran out on %s. Prepare another job change instead, which keeps a record of both."
+msgstr "Thời hạn hoàn tác đã hết vào %s. Hãy chuẩn bị một thay đổi công việc khác, hệ thống sẽ lưu cả hai."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Their manager has a login"
+msgstr "Quản lý của họ có tài khoản đăng nhập"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Their pay scheme reads what this changes, in:"
+msgstr "Chính sách lương của họ đọc dữ liệu thay đổi này, ở:"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "There is no letter for this change."
+msgstr "Thay đổi này không có thư."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "There is nothing here to take back."
+msgstr "Không có gì để hoàn tác."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This change has not been written yet."
+msgstr "Thay đổi này chưa được ghi."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This change is being written right now. Look again in a minute."
+msgstr "Thay đổi đang được ghi. Hãy xem lại sau một phút."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This change is no longer waiting for its day."
+msgstr "Thay đổi này không còn chờ đến ngày."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This change starts in a month already paid"
+msgstr "Thay đổi bắt đầu trong tháng đã trả lương"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This change starts in a month already paid:"
+msgstr "Thay đổi bắt đầu trong tháng đã trả lương:"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This change starts on a date in the past."
+msgstr "Thay đổi bắt đầu vào một ngày trong quá khứ."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This could not be checked just now."
+msgstr "Chưa kiểm tra được."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This could not be sent."
+msgstr "Không gửi được."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This job change could not be opened."
+msgstr "Không mở được thay đổi công việc này."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "This job change has already been sent in, so it cannot be changed."
+msgstr "Thay đổi công việc này đã được gửi, nên không thể sửa."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This job change has already been sent in."
+msgstr "Thay đổi công việc này đã được gửi."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "This job change is no longer there."
+msgstr "Thay đổi công việc này không còn nữa."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This job change was cancelled, so nothing was written."
+msgstr "Thay đổi công việc này đã bị hủy, nên không ghi gì."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "This job change was taken back, so this letter no longer describes what happened."
+msgstr "Thay đổi công việc này đã được hoàn tác, nên thư này không còn đúng."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This one is for HR and the pay team"
+msgstr "Màn hình này dành cho Nhân sự và bộ phận lương"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "This person could not be opened."
+msgstr "Không mở được người này."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This person has no running contract, so their pay cannot be changed here."
+msgstr "Người này không có hợp đồng đang hiệu lực, nên không thể đổi lương ở đây."
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__reason_kind__transfer
+msgid "Transfer"
+msgstr "Điều chuyển"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_letter_template__letter_type__transfer
+msgid "Transfer letter"
+msgstr "Thư điều chuyển"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_job_change
+#: model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__rejected
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Type a name…"
+msgstr "Nhập tên…"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Type every pay line as a number."
+msgstr "Nhập mọi khoản lương bằng số."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Type the new monthly pay as a number."
+msgstr "Nhập lương tháng mới bằng số."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Type the new monthly pay or a pay line, or leave pay unchanged."
+msgstr "Nhập lương tháng mới hoặc một khoản lương, hoặc giữ nguyên lương."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Unchanged"
+msgstr "Giữ nguyên"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Unchanged. Type a name…"
+msgstr "Giữ nguyên. Nhập tên…"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Waiting for"
+msgstr "Đang chờ"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0 model:ir.model.fields.selection,name:pb_job_change.selection__pb_job_change__state__pending
+msgid "Waiting for approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "What"
+msgstr "Loại"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What changes"
+msgstr "Điều gì thay đổi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What has changed, and why now. The people who sign it off read this first."
+msgstr "Điều gì đã thay đổi, và vì sao vào lúc này. Người duyệt sẽ đọc phần này đầu tiên."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "What kind"
+msgstr "Loại"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__reason_kind
+msgid "What kind of change"
+msgstr "Loại thay đổi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What kind of change is it?"
+msgstr "Đây là loại thay đổi nào?"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What moves?"
+msgstr "Điều gì thay đổi?"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "What this does"
+msgstr "Điều này sẽ làm gì"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "What would change"
+msgstr "Điều gì sẽ thay đổi"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "When and why"
+msgstr "Khi nào và vì sao"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "When it is done, the pay team can open a Past-month re-work for those months. Nothing is paid back by itself."
+msgstr "Khi hoàn tất, bộ phận lương có thể mở Tính lại tháng trước cho các tháng đó. Không có khoản truy lĩnh nào tự động."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Who"
+msgstr "Ai"
+
+#. module: pb_job_change
+#: model_terms:ir.ui.view,arch_db:pb_job_change.view_pb_job_change_form
+msgid "Who and when"
+msgstr "Ai và khi nào"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Who signs it off"
+msgstr "Ai duyệt"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Whose job is changing?"
+msgstr "Công việc của ai thay đổi?"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0 model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__reason
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__block_note
+msgid "Why it could not be done"
+msgstr "Vì sao không thực hiện được"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0 code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Working hours"
+msgstr "Giờ làm việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Working it out…"
+msgstr "Đang tính…"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "You can only move people to a company you work in."
+msgstr "Bạn chỉ có thể chuyển nhân viên sang công ty bạn làm việc."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "You can take it back for"
+msgstr "Bạn có thể hoàn tác trong"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "You see first if the move changes who pays them."
+msgstr "Bạn thấy trước nếu việc điều chuyển làm đổi chính sách trả lương."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "being prepared"
+msgstr "đang chuẩn bị"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "company"
+msgstr "công ty"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "company on the contract"
+msgstr "công ty trên hợp đồng"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "done"
+msgstr "hoàn tất"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "hours after it was written, as long as nobody has changed these details since."
+msgstr "giờ sau khi được ghi, miễn là chưa ai đổi các thông tin này."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "job"
+msgstr "công việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "job changes"
+msgstr "thay đổi công việc"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "job on the contract"
+msgstr "công việc trên hợp đồng"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "job title"
+msgstr "chức danh"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "manager"
+msgstr "quản lý"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "monthly pay"
+msgstr "lương tháng"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid "pay"
+msgstr "lương"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "place of work"
+msgstr "nơi làm việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "start later"
+msgstr "bắt đầu sau"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "team"
+msgstr "nhóm"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "team on the contract"
+msgstr "nhóm trên hợp đồng"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "the running contract"
+msgstr "hợp đồng đang hiệu lực"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "to"
+msgstr "sang"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "waiting for approval"
+msgstr "đang chờ duyệt"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "was paid with the old figures. Nothing is paid back by itself."
+msgstr "đã được trả theo số liệu cũ. Không có khoản truy lĩnh nào tự động."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "working hours"
+msgstr "giờ làm việc"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "working hours on the contract"
+msgstr "giờ làm việc trên hợp đồng"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change_patches.js:0
+msgid "Change job could not be opened for this person."
+msgstr "Không mở được Đổi công việc cho người này."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change_patches.xml:0
+msgid ""
+"Pick the person. Their new pay opens in Change job: one sign-off for the "
+"whole change, and the new pay starts on the date you choose."
+msgstr "Chọn người. Lương mới của họ được mở trong Đổi công việc: một lần duyệt cho cả thay đổi, và lương mới bắt đầu từ ngày bạn chọn."

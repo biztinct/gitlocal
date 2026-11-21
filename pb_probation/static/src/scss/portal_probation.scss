@@ -1,0 +1,37 @@
+// =====================================================================
+//  The trial-period card on /my/journey — .pbpr-*
+//
+//  Everything structural comes from the portal kit (.pbme-card,
+//  .pbme-card-title, .pbme-badge, .pbme-muted). This file only says what is
+//  specific to one card.
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK beside its token, on purpose.
+//  The portal surface has no dark mode at all — the website frontend is
+//  light-only by design (R39) — so "checked in both themes" here means
+//  "every colour resolves even where the token does not exist", which is
+//  what these fallbacks guarantee.
+// =====================================================================
+
+.pbpr-card {
+    .pbpr-state {
+        display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+
+    .pbpr-when {
+        display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+    .pbpr-when-d {
+        font-size: 17px; font-weight: 800;
+        color: var(--pbme-ink, #1B1733);
+        font-variant-numeric: tabular-nums;
+    }
+    .pbpr-when-w {
+        font-size: 12.5px; color: var(--pbme-muted, #6B7280);
+    }
+
+    .pbpr-note {
+        margin-top: 10px; padding-top: 10px;
+        border-top: 1px solid var(--pbme-line, #E5E7EB);
+    }
+}
