@@ -847,7 +847,9 @@ class PbFormStudioStandard(models.AbstractModel):
             if cur[0] == 'only' and base[0] != 'none':
                 pool = self._pbfs_cow_universe() if base[0] == 'all' else base[1]
                 old_in = sorted(pool - cur[1])
-            hidden = bool(vals['std_hidden']) if 'std_hidden' in vals else old_hidden
+            # a country list alone always meant "not hidden for everyone" (FS-7)
+            hidden = bool(vals['std_hidden']) if 'std_hidden' in vals else (
+                False if 'std_country_ids' in vals else old_hidden)
             hidden_in = self._pbfs_country_ids(vals['std_country_ids']) \
                 if 'std_country_ids' in vals else old_in
             if not hidden and not hidden_in:
