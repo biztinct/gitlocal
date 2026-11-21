@@ -6,6 +6,7 @@ import { PremiumRecordForm } from "@pb_form_studio/js/record_form";
 import { useSubEnv } from "@odoo/owl";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
+import { registry } from "@web/core/registry";
 
 Employee360Drawer.components = { ...Employee360Drawer.components, PremiumRecordForm, Dropdown, DropdownItem };
 Employee360Drawer.props = { ...Employee360Drawer.props,
@@ -49,6 +50,20 @@ patch(Employee360Drawer.prototype, {
         }
     },
     toggleWorkspace() { this.state.expanded = !this.state.expanded; },
+    get workspaceHasOrgChart() { return registry.category("pb_people_hub_lens").contains("orgchart"); },
+    async openWorkspaceOrgChart() {
+        if (!this.workspaceHasOrgChart) { return; }
+        if (this.recordForm && !(await this.recordForm.guardLeave())) { return; }
+        return this.pbfsGuard(() => {
+            const id = this.workspaceRecordId;
+            this.state.shown = false;
+            this.props.onClose?.();
+            return this.action.doAction("pb_people_hub.action_pb_people_hub", {
+                additionalContext: { pb_lens: "orgchart", pb_focus: `employee:${id}` },
+                clearBreadcrumbs: false,
+            });
+        });
+    },
     get workspaceBackLabel() {
         const previous = this.props.workspaceTrail?.at(-1);
         return previous ? _t("Back to %s", previous.name) : "";
