@@ -2610,7 +2610,7 @@ export const SCREENS = {
                 <td>${esc(tx(B("As the product decides", "Theo mặc định")))}</td>
                 <td>${esc(tx(B("All countries", "Mọi quốc gia")))}</td>
                 <td>${esc(tx(B("Not shown", "Không hiển thị")))}</td>
-                <td>${r.locked ? `<span class="lrn-chip">${ic("lock")}${esc(tx(B("Locked", "Đã khoá")))}</span>` : "—"}</td>
+                <td>${r.locked ? `<span class="lrn-chip">${ic("shield-check")}${esc(tx(B("Always shown", "Luôn hiển thị")))}</span>` : "—"}</td>
                 <td>${edit}</td>
             </tr>`).join("");
         const count = f.rows.length + std.length;

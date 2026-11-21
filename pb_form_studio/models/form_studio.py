@@ -838,6 +838,7 @@ class PbFormStudio(models.AbstractModel):
         surface = self.env.context.get('pbfs_surface') or 'panel'
         sections = self._pbfs_surface_sections(host_key, sections, surface)
         fixed = self._pbfs_fixed_lists(host_key, sections, surface, flds)
+        in_use, in_use_none = self._pbfs_countries_in_use()
         return {
             'host': {'key': host_key, 'model': model, 'title': host['title'],
                      'icon': host.get('icon') or 'fileText',
@@ -857,6 +858,8 @@ class PbFormStudio(models.AbstractModel):
             'comodels': [{'model': m, 'label': l} for m, l in targets.items() if m in self.env],
             'countries': [{'id': c.id, 'name': c.name, 'code': c.code}
                           for c in self.env['res.country'].search([])],
+            # R31 (FS-15): the country picker lists these first, with people
+            'countries_in_use': in_use, 'countries_none': in_use_none,
             'country_ok': bool(host.get('country_field')),
             'caps': {'per_model': MAX_PER_MODEL, 'per_section': MAX_PER_SECTION,
                      'label': MAX_LABEL},
@@ -896,11 +899,18 @@ class PbFormStudio(models.AbstractModel):
         from .form_standard import STD_SKIP_TTYPES
         skip = self._pbfs_std_exclude(model)
         Model = self.env[model]
+        # R31: a box the product took off the screens is listed only once an
+        # administrator shows it again (until then it waits in the Standard
+        # fields tab, "Taken off the screens").
+        shown_again = {n for n, r in self._pbfs_std_rules(model).items()
+                       if r.get('show') in ('all', 'only')}
         for name, label, tab, _n, _req in self._pbfs_std_scan(model):
             # the Form builder's own fields are the open sections; status
             # widgets, pictures and helpers the form draws are not fields
             # anybody fills in (the Standard fields tab leaves them out too)
             if name.startswith(PREFIX) or name in skip or Model._fields[name].type in STD_SKIP_TTYPES:
+                continue
+            if self._pbfs_std_builtin_rule(model, name) == 'remove' and name not in shown_again:
                 continue
             if tab not in tabs:
                 tabs[tab] = []
@@ -1501,6 +1511,7 @@ class PbFormStudio(models.AbstractModel):
             desc = self.create_field(host_key, spec)
             created[str(spec.get('tmp'))] = desc['name']
         std_changed = False
+        from .form_standard import STD_KEYS
         for name, vals in (payload.get('updates') or {}).items():
             real = created.get(name.split(':', 1)[1], name) if name.startswith('new:') else name
             if real not in self.env[model]._fields:
@@ -1512,8 +1523,7 @@ class PbFormStudio(models.AbstractModel):
                 # rule — hidden / own label (R23). No column is added or
                 # dropped, so the pay-run guard does not apply to it.
                 self.with_context(pbfs_publishing=True).update_standard(model, real, vals)
-                std_changed = std_changed or any(k in (vals or {}) for k in
-                                                 ('std_hidden', 'std_country_ids', 'std_labels'))
+                std_changed = std_changed or any(k in (vals or {}) for k in STD_KEYS)
         if std_changed:
             self.env.registry.clear_cache('templates')    # every worker follows
         sections = []
@@ -2109,9 +2119,11 @@ class PbFormStudio(models.AbstractModel):
                 row.update({'model': model, 'record_type': record_type, 'stdbox': sd,
                             'where': [sd['tab']] if sd['tab'] else [], 'used_by': []})
                 std_rows.append(row)
+        in_use, in_use_none = self._pbfs_countries_in_use()
         return {'fields': rows, 'std': std_rows, 'screens': screens, 'langs': self._pbfs_langs(),
                 'countries': [{'id': c.id, 'name': c.name, 'code': c.code}
                               for c in self.env['res.country'].search([])],
+                'countries_in_use': in_use, 'countries_none': in_use_none,
                 'lang': self.env.lang or 'en_US',
                 'busy': self._pbfs_busy()}
 

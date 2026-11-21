@@ -897,3 +897,28 @@ msgstr "Pajak"
 #: code:addons/pb_form_studio_people/models/fixed_sections.py:0
 msgid "Unemployment insurance (UI)"
 msgstr "Asuransi pengangguran"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "The bank account people are paid to is the approved one under Bank details. This old box is no longer read, so showing it would invite a second account that nothing uses."
+msgstr "Rekening bank tempat gaji dibayar adalah rekening yang disetujui di Detail bank. Kotak lama ini tidak dibaca lagi, jadi menampilkannya akan mengundang rekening kedua yang tidak dipakai."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "The contract holds this now (contract type and pay structure). This box belongs to an older record and is not used."
+msgstr "Kontrak kini menyimpannya (jenis kontrak dan struktur gaji). Kotak ini milik catatan lama dan tidak dipakai."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A worked-out figure from an old insurance and tax set-up that nobody uses. It is never typed and would always show 0."
+msgstr "Angka hasil hitungan dari pengaturan asuransi dan pajak lama yang tidak dipakai. Tidak pernah diisi dan selalu menampilkan 0."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Its old section was replaced by the insurance and tax summary Vietnam staff see, so it would not be drawn. The insurance details the files read are on the side panel."
+msgstr "Bagian lamanya diganti ringkasan asuransi dan pajak yang dilihat staf Vietnam, jadi tidak akan ditampilkan. Detail asuransi yang dibaca file ada di panel samping."
+

@@ -177,7 +177,11 @@ class TestFs7ContractStandard(TransactionCase):
         self.assertNotIn('hr_responsible_id', self.terms(self.c_in))
         self.assertIn('hr_responsible_id', self.terms(self.c_vn))
         node = self.nodes(self.arch(), 'hr_responsible_id')[0]
-        self.assertIn('pb_country_of_work_id in [%s]' % self.india.id, node.get('invisible'))
+        # R31 (FS-15): an FS-7 "hidden in India" reads as "shown for every other
+        # Country of Work (and people with none)" — the same effect
+        expr = node.get('invisible')
+        self.assertIn('pb_country_of_work_id not in', expr)
+        self.assertNotIn(str(self.india.id), expr.split('not in', 1)[1].replace(' ', '').strip('[]').split(','))
         # the panel's save list follows: a hidden term cannot be saved from it
         writable = self.env['pb.contracts'].with_user(self.hr)._cd_writable_map(
             self.c_in, self.env['pb.contracts']._cd_symbol(self.c_in), True, True) \

@@ -232,6 +232,7 @@ msgstr "Tất cả"
 #. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__all
 msgid "All countries"
 msgstr "Mọi quốc gia"
 
@@ -2199,6 +2200,7 @@ msgstr "Tìm trường chuẩn"
 #: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 #: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_hidden
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__none
 msgid "Hidden for everyone"
 msgstr "Ẩn với mọi người"
 
@@ -2665,3 +2667,343 @@ msgstr "Do màn hình tự tính"
 msgid "Field code: %s"
 msgstr "Mã trường: %s"
 
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Choose who sees this field: all countries, only some Countries of Work, or nobody."
+msgstr "Chọn ai thấy trường này: mọi quốc gia, chỉ một số quốc gia làm việc, hoặc không ai."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s It cannot be shown again."
+msgstr "%s Không thể hiện lại."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "built-in setting put back"
+msgstr "đã đặt lại thiết lập mặc định"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown for all countries"
+msgstr "hiện cho mọi quốc gia"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "people with no Country of Work"
+msgstr "người chưa có quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown only for %s"
+msgstr "chỉ hiện cho %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "No Country of Work"
+msgstr "Chưa có quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "No country matches"
+msgstr "Không có quốc gia nào khớp"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "Every Country of Work in use is already chosen"
+msgstr "Mọi quốc gia làm việc đang dùng đã được chọn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "no Country of Work"
+msgstr "chưa có quốc gia làm việc"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%(a)s + %(b)s"
+msgstr "%(a)s + %(b)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%(a)s + %(b)s + %(n)s more"
+msgstr "%(a)s + %(b)s + %(n)s nước khác"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Countries of Work in use"
+msgstr "Quốc gia làm việc đang dùng"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Other countries"
+msgstr "Quốc gia khác"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Type a country's name to find it."
+msgstr "Gõ tên quốc gia để tìm."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Taken off the screens"
+msgstr "Đã gỡ khỏi màn hình"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Was on %s"
+msgstr "Trước ở %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Stays off"
+msgstr "Giữ ẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Can be shown again"
+msgstr "Có thể hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Always shown now: %s"
+msgstr "Nay luôn hiện: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Cannot be hidden. %s"
+msgstr "Không thể ẩn. %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown for"
+msgstr "hiện cho"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown for: %s"
+msgstr "hiện cho: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "built-in setting put back: %s"
+msgstr "đã đặt lại thiết lập mặc định: %s"
+
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "When shown again: Full details, %s tab, and the side panel."
+msgstr "Khi hiện lại: Xem đầy đủ, thẻ %s, và bảng bên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "When shown again: Full details, %s tab, in its old place. Not on the side panel."
+msgstr "Khi hiện lại: Xem đầy đủ, thẻ %s, ở chỗ cũ. Không có trên bảng bên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s You can still rename it."
+msgstr "%s Bạn vẫn có thể đổi tên."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Always shown"
+msgstr "Luôn hiện"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Always shown: %s"
+msgstr "Luôn hiện: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Built-in setting"
+msgstr "Thiết lập mặc định"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Changed from: %s"
+msgstr "Đổi từ: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Shown again"
+msgstr "Đã hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Taken off the screens, stays off"
+msgstr "Đã gỡ khỏi màn hình, giữ ẩn"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Pick at least one Country of Work, or choose All countries."
+msgstr "Chọn ít nhất một quốc gia làm việc, hoặc chọn Mọi quốc gia."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick a field to choose the countries it shows for, give it your own label or tick it for My Payobook. It stays where the product draws it."
+msgstr "Chọn một trường để chọn quốc gia mà trường hiện ra, đặt nhãn riêng hoặc đánh dấu cho My Payobook. Trường vẫn ở chỗ sản phẩm vẽ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick a field to choose the countries it shows for or give it your own label. It stays where the product draws it."
+msgstr "Chọn một trường để chọn quốc gia mà trường hiện ra hoặc đặt nhãn riêng. Trường vẫn ở chỗ sản phẩm vẽ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The product took these off the screens. Their values are kept. Most can be shown again."
+msgstr "Sản phẩm đã gỡ các trường này khỏi màn hình. Giá trị vẫn được giữ. Phần lớn có thể hiện lại."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Show again"
+msgstr "Hiện lại"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Always shown: identity or pay depends on it"
+msgstr "Luôn hiện: danh tính hoặc lương phụ thuộc vào nó"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "It was narrowed before it had to stay on screen, so every screen shows it as the product does. Choose Reset to built-in to clear the old setting."
+msgstr "Trường đã bị thu hẹp trước khi phải luôn hiện, nên mọi màn hình hiện nó như sản phẩm. Chọn Đặt lại mặc định để xoá thiết lập cũ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Stays off the screens."
+msgstr "Giữ ẩn khỏi màn hình."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show
+msgid "Shown for"
+msgstr "Hiện cho"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__only
+msgid "Only these Countries of Work"
+msgstr "Chỉ các quốc gia làm việc này"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Shown only for people whose Country of Work is one of these. Removing the last one hides it for everyone. Values are kept."
+msgstr "Chỉ hiện cho người có quốc gia làm việc là một trong số này. Bỏ quốc gia cuối cùng sẽ ẩn với mọi người. Giá trị vẫn được giữ."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Always shown here"
+msgstr "Luôn hiện ở đây"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Pick a country below."
+msgstr "Chọn một quốc gia bên dưới."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Built-in setting:"
+msgstr "Thiết lập mặc định:"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Now:"
+msgstr "Hiện tại:"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Reset to built-in"
+msgstr "Đặt lại mặc định"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show_country_ids
+msgid "Shown for these Countries of Work"
+msgstr "Hiện cho các quốc gia làm việc này"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show_unset
+msgid "Also people with no Country of Work"
+msgstr "Cả người chưa có quốc gia làm việc"

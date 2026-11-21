@@ -306,6 +306,7 @@ msgstr ""
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0
 #: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__all
 msgid "All countries"
 msgstr ""
 
@@ -1022,6 +1023,7 @@ msgstr ""
 #: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 #: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_hidden
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__none
 msgid "Hidden for everyone"
 msgstr ""
 
@@ -2799,3 +2801,343 @@ msgstr ""
 msgid "Field code: %s"
 msgstr ""
 
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Choose who sees this field: all countries, only some Countries of Work, or nobody."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s It cannot be shown again."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "built-in setting put back"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown for all countries"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "people with no Country of Work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown only for %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "No Country of Work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "No country matches"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "Every Country of Work in use is already chosen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "1 person"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%s people"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "no Country of Work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%(a)s + %(b)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%(a)s + %(b)s + %(n)s more"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Countries of Work in use"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Other countries"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Type a country's name to find it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Taken off the screens"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Was on %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Stays off"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Can be shown again"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Always shown now: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Cannot be hidden. %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown for"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown for: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "built-in setting put back: %s"
+msgstr ""
+
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "When shown again: Full details, %s tab, and the side panel."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "When shown again: Full details, %s tab, in its old place. Not on the side panel."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s You can still rename it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Always shown"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Always shown: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Built-in setting"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Changed from: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Shown again"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Taken off the screens, stays off"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Pick at least one Country of Work, or choose All countries."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick a field to choose the countries it shows for, give it your own label or tick it for My Payobook. It stays where the product draws it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick a field to choose the countries it shows for or give it your own label. It stays where the product draws it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The product took these off the screens. Their values are kept. Most can be shown again."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Show again"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Always shown: identity or pay depends on it"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "It was narrowed before it had to stay on screen, so every screen shows it as the product does. Choose Reset to built-in to clear the old setting."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Stays off the screens."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show
+msgid "Shown for"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__only
+msgid "Only these Countries of Work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Shown only for people whose Country of Work is one of these. Removing the last one hides it for everyone. Values are kept."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Always shown here"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Pick a country below."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Built-in setting:"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Now:"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Reset to built-in"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show_country_ids
+msgid "Shown for these Countries of Work"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show_unset
+msgid "Also people with no Country of Work"
+msgstr ""

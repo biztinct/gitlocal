@@ -5,3 +5,4 @@ from . import test_country_of_work
 from . import test_country_label
 from . import test_followup1
 from . import test_action_help
+from . import test_fs15_rules

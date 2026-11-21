@@ -68,18 +68,19 @@
                 </tr></thead>
                 <tbody>
                   <t t-foreach="rows" t-as="r" t-key="r.model + r.name">
-                  <tr t-if="isStdRow(r)" class="pbfb-stdrow" t-att-class="{ hid: rowHidden(r) }">
+                  <tr t-if="isStdRow(r)" class="pbfb-stdrow" t-att-class="{ hid: rowHidden(r) or rowOff(r) }">
                     <td><span class="name" t-esc="r.label"/><span class="sub" t-if="stdRenamedText(r)" t-esc="stdRenamedText(r)"/><span class="code"><span>Field code</span> <t t-esc="r.name"/></span></td>
                     <td><span class="rt std"><i/><t t-esc="r.record_type"/></span></td>
                     <td><span class="ty"><t t-out="kindIcon(r)"/> <t t-esc="r.type_label"/></span></td>
                     <td><div class="pbfb-usage"><span class="on">Standard field</span></div><span class="sub" t-esc="r.stdbox.tab"/></td>
                     <td><span class="muted">—</span></td>
                     <td><span class="muted">As the product decides</span></td>
-                    <td t-esc="stdHiddenText(r)"/>
+                    <td><span t-esc="stdHiddenText(r)"/><span class="sub" t-if="stdShowSub(r)" t-esc="stdShowSub(r)"/></td>
                     <td t-esc="portalText(r)"/>
-                    <td><span t-if="r.stdbox.lock" class="pbfb-lockchip" t-att-title="r.stdbox.lock"><t t-out="ic('lock',12)"/> <span>Locked</span></span><span t-else="" class="muted">—</span></td>
+                    <td><span t-if="r.stdbox.lock and !rowOff(r)" class="pbfb-lockchip" t-att-title="r.stdbox.lock" tabindex="0" t-att-aria-label="r.stdbox.lock"><t t-out="ic('shieldCheck',12)"/> <span>Always shown</span></span><span t-else="" class="muted">—</span></td>
                     <td class="acts">
-                      <button type="button" class="pbfb-btn sm ghost-dark" t-on-click="() => this.startStdEdit(r)"><t t-out="ic('pencil',13)"/> <span>Edit</span></button>
+                      <button t-if="rowOff(r) and !r.stdbox.comeback" type="button" class="pbfb-btn sm outline" t-on-click="() => this.startStdEdit(r, true)"><t t-out="ic('eye',13)"/> <span>Show again</span></button>
+                      <button t-else="" type="button" class="pbfb-btn sm ghost-dark" t-att-title="r.stdbox.comeback or ''" t-on-click="() => this.startStdEdit(r)"><t t-out="ic('pencil',13)"/> <span>Edit</span></button>
                       <button t-if="stdChanged(r)" type="button" class="pbfb-btn sm ghost-dark icon" title="Back to how the product shows it" aria-label="Back to how the product shows it" t-att-disabled="state.saving" t-on-click="() => this.undoStd(r)"><t t-out="ic('undo',13)"/></button>
                     </td>
                   </tr>
@@ -139,10 +140,7 @@
                 <span t-foreach="e.countries" t-as="c" t-key="c.id" class="pbfb-cchip on"><span t-esc="c.name"/>
                   <button type="button" aria-label="Remove" t-on-click="() => this.removeCountry(c)"><t t-out="ic('x',11)"/></button></span>
               </div>
-              <input type="text" class="pbfb-csearch" placeholder="Add a country…" t-att-value="e.countryTerm" t-on-input="onCountryTerm"/>
-              <div class="pbfb-cmatch" t-if="countryMatches.length">
-                <button t-foreach="countryMatches" t-as="c" t-key="c.id" type="button" t-on-click="() => this.addCountry(c)" t-esc="c.name"/>
-              </div>
+              <CountryPicker countries="state.countries" inUse="state.inUse" chosen="editChosenIds" onPick="(c) => this.addCountry(c)"/>
             </div>
             <div class="pbfb-row"><div><div class="t">Required</div></div>
               <button type="button" class="pbfb-sw" role="switch" aria-label="Required" t-att-aria-checked="switchAttr(e.required)" t-on-click="() => this.onEditToggle('required')"/></div>
@@ -179,26 +177,41 @@
           <t t-set="e" t-value="state.stdEdit"/>
           <div class="hd"><h2 t-esc="e.row.label"/><p><t t-esc="e.row.record_type"/> · <t t-esc="e.row.type_label"/> · <t t-esc="e.row.stdbox.tab"/></p></div>
           <div class="bd pbfb-prop">
-            <div t-if="e.row.stdbox.lock" class="pbfb-note lock"><t t-out="ic('lock',15)"/> <div><b>Cannot be hidden.</b> <span t-esc="e.row.stdbox.lock"/></div></div>
-            <div class="pbfb-stdblock">
-              <div class="pbfb-stdblock-h"><t t-out="ic('eye',14)"/> <span>On screen</span></div>
-              <div class="pbfb-seg three" role="group" aria-label="On screen">
-                <button type="button" t-att-class="stdModeClass('shown')" t-on-click="() => this.setStdMode('shown')"><t t-out="ic('eye',13)"/> <span>Shown</span></button>
-                <button type="button" t-att-class="stdModeClass('all')" t-att-disabled="!!e.row.stdbox.lock" t-on-click="() => this.setStdMode('all')"><t t-out="ic('eyeOff',13)"/> <span>Hidden for everyone</span></button>
-                <button type="button" t-att-class="stdModeClass('some')" t-att-disabled="!!e.row.stdbox.lock" t-on-click="() => this.setStdMode('some')"><t t-out="ic('globe',13)"/> <span>Hidden in some countries</span></button>
+            <div t-if="e.row.stdbox.lock" class="pbfb-note lock"><t t-out="ic('shieldCheck',15)"/> <div><b>Cannot be hidden.</b> <span t-esc="eLockNote"/></div></div>
+            <div t-if="e.row.stdbox.removed and e.row.stdbox.comeback" class="pbfb-note err"><t t-out="ic('ban',15)"/> <div><b>Stays off the screens.</b> <span t-esc="e.row.stdbox.comeback"/></div></div>
+            <!-- R31 (FS-15): which Countries of Work it shows for -->
+            <div class="pbfb-stdblock pbfb-showfor">
+              <div class="pbfb-stdblock-h"><t t-out="ic('globe',14)"/> <span>Shown for</span>
+                <span t-if="eChanged" class="pbfb-showtag changed">Changed</span>
+                <span t-else="" class="pbfb-showtag">Built-in setting</span>
               </div>
-              <div t-if="e.mode === 'some'" class="pbfb-countries">
-                <div class="d">Hidden for people whose Country of Work is one of these. Their values are kept.</div>
+              <div class="pbfb-seg three" role="group" aria-label="Shown for">
+                <button type="button" t-att-class="stdModeClass('all')" t-att-disabled="!!stdModeBlock('all')" t-att-title="stdModeBlock('all')" t-on-click="() => this.setStdMode('all')"><t t-out="ic('globe',13)"/> <span>All countries</span></button>
+                <button type="button" t-att-class="stdModeClass('only')" t-att-disabled="!!stdModeBlock('only')" t-att-title="stdModeBlock('only')" t-on-click="() => this.setStdMode('only')"><t t-out="ic('mapPin',13)"/> <span>Only these Countries of Work</span></button>
+                <button type="button" t-att-class="stdModeClass('none')" t-att-disabled="!!stdModeBlock('none')" t-att-title="stdModeBlock('none')" t-on-click="() => this.setStdMode('none')"><t t-out="ic('eyeOff',13)"/> <span>Hidden for everyone</span></button>
+              </div>
+              <div t-if="eMode === 'only'" class="pbfb-countries">
+                <div class="d">Shown only for people whose Country of Work is one of these. Removing the last one hides it for everyone. Values are kept.</div>
                 <div class="pbfb-cchips">
-                  <span t-foreach="e.countries" t-as="c" t-key="c.id" class="pbfb-cchip on"><span t-esc="c.name"/>
-                    <button type="button" aria-label="Remove" t-on-click="() => this.removeStdCountry(c)"><t t-out="ic('x',11)"/></button></span>
+                  <span t-foreach="e.show.mode === 'only' ? e.show.countries : []" t-as="c" t-key="c.id" class="pbfb-cchip on" t-att-class="{ fixed: eChipFixed(c) }"><span t-esc="c.name"/>
+                    <span t-if="eChipFixed(c)" class="fx" title="Always shown here" t-out="ic('lock',10)"/>
+                    <button t-else="" type="button" aria-label="Remove" t-on-click="() => this.removeStdCountry(c)"><t t-out="ic('x',11)"/></button></span>
+                  <span t-if="eUnset" class="pbfb-cchip on"><span>No Country of Work</span>
+                    <button t-if="!eUnsetFixed" type="button" aria-label="Remove" t-on-click="removeStdUnset"><t t-out="ic('x',11)"/></button></span>
+                  <span t-if="!eChosenIds.length and !eUnset" class="pbfb-cempty">Pick a country below.</span>
                 </div>
-                <input type="text" class="pbfb-csearch" placeholder="Add a country…" t-att-value="e.countryTerm" t-on-input="onStdCountryTerm"/>
-                <div class="pbfb-cmatch" t-if="stdCountryMatches.length">
-                  <button t-foreach="stdCountryMatches" t-as="c" t-key="c.id" type="button" t-on-click="() => this.addStdCountry(c)" t-esc="stdMatchLabel(c)"/>
-                </div>
+                <CountryPicker countries="state.countries" inUse="state.inUse" noneCount="state.noneCount"
+                               offerNone="true" noneChosen="eUnset" chosen="eChosenIds"
+                               disabled="!!stdModeBlock('only')" onPick="(c) => this.addStdCountry(c)"/>
               </div>
-              <div t-if="e.row.stdbox.rule" class="pbfb-note lock"><t t-out="ic('globe',15)"/> <span t-esc="stdRuleText()"/></div>
+              <div class="pbfb-builtin">
+                <span class="ic" t-out="ic('info',14)"/>
+                <div><span class="k">Built-in setting:</span> <b t-esc="eBaseText"/>
+                  <div t-if="eChanged" class="now">Now: <b t-esc="eShowText"/></div></div>
+                <button t-if="eChanged" type="button" class="pbfb-btn sm outline" t-on-click="resetStdShow"><t t-out="ic('rotate',13)"/> <span>Reset to built-in</span></button>
+              </div>
+              <button t-if="eOff and !e.row.stdbox.comeback" type="button" class="pbfb-btn sm primary pbfb-again" t-on-click="eShowAgain"><t t-out="ic('eye',13)"/> <span>Show again</span></button>
+              <p t-if="ePlaceText" class="pbfb-hint flush" t-esc="ePlaceText"/>
               <p class="pbfb-hint flush">Only the screens change. The field, its values, pay formulas, imports, Mapping and reports keep it.</p>
             </div>
             <div class="pbfb-stdblock">

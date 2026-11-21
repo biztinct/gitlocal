@@ -18,11 +18,13 @@ import { _t } from "@web/core/l10n/translation";
 import { rpcBus } from "@web/core/network/rpc";
 import { fsIc, KIND_ICON } from "./fs_icons";
 import { FACADE, fold, foldMatch, isSlashKey } from "./fs_words";
+import { CountryPicker, SHOW_ALL, SHOW_NONE, showOnly, showSame, showUnion, showCovers, showApplies, showChipText, showLongText } from "./country_picker";
 
 const LANG_NAMES = { en_US: "English", vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
 
 export class FieldLibrary extends Component {
     static template = "pb_form_studio.FieldLibrary";
+    static components = { CountryPicker };
     static props = { "*": true };
 
     setup() {
@@ -31,10 +33,11 @@ export class FieldLibrary extends Component {
         this.notification = useService("notification");
         this.state = useState({
             loading: true, error: "", rows: [], std: [], screens: [], langs: [], countries: [],
+            inUse: [], noneCount: 0,
             busy: "", filter: "all", term: "", edit: null, del: null, saving: false,
             // R24 — kind chip and Country of Work picker (client-side only)
             kind: "all", country: 0, lang: "en_US",
-            // R23 — the Edit sheet of a standard field
+            // R23 — the Edit sheet of a standard field (R31: "Shown for")
             stdEdit: null,
         });
         this.search = useRef("libSearch");
@@ -56,6 +59,7 @@ export class FieldLibrary extends Component {
             const res = await this.orm.call(FACADE, "library", []);
             Object.assign(this.state, { rows: res.fields, std: res.std || [], screens: res.screens,
                                         langs: res.langs, countries: res.countries, busy: res.busy,
+                                        inUse: res.countries_in_use || [], noneCount: res.countries_none || 0,
                                         lang: res.lang || "en_US", error: "" });
         } catch (e) {
             this.state.error = (e && e.data && e.data.message) || _t("The Field library could not open.");
@@ -87,18 +91,20 @@ export class FieldLibrary extends Component {
     get allRows() { return [...this.state.rows, ...this.state.std]; }
     isStdRow(r) { return Boolean(r.stdbox && !r.custom); }
     rowHidden(r) {
-        if (this.isStdRow(r)) { return Boolean(r.stdbox.hidden || (r.stdbox.countries || []).length); }
+        if (this.isStdRow(r)) {
+            // R31: the administrator shows it for fewer people than the product does
+            const sb = r.stdbox;
+            return Boolean(sb.changed && sb.show && sb.base && !showCovers(sb.show, sb.base));
+        }
         return !r.where.length;
     }
+    /** R31 — taken off the screens by the product, not shown again. */
+    rowOff(r) { return this.isStdRow(r) && Boolean(r.stdbox.removed) && (r.stdbox.show || {}).mode === "none"; }
     rowOnPortal(r) { return Boolean(r.portal && r.portal.show); }
     /** R24 — does the field show for people of this Country of Work? */
     rowApplies(r, cid) {
         if (!cid) { return true; }
-        if (this.isStdRow(r)) {
-            const s = r.stdbox;
-            if (!s.lock && (s.hidden || (s.countries || []).some((c) => c.id === cid))) { return false; }
-            return !(s.rule && s.rule.country_id && s.rule.country_id !== cid);
-        }
+        if (this.isStdRow(r)) { return showApplies(r.stdbox.show, cid); }
         return !(r.countries || []).length || r.countries.some((c) => c.id === cid);
     }
     get rows() {
@@ -109,6 +115,7 @@ export class FieldLibrary extends Component {
             if (kind === "own" && this.isStdRow(r)) { return false; }
             if (kind === "std" && !this.isStdRow(r)) { return false; }
             if (kind === "hidden" && !this.rowHidden(r)) { return false; }
+            if (kind === "off" && !(this.isStdRow(r) && r.stdbox.removed)) { return false; }
             if (kind === "portal" && !this.rowOnPortal(r)) { return false; }
             if (!this.rowApplies(r, cid)) { return false; }
             return foldMatch(this.state.term, r.label, r.help, (r.stdbox || {}).builtin);
@@ -119,6 +126,7 @@ export class FieldLibrary extends Component {
             { key: "all", label: _t("All") }, { key: "own", label: _t("Own fields") },
             { key: "std", label: _t("Standard fields") }, { key: "hidden", label: _t("Hidden") },
             { key: "portal", label: _t("On My Payobook") },
+            { key: "off", label: _t("Taken off the screens") },
         ];
     }
     kindClass(c) { return { on: this.state.kind === c.key }; }
@@ -157,12 +165,14 @@ export class FieldLibrary extends Component {
     }
     // standard rows (R23)
     stdHiddenText(r) {
-        const s = r.stdbox;
-        if (s.ignored) { return _t("Locked now, shown"); }
-        if (s.hidden) { return _t("Hidden for everyone"); }
-        if ((s.countries || []).length) { return _t("Hidden in %s", s.countries.map((c) => c.name).join(", ")); }
-        if (s.rule) { return _t("Only %s", s.rule.country); }
-        return _t("All countries");
+        const sb = r.stdbox;
+        if (this.rowOff(r)) { return sb.comeback ? _t("Taken off the screens, stays off") : _t("Taken off the screens"); }
+        return showChipText(sb.show);
+    }
+    stdShowSub(r) {
+        const sb = r.stdbox;
+        if (!sb.changed) { return ""; }
+        return sb.removed ? _t("Shown again") : _t("Changed from: %s", showChipText(sb.base));
     }
     stdRenamedText(r) {
         const s = r.stdbox;
@@ -200,7 +210,6 @@ export class FieldLibrary extends Component {
             list_ok: r.list_ok, formula_ok: r.formula_ok,
             labels: { ...(r.labels || {}) }, helps: { ...(r.helps || {}) },
             countries: (r.countries || []).map((c) => ({ ...c })), options: (r.options || []).map((o) => ({ ...o })),
-            countryTerm: "",
             portal: r.portal ? { ...r.portal } : null,
         };
     }
@@ -246,17 +255,11 @@ export class FieldLibrary extends Component {
     onOption(i, ev) { this.state.edit.options[i].label = ev.target.value; }
     addOption() { this.state.edit.options.push({ value: "", label: _t("Option %s", this.state.edit.options.length + 1) }); }
     removeOption(i) { if (this.state.edit.options.length > 1) { this.state.edit.options.splice(i, 1); } }
-    onCountryTerm(ev) { this.state.edit.countryTerm = ev.target.value; }
-    get countryMatches() {
-        const e = this.state.edit;
-        const t = (e.countryTerm || "").toLowerCase().trim();
-        if (!t) { return []; }
-        const chosen = new Set(e.countries.map((c) => c.id));
-        const rank = (c) => (c.name.toLowerCase().startsWith(t) ? 0 : 1);
-        return this.state.countries.filter((c) => !chosen.has(c.id) && c.name.toLowerCase().includes(t))
-            .sort((a, b) => rank(a) - rank(b)).slice(0, 6);
+    get editChosenIds() { return this.state.edit.countries.map((c) => c.id); }
+    addCountry(c) {
+        if (!c || c === "none" || this.editChosenIds.includes(c.id)) { return; }
+        this.state.edit.countries.push({ id: c.id, name: c.name });
     }
-    addCountry(c) { this.state.edit.countries.push({ id: c.id, name: c.name }); this.state.edit.countryTerm = ""; }
     removeCountry(c) { this.state.edit.countries = this.state.edit.countries.filter((x) => x.id !== c.id); }
     allCountries() { this.state.edit.countries = []; }
     async saveEdit() {
@@ -283,22 +286,24 @@ export class FieldLibrary extends Component {
     }
 
     // -------------------------------------------- standard field (R23 sheet)
-    startStdEdit(r) {
-        const s = r.stdbox;
+    startStdEdit(r, again = false) {
+        const sb = r.stdbox;
         this.state.edit = null;
         this.state.del = null;
+        let show = { ...(sb.show || SHOW_ALL), countries: [...((sb.show || SHOW_ALL).countries || [])] };
+        if (again && sb.propose && !sb.comeback) {
+            show = sb.propose.mode === "only" ? showOnly(sb.propose.countries, sb.propose.unset) : SHOW_ALL;
+        }
         this.state.stdEdit = {
-            row: r, labels: { ...(s.labels || {}) },
-            mode: s.hidden ? "all" : ((s.countries || []).length ? "some" : "shown"),
-            countries: (s.countries || []).map((c) => ({ ...c })), countryTerm: "",
+            row: r, labels: { ...(sb.labels || {}) }, show, picking: false,
             portal: r.portal ? { ...r.portal } : null,
         };
     }
     closeStdEdit() { this.state.stdEdit = null; }
     get allLangs() { return this.state.langs || ["en_US"]; }
     stdBuiltin(lang) {
-        const s = this.state.stdEdit.row.stdbox;
-        return (s.builtins || {})[lang] || s.builtin || "";
+        const sb = this.state.stdEdit.row.stdbox;
+        return (sb.builtins || {})[lang] || sb.builtin || "";
     }
     onStdLabel(lang, ev) {
         const v = ev.target.value.trim();
@@ -307,33 +312,78 @@ export class FieldLibrary extends Component {
     }
     resetStdLabels() { this.state.stdEdit.labels = {}; }
     get stdHasLabels() { return Object.keys(this.state.stdEdit.labels || {}).length > 0; }
+    // ------------------------------------------- R31 (FS-15): "Shown for"
+    get eBase() { return this.state.stdEdit.row.stdbox.base || SHOW_ALL; }
+    get eMode() {
+        const e = this.state.stdEdit;
+        return e.picking && e.show.mode !== "only" ? "only" : e.show.mode;
+    }
+    stdModeClass(mode) { return { on: this.eMode === mode }; }
+    stdModeBlock(mode) {
+        const sb = this.state.stdEdit.row.stdbox;
+        if (sb.comeback && mode !== "none") { return sb.comeback; }
+        if (!sb.lock) { return ""; }
+        if (mode === "none" || (mode === "only" && this.eBase.mode === "all")) { return _t("Cannot be hidden. %s", sb.lock); }
+        return "";
+    }
     setStdMode(mode) {
         const e = this.state.stdEdit;
-        if (mode !== "shown" && e.row.stdbox.lock) { return; }
-        e.mode = mode;
-        if (mode !== "some") { e.countries = []; }
+        if (this.stdModeBlock(mode) || this.eMode === mode) { return; }
+        e.picking = false;
+        if (mode === "all") { e.show = SHOW_ALL; }
+        else if (mode === "none") { e.show = SHOW_NONE; }
+        else {
+            const from = e.show.mode === "only" ? e.show : this.eBase;
+            if (from.mode === "only") { e.show = showOnly(from.countries, from.unset); }
+            else { e.picking = true; }
+        }
     }
-    stdModeClass(mode) { return { on: this.state.stdEdit.mode === mode }; }
-    onStdCountryTerm(ev) { this.state.stdEdit.countryTerm = ev.target.value; }
-    get stdCountryMatches() {
+    get eChosenIds() { return this.state.stdEdit.show.mode === "only" ? this.state.stdEdit.show.countries.map((c) => c.id) : []; }
+    get eUnset() { return this.state.stdEdit.show.mode === "only" && Boolean(this.state.stdEdit.show.unset); }
+    eChipFixed(c) { return Boolean(this.state.stdEdit.row.stdbox.lock) && this.eBase.countries.some((x) => x.id === c.id); }
+    get eUnsetFixed() { return Boolean(this.state.stdEdit.row.stdbox.lock) && this.eBase.mode === "only" && Boolean(this.eBase.unset); }
+    addStdCountry(c) {
         const e = this.state.stdEdit;
-        const t = fold(e.countryTerm);
-        if (!t) { return []; }
-        const chosen = new Set(e.countries.map((c) => c.id));
-        const rank = (c) => (fold(c.name).startsWith(t) ? 0 : 1);
-        return this.state.countries.filter((c) => !chosen.has(c.id) && (fold(c.name).includes(t) || fold(c.code) === t))
-            .sort((a, b) => rank(a) - rank(b)).slice(0, 6);
+        const cur = e.show.mode === "only" ? e.show : { countries: [], unset: false };
+        e.picking = false;
+        e.show = c === "none" ? showOnly(cur.countries, true) : showOnly([...cur.countries, { id: c.id, name: c.name, code: c.code }], cur.unset);
     }
-    stdMatchLabel(c) {
-        const r = this.state.stdEdit.row.stdbox.rule;
-        return r && r.country_id && r.country_id !== c.id ? _t("%s (not used there)", c.name) : c.name;
+    removeStdCountry(c) {
+        if (this.eChipFixed(c)) { return; }
+        const e = this.state.stdEdit;
+        e.show = showOnly(e.show.countries.filter((x) => x.id !== c.id), e.show.unset);
     }
-    addStdCountry(c) { this.state.stdEdit.countries.push({ id: c.id, name: c.name }); this.state.stdEdit.countryTerm = ""; }
-    removeStdCountry(c) { this.state.stdEdit.countries = this.state.stdEdit.countries.filter((x) => x.id !== c.id); }
-    stdRuleText() {
-        const r = this.state.stdEdit.row.stdbox.rule;
-        return r ? _t("Shown only where Country of Work is %s: not used in other countries. That rule comes with the product and cannot be changed here.", r.country) : "";
+    removeStdUnset() {
+        if (this.eUnsetFixed) { return; }
+        const e = this.state.stdEdit;
+        e.show = showOnly(e.show.countries, false);
     }
+    resetStdShow() { const e = this.state.stdEdit; e.picking = false; e.show = { ...this.eBase }; }
+    get eChanged() { return !showSame(this.state.stdEdit.show, this.eBase); }
+    get eBaseText() {
+        const sb = this.state.stdEdit.row.stdbox;
+        return sb.removed ? _t("Taken off the screens") : showLongText(this.eBase);
+    }
+    get eShowText() { return showLongText(this.state.stdEdit.show); }
+    get eLockNote() {
+        const sb = this.state.stdEdit.row.stdbox;
+        return sb.label_lock ? sb.lock : _t("%s You can still rename it.", sb.lock);
+    }
+    get ePlaceText() {
+        const sb = this.state.stdEdit.row.stdbox;
+        if (!sb.removed) { return ""; }
+        const tab = sb.tab || _t("Other fields");
+        return sb.panel ? _t("When shown again: Full details, %s tab, and the side panel.", tab)
+            : _t("When shown again: Full details, %s tab, in its old place. Not on the side panel.", tab);
+    }
+    eShowAgain() {
+        const sb = this.state.stdEdit.row.stdbox;
+        if (sb.comeback || !sb.propose) { return; }
+        const p = sb.propose;
+        this.state.stdEdit.picking = false;
+        this.state.stdEdit.show = p.mode === "only" ? showOnly(p.countries, p.unset) : SHOW_ALL;
+    }
+    get eOff() { const sb = this.state.stdEdit.row.stdbox; return Boolean(sb.removed) && this.state.stdEdit.show.mode === "none"; }
     toggleStdPortal(which) {
         const p = this.state.stdEdit.portal;
         if (which === "show") {
@@ -350,14 +400,17 @@ export class FieldLibrary extends Component {
     stdPortalModeClass(mode) { return { on: this.state.stdEdit.portal.mode === mode }; }
     async saveStdEdit() {
         const e = this.state.stdEdit;
-        if (e.mode === "some" && !e.countries.length) {
-            this.notification.add(_t("Pick at least one country, or choose Shown."), { type: "warning" });
+        if (e.picking && e.show.mode !== "only") {
+            this.notification.add(_t("Pick at least one Country of Work, or choose All countries."), { type: "warning" });
             return;
         }
-        const vals = { std_labels: e.labels, std_hidden: e.mode === "all",
-                       std_country_ids: e.mode === "some" ? e.countries.map((c) => c.id) : [] };
-        if (e.row.stdbox.lock) { delete vals.std_hidden; delete vals.std_country_ids; }
-        if (e.row.stdbox.lock && e.mode === "shown") { Object.assign(vals, { std_hidden: false, std_country_ids: [] }); }
+        const vals = { std_labels: e.labels };
+        // R31 — "Shown for": the built-in setting, or the administrator's
+        if (!this.eChanged) { vals.std_show = "builtin"; }
+        else if (e.show.mode === "only") {
+            Object.assign(vals, { std_show: "only", std_show_country_ids: e.show.countries.map((c) => c.id),
+                                  std_show_unset: Boolean(e.show.unset) });
+        } else { vals.std_show = e.show.mode; }
         if (e.row.stdbox.label_lock) { delete vals.std_labels; }
         if (e.portal) {
             Object.assign(vals, { portal_show: e.portal.show, portal_edit: e.portal.edit, portal_mode: e.portal.mode });
@@ -379,8 +432,8 @@ export class FieldLibrary extends Component {
     async undoStd(r) {
         this.state.saving = true;
         try {
-            const vals = { std_labels: {} };
-            if (!r.stdbox.lock || r.stdbox.ignored) { Object.assign(vals, { std_hidden: false, std_country_ids: [] }); }
+            const vals = { std_labels: {}, std_show: "builtin" };
+            if (r.stdbox.label_lock) { delete vals.std_labels; }
             await this.orm.call(FACADE, "update_standard", [r.model, r.name, vals]);
             rpcBus.trigger("CLEAR-CACHES", "get_views");
             this.notification.add(_t("%s is back to how the product shows it.", r.stdbox.builtin), { type: "success" });
@@ -391,7 +444,7 @@ export class FieldLibrary extends Component {
             this.state.saving = false;
         }
     }
-    stdChanged(r) { return this.rowHidden(r) || Object.keys(r.stdbox.labels || {}).length > 0; }
+    stdChanged(r) { return Boolean(r.stdbox.changed) || Object.keys(r.stdbox.labels || {}).length > 0; }
 
     // ------------------------------------------------------------- delete
     startDelete(r) { this.state.edit = null; this.state.del = { row: r, typed: "" }; }
