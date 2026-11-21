@@ -152,13 +152,14 @@ for i, u in enumerate(users):
 print('PROBE page admin %s' % ' | '.join(open_pages(admin, ['/my', '/my/profile'])))
 
 
-def shown(arch, name, emp):
+def shown(arch, name, code):
+    """Is the box drawn for a saved person whose Country of Work is `code`?"""
     node = next((n for n in arch.iter('field') if n.get('name') == name
                  and not any(a.tag == 'field' for a in n.iterancestors())), None)
     if node is None:
         return False
-    ctx = {'pbfs_country_of_work_id': emp.pbfs_country_of_work_id.id or False,
-           'payroll_country': emp.payroll_country or False, 'id': emp.id}
+    country = env['res.country'].sudo().search([('code', '=', code)], limit=1)
+    ctx = {'pbfs_country_of_work_id': country.id or False, 'payroll_country': code, 'id': 1}
     for el in [node] + list(node.iterancestors()):
         expr = (el.get('invisible') or '').strip()
         if not expr:
@@ -189,9 +190,8 @@ if os.environ.get('PROBE_CHANGE') == '1' and db.startswith('fs15_rh_'):
 
         def arch():
             env.registry.clear_cache('templates')
-            return etree.fromstring(e[MODEL].get_view(emp_view.id, 'form')['arch'])
-        p_vn = Emp.new({'payroll_country': 'VN'})
-        p_id = Emp.new({'payroll_country': 'ID'})
+            return etree.fromstring(Emp.get_view(emp_view.id, 'form')['arch'])   # as HR sees it (superuser)
+        p_vn, p_id = 'VN', 'ID'
         if 'pb_safety_group' in env[MODEL]._fields:
             S.update_standard(MODEL, 'pb_safety_group', {'std_show': 'only', 'std_show_country_ids': [vn.id, idn.id]})
             env.cr.commit()
