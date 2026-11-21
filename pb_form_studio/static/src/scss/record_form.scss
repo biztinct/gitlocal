@@ -78,10 +78,13 @@
     .pb-job-field { min-width: 0; margin-bottom: 18px; }
     .pb-job-field:last-child { margin-bottom: 0; }
     .pb-job-field .o_form_label { display: block; color: #64748b; font-weight: 500; font-size: 12px; margin-bottom: 5px; }
-    .pb-job-field .o_field_widget { display: block; width: 100%; color: #172b38; font-size: 14px; min-height: 22px; }
+    .pb-job-field .o_field_widget { display: block; width: 100%; color: var(--pbim-text, #1B1733); font-size: 14px; min-height: 22px; }
+    .o_form_readonly .pb-job-field .o_field_widget { font-weight: 600; }
+    .o_form_readonly .pb-job-field .o_field_widget a { color: inherit; font-weight: inherit; }
+    .o_form_readonly .pb-job-field .o_field_widget a:hover { color: var(--pbim-primary, #5A4BB0); }
     .o_form_editable .pb-job-field .o_input { border: 1px solid #dce5eb; border-radius: 8px; padding: 8px 10px; background: #fbfcfe; }
     .o_form_editable .pb-job-field .o_input:focus { border-color: #00877f; box-shadow: 0 0 0 2px #00877f16; }
-    .o_form_readonly .pb-job-field .o_field_empty::after { content: "—"; color: #93a1b0; }
+    .o_form_readonly .pb-job-field .o_field_empty::after { content: "—"; color: #93a1b0; font-weight: 400; }
 }
 @container (max-width: 680px) {
     .pb-section-form .pb-job-grid { grid-template-columns: 1fr; }
