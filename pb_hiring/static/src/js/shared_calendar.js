@@ -46,7 +46,7 @@ export class SharedCalendar extends Component {
         this.orm = useService("orm"); this.actions = useService("action");
         this.notification = useService("notification"); this.dialog = useService("dialog");
         this.state = useState({ busy: true, error: "", events: [], caps: {}, date: DateTime.now().toISODate(),
-            zone: "UTC", view: window.innerWidth < 700 ? "agenda" : "week", query: "", hidden: [], selected: null, truncated: false, syncing: "", refreshing: false, syncError: "", googleConnection: null });
+            zone: "UTC", view: window.innerWidth < 700 ? "agenda" : "week", query: "", hidden: [], selected: null, truncated: false, syncing: "", refreshing: false, syncError: "", googleConnection: null, signIn: "" });
         useExternalListener(window, "keydown", ev => { if (ev.key === "Escape") this.state.selected = null; });
         // Automatic refresh reads the local feed; only the explicit Refresh
         // button contacts the provider. Leave open details and background tabs alone.
@@ -133,7 +133,6 @@ export class SharedCalendar extends Component {
     }
     async newEvent() { await this.actions.doAction(await this.orm.call("pb.shared.calendar", "new_event", []), { onClose: () => this.load() }); }
     async payrollDates() { await this.actions.doAction(await this.orm.call("pb.shared.calendar", "payroll_dates_action", []), { onClose: () => this.load() }); }
-    async settings() { await this.actions.doAction(await this.orm.call("pb.shared.calendar", "settings_action", [])); }
     get providers() { return ["google", "microsoft"].map(key => ({ key, label: key === "google" ? "Google Calendar" : "Microsoft 365", status: this.state.caps.connections?.[key + "_calendar"] || "missing_credentials" })); }
     providerStatus(p) { return { sync_active: _t("Connected"), sync_stopped: _t("Not syncing"), sync_paused: _t("Paused by administrator"), missing_credentials: _t("Administrator setup required") }[p.status] || p.status; }
     async providerChange(p, op) {
@@ -157,12 +156,14 @@ export class SharedCalendar extends Component {
     }
     offerGoogleConnection(connection) {
         if (connection?.status !== "needs_auth") return;
-        this.dialog.add(ConfirmationDialog, {
-            title: _t("Connect Google Calendar"),
-            body: _t("Choose your Google account and approve calendar access. This enables two-way meeting synchronisation. You only need to sign in when connecting or repairing access."),
-            confirmLabel: _t("Continue to Google"), confirm: () => this.authorizeGoogle(),
-        });
+        this.state.signIn = "google";
     }
+    async continueSignIn(p) {
+        this.state.signIn = "";
+        if (p.key === "google") return this.authorizeGoogle();
+        return this.sync(p);
+    }
+
     async authorizeGoogle() {
         this.state.syncing = "google";
         try {
@@ -191,7 +192,7 @@ export class SharedCalendar extends Component {
     async connect(p) {
         if (this.providers.some(x => x.key !== p.key && x.status === "sync_active")) { this.notification.add(_t("Pause your other calendar connection first to avoid copying meetings between accounts."), { type: "warning" }); return; }
         if (p.key === "google") { this.offerGoogleConnection(await this.checkGoogleConnection()); return; }
-        this.dialog.add(ConfirmationDialog, { title: _t("Connect your calendar"), body: _t("This connects your primary calendar with two-way synchronisation. Meeting changes can update your connected calendar and invitations. Payroll deadlines stay inside Payobook. Continue to your provider to consent?"), confirmLabel: _t("Continue"), confirm: () => this.sync(p) });
+        this.state.signIn = p.key;
     }
     syncTime(provider) {
         const value = this.state.caps.last_sync?.[provider];
@@ -289,8 +290,32 @@ export class CalendarHub extends Component {
 registry.category("actions").add("pb_shared_calendar", CalendarHub);
 class CalendarAdmin extends Component {
     static template = "pb_hiring.CalendarAdmin"; static props = { "*": true };
-    setup() { this.orm = useService("orm"); this.actions = useService("action"); }
-    async open() { await this.actions.doAction(await this.orm.call("pb.shared.calendar", "settings_action", [])); }
+    setup() {
+        this.orm = useService("orm"); this.actions = useService("action");
+        this.state = useState({ providers: [], error: "", loading: true });
+        onWillStart(() => this.load());
+    }
+    draft(p) { return { ...p, client_secret: "", busy: false, message: "", error: "", original: { ...p } }; }
+    async load() {
+        this.state.loading = true; this.state.error = "";
+        try { this.state.providers = (await this.orm.call("pb.shared.calendar", "provider_configuration", [])).map(p => this.draft(p)); }
+        catch (e) { this.state.error = e.data?.message || _t("Could not load calendar providers. Please try again."); }
+        finally { this.state.loading = false; }
+    }
+    label(p) { return p.key === "google" ? _t("Google Calendar") : _t("Microsoft 365"); }
+    reset(p) { Object.assign(p, this.draft(p.original)); }
+    async save(p) {
+        if (p.busy) return;
+        p.busy = true; p.error = ""; p.message = "";
+        try {
+            const saved = await this.orm.call("pb.shared.calendar", "save_provider_configuration", [p.key,
+                { client_id: p.client_id, client_secret: p.client_secret, paused: p.paused }, p.revision]);
+            Object.assign(p, this.draft(saved)); p.message = _t("Settings saved.");
+        } catch (e) { p.error = e.data?.message || _t("Could not save. Please try again."); }
+        finally { p.busy = false; }
+    }
+    back() { return this.actions.doAction("pb_settings.action_pb_settings_hub", { additionalContext: { pb_lens: "integrations" } }); }
+
 }
 registry.category("actions").add("pb_calendar_admin", CalendarAdmin);
 registry.category(SETTINGS_CATEGORIES).add("calendars", { key: "calendars", group: "integrations", label: _t("Calendars"), icon: "calendar", groups: ["base.group_system"], blurb: _t("Google and Microsoft application setup. Each person connects their own account."), cards: [{ id: "calendars", tag: "pb_calendar_admin", icon: "calendar", label: _t("Calendar providers"), sub: _t("Configure Google and Microsoft OAuth. This does not grant access to payroll or private meetings.") }] });

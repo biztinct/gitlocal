@@ -44,3 +44,14 @@
 .pbcal-time-list { display:flex; flex-wrap:wrap; gap:8px; padding:0; list-style:none; margin:16px 0 0; }
 .pbcal-time-list li { padding:8px 12px; border-radius:8px; background:#f1edfb; color:#4d3c85; font-variant-numeric:tabular-nums; }
 @media(max-width:750px) { .pbcal-availability-results { grid-template-columns:1fr; } .pbcal-availability-form label { flex:1 1 140px; } }
+
+.pbcal-admin { width:100%; max-width:1200px; padding:28px; }
+.pbcal-admin .pbcal-back { margin-bottom:20px; }
+.pbcal-admin fieldset { border:0; padding:0; margin:0; min-width:0; }
+.pbcal-admin .pbcal-field { display:block; margin:18px 0 7px; font-weight:650; }
+.pbcal-admin input[type=text], .pbcal-admin input[type=password] { width:100%; box-sizing:border-box; border:1px solid #dce1ef; border-radius:9px; padding:11px 12px; background:white; color:#201d40; }
+.pbcal-admin input:focus { outline:2px solid #9586dc; outline-offset:2px; }
+.pbcal-admin .pbcal-field-help { font-size:13px; margin:9px 0 20px; }
+.pbcal-admin .pbcal-pause { display:flex; align-items:center; gap:9px; margin:20px 0; }
+.pbcal-signin h3 { font-size:18px; margin:0 0 12px; }
+@media(max-width:650px) { .pbcal-admin { padding:16px; } }

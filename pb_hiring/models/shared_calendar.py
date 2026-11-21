@@ -5,6 +5,8 @@ record rules and selected companies. Only connector status (never tokens) uses
 an existing provider API. A hidden source is absent from payloads, not CSS.
 """
 from datetime import datetime, time, timedelta
+import hashlib
+import json
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
@@ -263,9 +265,52 @@ class SharedCalendar(models.AbstractModel):
 
     @api.model
     def settings_action(self):
+        self._require_provider_admin()
+        return {'type': 'ir.actions.client', 'tag': 'pb_calendar_admin',
+                'name': _('Calendar providers')}
+
+    def _require_provider_admin(self):
         self._require()
         if not self.env.user.has_group('base.group_system'):
             raise AccessError(_('Only an administrator can configure calendar providers.'))
-        action = self.env.ref('base_setup.action_general_configuration').read()[0]
-        action['context'] = {'module': 'calendar'}
-        return action
+
+    def _provider_configuration(self, provider):
+        params = self.env['ir.config_parameter'].sudo()
+        prefix = provider + '_calendar_'
+        client_id = params.get_param(prefix + 'client_id', '')
+        secret = params.get_param(prefix + 'client_secret', '')
+        paused = params.get_param(prefix + 'sync_paused', 'False') == 'True'
+        revision = hashlib.sha256(json.dumps([client_id, secret, paused]).encode()).hexdigest()
+        return {'key': provider, 'client_id': client_id, 'secret_saved': bool(secret),
+                'paused': paused, 'configured': bool(client_id and secret), 'revision': revision}
+
+    @api.model
+    def provider_configuration(self):
+        self._require_provider_admin()
+        return [self._provider_configuration(p) for p in ('google', 'microsoft')]
+
+    @api.model
+    def save_provider_configuration(self, provider, values, revision):
+        self._require_provider_admin()
+        if provider not in ('google', 'microsoft') or not isinstance(values, dict) or set(values) != {'client_id', 'client_secret', 'paused'}:
+            raise UserError(_('Choose a supported provider and its application settings.'))
+        if any(not isinstance(values[k], str) or len(values[k]) > 4096 for k in ('client_id', 'client_secret')) or type(values['paused']) is not bool:
+            raise UserError(_('Enter valid application credentials.'))
+        # Serialize administrator saves and reject stale forms instead of overwriting them.
+        self.env.cr.execute('SELECT pg_advisory_xact_lock(hashtext(%s))', ['pb_calendar_config_' + provider])
+        self.env.registry.clear_cache()
+        current = self._provider_configuration(provider)
+        if revision != current['revision']:
+            raise UserError(_('These settings changed. Reload the page before saving.'))
+        client_id, secret = values['client_id'].strip(), values['client_secret'].strip()
+        if not client_id or not (secret or current['secret_saved']):
+            raise UserError(_('Enter the application client ID and client secret.'))
+        if client_id != current['client_id'] and not secret:
+            raise UserError(_('Enter the matching client secret when changing the client ID.'))
+        params = self.env['ir.config_parameter'].sudo()
+        prefix = provider + '_calendar_'
+        params.set_param(prefix + 'client_id', client_id)
+        if secret:
+            params.set_param(prefix + 'client_secret', secret)
+        params.set_param(prefix + 'sync_paused', str(values['paused']))
+        return self._provider_configuration(provider)

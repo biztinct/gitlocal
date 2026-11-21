@@ -33,7 +33,34 @@
     <details t-if="state.canHire" class="pbcal-note mt-4"><summary>Scheduling a panel interview?</summary><p>Choose a candidate to check a panel’s shared availability.</p><button class="pbim-btn" t-on-click="open">Choose a candidate</button></details>
   </div>
 </t>
-<t t-name="pb_hiring.CalendarAdmin"><div class="pbcal pbim"><h1>Calendar providers</h1><p>Configure Google and Microsoft application credentials at master Settings level. Employees grant access to their own accounts from Calendar → Connect.</p><p>Calendar access follows each source’s permissions. Payroll dates remain internal and are never published to an employee’s connected calendar.</p><button class="pbim-btn primary" t-on-click="open">Configure providers</button></div></t>
+<t t-name="pb_hiring.CalendarAdmin">
+  <div class="pbcal pbim pbcal-admin">
+    <button class="pbim-btn pbcal-back" t-on-click="back">← Settings</button>
+    <h1>Calendar providers</h1>
+    <p class="pbcal-muted">Set up Google and Microsoft for your organisation. Each person signs in to their own account from Calendar → Connect.</p>
+    <p t-if="state.loading" role="status">Loading providers…</p>
+    <div t-if="state.error" class="alert alert-danger" role="alert"><t t-esc="state.error"/> <button class="pbim-btn" t-on-click="load">Retry</button></div>
+    <div class="pbcal-connections">
+      <form class="pbcal-provider" t-foreach="state.providers" t-as="p" t-key="p.key" t-on-submit.prevent="() => this.save(p)">
+        <span class="pbcal-provider-icon" t-esc="p.key === 'google' ? 'G' : 'M'"/>
+        <h2 t-esc="label(p)"/>
+        <p class="pbcal-muted" t-esc="p.configured ? (p.paused ? 'Synchronisation paused' : 'Ready for people to connect') : 'Application setup required'"/>
+        <fieldset t-att-disabled="p.busy">
+          <label class="pbcal-field" t-att-for="p.key + '-client-id'">Application client ID</label>
+          <input t-att-id="p.key + '-client-id'" type="text" t-model="p.client_id" required="required" autocomplete="off" spellcheck="false" placeholder="Enter the application client ID"/>
+          <label class="pbcal-field" t-att-for="p.key + '-client-secret'">Application client secret</label>
+          <input t-att-id="p.key + '-client-secret'" type="password" t-model="p.client_secret" t-att-required="!p.secret_saved" autocomplete="new-password" t-att-placeholder="p.secret_saved ? 'Saved securely · leave blank to keep' : 'Enter the application client secret'"/>
+          <p class="pbcal-muted pbcal-field-help">Application credentials come from your provider’s developer console. These are not a personal email address or password.</p>
+          <label class="pbcal-pause"><input type="checkbox" t-model="p.paused"/> Pause synchronisation for this provider</label>
+          <div class="pbcal-actions"><button class="pbim-btn primary" type="submit" t-esc="p.busy ? 'Saving…' : 'Save settings'"/><button class="pbim-btn" type="button" t-on-click="() => this.reset(p)">Discard changes</button></div>
+        </fieldset>
+        <p t-if="p.message" class="alert alert-success mt-3" role="status" t-esc="p.message"/>
+        <p t-if="p.error" class="alert alert-danger mt-3" role="alert" t-esc="p.error"/>
+      </form>
+    </div>
+    <p class="pbcal-note">Saving application settings does not connect anyone’s account. People choose their own account and approve calendar access when they sign in. Payroll deadlines stay inside Payobook.</p>
+  </div>
+</t>
 <t t-name="pb_hiring.SharedCalendar">
 <div class="pbcal">
   <div t-if="state.error" class="alert alert-danger" role="alert"><t t-esc="state.error"/> <button class="pbim-btn" t-on-click="load">Retry</button></div>
@@ -49,9 +76,16 @@
       </p>
       <p class="pbcal-muted">Your primary calendar · two-way sync</p>
       <p t-if="syncTime(p.key)" class="pbcal-muted" role="status">Last synced: <t t-esc="syncTime(p.key)"/></p>
-      <t t-if="p.status === 'missing_credentials'"><p>Your administrator needs to configure this provider first.</p><button t-if="state.caps.admin" class="pbim-btn" t-on-click="settings">Open master settings</button></t>
+      <t t-if="p.status === 'missing_credentials'"><p>This provider is not ready yet. Contact your administrator to enable calendar sign-in.</p><button class="pbim-btn" disabled="disabled">Sign-in unavailable</button></t>
       <t t-elif="p.status === 'sync_active'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.sync(p)">Sync now</button><button class="pbim-btn" t-on-click="() => this.providerChange(p,'pause')">Pause</button></t>
-      <t t-elif="p.status !== 'sync_paused'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.connect(p)">Connect / reconnect</button><button t-if="p.key !== 'google' or state.caps.google_connection_saved" class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="() => this.providerChange(p,'resume')">Resume</button></t>
+      <t t-elif="p.status !== 'sync_paused'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.connect(p)" t-esc="p.key === 'google' ? 'Sign in with Google' : 'Sign in with Microsoft'"/><button t-if="p.key !== 'google' or state.caps.google_connection_saved" class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="() => this.providerChange(p,'resume')">Resume</button></t>
+      <div t-if="state.signIn === p.key" class="pbcal-note pbcal-signin" role="region" t-att-aria-label="'Sign in to ' + p.label">
+        <h3 t-esc="p.key === 'google' ? 'Connect your Google account' : 'Connect your Microsoft account'"/>
+        <p>Continue to sign in with your email or user ID and password on your provider’s secure page. Your password is never stored here.</p>
+        <p>You choose the account and approve calendar access. Meeting changes sync both ways. Payroll deadlines stay inside Payobook.</p>
+        <button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.continueSignIn(p)" t-esc="p.key === 'google' ? 'Continue to Google' : 'Continue to Microsoft'"/>
+        <button class="pbim-btn" t-on-click="() => { this.state.signIn = ''; }">Cancel</button>
+      </div>
       <t t-if="p.key === 'google'">
         <div class="pbcal-actions mt-3" t-if="state.caps.google_connection_saved">
           <button class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="checkGoogleConnection">Check connection</button>
@@ -64,7 +98,7 @@
             <p t-else="">Your primary Google calendar is connected. Google did not return a calendar name.</p>
             <p>You can keep using this connection. To start fresh, choose Remove connection first.</p>
           </t>
-          <p t-elif="state.googleConnection.status === 'needs_auth'">Google sign-in is needed. Choose Connect / reconnect to restore access.</p>
+          <p t-elif="state.googleConnection.status === 'needs_auth'">Google sign-in is needed. Choose Sign in with Google to restore access.</p>
           <p t-elif="state.googleConnection.status === 'missing_credentials' or state.googleConnection.status === 'configuration_error'">Ask your administrator to check the Google Calendar application settings.</p>
           <p t-else="">We could not verify access to Google right now. Your saved connection has been kept. Try again, or remove the connection to start fresh.</p>
         </div>

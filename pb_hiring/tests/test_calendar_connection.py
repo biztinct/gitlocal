@@ -257,3 +257,30 @@ class TestCalendarConnection(TransactionCase):
         self.assertNotIn('pb_google_last_sync', payload)
         self.assertNotIn('pb_microsoft_last_sync', payload)
         json.dumps(payload)
+
+    def test_provider_configuration_is_admin_only_and_never_returns_secrets(self):
+        for api in (self.api, self.api.with_user(self.env.ref('base.public_user'))):
+            with self.assertRaises(AccessError): api.provider_configuration()
+            with self.assertRaises(AccessError): api.save_provider_configuration('google', {}, '')
+        admin = self.env['pb.shared.calendar'].with_user(self.env.ref('base.user_admin'))
+        result = admin.provider_configuration()
+        self.assertNotIn('test-only-secret', json.dumps(result))
+        self.assertNotIn('client_secret', result[0])
+        self.assertEqual(admin.settings_action()['tag'], 'pb_calendar_admin')
+
+    def test_provider_save_preserves_secret_and_other_provider_and_rejects_stale_form(self):
+        admin = self.env['pb.shared.calendar'].with_user(self.env.ref('base.user_admin'))
+        google, microsoft = admin.provider_configuration()
+        values = {'client_id': google['client_id'], 'client_secret': '', 'paused': True}
+        saved = admin.save_provider_configuration('google', values, google['revision'])
+        self.assertTrue(saved['paused'])
+        self.assertTrue(saved['secret_saved'])
+        self.assertEqual(self.env['ir.config_parameter'].sudo().get_param('google_calendar_client_secret'), 'test-only-secret')
+        self.assertEqual(admin.provider_configuration()[1], microsoft)
+        with self.assertRaises(UserError): admin.save_provider_configuration('google', values, google['revision'])
+        with self.assertRaises(UserError): admin.save_provider_configuration('google', dict(values, client_id='changed'), saved['revision'])
+        with self.assertRaises(UserError): admin.save_provider_configuration('google', dict(values, unrelated='value'), saved['revision'])
+        with self.assertRaises(UserError): admin.save_provider_configuration('unknown', values, saved['revision'])
+        changed = admin.save_provider_configuration('google', dict(values, client_id='changed', client_secret='new-test-secret'), saved['revision'])
+        self.assertEqual(changed['client_id'], 'changed')
+        self.assertNotIn('new-test-secret', json.dumps(changed))
