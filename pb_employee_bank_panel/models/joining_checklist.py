@@ -50,7 +50,7 @@ class HrEmployeeJoiningBank(models.Model):
 
     @api.depends('image_1920', 'birthday', 'sex', 'private_street',
                  'private_city', 'private_phone', 'emergency_contact',
-                 'emergency_phone', 'identification_id', 'account_number',
+                 'emergency_phone', 'identification_id',
                  'bank_account_ids', 'vietnam_bank_account_number')
     def _compute_profile_complete(self):
         for rec in self:
