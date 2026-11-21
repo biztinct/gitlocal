@@ -185,3 +185,114 @@ HR-approves note; "No changes yet"; console clean. Customer sites: server-side c
 * "Saves at once" for the five personal details was not built: these details only change through HR
   approval today. If the owner wants some of them (say, private phone) to save at once, that is a new way
   of writing them and needs his yes.
+  **Answered by the architect (FS-14b): all three — see §9.**
+
+---
+
+## 9. FS-14b — architect decisions on §8 (built, tested, deployed under the same rules)
+
+Decisions: (1) "Saves at once" for the five personal details: not offered, left as is. (2) Close the
+direct-change gap. (3) Stop the seven picture requests from our side.
+
+### 9.1 What was built
+* **No direct change of one's own details** (`pb_form_studio_portal` 19.0.1.1.0 → **19.0.1.2.0**,
+  `models/res_users.py` rewritten, `controllers/portal.py` +1 method):
+  * own-user write (`res.users.write` on oneself) by an employee (no HR role, not an administrator): EVERY
+    field of the user record that writes the employee record (the HR addon's related fields — private
+    phone/e-mail, every home-address part: street, street2, city, zip, state, country; emergency contact
+    and phone; work e-mail, work phone, work mobile; and the rest of that list) is refused when the value
+    really changes — whatever the My Profile switches say. Plain message: "Your details change only through
+    "Request a change" on My Profile, where HR approves them. Nothing was saved." (vi/id). The address parts
+    are therefore refused in both switch positions; with the address switch on, the address changes
+    through "Request a change" (HR approves), exactly as the visible address does — the other parts are on
+    no screen (the engine keeps them HR's: government forms).
+  * the work contact: an employee's work e-mail and work phone ARE the e-mail and phone of their own work
+    contact (`hr/models/hr_employee.py:122-124,824-842`; for a person with a login that is their own
+    partner). A write of that partner's e-mail or phone asked by the employee is refused — also under the
+    portal's super-user forms (judged by WHO asks). The standard portal address form (`/my/address/submit`,
+    `/my/account`) answers in its own error area before anything is written (controller override of
+    `_create_or_update_address`); the model refuses as a backstop (own-user write of `email` / `phone`).
+  * Not stopped: HR users, administrators, the system (cron, sign-up), approved requests (applied as the
+    approver), the Form builder's declared My Payobook boxes ("Saves at once" / "HR approves" through the
+    engine, which writes the employee record, not the user record), "Request a change".
+  * **pb_me_portal lines changed: none** (no edit was needed).
+* **No broken app pictures** (`pb_employee_form_tidy` 19.0.1.3.0 → **19.0.1.3.1**, new
+  `models/action_help.py`): when an action is handed to the browser (`ir.actions.act_window.
+  _get_action_dict`, used by `/web/action/load` and `_for_xml_id`), an `<img>` of `/<app>/static/...` is left
+  out when that app is not on the server. Nothing stored changes, an upgrade of the HR addon cannot bring
+  the 404s back, pictures of apps that exist stay (8 of the 15 in the Employees advert). Upgrading this
+  module also refreshes `pb_employee_bank_panel` (its only dependent; no file of it shipped).
+
+### 9.2 Tests (local base = `wf2p6_base` + the Form builder stack + `pb_employee_form_tidy`)
+| Run | Result |
+|---|---|
+| `/pb_form_studio_portal,/pb_employee_form_tidy` | **59 / 0 failed** (page builder 23 incl. 41–43; tidy incl. c1, c2) |
+| `/pb_me_portal,/pb_me_details,/pb_form_studio_reach,/pb_form_studio_people,/pb_employee_bank_panel,/pb_form_studio` | 261 run, 7 failed + 3 errors = exactly the pre-existing set of §3 (none new) |
+
+| # | Test | Evidence | Result |
+|---|---|---|---|
+| b1 | direct change of each field as an employee is refused, value unchanged | `test_41`: work e-mail, work phone, work mobile, street2, city, zip, state, country + the five personal details, address switch on AND off; a staff (internal) employee too; values unchanged; a non-employee setting (language) still saves. `test_42`: own-user write of e-mail / phone refused; portal address form refused with the plain words; work e-mail unchanged. Rehearsal on real copies (§9.3) | PASS |
+| b2 | the normal "Request a change" flow still works | `test_43` (Form builder "Saves at once" box saves; personal box → today's change request), `test_33` (HR approves → value changes only then) | PASS |
+| b3 | another employee's record unreachable | `test_36` (another person's user record), `test_42` (another person's contact through the portal form: refused by the standard portal rule, value unchanged) | PASS |
+| b4 | HR still edits | `test_32` (private phone), `test_42` (work e-mail) by an HR user | PASS |
+| b5 | silent upgrade: My Profile markup identical for 3 employees per site | §9.3 rehearsal byte check | see §9.3 |
+| c1 | the Employees action sends no picture of a missing app | `test_c1` (15 stored, the missing ones left out, the others kept, stored help unchanged), `test_c2` | PASS |
+| c2 | console clean on the employee record page | browser (local, administrator, `/bizapp/employees/<id>`): the page asks for 8 app pictures (all present), none of the 7 missing; no 404 in the console or in the server log (the only console lines: local-environment 500s of the missing local file folder and the worker bundle, as in §3) | PASS |
+
+PO gate: 236/236 vi and id, 0 empty, 0 vendor word.
+
+### 9.3 Rehearsal (after INBOX-BULK-BANK's go-live, so on the live module set incl. its changes)
+INBOX-BULK-BANK wrote START 02:00 (it upgrades `pb_employee_bank_panel`, the dependent of
+`pb_employee_form_tidy`); we waited for its DONE (02:31) before taking the dumps. Prep `20261121T021322Z`:
+staging = commit (2 trees), live = `origin/19.1` (hash), server PO gate (page builder 236/236, tidy 48/48 vi
+and id), dumps ×5 read back (`/odoo/backups/fs14-20261121T021322Z/`). Hidden copies of all five, jobs + mail
+off, `-u pb_form_studio_portal,pb_employee_form_tidy` (refreshes `pb_employee_bank_panel` 19.0.1.1.0),
+dropped after (0 left).
+
+| Copy | Upgrade | Data restored vs upgraded | Employee pages old vs new | Direct changes on the copy | Employees action pictures sent |
+|---|---|---|---|---|---|
+| rize | 17 s, 0 ERROR | identical | 3 people **byte-identical** | work phone, city, work mobile, private phone: refused | 15 → 8 |
+| p0clone | 17 s, 0 ERROR | identical | no employee login | refused | 15 → 8 |
+| sudima | 16 s, 0 ERROR | identical | 1 person: differs — see below | no employee login with a portal account | 15 → 8 |
+| payobook | 19 s, 0 ERROR | identical | 3 people **byte-identical** | refused; showcase page unchanged | 15 → 8 |
+| payobook_template | 16 s, 0 ERROR | identical | no employee login | — | 15 → 8 |
+
+**rize payslips: 211 / 6,914 lines old vs new, 0 differing.** Sudima: its only employee with a login is an
+internal (staff) user; its pages carry session data that changes between two runs of the SAME code (proven
+on live sudima: two read-only runs, all four page hashes differ — gotcha FS11-9). In the FS-14 rehearsal an
+hour earlier the same comparison was identical; nothing in FS-14b touches page markup.
+
+### 9.4 Go-live
+* `origin/19.1` had moved to `17e48af44` (INBOX-BULK-BANK merged with FS-14): merged into `fs-14` (no force
+  push) → `0f348ac4c`; the two module trees are byte-identical to the rehearsed ones (hash).
+* 03:07 START (tag "Claude FORMSTUDIO FS-14b"; no other open START; lock). Try 1: quiet on rize, payobook,
+  sudima since 02:52 → fresh backups ×5 → 03:09:47 stop → 2 trees rsynced (= staged) → upgrades template
+  23 s, p0clone 17, sudima 17, rize 18, payobook 19 — all exit 0, 0 ERROR → asset purge +
+  `web.assets.version` → 03:12:50 port listening. **183 s down.** DONE 03:13.
+
+| Check (after) | Result |
+|---|---|
+| Trees / versions | 2 trees = commit; manifest = installed ×5 (page builder 19.0.1.2.0, tidy 19.0.1.3.1) |
+| Jobs | = snapshot ×5; payobook job 156 off |
+| Data before the stop vs after | identical ×5 |
+| Silent upgrade | personal-box switches all on ×5 (unchanged), pages and ticks unchanged |
+| Employees action | pictures sent 15 → 8 on all five sites |
+| Employee pages after (My Payobook, My Profile, My details, My Leave) | payobook 3, rize 3, sudima 1: all 200, 0 failed |
+| Server log since the stop | 2 ERROR lines = one chat-presence write on rize refused at the moment of the stop (as in FS-14); 0 asset errors; one process; sites 200 |
+| payobook.com in the browser (QA login) | People list and an employee record (`/bizapp/employees/<id>`): only the 8 existing app pictures asked for, **console clean**; 0 picture 404s in the server log since the restart |
+
+### 9.5 Gotchas (ledger rows)
+* FS14-5 An employee's work e-mail and work phone are not stored on the employee: they are the e-mail and
+  phone of the work contact, which for a person with a login is THEIR OWN partner — so the standard portal
+  address form and an own-user write of `email` / `phone` change them. Guard by WHO asks (the portal writes
+  the partner as super-user).
+* FS14-6 `-u pb_employee_form_tidy` also refreshes `pb_employee_bank_panel`: wait for any deployer of that
+  module and rehearse on dumps taken after its go-live.
+* FS14-7 A probe that compares an INTERNAL user's pages before/after will differ between two runs of the same
+  code (sudima has only such a login); judge byte-identity on portal employees.
+
+### 9.6 Not done / left
+* The login's own name, photo and time zone still copy to the employee record when the person changes them
+  on their own user record (the platform's sync). Not in the decision's list; the time zone is read by pay
+  formulas (working time). Say if they should be closed the same way.
+* "Saves at once" for the five personal details: not offered (decision 1).
