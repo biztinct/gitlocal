@@ -18,8 +18,11 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.fields import Domain
 
 from odoo.addons.biz_approval_workflow.models import definition as D
+from odoo.addons.biz_approval_workflow.models.process import (
+    BULK_CONFIRM_KEYS)
 
 _logger = logging.getLogger(__name__)
 
@@ -55,7 +58,13 @@ MIN_EXCEPTION_REASON = 12
 MIN_REASON = 6
 
 #: WDGAP QF1 — "Approve selected": the most requests one press may approve.
+#: INBOX-BULK-BANK: a bigger selection is sent by the screen in groups of
+#: this size, one call each, so every call stays short.
 MAX_BULK = 50
+
+#: INBOX-BULK-BANK — "Select all N that I can approve" across the whole
+#: current filter: the most ids one answer carries.
+MAX_SELECT_ALL = 1000
 
 
 def _clip(text, size=MAX_TEXT):
@@ -536,6 +545,17 @@ class PbApprovalInbox(models.AbstractModel):
             lambda s: s.status == 'open'
             and s.acting_user_id.id == self.env.uid))
 
+    @api.model
+    def _needs_confirm(self, process):
+        """INBOX-BULK-BANK — is this kind approved several at once only after
+        the extra confirmation? A money row qualifies only when it is a
+        bank-detail change (`BULK_CONFIRM_KEYS`); the catalogue's own
+        constraint says the same, this asks again so a row written around it
+        never slips through."""
+        if not process or not process.bulk_confirm:
+            return False
+        return not process.money or process.key in BULK_CONFIRM_KEYS
+
     def _can_bulk(self, request, step=None, mine=None):
         """(may this be approved together with others, why not) — WDGAP QF1.
 
@@ -560,12 +580,16 @@ class PbApprovalInbox(models.AbstractModel):
                             "its own.")
         if not mine or request.state != 'pending':
             return False, _("This request is not waiting for your approval.")
-        if process.money:
-            return False, _("Money leaves the company with this one, so it "
-                            "is approved on its own.")
-        if not process.bulk_ok:
-            return False, _("This kind of request is approved one at a "
-                            "time.")
+        # INBOX-BULK-BANK — the middle tier: a bank-detail change may be
+        # approved with others after the extra confirmation, although its
+        # row is marked money. Every other check below still applies.
+        if not self._needs_confirm(process):
+            if process.money:
+                return False, _("Money leaves the company with this one, so "
+                                "it is approved on its own.")
+            if not process.bulk_ok:
+                return False, _("This kind of request is approved one at a "
+                                "time.")
         safeguards = D.normalise(request.version_id.definition)['safeguards']
         if safeguards.get('independent'):
             seat = step.seat_ids.filtered(
@@ -647,6 +671,10 @@ class PbApprovalInbox(models.AbstractModel):
             # The server's answer, re-asked by `decide_many` on every press.
             'can_bulk': bulk_ok,
             'bulk_why': bulk_why,
+            # INBOX-BULK-BANK — ticked with others, but only after the extra
+            # confirmation (`decide_many` refuses it without `confirmed`)
+            'bulk_confirm': bool(bulk_ok
+                                 and self._needs_confirm(request.process_id)),
             'lock_revision': request.lock_revision,
             'blocked': request.state == 'blocked',
             'block_reason': request.block_reason or '',
@@ -1286,8 +1314,17 @@ class PbApprovalInbox(models.AbstractModel):
         return self.get_request(request.id)
 
     @api.model
-    def decide_many(self, request_ids, revisions=None):
+    def decide_many(self, request_ids, revisions=None, confirmed=False,
+                    batch_size=None):
         """WDGAP QF1 — "Approve selected": approve several requests, one by one.
+
+        INBOX-BULK-BANK: a request whose kind is approved together only after
+        the extra confirmation (`_needs_confirm`) is refused unless the call
+        says `confirmed=True` — the screen sends it only once the approver has
+        ticked "I have checked these bank details". `batch_size` is how many
+        the approver chose in all (the screen sends a big selection in groups
+        of `MAX_BULK`); it only words the trail line "approved together with
+        N others" on each decision, and never widens what may be approved.
 
         APPROVE ONLY. Sending back and turning down need a written reason
         each, so they stay one at a time.
@@ -1324,6 +1361,13 @@ class PbApprovalInbox(models.AbstractModel):
                 "You can approve up to %(max)s requests at once. Choose "
                 "fewer and try again.", max=MAX_BULK))
         revisions = revisions if isinstance(revisions, dict) else {}
+        confirmed = confirmed is True
+        try:
+            together = int(batch_size or 0)
+        except (TypeError, ValueError):
+            together = 0
+        together = max(len(ids), min(together, MAX_SELECT_ALL))
+        others = max(together - 1, 0)
         Request = self.env['biz.approval.request']
         results = []
         for request_id in ids:
@@ -1343,6 +1387,12 @@ class PbApprovalInbox(models.AbstractModel):
                     allowed, why = self._can_bulk(request, step)
                     if not allowed:
                         raise UserError(why)
+                    extra = self._needs_confirm(request.process_id)
+                    if extra and not confirmed:
+                        raise UserError(_(
+                            "This kind is approved together with others only "
+                            "after the extra check. Press Approve selected "
+                            "again and confirm the check."))
                     seen = revisions.get(str(request_id),
                                          revisions.get(request_id))
                     try:
@@ -1351,8 +1401,22 @@ class PbApprovalInbox(models.AbstractModel):
                         seen = request.lock_revision
                     key = 'bulk-%s-%s-%s-%s' % (
                         self.env.uid, request.id, step.key, seen)
+                    # the trail line on the decision: how it was approved
+                    if extra and others:
+                        note = _("Approved with Approve selected, together "
+                                 "with %(n)s others, after the extra check.",
+                                 n=others)
+                    elif extra:
+                        note = _("Approved with Approve selected, after the "
+                                 "extra check.")
+                    elif others:
+                        note = _("Approved with Approve selected, together "
+                                 "with %(n)s others.", n=others)
+                    else:
+                        note = _("Approved with Approve selected.")
                     self._engine().decide(
-                        request.id, step.key, 'approve', '', seen, key, None)
+                        request.id, step.key, 'approve', str(note), seen, key,
+                        None)
                     request.invalidate_recordset()
                     if request.state == 'approved' and request.block_reason:
                         # approved, but the change itself could not be made:
@@ -1377,6 +1441,107 @@ class PbApprovalInbox(models.AbstractModel):
         done = sum(1 for r in results if r['ok'])
         return {'results': results, 'done': done,
                 'failed': len(results) - done}
+
+    # ------------------------------------- INBOX-BULK-BANK — select all, check
+    @api.model
+    def _clean_ids(self, request_ids, cap=MAX_SELECT_ALL):
+        if not isinstance(request_ids, (list, tuple)):
+            raise UserError(_("Choose the requests to approve."))
+        ids = []
+        for raw in request_ids:
+            try:
+                value = int(raw)
+            except (TypeError, ValueError):
+                continue
+            if value > 0 and value not in ids:
+                ids.append(value)
+        return ids[:cap]
+
+    @api.model
+    def select_all_ids(self, filters=None, search=None):
+        """"Select all N that I can approve": every request under the panel's
+        current filters, in the queue the context's scope names, that I could
+        approve together with others (`_can_bulk`), newest first, up to
+        `MAX_SELECT_ALL`.
+
+        A READ AND A SHAPER, like everything here: the press still goes
+        through `decide_many`, which asks `_can_bulk` again for every request
+        and the engine's own `decide` after it. Only requests whose open seat
+        is mine are looked at (`_my_turn_ids`), so a wider queue never offers
+        somebody else's turn."""
+        Request = self._pbf_records()
+        mine = self._my_turn_ids()
+        domain = Domain.AND([
+            self.pbf_domain(filters or {}, search),
+            Domain([('state', '=', 'pending'), ('id', 'in', mine)])])
+        rows = Request.search(domain, order='submitted_at desc, id desc')
+        ids, revisions, confirm, capped = [], {}, 0, False
+        for row in rows:
+            try:
+                allowed, _why = self._can_bulk(row)
+            except Exception as exc:  # noqa: BLE001 — one bad row spoils nothing
+                _logger.debug('Select all: request %s skipped: %s', row.id, exc)
+                continue
+            if not allowed:
+                continue
+            if len(ids) >= MAX_SELECT_ALL:
+                capped = True
+                break
+            ids.append(row.id)
+            revisions[str(row.id)] = row.lock_revision
+            if self._needs_confirm(row.process_id):
+                confirm += 1
+        return {'ids': ids, 'revisions': revisions, 'count': len(ids),
+                'capped': capped, 'confirm': confirm, 'max': MAX_SELECT_ALL}
+
+    @api.model
+    def _bulk_confirm_notes(self, requests):
+        """The counts the extra check shows for the requests that need it.
+
+        `pay`: how many also change pay — asked of the business record
+        (duck-typed `touches_salary`, the Records desk's own fact).
+        `other_name`: how many send pay to an account in another person's
+        name — None here (this module does not know bank accounts); the
+        module that does fills it in. Counts only, never a name or a number.
+        """
+        pay = 0
+        for request in requests:
+            record = self._record_of(request)
+            if record is not None and self._safe(
+                    lambda r=record: bool(getattr(r, 'touches_salary', False)),
+                    default=False):
+                pay += 1
+        return {'pay': pay, 'other_name': None}
+
+    @api.model
+    def bulk_summary(self, request_ids):
+        """What the confirmation in front of "Approve selected" says: how many
+        are chosen, and — for the kinds that need the extra check — how many
+        of which kind, how many are in another person's name and how many
+        also change pay. Read as myself (the record rules decide)."""
+        ids = self._clean_ids(request_ids)
+        rows = self.env['biz.approval.request'].search([('id', 'in', ids)])
+        extra = rows.filtered(lambda r: self._needs_confirm(r.process_id))
+        kinds = {}
+        for row in rows:
+            key = (row.process_id.name or '', row in extra)
+            kinds[key] = kinds.get(key, 0) + 1
+        notes = self._bulk_confirm_notes(extra) if extra else {
+            'pay': 0, 'other_name': 0}
+        return {
+            'count': len(rows),
+            'confirm': len(extra),
+            # how many of those are bank-detail changes: the check then says
+            # "Pay will be sent to these accounts" and asks about bank details
+            'bank': len(extra.filtered(
+                lambda r: r.process_id.key in BULK_CONFIRM_KEYS)),
+            'kinds': [{'name': name, 'count': count, 'confirm': confirm}
+                      for (name, confirm), count in
+                      sorted(kinds.items(), key=lambda kv: (-kv[1], kv[0]))],
+            'other_name': notes.get('other_name'),
+            'pay': notes.get('pay') or 0,
+            'chunk': MAX_BULK,
+        }
 
     @api.model
     def repair(self, request_id):

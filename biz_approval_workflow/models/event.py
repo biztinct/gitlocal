@@ -28,6 +28,8 @@ KINDS = [
     ('delegation_changed', 'Hand-over changed'),
     ('grant_changed', 'Exception changed'),
     ('exception_used', 'Exception used'),
+    # INBOX-BULK-BANK — "Can be approved several at once" changed on screen
+    ('setting_changed', 'Setting changed'),
 ]
 KIND_LABELS = dict(KINDS)
 

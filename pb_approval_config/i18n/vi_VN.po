@@ -5701,3 +5701,311 @@ msgstr ""
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "You were part of this one, so somebody else has to approve it."
 msgstr "Bạn có tham gia vào yêu cầu này, nên người khác phải duyệt."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "This kind is approved together with others only after the extra check. Press Approve selected again and confirm the check."
+msgstr "Loại yêu cầu này chỉ được duyệt cùng các yêu cầu khác sau bước kiểm tra thêm. Hãy bấm lại “Duyệt các mục đã chọn” và xác nhận bước kiểm tra."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, together with %(n)s others, after the extra check."
+msgstr "Đã duyệt bằng “Duyệt các mục đã chọn”, cùng với %(n)s yêu cầu khác, sau bước kiểm tra thêm."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, after the extra check."
+msgstr "Đã duyệt bằng “Duyệt các mục đã chọn”, sau bước kiểm tra thêm."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, together with %(n)s others."
+msgstr "Đã duyệt bằng “Duyệt các mục đã chọn”, cùng với %(n)s yêu cầu khác."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected."
+msgstr "Đã duyệt bằng “Duyệt các mục đã chọn”."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Money leaves the company with this kind, so each one is approved on its own."
+msgstr "Loại yêu cầu này làm tiền ra khỏi công ty, nên mỗi yêu cầu được duyệt riêng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Only your administrator can change this."
+msgstr "Chỉ quản trị viên của bạn mới có thể thay đổi mục này."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Money leaves the company with \"%s\", so it cannot be approved several at once that way."
+msgstr "“%s” làm tiền ra khỏi công ty, nên không thể duyệt nhiều yêu cầu cùng lúc theo cách đó."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Choose one of the three answers."
+msgstr "Hãy chọn một trong ba câu trả lời."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "One at a time"
+msgstr "Từng yêu cầu một"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Several at once"
+msgstr "Nhiều yêu cầu cùng lúc"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Several at once, with an extra confirmation"
+msgstr "Nhiều yêu cầu cùng lúc, có xác nhận thêm"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s changed \"%(what)s\": %(old)s → %(new)s"
+msgstr "%(who)s đã đổi “%(what)s”: %(old)s → %(new)s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Select the first %s that I can approve"
+msgstr "Chọn %s yêu cầu đầu tiên tôi có thể duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Select all %s that I can approve"
+msgstr "Chọn tất cả %s yêu cầu tôi có thể duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "The list could not be read. Try again in a moment."
+msgstr "Không đọc được danh sách. Hãy thử lại sau giây lát."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 selected"
+msgstr "Đã chọn 1"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s selected"
+msgstr "Đã chọn %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%(done)s of %(total)s approved"
+msgstr "Đã duyệt %(done)s / %(total)s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "· 1 could not be approved"
+msgstr "· 1 yêu cầu không duyệt được"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "· %s could not be approved"
+msgstr "· %s yêu cầu không duyệt được"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "None of them is in another person's name."
+msgstr "Không có tài khoản nào đứng tên người khác."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 of them is in another person's name."
+msgstr "1 tài khoản đứng tên người khác."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s of them are in another person's name."
+msgstr "%s tài khoản đứng tên người khác."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 of them also changes pay."
+msgstr "1 yêu cầu cũng thay đổi lương."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s of them also change pay."
+msgstr "%s yêu cầu cũng thay đổi lương."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 other request is approved the usual way."
+msgstr "1 yêu cầu khác được duyệt theo cách thông thường."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s other requests are approved the usual way."
+msgstr "%s yêu cầu khác được duyệt theo cách thông thường."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "They are approved %s at a time, and you can stop at any point."
+msgstr "Các yêu cầu được duyệt %s yêu cầu mỗi lượt, và bạn có thể dừng bất cứ lúc nào."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve 1 bank details change?"
+msgstr "Duyệt 1 thay đổi thông tin ngân hàng?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve %s bank details changes together?"
+msgstr "Duyệt cùng lúc %s thay đổi thông tin ngân hàng?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "I have checked these bank details"
+msgstr "Tôi đã kiểm tra các thông tin ngân hàng này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "I have checked these requests"
+msgstr "Tôi đã kiểm tra các yêu cầu này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approving stopped after %(done)s of %(total)s: %(why)s The rest are still selected."
+msgstr "Đã dừng duyệt sau %(done)s / %(total)s: %(why)s Các yêu cầu còn lại vẫn đang được chọn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approving stopped after %(done)s of %(total)s because the connection dropped. Nothing else was changed; press Approve selected to carry on."
+msgstr "Đã dừng duyệt sau %(done)s / %(total)s vì mất kết nối. Không có gì khác bị thay đổi; hãy bấm “Duyệt các mục đã chọn” để tiếp tục."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Stopped after %(done)s of %(total)s were approved. Nothing else was changed; the rest are still selected."
+msgstr "Đã dừng sau khi duyệt %(done)s / %(total)s. Không có gì khác bị thay đổi; các yêu cầu còn lại vẫn đang được chọn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Stopping after this group…"
+msgstr "Đang dừng sau nhóm này…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Stop"
+msgstr "Dừng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "An extra check before you approve"
+msgstr "Kiểm tra thêm trước khi bạn duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Pay will be sent to these accounts."
+msgstr "Lương sẽ được chuyển vào các tài khoản này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Each one is approved in your name, exactly as if you pressed Approve on it, and its history says it was approved together with the others."
+msgstr "Mỗi yêu cầu được duyệt dưới tên bạn, đúng như khi bạn bấm Duyệt trên từng yêu cầu, và lịch sử của nó ghi rằng nó được duyệt cùng các yêu cầu khác."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Review the list"
+msgstr "Xem lại danh sách"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Each request is opened and decided on its own."
+msgstr "Mỗi yêu cầu được mở và quyết định riêng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Approvers may tick several in the Approvals inbox and approve them together."
+msgstr "Người duyệt có thể đánh dấu nhiều yêu cầu trong hộp Phê duyệt và duyệt chúng cùng lúc."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Approvers may approve them together after a check that counts them and asks them to confirm."
+msgstr "Người duyệt có thể duyệt chúng cùng lúc sau một bước kiểm tra đếm số yêu cầu và yêu cầu họ xác nhận."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Saved. It applies straight away."
+msgstr "Đã lưu. Thiết lập áp dụng ngay."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "That could not be saved. Try again in a moment."
+msgstr "Không lưu được. Hãy thử lại sau giây lát."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Can be approved several at once?"
+msgstr "Có thể duyệt nhiều yêu cầu cùng lúc?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "These decide where pay is sent, so they are approved together only after the extra check."
+msgstr "Các yêu cầu này quyết định lương được chuyển đến đâu, nên chỉ được duyệt cùng lúc sau bước kiểm tra thêm."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "This applies straight away to every request of this kind, in every company. It is not part of the route, so it needs no publish."
+msgstr "Thiết lập này áp dụng ngay cho mọi yêu cầu thuộc loại này, ở mọi công ty. Nó không thuộc quy trình duyệt nên không cần xuất bản."

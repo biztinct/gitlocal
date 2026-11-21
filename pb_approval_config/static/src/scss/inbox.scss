@@ -475,9 +475,111 @@
         b { color: var(--pbim-ink); margin-right: 4px; }
     }
 
+    // ============================ INBOX-BULK-BANK — select all, progress, check
+    //  "Select all 358 that I can approve": a quiet pill beside the page tick
+    //  box; once pressed it turns into the count with its own Clear.
+    .pbam-selall {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 11px; border-radius: 999px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-primary);
+        cursor: pointer; font-variant-numeric: tabular-nums;
+        transition: border-color .15s ease, background-color .15s ease;
+        &:hover:not(:disabled) { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &:disabled { opacity: .55; cursor: wait; }
+        svg { flex: 0 0 auto; }
+    }
+    .pbam-selall--on {
+        cursor: default; border-color: var(--pbim-primary);
+        background: var(--pbim-soft); color: var(--pbim-primary-hover);
+    }
+    .pbam-selall-x {
+        margin-left: 4px; padding: 0 0 0 8px; border: 0;
+        border-left: 1px solid var(--pbim-line); background: none;
+        font: inherit; color: var(--pbim-muted); cursor: pointer;
+        &:hover { color: var(--pbim-ink); }
+    }
+
+    //  The progress line takes the tray's place while a big selection is
+    //  approved group by group: the count, a thin bar, and Stop.
+    .pbam-tray-prog { padding: 12px 14px; }
+    .pbam-tray-prog-h {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        font-size: 13.5px; color: var(--pbim-ink); font-variant-numeric: tabular-nums;
+        > svg { color: var(--pbim-primary); }
+        b { font-weight: 800; }
+    }
+    .pbam-tray-prog-f { font-size: 12.5px; color: var(--pbim-muted); font-weight: 600; }
+    .pbam-tray-bar-track {
+        margin-top: 10px; height: 6px; border-radius: 999px; overflow: hidden;
+        background: var(--pbim-line-2);
+        i {
+            display: block; height: 100%; border-radius: 999px;
+            background: var(--pbim-primary); transition: width .3s ease;
+        }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .pbam-tray-prog-h > svg { animation: pbam-spin 1.1s linear infinite; }
+        .pbam-selall:disabled svg { animation: pbam-spin 1.1s linear infinite; }
+    }
+
+    //  The extra check: the count first, then the facts that matter (another
+    //  person's name, pay changes), the plain warning, a way back to the
+    //  list, and the tick without which the button stays off.
+    .pbam-check { width: 560px; gap: 14px; }
+    .pbam-check-eyebrow {
+        display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+        padding: 4px 10px; border-radius: 999px;
+        background: var(--pbim-soft); color: var(--pbim-primary-hover);
+        font-size: 11.5px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase;
+    }
+    .pbam-check h2 { font-variant-numeric: tabular-nums; line-height: 1.25; }
+    .pbam-check-kinds { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pbam-check-kind {
+        display: inline-flex; align-items: baseline; gap: 6px;
+        padding: 6px 12px; border-radius: var(--pbim-r);
+        background: var(--pbim-line-2); font-size: 13px; color: var(--pbim-text);
+        b { font-size: 15px; font-weight: 800; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    }
+    .pbam-check-facts {
+        list-style: none; margin: 0; padding: 0;
+        display: flex; flex-direction: column; gap: 8px;
+        li {
+            display: flex; align-items: flex-start; gap: 9px;
+            font-size: 13.5px; color: var(--pbim-text);
+            svg { flex: 0 0 auto; margin-top: 2px; color: var(--pbim-muted); }
+            &.pbam-check-fact--warn { color: var(--pbim-ink); font-weight: 700; }
+            &.pbam-check-fact--warn svg { color: var(--pbim-amber); }
+        }
+    }
+    .pbam-check-warn {
+        display: flex; align-items: flex-start; gap: 9px;
+        svg { flex: 0 0 auto; margin-top: 2px; }
+        .pbam-check-warn-h { display: block; margin-bottom: 2px; }
+    }
+    .pbam-check-review {
+        display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+        padding: 0; border: 0; background: none;
+        font-size: 13px; font-weight: 700; color: var(--pbim-primary); cursor: pointer;
+        &:hover { color: var(--pbim-primary-hover); text-decoration: underline; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 3px; border-radius: 4px; }
+    }
+    .pbam-check-tick {
+        display: flex; align-items: center; gap: 10px; margin: 0;
+        padding: 12px 14px; border-radius: var(--pbim-r);
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        font-size: 14px; font-weight: 700; color: var(--pbim-ink); cursor: pointer;
+        transition: border-color .15s ease, background-color .15s ease;
+        &.is-on { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+    }
+    .pbam-check-chunk { margin: -4px 0 0; }
+
     //  Phone: the card is one column with the icon put away (the 760px
     //  block above); the tick box keeps a narrow column of its own in front.
     @media (max-width: 760px) {
+        .pbam-check { padding: 18px 16px; }
+        .pbam-check .pbam-mf .pbim-btn { flex: 1 1 auto; justify-content: center; }
         .pbam-reqs--pick .pbam-req {
             grid-template-columns: 22px minmax(0, 1fr);
         }
@@ -486,3 +588,6 @@
         .pbam-tray-btns .pbim-btn { flex: 1 1 auto; justify-content: center; }
     }
 }
+
+// INBOX-BULK-BANK — the loader icon turns while a group is being approved
+@keyframes pbam-spin { to { transform: rotate(360deg); } }

@@ -122,10 +122,26 @@
             <div t-if="pickable.length" class="pbam-pickbar">
               <label class="pbam-pickall">
                 <input type="checkbox" class="pbam-pick-in"
-                       t-att-checked="allSel" t-att-disabled="state.bulkBusy"
+                       t-att-checked="allSel and !wideSel" t-att-disabled="state.bulkBusy"
                        t-on-change="() => this.toggleAll()"/>
                 <span t-esc="pickAllWords"/>
               </label>
+              <!-- INBOX-BULK-BANK: every request under these filters that I
+                   can approve together, not only this page -->
+              <button t-if="showSelectAll and !wideSel" type="button"
+                      class="pbam-selall" data-coach="pbam-select-all"
+                      t-att-disabled="state.bulkBusy or state.bulkAllBusy"
+                      t-on-click="() => this.selectAll()">
+                <t t-if="state.bulkAllBusy" t-out="ic('loader',14)"/>
+                <t t-else="" t-out="ic('checkCheck',14)"/>
+                <span t-esc="selectAllWords"/>
+              </button>
+              <span t-if="wideSel" class="pbam-selall pbam-selall--on" role="status">
+                <t t-out="ic('checkCheck',14)"/>
+                <span t-esc="selWords"/>
+                <button type="button" class="pbam-selall-x" t-att-disabled="state.bulkBusy"
+                        t-on-click="() => this.clearSel()">Clear</button>
+              </span>
               <span class="pbam-pickbar-note">Send back and turn down stay one at a time: each needs its own reason.</span>
             </div>
             <div class="pbam-reqs" t-att-class="{ 'pbam-reqs--pick': showPick }">
@@ -230,7 +246,23 @@
 
             <!-- ==== WDGAP QF1: the tray, and the in-page confirm above it ==== -->
             <div t-if="selCount" class="pbam-tray" role="region" aria-label="Selected requests">
-              <div t-if="state.confirming" class="pbam-tray-confirm">
+              <!-- INBOX-BULK-BANK: a big selection is approved one group at a
+                   time; this is how far it has got, and the way to stop -->
+              <div t-if="state.progress" class="pbam-tray-prog" role="status" aria-live="polite">
+                <div class="pbam-tray-prog-h">
+                  <t t-out="ic('loader',14)"/>
+                  <b t-esc="progressWords"/>
+                  <span t-if="state.progress.failed" class="pbam-tray-prog-f" t-esc="progressFailedWords"/>
+                  <span class="pbam-sp"/>
+                  <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.progress.stopping"
+                          t-on-click="() => this.stopApproving()">
+                    <t t-if="state.progress.stopping">Stopping after this group…</t>
+                    <t t-else=""><t t-out="ic('pause',13)"/> <span>Stop</span></t>
+                  </button>
+                </div>
+                <div class="pbam-tray-bar-track"><i t-att-style="'width:' + progressPct + '%'"/></div>
+              </div>
+              <div t-elif="state.confirming" class="pbam-tray-confirm">
                 <div class="pbam-tray-q">
                   <b t-esc="confirmTitle"/>
                   <span t-esc="selKinds"/>
@@ -250,10 +282,67 @@
               <div t-else="" class="pbam-tray-bar">
                 <span class="pbam-tray-cnt" t-esc="selWords"/>
                 <span class="pbam-sp"/>
-                <button class="pbim-btn primary pbim-btn-sm" t-on-click="() => this.askApproveSelected()">
-                  <t t-out="ic('check',14)"/> <span>Approve selected</span>
+                <button class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.summaryBusy"
+                        t-on-click="() => this.askApproveSelected()">
+                  <t t-if="state.summaryBusy" t-out="ic('loader',14)"/>
+                  <t t-else="" t-out="ic('check',14)"/>
+                  <span>Approve selected</span>
                 </button>
                 <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.clearSel()">Clear</button>
+              </div>
+            </div>
+
+            <!-- ==== INBOX-BULK-BANK: the extra check in front of approving
+                 bank details together. Counts only — never a name or an
+                 account number. The button stays off until the tick. ==== -->
+            <div t-if="state.checkOpen" class="pbam-modal pbam-check-scrim" role="dialog"
+                 aria-modal="true" aria-labelledby="pbam-check-title">
+              <div class="pbam-modalbox pbam-check">
+                <div class="pbam-check-eyebrow">
+                  <t t-out="ic('shieldCheck',14)"/> <span>An extra check before you approve</span>
+                </div>
+                <h2 id="pbam-check-title" t-esc="checkTitle"/>
+                <div t-if="checkKinds.length" class="pbam-check-kinds">
+                  <span t-foreach="checkKinds" t-as="ck" t-key="ck_index" class="pbam-check-kind">
+                    <b t-esc="ck.count"/> <span t-esc="ck.name"/>
+                  </span>
+                </div>
+                <ul class="pbam-check-facts">
+                  <li t-if="otherNameWords" t-att-class="{ 'pbam-check-fact--warn': summary.other_name }">
+                    <t t-out="ic('userX',15)"/> <span t-esc="otherNameWords"/>
+                  </li>
+                  <li t-if="payWords" class="pbam-check-fact--warn">
+                    <t t-out="ic('banknote',15)"/> <span t-esc="payWords"/>
+                  </li>
+                  <li t-if="usualWords">
+                    <t t-out="ic('checkCircle',15)"/> <span t-esc="usualWords"/>
+                  </li>
+                </ul>
+                <div class="pbim-note pbam-note-amber pbam-check-warn">
+                  <t t-out="ic('triangleAlert',15)"/>
+                  <span>
+                    <b t-if="checkIsBank" class="pbam-check-warn-h">Pay will be sent to these accounts.</b>
+                    <span>Each one is approved in your name, exactly as if you pressed Approve on it, and its history says it was approved together with the others.</span>
+                  </span>
+                </div>
+                <button type="button" class="pbam-check-review" t-on-click="() => this.reviewList()">
+                  <t t-out="ic('listChecks',15)"/> <span>Review the list</span>
+                </button>
+                <label class="pbam-check-tick" t-att-class="{ 'is-on': state.checked }">
+                  <input type="checkbox" class="pbam-pick-in" t-att-checked="state.checked"
+                         t-on-change="() => this.toggleChecked()"/>
+                  <span t-esc="checkTick"/>
+                </label>
+                <p t-if="chunkWords" class="pbim-sub pbam-check-chunk" t-esc="chunkWords"/>
+                <div class="pbam-mf">
+                  <button class="pbim-btn ghost" t-att-disabled="state.bulkBusy"
+                          t-on-click="() => this.closeCheck()">Cancel</button>
+                  <button class="pbim-btn primary" data-coach="pbam-check-approve"
+                          t-att-disabled="!state.checked or state.bulkBusy"
+                          t-on-click="() => this.approveSelected(true)">
+                    <t t-out="ic('check',14)"/> <span t-esc="confirmButton"/>
+                  </button>
+                </div>
               </div>
             </div>
           </PbFilterLayout>

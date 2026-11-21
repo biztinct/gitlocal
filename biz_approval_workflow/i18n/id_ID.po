@@ -120,3 +120,30 @@ msgstr ""
 #: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_process__bulk_ok
 msgid "Can be approved several at once"
 msgstr "Dapat disetujui beberapa sekaligus"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_process__bulk_confirm
+msgid "Several at once, with an extra confirmation"
+msgstr "Beberapa sekaligus, dengan konfirmasi tambahan"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,help:biz_approval_workflow.field_biz_approval_process__bulk_confirm
+msgid "A manager may tick several of these in the Approvals inbox and approve them together, after a check that counts them and asks them to confirm. Allowed for bank-detail changes even though they decide where pay is sent; never for a kind that pays money out."
+msgstr "Seorang manajer dapat mencentang beberapa permintaan ini di kotak Persetujuan dan menyetujuinya bersama, setelah pemeriksaan yang menghitungnya dan meminta konfirmasi. Diizinkan untuk perubahan rekening bank walaupun menentukan ke mana gaji dikirim; tidak pernah untuk jenis yang membayarkan uang."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_event__kind__setting_changed
+msgid "Setting changed"
+msgstr "Pengaturan diubah"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid "\"%s\" moves money out of the company, so each one is approved on its own, even with an extra confirmation."
+msgstr "\"%s\" mengeluarkan uang dari perusahaan, jadi setiap permintaan disetujui sendiri-sendiri, bahkan dengan konfirmasi tambahan."
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid "Choose one of the three answers."
+msgstr "Pilih salah satu dari tiga jawaban."

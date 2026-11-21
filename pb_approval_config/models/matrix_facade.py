@@ -425,7 +425,74 @@ class PbApprovalMatrix(models.AbstractModel):
             'roles': self._role_rows(),
             'can_publish': self._can_publish(),
             'example_defaults': self._example_defaults(workflow),
+            # INBOX-BULK-BANK (R13 screen twin) — "Can be approved several
+            # at once" for this kind, as a switch on the Safeguards step
+            'bulk': self._bulk_payload(process),
         }
+
+    # ------------------------------------- INBOX-BULK-BANK — several at once
+    @api.model
+    def _bulk_editor(self):
+        """Only the tenant administrator changes it (ruling R2's gate)."""
+        user = self.env.user
+        return bool(self.env.su or self._safe(
+            lambda: user.has_group('base.group_system'), default=False))
+
+    @api.model
+    def _bulk_payload(self, process):
+        process = process.sudo()
+        allowed = process._bulk_modes_allowed()
+        locked = ''
+        if allowed == ['off']:
+            locked = _("Money leaves the company with this kind, so each "
+                       "one is approved on its own.")
+        return {
+            'process_key': process.key,
+            'mode': process._bulk_mode(),
+            'allowed': allowed,
+            'locked': locked,
+            'confirm_only': allowed == ['off', 'confirm'],
+            'can_edit': self._bulk_editor() and len(allowed) > 1,
+            'is_admin': self._bulk_editor(),
+        }
+
+    @api.model
+    def set_bulk_mode(self, process_key, mode):
+        """Switch "Can be approved several at once" for one kind: 'off',
+        'on' or 'confirm' (with an extra confirmation). Tenant administrator
+        only; a payment kind refuses every answer but 'off'; one trail line."""
+        if not self._bulk_editor():
+            raise AccessError(_("Only your administrator can change this."))
+        found = self.env['biz.approval.process']._by_key(process_key or '')
+        if not found:
+            raise UserError(_("That kind of request is not in the list."))
+        # written as the person, so the catalogue's own rails and rights
+        # apply (`_by_key` reads under sudo)
+        process = self.env['biz.approval.process'].browse(found.id)
+        R.check_process(self.env, process)
+        if mode not in process._bulk_modes_allowed():
+            if process.money and mode != 'off':
+                raise UserError(_(
+                    "Money leaves the company with \"%s\", so it cannot be "
+                    "approved several at once that way.", process.name))
+            raise UserError(_("Choose one of the three answers."))
+        old = process._bulk_mode()
+        if old != mode:
+            labels = {
+                'off': _("One at a time"),
+                'on': _("Several at once"),
+                'confirm': _("Several at once, with an extra confirmation"),
+            }
+            process._set_bulk_mode(mode)
+            self.env['biz.approval.event']._log(
+                'setting_changed',
+                _("%(who)s changed \"%(what)s\": %(old)s → %(new)s",
+                  who=self.env.user.name, what=process.name,
+                  old=labels[old], new=labels[mode]),
+                company=self.env.user.company_id,
+                payload={'process_key': process.key, 'setting': 'bulk',
+                         'old': old, 'new': mode})
+        return self._bulk_payload(process)
 
     def _capabilities(self, process):
         """What a designer may ask about this kind of request.
@@ -1135,7 +1202,7 @@ class PbApprovalMatrix(models.AbstractModel):
         domain = ['|', ('company_id', '=', False),
                   ('company_id', '=', company.id)]
         families = {
-            'publishes': ['published'],
+            'publishes': ['published', 'setting_changed'],
             'decisions': ['decided', 'submitted', 'returned', 'rejected',
                           'applied', 'cancelled'],
             'exceptions': ['exception_used', 'grant_changed'],

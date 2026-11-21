@@ -38,6 +38,10 @@ import { FilterKit } from "@pb_filter_kit/js/filter_kit";
 import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const PAGE = 60;
+/** INBOX-BULK-BANK — a big selection is approved this many per call (the
+ *  server's `MAX_BULK`), so every call stays short and Stop is honoured
+ *  between groups. */
+const BULK_CHUNK = 50;
 /** The four tabs, as the filter panel's first four views (same words). */
 const TAB_FILTERS = {
     mine: { my_turn: ["yes"] },
@@ -171,6 +175,21 @@ export class PbInbox extends Component {
             confirming: false,
             bulkBusy: false,
             bulkFailed: [],
+            // INBOX-BULK-BANK — "Select all N that I can approve" across the
+            // whole filter. `selRev` keeps the lock revision of ticks that
+            // are not on a loaded card; `selSig` is the query the selection
+            // was made for (a new filter clears it); `bulkAll` is the count
+            // the server offers; `summary`/`checkOpen`/`checked` are the
+            // extra check; `progress` is the "120 of 358 approved" line.
+            selRev: {},
+            selSig: "",
+            bulkAll: null,
+            bulkAllBusy: false,
+            summary: null,
+            summaryBusy: false,
+            checkOpen: false,
+            checked: false,
+            progress: null,
         });
 
         this.navigationRoot = useRef("navigationRoot");
@@ -297,6 +316,10 @@ export class PbInbox extends Component {
         if (this.state.asking) { this.state.asking = false; return; }
         // WDGAP QF1 — the confirm closes first, then the selection clears;
         // only while the tray is showing and no drawer is open
+        if (this.state.checkOpen && !this.state.bulkBusy) {
+            this.state.checkOpen = false;
+            return;
+        }
         if (this.state.confirming && !this.state.bulkBusy) {
             this.state.confirming = false;
             return;
@@ -342,6 +365,7 @@ export class PbInbox extends Component {
             if (!more) { this._pruneSel(); }
             this.state.money = more ? this._mergeMoney(this.state.money, d.money) : (d.money || []);
             this.state.listLoaded = true;
+            if (!more) { this.countAll(q); }
         } catch (error) {
             if (this.kit.isCurrent(q.seq)) {
                 this.notif.add((error.data && error.data.message)
@@ -429,15 +453,95 @@ export class PbInbox extends Component {
     // cards may be ticked is the server's answer (`can_bulk`), and
     // `decide_many` asks it again on the press.
 
-    /** Keep only ticks on cards still shown and still approvable together. */
+    /** Keep only ticks on cards still shown and still approvable together.
+     *  INBOX-BULK-BANK: a selection made with "Select all N" also holds
+     *  requests that are not on a loaded page; it is kept while the filters
+     *  are the ones it was made for (only a loaded card that can no longer
+     *  be ticked leaves it) and cleared by any other filter. */
     _pruneSel() {
+        const keepWide = this.state.selSig && this.state.selSig === this.querySig();
+        const loaded = new Set(this.state.cards.map((c) => c.id));
         const here = new Set(this.state.cards.filter((c) => c.can_bulk).map((c) => c.id));
         const sel = {};
         for (const id of Object.keys(this.state.sel)) {
-            if (here.has(Number(id))) { sel[id] = true; }
+            const n = Number(id);
+            if (here.has(n) || (keepWide && !loaded.has(n))) { sel[id] = true; }
         }
         this.state.sel = sel;
-        if (!this.selCount) { this.state.confirming = false; }
+        if (!keepWide) { this.state.selSig = ""; this.state.selRev = {}; }
+        if (!this.selCount) { this.state.confirming = false; this.state.selSig = ""; }
+    }
+
+    /** The panel's query and the queue, as one comparable string. */
+    querySig() {
+        const q = this.kit.query || {};
+        return JSON.stringify([this.state.scope, q.filters || {}, q.search || ""]);
+    }
+
+    /** How many I could approve together under these filters, when there is
+     *  more than the loaded page: the number on "Select all N". */
+    async countAll(q) {
+        const sig = this.querySig();
+        if (!(this.state.total > this.state.cards.length) || !this.showPick) {
+            this.state.bulkAll = null;
+            return;
+        }
+        try {
+            const d = await this.orm.call("pb.approval.inbox", "select_all_ids", [], {
+                filters: q.filters, search: q.search,
+                context: { pbf_ctx: { scope: this.state.scope } },
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.bulkAll = { count: d.count, capped: d.capped, max: d.max, sig };
+        } catch {
+            this.state.bulkAll = null;
+        }
+    }
+
+    /** "Select all N" is offered when it reaches further than this page. */
+    get showSelectAll() {
+        const all = this.state.bulkAll;
+        return Boolean(all && all.sig === this.querySig()
+                       && all.count > this.pickable.length);
+    }
+
+    get selectAllWords() {
+        const all = this.state.bulkAll || { count: 0 };
+        return all.capped
+            ? _t("Select the first %s that I can approve", all.count)
+            : _t("Select all %s that I can approve", all.count);
+    }
+
+    get wideSel() { return Boolean(this.state.selSig); }
+
+    /** Tick every request under these filters that I can approve together,
+     *  including those on pages not loaded yet (read fresh from the server). */
+    async selectAll() {
+        if (this.state.bulkBusy || this.state.bulkAllBusy) { return; }
+        const q = this.kit.query;
+        const sig = this.querySig();
+        this.state.bulkAllBusy = true;
+        try {
+            const d = await this.orm.call("pb.approval.inbox", "select_all_ids", [], {
+                filters: q.filters, search: q.search,
+                context: { pbf_ctx: { scope: this.state.scope } },
+            });
+            if (sig !== this.querySig()) { return; }
+            const sel = {};
+            for (const id of d.ids || []) { sel[id] = true; }
+            this.state.sel = sel;
+            this.state.selRev = { ...(d.revisions || {}) };
+            this.state.selSig = d.ids && d.ids.length ? sig : "";
+            this.state.bulkAll = { count: d.count, capped: d.capped, max: d.max, sig };
+            this.state.bulkFailed = [];
+            this.state.confirming = false;
+        } catch (error) {
+            this.notif.add((error.data && error.data.message)
+                || _t("The list could not be read. Try again in a moment."),
+                { type: "danger" });
+        } finally {
+            this.state.bulkAllBusy = false;
+        }
     }
 
     /** Draw the tick-box column at all: some card here is my turn. */
@@ -454,7 +558,7 @@ export class PbInbox extends Component {
         if (sel[card.id]) { delete sel[card.id]; } else { sel[card.id] = true; }
         this.state.sel = sel;
         this.state.bulkFailed = [];
-        if (!this.selCount) { this.state.confirming = false; }
+        if (!this.selCount) { this.state.confirming = false; this.state.selSig = ""; }
     }
 
     get allSel() {
@@ -469,11 +573,15 @@ export class PbInbox extends Component {
         const sel = {};
         for (const c of this.pickable) { sel[c.id] = true; }
         this.state.sel = sel;
+        this.state.selSig = "";
+        this.state.selRev = {};
         this.state.bulkFailed = [];
     }
 
     clearSel() {
         this.state.sel = {};
+        this.state.selSig = "";
+        this.state.selRev = {};
         this.state.confirming = false;
     }
 
@@ -484,12 +592,115 @@ export class PbInbox extends Component {
     }
 
     get selWords() {
+        if (this.wideSel) {
+            return this.selCount === 1 ? _t("1 selected")
+                : _t("%s selected", this.selCount);
+        }
         return _t("%(n)s of %(total)s selected",
                   { n: this.selCount, total: this.pickable.length });
     }
 
+    /** "120 of 358 approved" while a big selection is being approved. */
+    get progressWords() {
+        const p = this.state.progress;
+        if (!p) { return ""; }
+        return _t("%(done)s of %(total)s approved", { done: p.done, total: p.total });
+    }
+
+    get progressFailedWords() {
+        const n = (this.state.progress || {}).failed || 0;
+        return n === 1 ? _t("· 1 could not be approved")
+            : _t("· %s could not be approved", n);
+    }
+
+    get progressPct() {
+        const p = this.state.progress;
+        return p && p.total ? Math.round(100 * p.seen / p.total) : 0;
+    }
+
+    stopApproving() {
+        if (this.state.progress) { this.state.progress.stopping = true; }
+    }
+
+    // ------------------------------------------ INBOX-BULK-BANK — the check
+    get summary() { return this.state.summary || { kinds: [], count: 0, confirm: 0 }; }
+
+    get otherNameWords() {
+        const n = this.summary.other_name;
+        if (n === null || n === undefined) { return ""; }
+        if (!n) { return _t("None of them is in another person's name."); }
+        return n === 1 ? _t("1 of them is in another person's name.")
+            : _t("%s of them are in another person's name.", n);
+    }
+
+    get payWords() {
+        const n = this.summary.pay || 0;
+        if (!n) { return ""; }
+        return n === 1 ? _t("1 of them also changes pay.")
+            : _t("%s of them also change pay.", n);
+    }
+
+    get usualWords() {
+        const n = (this.summary.count || 0) - (this.summary.confirm || 0);
+        if (n <= 0) { return ""; }
+        return n === 1 ? _t("1 other request is approved the usual way.")
+            : _t("%s other requests are approved the usual way.", n);
+    }
+
+    get chunkWords() {
+        const chunk = this.summary.chunk || BULK_CHUNK;
+        if (this.selCount <= chunk) { return ""; }
+        return _t("They are approved %s at a time, and you can stop at any point.", chunk);
+    }
+
+    /** Bank details in the selection: the check speaks about accounts. */
+    get checkIsBank() {
+        const s = this.state.summary;
+        return !s || (s.bank || 0) > 0;
+    }
+
+    get checkTitle() {
+        const n = this.selCount;
+        if (this.checkIsBank && this.summary.bank === n) {
+            return n === 1 ? _t("Approve 1 bank details change?")
+                : _t("Approve %s bank details changes together?", n);
+        }
+        return this.confirmTitle;
+    }
+
+    get checkTick() {
+        return this.checkIsBank ? _t("I have checked these bank details")
+            : _t("I have checked these requests");
+    }
+
+    toggleChecked() { this.state.checked = !this.state.checked; }
+
+    /** "Review the list": the check closes, the filters and the ticks stay. */
+    reviewList() {
+        this.state.checkOpen = false;
+        this.state.checked = false;
+        const root = this.navigationRoot.el;
+        if (root) { root.scrollTop = 0; }
+    }
+
+    closeCheck() {
+        if (this.state.bulkBusy) { return; }
+        this.state.checkOpen = false;
+        this.state.checked = false;
+    }
+
+    /** The kinds the extra check is about (one line each in the dialog). */
+    get checkKinds() {
+        return (this.summary.kinds || []).filter((k) => k.confirm);
+    }
+
     /** "6 Leave · 3 Overtime" — what the press is about to approve. */
     get selKinds() {
+        if (this.wideSel && this.state.summary) {
+            return (this.state.summary.kinds || [])
+                .map((k) => _t("%(n)s %(kind)s", { n: k.count, kind: k.name || _t("Other") }))
+                .join(" · ");
+        }
         const counts = {};
         for (const c of this.selCards) {
             const name = c.process || _t("Other");
@@ -531,48 +742,118 @@ export class PbInbox extends Component {
         }
     }
 
-    askApproveSelected() {
-        if (!this.selCount || this.state.bulkBusy) { return; }
+    /** "Approve selected": the server says what the selection holds. A kind
+     *  that needs the extra check (bank details) opens the check dialog;
+     *  anything else gets the in-page confirm exactly as before. */
+    async askApproveSelected() {
+        if (!this.selCount || this.state.bulkBusy || this.state.summaryBusy) { return; }
         this.state.bulkFailed = [];
-        this.state.confirming = true;
+        this.state.summaryBusy = true;
+        let summary = null;
+        try {
+            summary = await this.orm.call("pb.approval.inbox", "bulk_summary", [this.selIds]);
+        } catch {
+            summary = null;
+        } finally {
+            this.state.summaryBusy = false;
+        }
+        const needsCheck = summary ? summary.confirm > 0
+            : this.selCards.some((c) => c.bulk_confirm) || this.wideSel;
+        this.state.summary = summary;
+        this.state.checked = false;
+        if (needsCheck) {
+            this.state.checkOpen = true;
+        } else {
+            this.state.confirming = true;
+        }
     }
 
     cancelApproveSelected() { this.state.confirming = false; }
 
-    async approveSelected() {
-        const cards = this.selCards;
-        if (!cards.length || this.state.bulkBusy) { return; }
+    /** Approve the selection, BULK_CHUNK at a time (one call each), with the
+     *  "120 of 358 approved" line and a Stop button between groups. Each
+     *  call is the same `decide_many` as before: the server asks again for
+     *  every request, and the extra check is sent only after the tick. */
+    async approveSelected(confirmed = false) {
+        const ids = this.selIds;
+        if (!ids.length || this.state.bulkBusy) { return; }
+        if (this.state.checkOpen && !this.state.checked) { return; }
+        const revisions = { ...this.state.selRev };
+        for (const c of this.state.cards) {
+            if (this.state.sel[c.id]) { revisions[c.id] = c.lock_revision; }
+        }
+        const total = ids.length;
         this.state.bulkBusy = true;
-        const revisions = {};
-        for (const c of cards) { revisions[c.id] = c.lock_revision; }
-        let answer = null;
+        // the check (or the in-page confirm) gives way to the progress line
+        this.state.checkOpen = false;
+        this.state.confirming = false;
+        this.state.progress = { done: 0, failed: 0, seen: 0, total, stopping: false };
+        const failed = [];
+        let done = 0;
+        let stopAt = -1;
+        let broke = "";
+        let errored = false;
         try {
-            answer = await this.orm.call("pb.approval.inbox", "decide_many",
-                [cards.map((c) => c.id)], { revisions });
-        } catch (error) {
-            this.notif.add((error.data && error.data.message)
-                || _t("Nothing was approved. Try again in a moment."),
-                { type: "danger" });
-            return;
+            for (let i = 0; i < total; i += BULK_CHUNK) {
+                if (this.state.progress.stopping) { stopAt = i; break; }
+                const chunk = ids.slice(i, i + BULK_CHUNK);
+                const rev = {};
+                for (const id of chunk) {
+                    if (revisions[id] !== undefined) { rev[id] = revisions[id]; }
+                }
+                let answer = null;
+                try {
+                    answer = await this.orm.call("pb.approval.inbox", "decide_many",
+                        [chunk], { revisions: rev, confirmed: confirmed === true, batch_size: total });
+                } catch (error) {
+                    errored = true;
+                    broke = (error.data && error.data.message) || "";
+                    stopAt = i;
+                    break;
+                }
+                for (const row of (answer && answer.results) || []) {
+                    if (row.ok) {
+                        done += 1;
+                    } else {
+                        failed.push({ id: row.id, title: row.title || _t("A request"),
+                                      error: row.error || _t("This one could not be approved.") });
+                    }
+                }
+                this.state.progress.done = done;
+                this.state.progress.failed = failed.length;
+                this.state.progress.seen = Math.min(i + chunk.length, total);
+            }
         } finally {
             this.state.bulkBusy = false;
             this.state.confirming = false;
+            this.state.checkOpen = false;
+            this.state.checked = false;
+            this.state.progress = null;
         }
-        const results = (answer && answer.results) || [];
+        // failed ones and the ones not reached stay ticked; approved ones
+        // leave the list on refresh
+        const keep = new Set(failed.map((f) => f.id));
+        if (stopAt >= 0) { for (const id of ids.slice(stopAt)) { keep.add(id); } }
         const sel = {};
-        const failed = [];
-        for (const row of results) {
-            if (!row.ok) {
-                sel[row.id] = true;
-                failed.push({ id: row.id, title: row.title || _t("A request"),
-                              error: row.error || _t("This one could not be approved.") });
-            }
+        const selRev = {};
+        for (const id of keep) {
+            sel[id] = true;
+            if (revisions[id] !== undefined) { selRev[id] = revisions[id]; }
         }
-        // failed ones stay ticked; approved ones leave the list on refresh
         this.state.sel = sel;
+        this.state.selRev = selRev;
+        if (!keep.size) { this.state.selSig = ""; }
         this.state.bulkFailed = failed;
-        const done = (answer && answer.done) || 0;
-        if (done) {
+        if (errored && broke) {
+            this.notif.add(_t("Approving stopped after %(done)s of %(total)s: %(why)s The rest are still selected.",
+                              { done, total, why: broke }), { type: "danger" });
+        } else if (errored) {
+            this.notif.add(_t("Approving stopped after %(done)s of %(total)s because the connection dropped. Nothing else was changed; press Approve selected to carry on.",
+                              { done, total }), { type: "danger" });
+        } else if (stopAt >= 0) {
+            this.notif.add(_t("Stopped after %(done)s of %(total)s were approved. Nothing else was changed; the rest are still selected.",
+                              { done, total }), { type: "warning" });
+        } else if (done) {
             this.notif.add(done === 1 ? _t("1 approved.") : _t("%s approved.", done),
                            { type: "success" });
         }
