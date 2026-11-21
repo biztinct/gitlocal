@@ -5,6 +5,18 @@
 
 // ---- the roster inside the shared filter panel (pb_filter_kit) ----
 .ppl-people {
+    // Keep the count readable; wrap controls rather than individual words.
+    .pbf-bar {
+        position: sticky; top: 0; z-index: 5;
+        padding: 8px 0; background: var(--pbim-bg, #f4f5fb);
+    }
+    .ppl-select-toggle { flex-shrink: 0; white-space: nowrap; }
+    .ppl-bulkbar { flex: 1 0 100%; min-width: 0; margin: 0; flex-wrap: wrap; }
+    .ppl-bulk-count { flex: 0 0 auto; white-space: nowrap; }
+    .ppl-bulkbar > .pbim-btn { flex-shrink: 0; }
+    .ppl-bulk-sp { display: none; }
+    .ppl-bulk-dept { flex: 1 1 220px; min-width: 0; width: auto; max-width: 100%; }
+
     .ppl-skeleton .ppl-card--ghost {
         height: 66px; cursor: default; box-shadow: none; border-color: #EEF1F6;
         background: linear-gradient(90deg, #F4F5FA 0, #FAFAFD 50%, #F4F5FA 100%);

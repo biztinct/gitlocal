@@ -23,27 +23,8 @@
                  when the host handed one in and the board would let them in. -->
             <button t-if="state.canContracts" class="pbim-btn outline" data-coach="pe-contracts" t-on-click="openContracts"
                     title="Every contract, on its own board"><t t-out="ic('fileText',15)"/> Contracts</button>
-            <button t-attf-class="pbim-btn {{ state.selectMode ? 'outline' : 'ghost' }}" t-on-click="toggleSelectMode"><t t-out="ic('list',15)"/> <t t-esc="state.selectMode ? 'Done' : 'Select'"/></button>
             <button class="pbim-btn primary" t-on-click="addEmployee"><t t-out="ic('plus',16)"/> Add employee</button>
           </div>
-        </div>
-
-        <!-- bulk selection bar -->
-        <div t-if="state.selectMode" class="pbim-panel ppl-bulkbar" data-coach="pe-bulk">
-          <span class="ppl-bulk-count"><t t-esc="state.selected.length"/> selected</span>
-          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="selectAllVisible">Select all</button>
-          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="clearSelection">Clear</button>
-          <div class="ppl-bulk-sp"/>
-          <select class="ppl-bulk-dept" t-att-disabled="!state.selected.length" t-on-change="bulkSetDept">
-            <option value="">Move to department…</option>
-            <option t-foreach="state.departments" t-as="dp" t-key="dp_index" t-if="dp.id" t-att-value="dp.id" t-esc="dp.name"/>
-          </select>
-          <button t-if="hasRecordsDesk" class="pbim-btn outline pbim-btn-sm"
-                  t-att-disabled="!state.selected.length" t-on-click="bulkUpdate"
-                  title="Change the employee, contract and bank details your pay scheme reads">
-            <t t-out="ic('pencil',14)"/> Bulk update
-          </button>
-          <button class="pbim-btn outline pbim-btn-sm" t-on-click="bulkExport"><t t-out="ic('download',14)"/> Export CSV</button>
         </div>
 
         <!-- the numbers: one quiet line (QUIET_BOARD_ROLLOUT). Grey at zero;
@@ -59,6 +40,34 @@
         <!-- The shared filter panel (pb_filter_kit, FILTER program): views,
              search, the left panel with counts, chips. The roster is its slot. -->
         <PbFilterLayout kit="kit" coach="'pe-filters'" searchPlaceholder="'Search name, job, department, email…'">
+          <t t-set-slot="afterFilterToggle">
+            <button type="button" class="pbf-toggle ppl-select-toggle"
+                    t-att-class="{ on: state.selectMode }"
+                    t-att-aria-pressed="state.selectMode ? 'true' : 'false'"
+                    t-on-click="toggleSelectMode">
+              <t t-out="ic('list',15)"/>
+              <span t-if="state.selectMode">Exit selection</span>
+              <span t-else="">Select</span>
+            </button>
+          </t>
+          <t t-set-slot="belowToolbar">
+            <div t-if="state.selectMode" class="pbim-panel ppl-bulkbar" data-coach="pe-bulk">
+              <span class="ppl-bulk-count"><t t-esc="state.selected.length"/> selected</span>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="selectAllVisible">Select all</button>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="clearSelection">Clear</button>
+              <div class="ppl-bulk-sp"/>
+              <select class="ppl-bulk-dept" t-att-disabled="!state.selected.length" t-on-change="bulkSetDept">
+                <option value="">Move to department…</option>
+                <option t-foreach="state.departments" t-as="dp" t-key="dp_index" t-if="dp.id" t-att-value="dp.id" t-esc="dp.name"/>
+              </select>
+              <button t-if="hasRecordsDesk" class="pbim-btn outline pbim-btn-sm"
+                      t-att-disabled="!state.selected.length" t-on-click="bulkUpdate"
+                      title="Change the employee, contract and bank details your pay scheme reads">
+                <t t-out="ic('pencil',14)"/> Bulk update
+              </button>
+              <button class="pbim-btn outline pbim-btn-sm" t-on-click="bulkExport"><t t-out="ic('download',14)"/> Export CSV</button>
+            </div>
+          </t>
           <div t-if="filteredPeople.length" class="ppl-roster" data-coach="pe-roster">
             <div t-foreach="filteredPeople" t-as="p" t-key="p.id" t-attf-class="ppl-card {{ state.selectMode and isSelected(p.id) ? 'sel' : '' }}" t-on-click="() => this.onCard(p)">
               <input t-if="state.selectMode" type="checkbox" class="ppl-cb" t-att-checked="isSelected(p.id)" t-on-click.stop="() => this.toggleSelect(p.id)"/>

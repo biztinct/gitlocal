@@ -16,6 +16,7 @@
           <span t-else="">Filters</span>
           <span t-if="kit.activeCount" class="pbf-badge" t-esc="kit.activeCount"/>
         </button>
+        <t t-slot="afterFilterToggle"/>
         <label class="pbf-search">
           <t t-out="icon('search', 15)"/>
           <input t-ref="search" type="search" t-att-value="kit.search" t-att-placeholder="placeholder"
@@ -30,6 +31,7 @@
           <PbFilterSort t-if="kit.sorts.length > 1" kit="kit"/>
           <t t-slot="toolbar"/>
         </div>
+        <t t-slot="belowToolbar"/>
       </div>
 
       <div class="pbf-body">

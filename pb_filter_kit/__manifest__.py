@@ -28,7 +28,7 @@ panel, chips) with a slot for the screen's own list.
     # `<screen>::columns` row each) and the company default in the new
     # `pb.list.layout` (administrator only); PbListTable, PbColumnsButton,
     # PbTableTools. A board without `_pbf_columns` is unchanged.
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.5.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -4,7 +4,17 @@
     width: var(--pb-workspace-width) !important;
     max-width: 100vw !important;
     container-type: inline-size;
-    &.pb-workspace-expanded { width: 100vw !important; border-radius: 0; }
+    &.pb-workspace-expanded {
+        width: 100vw !important;
+        max-width: 1280px !important;
+        right: 0;
+        @media (min-width: 1280px) { right: calc((100vw - 1280px) / 2); }
+        border-radius: 0;
+        // The expanded panel is centred; its closing animation still has to
+        // leave the viewport completely instead of exposing a strip at right.
+        transform: translateX(100vw);
+        &.shown { transform: translateX(0); }
+    }
     .pev-head, .pbc-head { padding: 18px 24px; }
     .pev-head-side, .pbc-head-side { flex-wrap: wrap; }
     .pev-tabs, .pbc-tabs { flex-wrap: nowrap; overflow-x: auto; height: auto; flex-shrink: 0; }
