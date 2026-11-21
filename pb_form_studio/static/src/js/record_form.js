@@ -1,7 +1,7 @@
 /** @odoo-module **/
 // Keep the original employee/contract controller and server-processed arch.
 // Only the enclosing presentation changes; installed field widgets and hooks stay.
-import { Component, onMounted, onWillUnmount, useState, useSubEnv } from "@odoo/owl";
+import { Component, onError, onMounted, onWillUnmount, useState, useSubEnv } from "@odoo/owl";
 import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
@@ -33,6 +33,11 @@ patch(FormController.prototype, {
             params.useSendBeaconToSaveUrgently = false;
         }
         return params;
+    },
+    get className() {
+        const classes = { ...super.className };
+        if (this.isPremiumRecord) { delete classes["o_xxl_form_view h-100"]; }
+        return classes;
     },
     async pbRecordEdit() {
         if (this.canEdit) { await this.model.root.switchMode("edit"); }
@@ -82,12 +87,18 @@ export class PremiumRecordForm extends Component {
         onSaved: { type: Function, optional: true },
     };
     setup() {
-        this.state = useState({ generation: 0 });
+        this.state = useState({ generation: 0, error: false });
+        onError((error) => {
+            const cause = error.cause || error;
+            this.state.error = cause.data?.name === "odoo.exceptions.AccessError"
+                ? _t("Your role cannot open all details on this record. The summary and available tools are still accessible.")
+                : _t("The complete form could not be loaded. You can retry or use the other tabs.");
+        });
         this.controller = null;
         this.notebookPages = {};
         // A drawer may originate from any list or dashboard. Its form must
         // never inherit that action's model-specific view ids or pager.
-        useSubEnv({ pbRecordWorkspace: this, config: getDefaultConfig() });
+        useSubEnv({ pbRecordWorkspace: this, config: { ...getDefaultConfig(), noBreadcrumbs: true } });
         this.props.onReady(this);
         onWillUnmount(() => this.props.onReady(null));
     }
@@ -101,6 +112,7 @@ export class PremiumRecordForm extends Component {
         };
     }
     async guardLeave() { return this.controller ? this.controller.pbRecordGuard() : true; }
+    retry() { this.state.error = false; this.state.generation++; }
     async reloadDesign() {
         if (this.controller && await this.controller.model.root.isDirty()) { return false; }
         rpcBus.trigger("CLEAR-CACHES", "get_views");

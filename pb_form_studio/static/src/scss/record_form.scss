@@ -14,12 +14,26 @@
 }
 .pb-record-form {
     .o_form_view, .o_form_view_container, .o_action { height: auto !important; }
-    .o_content { overflow: visible !important; }
+    // The desktop viewport can be XXL while its drawer is much narrower.
+    // Keep the edit bar above the form instead of becoming an XXL side column.
+    .o_form_view { flex-direction: column !important; }
+    .o_form_view_container { width: 100% !important; min-width: 0; }
+    .o_content { height: auto !important; overflow: visible !important; }
     .o_control_panel { position: static; padding: 8px 20px; gap: 8px; }
-    .o_control_panel_breadcrumbs { display: none; }
+    .o_control_panel_main { flex-wrap: wrap !important; }
+    .o_control_panel_breadcrumbs { flex: 0 0 auto; }
+    .o_control_panel_actions { flex: 1 1 500px; min-width: 0; }
+    .o_control_panel_navigation { flex: 1 1 100% !important; justify-content: flex-start !important; }
+    .pbhub-navigation__row, .pbhub-navigation__current { display: none; }
+    .o_cp_pager { display: none; }
+    .o_control_panel button { white-space: nowrap; }
     .o_form_sheet_bg { padding: 0 !important; }
     .o_form_sheet { width: 100% !important; max-width: none !important; margin: 0 !important; }
-    .o_form_renderer.vu-form .o_form_sheet { padding: 14px 20px 24px !important; }
+    .o_form_renderer.vu-form .o_form_sheet {
+        width: 100% !important; max-width: none !important;
+        padding: 14px 20px 24px !important;
+    }
+    .o_form_statusbar { position: static !important; }
     .o_form_renderer.vu-form .vu-hero { padding: 14px 18px; box-shadow: none; }
     .o_form_renderer.vu-form .o_notebook .tab-content > .tab-pane {
         padding: 14px; box-shadow: none;
@@ -27,6 +41,7 @@
     .o_form_renderer.vu-form .o_inner_group.vu-sec { padding: 16px; box-shadow: none; }
 }
 .pb-record-editbar {
+    position: sticky; top: 0; z-index: 6; flex-shrink: 0;
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
     gap: 10px; padding: 10px 20px; background: var(--vuf-surface, #fff);
     border-bottom: 1px solid var(--vuf-border, #e7e8f0);
