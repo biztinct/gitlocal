@@ -277,8 +277,13 @@ class PbOnboardWizard(models.AbstractModel):
             contract_id = res.get('contract_id')
             c_err = res.get('error')
 
+        # `applied` is what the screen reads to say "Employee added" (as
+        # create_contract does): a route that applies at once hands this dict
+        # back through `_apply_employee`, so it must say so itself (FS-16
+        # walk: under "No approval needed" the screen said "Nobody has been
+        # added" over a person who had just been added).
         out = {'employee_id': emp.id, 'employee_name': emp.name,
-               'contract_id': contract_id, 'error': c_err}
+               'contract_id': contract_id, 'error': c_err, 'applied': True}
         if bank_outcome:
             out['bank'] = bank_outcome
         return out

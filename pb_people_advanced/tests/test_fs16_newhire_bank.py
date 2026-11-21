@@ -108,6 +108,7 @@ class TestFs16NewHireBank(TransactionCase):
         res = self.wizard().create_employee(self.vals('DEMO FS16 One'))
         emp = self.env['hr.employee'].browse(res['employee_id'])
         self.assertTrue(emp.exists())
+        self.assertTrue(res.get('applied'), 'the screen says "Employee added"')
         self.assertEqual(res['bank']['state'], 'sent', res.get('bank'))
         self.assertEqual(res['bank']['message'], 'Bank details sent for approval')
         req = self.changes(emp)
