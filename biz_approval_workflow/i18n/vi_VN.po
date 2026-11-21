@@ -1362,3 +1362,30 @@ msgstr "Công ty"
 #: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_process__area__other
 msgid "Other"
 msgstr "Khác"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_process__bulk_confirm
+msgid "Several at once, with an extra confirmation"
+msgstr "Nhiều yêu cầu cùng lúc, có xác nhận thêm"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,help:biz_approval_workflow.field_biz_approval_process__bulk_confirm
+msgid "A manager may tick several of these in the Approvals inbox and approve them together, after a check that counts them and asks them to confirm. Allowed for bank-detail changes even though they decide where pay is sent; never for a kind that pays money out."
+msgstr "Người quản lý có thể đánh dấu nhiều yêu cầu loại này trong hộp Phê duyệt và duyệt chúng cùng lúc, sau một bước kiểm tra đếm số yêu cầu và yêu cầu họ xác nhận. Được phép với thay đổi thông tin ngân hàng dù chúng quyết định lương được chuyển đến đâu; không bao giờ áp dụng cho loại chi trả tiền."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_event__kind__setting_changed
+msgid "Setting changed"
+msgstr "Đã đổi thiết lập"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid "\"%s\" moves money out of the company, so each one is approved on its own, even with an extra confirmation."
+msgstr "“%s” làm tiền ra khỏi công ty, nên mỗi yêu cầu được duyệt riêng, kể cả khi có xác nhận thêm."
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid "Choose one of the three answers."
+msgstr "Hãy chọn một trong ba câu trả lời."
