@@ -113,7 +113,7 @@ export class PremiumRecordForm extends Component {
         try {
             const result = await this.viewService.loadViews({
                 resModel: this.props.resModel, views: [[false, "form"]], context: {},
-            }, { pb_workspace_section: this.props.section });
+            }, { pb_workspace_section: this.props.section, pb_workspace_revision: 1 });
             this.sectionView = { arch: result.views.form.arch, fields: result.fields,
                 relatedModels: result.relatedModels, viewId: result.views.form.id };
         } catch (error) {

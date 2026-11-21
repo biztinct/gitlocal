@@ -18,6 +18,6 @@
         <div class="pev-more"><span>Other job details are shown below.</span><button class="pev-btn ghost" t-on-click="openFull">Full details</button></div>
       </div>
     </xpath>
-    <xpath expr="//div[hasclass('pev-more')]" position="attributes"><attribute name="t-if">['profile', 'personal', 'pay'].includes(state.tab)</attribute></xpath>
+    <xpath expr="//div[hasclass('pev-more')][@t-if]" position="attributes"><attribute name="t-if">['profile', 'personal', 'pay'].includes(state.tab)</attribute></xpath>
   </t>
 </templates>

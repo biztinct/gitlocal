@@ -26,8 +26,9 @@ The Job form projects the server-processed native form into a new layout. It
 retains installed field attributes, domains, contexts, widgets, required and
 readonly rules, translated labels and ancestor visibility. It does not add a
 write facade: native FormController/relational model and hr.employee.web_save
-remain responsible for onchanges, validation, access, writes and audit. Fields
-not shown remain hidden dependencies so the original onchange graph is intact.
+remain responsible for onchanges, validation, access, writes and audit. Only fields referenced by the section and its domains remain hidden dependencies;
+unrelated payroll collections are not loaded. Native onchanges for the section
+continue through the existing relational model.
 No field removed by the source form or its permissions is recreated.
 
 Only the six named fields move into the new editor in this delivery. There is

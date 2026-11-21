@@ -4,6 +4,7 @@ Project the already postprocessed full form: installed view rules, field ACLs,
 translations, Form builder labels and modifiers remain authoritative. Full
 Details is not modified or cached under the section's key.
 """
+import ast
 from copy import deepcopy
 from lxml import etree
 from odoo import api, models
@@ -16,7 +17,18 @@ def _root_fields(arch):
     return arch.xpath('.//field[not(ancestor::field)]')
 
 
-def project_job_form(arch, titles):
+def _references(expressions, names):
+    refs = set()
+    for expression in expressions:
+        try:
+            refs.update(node.id for node in ast.walk(ast.parse(expression, mode='eval'))
+                        if isinstance(node, ast.Name) and node.id in names)
+        except (SyntaxError, TypeError):
+            continue
+    return refs
+
+
+def project_job_form(arch, titles, domains=None):
     source = etree.fromstring(arch)
     root = etree.Element('form', dict(source.attrib))
     root.set('class', 'vu-form-native pb-premium-section')
@@ -25,6 +37,9 @@ def project_job_form(arch, titles):
     grid = etree.SubElement(root, 'div', {'class': 'pb-job-grid'})
     fields = _root_fields(source)
     selected = set()
+    dependencies = {"company_id", "active", "version_id"}
+    available = {node.get("name") for node in fields}
+    domains = domains or {}
     for title, names in zip(titles, (('department_id', 'job_id', 'job_title'),
                                     ('parent_id', 'work_location_id', 'address_id'))):
         card = etree.SubElement(grid, 'section', {'class': 'pb-job-card'})
@@ -53,18 +68,31 @@ def project_job_form(arch, titles):
             etree.SubElement(holder, 'label', label)
             holder.append(field)
             selected.add(name)
-    # Keep the original form's onchange/dependency graph. Non-displayed fields
-    # do not become editors, but dependent domains and native computed fields
-    # still receive the values the full form would receive.
+            dependencies.update(_references(
+                [value for parent in [node, *node.iterancestors()]
+                 for attr, value in parent.attrib.items()
+                 if attr in ('invisible', 'readonly', 'required', 'domain', 'context')]
+                + [domains.get(name, '')], available))
+    # Include only dependency fields, not unrelated payroll/private x2many
+    # collections. Keeping those collections would require payroll access just
+    # to edit a job. Helpers are data for native domains/onchanges, never editors.
     hidden = etree.SubElement(root, 'div', {'invisible': '1'})
-    for node in fields:
-        if node.get('name') in selected:
+    kept = set(selected)
+    while dependencies - kept:
+        name = (dependencies - kept).pop()
+        kept.add(name)
+        candidates = [node for node in fields if node.get('name') == name]
+        if not candidates:
             continue
+        node = candidates[0]
         field = deepcopy(node)
         field.set('invisible', '1')
-        field.attrib.pop('id', None)
-        field.attrib.pop('widget', None)
+        for attr in ('id', 'widget', 'required', 'readonly'):
+            field.attrib.pop(attr, None)
         hidden.append(field)
+        dependencies.update(_references(
+            [value for attr, value in field.attrib.items() if attr in ('domain', 'context')]
+            + [domains.get(name, '')], available))
     return etree.tostring(root, encoding='unicode')
 
 
@@ -77,5 +105,7 @@ class HrEmployee(models.Model):
         if view_type == 'form' and options.get('pb_workspace_section') == 'job':
             result = dict(result)
             result['arch'] = project_job_form(result['arch'],
-                (self.env._('Role & organisation'), self.env._('Reporting & workplace')))
+                (self.env._('Role & organisation'), self.env._('Reporting & workplace')),
+                {name: field.get('domain', '') for name, field in
+                 self.fields_get(attributes=['domain']).items()})
         return result
