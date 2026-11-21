@@ -177,11 +177,6 @@ msgstr "<span id=\"ui-enrolled-count\">0</span>"
 
 #. module: pb_hr_payroll_vietnam
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
-msgid "<strong>Dependent Tax Allowance:</strong>"
-msgstr "<strong>Trợ cấp thuế phụ thuộc:</strong>"
-
-#. module: pb_hr_payroll_vietnam
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
 msgid "<strong>Eligible Dependents:</strong>"
 msgstr "<strong>ENgười phụ thuộc đủ điều kiện:</strong>"
 
@@ -275,11 +270,6 @@ msgstr "Báo cáo thuế hàng năm"
 #: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_insurance_policy_id
 msgid "Applicable insurance policy for this employee"
 msgstr "Chính sách bảo hiểm áp dụng cho nhân viên này"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_table_id
-msgid "Applicable tax table for this employee"
-msgstr "Bảng thuế áp dụng cho nhân viên này"
 
 #. module: pb_hr_payroll_vietnam
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
@@ -533,11 +523,6 @@ msgid "Comprehensive payroll analytics with trend analysis and reporting"
 msgstr "Phân tích bảng lương toàn diện với phân tích và báo cáo xu hướng"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_personal_tax_rate
-msgid "Computed effective personal tax rate"
-msgstr "Thuế suất cá nhân hiệu quả được tính toán"
-
-#. module: pb_hr_payroll_vietnam
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
 msgid "Configure formula-based salary calculations with Excel-like rules"
 msgstr ""
@@ -590,7 +575,6 @@ msgstr "Tỷ lệ đóng góp"
 
 #. module: pb_hr_payroll_vietnam
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
 msgid "Contribution Summary"
 msgstr "Tóm tắt đóng góp"
@@ -773,26 +757,6 @@ msgid "Date registered with tax authority"
 msgstr "Ngày đăng ký với cơ quan thuế"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_effective_date
-msgid "Date when HI enrollment starts"
-msgstr "Ngày bắt đầu tuyển sinh HI"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_si_effective_date
-msgid "Date when SI enrollment starts"
-msgstr "Ngày bắt đầu đăng ký SI"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_effective_date
-msgid "Date when UI enrollment starts"
-msgstr "Ngày bắt đầu đăng ký UI"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_effective_date
-msgid "Date when current tax regime applies"
-msgstr "Ngày áp dụng chế độ thuế hiện hành"
-
-#. module: pb_hr_payroll_vietnam
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
 msgid "Deductions & Exemptions"
 msgstr "Các khoản khấu trừ & miễn trừ"
@@ -860,11 +824,6 @@ msgstr "Thông tin phụ thuộc"
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__name
 msgid "Dependent Name"
 msgstr "Tên phụ thuộc"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_dependent_tax_allowance
-msgid "Dependent Tax Allowance"
-msgstr "Trợ cấp thuế cho người phụ thuộc"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__tax_registration_number
@@ -1091,11 +1050,6 @@ msgid "Employee Details"
 msgstr "Chi tiết nhân viên"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_employee_insurance_cost
-msgid "Employee Insurance Cost"
-msgstr "Chi phí bảo hiểm nhân viên"
-
-#. module: pb_hr_payroll_vietnam
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
 msgid "Employee Rate"
 msgstr "Tỷ lệ nhân viên"
@@ -1204,11 +1158,6 @@ msgstr "Điều chỉnh nhà tuyển dụng"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
 msgid "Employer Amount"
 msgstr "Số tiền của nhà tuyển dụng"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_employer_insurance_cost
-msgid "Employer Insurance Cost"
-msgstr "Chi phí bảo hiểm của người sử dụng lao động"
 
 #. module: pb_hr_payroll_vietnam
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
@@ -1358,19 +1307,9 @@ msgid "Fixed tax amount for income up to previous bracket"
 msgstr "Số tiền thuế cố định đối với thu nhập tính đến khung trước đó"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_foreign_insurance_exempt
-msgid "Foreign Employee Exempt"
-msgstr "Miễn trừ nhân viên nước ngoài"
-
-#. module: pb_hr_payroll_vietnam
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
 msgid "Foreign Employee Waivers"
 msgstr "Miễn trừ nhân viên nước ngoài"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_foreign_insurance_exempt
-msgid "Foreign employee exempt from certain insurance types"
-msgstr "Nhân viên nước ngoài được miễn một số loại bảo hiểm"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__waive_hi_foreign
@@ -1478,11 +1417,6 @@ msgid "HI ER"
 msgstr "xin chào er"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_effective_date
-msgid "HI Effective Date"
-msgstr "HI Ngày có hiệu lực"
-
-#. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__hi_employee_rate
 msgid "HI Employee Rate (%)"
 msgstr "Tỷ lệ nhân viên HI (%)"
@@ -1508,11 +1442,6 @@ msgstr "HI Nhà tuyển dụng Tổng cộng"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
 msgid "HI Enrolled"
 msgstr "HI đã đăng ký"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_number
-msgid "HI Number"
-msgstr "Số HI"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_salary_base
@@ -1546,11 +1475,6 @@ msgstr "Bảo hiểm Y tế - Người lao động (đồng)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_health_insurance_employer
 msgid "Health Insurance - Employer (VND)"
 msgstr "Bảo hiểm Y tế - Người sử dụng lao động (đồng)"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_number
-msgid "Health Insurance Number (Số thẻ BHYT)"
-msgstr "Health Insurance Number (Số thẻ BHYT)"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__high_school
@@ -2001,11 +1925,6 @@ msgid "Month"
 msgstr "Tháng"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_monthly_tax_allowance
-msgid "Monthly Tax Allowance"
-msgstr "Trợ cấp thuế hàng tháng"
-
-#. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__tax_allowance
 msgid "Monthly Tax Allowance (VND)"
 msgstr "Trợ cấp thuế hàng tháng (đồng)"
@@ -2024,16 +1943,6 @@ msgstr "Số tiền khấu trừ hàng tháng (tiêu chuẩn 4.400.000 VNĐ)"
 #: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_table__dependent_deduction
 msgid "Monthly deduction per dependent (4,400,000 VND standard)"
 msgstr "Mức khấu trừ hàng tháng cho mỗi người phụ thuộc (tiêu chuẩn 4.400.000 VNĐ)"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_employee_insurance_cost
-msgid "Monthly employee insurance contribution"
-msgstr "Đóng góp bảo hiểm nhân viên hàng tháng"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_employer_insurance_cost
-msgid "Monthly employer insurance contribution"
-msgstr "Đóng góp bảo hiểm hàng tháng của người sử dụng lao động"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_table__personal_deduction
@@ -2337,11 +2246,6 @@ msgid "Personal Income Tax code"
 msgstr "Mã số thuế thu nhập cá nhân"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_personal_tax_rate
-msgid "Personal Tax Rate (%)"
-msgstr "Thuế suất cá nhân (%)"
-
-#. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_phone_allowance
 msgid "Phone Allowance (VND)"
 msgstr "Phụ cấp điện thoại (đồng)"
@@ -2579,11 +2483,6 @@ msgid "SI ER"
 msgstr "SI ER"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_effective_date
-msgid "SI Effective Date"
-msgstr "Ngày hiệu lực SI"
-
-#. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_employee_rate
 msgid "SI Employee Rate (%)"
 msgstr "Tỷ lệ nhân viên SI (%)"
@@ -2614,11 +2513,6 @@ msgstr "SI đã đăng ký"
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_enrollment_status
 msgid "SI Enrollment Status"
 msgstr "Tình trạng đăng ký SI"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_number
-msgid "SI Number"
-msgstr "Số SI"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_salary_base
@@ -2753,11 +2647,6 @@ msgid "Social Insurance Number"
 msgstr "Số bảo hiểm xã hội"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_si_number
-msgid "Social Insurance Number (Số sổ BHXH)"
-msgstr "Social Insurance Number (Số sổ BHXH)"
-
-#. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__relationship__spouse
 msgid "Spouse (Vợ/Chồng)"
 msgstr "Spouse (Vợ/Chồng)"
@@ -2847,11 +2736,6 @@ msgid "Tax Regime"
 msgstr "Chế độ thuế"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_effective_date
-msgid "Tax Regime Effective Date"
-msgstr "Chế độ thuế Ngày có hiệu lực"
-
-#. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__tax_registration_number
 msgid "Tax Registration Number"
 msgstr "Mã số thuế"
@@ -2864,7 +2748,6 @@ msgid "Tax Slabs"
 msgstr "Tấm thuế"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_table_id
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config__vn_tax_table_id
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__table_id
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
@@ -3007,29 +2890,9 @@ msgid "Total Employer Rate (%)"
 msgstr "Tổng tỷ lệ sử dụng lao động (%)"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_total_insurance_contribution
-msgid "Total Insurance Contribution"
-msgstr "Tổng đóng góp bảo hiểm"
-
-#. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_total_salary
 msgid "Total Salary (VND)"
 msgstr "Tổng lương (đồng)"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_total_insurance_contribution
-msgid "Total monthly insurance contribution"
-msgstr "Tổng số tiền đóng bảo hiểm hàng tháng"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_monthly_tax_allowance
-msgid "Total monthly tax allowance (personal + dependents)"
-msgstr "Tổng trợ cấp thuế hàng tháng (cá nhân + người phụ thuộc)"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_dependent_tax_allowance
-msgid "Total monthly tax allowance from dependents"
-msgstr "Tổng trợ cấp thuế hàng tháng từ người phụ thuộc"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_transport_allowance
@@ -3077,11 +2940,6 @@ msgid "UI ER"
 msgstr "Giao diện người dùng ER"
 
 #. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_effective_date
-msgid "UI Effective Date"
-msgstr "Ngày hiệu lực UI"
-
-#. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__ui_employee_rate
 msgid "UI Employee Rate (%)"
 msgstr "Tỷ lệ nhân viên UI (%)"
@@ -3107,11 +2965,6 @@ msgstr "Tổng số nhà tuyển dụng UI"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
 msgid "UI Enrolled"
 msgstr "Đã đăng ký giao diện người dùng"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_number
-msgid "UI Number"
-msgstr "Số giao diện người dùng"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_salary_base
@@ -3145,11 +2998,6 @@ msgstr "Bảo hiểm thất nghiệp - Người lao động (đồng)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_unemployment_insurance_employer
 msgid "Unemployment Insurance - Employer (VND)"
 msgstr "Bảo hiểm thất nghiệp - Người sử dụng lao động (đồng)"
-
-#. module: pb_hr_payroll_vietnam
-#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_number
-msgid "Unemployment Insurance Number"
-msgstr "Số Bảo hiểm Thất nghiệp"
 
 #. module: pb_hr_payroll_vietnam
 #: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__code

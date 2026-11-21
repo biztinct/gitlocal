@@ -105,29 +105,16 @@ FORM_RULES = {
     'vn_hi_salary_base': 'VN',
     'vn_ui_enrolled': 'VN',
     'vn_ui_salary_base': 'VN',
-    'vn_foreign_insurance_exempt': REMOVE,
-    'vn_si_number': REMOVE,
-    'vn_si_effective_date': REMOVE,
-    'vn_hi_number': REMOVE,
-    'vn_hi_effective_date': REMOVE,
-    'vn_ui_number': REMOVE,
-    'vn_ui_effective_date': REMOVE,
-    'vn_employer_insurance_cost': REMOVE,
-    'vn_employee_insurance_cost': REMOVE,
-    'vn_total_insurance_contribution': REMOVE,
 
     # ---- Tax & Dependents (pb_hr_payroll_vietnam)
+    # FS-16: the 15 old Vietnam insurance / tax boxes this table used to
+    # REMOVE were deleted from pb_hr_payroll_vietnam (0 values, 0 readers).
     'vn_payroll_tax_summary': 'VN',
     'vn_tax_regime': 'VN',
     'vn_residency_status': 'VN',
     'vn_dependent_record_count': 'VN',
     'vn_eligible_dependent_count': 'VN',
     'vn_dependent_ids': 'VN',
-    'vn_tax_table_id': REMOVE,
-    'vn_tax_effective_date': REMOVE,
-    'vn_personal_tax_rate': REMOVE,
-    'vn_monthly_tax_allowance': REMOVE,
-    'vn_dependent_tax_allowance': REMOVE,
 
     # ---- Payroll facts (pb_payroll_mapping_vn; rize only)
     'pb_vn_is_local': 'VN',

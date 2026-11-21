@@ -48,7 +48,7 @@ class TestEmployeePayrollProfile(TransactionCase):
         return drawer
 
     def test_same_values_as_drawer_without_writing_legacy_fields(self):
-        before = self.emp.read(['write_date', 'vn_monthly_tax_allowance', 'vietnam_dependents_count'])
+        before = self.emp.read(['write_date', 'vn_residency_status', 'vietnam_dependents_count'])
         drawer = self.compute()
         self.assertTrue(self.emp.vn_uses_payroll_profile)
         tax = self.emp.vn_payroll_tax_summary
@@ -61,7 +61,7 @@ class TestEmployeePayrollProfile(TransactionCase):
         for value in ['15,500,000', '6,200,000', '12,400,000']:
             self.assertIn(value, tax)
         self.assertNotIn('11,000,000', tax)
-        self.assertEqual(before, self.emp.read(['write_date', 'vn_monthly_tax_allowance', 'vietnam_dependents_count']))
+        self.assertEqual(before, self.emp.read(['write_date', 'vn_residency_status', 'vietnam_dependents_count']))
 
     def test_missing_scheme_does_not_fall_back_to_eleven_million(self):
         self.compute(config=False)
@@ -113,7 +113,7 @@ class TestEmployeePayrollProfile(TransactionCase):
     def test_full_form_hides_legacy_allowances_when_using_payroll_summary(self):
         view = self.env.ref('pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance')
         arch = etree.fromstring(view.arch_db.encode())
-        self.assertEqual(arch.xpath('//field[@name="vn_monthly_tax_allowance"]/ancestor::group[@string="Tax Configuration"]/@invisible'), ['vn_uses_payroll_profile'])
+        self.assertEqual(arch.xpath('//field[@name="vn_tax_regime"]/ancestor::group[@string="Tax Configuration"]/@invisible'), ['vn_uses_payroll_profile'])
         self.assertEqual(arch.xpath('//field[@name="tax_allowance"]/@column_invisible'), ['parent.vn_uses_payroll_profile'])
         # Compile the real inherited employee form too, not only our fragment.
         combined = self.emp.get_view(view_id=self.env.ref('hr.view_employee_form').id, view_type='form')
