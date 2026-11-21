@@ -69,6 +69,13 @@
 @media (max-width: 600px) {
     .pb-workspace.pev-drawer, .pb-workspace.pbc-drawer {
         .pev-head, .pbc-head { padding: 12px; }
+        .pbc-head { flex-wrap: wrap; }
+        .pbc-head-side {
+            display: grid; grid-template-columns: 1fr auto auto;
+            width: 100%; min-width: 0; gap: 8px;
+        }
+        .pbc-wage { grid-column: 1 / -1; text-align: left; }
+        .pbc-x { justify-self: end; }
         .pev-body, .pbc-body { padding: 12px; }
         .pb-workspace-record { margin: -12px; }
     }

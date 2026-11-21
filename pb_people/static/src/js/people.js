@@ -49,7 +49,10 @@ export class PbPeople extends Component {
             const measure = () => {
                 const values = {
                     "--ppl-toolbar-height": Math.ceil(toolbar.getBoundingClientRect().height),
-                    "--ppl-scrollport-top": Math.max(0, Math.ceil(scrollport?.getBoundingClientRect().top || 0)),
+                    "--ppl-scrollport-top": Math.max(0, Math.ceil(
+                        (scrollport?.getBoundingClientRect().top || 0)
+                        + (scrollport ? parseFloat(getComputedStyle(scrollport).paddingTop) || 0 : 0)
+                    )),
                 };
                 for (const [name, value] of Object.entries(values)) {
                     const pixels = `${value}px`;
