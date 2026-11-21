@@ -104,3 +104,7 @@
     .pbfb-ic { flex: none; }
     @media (max-width: 575.98px) { .pbfs-fullbtn-t { display: none; } }
 }
+// The phone header includes the secondary action menu as well as expand/close.
+@media (max-width: 600px) {
+    .pb-workspace.pbc-drawer .pbc-head-side { grid-template-columns: 1fr auto auto auto; }
+}

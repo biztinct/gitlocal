@@ -5,6 +5,20 @@ from odoo.addons.pb_form_studio_people.models.premium_section import project_job
 
 @tagged('post_install', '-at_install')
 class TestPremiumJobSection(TransactionCase):
+    def test_chart_uses_premium_navigation_only_in_job_workspace(self):
+        model = self.env['hr.employee']
+        original = model.get_view(view_type='form')['arch']
+        native = etree.fromstring(original).xpath("//field[@name='child_ids'][@widget='hr_org_chart']")
+        if not native:
+            self.skipTest('Native organisation chart is not installed')
+        premium = etree.fromstring(model.get_view(view_type='form', pb_workspace_section='job')['arch'])
+        chart = premium.xpath("//section//field[@name='child_ids']")
+        self.assertEqual(len(chart), 1)
+        self.assertEqual(chart[0].get('widget'), 'pb_premium_org_chart')
+        self.assertEqual({k: v for k, v in chart[0].attrib.items() if k != 'widget'},
+                         {k: v for k, v in native[0].attrib.items() if k != 'widget'})
+        self.assertEqual(model.get_view(view_type='form')['arch'], original)
+
     def test_live_arch_preserves_field_behaviour_and_full_details(self):
         model = self.env['hr.employee']
         normal = model.get_view(view_type='form')['arch']

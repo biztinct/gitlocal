@@ -3,8 +3,10 @@ import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { PremiumRecordForm } from "@pb_form_studio/js/record_form";
 import { Contract360Drawer } from "@pb_contracts/js/contract_360";
+import { Dropdown } from "@web/core/dropdown/dropdown";
+import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
-Contract360Drawer.components = { ...Contract360Drawer.components, PremiumRecordForm };
+Contract360Drawer.components = { ...Contract360Drawer.components, PremiumRecordForm, Dropdown, DropdownItem };
 
 patch(Contract360Drawer.prototype, {
     setup() {
@@ -27,7 +29,7 @@ patch(Contract360Drawer.prototype, {
     async openFullForm() {
         if (this.recordForm && !(await this.recordForm.guardLeave())) { return; }
         if (this.isDirty) {
-            this.notif.add(_t("Save or discard your changes before opening Full details."), { type: "warning" });
+            this.notif.add(_t("Save or discard your changes before opening the advanced record."), { type: "warning" });
             return;
         }
         this.reallyClose();
@@ -39,6 +41,7 @@ patch(Contract360Drawer.prototype, {
         return super.close(...arguments);
     },
     onKey(ev) {
+        if (ev.key === "Escape" && document.querySelector(".o-dropdown--menu")) { return; }
         if (this.state.tab === 'agreement' && ev.key === 'Enter' && (ev.metaKey || ev.ctrlKey)) {
             ev.preventDefault(); ev.stopPropagation();
             this.recordForm?.controller?.pbRecordSave();

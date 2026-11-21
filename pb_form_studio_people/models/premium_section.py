@@ -5,6 +5,7 @@ translations, Form builder labels and modifiers remain authoritative. Full
 Details is not modified or cached under the section's key.
 """
 from odoo import api, models
+from lxml import etree
 from odoo.addons.pb_form_studio.models.native_section import project_section_form
 
 # Names are mapped to presentation only. Missing/restricted native fields are
@@ -90,4 +91,9 @@ class HrEmployee(models.Model):
                 excluded={name for name, field in self._fields.items()
                           if field.type in ('one2many', 'many2many')
                           and not self.env[field.comodel_name].has_access('read')})
+            if section == 'job':
+                arch = etree.fromstring(result['arch'])
+                for field in arch.xpath(".//section//field[@name='child_ids'][@widget='hr_org_chart']"):
+                    field.set('widget', 'pb_premium_org_chart')
+                result['arch'] = etree.tostring(arch, encoding='unicode')
         return result

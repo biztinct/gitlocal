@@ -8,7 +8,19 @@
     </xpath>
     <xpath expr="//div[hasclass('pbc-head-side')][div[hasclass('pbc-wage')]]/button[hasclass('pbc-x')]" position="before">
       <button type="button" class="pbim-btn ghost" t-on-click="toggleWorkspace" t-att-aria-expanded="state.expanded" t-esc="workspaceExpandLabel"/>
+      <Dropdown>
+        <button type="button" class="pbim-btn ghost" aria-label="More contract actions">More</button>
+        <t t-set-slot="content">
+          <DropdownItem onSelected.bind="openFullForm">
+            <span class="d-block">Advanced record</span>
+            <small class="d-block text-muted">Administrative tools and workflow setup</small>
+          </DropdownItem>
+        </t>
+      </Dropdown>
     </xpath>
+    <xpath expr="//div[hasclass('pbc-foot-rest')]" position="replace"/>
+    <xpath expr="//div[hasclass('pbc-savebar')]/button[@t-on-click='openFullForm']" position="replace"/>
+    <xpath expr="//div[hasclass('pbc-foot')]" position="attributes"><attribute name="t-if">isDirty</attribute></xpath>
     <xpath expr="//FormStudioWand[@studio='fs3Studio']" position="replace"><button t-if="fs3Studio.state.canEdit" type="button" class="pbim-btn ghost" t-on-click="workspaceBuilder">Form builder</button></xpath>
     <xpath expr="//FormStudioOverlay" position="attributes"><attribute name="t-props">workspaceStudioProps</attribute></xpath>
     <xpath expr="//div[hasclass('pbc-tabs')]" position="inside">

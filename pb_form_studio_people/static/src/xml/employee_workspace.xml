@@ -9,6 +9,20 @@
     <xpath expr="//div[hasclass('pev-head-side')]/button[@t-on-click='openFull']" position="before">
       <button type="button" class="pev-full" t-on-click="toggleWorkspace" t-att-aria-expanded="state.expanded"><t t-out="ic('external',14)"/> <t t-esc="workspaceExpandLabel"/></button>
     </xpath>
+    <xpath expr="//div[hasclass('pev-head-side')]/button[@t-on-click='openFull']" position="replace">
+      <Dropdown>
+        <button type="button" class="pev-full" aria-label="More employee actions">More</button>
+        <t t-set-slot="content">
+          <DropdownItem onSelected.bind="openFull">
+            <span class="d-block">Advanced record</span>
+            <small class="d-block text-muted">History, reports and administrative tools</small>
+          </DropdownItem>
+        </t>
+      </Dropdown>
+    </xpath>
+    <xpath expr="//div[hasclass('pev-head-id')]" position="before">
+      <button t-if="workspaceBackLabel" type="button" class="pb-workspace-back" t-on-click="workspaceBack"><span aria-hidden="true">&#8592;</span> <t t-esc="workspaceBackLabel"/></button>
+    </xpath>
     <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'job'&quot;)]" position="replace">
       <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'job'}" t-on-click="() => this.setTab('job')"><t t-out="ic('briefcase',15)"/> Job</button>
     </xpath>
@@ -38,7 +52,7 @@
         <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'documents'" title.translate="Additional document files" onReady.bind="workspaceDocumentsReady" t-key="'documents'" onSaved.bind="load"/>
       </div>
     </xpath>
-    <xpath expr="//div[hasclass('pev-more')][@t-if]" position="attributes"><attribute name="t-if">state.tab === 'profile'</attribute></xpath>
+    <xpath expr="//div[hasclass('pev-more')][@t-if]" position="replace"/>
     <xpath expr="//div[@t-if='!groups(state.tab).length']" position="attributes">
       <attribute name="t-if">!groups(state.tab).length and (!recordForm or recordForm.state.error)</attribute>
     </xpath>

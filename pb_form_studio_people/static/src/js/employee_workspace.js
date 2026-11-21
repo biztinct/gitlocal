@@ -3,15 +3,24 @@ import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { Employee360Drawer } from "@pb_employee_vault/js/employee_360";
 import { PremiumRecordForm } from "@pb_form_studio/js/record_form";
+import { useSubEnv } from "@odoo/owl";
+import { Dropdown } from "@web/core/dropdown/dropdown";
+import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
-Employee360Drawer.components = { ...Employee360Drawer.components, PremiumRecordForm };
+Employee360Drawer.components = { ...Employee360Drawer.components, PremiumRecordForm, Dropdown, DropdownItem };
+Employee360Drawer.props = { ...Employee360Drawer.props,
+    workspaceStartTab: { type: String, optional: true },
+    workspaceExpanded: { type: Boolean, optional: true },
+    workspaceTrail: { type: Array, optional: true },
+};
 patch(Employee360Drawer.prototype, {
     setup() {
         super.setup(...arguments);
-        this.state.expanded = false;
-        this.state.tab = this.props.embedded ? "documents" : "profile";
+        this.state.expanded = Boolean(this.props.workspaceExpanded);
+        this.state.tab = this.props.embedded ? "documents" : (this.props.workspaceStartTab || "profile");
         this.recordForms = {};
         this.state.sectionFields = {};
+        useSubEnv({ pbEmployeeWorkspace: this });
     },
     groups(tab) {
         const groups = super.groups(tab);
@@ -40,6 +49,36 @@ patch(Employee360Drawer.prototype, {
         }
     },
     toggleWorkspace() { this.state.expanded = !this.state.expanded; },
+    get workspaceBackLabel() {
+        const previous = this.props.workspaceTrail?.at(-1);
+        return previous ? _t("Back to %s", previous.name) : "";
+    },
+    openRelatedEmployee(id) {
+        if (Number(id) === this.workspaceRecordId) { return; }
+        const previous = { id: this.workspaceRecordId, name: this.profile.name,
+            tab: this.state.tab, expanded: this.state.expanded };
+        return this.changeWorkspaceEmployee({ id: Number(id), tab: "job", expanded: this.state.expanded },
+            [...(this.props.workspaceTrail || []), previous]);
+    },
+    workspaceBack() {
+        const trail = this.props.workspaceTrail || [];
+        if (trail.length) { return this.changeWorkspaceEmployee(trail.at(-1), trail.slice(0, -1)); }
+    },
+    async changeWorkspaceEmployee(target, trail) {
+        if (this.recordForm && !(await this.recordForm.guardLeave())) { return; }
+        return this.pbfsGuard(() => {
+            // Replace the current panel, rather than stacking dialogs or
+            // leaving hidden drawers listening for Escape. Each back step
+            // reloads authoritative data after the existing save guard.
+            this.state.shown = false;
+            this.props.onClose?.();
+            const remove = this.overlay.add(Employee360Drawer, {
+                empId: target.id, workspaceStartTab: target.tab,
+                workspaceExpanded: target.expanded, workspaceTrail: trail,
+                onClose: () => remove(),
+            });
+        });
+    },
     async openFull() {
         if (this.recordForm && !(await this.recordForm.guardLeave())) { return; }
         return super.openFull(...arguments);
@@ -59,6 +98,7 @@ patch(Employee360Drawer.prototype, {
     onKey(ev) {
         if (this.props.embedded) { return; }
         if (document.querySelector(".o_dialog, .pbfb-overlay")) { return; }
+        if (ev.key === "Escape" && document.querySelector(".o-dropdown--menu")) { return; }
         if (ev.key === "Escape" && ev.target?.closest(".o_field_widget")) { return; }
         return super.onKey(ev);
     },
