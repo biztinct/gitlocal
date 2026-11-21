@@ -11,6 +11,18 @@ from odoo.tests import TransactionCase, tagged
 class TestRizePolicy(TransactionCase):
     """Money/balance invariants and approval gates, not just field presence."""
 
+    def test_create_next_edition_preserves_published_rules(self):
+        action = self.policy.action_new_edition()
+        draft = self.Policy.browse(action['res_id'])
+        self.assertEqual(draft.state, 'draft')
+        self.assertGreater(draft.effective_from, self.policy.effective_from)
+        self.assertFalse(draft.published_by)
+        self.assertFalse(draft.rule_ids & self.policy.rule_ids)
+        draft.rule_ids.filtered(lambda r: r.category == 'annual').write({'quantity': 25})
+        self.assertEqual(self.annual_rule.quantity, 20)
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            draft.action_publish()
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

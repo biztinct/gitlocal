@@ -1,0 +1,49 @@
+// The form owns field semantics; the panel owns only space and navigation.
+.pb-workspace.pev-drawer, .pb-workspace.pbc-drawer {
+    --pb-workspace-width: min(86vw, 1280px);
+    width: var(--pb-workspace-width) !important;
+    max-width: 100vw !important;
+    container-type: inline-size;
+    &.pb-workspace-expanded { width: 100vw !important; border-radius: 0; }
+    .pev-head, .pbc-head { padding: 18px 24px; }
+    .pev-head-side, .pbc-head-side { flex-wrap: wrap; }
+    .pev-tabs, .pbc-tabs { flex-wrap: wrap; height: auto; flex-shrink: 0; }
+    .pbc-tab.on { border-bottom: 2px solid var(--pbim-primary, #5a4bb0); }
+    .pev-body, .pbc-body { padding: 18px 24px 28px; }
+    .pb-workspace-record { margin: -18px -24px -28px; }
+}
+.pb-record-form {
+    .o_form_view, .o_form_view_container, .o_action { height: auto !important; }
+    .o_content { overflow: visible !important; }
+    .o_control_panel { position: static; padding: 8px 20px; gap: 8px; }
+    .o_control_panel_breadcrumbs { display: none; }
+    .o_form_sheet_bg { padding: 0 !important; }
+    .o_form_sheet { width: 100% !important; max-width: none !important; margin: 0 !important; }
+    .o_form_renderer.vu-form .o_form_sheet { padding: 14px 20px 24px !important; }
+    .o_form_renderer.vu-form .vu-hero { padding: 14px 18px; box-shadow: none; }
+    .o_form_renderer.vu-form .o_notebook .tab-content > .tab-pane {
+        padding: 14px; box-shadow: none;
+    }
+    .o_form_renderer.vu-form .o_inner_group.vu-sec { padding: 16px; box-shadow: none; }
+}
+.pb-record-editbar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 10px 20px; background: var(--vuf-surface, #fff);
+    border-bottom: 1px solid var(--vuf-border, #e7e8f0);
+    > span { color: var(--vuf-muted, #65718a); font-size: 13px; }
+    > div { display: flex; gap: 8px; }
+}
+.pbfb-studiobar { flex-wrap: wrap; min-width: 0; }
+.pbfb-studiobar .pbfb-back { flex: 0 1 auto; white-space: normal; }
+@media (max-width: 900px) {
+    .pb-workspace.pev-drawer, .pb-workspace.pbc-drawer { width: 100vw !important; }
+    .pb-record-form .o_group.row > .o_inner_group,
+    .pb-record-form .o_group.row > .o_group { min-width: 0 !important; flex-basis: 100% !important; }
+}
+@media (max-width: 600px) {
+    .pb-workspace.pev-drawer, .pb-workspace.pbc-drawer {
+        .pev-head, .pbc-head { padding: 12px; }
+        .pev-body, .pbc-body { padding: 12px; }
+        .pb-workspace-record { margin: -12px; }
+    }
+}

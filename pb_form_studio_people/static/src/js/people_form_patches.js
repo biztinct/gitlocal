@@ -193,6 +193,8 @@ patch(Employee360Drawer.prototype, {
         studio.state.open = true;
         this._pbfsRemoveStudio = this.overlay.add(FormStudioOverlay, {
             ...studio.overlayProps,
+            surface: "full",
+            returnLabel: _t("Back to %s", this.profile.name || _t("employee")),
             onClose: () => this.pbfsCloseStudio(),
         });
     },

@@ -325,3 +325,14 @@
 }
 .pev-upload-buttons { display: flex; gap: 10px; margin-top: 14px; }
 @media (max-width: 420px) { .pev-upload-dates { grid-template-columns: 1fr; } }
+
+// The same document content is used in the panel and in the full form.
+.pev-document-summary { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; color: #52627a; }
+.pev-doc-categories {
+    display: grid; --pev-doc-min: min(100%, 340px); grid-template-columns: repeat(auto-fit, minmax(var(--pev-doc-min), 1fr)); gap: 16px;
+    .pev-catblock { margin: 0; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; align-self: start; }
+    .pev-docgrid { grid-template-columns: minmax(0, 1fr); }
+    .pev-drop { min-height: 76px; padding: 12px; }
+}
+.pev-embedded-documents { width: 100%; }
+.pev-legacy-docs { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 14px 0; }

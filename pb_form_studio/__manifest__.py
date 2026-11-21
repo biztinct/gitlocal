@@ -16,7 +16,7 @@ through `useFormStudio`. See docs/handovers/formstudio/FS1_REPORT.md, section
 
 Silent install: no field, layout, job, mail or approval is created.
 """,
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.6.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -34,6 +34,9 @@ Silent install: no field, layout, job, mail or approval is created.
         'web.assets_backend': [
             'pb_form_studio/static/src/scss/form_studio.scss',
             'pb_form_studio/static/src/js/fs_icons.js',
+            'pb_form_studio/static/src/js/record_form.js',
+            'pb_form_studio/static/src/xml/record_form.xml',
+            'pb_form_studio/static/src/scss/record_form.scss',
             'pb_form_studio/static/src/js/fs_words.js',
             'pb_form_studio/static/src/js/country_picker.js',
             'pb_form_studio/static/src/js/field_grid.js',

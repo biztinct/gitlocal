@@ -17,7 +17,7 @@ Bridge only: reaches pb_contracts and pb_people_advanced by inheritance and
 patches, edits neither. Silent install: no field, layout, page, job or mail is
 created until the administrator publishes.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.4.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -32,6 +32,8 @@ created until the administrator publishes.
             'pb_form_studio_contracts/static/src/js/contract_detail_patch.js',
             'pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml',
             'pb_form_studio_contracts/static/src/xml/contract_detail_patch.xml',
+            'pb_form_studio_contracts/static/src/js/contract_workspace.js',
+            'pb_form_studio_contracts/static/src/xml/contract_workspace.xml',
             # R22: the "Form builder" button on the full contract form.
             'pb_form_studio_contracts/static/src/js/full_form_button.js',
             'pb_form_studio_contracts/static/src/xml/full_form_button.xml',

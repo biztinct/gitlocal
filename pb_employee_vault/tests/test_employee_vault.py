@@ -82,6 +82,21 @@ class TestEmployeeVault(TransactionCase):
             '&', ('model_name', '=', 'hr.employee'), ('res_id', '=', emp.id),
             '&', ('model_name', '=', 'hr.version'), ('res_id', 'in', vids or [0])])
 
+    def test_documents_match_in_workspace_and_native_form(self):
+        self._mk_doc()
+        self.emp_a.id_card = _PDF
+        facade = self.People.with_user(self.mgr)
+        workspace = facade.get_employee_360(self.emp_a.id)
+        native = facade.get_employee_documents(self.emp_a.id)
+        for key in ('documents', 'categories', 'legacy_documents', 'can_manage'):
+            self.assertEqual(native[key], workspace[key], key)
+        self.assertEqual(len(native['legacy_documents']), 1)
+        self.assertNotIn('profile', native)
+
+    def test_embedded_documents_do_not_bypass_hr_access(self):
+        with self.assertRaises(AccessError):
+            self.People.with_user(self.plain).get_employee_documents(self.emp_b.id)
+
     # ============================================================ 1. audit engine
     def test_01_position_field_audit(self):
         # department_id + job_title are version-backed — the write routes to

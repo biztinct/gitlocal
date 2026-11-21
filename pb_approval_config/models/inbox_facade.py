@@ -282,7 +282,7 @@ class PbApprovalInbox(models.AbstractModel):
         return [
             # ---- pinned: which pile, which part of the business, when due
             {'key': 'pile', 'label': _('Where it is'), 'icon': 'inbox',
-             'group': 'other', 'type': 'choice', 'pinned': True,
+             'group': 'other', 'type': 'choice', 'pinned': True, 'always': True,
              'options': [
                  {'value': 'waiting', 'label': _('Waiting for a decision'), 'tone': 'amber',
                   'domain': [('state', 'in', open_states)]},

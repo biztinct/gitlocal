@@ -38,7 +38,7 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
     # ways, once). Post-migrate marks only requests whose approval provably
     # was sent back. P6d (same version, not yet live): the employee home's
     # "Needs you" row for a sent-back request until it is asked again.
-    'version': '19.0.1.13.0',
+    'version': '19.0.1.13.1',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',

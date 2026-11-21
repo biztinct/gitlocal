@@ -23,7 +23,7 @@ Form builder on the employee record (FORM STUDIO programme, phase FS-2).
 Bridge module: it reaches the People screens from outside (inheritance and
 patches only) and creates nothing at install.
 """,
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.6.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -39,6 +39,8 @@ patches only) and creates nothing at install.
             'pb_form_studio_people/static/src/scss/people_form.scss',
             'pb_form_studio_people/static/src/js/people_form_patches.js',
             'pb_form_studio_people/static/src/xml/people_form_patches.xml',
+            'pb_form_studio_people/static/src/js/employee_workspace.js',
+            'pb_form_studio_people/static/src/xml/employee_workspace.xml',
             # R22: the "Form builder" button on Full details.
             'pb_form_studio_people/static/src/js/full_form_button.js',
             'pb_form_studio_people/static/src/xml/full_form_button.xml',

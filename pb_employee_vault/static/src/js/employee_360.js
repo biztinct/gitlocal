@@ -11,10 +11,11 @@
  */
 import { Component, useState, onWillStart, onMounted, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
+import { useService, useBus } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic, CAT_ICON } from "@pb_employee_vault/js/pev_icons";
 
+let vaultInstance = 0;
 const MODEL = "pb.people";
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted", none: "muted", expired: "warn", running: "ok" };
 const KIND_TONE = { employee: "indigo", contract: "teal", bank: "cyan", approval: "green" };
@@ -23,10 +24,12 @@ export class Employee360Drawer extends Component {
     static template = "pb_employee_vault.Employee360Drawer";
     static props = {
         empId: { type: [Number, String] },
+        embedded: { type: Boolean, optional: true },
         onClose: { type: Function, optional: true },
     };
 
     setup() {
+        this.filePrefix = "pev-file-" + (++vaultInstance) + "-";
         this.orm = useService("orm");
         this.notif = useService("notification");
         this.action = useService("action");
@@ -35,6 +38,11 @@ export class Employee360Drawer extends Component {
             loaded: false, shown: false, busy: false,
             tab: "profile", d: null,
             tlOffset: 0, uploadCatId: null, uploading: false, uploadDraft: null,
+        });
+        useBus(this.env.bus, "PB-EMPLOYEE-DOCUMENTS-CHANGED", ({ detail }) => {
+            if (detail.employeeId === Number(this.props.empId) && detail.source !== this.filePrefix) {
+                this.load();
+            }
         });
         onWillStart(() => this.load());
         onMounted(() => { this.state.shown = true; });
@@ -111,7 +119,7 @@ export class Employee360Drawer extends Component {
 
     async load() {
         try {
-            this.state.d = await this.orm.call(MODEL, "get_employee_360", [Number(this.props.empId)]);
+            this.state.d = await this.orm.call(MODEL, this.props.embedded ? "get_employee_documents" : "get_employee_360", [Number(this.props.empId)]);
         } catch (e) {
             this.state.d = { error: (e && e.message && e.message.data && e.message.data.message) || "Could not load this employee." };
         } finally {
@@ -164,7 +172,8 @@ export class Employee360Drawer extends Component {
         this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_detail",
                                name: _t("Contract"), params: { contract_id: id } });
     }
-    onKey(ev) { if (ev.key === "Escape") { this.close(); } }
+    onKey(ev) {
+        if (this.props.embedded) { return; } if (ev.key === "Escape") { this.close(); } }
     close() {
         this.state.shown = false;
         // let the slide-out play before the parent unmounts us
@@ -208,9 +217,10 @@ export class Employee360Drawer extends Component {
     }
 
     // ---- documents: upload / verify / delete ----
+    fileInputId(catId) { return this.filePrefix + catId; }
     triggerPick(catId) {
         this.state.uploadCatId = catId;
-        const input = document.getElementById("pev-file-" + catId);
+        const input = document.getElementById(this.fileInputId(catId));
         if (input) { input.value = ""; input.click(); }
     }
     onFilePicked(catId, ev) {
@@ -270,6 +280,7 @@ export class Employee360Drawer extends Component {
                     issue_date: row.issueDate || false, expiry_date: row.expiryDate || false});
             }
             this.state.d = await this.orm.call(MODEL, "vault_upload_batch", [Number(this.props.empId), draft.catId, documents]);
+            this.env.bus.trigger("PB-EMPLOYEE-DOCUMENTS-CHANGED", { employeeId: Number(this.props.empId), source: this.filePrefix });
             this.state.uploadDraft = null;
             this.notif.add(_t("Documents uploaded."), { type: "success" });
         } catch (e) {
@@ -291,6 +302,7 @@ export class Employee360Drawer extends Component {
         this.state.busy = true;
         try {
             this.state.d = await this.orm.call(MODEL, "vault_verify", [doc.id, flag]);
+            this.env.bus.trigger("PB-EMPLOYEE-DOCUMENTS-CHANGED", { employeeId: Number(this.props.empId), source: this.filePrefix });
         } catch (e) {
             this.notif.add(this._err(e, _t("Could not update verification.")), { type: "danger" });
         } finally { this.state.busy = false; }
@@ -299,6 +311,7 @@ export class Employee360Drawer extends Component {
         this.state.busy = true;
         try {
             this.state.d = await this.orm.call(MODEL, "vault_delete", [doc.id]);
+            this.env.bus.trigger("PB-EMPLOYEE-DOCUMENTS-CHANGED", { employeeId: Number(this.props.empId), source: this.filePrefix });
             this.notif.add(_t("Document removed."), { type: "success" });
         } catch (e) {
             this.notif.add(this._err(e, _t("Could not delete this document.")), { type: "danger" });

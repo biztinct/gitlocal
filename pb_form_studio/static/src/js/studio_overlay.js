@@ -44,6 +44,7 @@ export class FormStudioOverlay extends Component {
     static components = { CountryPicker };
     static props = {
         hostKey: { type: String },
+        returnLabel: { type: String, optional: true },
         recordId: { type: [Number, Boolean], optional: true },
         focusField: { type: String, optional: true },
         // FS-11: "full" when opened from a full page (its tabs are the

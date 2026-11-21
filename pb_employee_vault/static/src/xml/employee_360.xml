@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_employee_vault.Employee360Drawer">
-    <div class="pev pbim">
+    <div t-if="!props.embedded" class="pev pbim">
       <div class="pev-scrim" t-att-class="{ 'shown': state.shown }" t-on-click="close"/>
       <aside class="pev-drawer ppl" t-att-class="{ 'shown': state.shown }" t-on-click.stop="">
 
@@ -177,7 +177,63 @@
             </div>
 
             <!-- ==================== DOCUMENTS ==================== -->
-            <t t-if="state.tab === 'documents'">
+            <t t-if="state.tab === 'documents'"><t t-call="pb_employee_vault.DocumentsContent"/></t>
+
+            <!-- ==================== TIMELINE ==================== -->
+            <t t-if="state.tab === 'timeline'">
+              <div t-if="!(d.timeline || []).length" class="pev-empty"><t t-out="ic('history',30)"/><p>No history yet.</p><small>Changes to this employee will appear here from now on.</small></div>
+
+              <div t-else="" class="pev-tl">
+                <t t-foreach="timelineRows()" t-as="row" t-key="row.key">
+                  <div t-if="row.sep" class="pev-tl-sep"><span t-esc="row.label"/></div>
+                  <div t-else="" t-attf-class="pev-tl-item tone-{{ kindTone(row.kind) }}">
+                    <span class="pev-tl-ic" t-out="ic(row.icon,15)"/>
+                    <div class="pev-tl-body">
+                      <div class="pev-tl-line1">
+                        <span class="t" t-esc="row.title"/>
+                        <span class="when" t-esc="relDate(row.stamp)" t-att-title="row.stamp"/>
+                      </div>
+                      <div class="pev-tl-detail" t-if="row.detail" t-esc="row.detail"/>
+                      <div class="pev-tl-actor" t-if="row.actor">
+                        <span class="a-av" t-att-style="row.actor_avatar ? ('background-image:url(' + row.actor_avatar + ')') : ''"/>
+                        <span t-esc="row.actor"/>
+                      </div>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+              <div class="pev-tl-more" t-if="hasMoreTimeline">
+                <span class="cnt">Showing <t t-esc="(d.timeline || []).length"/> of <t t-esc="d.timeline_total"/></span>
+                <button class="pev-btn ghost" t-att-disabled="state.busy" t-on-click="loadMore">Load more</button>
+              </div>
+            </t>
+
+          </div>
+        </t>
+      </aside>
+    </div>
+    <div t-else="" class="pev pbim pev-embedded-documents">
+      <div t-if="!state.loaded" class="pev-busy">Loading documents…</div>
+      <div t-elif="d.error" class="alert alert-warning" t-esc="d.error"/>
+      <t t-else=""><t t-call="pb_employee_vault.DocumentsContent"/></t>
+    </div>
+  </t>
+
+  <!-- ==================================================================
+       FILLIN P2 B4 — answers Payobook filled in that nobody has checked.
+       Rendered only when there is at least one (quiet board pattern).
+       ================================================================== -->
+  <t t-name="pb_employee_vault.FillinChip">
+    <button t-if="state.n" type="button" class="pev-chip pev-chip-fill"
+            t-att-title="tooltip" t-on-click.stop="open">
+      <t t-out="ic('sparkles',13)"/> <t t-esc="label"/>
+    </button>
+  </t>
+
+<t t-name="pb_employee_vault.DocumentsContent">
+<div class="pev-document-summary"><strong t-esc="(d.documents || []).length"/> uploaded documents <span>· Empty categories are places to upload, not missing files.</span></div>
+<div class="pev-doc-categories">
               <div t-if="state.uploading" class="pev-uploading"><div class="pev-spin sm"/> Uploading…</div>
               <t t-foreach="docsByCategory()" t-as="grp" t-key="grp.cat.id">
                 <div class="pev-catblock">
@@ -218,7 +274,7 @@
                       <t t-out="ic('upload',20)"/>
                       <span>Choose files or drop them here</span>
                       <small>JPG · PNG · PDF · up to 10 MB each</small>
-                      <input type="file" class="pev-hidden-file" t-att-id="'pev-file-' + grp.cat.id"
+                      <input type="file" class="pev-hidden-file" t-att-id="fileInputId(grp.cat.id)"
                              accept="image/png,image/jpeg,application/pdf" multiple="multiple"
                              t-on-change="(ev) => this.onFilePicked(grp.cat.id, ev)"/>
                     </div>
@@ -245,53 +301,8 @@
                 </div>
               </t>
               <div t-if="!(d.categories || []).length" class="pev-empty"><t t-out="ic('inbox',30)"/><p>No document categories configured.</p></div>
-            </t>
-
-            <!-- ==================== TIMELINE ==================== -->
-            <t t-if="state.tab === 'timeline'">
-              <div t-if="!(d.timeline || []).length" class="pev-empty"><t t-out="ic('history',30)"/><p>No history yet.</p><small>Changes to this employee will appear here from now on.</small></div>
-
-              <div t-else="" class="pev-tl">
-                <t t-foreach="timelineRows()" t-as="row" t-key="row.key">
-                  <div t-if="row.sep" class="pev-tl-sep"><span t-esc="row.label"/></div>
-                  <div t-else="" t-attf-class="pev-tl-item tone-{{ kindTone(row.kind) }}">
-                    <span class="pev-tl-ic" t-out="ic(row.icon,15)"/>
-                    <div class="pev-tl-body">
-                      <div class="pev-tl-line1">
-                        <span class="t" t-esc="row.title"/>
-                        <span class="when" t-esc="relDate(row.stamp)" t-att-title="row.stamp"/>
-                      </div>
-                      <div class="pev-tl-detail" t-if="row.detail" t-esc="row.detail"/>
-                      <div class="pev-tl-actor" t-if="row.actor">
-                        <span class="a-av" t-att-style="row.actor_avatar ? ('background-image:url(' + row.actor_avatar + ')') : ''"/>
-                        <span t-esc="row.actor"/>
-                      </div>
-                    </div>
-                  </div>
-                </t>
-              </div>
-
-              <div class="pev-tl-more" t-if="hasMoreTimeline">
-                <span class="cnt">Showing <t t-esc="(d.timeline || []).length"/> of <t t-esc="d.timeline_total"/></span>
-                <button class="pev-btn ghost" t-att-disabled="state.busy" t-on-click="loadMore">Load more</button>
-              </div>
-            </t>
-
-          </div>
-        </t>
-      </aside>
-    </div>
-  </t>
-
-  <!-- ==================================================================
-       FILLIN P2 B4 — answers Payobook filled in that nobody has checked.
-       Rendered only when there is at least one (quiet board pattern).
-       ================================================================== -->
-  <t t-name="pb_employee_vault.FillinChip">
-    <button t-if="state.n" type="button" class="pev-chip pev-chip-fill"
-            t-att-title="tooltip" t-on-click.stop="open">
-      <t t-out="ic('sparkles',13)"/> <t t-esc="label"/>
-    </button>
-  </t>
-
+            </div><div class="pev-legacy-docs" t-if="(d.legacy_documents || []).length">
+      <h4>Existing ID and licence files</h4>
+      <a t-foreach="d.legacy_documents" t-as="doc" t-key="doc.field" class="pev-mini" t-att-href="doc.url" target="_blank" t-esc="doc.label"/>
+    </div></t>
 </templates>

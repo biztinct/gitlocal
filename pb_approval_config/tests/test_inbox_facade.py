@@ -16,6 +16,13 @@ from .common import MatrixCase
 @tagged('post_install', '-at_install')
 class TestInboxFacade(MatrixCase):
 
+    def test_where_it_is_remains_available_with_no_requests(self):
+        inbox = self.Inbox.with_user(self.fin).with_company(self.company)
+        spec = next(s for s in inbox._pbf_spec() if s['key'] == 'pile')
+        self.assertTrue(inbox._pbf_worth_showing(spec, [('id', '=', 0)]))
+        section = next(s for s in inbox.pbf_layout()['sections'] if s['key'] == 'pile')
+        self.assertTrue(section['shown'])
+
     def setUp(self):
         super().setUp()
         # the seeded default route sends everything to the company's own

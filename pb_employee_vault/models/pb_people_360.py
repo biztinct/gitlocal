@@ -81,6 +81,16 @@ class PbPeople(models.AbstractModel):
             [('employee_id', '=', emp.id)], order='category_id, expiry_date, id')
         return [self._doc_payload(d) for d in docs]
 
+    def _legacy_documents_for(self, emp):
+        """Link old binary fields without moving or copying customer files."""
+        result = []
+        visible = emp.fields_get(['id_card', 'driving_license'])
+        for name, label in [('id_card', _('ID card copy')), ('driving_license', _('Driving licence'))]:
+            if name in visible and emp.with_context(bin_size=True)[name]:
+                result.append({'field': name, 'label': label,
+                               'url': '/web/content/hr.employee/%s/%s?download=true' % (emp.id, name)})
+        return result
+
     def _categories(self):
         cats = self.env['pb.employee.document.category'].search([])
         return [{'id': c.id, 'name': c.name, 'code': c.code,
@@ -94,6 +104,17 @@ class PbPeople(models.AbstractModel):
         return ''
 
     # ------------------------------------------------------------ bundled read
+    @api.model
+    def get_employee_documents(self, employee_id):
+        self._require_hr()
+        emp = self._emp(employee_id)
+        if not emp:
+            return {'error': _('Employee not found.')}
+        emp.check_access('read')
+        return {'documents': self._documents_for(emp), 'categories': self._categories(),
+                'legacy_documents': self._legacy_documents_for(emp),
+                'can_manage': self._vault_can_manage()}
+
     @api.model
     def get_employee_360(self, employee_id):
         self._require_hr()
@@ -118,6 +139,7 @@ class PbPeople(models.AbstractModel):
             'details': self._e360_details(emp, unmask, vietnam=vietnam),
             'costcenter': self._costcenter(emp),
             'documents': self._documents_for(emp),
+            'legacy_documents': self._legacy_documents_for(emp),
             'categories': self._categories(),
             'timeline': timeline[:_TIMELINE_PAGE],
             'timeline_total': len(timeline),

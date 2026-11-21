@@ -1,0 +1,110 @@
+/** @odoo-module **/
+// Keep the original employee/contract controller and server-processed arch.
+// Only the enclosing presentation changes; installed field widgets and hooks stay.
+import { Component, onMounted, onWillUnmount, useState, useSubEnv } from "@odoo/owl";
+import { patch } from "@web/core/utils/patch";
+import { _t } from "@web/core/l10n/translation";
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { View, getDefaultConfig } from "@web/views/view";
+import { rpcBus } from "@web/core/network/rpc";
+import { FormController } from "@web/views/form/form_controller";
+
+patch(FormController.prototype, {
+    get isPremiumRecord() {
+        const host = this.env.pbRecordWorkspace;
+        return Boolean(host && this.props.resModel === host.props.resModel && this.props.resId === host.props.resId);
+    },
+    setup() {
+        super.setup(...arguments);
+        if (!this.isPremiumRecord) { return; }
+        this.pbRecordUI = useState({ busy: false });
+        const notebookChanged = this.onNotebookPageChange;
+        this.onNotebookPageChange = (id, page) => {
+            notebookChanged(id, page);
+            if (page) { this.env.pbRecordWorkspace.notebookPages[id] = page; }
+        };
+        onMounted(() => { this.env.pbRecordWorkspace.controller = this; });
+        onWillUnmount(() => { this.env.pbRecordWorkspace.controller = null; });
+    },
+    get modelParams() {
+        const params = super.modelParams;
+        if (this.isPremiumRecord) {
+            params.config.mode = "readonly";
+            params.useSendBeaconToSaveUrgently = false;
+        }
+        return params;
+    },
+    async pbRecordEdit() {
+        if (this.canEdit) { await this.model.root.switchMode("edit"); }
+    },
+    async pbRecordSave() {
+        if (this.pbRecordUI.busy) { return false; }
+        this.pbRecordUI.busy = true;
+        try {
+            const saved = await this.saveButtonClicked();
+            if (saved) { await this.model.root.switchMode("readonly"); }
+            return saved;
+        } finally { this.pbRecordUI.busy = false; }
+    },
+    async pbRecordCancel() {
+        await this.model.root.discard();
+        await this.model.root.switchMode("readonly");
+    },
+    beforeVisibilityChange() {
+        if (!this.isPremiumRecord) { return super.beforeVisibilityChange(...arguments); }
+    },
+    async beforeUnload(ev) {
+        if (!this.isPremiumRecord) { return super.beforeUnload(...arguments); }
+        if (this.model.root.dirty) { ev.preventDefault(); ev.returnValue = _t("Unsaved changes"); }
+    },
+    beforeLeave() {
+        return this.isPremiumRecord ? this.pbRecordGuard() : super.beforeLeave(...arguments);
+    },
+    async pbRecordGuard() {
+        if (!(await this.model.root.isDirty())) { return true; }
+        return new Promise((resolve) => {
+            this.dialogService.add(ConfirmationDialog, {
+                title: _t("Unsaved changes"),
+                body: _t("Save or cancel your changes before leaving this record."),
+                confirmLabel: _t("Save and continue"), cancelLabel: _t("Keep editing"),
+                confirm: async () => resolve(Boolean(await this.pbRecordSave())),
+                cancel: () => resolve(false),
+            }, { onClose: () => resolve(false) });
+        });
+    },
+});
+
+export class PremiumRecordForm extends Component {
+    static template = "pb_form_studio.RecordForm";
+    static components = { View };
+    static props = {
+        resModel: String, resId: Number, onReady: Function,
+        onSaved: { type: Function, optional: true },
+    };
+    setup() {
+        this.state = useState({ generation: 0 });
+        this.controller = null;
+        this.notebookPages = {};
+        // A drawer may originate from any list or dashboard. Its form must
+        // never inherit that action's model-specific view ids or pager.
+        useSubEnv({ pbRecordWorkspace: this, config: getDefaultConfig() });
+        this.props.onReady(this);
+        onWillUnmount(() => this.props.onReady(null));
+    }
+    get viewProps() {
+        return {
+            type: "form", resModel: this.props.resModel, resId: this.props.resId,
+            preventCreate: true, loadActionMenus: true,
+            state: { activeNotebookPages: { ...this.notebookPages } },
+            context: { pb_premium_record: true }, display: { controlPanel: true },
+            onSave: () => this.props.onSaved?.(),
+        };
+    }
+    async guardLeave() { return this.controller ? this.controller.pbRecordGuard() : true; }
+    async reloadDesign() {
+        if (this.controller && await this.controller.model.root.isDirty()) { return false; }
+        rpcBus.trigger("CLEAR-CACHES", "get_views");
+        this.state.generation++;
+        return true;
+    }
+}

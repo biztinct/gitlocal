@@ -68,6 +68,7 @@ patch(FormController.prototype, {
                 recordId: this.model.root.resId || false,
                 // FS-11: this page's own tabs are the fixed sections.
                 surface: "full",
+                returnLabel: "Back to record",
                 onClose: () => this.pbfsFullClose(true),
                 onPublished: () => { this._pbfsFullDirty = true; },
             });
@@ -88,6 +89,7 @@ patch(FormController.prototype, {
 
     /** Draw this form again from the screen design the publish just wrote. */
     async pbfsFullReload() {
+        if (this.isPremiumRecord) { return this.env.pbRecordWorkspace.reloadDesign(); }
         rpcBus.trigger("CLEAR-CACHES", "get_views");
         const ctl = this.actionService.currentController;
         if (ctl) {

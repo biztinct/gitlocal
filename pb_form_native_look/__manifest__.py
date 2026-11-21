@@ -22,7 +22,7 @@ where the contract's dates and wage are; "Tham gia BHXH" gets an English
 label; "Employee Id" reads "Employee ID" / "Mã nhân viên". No stored value
 changes.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Payobook',

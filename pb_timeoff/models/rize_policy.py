@@ -163,6 +163,15 @@ class LeavePolicyEdition(models.Model):
         values.update(default or {})
         return super().copy(values)
 
+    def action_new_edition(self):
+        """A visible route to the existing immutable-edition workflow."""
+        self.ensure_one()
+        _manager(self.env)
+        draft = self.copy()
+        return {'type': 'ir.actions.act_window', 'name': _('New policy edition'),
+                'res_model': self._name, 'res_id': draft.id,
+                'views': [(False, 'form')], 'target': 'current'}
+
     def action_publish(self):
         _manager(self.env)
         for row in self:

@@ -10,6 +10,7 @@
     <div class="pbim pbfb pbfb-overlay" role="dialog" aria-modal="true">
 
       <div class="pbfb-studiobar" t-ref="studioBar">
+        <button type="button" class="pbfb-btn ghost pbfb-back" t-on-click="requestClose"><span>←</span> <span t-esc="props.returnLabel or 'Back to previous screen'"/></button>
         <span class="pbfb-tag"><t t-out="ic('wand',15)"/> <span>Form builder</span></span>
         <span class="pbfb-tag pbfb-tag-target" t-esc="hostTitle"/>
         <span class="pbfb-changes" t-esc="changeText"/>

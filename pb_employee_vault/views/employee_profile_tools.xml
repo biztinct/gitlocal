@@ -4,14 +4,23 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="pb_documents" string="Documents" groups="hr.group_hr_user,om_hr_payroll.group_hr_payroll_user">
+                    <widget name="pb_employee_documents"/>
+                    <group string="ID and licence file fields" name="pb_legacy_document_fields"/>
+                </page>
+            </xpath>
+            <xpath expr="//group[@name='pb_legacy_document_fields']" position="inside">
+                <xpath expr="//group[@name='hr_document_group']" position="move"/>
+            </xpath>
             <xpath expr="//notebook" position="before">
                 <group groups="om_hr_payroll.group_hr_payroll_manager,base.group_system">
                     <field name="pb_profile_contract_pay" readonly="1"/>
                 </group>
             </xpath>
             <xpath expr="//page[@name='resume']" position="inside">
-                <group string="Résumé file" groups="hr.group_hr_user,om_hr_payroll.group_hr_payroll_user">
-                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                <group name="pb_resume_file" string="Résumé file" groups="hr.group_hr_user,om_hr_payroll.group_hr_payroll_user">
+                    <div class="d-flex align-items-center gap-3 flex-wrap pb-resume-actions" colspan="2">
                         <button name="action_upload_resume" type="object" string="Upload résumé" class="btn-primary"/>
                         <button name="action_view_resumes" type="object" string="View résumés" class="btn-secondary"/>
                         <span class="text-muted">PDF, up to 10 MB. Files are saved in the employee’s Documents.</span>

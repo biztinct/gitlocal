@@ -312,3 +312,22 @@ $pb-nl-phone: 767.98px;
         mask: url("/biz_theme/static/src/img/lucide/info.svg") center / contain no-repeat;
     }
 }
+
+// Compact employee sections: let the content determine height, and give
+// actions/help their own full-width row instead of a narrow field cell.
+.o_form_view.pb-nl-emp {
+    .pb-resume-actions { width: 100%; min-width: 0; }
+    .pb-resume-actions > span { flex: 1 1 260px; }
+    .o_inner_group[name="pb_resume_file"] { min-height: 0; }
+    div:has(> .pb-bank-ro-note) {
+        flex-wrap: wrap;
+        > .o_field_widget { flex: 1 1 220px; min-width: 0; }
+        > .pb-bank-ro-note { flex: 1 0 100%; order: 3; padding-top: 6px; }
+        > .d-flex { flex: 0 0 auto; gap: 10px; }
+        > .d-flex > .w-50 { width: auto !important; }
+    }
+    .o_form_renderer.vu-form .o_group.row { align-items: start; }
+    .o_form_renderer.vu-form .o_notebook .tab-content > .tab-pane {
+        min-height: 0;
+    }
+}
