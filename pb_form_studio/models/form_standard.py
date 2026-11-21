@@ -47,9 +47,60 @@ _logger = logging.getLogger(__name__)
 
 #: Context key: the form exactly as the modules draw it, before any R23 rule
 #: (the Form builder lists the fields from it; hosts' `_get_view` honours it).
+#: R31: the product's "taken off the screens" boxes are drawn too (TIDY-E
+#: honours it), so the Form builder knows their label and their tab.
 STD_RAW = 'pbfs_std_raw'
-#: The keys `update_standard` accepts besides the My Payobook ticks.
-STD_KEYS = ('std_hidden', 'std_country_ids', 'std_labels')
+#: R31 (FS-15) — "Shown for": `std_show` 'all' | 'only' | 'none' | 'builtin'
+#: (= put the product's built-in setting back), the countries of 'only', and
+#: whether people with no Country of Work see it too.
+SHOW_KEYS = ('std_show', 'std_show_country_ids', 'std_show_unset')
+#: The keys `update_standard` accepts besides the My Payobook ticks. The FS-7
+#: pair (`std_hidden`, `std_country_ids` = hidden in these countries) is still
+#: accepted and translated into "Shown for".
+STD_KEYS = ('std_hidden', 'std_country_ids', 'std_labels') + SHOW_KEYS
+
+# R31 — a "Shown for" setting is a tuple (mode, frozenset of res.country ids,
+# people with no Country of Work see it). 'all' and 'none' carry no country.
+SHOW_ALL = ('all', frozenset(), True)
+SHOW_NONE = ('none', frozenset(), False)
+#: Settings rows that carry a "Shown for" rule (new or FS-7).
+RULE_DOMAIN = ['|', '|', ('std_show', '!=', False), ('std_hidden', '=', True),
+               ('std_country_ids', '!=', False)]
+
+
+def show_only(ids, unset=False):
+    """'Only these Countries of Work'; no country and nobody unset = hidden."""
+    ids = frozenset(int(i) for i in (ids or ()) if i)
+    if not ids and not unset:
+        return SHOW_NONE
+    return ('only', ids, bool(unset))
+
+
+def show_union(a, b):
+    """Shown wherever either says shown (a locked field's widening)."""
+    if a[0] == 'all' or b[0] == 'all':
+        return SHOW_ALL
+    if a[0] == 'none':
+        return b
+    if b[0] == 'none':
+        return a
+    return show_only(a[1] | b[1], a[2] or b[2])
+
+
+def show_covers(a, b):
+    """Does `a` show the field everywhere `b` does?"""
+    return show_union(a, b) == a
+
+
+def show_hides(show, country_id):
+    """Is a field with `show` hidden for a record of `country_id`?"""
+    if show[0] == 'all':
+        return False
+    if show[0] == 'none':
+        return True
+    if not country_id:
+        return not show[2]
+    return country_id not in show[1]
 #: Kinds of box never offered: pictures, files and free property bags.
 STD_SKIP_TTYPES = ('binary', 'properties', 'properties_definition', 'json', 'reference',
                    'many2one_reference')
@@ -189,8 +240,7 @@ class PbFormStudioStandard(models.AbstractModel):
         Meta = self.env['pb.form.field.meta'].sudo()
         for model in models or self._pbfs_host_models():
             if model not in self.env or not Meta.search_count(
-                    [('model', '=', model), ('custom', '=', False), '|',
-                     ('std_hidden', '=', True), ('std_country_ids', '!=', False)], limit=1):
+                    [('model', '=', model), ('custom', '=', False)] + RULE_DOMAIN, limit=1):
                 continue                # nothing hidden: nothing to show again
             names = self._pbfs_std_unhide_locked(model, '', notice=thing or True)
             if names:
@@ -215,6 +265,141 @@ class PbFormStudioStandard(models.AbstractModel):
         screen) or an ISO code (shown only where Country of Work is that
         country). Hosts extend (TIDY-E's table on the employee)."""
         return None
+
+    # ========================================================= R31 (FS-15)
+    @api.model
+    def _pbfs_std_comeback(self, model):
+        """`{field: reason}` — boxes the product took off the screens that
+        must NOT come back (a live source took their place, or they are
+        worked-out figures nobody types). Hosts extend. Every other
+        "taken off the screens" box can be shown again."""
+        return {}
+
+    @api.model
+    def _pbfs_std_propose(self, model, name):
+        """The "Shown for" a box gets when the administrator presses Show
+        again: all countries here; hosts propose the country it belongs to."""
+        return SHOW_ALL
+
+    @api.model
+    def _pbfs_countries_in_use(self):
+        """`([{id, name, code, n}], people with no Country of Work)` — the
+        Countries of Work in use on this site with their number of people,
+        most first: the figures of the People list's Country of Work filter.
+        Hosts provide them (the People host); none here."""
+        return [], 0
+
+    @api.model
+    def _pbfs_cow_universe(self):
+        """res.country ids of every Country of Work a person can have (the
+        choices of the employee's Country of Work box)."""
+        field = self.env['hr.employee']._fields.get('payroll_country') \
+            if 'hr.employee' in self.env else None
+        if not field or field.type != 'selection':
+            return frozenset(self.env['res.country'].sudo().search([]).ids)
+        codes = [str(k).upper() for k, _l in field._description_selection(self.env) if k]
+        return frozenset(self.env['res.country'].sudo().search([('code', 'in', codes)]).ids)
+
+    @api.model
+    def _pbfs_std_code_ids(self, codes):
+        codes = {str(c).upper() for c in codes or () if c}
+        if not codes:
+            return {}
+        return {(c.code or '').upper(): c.id
+                for c in self.env['res.country'].sudo().search([('code', 'in', list(codes))])}
+
+    @api.model
+    def _pbfs_std_base(self, model, name, code_ids=None):
+        """The product's built-in "Shown for" of a box (R31: the default an
+        administrator can change): all countries, none (taken off the
+        screens) or only the country of its built-in rule."""
+        rule = self._pbfs_std_builtin_rule(model, name)
+        if not rule:
+            return SHOW_ALL
+        if rule == 'remove':
+            return SHOW_NONE
+        code_ids = code_ids if code_ids is not None else self._pbfs_std_code_ids([rule])
+        cid = code_ids.get(str(rule).upper())
+        return show_only([cid]) if cid else SHOW_NONE
+
+    @api.model
+    def _pbfs_std_override(self, meta, base):
+        """The administrator's "Shown for" of a box, or None when the box
+        follows its built-in setting. An FS-7 row (hidden for everyone /
+        hidden in some countries) reads as exactly what it did: the built-in
+        setting minus those countries, people with no Country of Work kept."""
+        if not meta:
+            return None
+        if meta.std_show:
+            show = SHOW_ALL if meta.std_show == 'all' else (
+                SHOW_NONE if meta.std_show == 'none'
+                else show_only(meta.std_show_country_ids.ids, meta.std_show_unset))
+        elif meta.std_hidden or meta.std_country_ids:
+            show = self._pbfs_std_legacy(base, bool(meta.std_hidden), meta.std_country_ids.ids)
+        else:
+            return None
+        return None if show == base else show
+
+    @api.model
+    def _pbfs_std_legacy(self, base, hidden, hidden_ids):
+        """FS-7's (hidden for everyone, hidden in these countries) on top of
+        the built-in setting, as a "Shown for"."""
+        if hidden:
+            return SHOW_NONE
+        hidden_ids = frozenset(hidden_ids or ())
+        if not hidden_ids:
+            return base
+        if base[0] == 'all':
+            return show_only(self._pbfs_cow_universe() - hidden_ids, True)
+        if base[0] == 'only':
+            return show_only(base[1] - hidden_ids, base[2])
+        return SHOW_NONE
+
+    @api.model
+    def _pbfs_std_effective(self, model, name, meta, locked=None, code_ids=None):
+        """→ (built-in, what the screens apply, override as stored or None).
+        A locked box is never shown less than its built-in setting: a
+        narrower rule saved before it became locked is widened back."""
+        base = self._pbfs_std_base(model, name, code_ids)
+        override = self._pbfs_std_override(meta, base)
+        if override is None:
+            return base, base, None
+        locked = locked if locked is not None else self._pbfs_standard_locked(model)
+        eff = show_union(base, override) if name in locked else override
+        return base, eff, override
+
+    @api.model
+    def _pbfs_std_tidy_overrides(self, model):
+        """`{field: rule}` for TIDY-E's table (its boxes only): None = shown
+        for everyone, 'remove' = hidden for everyone, an ISO code, or a
+        frozenset of codes (None in it = people with no Country of Work see
+        it too). Read by `pb_employee_form_tidy` in `_get_view`."""
+        out = {}
+        metas = self._pbfs_std_metas(model)
+        if not metas:
+            return out
+        locked = self._pbfs_standard_locked(model)
+        codes = {}
+        for name, meta in metas.items():
+            if not self._pbfs_std_builtin_rule(model, name):
+                continue
+            _base, eff, override = self._pbfs_std_effective(model, name, meta, locked)
+            if override is None or eff == _base:
+                continue
+            if eff[0] == 'all':
+                out[name] = None
+            elif eff[0] == 'none':
+                out[name] = 'remove'
+            else:
+                if not codes:
+                    codes = {c.id: (c.code or '').upper()
+                             for c in self.env['res.country'].sudo().search([])}
+                found = frozenset(codes[i] for i in eff[1] if codes.get(i))
+                if len(found) == 1 and not eff[2]:
+                    out[name] = next(iter(found))
+                else:
+                    out[name] = found | ({None} if eff[2] else set())
+        return out
 
     # ============================================================= catalogue
     @api.model
@@ -312,9 +497,10 @@ class PbFormStudioStandard(models.AbstractModel):
 
         def ok(name):
             field = Model._fields.get(name)
+            # R31: the boxes the product took off the screens are listed too
+            # ("Taken off the screens"; most of them can be shown again).
             return (field is not None and not name.startswith(PREFIX) and name not in skip
-                    and field.type not in STD_SKIP_TTYPES and name not in out
-                    and self._pbfs_std_builtin_rule(model, name) != 'remove')
+                    and field.type not in STD_SKIP_TTYPES and name not in out)
 
         scan = self._pbfs_std_scan(model)
         last = max([r[3] for r in scan] or [0])
@@ -348,7 +534,8 @@ class PbFormStudioStandard(models.AbstractModel):
     @api.model
     def _pbfs_std_metas(self, model):
         return {n: m for n, m in self._pbfs_meta(model).items()
-                if not m.custom and (m.std_hidden or m.std_country_ids or m.std_labels)}
+                if not m.custom and (m.std_show or m.std_hidden or m.std_country_ids
+                                     or m.std_labels)}
 
     @api.model
     def _pbfs_std_label_of(self, meta, lang=None):
@@ -360,10 +547,14 @@ class PbFormStudioStandard(models.AbstractModel):
 
     @api.model
     def _pbfs_std_rules(self, model):
-        """THE rules every screen applies, in the reader's language:
-        `{field name: {'all': bool, 'countries': [res.country ids],
-        'label': own label or None}}`. Locked fields never come back hidden
-        (a rule saved before the field became locked is not applied)."""
+        """THE rules every screen applies, in the reader's language, for the
+        boxes an administrator changed: `{field name: {'all': hidden for
+        everyone, 'only': [res.country ids] or None (shown only there),
+        'unset': people with no Country of Work see it, 'show': 'all' |
+        'only' | 'none' | None (built-in), 'builtin': the box has a built-in
+        country rule (TIDY-E applies the "Shown for" of those on Full
+        details), 'label': own label or None}}`. A locked box is never shown
+        less than its built-in setting."""
         metas = self._pbfs_std_metas(model)
         if not metas:
             return {}
@@ -372,22 +563,35 @@ class PbFormStudioStandard(models.AbstractModel):
         for name, meta in metas.items():
             if name not in self.env[model]._fields:
                 continue
-            hide_ok = name not in locked
-            rule = {'all': bool(meta.std_hidden) and hide_ok,
-                    'countries': meta.std_country_ids.ids if hide_ok else [],
-                    'label': self._pbfs_std_label_of(meta)}
-            if rule['all'] or rule['countries'] or rule['label']:
-                out[name] = rule
+            base, eff, override = self._pbfs_std_effective(model, name, meta, locked)
+            changed = override is not None and eff != base
+            label = self._pbfs_std_label_of(meta)
+            if not changed and not label:
+                continue
+            out[name] = {
+                'all': changed and eff[0] == 'none',
+                'only': sorted(eff[1]) if changed and eff[0] == 'only' else None,
+                'unset': bool(eff[2]) if changed else False,
+                'show': eff[0] if changed else None,
+                'builtin': bool(self._pbfs_std_builtin_rule(model, name)),
+                'label': label,
+            }
         return out
 
     @api.model
     def _pbfs_std_hidden(self, rule, country_id):
-        """Is a box with `rule` hidden for a record of `country_id`?"""
+        """Is a box with `rule` (from `_pbfs_std_rules`) hidden for a record
+        of `country_id`?"""
         if not rule:
             return False
         if rule.get('all'):
             return True
-        return bool(country_id) and country_id in (rule.get('countries') or [])
+        only = rule.get('only')
+        if only is None:
+            return False
+        if not country_id:
+            return not rule.get('unset')
+        return country_id not in only
 
     @api.model
     def _pbfs_std_apply_arch(self, arch, model, country_field=None):
@@ -403,15 +607,25 @@ class PbFormStudioStandard(models.AbstractModel):
         Model = self.env[model]
         cvf = country_field if country_field and country_field in Model._fields else None
         changed = []
-        # Boxes the product's own rule removes from the screen (whatever order
-        # the two `_get_view` overrides run in).
-        removed = {n for n in Model._fields if self._pbfs_std_builtin_rule(model, n) == 'remove'}
+        # Boxes with a built-in country rule: the product's own `_get_view`
+        # (TIDY-E) draws their "Shown for", built-in or changed (R31) —
+        # whatever order the two `_get_view` overrides run in (FS7-4). Here
+        # they only get their own label. `gone` = off the screen for everyone.
+        builtin = {n: self._pbfs_std_builtin_rule(model, n) for n in Model._fields}
+        builtin = {n: r for n, r in builtin.items() if r}
+        gone = {n for n, r in builtin.items()
+                if (r == 'remove' and not (rules.get(n) or {}).get('show'))
+                or (rules.get(n) or {}).get('show') == 'none'}
 
         def expr_of(rule):
             if rule['all']:
                 return 'True'
-            if rule['countries'] and cvf:
-                return '%s in %s' % (cvf, sorted(rule['countries']))
+            if rule.get('only') is not None:
+                if not cvf:
+                    return 'True'       # nothing to test here: hide, never show to all
+                if rule.get('unset'):
+                    return '%s and %s not in %s' % (cvf, cvf, list(rule['only']))
+                return '%s not in %s' % (cvf, list(rule['only']))
             return None
 
         def touch(node, name):
@@ -420,10 +634,12 @@ class PbFormStudioStandard(models.AbstractModel):
                 return None
             if rule['label'] and not _static_hidden(node):
                 node.set('string', rule['label'])
+            changed.append(name)
+            if name in builtin:
+                return None             # its "Shown for" is TIDY-E's to draw
             expr = expr_of(rule)
             if expr:
                 node.set('invisible', _or(node.get('invisible'), expr))
-            changed.append(name)
             return expr
 
         def walk(node):
@@ -437,8 +653,9 @@ class PbFormStudioStandard(models.AbstractModel):
                 tag = child.tag if isinstance(child.tag, str) else ''
                 if not tag or _static_hidden(child):
                     continue
-                if tag == 'field' and child.get('name') in removed:
-                    continue        # the product takes it off the screen anyway
+                if tag == 'field' and child.get('name') in gone:
+                    touch(child, child.get('name'))     # its own label, nothing else
+                    continue        # off the screen for everyone anyway
                 if tag == 'field':
                     expr = touch(child, child.get('name'))   # never into a sub-view
                     if expr:
@@ -486,14 +703,33 @@ class PbFormStudioStandard(models.AbstractModel):
     def _pbfs_std_context(self, model):
         """Everything `_pbfs_std_desc` needs, worked out ONCE per call: the
         catalogue in every language, the locked list, the settings rows."""
+        cat = self._pbfs_std_catalogue(model)
+        rules = {n: self._pbfs_std_builtin_rule(model, n) for n in cat}
+        codes = {r for r in rules.values() if r and r != 'remove'}
+        code_ids = self._pbfs_std_code_ids(codes)
         return {
             'cats': {lang: self.with_context(lang=lang)._pbfs_std_catalogue(model)
                      for lang in self._pbfs_langs()},
-            'cat': self._pbfs_std_catalogue(model),
+            'cat': cat,
             'locked': self._pbfs_standard_locked(model),
             'metas': self._pbfs_meta(model),
             'countries': {},
+            'code_ids': code_ids,
+            'comeback': self._pbfs_std_comeback(model),
+            'panel': {n for n, _l, _t in self._pbfs_std_panel_boxes(model)},
+            'names': {},
         }
+
+    @api.model
+    def _pbfs_show_desc(self, show, ctx=None):
+        """A "Shown for" as the Form builder reads it."""
+        names = ctx['names'] if ctx is not None else {}
+        missing = [i for i in show[1] if i not in names]
+        if missing:
+            for c in self.env['res.country'].browse(missing).exists():
+                names[c.id] = {'id': c.id, 'name': c.name, 'code': c.code}
+        countries = sorted((names[i] for i in show[1] if i in names), key=lambda c: c['name'])
+        return {'mode': show[0], 'countries': countries, 'unset': bool(show[2])}
 
     @api.model
     def _pbfs_std_all(self, model):
@@ -519,18 +755,39 @@ class PbFormStudioStandard(models.AbstractModel):
                 ctx['countries'][rule] = {'code': rule, 'country': country.name or rule,
                                           'country_id': country.id or False}
             rule_desc = ctx['countries'][rule]
-        hidden = bool(meta and meta.std_hidden)
-        cids = meta.std_country_ids if meta else self.env['res.country']
+        # R31 — the built-in "Shown for", what the screens apply, and whether
+        # the administrator changed it.
+        base, eff, override = self._pbfs_std_effective(
+            model, name, meta, ctx['locked'], ctx.get('code_ids'))
+        changed = override is not None
+        removed = rule == 'remove'
+        hidden = changed and eff[0] == 'none'
+        # FS-7 words kept for older readers: the countries it is hidden in
+        hidden_in = []
+        if changed and eff[0] == 'only' and base[0] != 'none':
+            pool = self._pbfs_cow_universe() if base[0] == 'all' else base[1]
+            hidden_in = sorted(pool - eff[1])
+        comeback = (ctx.get('comeback') or {}).get(name, '') if removed else ''
         return {
             'tab': cat.get('tab') or '', 'order': cat.get('order', 0), 'seq': cat.get('seq', 0),
             'builtin': cat.get('label') or name, 'builtins': builtins,
             'labels': {k: v for k, v in labels.items() if isinstance(v, str) and v.strip()},
             'hidden': hidden,
-            'countries': [{'id': c.id, 'name': c.name, 'code': c.code} for c in cids],
+            'countries': self._pbfs_show_desc(('only', frozenset(hidden_in), False),
+                                              ctx)['countries'] if hidden_in else [],
             'lock': lock.get('reason') or '',
             'label_lock': (lock.get('reason') or '') if lock.get('label') else '',
-            'ignored': bool(lock) and (hidden or bool(cids)),
+            'ignored': bool(lock) and changed and eff != override,
             'rule': rule_desc,
+            'base': self._pbfs_show_desc(base, ctx),
+            'show': self._pbfs_show_desc(eff, ctx),
+            'changed': changed,
+            'removed': removed,
+            'off': removed and eff[0] == 'none',
+            'comeback': str(comeback or ''),
+            'propose': self._pbfs_show_desc(self._pbfs_std_propose(model, name), ctx)
+            if removed and not comeback else None,
+            'panel': name in (ctx.get('panel') or ()),
         }
 
     @api.model
@@ -562,28 +819,63 @@ class PbFormStudioStandard(models.AbstractModel):
             raise UserError(_('This field is not offered on this screen.'))
         lock = self._pbfs_standard_locked(model).get(name) or {}
         meta = self._pbfs_ensure_meta(model, name)
-        old_hidden, old_cids = bool(meta.std_hidden), set(meta.std_country_ids.ids)
-        hidden = bool(vals['std_hidden']) if 'std_hidden' in vals else old_hidden
-        cids = set(self._pbfs_country_ids(vals['std_country_ids'])) \
-            if 'std_country_ids' in vals else set(old_cids)
-        if hidden:
-            cids = set()            # hidden for everyone: no country list to keep
+        base = self._pbfs_std_base(model, name)
+        old = self._pbfs_std_override(meta, base)
+        cur = old if old is not None else base
+        new = cur
+        if any(k in vals for k in SHOW_KEYS):
+            # R31 — "Shown for": all countries / only these / hidden for
+            # everyone, or the built-in setting put back.
+            mode = vals.get('std_show') or 'builtin'
+            if mode == 'builtin':
+                new = base
+            elif mode == 'all':
+                new = SHOW_ALL
+            elif mode == 'none':
+                new = SHOW_NONE
+            elif mode == 'only':
+                new = show_only(self._pbfs_country_ids(vals.get('std_show_country_ids')),
+                                bool(vals.get('std_show_unset')))
+            else:
+                raise UserError(_('Choose who sees this field: all countries, only some '
+                                  'Countries of Work, or nobody.'))
+        elif 'std_hidden' in vals or 'std_country_ids' in vals:
+            # FS-7's words (hidden for everyone / hidden in these countries),
+            # read on top of the built-in setting, as before.
+            old_hidden = cur[0] == 'none' and base[0] != 'none'
+            old_in = []
+            if cur[0] == 'only' and base[0] != 'none':
+                pool = self._pbfs_cow_universe() if base[0] == 'all' else base[1]
+                old_in = sorted(pool - cur[1])
+            hidden = bool(vals['std_hidden']) if 'std_hidden' in vals else old_hidden
+            hidden_in = self._pbfs_country_ids(vals['std_country_ids']) \
+                if 'std_country_ids' in vals else old_in
+            if not hidden and not hidden_in:
+                new = base
+            else:
+                new = self._pbfs_std_legacy(base, hidden, [] if hidden else hidden_in)
         changes = []
         new_vals = {}
-        if (hidden, cids) != (old_hidden, old_cids):
-            # A locked field may only ever be shown more (a rule saved before
-            # it became locked can be narrowed or cleared), never hidden more.
-            more = False if old_hidden else (hidden or bool(cids - old_cids))
-            if lock and more:
-                raise UserError(_('%s It cannot be hidden.', lock['reason']))
-            new_vals.update(std_hidden=hidden, std_country_ids=[(6, 0, sorted(cids))])
-            if hidden:
-                changes.append(_('hidden for everyone'))
-            elif cids:
-                names = ', '.join(self.env['res.country'].browse(sorted(cids)).mapped('name'))
-                changes.append(_('hidden in %s', names))
+        if new != cur or (meta.std_hidden or meta.std_country_ids):
+            if new != cur:
+                comeback = self._pbfs_std_comeback(model).get(name) \
+                    if base[0] == 'none' and self._pbfs_std_builtin_rule(model, name) == 'remove' \
+                    else ''
+                if comeback and new[0] != 'none':
+                    raise UserError(_('%s It cannot be shown again.', comeback))
+                # A locked field may be shown MORE than the product shows it
+                # (R31: widening is always allowed), never less: a rule saved
+                # before it became locked can be widened or put back.
+                if lock and not show_covers(new, base):
+                    raise UserError(_('%s It cannot be hidden.', lock['reason']))
+            new_vals.update(std_hidden=False, std_country_ids=[(5,)])
+            if new == base:
+                new_vals.update(std_show=False, std_show_country_ids=[(5,)], std_show_unset=False)
             else:
-                changes.append(_('shown again'))
+                new_vals.update(std_show=new[0], std_show_country_ids=[(6, 0, sorted(new[1]))],
+                                std_show_unset=bool(new[2]) and new[0] == 'only')
+            if new != cur:
+                changes.append(self._pbfs_show_words(new, base))
         if 'std_labels' in vals:
             labels = {}
             langs = self._pbfs_langs()
@@ -604,6 +896,23 @@ class PbFormStudioStandard(models.AbstractModel):
         if new_vals:
             meta.write(new_vals)
         return changes
+
+    @api.model
+    def _pbfs_show_words(self, show, base=None):
+        """A "Shown for" in a history line: "shown for all countries",
+        "shown only for Vietnam, Indonesia", "hidden for everyone", "built-in
+        setting put back"."""
+        _ = self.env._
+        if base is not None and show == base:
+            return _('built-in setting put back')
+        if show[0] == 'all':
+            return _('shown for all countries')
+        if show[0] == 'none':
+            return _('hidden for everyone')
+        names = sorted(self.env['res.country'].browse(sorted(show[1])).exists().mapped('name'))
+        if show[2]:
+            names.append(_('people with no Country of Work'))
+        return _('shown only for %s', ', '.join(names))
 
     @api.model
     def update_standard(self, model, name, vals):
@@ -680,13 +989,28 @@ class PbFormStudioStandard(models.AbstractModel):
             return []
         locked = self._pbfs_standard_locked(model)
         Meta = self.env['pb.form.field.meta'].sudo()
-        rows = Meta.search([('model', '=', model), ('custom', '=', False), ('name', 'in', list(locked)),
-                            '|', ('std_hidden', '=', True), ('std_country_ids', '!=', False)])
+        rows = Meta.search([('model', '=', model), ('custom', '=', False),
+                            ('name', 'in', list(locked))] + RULE_DOMAIN)
         names = []
         _ = self.env._
-        things = self._pbfs_std_used_things(model) if notice and rows else {}
+        todo = []
         for meta in rows:
-            meta.write({'std_hidden': False, 'std_country_ids': [(5,)]})
+            # R31: a locked field is never shown LESS than its built-in
+            # setting; a wider rule (shown for more countries) is kept.
+            base = self._pbfs_std_base(model, meta.name)
+            override = self._pbfs_std_override(meta, base)
+            if override is None or show_covers(override, base):
+                continue
+            todo.append((meta, show_union(base, override), base))
+        things = self._pbfs_std_used_things(model) if notice and todo else {}
+        for meta, wide, base in todo:
+            if wide == base:
+                meta.write({'std_hidden': False, 'std_country_ids': [(5,)], 'std_show': False,
+                            'std_show_country_ids': [(5,)], 'std_show_unset': False})
+            else:
+                meta.write({'std_hidden': False, 'std_country_ids': [(5,)], 'std_show': wide[0],
+                            'std_show_country_ids': [(6, 0, sorted(wide[1]))],
+                            'std_show_unset': bool(wide[2]) and wide[0] == 'only'})
             box = self._pbfs_std_screen_label(model, meta.name)
             reason = locked[meta.name]['reason']
             self._pbfs_audit('update_field', None, model, meta.name,
@@ -740,14 +1064,16 @@ class PbFormStudioStandard(models.AbstractModel):
         dropped = 0
         Meta = self.env['pb.form.field.meta'].sudo()
         for meta in Meta.search([('custom', '=', False)]):
-            if not (meta.std_hidden or meta.std_country_ids or meta.std_labels):
+            if not (meta.std_show or meta.std_hidden or meta.std_country_ids or meta.std_labels):
                 continue
             model, name = meta.model, meta.name
             if model in self.env and name in self.env[model]._fields:
                 continue
             self._pbfs_audit('update_field', None, model, name,
                              self.env._('%s no longer exists: its screen rule was removed.', name))
-            meta.write({'std_hidden': False, 'std_country_ids': [(5,)], 'std_labels': False})
+            meta.write({'std_hidden': False, 'std_country_ids': [(5,)], 'std_labels': False,
+                        'std_show': False, 'std_show_country_ids': [(5,)],
+                        'std_show_unset': False})
             dropped += 1
         if dropped:
             self.env.registry.clear_cache('templates')

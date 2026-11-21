@@ -163,6 +163,19 @@ def country_expr(code):
     return "%s != '%s'" % (COUNTRY_FIELD, code)
 
 
+def rule_expr(rule):
+    """The `invisible` expression of a rule: one ISO code (the product's own
+    rule, unchanged) or — R31 (FS-15), an administrator's "Shown for" — a
+    frozenset of codes, `None` in it meaning that people with no Country of
+    Work see the box too."""
+    if isinstance(rule, str):
+        return country_expr(rule)
+    codes = sorted(c for c in rule if c)
+    if None in rule:
+        return "%s and %s not in %s" % (COUNTRY_FIELD, COUNTRY_FIELD, codes)
+    return "%s not in %s" % (COUNTRY_FIELD, codes)
+
+
 def _or(old, new):
     old = (old or '').strip()
     if not old or old in ('0', 'False', 'false'):
@@ -178,25 +191,25 @@ def _is_static_hidden(node):
     return (node.get('invisible') or '').strip() in ('1', 'True', 'true')
 
 
-def _walk(node, changed):
+def _walk(node, changed, rules=FORM_RULES):
     """Apply the rules under ``node``; return its verdict.
 
-    A verdict is `_IGNORE`, `_SHOWN`, `_ALWAYS` or a country code. Fields are
-    leaves: a field's own sub-view (an x2many list) belongs to another model
-    and is never walked.
+    A verdict is `_IGNORE`, `_SHOWN`, `_ALWAYS`, a country code or (R31) a
+    frozenset of codes. Fields are leaves: a field's own sub-view (an x2many
+    list) belongs to another model and is never walked.
     """
     tag = node.tag if isinstance(node.tag, str) else ''
     if tag == 'field':
         name = node.get('name')
-        rule = FORM_RULES.get(name)
+        rule = rules.get(name)
         if rule == REMOVE:
             node.set('invisible', '1')
             changed.append(name)
             return _ALWAYS
-        if rule:
-            node.set('invisible', _or(node.get('invisible'), country_expr(rule)))
+        if rule is not None and rule != '':
+            node.set('invisible', _or(node.get('invisible'), rule_expr(rule)))
             changed.append(name)
-            return rule
+            return rule if isinstance(rule, str) else frozenset(rule)
         if _is_static_hidden(node):
             return _IGNORE          # a helper the form needs, never a box
         return _SHOWN
@@ -206,7 +219,7 @@ def _walk(node, changed):
         return _IGNORE
     if tag in _ACTIVE:
         return _SHOWN               # a button or widget keeps its section
-    verdicts = [_walk(child, changed) for child in node]
+    verdicts = [_walk(child, changed, rules) for child in node]
     if tag not in _CONTAINERS:
         # sheet, notebook, …: walked, never hidden
         return _SHOWN if any(v != _IGNORE for v in verdicts) else _IGNORE
@@ -219,6 +232,12 @@ def _walk(node, changed):
     if not countries:
         node.set('invisible', '1')
         return _ALWAYS
+    if any(isinstance(c, frozenset) for c in countries):
+        # R31: an administrator widened or narrowed a box in here — the
+        # section shows wherever one of its boxes does.
+        union = frozenset().union(*[c if isinstance(c, frozenset) else {c} for c in countries])
+        node.set('invisible', _or(node.get('invisible'), rule_expr(union)))
+        return union
     if len(countries) == 1:
         code = next(iter(countries))
         node.set('invisible', _or(node.get('invisible'), country_expr(code)))
@@ -226,22 +245,25 @@ def _walk(node, changed):
     return _SHOWN                   # several countries: each box decides
 
 
-def apply_rules(arch):
-    """Apply `FORM_RULES` to a combined employee form arch, in place.
+def apply_rules(arch, rules=None):
+    """Apply `rules` (default `FORM_RULES`; R31: the table with the
+    administrator's changes, `hr.employee._pb_tidy_rules`) to a combined
+    employee form arch, in place.
 
     Returns the names of the boxes it touched (for tests and logs).
     """
+    rules = FORM_RULES if rules is None else rules
     changed = []
     sheet = arch.find('.//sheet')
     root = sheet if sheet is not None else arch
-    _walk(root, changed)
+    _walk(root, changed, rules)
     # A label written beside its field (`<label for="x"/>`) follows the field.
     for label in arch.iter('label'):
-        rule = FORM_RULES.get(label.get('for'))
+        rule = rules.get(label.get('for'))
         if rule == REMOVE:
             label.set('invisible', '1')
-        elif rule:
-            label.set('invisible', _or(label.get('invisible'), country_expr(rule)))
+        elif rule is not None and rule != '':
+            label.set('invisible', _or(label.get('invisible'), rule_expr(rule)))
     return changed
 
 

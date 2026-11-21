@@ -43,7 +43,7 @@ class IrModelFields(models.Model):
         Meta = self.env['pb.form.field.meta'].sudo()
         metas = Meta.search([('field_id', 'in', self.ids), ('custom', '=', False)])
         for meta in metas:
-            if meta.std_hidden or meta.std_country_ids or meta.std_labels:
+            if meta.std_show or meta.std_hidden or meta.std_country_ids or meta.std_labels:
                 self.env['pb.form.audit'].sudo().create({
                     'action': 'update_field', 'model': meta.model, 'field_name': meta.name,
                     'summary': self.env._('%s no longer exists: its screen rule was removed.',

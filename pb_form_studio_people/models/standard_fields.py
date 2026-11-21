@@ -73,6 +73,24 @@ STD_EXCLUDE = ('hr_icon_display', 'show_hr_icon_display', 'employee_properties',
 #: Side panel tab keys -> the panel's own tab names.
 PANEL_TABS = ('personal', 'job', 'pay')
 
+# R31 (FS-15) — boxes TIDY-E took off the screens that must NOT come back
+# (`_pbfs_std_comeback`). Bank: R12 / FS-9, the approved account is the truth.
+COMEBACK_BANK = ('account_number', 'bank_name')
+#: the platform's version-record boxes (Payroll tab); the contract holds them.
+COMEBACK_CONTRACT = ('contract_type_id', 'structure_type_id')
+#: computed, not stored (FIELD_AUDIT_FACTS §7): always 0 without a policy.
+COMEBACK_FIGURES = ('vn_employer_insurance_cost', 'vn_employee_insurance_cost',
+                    'vn_total_insurance_contribution', 'vn_personal_tax_rate',
+                    'vn_monthly_tax_allowance', 'vn_dependent_tax_allowance')
+#: inside the legacy Insurance (BH) / Tax & Dependents groups that carry
+#: `invisible="vn_uses_payroll_profile"` (FIELD_AUDIT_FACTS §3): HR viewing a
+#: Vietnam employee never sees that group, so "Show again" would draw nothing.
+COMEBACK_OLD_VN = ('vn_foreign_insurance_exempt', 'vn_si_number', 'vn_si_effective_date',
+                   'vn_hi_number', 'vn_hi_effective_date', 'vn_ui_number',
+                   'vn_ui_effective_date', 'vn_tax_table_id', 'vn_tax_effective_date')
+#: removed boxes that are not Vietnam's: "Show again" proposes all countries.
+PROPOSE_ALL = ('pb_position_reference', 'pb_emergency_relationship')
+
 
 class PbFormStudioPeopleStandard(models.AbstractModel):
     _inherit = 'pb.form.studio'
@@ -177,6 +195,76 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
             if rule:
                 return rule
         return super()._pbfs_std_builtin_rule(model, name)
+
+    # ------------------------------------------------------ R31 (FS-15)
+    @api.model
+    def _pbfs_std_comeback(self, model):
+        """The boxes TIDY-E took off the screens that must stay off, with the
+        reason (decided per box from TIDY_E_REPORT §2–3, FIELD_AUDIT_FACTS
+        §2/§3/§7 and the Full details arch): a live source took their place,
+        their old section is never drawn for the people they belong to, or
+        they are worked-out figures nobody types. Every other one can be
+        shown again (FS15_REPORT.md has the table)."""
+        out = dict(super()._pbfs_std_comeback(model) or {})
+        if model != MODEL:
+            return out
+        _ = self.env._
+        rows = [
+            (COMEBACK_BANK, _('The bank account people are paid to is the approved one under '
+                              'Bank details. This old box is no longer read, so showing it would '
+                              'invite a second account that nothing uses.')),
+            (COMEBACK_CONTRACT, _('The contract holds this now (contract type and pay structure). '
+                                  'This box belongs to an older record and is not used.')),
+            (COMEBACK_FIGURES, _('A worked-out figure from an old insurance and tax set-up that '
+                                 'nobody uses. It is never typed and would always show 0.')),
+            (COMEBACK_OLD_VN, _('Its old section was replaced by the insurance and tax summary '
+                                'Vietnam staff see, so it would not be drawn. The insurance '
+                                'details the files read are on the side panel.')),
+        ]
+        Model = self.env[MODEL]
+        tidy = self._pbfs_people_tidy_rules()
+        for names, reason in rows:
+            for name in names:
+                if name in Model._fields and tidy.get(name) == 'remove':
+                    out[name] = reason
+        return out
+
+    @api.model
+    def _pbfs_std_propose(self, model, name):
+        """Show again: a Vietnamese box proposes Vietnam (the audit's removed
+        boxes are all Vietnam's, except the two general Employment profile
+        ones, which propose all countries)."""
+        if model == MODEL and name not in PROPOSE_ALL:
+            from odoo.addons.pb_form_studio.models.form_standard import show_only
+            vn = self.env['res.country'].sudo().search([('code', '=', 'VN')], limit=1)
+            if vn:
+                return show_only([vn.id])
+        return super()._pbfs_std_propose(model, name)
+
+    @api.model
+    def _pbfs_countries_in_use(self):
+        """The People list's Country of Work figures: active people of the
+        companies the reader works in, by Country of Work, most first; and how
+        many have none ("Not recorded")."""
+        rows, none = super()._pbfs_countries_in_use()
+        if rows or MODEL not in self.env or 'payroll_country' not in self.env[MODEL]._fields:
+            return rows, none
+        if 'pb.people' in self.env and hasattr(self.env['pb.people'], '_pbf_base_domain'):
+            domain = self.env['pb.people']._pbf_base_domain()
+        else:
+            domain = [('company_id', 'in', self.env.companies.ids), ('active', '=', True)]
+        counts = {}
+        for code, n in self.env[MODEL].sudo()._read_group(domain, ['payroll_country'], ['__count']):
+            counts[str(code).upper() if code else ''] = n
+        none = counts.pop('', 0)
+        by_code = {(c.code or '').upper(): c for c in self.env['res.country'].search(
+            [('code', 'in', list(counts))])}
+        for code, n in counts.items():
+            country = by_code.get(code)
+            if country:
+                rows.append({'id': country.id, 'name': country.name, 'code': country.code, 'n': n})
+        rows.sort(key=lambda r: (-r['n'], r['name']))
+        return rows, none
 
     @api.model
     def _pbfs_std_exclude(self, model):

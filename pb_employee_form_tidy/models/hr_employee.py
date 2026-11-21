@@ -13,6 +13,9 @@ _logger = logging.getLogger(__name__)
 #: Context key that returns the form exactly as the owning modules draw it
 #: (tests compare the two; nothing on screen sets it).
 NO_TIDY = 'pb_form_tidy_off'
+#: The Form builder's "as the modules draw it" key (`pb_form_studio`
+#: `form_standard.STD_RAW`; repeated here: this module does not depend on it).
+STD_RAW = 'pbfs_std_raw'
 
 
 class HrEmployee(models.Model):
@@ -31,7 +34,39 @@ class HrEmployee(models.Model):
     @api.model
     def _get_view_cache_key(self, view_id=None, view_type='form', **options):
         key = super()._get_view_cache_key(view_id, view_type, **options)
-        return key + (bool(self.env.context.get(NO_TIDY)),)
+        return key + (bool(self.env.context.get(NO_TIDY)), bool(self.env.context.get(STD_RAW)))
+
+    @api.model
+    def _pb_tidy_rules(self):
+        """The table the form applies: `FORM_RULES` with the administrator's
+        "Shown for" of its boxes (R31, FS-15: the Form builder's Standard
+        fields; `pb.form.studio._pbfs_std_tidy_overrides`) — None = shown for
+        everyone, 'remove', an ISO code or a frozenset of codes.
+
+        With `pbfs_std_raw` (the Form builder reading the form as the modules
+        draw it) the boxes taken off the screens are drawn, so it knows their
+        label and tab; the other rules stay. Nothing on screen sets it."""
+        rules = dict(form_rules.FORM_RULES)
+        if self.env.context.get(STD_RAW):
+            return {n: r for n, r in rules.items() if r != form_rules.REMOVE}
+        if 'pb.form.studio' not in self.env:
+            return rules
+        hook = getattr(self.env['pb.form.studio'], '_pbfs_std_tidy_overrides', None)
+        if not hook:
+            return rules
+        try:
+            for name, rule in (hook(self._name) or {}).items():
+                if name not in rules:
+                    continue
+                if rule is None:
+                    rules.pop(name)
+                else:
+                    rules[name] = rule
+        except Exception:       # noqa: BLE001 — never cost the form
+            _logger.exception("Employee form: the administrator's country settings could "
+                              "not be read; the built-in ones are applied.")
+            return dict(form_rules.FORM_RULES)
+        return rules
 
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
@@ -48,7 +83,7 @@ class HrEmployee(models.Model):
         if not base or view.id != base.id:
             return arch, view
         try:
-            form_rules.apply_rules(arch)
+            form_rules.apply_rules(arch, self._pb_tidy_rules())
             form_rules.show_full_dates(arch, self.env, self._name)
             self._pb_tidy_tab_names(arch)
         except Exception:       # noqa: BLE001 — a tidy-up must never cost the form
