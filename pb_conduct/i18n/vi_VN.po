@@ -1,0 +1,2629 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_conduct
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 13:05+0000\n"
+"PO-Revision-Date: 2026-11-16 13:05+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: vi_VN\n"
+"Plural-Forms: \n"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_setup.py:0
+msgid ""
+"\"${%(word)s}\" is not a word the letter can fill in. Use one of: %(words)s."
+msgstr "\"${%(word)s}\" không phải từ thư có thể điền. Hãy dùng một trong: %(words)s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "%s added."
+msgstr "Đã thêm %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s cases"
+msgstr "%s hồ sơ"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "%s items wait for your sign-off"
+msgstr "%s mục chờ bạn xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "%s letters from HR to read"
+msgstr "%s thư từ Nhân sự cần đọc"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s letters to issue"
+msgstr "%s thư cần gửi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s to send for a second sign-off"
+msgstr "%s hồ sơ cần gửi để người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s waiting for a decision"
+msgstr "%s hồ sơ chờ quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "%s waiting for a second sign-off"
+msgstr "%s hồ sơ chờ người thứ hai xác nhận"
+
+#. module: pb_conduct
+#: model:ir.actions.report,print_report_name:pb_conduct.action_report_conduct_letter
+msgid "(object.title or 'Letter')"
+msgstr "(object.title or 'Letter')"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 case"
+msgstr "1 hồ sơ"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "1 item waits for your sign-off"
+msgstr "1 mục chờ bạn xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "1 letter from HR to read"
+msgstr "1 thư từ Nhân sự cần đọc"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 letter to issue"
+msgstr "1 thư cần gửi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 to send for a second sign-off"
+msgstr "1 hồ sơ cần gửi để người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 waiting for a decision"
+msgstr "1 hồ sơ chờ quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "1 waiting for a second sign-off"
+msgstr "1 hồ sơ chờ người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"A closed case stays here and in the person's history. You can open it again."
+msgstr "Hồ sơ đã đóng vẫn nằm ở đây và trong lịch sử của người đó. Bạn có thể mở lại."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "A letter needs a title and some text."
+msgstr "Thư cần có tiêu đề và nội dung."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"A second person named for conduct cases is needed to confirm this decision. "
+"Only one person is named for this company now: name a second one on the "
+"Access screen."
+msgstr "Cần một người thứ hai được chỉ định cho hồ sơ kỷ luật để xác nhận quyết định này. Hiện công ty này chỉ có một người được chỉ định: hãy chỉ định thêm một người trên màn hình Quyền truy cập."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"A warning or a dismissal needs a second person named for conduct cases to "
+"confirm it. Check the letter, then ask for the second sign-off: the letter "
+"is issued when they confirm."
+msgstr "Cảnh cáo hoặc sa thải cần một người thứ hai được chỉ định cho hồ sơ kỷ luật xác nhận. Kiểm tra thư, rồi đề nghị người thứ hai xác nhận: thư được gửi khi họ xác nhận."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__active
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Add a file"
+msgstr "Thêm tệp"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Add the note"
+msgstr "Thêm ghi chú"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__valid_until
+msgid ""
+"After this date the warning no longer counts. The usual period differs by "
+"country; check it with your adviser."
+msgstr "Sau ngày này cảnh cáo không còn hiệu lực. Thời hạn thông thường khác nhau theo quốc gia; hãy kiểm tra với cố vấn của bạn."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "All cases"
+msgstr "Tất cả hồ sơ"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "An issued letter cannot be changed."
+msgstr "Thư đã gửi không thể sửa."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "An issued letter cannot be changed. Prepare a new letter instead."
+msgstr "Thư đã gửi không thể sửa. Hãy soạn thư mới."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "An issued letter is kept with the case. It cannot be deleted."
+msgstr "Thư đã gửi được lưu cùng hồ sơ và không thể xoá."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Ask HR to link it, then letters they send you appear here."
+msgstr "Hãy nhờ Nhân sự liên kết, sau đó thư gửi cho bạn sẽ hiện ở đây."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Ask for the second sign-off"
+msgstr "Đề nghị người thứ hai xác nhận"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_attendance
+msgid "Attendance or lateness"
+msgstr "Chuyên cần hoặc đi muộn"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Back to my home"
+msgstr "Về trang của tôi"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_behaviour
+msgid "Behaviour towards others"
+msgstr "Cách cư xử với người khác"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_rules
+msgid "Breaking a company rule"
+msgstr "Vi phạm nội quy công ty"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__user_id
+msgid "By"
+msgstr "Người thực hiện"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Cancel"
+msgstr "Huỷ"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__case_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__case_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__case_id
+msgid "Case"
+msgstr "Hồ sơ"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Case closed with the decision letter."
+msgstr "Đã đóng hồ sơ cùng thư quyết định."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Case closed."
+msgstr "Đã đóng hồ sơ."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Case closed: %s"
+msgstr "Đã đóng hồ sơ: %s"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Case opened again."
+msgstr "Đã mở lại hồ sơ."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Case opened. Only the people named for conduct cases can see it."
+msgstr "Đã mở hồ sơ. Chỉ những người được chỉ định cho hồ sơ kỷ luật mới xem được."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Case opened: %s."
+msgstr "Đã mở hồ sơ: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Change the decision"
+msgstr "Thay đổi quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Change the wording"
+msgstr "Sửa nội dung"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Check each step with your adviser."
+msgstr "Hãy kiểm tra từng bước với cố vấn của bạn."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Choose the date and time of the hearing."
+msgstr "Chọn ngày giờ buổi làm việc."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Choose the reason."
+msgstr "Chọn lý do."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Choose what was decided."
+msgstr "Chọn nội dung đã quyết định."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Choose…"
+msgstr "Chọn…"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Close the case"
+msgstr "Đóng hồ sơ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__closed
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Closed cases"
+msgstr "Hồ sơ đã đóng"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__closed_on
+msgid "Closed on"
+msgstr "Ngày đóng"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__company_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__concern
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__concern
+msgid "Concern"
+msgstr "Phản ánh"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+msgid "Conduct"
+msgstr "Kỷ luật"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model,name:pb_conduct.model_pb_conduct_case
+msgid "Conduct case"
+msgstr "Hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_country_note
+msgid "Conduct case country note"
+msgstr "Ghi chú quốc gia cho hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_event
+msgid "Conduct case history"
+msgstr "Lịch sử hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_letter
+msgid "Conduct case letter"
+msgstr "Thư của hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_note
+msgid "Conduct case note"
+msgstr "Ghi chú hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct_reason
+msgid "Conduct case reason"
+msgstr "Lý do hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_reason
+msgid "Conduct case reasons"
+msgstr "Lý do hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.actions.client,name:pb_conduct.action_pb_conduct_board
+#: model:ir.module.category,name:pb_conduct.module_category_conduct
+#: model:res.groups.privilege,name:pb_conduct.res_groups_privilege_conduct
+msgid "Conduct cases"
+msgstr "Hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Conduct cases are seen only by the people HR names for them on the Access "
+"screen. Being in HR, running payroll or managing a team does not include it."
+" Ask your head of HR if you believe you should have it."
+msgstr "Hồ sơ kỷ luật chỉ những người được Nhân sự chỉ định trên màn hình Quyền truy cập mới xem được. Làm Nhân sự, làm lương hay quản lý nhóm không bao gồm quyền này. Hãy hỏi trưởng phòng Nhân sự nếu bạn nghĩ mình cần quyền này."
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_conduct
+msgid "Conduct cases board data"
+msgstr "Dữ liệu bảng hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:pb.role.profile,name:pb_conduct.role_conduct_hr
+msgid "Conduct cases — HR"
+msgstr "Hồ sơ kỷ luật — Nhân sự"
+
+#. module: pb_conduct
+#: model:pb.role.profile,name:pb_conduct.role_conduct_head
+msgid "Conduct cases — head of HR"
+msgstr "Hồ sơ kỷ luật — trưởng phòng Nhân sự"
+
+#. module: pb_conduct
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_letter_template
+#: model:ir.model,name:pb_conduct.model_pb_conduct_letter_template
+msgid "Conduct letter wording"
+msgstr "Mẫu thư kỷ luật"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Confirm and issue the letter"
+msgstr "Xác nhận và gửi thư"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_verbal
+msgid "Confirmation of a verbal warning"
+msgstr "Xác nhận nhắc nhở bằng lời"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__confirmed
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Confirmed by %(who)s on %(when)s."
+msgstr "Đã được %(who)s xác nhận lúc %(when)s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Confirmed. The letter is issued and the employee can read it on their own "
+"page now."
+msgstr "Đã xác nhận. Thư đã được gửi và nhân viên giờ có thể đọc trên trang của mình."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__country_id
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_country_note_list
+msgid "Country notes"
+msgstr "Ghi chú theo quốc gia"
+
+#. module: pb_conduct
+#: model:ir.actions.act_window,name:pb_conduct.action_pb_conduct_country_note
+msgid "Country notes for conduct cases"
+msgstr "Ghi chú theo quốc gia cho hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__create_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__create_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__date
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Date and time"
+msgstr "Ngày và giờ"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_final
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we are giving you a final written warning.\n"
+"\n"
+"${decision}\n"
+"\n"
+"This warning stays on your HR file until ${valid_until}. If the problem happens again, your employment may end. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Kính gửi ${employee},\n\nSau buổi làm việc về việc ${reason}, công ty gửi bạn cảnh cáo bằng văn bản lần cuối.\n\n${decision}\n\nCảnh cáo này được lưu trong hồ sơ nhân sự của bạn đến ${valid_until}. Nếu sự việc tái diễn, hợp đồng lao động của bạn có thể bị chấm dứt. Bạn có thể phản hồi thư này nếu không đồng ý.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_written
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we are giving you a written warning.\n"
+"\n"
+"${decision}\n"
+"\n"
+"This warning stays on your HR file until ${valid_until}. If the problem happens again, further steps may be taken. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Kính gửi ${employee},\n\nSau buổi làm việc về việc ${reason}, công ty gửi bạn cảnh cáo bằng văn bản.\n\n${decision}\n\nCảnh cáo này được lưu trong hồ sơ nhân sự của bạn đến ${valid_until}. Nếu sự việc tái diễn, công ty có thể có biện pháp tiếp theo. Bạn có thể phản hồi thư này nếu không đồng ý.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_dismissal
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Following our meeting about ${reason}, we have decided to end your employment.\n"
+"\n"
+"${decision}\n"
+"\n"
+"HR will contact you about your last day, your final pay and returning company property. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Kính gửi ${employee},\n\nSau buổi làm việc về việc ${reason}, công ty quyết định chấm dứt hợp đồng lao động với bạn.\n\n${decision}\n\nBộ phận Nhân sự sẽ liên hệ với bạn về ngày làm việc cuối cùng, khoản lương cuối và việc hoàn trả tài sản công ty. Bạn có thể phản hồi thư này nếu không đồng ý.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_none
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"Thank you for meeting us about ${reason}.\n"
+"\n"
+"${decision}\n"
+"\n"
+"We have decided to take no further action. This letter is kept on your HR file.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Kính gửi ${employee},\n\nCảm ơn bạn đã tham gia buổi làm việc về việc ${reason}.\n\n${decision}\n\nCông ty quyết định không xử lý thêm. Thư này được lưu trong hồ sơ nhân sự của bạn.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_verbal
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"This letter confirms the verbal warning you were given about ${reason}.\n"
+"\n"
+"${decision}\n"
+"\n"
+"The warning stays on your HR file until ${valid_until}. You may reply to this letter if you disagree.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Kính gửi ${employee},\n\nThư này xác nhận lời nhắc nhở bạn đã nhận về việc ${reason}.\n\n${decision}\n\nNhắc nhở này được lưu trong hồ sơ nhân sự của bạn đến ${valid_until}. Bạn có thể phản hồi thư này nếu không đồng ý.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,body:pb_conduct.tpl_invite
+msgid ""
+"Dear ${employee},\n"
+"\n"
+"We would like to meet you to talk about a concern: ${reason}.\n"
+"\n"
+"The meeting will take place on ${hearing_date} at ${hearing_place}.\n"
+"\n"
+"You may bring a colleague or an employee representative with you. You will be able to give your side of what happened before any decision is made.\n"
+"\n"
+"If you cannot attend at this time, please tell HR as soon as possible.\n"
+"\n"
+"${signed_by}\n"
+"${company}\n"
+"${date}"
+msgstr "Kính gửi ${employee},\n\nCông ty mời bạn tham gia buổi làm việc về một phản ánh: ${reason}.\n\nBuổi làm việc diễn ra lúc ${hearing_date} tại ${hearing_place}.\n\nBạn có thể mời một đồng nghiệp hoặc đại diện người lao động đi cùng. Bạn sẽ được trình bày ý kiến của mình trước khi có bất kỳ quyết định nào.\n\nNếu không thể tham gia vào thời gian này, vui lòng báo cho bộ phận Nhân sự sớm nhất có thể.\n\n${signed_by}\n${company}\n${date}"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+msgid "Dear ${employee}, ..."
+msgstr "Kính gửi ${employee}, ..."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Decide the outcome"
+msgstr "Ra quyết định"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decided_by
+msgid "Decided by"
+msgstr "Người quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decided_on
+msgid "Decided on"
+msgstr "Ngày quyết định"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decided: %s."
+msgstr "Đã quyết định: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__outcome
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__decision
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__decision
+msgid "Decision"
+msgstr "Quyết định"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decision (%s) taken back to change it."
+msgstr "Đã rút lại quyết định (%s) để thay đổi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Decision confirmed by a second named person."
+msgstr "Quyết định đã được người thứ hai được chỉ định xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Decision saved. Check the letter, then ask a second named person to sign it "
+"off."
+msgstr "Đã lưu quyết định. Kiểm tra thư, rồi đề nghị một người thứ hai được chỉ định xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Decision saved. The letter is ready to check and issue."
+msgstr "Đã lưu quyết định. Thư đã sẵn sàng để kiểm tra và gửi."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__decision_summary
+msgid "Decision, in a few sentences"
+msgstr "Quyết định, tóm tắt vài câu"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Delete the draft"
+msgstr "Xoá bản nháp"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__dismissal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__dismissal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__dismissal
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_dismissal
+msgid "Dismissal"
+msgstr "Chấm dứt hợp đồng"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Download the letter"
+msgstr "Tải thư xuống"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__state__draft
+msgid "Draft"
+msgstr "Bản nháp"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Draft letter deleted."
+msgstr "Đã xoá thư nháp."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Draft letter deleted: %s."
+msgstr "Đã xoá thư nháp: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Draft, not seen by the employee"
+msgstr "Bản nháp, nhân viên chưa thấy"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Draft, waits for the second sign-off"
+msgstr "Bản nháp, chờ người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Earlier cases for this person"
+msgstr "Hồ sơ trước đây của người này"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__employee_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Thông tin trang chủ nhân viên"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__read_on
+msgid "Employee read it on"
+msgstr "Nhân viên đã đọc ngày"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply
+msgid "Employee's reply"
+msgstr "Phản hồi của nhân viên"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_dismissal
+msgid "End of your employment"
+msgstr "Chấm dứt việc làm của bạn"
+
+#. module: pb_conduct
+#: model:pb.role.ability,description:pb_conduct.ability_conduct_head
+#: model:res.groups,comment:pb_conduct.group_conduct_head
+msgid ""
+"Everything above, plus the reasons, the letter wording and the country "
+"notes."
+msgstr "Tất cả quyền trên, cộng với lý do, mẫu thư và ghi chú theo quốc gia."
+
+#. module: pb_conduct
+#: model:pb.role.profile,description:pb_conduct.role_conduct_head
+msgid ""
+"Everything in Conduct cases — HR, plus the reasons, the letter wording and "
+"the country notes."
+msgstr "Mọi quyền của Hồ sơ kỷ luật — Nhân sự, cộng với lý do, mẫu thư và ghi chú theo quốc gia."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "File added to the case."
+msgstr "Đã thêm tệp vào hồ sơ."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "File added: %s."
+msgstr "Đã thêm tệp: %s."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Files"
+msgstr "Tệp"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__final
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__final
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__final
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_final
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_final
+msgid "Final written warning"
+msgstr "Cảnh cáo bằng văn bản lần cuối"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Find a person, a reference or a word…"
+msgstr "Tìm người, mã hồ sơ hoặc một từ…"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__hearing_attendees
+msgid ""
+"For example: the employee, a companion or employee representative, the HR "
+"lead."
+msgstr "Ví dụ: nhân viên, người đi cùng hoặc đại diện người lao động, trưởng nhóm Nhân sự."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Go to a decision without a hearing"
+msgstr "Ra quyết định không cần làm việc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "HR has sent you a letter."
+msgstr "Nhân sự đã gửi cho bạn một thư."
+
+#. module: pb_conduct
+#: model:ir.actions.report,name:pb_conduct.action_report_conduct_letter
+msgid "HR letter"
+msgstr "Thư nhân sự"
+
+#. module: pb_conduct
+#: model:res.groups,name:pb_conduct.group_conduct_user
+msgid "HR — conduct cases"
+msgstr "Nhân sự — hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_harassment
+msgid "Harassment or bullying"
+msgstr "Quấy rối hoặc bắt nạt"
+
+#. module: pb_conduct
+#: model:res.groups,name:pb_conduct.group_conduct_head
+msgid "Head of HR — conduct cases"
+msgstr "Trưởng phòng Nhân sự — hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_safety
+msgid "Health and safety"
+msgstr "An toàn và sức khoẻ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__hearing
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__hearing
+msgid "Hearing"
+msgstr "Buổi làm việc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing %s"
+msgstr "Làm việc %s"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing date, soonest first"
+msgstr "Ngày làm việc, gần nhất trước"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_held_on
+msgid "Hearing held on"
+msgstr "Ngày đã làm việc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing held on %s."
+msgstr "Đã làm việc ngày %s."
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__minutes
+msgid "Hearing minutes"
+msgstr "Biên bản buổi làm việc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing moved to %s."
+msgstr "Đã dời buổi làm việc sang %s."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_date
+msgid "Hearing on"
+msgstr "Ngày làm việc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Hearing planned for %s."
+msgstr "Đã lên lịch buổi làm việc lúc %s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing recorded. Next: the decision."
+msgstr "Đã ghi nhận buổi làm việc. Tiếp theo: quyết định."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Hearing saved."
+msgstr "Đã lưu buổi làm việc."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Held on"
+msgstr "Ngày làm việc"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__event_ids
+msgid "History"
+msgstr "Lịch sử"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "I have read this"
+msgstr "Tôi đã đọc thư này"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__document_id
+msgid "In documents"
+msgstr "Trong tài liệu"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__investigation
+msgid "Investigation note"
+msgstr "Ghi chú xác minh"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Invitation prepared. Check it, then issue it."
+msgstr "Đã soạn thư mời. Hãy kiểm tra rồi gửi."
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__invite
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__invite
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_invite
+msgid "Invitation to a hearing"
+msgstr "Thư mời buổi làm việc"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_invite
+msgid "Invitation to a meeting"
+msgstr "Thư mời làm việc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Issue the decision letter first, or say why the case closes without it."
+msgstr "Hãy gửi thư quyết định trước, hoặc nêu vì sao đóng hồ sơ mà không có thư."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Issue the letter"
+msgstr "Gửi thư"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__state__issued
+msgid "Issued"
+msgstr "Đã gửi"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__issued_by
+msgid "Issued by"
+msgstr "Người gửi"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__issued_on
+msgid "Issued on"
+msgstr "Ngày gửi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"It goes back to the person who recorded the decision, with your reason. The "
+"employee sees nothing."
+msgstr "Hồ sơ được trả lại cho người đã ghi nhận quyết định, kèm lý do của bạn. Nhân viên không thấy gì."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__write_uid
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__write_date
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_reason__company_id
+msgid "Leave empty to offer it in every company."
+msgstr "Để trống để dùng cho mọi công ty."
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_letter_template__company_id
+msgid "Leave empty to use it in every company."
+msgstr "Để trống để dùng cho mọi công ty."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__exit_case_id
+msgid "Leaving checklist"
+msgstr "Danh sách nghỉ việc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Leaving checklist opened."
+msgstr "Đã mở danh sách nghỉ việc."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__kind
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__kind
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__letter
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_country_note__step__letter
+msgid "Letter"
+msgstr "Thư"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Letter issued. The employee can read it on their own page now."
+msgstr "Đã gửi thư. Nhân viên có thể đọc trên trang của mình."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Letter issued: %s. The employee can now read it on their own page."
+msgstr "Đã gửi thư: %s. Nhân viên có thể đọc trên trang của mình."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Letter prepared: %s."
+msgstr "Đã soạn thư: %s."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Letter saved."
+msgstr "Đã lưu thư."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__body
+msgid "Letter text"
+msgstr "Nội dung thư"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__title
+msgid "Letter title"
+msgstr "Tiêu đề thư"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_list
+msgid "Letter wording"
+msgstr "Mẫu thư"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__letter_ids
+msgid "Letters"
+msgstr "Thư"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_home_hr_letters
+msgid "Letters HR has sent you"
+msgstr "Thư Nhân sự đã gửi cho bạn"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Letters HR has sent you. Only you and the people in HR who handle them can "
+"see these."
+msgstr "Thư Nhân sự đã gửi cho bạn. Chỉ bạn và những người Nhân sự phụ trách mới xem được."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_breadcrumbs_hr_letters
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_home_hr_letters
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Letters from HR"
+msgstr "Thư từ Nhân sự"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Loading cases"
+msgstr "Đang tải hồ sơ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Look into it, then plan a hearing"
+msgstr "Xác minh, sau đó lên lịch làm việc"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Mark as read"
+msgstr "Đánh dấu đã đọc"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__meeting
+msgid "Meeting note"
+msgstr "Ghi chú cuộc họp"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Minutes: who was there, what was said"
+msgstr "Biên bản: ai có mặt, đã nói gì"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_property
+msgid "Misuse of company property or money"
+msgstr "Sử dụng sai tài sản hoặc tiền của công ty"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Move the hearing"
+msgstr "Dời buổi làm việc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Moved to the decision."
+msgstr "Đã chuyển sang quyết định."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_res_users__pb_conduct_reader
+msgid "Named for conduct cases"
+msgstr "Được chỉ định cho hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_required
+msgid "Needs a second sign-off"
+msgstr "Cần người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "New case"
+msgstr "Hồ sơ mới"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "New conduct case"
+msgstr "Hồ sơ kỷ luật mới"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__none
+msgid "No action"
+msgstr "Không xử lý"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No cases match these filters"
+msgstr "Không có hồ sơ khớp bộ lọc"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No conduct cases"
+msgstr "Chưa có hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model_terms:ir.actions.act_window,help:pb_conduct.action_pb_conduct_country_note
+msgid "No country notes yet"
+msgstr "Chưa có ghi chú theo quốc gia"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "No department"
+msgstr "Không có phòng ban"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__none
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__none
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_none
+msgid "No further action"
+msgstr "Không xử lý thêm"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No hearing needed"
+msgstr "Không cần làm việc"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "No letters from HR"
+msgstr "Không có thư từ Nhân sự"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "No notes for"
+msgstr "Chưa có ghi chú cho"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Nobody else named for conduct cases can confirm this decision: the person "
+"who recorded it, the person who asked and the employee themselves cannot. "
+"Name another person on the Access screen."
+msgstr "Không còn ai khác được chỉ định cho hồ sơ kỷ luật có thể xác nhận quyết định này: người ghi nhận, người đề nghị và chính nhân viên đều không được. Hãy chỉ định thêm người trên màn hình Quyền truy cập."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "None."
+msgstr "Không có."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Not read by the employee yet."
+msgstr "Nhân viên chưa đọc."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__body
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Note added."
+msgstr "Đã thêm ghi chú."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__note_ids
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Notes and minutes stay with the case. They are never put in the employee's "
+"documents and the employee does not see them."
+msgstr "Ghi chú và biên bản được lưu cùng hồ sơ. Không bao giờ đưa vào tài liệu của nhân viên và nhân viên không xem được."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Notes for the other steps ("
+msgstr "Ghi chú cho các bước khác ("
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "On"
+msgstr "Lúc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"Only a second person named for conduct cases can do this: not the person who"
+" recorded the decision or asked for the sign-off, and never the employee "
+"themselves."
+msgstr "Chỉ người thứ hai được chỉ định cho hồ sơ kỷ luật mới làm được việc này: không phải người đã ghi nhận quyết định hay đề nghị xác nhận, và không bao giờ là chính nhân viên."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Only for the people HR names"
+msgstr "Chỉ dành cho người được Nhân sự chỉ định"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Only the head of HR for conduct cases can change this."
+msgstr "Chỉ trưởng phòng Nhân sự phụ trách hồ sơ kỷ luật mới thay đổi được."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Only the people named for conduct cases will see it. The employee sees "
+"nothing until a letter is issued."
+msgstr "Chỉ người được chỉ định cho hồ sơ kỷ luật mới xem được. Nhân viên không thấy gì cho đến khi thư được gửi."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"Only when no hearing is needed, for example when you decide to take no "
+"action."
+msgstr "Chỉ khi không cần làm việc, ví dụ khi bạn quyết định không xử lý."
+
+#. module: pb_conduct
+#: model:pb.role.ability,description:pb_conduct.ability_conduct_hr
+msgid ""
+"Open and run conduct cases: the concern, the hearing notes, the decision and"
+" the letters. Highly confidential: give it only to the people who handle "
+"these cases."
+msgstr "Mở và xử lý hồ sơ kỷ luật: phản ánh, ghi chú buổi làm việc, quyết định và thư. Tuyệt mật: chỉ cấp cho người trực tiếp xử lý."
+
+#. module: pb_conduct
+#: model:pb.role.profile,description:pb_conduct.role_conduct_hr
+msgid ""
+"Open and run somebody's conduct case: the concern, the hearing notes, the "
+"decision and the letters. Highly confidential."
+msgstr "Mở và xử lý hồ sơ kỷ luật của một người: phản ánh, ghi chú buổi làm việc, quyết định và thư. Tuyệt mật."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Open cases"
+msgstr "Hồ sơ đang mở"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Open it in HR to confirm or send it back"
+msgstr "Mở trong mục Nhân sự để xác nhận hoặc trả lại"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the Access screen"
+msgstr "Mở màn hình Quyền truy cập"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the case"
+msgstr "Mở hồ sơ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the case again"
+msgstr "Mở lại hồ sơ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Open the leaving checklist"
+msgstr "Mở danh sách nghỉ việc"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__opened_on
+msgid "Opened"
+msgstr "Ngày mở"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Opened longest ago"
+msgstr "Mở lâu nhất"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Opened most recently"
+msgstr "Mở gần đây nhất"
+
+#. module: pb_conduct
+#: model:pb.conduct.reason,name:pb_conduct.reason_other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_note__kind__other
+msgid "Other note"
+msgstr "Ghi chú khác"
+
+#. module: pb_conduct
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_none
+msgid "Outcome of our meeting"
+msgstr "Kết quả buổi làm việc"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__attachment_id
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Pick who the case is about."
+msgstr "Chọn người liên quan đến hồ sơ."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Plan the hearing"
+msgstr "Lên lịch làm việc"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Prepare an invitation letter"
+msgstr "Soạn thư mời"
+
+#. module: pb_conduct
+#: model:pb.employee.document.category,name:pb_conduct.vault_category_conduct
+msgid "Private HR letters"
+msgstr "Thư nhân sự riêng tư"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__raised_by
+msgid "Raised by"
+msgstr "Người phản ánh"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Raised by (optional)"
+msgstr "Người phản ánh (không bắt buộc)"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Read"
+msgstr "Đã đọc"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Read it and reply if you want to"
+msgstr "Đọc và phản hồi nếu bạn muốn"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Read the board again"
+msgstr "Tải lại bảng"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Reading the cases…"
+msgstr "Đang đọc hồ sơ…"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__reason_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__name
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_reason_list
+msgid "Reasons"
+msgstr "Lý do"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Record the decision"
+msgstr "Ghi nhận quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Record the hearing"
+msgstr "Ghi nhận buổi làm việc"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__name
+msgid "Reference"
+msgstr "Mã hồ sơ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Remove a filter above, or start again from every case."
+msgstr "Bỏ bớt bộ lọc phía trên, hoặc bắt đầu lại từ tất cả hồ sơ."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply_on
+msgid "Replied on"
+msgstr "Ngày phản hồi"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__reply_seen
+msgid "Reply read by HR"
+msgstr "Nhân sự đã đọc phản hồi"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Reply to HR"
+msgstr "Phản hồi Nhân sự"
+
+#. module: pb_conduct
+#: model:pb.role.ability,name:pb_conduct.ability_conduct_hr
+msgid "Run conduct cases"
+msgstr "Xử lý hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#: model:pb.role.ability,name:pb_conduct.ability_conduct_head
+msgid "Run conduct cases and their set-up"
+msgstr "Xử lý hồ sơ kỷ luật và thiết lập"
+
+#. module: pb_conduct
+#: model:res.groups,comment:pb_conduct.group_conduct_user
+msgid ""
+"Run conduct cases: record a concern, plan and record a hearing, record the "
+"decision and issue the letter. Not part of the general HR permissions — it "
+"is given by name."
+msgstr "Xử lý hồ sơ kỷ luật: ghi nhận phản ánh, lên lịch và ghi biên bản buổi làm việc, ghi quyết định và gửi thư. Không thuộc quyền Nhân sự chung — được cấp theo tên."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Save the letter"
+msgstr "Lưu thư"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why it goes back."
+msgstr "Nêu ngắn gọn lý do trả lại."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why the case is closed."
+msgstr "Nêu ngắn gọn vì sao đóng hồ sơ."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Say in a few words why there is no hearing."
+msgstr "Nêu ngắn gọn vì sao không có buổi làm việc."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Say why, in a few words."
+msgstr "Nêu lý do ngắn gọn."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_state
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__state__signoff
+msgid "Second sign-off"
+msgstr "Người thứ hai xác nhận"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_by
+msgid "Second sign-off by"
+msgstr "Người thứ hai xác nhận"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_on
+msgid "Second sign-off on"
+msgstr "Ngày người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"Seen only by the people HR names for conduct cases. Nothing here is emailed."
+msgstr "Chỉ những người được Nhân sự chỉ định cho hồ sơ kỷ luật mới xem được. Không có gì ở đây được gửi qua email."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Send it back"
+msgstr "Trả lại"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Send my reply"
+msgstr "Gửi phản hồi"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__sent_back
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back by %(who)s on %(when)s: \"%(why)s\""
+msgstr "Bị %(who)s trả lại lúc %(when)s: \"%(why)s\""
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Sent back by the second sign-off: %s"
+msgstr "Người xác nhận thứ hai đã trả lại: %s"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back with your reason."
+msgstr "Đã trả lại kèm lý do của bạn."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Sent back: check it and ask again"
+msgstr "Bị trả lại: kiểm tra và đề nghị lại"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Sent by %(who)s on %(when)s. A second person named for conduct cases "
+"confirms it; the employee sees nothing until then."
+msgstr "Do %(who)s gửi lúc %(when)s. Một người thứ hai được chỉ định cho hồ sơ kỷ luật sẽ xác nhận; đến lúc đó nhân viên không thấy gì."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Sent for a second sign-off."
+msgstr "Đã gửi để người thứ hai xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"Sent for the second sign-off. The employee sees nothing until it is "
+"confirmed."
+msgstr "Đã gửi để người thứ hai xác nhận. Nhân viên không thấy gì cho đến khi được xác nhận."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Sent on"
+msgstr "Gửi ngày"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__sequence
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_reason__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Set up"
+msgstr "Thiết lập"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Show"
+msgstr "Xem thêm"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Show all cases"
+msgstr "Xem tất cả hồ sơ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_asked_by
+msgid "Sign-off asked by"
+msgstr "Người đề nghị xác nhận"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_asked_on
+msgid "Sign-off asked on"
+msgstr "Ngày đề nghị xác nhận"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Something not clear? Ask HR. You can also find these letters in your "
+"documents."
+msgstr "Có điều chưa rõ? Hãy hỏi Nhân sự. Bạn cũng có thể tìm các thư này trong tài liệu của mình."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_me_home.py:0
+msgid "Something waits for your sign-off."
+msgstr "Có việc đang chờ bạn xác nhận."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__state
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__step
+msgid "Step"
+msgstr "Bước"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Take it back"
+msgstr "Rút lại"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Taken back before the second sign-off."
+msgstr "Đã rút lại trước khi người thứ hai xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Taken back. You can change the letter or the decision now."
+msgstr "Đã rút lại. Giờ bạn có thể sửa thư hoặc quyết định."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_palette.js:0
+msgid "Talent"
+msgstr "Nhân tài"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"Tell the employee in good time and in writing. Prepare an invitation letter "
+"from this case once the date is set."
+msgstr "Báo cho nhân viên sớm và bằng văn bản. Soạn thư mời từ hồ sơ này khi đã có ngày."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Thank you. HR can see that you have read it."
+msgstr "Cảm ơn bạn. Nhân sự sẽ thấy bạn đã đọc."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "That cannot be done here."
+msgstr "Không thể làm việc đó ở đây."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "That could not be done."
+msgstr "Không thực hiện được."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "That could not be opened."
+msgstr "Không mở được."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "That letter is not one of yours."
+msgstr "Thư này không phải của bạn."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The Access screen could not be opened."
+msgstr "Không mở được màn hình Quyền truy cập."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The case could not be opened."
+msgstr "Không mở được hồ sơ."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The cases could not be read just now."
+msgstr "Hiện chưa đọc được các hồ sơ."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The cases could not load"
+msgstr "Không tải được hồ sơ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể mất kết nối. Bộ lọc của bạn vẫn được giữ."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The decision (%s) had no second sign-off and does not count."
+msgstr "Quyết định (%s) chưa có người thứ hai xác nhận nên không được tính."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The decision is open to change. The draft letter was removed."
+msgstr "Quyết định có thể thay đổi. Thư nháp đã được xoá."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The decision letter has been issued, so the decision cannot change."
+msgstr "Thư quyết định đã được gửi nên quyết định không thể thay đổi."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"The decision letter is prepared from it. A warning or a dismissal then needs"
+" a second named person to sign it off before the letter is issued: only then"
+" can the employee read it."
+msgstr "Thư quyết định được soạn từ nội dung này. Cảnh cáo hoặc sa thải cần một người thứ hai được chỉ định xác nhận trước khi gửi thư: chỉ khi đó nhân viên mới đọc được."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The decision, in a few sentences (it goes in the letter)"
+msgstr "Quyết định, trong vài câu (sẽ đưa vào thư)"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__department_id
+msgid "The department when the case was opened."
+msgstr "Phòng ban tại thời điểm mở hồ sơ."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee has replied"
+msgstr "Nhân viên đã phản hồi"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The employee replied to \"%s\"."
+msgstr "Nhân viên đã phản hồi \"%s\"."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The employee said they have read \"%s\"."
+msgstr "Nhân viên xác nhận đã đọc \"%s\"."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee said they read it on"
+msgstr "Nhân viên xác nhận đã đọc ngày"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee's reply,"
+msgstr "Phản hồi của nhân viên,"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "The employee, a companion or representative, the HR lead"
+msgstr "Nhân viên, người đi cùng hoặc đại diện, trưởng nhóm Nhân sự"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The file is empty."
+msgstr "Tệp trống."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "The file is larger than 10 MB."
+msgstr "Tệp lớn hơn 10 MB."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"The law on hearings, warnings and letters differs by country, and these "
+"steps are general."
+msgstr "Luật về buổi làm việc, cảnh cáo và thư khác nhau theo quốc gia, còn các bước này chỉ là chung."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The leaving checklist is not part of this system."
+msgstr "Hệ thống này không có danh sách nghỉ việc."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The leaving checklist is open on the employee's record."
+msgstr "Danh sách nghỉ việc đã mở trên hồ sơ nhân viên."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The leaving checklist is opened only after a dismissal."
+msgstr "Danh sách nghỉ việc chỉ được mở sau quyết định chấm dứt hợp đồng."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"The leaving checklist opens once the dismissal has its second sign-off."
+msgstr "Danh sách việc khi nghỉ việc chỉ mở sau khi quyết định sa thải được người thứ hai xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "The letter has no text yet."
+msgstr "Thư chưa có nội dung."
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_letter_template__body
+msgid ""
+"The letter text. Words in ${...} are filled in from the case: ${employee}, "
+"${job}, ${department}, ${company}, ${date}, ${reason}, ${incident_date}, "
+"${hearing_date}, ${hearing_place}, ${decision}, ${valid_until}, "
+"${signed_by}."
+msgstr "Nội dung thư. Các từ trong ${...} được điền từ hồ sơ: ${employee}, ${job}, ${department}, ${company}, ${date}, ${reason}, ${incident_date}, ${hearing_date}, ${hearing_place}, ${decision}, ${valid_until}, ${signed_by}."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid ""
+"The minutes stay with the case. They are never put in the employee's "
+"documents and the employee does not see them."
+msgstr "Biên bản được lưu cùng hồ sơ. Không bao giờ đưa vào tài liệu của nhân viên và nhân viên không xem được."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"The reasons, letter wording and country notes are changed by the head of HR "
+"for conduct cases."
+msgstr "Lý do, mẫu thư và ghi chú theo quốc gia do trưởng phòng Nhân sự phụ trách hồ sơ kỷ luật thay đổi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "The steps above the table."
+msgstr "Các bước phía trên bảng."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "The warning must stay valid after the day it was decided."
+msgstr "Cảnh cáo phải còn hiệu lực sau ngày quyết định."
+
+#. module: pb_conduct
+#: model:ir.model.constraint,message:pb_conduct.constraint_pb_conduct_country_note_country_step_uniq
+msgid "There is already a note for this country and step. Edit that one."
+msgstr "Đã có ghi chú cho quốc gia và bước này. Hãy sửa ghi chú đó."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "There is no decision letter to confirm. Record the decision again."
+msgstr "Không có thư quyết định để xác nhận. Hãy ghi nhận lại quyết định."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "This case could not be opened."
+msgstr "Không mở được hồ sơ này."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "This case is at the \"%s\" step, so that cannot be done now."
+msgstr "Hồ sơ đang ở bước \"%s\", nên chưa thể làm việc này."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "This case no longer exists, or it is not one you can see."
+msgstr "Hồ sơ không còn tồn tại, hoặc bạn không được xem."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "This decision does not need a second sign-off."
+msgstr "Quyết định này không cần người thứ hai xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"This decision has no second sign-off yet, so its letter cannot be issued. To"
+" close the case without it, say why."
+msgstr "Quyết định này chưa có người thứ hai xác nhận nên chưa gửi thư được. Để đóng hồ sơ mà không có thư, hãy nêu lý do."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid ""
+"This decision is waiting for a second sign-off. Take it back first if the "
+"case should close without it."
+msgstr "Quyết định này đang chờ người thứ hai xác nhận. Hãy rút lại trước nếu muốn đóng hồ sơ mà không có xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"This decision needs a second sign-off first. A second person named for "
+"conduct cases confirms it, and the letter is issued when they do."
+msgstr "Quyết định này cần người thứ hai xác nhận trước. Một người thứ hai được chỉ định cho hồ sơ kỷ luật sẽ xác nhận, và thư được gửi khi họ xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid ""
+"This decision waits for your sign-off. Read the decision and the letter "
+"below, then confirm it or send it back. The employee sees nothing until it "
+"is confirmed."
+msgstr "Quyết định này đang chờ bạn xác nhận. Đọc quyết định và thư bên dưới, rồi xác nhận hoặc trả lại. Nhân viên không thấy gì cho đến khi được xác nhận."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "This letter has already been issued."
+msgstr "Thư này đã được gửi."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"This letter is waiting for a second sign-off. Take it back to change it."
+msgstr "Thư này đang chờ người thứ hai xác nhận. Hãy rút lại để sửa."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "This letter no longer exists."
+msgstr "Thư này không còn tồn tại."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.view_pb_conduct_letter_template_form
+msgid ""
+"This wording is a starting point. Check it with your adviser before you use "
+"it: what a letter must say differs by country."
+msgstr "Mẫu này chỉ là điểm khởi đầu. Hãy kiểm tra với cố vấn trước khi dùng: nội dung bắt buộc của thư khác nhau theo quốc gia."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__title
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_res_users__pb_conduct_reader
+msgid ""
+"True for the people HR has named on the Access screen to see conduct cases. "
+"Read by the record rules."
+msgstr "Đúng với những người được Nhân sự chỉ định trên màn hình Quyền truy cập để xem hồ sơ kỷ luật."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Type a name or an employee code"
+msgstr "Nhập tên hoặc mã nhân viên"
+
+#. module: pb_conduct
+#: model:ir.model,name:pb_conduct.model_res_users
+msgid "User"
+msgstr "Người dùng"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__verbal
+msgid "Verbal warning"
+msgstr "Nhắc nhở bằng lời"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__verbal
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__verbal
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_verbal
+msgid "Verbal warning confirmed"
+msgstr "Xác nhận nhắc nhở bằng lời"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__signoff_state__waiting
+msgid "Waiting for a second sign-off"
+msgstr "Chờ người thứ hai xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Waiting for your sign-off"
+msgstr "Chờ bạn xác nhận"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__valid_until
+msgid "Warning valid until"
+msgstr "Cảnh cáo có hiệu lực đến"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+msgid "Went to a decision without a hearing: %s"
+msgstr "Chuyển sang quyết định mà không có buổi làm việc: %s"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "What comes next"
+msgstr "Bước tiếp theo"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__summary
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_event__text
+msgid "What happened"
+msgstr "Sự việc"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_country_note__note
+msgid "What to do in this country"
+msgstr "Cần làm gì ở quốc gia này"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "When HR sends you a letter, you can read it here and reply."
+msgstr "Khi Nhân sự gửi thư, bạn có thể đọc và phản hồi tại đây."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"When a concern about someone's conduct reaches HR, open a case here. It goes"
+" from the concern to a hearing, a decision and a letter, and only the people"
+" named for conduct cases can see it."
+msgstr "Khi có phản ánh về hành vi của ai đó gửi đến Nhân sự, hãy mở hồ sơ tại đây. Hồ sơ đi từ phản ánh đến buổi làm việc, quyết định và thư, và chỉ người được chỉ định mới xem được."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__incident_date
+msgid "When it happened"
+msgstr "Thời điểm xảy ra"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_place
+msgid "Where"
+msgstr "Địa điểm"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Where every case is"
+msgstr "Hồ sơ đang ở đâu"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who"
+msgstr "Ai"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__hearing_attendees
+msgid "Who attends"
+msgstr "Thành phần tham dự"
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_case__raised_by
+msgid ""
+"Who brought the concern to HR. Free text, not a login: the person who raised"
+" it does not get to see the case."
+msgstr "Người đã báo sự việc cho Nhân sự. Chỉ ghi tên, không phải tài khoản: người phản ánh không được xem hồ sơ."
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who can see conduct cases"
+msgstr "Ai được xem hồ sơ kỷ luật"
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Who it is about"
+msgstr "Về ai"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__close_reason
+msgid "Why it was closed"
+msgstr "Lý do đóng"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_case__signoff_note
+msgid "Why it was sent back"
+msgstr "Lý do trả lại"
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter__template_id
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_letter_template__body
+msgid "Wording"
+msgstr "Nội dung mẫu"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "Write a note…"
+msgstr "Viết ghi chú…"
+
+#. module: pb_conduct
+#: model_terms:ir.actions.act_window,help:pb_conduct.action_pb_conduct_country_note
+msgid ""
+"Write down what your adviser tells you for each step in each country: time "
+"limits, who must attend the hearing, how long a warning lasts. The note "
+"shows on every case at that step."
+msgstr "Ghi lại điều cố vấn hướng dẫn cho từng bước ở từng quốc gia: thời hạn, ai phải dự buổi làm việc, cảnh cáo có hiệu lực bao lâu. Ghi chú hiện trên mọi hồ sơ ở bước đó."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_case.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write the decision in a few sentences. It goes in the letter."
+msgstr "Viết quyết định trong vài câu. Nội dung này sẽ đưa vào thư."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write the note first."
+msgstr "Hãy viết ghi chú trước."
+
+#. module: pb_conduct
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "Write what happened, in a few sentences."
+msgstr "Viết sự việc trong vài câu."
+
+#. module: pb_conduct
+#: model:ir.model.fields,help:pb_conduct.field_pb_conduct_country_note__note
+msgid ""
+"Write what your adviser tells you for this step in this country (time "
+"limits, who must attend, what the letter must say). It shows on every case "
+"at this step."
+msgstr "Ghi lại điều cố vấn hướng dẫn cho bước này ở quốc gia này (thời hạn, ai phải tham dự, thư phải nêu gì). Ghi chú hiện trên mọi hồ sơ ở bước này."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid "Write your reply first."
+msgstr "Hãy viết phản hồi trước."
+
+#. module: pb_conduct
+#: model:ir.model.fields,field_description:pb_conduct.field_pb_conduct_note__author_id
+msgid "Written by"
+msgstr "Người viết"
+
+#. module: pb_conduct
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_case__outcome__written
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter__kind__written
+#: model:ir.model.fields.selection,name:pb_conduct.selection__pb_conduct_letter_template__kind__written
+#: model:pb.conduct.letter.template,name:pb_conduct.tpl_written
+#: model:pb.conduct.letter.template,title:pb_conduct.tpl_written
+msgid "Written warning"
+msgstr "Cảnh cáo bằng văn bản"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "You cannot open a case about yourself."
+msgstr "Bạn không thể mở hồ sơ về chính mình."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+msgid ""
+"You have already replied to this letter. Ask HR if you want to add "
+"something."
+msgstr "Bạn đã phản hồi thư này. Hãy hỏi Nhân sự nếu muốn bổ sung."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your login is not linked to an employee record"
+msgstr "Tài khoản của bạn chưa liên kết với hồ sơ nhân viên"
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Your reply could not be sent. Write something first, or ask HR if you have "
+"already replied."
+msgstr "Không gửi được phản hồi. Hãy viết nội dung trước, hoặc hỏi Nhân sự nếu bạn đã phản hồi rồi."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid ""
+"Your reply goes to the people in HR who handle this letter. You can reply "
+"once."
+msgstr "Phản hồi sẽ đến những người Nhân sự phụ trách thư này. Bạn chỉ phản hồi được một lần."
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/conduct_letter.py:0
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your reply has been sent to HR."
+msgstr "Phản hồi của bạn đã được gửi đến Nhân sự."
+
+#. module: pb_conduct
+#: model_terms:ir.ui.view,arch_db:pb_conduct.portal_my_letters
+msgid "Your reply, sent on"
+msgstr "Phản hồi của bạn, gửi ngày"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "Your sign-off is needed"
+msgstr "Cần bạn xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "cases"
+msgstr "hồ sơ"
+
+#. module: pb_conduct
+#. odoo-python
+#: code:addons/pb_conduct/models/pb_conduct.py:0
+msgid "file"
+msgstr "tệp"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "hearings in the next 7 days"
+msgstr "buổi làm việc trong 7 ngày tới"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "letters to issue"
+msgstr "thư cần gửi"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "more"
+msgstr "hồ sơ"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "open cases"
+msgstr "hồ sơ đang mở"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "replies from employees to read"
+msgstr "phản hồi của nhân viên cần đọc"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid "valid until"
+msgstr "hiệu lực đến"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "waiting for a decision"
+msgstr "chờ quyết định"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "waiting for your sign-off"
+msgstr "chờ bạn xác nhận"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/js/conduct_board.js:0
+msgid "warnings still valid"
+msgstr "cảnh cáo còn hiệu lực"
+
+#. module: pb_conduct
+#. odoo-javascript
+#: code:addons/pb_conduct/static/src/xml/conduct_board.xml:0
+msgid ""
+"yet. The head of HR can add what your adviser says under Set up › Country "
+"notes."
+msgstr "Trưởng phòng Nhân sự có thể thêm hướng dẫn của cố vấn tại Thiết lập › Ghi chú theo quốc gia."

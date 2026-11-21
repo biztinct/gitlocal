@@ -120,6 +120,9 @@ from . import payroll_tax_table
 from . import treatment_classification
 
 from . import application_payroll_source
+# WDGAP W2-A — the scheme's tax year start and the ONE helper every
+# year-to-date reader asks (engine source, Updates desk, employee tax sheet).
+from . import tax_year
 from . import application_domain_sources
 from . import application_source_ui
 
@@ -135,3 +138,8 @@ from . import payroll_preparation
 # Extends hr.contract / hr.contract.advantage(.template) / hr.formula.rule /
 # hr.formula.config, so it loads after every base model it touches.
 from . import contract_fill_in
+
+# WDGAP W2-F (F-1) — an Extra run never takes the mid-month advance twice.
+# Extends hr.formula.config, hr.payslip and hr.payroll.import.batch; loads
+# after all three.
+from . import advance_once

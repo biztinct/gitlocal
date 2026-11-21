@@ -1,0 +1,189 @@
+field_code,verdict,country
+version_id,KEEP,general
+image_1920,KEEP,general
+name,KEEP,general
+work_email,KEEP,general
+work_phone,KEEP,general
+mobile_phone,KEEP,general
+category_ids,KEEP,general
+hr_icon_display,KEEP,general
+employee_properties,KEEP,general
+company_id,KEEP,general
+department_id,KEEP,general
+contract_id,KEEP,general
+job_id,KEEP,general
+job_title,KEEP,general
+parent_id,KEEP,general
+hrbp_user_id,KEEP,general
+buddy_id,KEEP,general
+employee_id,KEEP,general
+address_id,KEEP,general
+work_location_id,KEEP,general
+pb_safety_group,HIDE BY COUNTRY,VN
+pb_posh_ic_member,HIDE BY COUNTRY,IN
+pb_sg_experienced,HIDE BY COUNTRY,SG
+departure_reason_id,KEEP,general
+departure_description,KEEP,general
+departure_date,KEEP,general
+monday_location_id,KEEP,general
+tuesday_location_id,KEEP,general
+wednesday_location_id,KEEP,general
+thursday_location_id,KEEP,general
+friday_location_id,KEEP,general
+saturday_location_id,KEEP,general
+sunday_location_id,KEEP,general
+additional_note,KEEP,general
+child_ids,KEEP,general
+resume_line_ids,KEEP,general
+current_employee_skill_ids,KEEP,general
+certification_ids,KEEP,general
+private_email,KEEP,general
+private_phone,KEEP,general
+bank_account_ids,KEEP,general
+pb_other_name_holder,KEEP,general
+legal_name,KEEP,general
+birthday,KEEP,general
+birthday_public_display,KEEP,general
+place_of_birth,KEEP,general
+country_of_birth,KEEP,general
+sex,KEEP,general
+emergency_contact,KEEP,general
+emergency_phone,KEEP,general
+visa_no,KEEP,general
+visa_expire,KEEP,general
+permit_no,KEEP,general
+work_permit_expiration_date,KEEP,general
+has_work_permit,KEEP,general
+country_id,KEEP,general
+identification_id,KEEP,general
+ssnid,KEEP,general
+passport_id,KEEP,general
+passport_expiration_date,KEEP,general
+private_street,KEEP,general
+private_street2,KEEP,general
+private_city,KEEP,general
+private_state_id,KEEP,general
+private_zip,KEEP,general
+private_country_id,KEEP,general
+distance_home_work,KEEP,general
+distance_home_work_unit,KEEP,general
+marital,KEEP,general
+spouse_complete_name,KEEP,general
+spouse_birthdate,KEEP,general
+children,KEEP,general
+certificate,KEEP,general
+study_field,KEEP,general
+id_card,KEEP,general
+driving_license,KEEP,general
+contract_date_start,KEEP,general
+contract_date_end,KEEP,general
+wage,KEEP,general
+employee_type,KEEP,general
+pb_probation_state,KEEP,general
+contract_type_id,REMOVE FROM SCREEN,general
+structure_type_id,REMOVE FROM SCREEN,general
+resource_calendar_id,KEEP,general
+badge_ids,KEEP,general
+user_id,KEEP,general
+payroll_country,KEEP,general
+tz,KEEP,general
+pb_work_timezone_note,KEEP,general
+hr_responsible_id,KEEP,general
+expense_manager_id,KEEP,general
+leave_manager_id,KEEP,general
+attendance_manager_id,KEEP,general
+hourly_cost,KEEP,general
+pin,KEEP,general
+barcode,KEEP,general
+pb_clock_code,KEEP,general
+ruleset_id,KEEP,general
+pb_fixed_term_before,KEEP,general
+pb_fixed_term_months_before,KEEP,general
+pb_rehire,KEEP,general
+pb_rehire_note,KEEP,general
+pb_rehire_by,KEEP,general
+pb_rehire_on,KEEP,general
+date_of_joining,KEEP,general
+overtime_status,HIDE BY COUNTRY,VN
+fire_prevention_officer,HIDE BY COUNTRY,VN
+tham_gia_bhxh,HIDE BY COUNTRY,VN
+level_of_health_compensation,REMOVE FROM SCREEN,VN
+subject_to_pit,HIDE BY COUNTRY,VN
+trade_union_participation,REMOVE FROM SCREEN,VN
+funeral_fund_participation,REMOVE FROM SCREEN,VN
+female_excluding_pregnant,REMOVE FROM SCREEN,VN
+osh_worker_code,REMOVE FROM SCREEN,VN
+insurance_code,HIDE BY COUNTRY,VN
+trade_union_fee_code,REMOVE FROM SCREEN,VN
+basic_overtime_electricity,REMOVE FROM SCREEN,VN
+bd_phsk,REMOVE FROM SCREEN,VN
+deduction_of_funeral_money,REMOVE FROM SCREEN,VN
+different_subjects,REMOVE FROM SCREEN,VN
+legal_entity_pays_salary,REMOVE FROM SCREEN,VN
+bank_name,REMOVE FROM SCREEN,general
+account_number,REMOVE FROM SCREEN,general
+pb_legal_first_name,KEEP,general
+pb_legal_last_name,KEEP,general
+pb_blood_type,KEEP,general
+pb_religion,KEEP,general
+pb_position_reference,REMOVE FROM SCREEN,general
+pb_job_level,KEEP,general
+pb_emergency_relationship,REMOVE FROM SCREEN,general
+pb_permanent_address,KEEP,general
+pb_visa_status,KEEP,general
+pb_npwp_number,HIDE BY COUNTRY,ID
+pb_family_card_number,HIDE BY COUNTRY,ID
+pb_bpjs_employment_number,HIDE BY COUNTRY,ID
+pb_bpjs_health_number,HIDE BY COUNTRY,ID
+pb_vn_dependants_check,HIDE BY COUNTRY,VN
+pb_id_ptkp_status,HIDE BY COUNTRY,ID
+pb_in_pan_number,HIDE BY COUNTRY,IN
+pb_in_tax_regime,HIDE BY COUNTRY,IN
+pb_in_uan_number,HIDE BY COUNTRY,IN
+pb_in_esi_number,HIDE BY COUNTRY,IN
+pb_sg_tax_residency,HIDE BY COUNTRY,SG
+pb_sg_shg_fund,HIDE BY COUNTRY,SG
+pb_tax_request_ids,KEEP,general
+vn_payroll_insurance_summary,KEEP,VN
+vn_insurance_policy_id,HIDE BY COUNTRY,VN
+vn_work_region,HIDE BY COUNTRY,VN
+vn_foreign_insurance_exempt,REMOVE FROM SCREEN,VN
+vn_exempt_oa_od,HIDE BY COUNTRY,VN
+vn_si_number,REMOVE FROM SCREEN,VN
+vn_si_enrolled,HIDE BY COUNTRY,VN
+vn_si_enrollment_status,HIDE BY COUNTRY,VN
+vn_si_salary_base,HIDE BY COUNTRY,VN
+vn_si_effective_date,REMOVE FROM SCREEN,VN
+vn_hi_number,REMOVE FROM SCREEN,VN
+vn_hi_enrolled,HIDE BY COUNTRY,VN
+vn_hi_salary_base,HIDE BY COUNTRY,VN
+vn_hi_effective_date,REMOVE FROM SCREEN,VN
+vn_ui_number,REMOVE FROM SCREEN,VN
+vn_ui_enrolled,HIDE BY COUNTRY,VN
+vn_ui_salary_base,HIDE BY COUNTRY,VN
+vn_ui_effective_date,REMOVE FROM SCREEN,VN
+vn_employer_insurance_cost,REMOVE FROM SCREEN,VN
+vn_employee_insurance_cost,REMOVE FROM SCREEN,VN
+vn_total_insurance_contribution,REMOVE FROM SCREEN,VN
+vn_payroll_tax_summary,KEEP,VN
+vn_tax_table_id,REMOVE FROM SCREEN,VN
+vn_tax_regime,HIDE BY COUNTRY,VN
+vn_tax_effective_date,REMOVE FROM SCREEN,VN
+vn_residency_status,HIDE BY COUNTRY,VN
+vn_personal_tax_rate,REMOVE FROM SCREEN,VN
+vn_monthly_tax_allowance,REMOVE FROM SCREEN,VN
+vn_dependent_record_count,HIDE BY COUNTRY,VN
+vn_eligible_dependent_count,HIDE BY COUNTRY,VN
+vn_dependent_tax_allowance,REMOVE FROM SCREEN,VN
+vn_dependent_ids,HIDE BY COUNTRY,VN
+pb_vn_is_local,HIDE BY COUNTRY,VN
+pb_vn_tax_resident,HIDE BY COUNTRY,VN
+pb_vn_tax_commitment,HIDE BY COUNTRY,VN
+pb_vn_in_insurance,HIDE BY COUNTRY,VN
+pb_vn_union_member,HIDE BY COUNTRY,VN
+pb_vn_enrol_family_health,REMOVE FROM SCREEN,VN
+pb_vn_enrol_private_health,REMOVE FROM SCREEN,VN
+pb_vn_enrol_dep_health,REMOVE FROM SCREEN,VN
+pb_leave_policy_id,KEEP,general
+pb_policy_full_time_confirmed,KEEP,general
+pb_policy_eligibility_review_ref,KEEP,general

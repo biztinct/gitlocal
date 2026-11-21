@@ -73,8 +73,11 @@
                     <button name="action_open" type="object" string="Open it"
                             class="btn-primary" invisible="state == 'open'"
                             help="People can be given their goal sheets once it is open. Only one goal year can be open at a time."/>
+                    <!-- WDGAP QF4: hidden — "Score it and close the year"
+                         (goal_year_views.xml) is the one close button; this
+                         one stays as the anchor that view hangs off. -->
                     <button name="action_close" type="object"
-                            string="Close it" invisible="state != 'open'"/>
+                            string="Close it" invisible="1"/>
                     <button name="action_back_to_draft" type="object"
                             string="Back to being set up"
                             invisible="state != 'closed'"/>

@@ -41,6 +41,22 @@
 
         <div class="pbbk-cols">
           <div class="pbbk-main">
+            <!-- WDGAP S6-A BK2: bank changes that arrived by an import and
+                 wait for THIS reader — one action per file. -->
+            <div class="pbbk-imports" t-if="(state.data.imports or []).length">
+              <div class="pbbk-imports__hd"><span t-out="ic('fileSpreadsheet', 15)"/> <span>Bank changes from imports, waiting for you</span></div>
+              <div class="pbbk-imports__row" t-foreach="state.data.imports" t-as="imp" t-key="imp.key">
+                <div class="pbbk-imports__l"><b t-esc="imp.label"/><span class="pbbk-imports__n"><t t-esc="imp.count"/> waiting</span></div>
+                <t t-if="state.confirmImport === imp.key">
+                  <span class="pbbk-imports__ask">Approve all of them?</span>
+                  <button type="button" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="() => this.approveImport(imp)"><span t-out="ic('check', 14)"/> Yes, approve all</button>
+                  <button type="button" class="pbim-btn ghost" t-on-click="cancelImport">Cancel</button>
+                </t>
+                <button t-else="" type="button" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="() => this.approveImport(imp)">Approve all in this file</button>
+              </div>
+              <p class="pbbk-imports__note">Changes you imported yourself stay waiting for somebody else. To send one back, open it in Approvals.</p>
+            </div>
+
             <div class="pbbk-upload" data-coach="cp-bank-new">
               <div class="pbbk-upload__hd">New bank-change request</div>
               <DocDrop onFile.bind="onUpload" label="'Drop a bank confirmation letter / statement / passbook'"/>

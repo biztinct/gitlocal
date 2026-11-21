@@ -1,0 +1,82 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-18 06:00+0000\n"
+"PO-Revision-Date: 2026-11-18 06:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "<span>Tax year</span>"
+msgstr "<span>Năm tính thuế</span>"
+
+#. module: pb_me_tax_cert
+#: model:ir.model.fields,field_description:pb_me_tax_cert.field_pb_me_home__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_tax_cert
+#. odoo-python
+#: code:addons/pb_me_tax_cert/models/pb_me_home.py:0
+msgid "Download it as a PDF"
+msgstr "Tải xuống dạng PDF"
+
+#. module: pb_me_tax_cert
+#: model:ir.model,name:pb_me_tax_cert.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Thông tin trang chủ nhân viên"
+
+#. module: pb_me_tax_cert
+#: model:ir.model.fields,field_description:pb_me_tax_cert.field_pb_me_home__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "None yet. When payroll releases your year-end tax certificate, it appears here."
+msgstr "Chưa có. Khi bộ phận lương phát hành chứng từ thuế cuối năm của bạn, chứng từ sẽ hiện ở đây."
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_breadcrumbs_tax_certificates model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_home_tax_certificates model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "Tax certificates"
+msgstr "Chứng từ thuế"
+
+#. module: pb_me_tax_cert
+#. odoo-python
+#: code:addons/pb_me_tax_cert/models/pb_me_home.py:0
+msgid "Your tax certificate is ready"
+msgstr "Chứng từ thuế của bạn đã sẵn sàng"
+
+#. module: pb_me_tax_cert
+#. odoo-python
+#: code:addons/pb_me_tax_cert/models/pb_me_home.py:0
+msgid "Your tax certificate is ready."
+msgstr "Chứng từ thuế của bạn đã sẵn sàng."
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_home_tax_certificates
+msgid "Your year-end tax certificates"
+msgstr "Chứng từ thuế cuối năm của bạn"
+
+#. module: pb_me_tax_cert
+#: model_terms:ir.ui.view,arch_db:pb_me_tax_cert.portal_my_tax_certificates
+msgid "Your year-end tax certificates, as your employer released them. Only you can see and download yours."
+msgstr "Chứng từ thuế cuối năm của bạn, do công ty phát hành. Chỉ bạn mới xem và tải được chứng từ của mình."

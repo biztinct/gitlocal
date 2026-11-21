@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_me_certificate_hr,pb.me.certificate hr,model_pb_me_certificate,hr.group_hr_user,1,1,0,0
+access_pb_me_certificate_pay,pb.me.certificate pay team,model_pb_me_certificate,om_hr_payroll.group_hr_payroll_user,1,1,0,0
+access_pb_me_certificate_seat,pb.me.certificate seat read,model_pb_me_certificate,base.group_user,1,0,0,0
+access_pb_me_certificate_system,pb.me.certificate system,model_pb_me_certificate,base.group_system,1,1,0,1

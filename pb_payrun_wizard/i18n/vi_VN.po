@@ -932,3 +932,285 @@ msgstr "Tab để chuyển ô. Enter để hoàn tất. Thay đổi được lư
 #: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
 msgid "Final tax month reminder"
 msgstr "Nhắc tháng tính thuế cuối"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "Give the extra run a name, so everybody can tell it from the month’s regular run — for example “Extra run — bonus — %(month)s”."
+msgstr "Hãy đặt tên cho đợt lương thêm để mọi người phân biệt được với đợt lương thường kỳ của tháng — ví dụ “Đợt lương thêm — thưởng — %(month)s”."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "An extra run is only for the people you pick. Pick at least one person, then run it."
+msgstr "Đợt lương thêm chỉ dành cho những người bạn chọn. Hãy chọn ít nhất một người rồi chạy."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "Somebody you picked"
+msgstr "Một người bạn đã chọn"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%(names)s cannot be in this extra run: the payroll scheme “%(scheme)s” does not pay them for this period. Take them off the list, or pick the scheme that pays them."
+msgstr "%(names)s không thể có trong đợt lương thêm này: phương án lương “%(scheme)s” không trả lương cho họ trong kỳ này. Hãy bỏ họ khỏi danh sách, hoặc chọn phương án lương đang trả lương cho họ."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%(names)s cannot be in this extra run: they have no contract running in this company for this period. Take them off the list and try again."
+msgstr "%(names)s không thể có trong đợt lương thêm này: họ không có hợp đồng đang hiệu lực tại công ty này trong kỳ này. Hãy bỏ họ khỏi danh sách và thử lại."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "Extra run — %(scheme)s — %(date)s"
+msgstr "Đợt lương thêm — %(scheme)s — %(date)s"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "Extra run — %(date)s"
+msgstr "Đợt lương thêm — %(date)s"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "Give the extra run a name, so everybody can tell it from the month’s regular run."
+msgstr "Hãy đặt tên cho đợt lương thêm để mọi người phân biệt được với đợt lương thường kỳ của tháng."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Everybody this scheme pays, once a month"
+msgstr "Mọi người do phương án lương này trả, mỗi tháng một lần"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Something on top of the normal month"
+msgstr "Một khoản ngoài lương tháng thông thường"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Extra run"
+msgstr "Đợt lương thêm"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Only the people you pick"
+msgstr "Chỉ những người bạn chọn"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Extra run — only the people you pick. Use it for a bonus, a correction or one extra payslip. It never changes another run."
+msgstr "Đợt lương thêm — chỉ những người bạn chọn. Dùng cho tiền thưởng, một khoản điều chỉnh hoặc thêm một phiếu lương. Đợt này không bao giờ thay đổi đợt lương khác."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Regular — everybody this scheme pays, once a month."
+msgstr "Thường kỳ — mọi người do phương án lương này trả, mỗi tháng một lần."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "An extra run works out everything this scheme contains for the people you pick. To pay only a bonus, pick a scheme that only contains the bonus."
+msgstr "Đợt lương thêm tính mọi khoản có trong phương án lương này cho những người bạn chọn. Để chỉ trả tiền thưởng, hãy chọn một phương án lương chỉ gồm khoản thưởng đó."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Who is this extra run for?"
+msgstr "Đợt lương thêm này dành cho ai?"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Remove"
+msgstr "Bỏ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Nobody picked yet. Find the people this run pays below."
+msgstr "Chưa chọn ai. Hãy tìm những người đợt này trả lương ở bên dưới."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "picked — only they will be paid."
+msgstr "người đã chọn — chỉ họ được trả lương."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Nobody this scheme pays matches that search."
+msgstr "Không có ai do phương án lương này trả khớp với tìm kiếm đó."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "A draft extra run will be created and computed — fully reversible. Only the people you picked are paid; no other run changes."
+msgstr "Một đợt lương thêm nháp sẽ được tạo và tính — có thể hoàn tác hoàn toàn. Chỉ những người bạn đã chọn được trả lương; không đợt lương nào khác thay đổi."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Compute the extra payslips"
+msgstr "Tính các phiếu lương thêm"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%(names)s and %(more)s more"
+msgstr "%(names)s và %(more)s người khác"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%s are not in this file. Their payslips are worked out without it, from their contracts and records — the same as a regular run does for anybody the file leaves out."
+msgstr "%s không có trong tệp này. Phiếu lương của họ được tính không dùng tệp, từ hợp đồng và hồ sơ của họ — giống như kỳ lương thông thường làm với bất kỳ ai không có trong tệp."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%s is not in this file. Their payslip is worked out without it, from their contract and records — the same as a regular run does for anybody the file leaves out."
+msgstr "%s không có trong tệp này. Phiếu lương được tính không dùng tệp, từ hợp đồng và hồ sơ của người này — giống như kỳ lương thông thường làm với bất kỳ ai không có trong tệp."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%s payslips in this extra run also take the mid-month advance off. Check it has not been taken already."
+msgstr "%s phiếu lương trong kỳ lương bổ sung này cũng trừ khoản tạm ứng giữa tháng. Hãy kiểm tra khoản này chưa bị trừ trước đó."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "1 payslip in this extra run also takes the mid-month advance off. Check it has not been taken already."
+msgstr "1 phiếu lương trong kỳ lương bổ sung này cũng trừ khoản tạm ứng giữa tháng. Hãy kiểm tra khoản này chưa bị trừ trước đó."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "Nobody you picked is in it."
+msgstr "Không ai bạn đã chọn có trong tệp."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This extra run does not say who it is for, so the pay data file cannot be loaded into it. Start the extra run again and pick the people."
+msgstr "Kỳ lương bổ sung này không ghi rõ dành cho ai, nên không thể tải tệp dữ liệu lương vào. Hãy bắt đầu lại kỳ lương bổ sung và chọn người."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This extra run keeps the %s you picked."
+msgstr "Kỳ lương bổ sung này chỉ giữ %s người bạn đã chọn."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This extra run keeps the 1 you picked."
+msgstr "Kỳ lương bổ sung này chỉ giữ 1 người bạn đã chọn."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This file has %s people."
+msgstr "Tệp này có %s người."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This file has 1 person."
+msgstr "Tệp này có 1 người."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/extra_run_file.py:0
+msgid "This file also takes the mid-month advance; check it has not been taken already"
+msgstr "Tệp này cũng trừ khoản tạm ứng giữa tháng; hãy kiểm tra khoản này chưa bị trừ trước đó"
+
+#. module: pb_payrun_wizard
+#: model:ir.model.fields,field_description:pb_payrun_wizard.field_hr_payslip_run__pb_extra_employee_ids
+msgid "People picked for this extra run"
+msgstr "Những người được chọn cho kỳ lương bổ sung này"
+
+#. module: pb_payrun_wizard
+#: model:ir.model.fields,help:pb_payrun_wizard.field_hr_payslip_run__pb_extra_employee_ids
+msgid "The people this extra run is for. A pay data file loaded into the run keeps only their rows."
+msgstr "Những người mà kỳ lương bổ sung này dành cho. Tệp dữ liệu lương tải vào kỳ lương chỉ giữ các dòng của họ."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/extra_run_file.py:0
+msgid "Advance not taken again (already in %s)"
+msgstr "Không trừ tạm ứng lần nữa (đã trừ trong %s)"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/extra_run_file.py:0
+msgid "Takes the mid-month advance: %s is not worked out yet, so it could not be told whether it takes it too"
+msgstr "Có trừ khoản tạm ứng giữa tháng: %s chưa được tính, nên chưa biết kỳ đó có trừ khoản này nữa không"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/extra_run_file.py:0
+msgid "the regular payslip"
+msgstr "phiếu lương thường kỳ"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/extra_run_file.py:0
+msgid "Takes the mid-month advance, and %s took it too — it is taken twice"
+msgstr "Có trừ khoản tạm ứng giữa tháng, và %s cũng đã trừ — khoản này bị trừ hai lần"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "another payslip of this month"
+msgstr "một phiếu lương khác của tháng này"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%(names)s and %(more)s other runs"
+msgstr "%(names)s và %(more)s kỳ lương khác"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "The mid-month advance was already taken in %s for the person picked. This extra run will not take it again."
+msgstr "Khoản tạm ứng giữa tháng của người được chọn đã được trừ trong %s. Kỳ lương bổ sung này sẽ không trừ lại."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "The mid-month advance was already taken in %(runs)s for %(count)s of the people picked. This extra run will not take it again."
+msgstr "Khoản tạm ứng giữa tháng của %(count)s người được chọn đã được trừ trong %(runs)s. Kỳ lương bổ sung này sẽ không trừ lại."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "1 payslip in this extra run takes the mid-month advance. The month's regular payslip is not worked out yet, so it could not be told whether it takes it too."
+msgstr "1 phiếu lương trong kỳ lương bổ sung này trừ khoản tạm ứng giữa tháng. Phiếu lương thường kỳ của tháng chưa được tính, nên chưa biết phiếu đó có trừ khoản này nữa không."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%s payslips in this extra run take the mid-month advance. The month's regular payslips are not all worked out yet, so it could not be told whether they take it too."
+msgstr "%s phiếu lương trong kỳ lương bổ sung này trừ khoản tạm ứng giữa tháng. Các phiếu lương thường kỳ của tháng chưa được tính hết, nên chưa biết các phiếu đó có trừ khoản này nữa không."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Good to know — nothing to do:"
+msgstr "Để bạn biết — không cần làm gì:"

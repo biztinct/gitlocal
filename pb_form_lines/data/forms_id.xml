@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-A — Indonesia: monthly income-tax slips for permanent
+         employees (BPMP, form 1721-VIII), the bulk import of the tax office's
+         system. Layout from the tax office's own published converter and
+         template; see pb_form_lines/models/render_id.py. -->
+    <record id="form_id_bpmp" model="pb.gov.form">
+        <field name="code">ID_BPMP</field>
+        <field name="country_code">ID</field>
+        <field name="sequence">10</field>
+        <field name="name">Monthly income tax slips — permanent employees (PPh 21)</field>
+        <field name="official_name">Bukti Pemotongan Bulanan Pegawai Tetap (BPMP) — Formulir 1721-VIII</field>
+        <field name="authority">Tax office (DJP)</field>
+        <field name="period_kind">month</field>
+        <field name="output_kinds">xml,xlsx</field>
+        <field name="total_line_code">PPH21</field>
+        <field name="source_url">https://www.pajak.go.id/reformdjp/coretax/template-xml-dan-converter-excel-ke-xml</field>
+        <field name="source_note">Direktorat Jenderal Pajak, "Template XML dan Converter Excel ke XML" (Coretax), section "Bupot PPh Pasal 21/26": "BPMP Excel to XML v.3.xlsx" (updated 17 April 2025) with its XML map MONTHLYPAYROLL, and the XML template "bpmp.zip" (7 November 2024). Every month of the tax year except the last; the last month goes on the year-end slip.</field>
+        <field name="inferred" eval="False"/>
+        <field name="inferred_note">The published schema lists the tax facility values N/A, DTP, ECT while the converter's reference sheet says ETC; only N/A is written. The rate is the person's own tax withheld divided by gross unless a pay item is put on the Rate line. The withholding date is the last day of the month.</field>
+    </record>
+
+    <record id="form_id_bpmp_gross" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpmp"/>
+        <field name="code">GROSS</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="label">Gross income</field>
+        <field name="official_label">Penghasilan Kotor (Gross)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">penghasilan bruto,penghasilan kotor,bruto,gross income,total gross,gross</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_id_bpmp_pph21" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpmp"/>
+        <field name="code">PPH21</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="label">Income tax withheld (PPh 21)</field>
+        <field name="official_label">PPh Pasal 21 dipotong</field>
+        <field name="required" eval="True"/>
+        <field name="note">Not a column of the import file: it gives the rate and the control total.</field>
+        <field name="suggest_words">pph 21,pph21,pph pasal 21,pajak penghasilan,income tax,payable tax,tax</field>
+        <field name="suggest_roles">deduction</field>
+        <field name="suggest_parts" eval="True"/>
+    </record>
+    <record id="form_id_bpmp_rate" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpmp"/>
+        <field name="code">RATE</field>
+        <field name="sequence">30</field>
+        <field name="kind">computed</field>
+        <field name="compute_op">ratio</field>
+        <field name="operand_codes">PPH21,GROSS</field>
+        <field name="factor">100</field>
+        <field name="round_digits">2</field>
+        <field name="label">Rate (%)</field>
+        <field name="official_label">Tarif</field>
+        <field name="note">Worked out as tax withheld divided by gross income, unless a pay item is put on this line.</field>
+        <field name="suggest_words">tarif ter,ter rate,tarif,rate ter</field>
+    </record>
+    <record id="form_id_bpmp_ptkp" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpmp"/>
+        <field name="code">PTKP</field>
+        <field name="sequence">40</field>
+        <field name="kind">text</field>
+        <field name="label">Tax status (TK / K / HB)</field>
+        <field name="official_label">Status PTKP</field>
+        <field name="note">Read from the pay item put here; when none, from the employee record.</field>
+        <field name="suggest_words">status ptkp,ptkp,tax status,status pajak</field>
+    </record>
+    <record id="form_id_bpmp_people" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpmp"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">50</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="mappable" eval="False"/>
+        <field name="label">People</field>
+        <field name="official_label">Jumlah pegawai</field>
+    </record>
+</odoo>

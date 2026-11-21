@@ -243,19 +243,29 @@ class ShiftPlanningGrid(models.TransientModel):
                 by_emp.setdefault(s.employee_id.id, []).append(s)
 
         leaves_by_emp = {}
+        Engine = self.env.get('pb.attendance.exception.engine')
         for lv in leaves:
             lv_start = lv.date_from.date() if isinstance(lv.date_from, datetime) else lv.date_from
             lv_end = lv.date_to.date() if isinstance(lv.date_to, datetime) else lv.date_to
             cur = max(lv_start, week_start)
             stop = min(lv_end, week_end)
             bucket = leaves_by_emp.setdefault(lv.employee_id.id, {})
+            # WDGAP QF3: a half day (or a few hours) says so on the square —
+            # the person is still there for the rest of the day
+            partial = (Engine._leave_partial_days(lv) or set()) \
+                if Engine is not None else set()
             while cur <= stop:
                 approved = lv.state in _APPROVED_LEAVE_STATES
                 prev = bucket.get(cur.isoformat())
                 # an approved day beats a pending one on the same square
                 if not prev or (approved and not prev['is_approved']):
+                    label = lv.holiday_status_id.name or _('Leave')
+                    if cur.isoformat() in partial:
+                        label = _("%s · half day", label) \
+                            if not lv.request_unit_hours \
+                            else _("%s · some hours", label)
                     bucket[cur.isoformat()] = {
-                        'type': lv.holiday_status_id.name or _('Leave'),
+                        'type': label,
                         'is_approved': approved,
                     }
                 cur += timedelta(days=1)

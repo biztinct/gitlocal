@@ -22,7 +22,13 @@ panel, chips) with a slot for the screen's own list.
     # the first view); date "none" only with a none_label; number units in
     # hints and chips; `hidden` sections; domain_method `args`; a one-option
     # choice.
-    'version': '19.0.1.4.0',
+    # 1.5.0 (FORM STUDIO FS-4): the table view — `_pbf_columns` (a board's
+    # columns), `pbf_columns` / `pbf_export_table` on the mixin; a person's
+    # own columns on `pb.filter.view.columns` (new nullable column, one
+    # `<screen>::columns` row each) and the company default in the new
+    # `pb.list.layout` (administrator only); PbListTable, PbColumnsButton,
+    # PbTableTools. A board without `_pbf_columns` is unchanged.
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -35,9 +41,12 @@ panel, chips) with a slot for the screen's own list.
     'assets': {
         'web.assets_backend': [
             'pb_filter_kit/static/src/scss/filter_kit.scss',
+            'pb_filter_kit/static/src/scss/list_table.scss',
             'pb_filter_kit/static/src/js/filter_kit.js',
             'pb_filter_kit/static/src/js/filter_components.js',
+            'pb_filter_kit/static/src/js/list_table.js',
             'pb_filter_kit/static/src/xml/filter_kit.xml',
+            'pb_filter_kit/static/src/xml/list_table.xml',
         ],
     },
     'installable': True,

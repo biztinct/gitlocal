@@ -16,3 +16,5 @@ from . import test_bulk_no_approval
 # UPDATES P6 — a client's own admin sets approvals up (D22).
 from . import test_p6_tenant_admin
 from . import test_p6_bank_rails
+# WDGAP QF1 — approve selected.
+from . import test_wdgap_qf1_bulk

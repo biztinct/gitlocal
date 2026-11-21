@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Who reads a job change.
+
+         The HR team and the pay team read the ones of the companies they work
+         in. Anybody else reads only the ones a route asked them to decide (a
+         line manager with no HR rights is the everyday case) or the ones they
+         prepared. A seat is a read, never a write (ledger AM60). -->
+    <record id="rule_job_change_seat" model="ir.rule">
+        <field name="name">Job change: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_job_change"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_job_change_team" model="ir.rule">
+        <field name="name">Job change: HR and the pay team, their companies</field>
+        <field name="model_id" ref="model_pb_job_change"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_manager')),
+                                    (4, ref('pb_pay.group_pay_manager')),
+                                    (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_job_change_line_seat" model="ir.rule">
+        <field name="name">Job change pay line: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_job_change_line"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('change_id.seat_user_ids', 'in', [user.id]),
+            ('change_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_job_change_line_team" model="ir.rule">
+        <field name="name">Job change pay line: HR and the pay team, their companies</field>
+        <field name="model_id" ref="model_pb_job_change_line"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_manager')),
+                                    (4, ref('pb_pay.group_pay_manager')),
+                                    (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[('change_id.company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

@@ -8,3 +8,6 @@ access_pb_fact_line_admin,pb.fact.line super admin,model_pb_fact_line,pb_hr_payr
 access_pb_fact_emp_analytics,pb.fact.emp analytics read,model_pb_fact_emp,pb_hr_payroll_base.group_payroll_analytics_user,1,0,0,0
 access_pb_fact_emp_manager,pb.fact.emp manager read,model_pb_fact_emp,pb_hr_payroll_base.group_payroll_base_manager,1,0,0,0
 access_pb_fact_emp_admin,pb.fact.emp super admin,model_pb_fact_emp,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_pb_explorer_view_user,pb.explorer.view internal users,model_pb_explorer_view,base.group_user,1,1,1,1
+access_pb_explorer_schedule_user,pb.explorer.schedule internal users,model_pb_explorer_schedule,base.group_user,1,1,1,1
+access_pb_explorer_schedule_log_user,pb.explorer.schedule.log internal users read,model_pb_explorer_schedule_log,base.group_user,1,0,0,0

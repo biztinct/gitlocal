@@ -153,8 +153,185 @@ class PbContractWizard(models.AbstractModel):
                     'struct_id': c.struct_id.id if getattr(c, 'struct_id', False) else False,
                     'structure_type_id': c.structure_type_id.id if c.structure_type_id else False,
                     'resource_calendar_id': c.resource_calendar_id.id if c.resource_calendar_id else d['default_calendar'],
+                    # WDGAP S8-D (EX1): the pay lines the renewal carries,
+                    # shown on the form so HR can change them before saving.
+                    'lines': self._renewal_lines(c),
                 }
+                # WDGAP W3-B (RN1): the Vietnam contract kind the renewal
+                # carries (never a trial), changeable on the form.
+                kinds = self._vn_kinds()
+                if kinds:
+                    d['vn_kinds'] = kinds
+                    d['prefill']['vn_kind'] = self._renewal_kind(c)
+                    d['prefill']['vn_kind_show'] = bool(
+                        (c.company_id.country_id.code or '') == 'VN'
+                        or d['prefill']['vn_kind'] not in ('', 'indefinite'))
+                # WDGAP W3-B follow-up (RN3): the Vietnam payroll treatment
+                # "Permanent" is carried (never "Probation"), changeable too.
+                if self._treat_field():
+                    treat = self._renewal_treatment(c)
+                    d['pay_treatments'] = [{'key': '', 'label': _("Not set")},
+                                           {'key': 'permanent', 'label': _("Permanent")}]
+                    d['prefill']['pay_treatment'] = treat
+                    d['prefill']['pay_treatment_show'] = bool(
+                        (c.company_id.country_id.code or '') == 'VN'
+                        or c.sudo().pb_payroll_contract_type)
         return d
+
+    # ------------------------------------------------------------------
+    # WDGAP W3-B follow-up (owner ruling RN3) — a renewal copies the Vietnam
+    # payroll treatment `pb_payroll_contract_type` ONLY when the old contract
+    # says "permanent"; "probation" is never copied (the new contract stays
+    # empty, as before). It is read by the Vietnam pay formula, so carrying
+    # "permanent" keeps the renewed contract paid exactly like the old one.
+    # HR can change it on the Renew form; "Make it permanent" is unchanged.
+    # The field belongs to pb_employee_vault: probed.
+    # ------------------------------------------------------------------
+    @api.model
+    def _treat_field(self):
+        return self.env['hr.contract']._fields.get('pb_payroll_contract_type')
+
+    @api.model
+    def _renewal_treatment(self, contract):
+        if not contract or not self._treat_field():
+            return ''
+        return 'permanent' if contract.sudo().pb_payroll_contract_type == 'permanent' else ''
+
+    @api.model
+    def _treatment_for_new(self, vals, old):
+        if not self._treat_field():
+            return ''
+        if 'pay_treatment' in (vals or {}):
+            return 'permanent' if vals.get('pay_treatment') == 'permanent' else ''
+        return self._renewal_treatment(old) if old else ''
+
+    # ------------------------------------------------------------------
+    # WDGAP W3-B (owner ruling RN1) — a renewal copies the Vietnam contract
+    # kind (`vietnam_contract_type`: fixed-term / open-ended / seasonal) from
+    # the old contract; NEVER the trial: a "probation" kind is not copied, and
+    # the separate Vietnam payroll treatment (`pb_payroll_contract_type`) has
+    # its own rule (RN3, below: "permanent" only, never "probation"). HR can
+    # change the kind on the Renew form; "Make it
+    # permanent" asks for open-ended. The field belongs to the Vietnam payroll
+    # module, so everything here is probed.
+    # ------------------------------------------------------------------
+    #: The kinds a renewal may carry, in screen words. "probation" is absent
+    #: on purpose: a renewal is never a trial.
+    VN_KINDS = ('definite', 'indefinite', 'seasonal')
+
+    @api.model
+    def _vn_kind_field(self):
+        return self.env['hr.contract']._fields.get('vietnam_contract_type')
+
+    @api.model
+    def _vn_kinds(self):
+        if not self._vn_kind_field():
+            return []
+        words = {'definite': _("Fixed-term"), 'indefinite': _("Open-ended"),
+                 'seasonal': _("Seasonal")}
+        return [{'key': key, 'label': words[key]} for key in self.VN_KINDS]
+
+    @api.model
+    def _renewal_kind(self, contract):
+        """The kind a renewal of `contract` carries, or '' (the default)."""
+        if not contract or not self._vn_kind_field():
+            return ''
+        value = contract.sudo().vietnam_contract_type or ''
+        return value if value in self.VN_KINDS else ''
+
+    @api.model
+    def _kind_for_new(self, vals, old):
+        """The kind to write on the new contract: what HR chose on the form
+        (`vn_kind`), else the old contract's (renewal), else nothing."""
+        if not self._vn_kind_field():
+            return ''
+        if 'vn_kind' in (vals or {}):
+            chosen = vals.get('vn_kind') or ''
+            return chosen if chosen in self.VN_KINDS else ''
+        return self._renewal_kind(old) if old else ''
+
+    # ------------------------------------------------------------------
+    # WDGAP S8-D (EX1) — a renewal carries the old contract's pay lines.
+    # Before this, a renewed contract started with none of them (meal,
+    # phone…), so they read 0 on the next payslip unless HR typed them again.
+    # ------------------------------------------------------------------
+    @api.model
+    def _renewal_lines(self, contract):
+        """The old contract's pay lines, as the form shows them."""
+        out = []
+        lines = self.env['hr.contract.advantage'].sudo().search(
+            [('contract_id', '=', contract.id)], order='id')
+        for line in lines:
+            template = line.advantage_template_id
+            if not template:
+                continue
+            text = (line.text_value or '') if 'text_value' in line._fields else ''
+            out.append({'template_id': template.id, 'code': template.code or '',
+                        'name': template.name or template.code or '',
+                        'amount': line.amount or 0.0, 'text': text})
+        return out
+
+    @api.model
+    def _carry_renewal_lines(self, contract, old, typed=None):
+        """Put the old contract's pay lines on the NEW one (get-or-create per
+        pay item). ``typed`` — the amounts HR changed on the form, by pay
+        item — win over the old ones. Each line written is logged in the
+        pay-line trail, dated the new contract's start. Writes nothing on the
+        old contract. Returns how many lines were written."""
+        if not contract or not old:
+            return 0
+        overrides = {}
+        for row in typed or []:
+            try:
+                overrides[int(row.get('template_id') or 0)] = row
+            except (TypeError, ValueError, AttributeError):
+                continue
+        Line = self.env['hr.contract.advantage'].sudo()
+        Change = self.env['hr.contract.advantage.change'].sudo() \
+            if 'hr.contract.advantage.change' in self.env else None
+        has_text = 'text_value' in Line._fields
+        written = 0
+        for row in self._renewal_lines(old):
+            template_id = row['template_id']
+            amount, text = row['amount'], row['text']
+            if template_id in overrides:
+                given = overrides[template_id]
+                if given.get('drop'):
+                    continue
+                try:
+                    amount = float(given.get('amount') if given.get('amount') is not None
+                                   else amount)
+                except (TypeError, ValueError):
+                    pass
+            if not amount and not text:
+                continue
+            line = Line.search([('contract_id', '=', contract.id),
+                                ('advantage_template_id', '=', template_id)], limit=1)
+            old_amount = line.amount if line else 0.0
+            vals = {'amount': amount}
+            if has_text and text:
+                vals['text_value'] = text
+            if line:
+                if abs((line.amount or 0.0) - amount) < 1e-9 and \
+                        (not has_text or (line.text_value or '') == (text or '')):
+                    continue
+                line.write(vals)
+            else:
+                Line.create(dict(vals, contract_id=contract.id,
+                                 advantage_template_id=template_id))
+            written += 1
+            if Change is not None:
+                try:
+                    Change.log(contract,
+                               self.env['hr.contract.advantage.template'].sudo().browse(template_id),
+                               old_amount, amount, 'manual',
+                               notes=_("Carried from %s", old.name or ''),
+                               effective_date=contract.date_start,
+                               old_text=None, new_text=text or None)
+                except Exception:   # noqa: BLE001 — the trail never undoes a line
+                    _logger.warning('pb_people_advanced: no trail row for the renewal '
+                                    'line on contract %s', contract.id, exc_info=True)
+        return written
 
     @api.model
     def create_contract(self, vals):
@@ -200,12 +377,43 @@ class PbContractWizard(models.AbstractModel):
         cal = vals.get('resource_calendar_id') or self.env.company.resource_calendar_id.id
         if cal:
             cvals['resource_calendar_id'] = int(cal)
+        # The contract this one renews — only a contract of the SAME person.
+        old = self.env['hr.contract'].browse()
+        if vals.get('renew_from'):
+            old = self.env['hr.contract'].sudo().browse(int(vals['renew_from'] or 0)).exists()
+            if old and old.employee_id != emp:
+                old = self.env['hr.contract'].browse()
+        # WDGAP W3-B (RN1): the Vietnam contract kind (chosen on the form, else
+        # carried from the renewed contract; never a trial).
+        kind = self._kind_for_new(vals, old)
+        if kind:
+            cvals['vietnam_contract_type'] = kind
+        # WDGAP W3-B follow-up (RN3): "Permanent" payroll treatment carried.
+        treatment = self._treatment_for_new(vals, old)
+        if treatment:
+            cvals['pb_payroll_contract_type'] = treatment
+        # WDGAP W3-B (RN2): from now on a renewal made here is LINKED to the
+        # contract it renews — the link the fixed-term counting reads (the
+        # decision board already wrote it). Past renewals are not backfilled.
+        if old and 'pb_renewed_from_id' in self.env['hr.contract']._fields:
+            cvals['pb_renewed_from_id'] = old.id
         try:
             c = self.env['hr.contract'].create(cvals)
             if vals.get('activate'):
                 c.write({'state': 'open'})
         except Exception as e:
             return {'error': str(getattr(e, 'name', None) or e) or 'Could not create contract.'}
+        # WDGAP S8-D (EX1): a renewal carries the old contract's pay lines
+        # (with any amount HR changed on the form). Only from a contract of the
+        # SAME person; never fatal for the new contract.
+        if old:
+            if old.id != c.id:
+                try:
+                    with self.env.cr.savepoint():
+                        self._carry_renewal_lines(c, old, vals.get('lines'))
+                except Exception:   # noqa: BLE001
+                    _logger.exception('pb_people_advanced: pay lines not carried from '
+                                      'contract %s to %s', old.id, c.id)
         # `applied` is what the dialog reads to say "Contract created" rather
         # than "No contract exists yet": a route that applies at once hands
         # this dict back through `_apply_contract`, so it must say so itself.

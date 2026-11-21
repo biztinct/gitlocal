@@ -10,6 +10,18 @@ from .ai_redaction import redact_names, restore_names
 
 _logger = logging.getLogger(__name__)
 
+#: WDGAP QF1 — most severe first. The selection sorts as TEXT ("warning" >
+#: "info" > "critical"), so order is always worked out with this, in Python.
+SEVERITY_RANK = {'info': 1, 'warning': 2, 'critical': 3}
+
+#: How much worse an acknowledged alert has to get before it shows again on
+#: Home: 5 more percentage points (cost, overtime) or 5 more of the thing
+#: counted (people, leave requests) — or a higher severity.
+REOPEN_STEP = 5.0
+
+#: Alerts measured in percent; the others are counts.
+PCT_CATEGORIES = ('cost', 'overtime')
+
 
 def redacted_details(raw):
     """One alert's `details` as a JSON string with the people taken out.
@@ -116,8 +128,40 @@ class PayrollAIPulse(models.Model):
         default=lambda self: self.env.user,
     )
 
+    # WDGAP QF1 — an alert belongs to ONE company, there is ONE open alert per
+    # thing, and "Got it" remembers how bad it was when it was pressed.
+    company_id = fields.Many2one('res.company', string='Company', index=True)
+    dedupe_key = fields.Char(
+        string='Same-alert key', index=True, copy=False,
+        help='Company, kind and department: one open alert per key.')
+    direction = fields.Char(
+        string='Direction',
+        help='Which way it moved: up, down, joined, left, approved.')
+    ack_level = fields.Float(
+        string='Level when put away',
+        help='How bad it was when somebody pressed "Got it".')
+    ack_severity = fields.Char(
+        string='Severity when put away',
+        help='Its severity when somebody pressed "Got it".')
+
+    @api.model
+    def _badness(self, vals):
+        """The figure "worse" is measured on: percentage points for cost and
+        overtime, the count for people and leave."""
+        if vals.get('category') in PCT_CATEGORIES:
+            return abs(vals.get('deviation_pct') or 0.0)
+        return abs(vals.get('metric_value') or 0.0)
+
     def action_acknowledge(self):
-        self.write({'state': 'acknowledged'})
+        for alert in self:
+            alert.write({
+                'state': 'acknowledged',
+                'ack_level': self._badness({
+                    'category': alert.category,
+                    'deviation_pct': alert.deviation_pct,
+                    'metric_value': alert.metric_value}),
+                'ack_severity': alert.severity,
+            })
 
     def action_resolve(self):
         self.write({'state': 'resolved'})
@@ -131,29 +175,31 @@ class PayrollAIPulse(models.Model):
         """
         Main entry point for the scheduled cron job.
         Detects anomalies across payroll data and creates pulse alerts.
+
+        WDGAP QF1 — once PER COMPANY, each detector reading that company's
+        payslips, people and leave only. A condition that still holds updates
+        its one open alert instead of adding another every day; a condition
+        that has gone resolves its alert. Returns the number of NEW alerts.
         """
         _logger.info("PayAI Pulse: Starting anomaly detection...")
         alerts_created = 0
-
-        try:
-            alerts_created += self._detect_payroll_cost_anomalies()
-        except Exception as e:
-            _logger.error("PayAI Pulse: Cost anomaly detection failed: %s", e)
-
-        try:
-            alerts_created += self._detect_headcount_changes()
-        except Exception as e:
-            _logger.error("PayAI Pulse: Headcount detection failed: %s", e)
-
-        try:
-            alerts_created += self._detect_overtime_spikes()
-        except Exception as e:
-            _logger.error("PayAI Pulse: Overtime detection failed: %s", e)
-
-        try:
-            alerts_created += self._detect_leave_anomalies()
-        except Exception as e:
-            _logger.error("PayAI Pulse: Leave detection failed: %s", e)
+        detectors = (
+            ('cost', self._detect_payroll_cost_anomalies),
+            ('headcount', self._detect_headcount_changes),
+            ('overtime', self._detect_overtime_spikes),
+            ('leave', self._detect_leave_anomalies),
+        )
+        for company in self._pulse_companies():
+            seen, checked = set(), set()
+            for category, detector in detectors:
+                try:
+                    with self.env.cr.savepoint():
+                        alerts_created += detector(company, seen)
+                    checked.add(category)
+                except Exception as e:
+                    _logger.error("PayAI Pulse: %s detection failed for "
+                                  "company %s: %s", category, company.id, e)
+            self._resolve_gone(company, checked, seen)
 
         _logger.info("PayAI Pulse: Detection complete. %d alerts created.", alerts_created)
 
@@ -163,14 +209,69 @@ class PayrollAIPulse(models.Model):
 
         return alerts_created
 
-    def _detect_payroll_cost_anomalies(self):
+    @api.model
+    def _pulse_companies(self):
+        """The companies that have people (and so, possibly, payslips)."""
+        Employee = self.env['hr.employee'].sudo().with_context(active_test=False)
+        return self.env['res.company'].sudo().search([]).filtered(
+            lambda c: Employee.search_count([('company_id', '=', c.id)],
+                                            limit=1))
+
+    @api.model
+    def _raise_alert(self, company, vals, seen, sub=''):
+        """Create the alert, or refresh the one already open for the same
+        thing. Returns 1 when a new alert was created, else 0.
+
+        An acknowledged alert comes back (state "new") only when it is worse
+        by REOPEN_STEP or its severity rose since "Got it" was pressed."""
+        category = vals['category'] + ('.' + sub if sub else '')
+        key = '%s:%s:%s' % (company.id, category,
+                            vals.get('department_id') or 'none')
+        seen.add(key)
+        vals = dict(vals, company_id=company.id, dedupe_key=key)
+        Pulse = self.sudo()
+        alert = Pulse.search([('dedupe_key', '=', key),
+                              ('state', 'in', ('new', 'acknowledged'))],
+                             order='id desc', limit=1)
+        if not alert:
+            Pulse.create(vals)
+            return 1
+        update = dict(vals)
+        if alert.state == 'acknowledged':
+            was = alert.ack_severity or alert.severity
+            worse = (self._badness(vals) >= (alert.ack_level or 0.0) + REOPEN_STEP
+                     or SEVERITY_RANK.get(vals.get('severity'), 0)
+                     > SEVERITY_RANK.get(was, 0))
+            if worse:
+                update['state'] = 'new'
+        alert.write(update)
+        return 0
+
+    @api.model
+    def _resolve_gone(self, company, checked, seen):
+        """Open alerts of this company whose condition no longer holds (their
+        detector ran and did not raise them again) are resolved. Old rows
+        without a key are left exactly as they are."""
+        if not checked:
+            return 0
+        stale = self.sudo().search([
+            ('company_id', '=', company.id),
+            ('state', 'in', ('new', 'acknowledged')),
+            ('dedupe_key', '!=', False),
+            ('category', 'in', sorted(checked)),
+        ]).filtered(lambda a: a.dedupe_key not in seen)
+        stale.write({'state': 'resolved'})
+        return len(stale)
+
+    def _detect_payroll_cost_anomalies(self, company, seen):
         """Compare current month payroll cost vs previous 3-month average."""
         Payslip = self.env['hr.payslip'].sudo()
         today = fields.Date.today()
+        mine = [('company_id', '=', company.id)]
 
         # Current month
         month_start = today.replace(day=1)
-        current_payslips = Payslip.search([
+        current_payslips = Payslip.search(mine + [
             ('state', 'in', ['done', 'paid']),
             ('date_from', '>=', month_start),
         ])
@@ -187,7 +288,7 @@ class PayrollAIPulse(models.Model):
         for i in range(1, 4):
             m_start = (month_start - relativedelta(months=i))
             m_end = (month_start - relativedelta(months=i-1)) - timedelta(days=1)
-            prev_payslips = Payslip.search([
+            prev_payslips = Payslip.search(mine + [
                 ('state', 'in', ['done', 'paid']),
                 ('date_from', '>=', m_start),
                 ('date_from', '<=', m_end),
@@ -210,10 +311,11 @@ class PayrollAIPulse(models.Model):
             severity = 'critical' if abs(deviation) > 25 else 'warning'
             direction = 'increased' if deviation > 0 else 'decreased'
 
-            self.create({
+            return self._raise_alert(company, {
                 'name': f'Payroll Cost {direction.title()} by {abs(deviation):.1f}%',
                 'severity': severity,
                 'category': 'cost',
+                'direction': 'up' if deviation > 0 else 'down',
                 'metric_value': current_cost,
                 'baseline_value': avg_cost,
                 'deviation_pct': round(deviation, 2),
@@ -222,32 +324,33 @@ class PayrollAIPulse(models.Model):
                     'avg_3m_cost': avg_cost,
                     'previous_months': prev_costs,
                 }),
-            })
-            return 1
+            }, seen)
         return 0
 
-    def _detect_headcount_changes(self):
+    def _detect_headcount_changes(self, company, seen):
         """Detect significant headcount changes (new hires, departures)."""
         Employee = self.env['hr.employee'].sudo()
         today = fields.Date.today()
         last_week = today - timedelta(days=7)
+        mine = [('company_id', '=', company.id)]
 
         # New employees this week
-        new_employees = Employee.search([
+        new_employees = Employee.search(mine + [
             ('create_date', '>=', last_week),
         ])
         # Departed employees this week (archived)
-        departed = Employee.with_context(active_test=False).search([
+        departed = Employee.with_context(active_test=False).search(mine + [
             ('active', '=', False),
             ('write_date', '>=', last_week),
         ])
 
         alerts = 0
         if len(new_employees) >= 3:
-            self.create({
+            alerts += self._raise_alert(company, {
                 'name': f'{len(new_employees)} New Employees Joined This Week',
                 'severity': 'info',
                 'category': 'headcount',
+                'direction': 'joined',
                 'metric_value': len(new_employees),
                 'details': json.dumps({
                     'new_employees': [
@@ -255,14 +358,14 @@ class PayrollAIPulse(models.Model):
                         for e in new_employees[:10]
                     ],
                 }),
-            })
-            alerts += 1
+            }, seen, sub='joined')
 
         if len(departed) >= 2:
-            self.create({
+            alerts += self._raise_alert(company, {
                 'name': f'{len(departed)} Employees Departed This Week',
                 'severity': 'warning',
                 'category': 'headcount',
+                'direction': 'left',
                 'metric_value': len(departed),
                 'details': json.dumps({
                     'departed': [
@@ -270,19 +373,19 @@ class PayrollAIPulse(models.Model):
                         for e in departed[:10]
                     ],
                 }),
-            })
-            alerts += 1
+            }, seen, sub='left')
 
         return alerts
 
-    def _detect_overtime_spikes(self):
+    def _detect_overtime_spikes(self, company, seen):
         """Detect departments with unusually high overtime."""
         Payslip = self.env['hr.payslip'].sudo()
         today = fields.Date.today()
         month_start = today.replace(day=1)
+        mine = [('company_id', '=', company.id)]
 
         # Current month overtime by department
-        payslips = Payslip.search([
+        payslips = Payslip.search(mine + [
             ('state', 'in', ['done', 'paid']),
             ('date_from', '>=', month_start),
         ])
@@ -308,7 +411,7 @@ class PayrollAIPulse(models.Model):
                 # Check against previous month
                 prev_start = month_start - relativedelta(months=1)
                 prev_end = month_start - timedelta(days=1)
-                prev_ps = Payslip.search([
+                prev_ps = Payslip.search(mine + [
                     ('state', 'in', ['done', 'paid']),
                     ('date_from', '>=', prev_start),
                     ('date_from', '<=', prev_end),
@@ -324,11 +427,15 @@ class PayrollAIPulse(models.Model):
                 if prev_ot > 0:
                     deviation = ((ot_total - prev_ot) / prev_ot) * 100
                     if deviation > 30:
-                        dept_rec = self.env['hr.department'].search([('name', '=', dept)], limit=1)
-                        self.create({
+                        dept_rec = self.env['hr.department'].sudo().search([
+                            ('name', '=', dept),
+                            ('company_id', 'in', [company.id, False]),
+                        ], limit=1)
+                        alerts += self._raise_alert(company, {
                             'name': f'Overtime Spike in {dept}: +{deviation:.0f}%',
                             'severity': 'warning',
                             'category': 'overtime',
+                            'direction': 'up',
                             'department_id': dept_rec.id if dept_rec else False,
                             'metric_value': ot_total,
                             'baseline_value': prev_ot,
@@ -338,11 +445,10 @@ class PayrollAIPulse(models.Model):
                                 'current_ot': ot_total,
                                 'previous_ot': prev_ot,
                             }),
-                        })
-                        alerts += 1
+                        }, seen)
         return alerts
 
-    def _detect_leave_anomalies(self):
+    def _detect_leave_anomalies(self, company, seen):
         """Detect unusually high leave rates."""
         if not self._is_module_installed('hr_holidays'):
             return 0
@@ -353,6 +459,7 @@ class PayrollAIPulse(models.Model):
 
         # Leaves this week
         current_leaves = Leave.search([
+            ('employee_company_id', '=', company.id),
             ('state', '=', 'validate'),
             ('date_from', '>=', week_start),
         ])
@@ -371,17 +478,17 @@ class PayrollAIPulse(models.Model):
                 lt = lv.holiday_status_id.name or 'Other'
                 type_counts[lt] = type_counts.get(lt, 0) + 1
 
-            self.create({
+            return self._raise_alert(company, {
                 'name': f'{len(current_leaves)} Approved Leaves This Week',
                 'severity': 'info' if len(current_leaves) < 10 else 'warning',
                 'category': 'leave',
+                'direction': 'approved',
                 'metric_value': len(current_leaves),
                 'details': json.dumps({
                     'total_leaves': len(current_leaves),
                     'by_type': type_counts,
                 }),
-            })
-            return 1
+            }, seen)
         return 0
 
     def _is_module_installed(self, module_name):
@@ -477,6 +584,46 @@ class PayrollAIPulse(models.Model):
             'created': a.create_date.isoformat() if a.create_date else '',
             'chart_config': json.loads(a.chart_config) if a.chart_config else None,
         } for a in alerts]
+
+    @api.model
+    def home_alerts(self, limit=3):
+        """WDGAP QF1 — what Home's "PayAI noticed" card shows.
+
+        Open, not yet acknowledged alerts of the reader's companies only (the
+        record rule says the same; this says it again, explicitly), most
+        severe first, then the newest. Facts, never sentences: the browser
+        builds the words in the reader's language. NO `details` (the
+        headcount detector lists people by name there), no stored English
+        title, no summary. Old rows written before alerts had a company are
+        never returned. Whoever may not open a payslip gets nothing — the
+        same rule as `rpc_get_active_alerts`.
+        """
+        if not self.env['hr.payslip'].has_access('read'):
+            return []
+        try:
+            limit = max(0, min(int(limit or 3), 10))
+        except (TypeError, ValueError):
+            limit = 3
+        rows = self.search([
+            ('state', '=', 'new'),
+            ('dedupe_key', '!=', False),
+            ('company_id', 'in', self.env.companies.ids),
+        ], order='write_date desc, id desc', limit=60)
+        rows = sorted(rows, key=lambda a: (
+            -SEVERITY_RANK.get(a.severity, 0),
+            -(a.write_date.timestamp() if a.write_date else 0), -a.id))
+        return [{
+            'id': a.id,
+            'category': a.category,
+            'severity': a.severity,
+            'direction': a.direction or '',
+            'pct': round(abs(a.deviation_pct or 0.0), 1),
+            'value': a.metric_value or 0.0,
+            'baseline': a.baseline_value or 0.0,
+            'department': a.department_id.sudo().name or '',
+            'since': fields.Date.to_string(a.create_date.date())
+            if a.create_date else '',
+        } for a in rows[:limit]]
 
     @api.model
     def rpc_acknowledge_alert(self, alert_id):

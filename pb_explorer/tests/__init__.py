@@ -8,3 +8,6 @@ from . import test_look_p4
 # company's.
 from . import test_schemectx_currency
 from . import test_schemectx_p2_country
+
+# WDGAP QF2 — saved views, the Excel download, regular email.
+from . import test_wdgap_qf2

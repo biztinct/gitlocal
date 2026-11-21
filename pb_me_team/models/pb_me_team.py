@@ -216,11 +216,31 @@ class PbMeTeam(models.AbstractModel):
         leave = self.env['hr.leave'].sudo().browse(req.res_id).exists()
         if not leave:
             return None
+        # WDGAP QF3: the part of the day and the papers the person attached
+        # (pb_timeoff's helpers when installed — this module does not depend
+        # on it). Tokened links: the one link shape that opens for every kind
+        # of login (TIERS T14/T20). The caller may see this request (the inbox
+        # said so above), and the leave is what the request is about.
+        part = leave._pb_day_part_label() \
+            if hasattr(leave, '_pb_day_part_label') else ''
+        unit = leave.holiday_status_id.request_unit or 'day'
+        files = self.env['ir.attachment'].sudo().search([
+            ('res_model', '=', 'hr.leave'), ('res_id', '=', leave.id)],
+            order='id', limit=10)
         out = {
             'type': leave.holiday_status_id.name or '',
             'date_from': leave.request_date_from,
             'date_to': leave.request_date_to,
             'days': leave.number_of_days,
+            'hours': round(leave.number_of_hours or 0.0, 2)
+            if unit == 'hour' else None,
+            'period_label': part,
+            'files': [{
+                'id': att.id,
+                'name': att.name or self.env._('Document'),
+                'url': '/web/content/%s?access_token=%s' % (
+                    att.id, att.generate_access_token()[0]),
+            } for att in files],
             'balance_after': None,
             'away': [],
         }
@@ -252,7 +272,10 @@ class PbMeTeam(models.AbstractModel):
         """Days left of this type once this request (and any other request
         still waiting) is taken; None for a type that is not counted."""
         lt = leave.holiday_status_id
-        if getattr(lt, 'requires_allocation', 'yes') == 'no':
+        # WDGAP QF3 (R7): `requires_allocation` is a Boolean in this version;
+        # the old `== 'no'` test never matched, so a kind that is not counted
+        # paid for a full allocation read it had no use for.
+        if not lt.requires_allocation:
             return None
         data = lt.get_allocation_data(leave.employee_id,
                                       leave.request_date_from)

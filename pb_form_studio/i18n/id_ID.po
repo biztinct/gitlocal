@@ -1,0 +1,2669 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s (%(type)s) in %(section)s"
+msgstr "%(label)s (%(type)s) di %(section)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s in %(section)s"
+msgstr "%(label)s di %(section)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s to %(section)s"
+msgstr "%(label)s ke %(section)s"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "%(label)s: %(old)s → %(new)s (changed on My Payobook by %(who)s, %(how)s)"
+msgstr "%(label)s: %(old)s → %(new)s (diubah di My Payobook oleh %(who)s, %(how)s)"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s: %(what)s"
+msgstr "%(label)s: %(what)s"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "%(n)s records use the choice \"%(choice)s\". Change them first, then remove it."
+msgstr "%(n)s data memakai pilihan \"%(choice)s\". Ubah dulu, lalu hapus."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "%(who)s published this screen after you started your changes. Publishing now would replace their layout with yours."
+msgstr "%(who)s menerbitkan layar ini setelah Anda mulai mengubahnya. Menerbitkan sekarang akan mengganti tata letak mereka dengan milik Anda."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s changes not yet published"
+msgstr "%s perubahan belum diterbitkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s is deleted."
+msgstr "%s sudah dihapus."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s is hidden. Find it again under \"Add existing\"."
+msgstr "%s disembunyikan. Temukan lagi di \"Tambah yang ada\"."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s records"
+msgstr "%s data"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "%s unsaved changes"
+msgstr "%s perubahan belum disimpan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 change not yet published"
+msgstr "1 perubahan belum diterbitkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 record"
+msgstr "1 data"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "1 unsaved change"
+msgstr "1 perubahan belum disimpan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice can be at most %s characters."
+msgstr "Satu pilihan paling banyak %s karakter."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice list can have at most %s choices."
+msgstr "Daftar pilihan paling banyak berisi %s pilihan."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice list needs at least one choice."
+msgstr "Daftar pilihan butuh setidaknya satu pilihan."
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_field_meta_field_uniq
+msgid "A field has one set of Form builder settings."
+msgstr "Satu kolom hanya punya satu set pengaturan Pembuat formulir."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A field name can be at most %s characters."
+msgstr "Nama kolom paling banyak %s karakter."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A field's type cannot be changed. Delete it and add a new one."
+msgstr "Jenis kolom tidak bisa diubah. Hapus lalu tambahkan kolom baru."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "A locked field stays in its own section. You can still change its order there."
+msgstr "Kolom terkunci tetap di bagiannya sendiri. Anda masih bisa mengubah urutannya di sana."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "A new field is made for every record of this kind when you publish."
+msgstr "Kolom baru dibuat untuk setiap data jenis ini saat Anda menerbitkan."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A pay run is being worked out right now. Try again in a few minutes."
+msgstr "Sebuah penggajian sedang dihitung. Coba lagi beberapa menit lagi."
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_layout_host_company_uniq
+msgid "A screen has one published layout per company."
+msgstr "Satu layar punya satu tata letak terbit per perusahaan."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "About"
+msgstr "Tentang"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__action
+msgid "Action"
+msgstr "Tindakan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add a choice"
+msgstr "Tambah pilihan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add a country…"
+msgstr "Tambah negara…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add existing"
+msgstr "Tambah yang ada"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/use_form_studio.js:0
+msgid "Add or move fields on this screen"
+msgstr "Tambah atau pindahkan kolom di layar ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0
+msgid "Add your own fields to record screens and decide who sees them."
+msgstr "Tambahkan kolom Anda sendiri ke layar data dan tentukan siapa yang bisa melihatnya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Added"
+msgstr "Ditambah"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Added %(label)s (%(type)s)"
+msgstr "Menambah %(label)s (%(type)s)"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__create_field
+msgid "Added a field"
+msgstr "Menambah kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__admin
+msgid "Administrators only"
+msgstr "Hanya administrator"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "All"
+msgstr "Semua"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "All countries"
+msgstr "Semua negara"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Another administrator published this screen after you started your changes."
+msgstr "Administrator lain menerbitkan layar ini setelah Anda mulai mengubahnya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Appears in"
+msgstr "Muncul di"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Automations"
+msgstr "Otomatisasi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Back to %s"
+msgstr "Kembali ke %s"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__base_version
+msgid "Base Version"
+msgstr "Versi dasar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · HR approves"
+msgstr "Bisa diubah · HR menyetujui"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · saves at once"
+msgstr "Bisa diubah · langsung disimpan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cannot delete."
+msgstr "Tidak bisa dihapus."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Changed"
+msgstr "Diubah"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Changed %(label)s: %(what)s"
+msgstr "Mengubah %(label)s: %(what)s"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__update_field
+msgid "Changed a field"
+msgstr "Mengubah kolom"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__portal_change
+msgid "Changed on My Payobook"
+msgstr "Diubah di My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Changes discarded. Nothing was published."
+msgstr "Perubahan dibuang. Tidak ada yang diterbitkan."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Choice list"
+msgstr "Daftar pilihan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Choices"
+msgstr "Pilihan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Choose a file"
+msgstr "Pilih berkas"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__city
+msgid "City"
+msgstr "Kota"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Click a field on the screen to change it, or drag a type from the left to add one."
+msgstr "Klik kolom di layar untuk mengubahnya, atau seret jenis dari kiri untuk menambah."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Close the Form builder"
+msgstr "Tutup Pembuat formulir"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__company_id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__company_id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__company_id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Company details"
+msgstr "Detail perusahaan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Contact"
+msgstr "Kontak"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Countries"
+msgstr "Negara"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__country_ids
+msgid "Countries of work"
+msgstr "Negara kerja"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Country of Work decides which fields apply."
+msgstr "Negara kerja menentukan kolom mana yang berlaku."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__country_id
+msgid "Country of work"
+msgstr "Negara kerja"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__create_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__create_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__custom
+msgid "Custom"
+msgstr "Kustom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Custom field"
+msgstr "Kolom kustom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Custom fields"
+msgstr "Kolom kustom"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Custom fields cannot be added to this kind of record."
+msgstr "Kolom kustom tidak bisa ditambahkan ke jenis data ini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Custom fields cannot be saved on this kind of record."
+msgstr "Kolom kustom tidak bisa disimpan di jenis data ini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Date"
+msgstr "Tanggal"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Decimal"
+msgstr "Desimal"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Delete"
+msgstr "Hapus"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Delete field…"
+msgstr "Hapus kolom…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Delete this field?"
+msgstr "Hapus kolom ini?"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Deleted"
+msgstr "Dihapus"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Deleted %s"
+msgstr "Menghapus %s"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__delete_field
+msgid "Deleted a field"
+msgstr "Menghapus kolom"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__detail
+msgid "Detail"
+msgstr "Rincian"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Discard"
+msgstr "Buang"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__display_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_studio__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drag a type onto a section"
+msgstr "Seret jenis ke sebuah bagian"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drawn by the screen"
+msgstr "Digambar oleh layar"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Drawn by the screen itself from the contract and the pay scheme. Fields cannot be placed here."
+msgstr "Digambar oleh layar dari kontrak dan skema gaji. Kolom tidak bisa ditaruh di sini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drawn by the screen: no fields can be placed"
+msgstr "Digambar oleh layar: kolom tidak bisa ditaruh"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drop a field here"
+msgstr "Letakkan kolom di sini"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Each choice must be different: \"%s\" is there twice."
+msgstr "Setiap pilihan harus berbeda: \"%s\" ada dua kali."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Edit"
+msgstr "Ubah"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__email
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_edit
+msgid "Employee can change it"
+msgstr "Karyawan bisa mengubahnya"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a date."
+msgstr "Masukkan tanggal."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a number."
+msgstr "Masukkan angka."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a whole number."
+msgstr "Masukkan bilangan bulat."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter an amount."
+msgstr "Masukkan jumlah."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Every custom field in this company, where it appears, how filled it is and what uses it."
+msgstr "Setiap kolom kustom di perusahaan ini: di mana muncul, seberapa terisi, dan apa yang memakainya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0
+msgid "Every custom field in this company: where it appears, who can see it and what uses it."
+msgstr "Setiap kolom kustom di perusahaan ini: di mana muncul, siapa yang bisa melihat, dan apa yang memakainya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Every field is already on the screen."
+msgstr "Semua kolom sudah ada di layar."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Every record needs its name."
+msgstr "Setiap data butuh nama."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Everyone"
+msgstr "Semua orang"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Everyone, in every company, sees the new layout the next time the screen loads."
+msgstr "Semua orang, di setiap perusahaan, melihat tata letak baru saat layar dimuat berikutnya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__all
+msgid "Everyone, including the employee"
+msgstr "Semua orang, termasuk karyawan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Feed pay formulas"
+msgstr "Dipakai rumus gaji"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__field_id
+msgid "Field"
+msgstr "Kolom"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__field_name model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__name
+msgid "Field Name"
+msgstr "Nama kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Field code"
+msgstr "Kode kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Field settings"
+msgstr "Pengaturan kolom"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_ir_model_fields
+msgid "Fields"
+msgstr "Kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fields to add"
+msgstr "Kolom untuk ditambah"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "File"
+msgstr "Berkas"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "File attached"
+msgstr "Berkas terlampir"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Fill this in: it is required."
+msgstr "Isi ini: wajib diisi."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Filled"
+msgstr "Terisi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Filled on %(n)s of %(total)s records."
+msgstr "Terisi pada %(n)s dari %(total)s data."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.actions.client,name:pb_form_studio.action_pb_form_library model:ir.model,name:pb_form_studio.model_pb_form_studio
+msgid "Form builder"
+msgstr "Pembuat formulir"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_layout_draft
+msgid "Form builder draft"
+msgstr "Draf Pembuat formulir"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_field_meta
+msgid "Form builder field settings"
+msgstr "Pengaturan kolom Pembuat formulir"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_audit
+msgid "Form builder history"
+msgstr "Riwayat Pembuat formulir"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_native_view
+msgid "Form builder page on a standard screen"
+msgstr "Halaman Pembuat formulir di layar standar"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_layout
+msgid "Form builder published layout"
+msgstr "Tata letak terbit Pembuat formulir"
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_sample
+msgid "Form builder sample record"
+msgstr "Data contoh Pembuat formulir"
+
+#. module: pb_form_studio
+#: model:ir.actions.client,name:pb_form_studio.action_pb_form_dev_host
+msgid "Form builder test screen"
+msgstr "Layar uji Pembuat formulir"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__pbfs_groups
+msgid "Form builder visibility"
+msgstr "Visibilitas Pembuat formulir"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Formulas"
+msgstr "Rumus"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__name
+msgid "Full name"
+msgstr "Nama lengkap"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Give the field a name."
+msgstr "Beri nama kolom ini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__approve
+msgid "HR approves the change"
+msgstr "HR menyetujui perubahan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__hr
+msgid "HR staff and administrators"
+msgstr "Staf HR dan administrator"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "HR staff and administrators only"
+msgstr "Hanya staf HR dan administrator"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Help text"
+msgstr "Teks bantuan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden"
+msgstr "Disembunyikan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Hide from this screen"
+msgstr "Sembunyikan dari layar ini"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__host_key model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__host_key model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__host_key model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__host_key model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__host_key
+msgid "Host Key"
+msgstr "Kunci layar"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_studio__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "It cannot be hidden, moved out of its section or deleted."
+msgstr "Tidak bisa disembunyikan, dipindah dari bagiannya, atau dihapus."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Its type cannot be changed afterwards."
+msgstr "Jenisnya tidak bisa diubah setelahnya."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Job position"
+msgstr "Jabatan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Keep editing"
+msgstr "Lanjut mengubah"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Keep going"
+msgstr "Lanjutkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Label"
+msgstr "Label"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Label in other languages"
+msgstr "Label dalam bahasa lain"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__write_uid model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diubah oleh"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__write_date model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diubah pada"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_layout_draft__base_version
+msgid "Layout version the draft was started from."
+msgstr "Versi tata letak saat draf dimulai."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Leave empty"
+msgstr "Biarkan kosong"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Leave the Form builder without publishing?"
+msgstr "Keluar dari Pembuat formulir tanpa menerbitkan?"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Leave, keep the draft"
+msgstr "Keluar, simpan draf"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Link to a record"
+msgstr "Tautan ke data"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Links to"
+msgstr "Menaut ke"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Lists"
+msgstr "Daftar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Loading the Field library…"
+msgstr "Memuat pustaka kolom…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked"
+msgstr "Terkunci"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Locked field: identity or pay depends on it"
+msgstr "Kolom terkunci: identitas atau gaji bergantung padanya"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Locked."
+msgstr "Terkunci."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Long text"
+msgstr "Teks panjang"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_field_meta__custom
+msgid "Made by the Form builder (can be deleted)."
+msgstr "Dibuat oleh Pembuat formulir (bisa dihapus)."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__model model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__model model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__model
+msgid "Model"
+msgstr "Jenis data"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__model
+msgid "Model Name"
+msgstr "Nama jenis data"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Money"
+msgstr "Uang"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Money and files can be shown, not changed by the employee."
+msgstr "Uang dan berkas bisa ditampilkan, tidak bisa diubah karyawan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Monthly wage"
+msgstr "Gaji bulanan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Moved"
+msgstr "Dipindah"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Must be filled in before the record is saved."
+msgstr "Harus diisi sebelum data disimpan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "My Payobook"
+msgstr "My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "New %s"
+msgstr "%s baru"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "New field"
+msgstr "Kolom baru"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "New fields are added to every record of this kind (%s), empty until filled."
+msgstr "Kolom baru ditambahkan ke setiap data jenis ini (%s), kosong sampai diisi."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "No changes yet"
+msgstr "Belum ada perubahan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "No custom fields yet"
+msgstr "Belum ada kolom kustom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Not on any screen"
+msgstr "Tidak ada di layar mana pun"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Not on this screen"
+msgstr "Tidak di layar ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Not shown"
+msgstr "Tidak tampil"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Not shown on this screen"
+msgstr "Tidak tampil di layar ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Nothing matches."
+msgstr "Tidak ada yang cocok."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Offered as a column on the lists of these records."
+msgstr "Ditawarkan sebagai kolom di daftar data ini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Offered as an input when pay rules are written."
+msgstr "Ditawarkan sebagai masukan saat aturan gaji ditulis."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "On a phone, tap a type to add it to the last section."
+msgstr "Di ponsel, ketuk jenis untuk menambahkannya ke bagian terakhir."
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_native_view_parent_uniq
+msgid "One Form builder page per screen design."
+msgstr "Satu halaman Pembuat formulir per desain layar."
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_layout_draft_draft_uniq
+msgid "One draft per person per screen."
+msgstr "Satu draf per orang per layar."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Only fields added with the Form builder can be changed here."
+msgstr "Hanya kolom yang ditambah dengan Pembuat formulir yang bisa diubah di sini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Only numbers, money, yes/no, dates and choice lists can feed a formula."
+msgstr "Hanya angka, uang, ya/tidak, tanggal, dan daftar pilihan yang bisa dipakai rumus."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Only some countries of work"
+msgstr "Hanya beberapa negara kerja"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_layout.py:0 code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Only the administrator can change forms."
+msgstr "Hanya administrator yang bisa mengubah formulir."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Open a record screen and press Form builder to add the fields your company needs."
+msgstr "Buka layar data dan tekan Pembuat formulir untuk menambah kolom yang dibutuhkan perusahaan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Open section"
+msgstr "Bagian terbuka"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Open section: fields can be added, moved, hidden"
+msgstr "Bagian terbuka: kolom bisa ditambah, dipindah, disembunyikan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Opening the Form builder…"
+msgstr "Membuka Pembuat formulir…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option %s"
+msgstr "Pilihan %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option A"
+msgstr "Pilihan A"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option B"
+msgstr "Pilihan B"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "PDF, image"
+msgstr "PDF, gambar"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_native_view__titles
+msgid "Page title per language."
+msgstr "Judul halaman per bahasa."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__parent_xmlid
+msgid "Parent Xmlid"
+msgstr "Layar induk"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pay"
+msgstr "Gaji"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pay data import mappings"
+msgstr "Pemetaan impor data gaji"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Pay formulas"
+msgstr "Rumus gaji"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Pay scheme"
+msgstr "Skema gaji"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__payload
+msgid "Payload"
+msgstr "Isi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Payslips, payslip lines and government returns cannot take custom fields:"
+msgstr "Slip gaji, baris slip gaji, dan laporan pemerintah tidak bisa diberi kolom kustom:"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__phone
+msgid "Phone"
+msgstr "Telepon"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick how a change by the employee is saved."
+msgstr "Pilih cara perubahan dari karyawan disimpan."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick one of the choices."
+msgstr "Pilih salah satu pilihan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick the type carefully. Once published, a field's type cannot be changed; you would have to delete it and start again."
+msgstr "Pilih jenis dengan cermat. Setelah diterbitkan, jenis kolom tidak bisa diubah; Anda harus menghapus dan memulai lagi."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick what kind of field this is."
+msgstr "Pilih jenis kolom ini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick what this field links to."
+msgstr "Pilih kolom ini menaut ke apa."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick who can see this field."
+msgstr "Pilih siapa yang bisa melihat kolom ini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Place in section"
+msgstr "Taruh di bagian"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish"
+msgstr "Terbitkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish for everyone"
+msgstr "Terbitkan untuk semua"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish mine over it"
+msgstr "Terbitkan milik saya menggantikannya"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish this layout for everyone?"
+msgstr "Terbitkan tata letak ini untuk semua?"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Published %(screen)s, version %(v)s"
+msgstr "Menerbitkan %(screen)s, versi %(v)s"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__published_at
+msgid "Published At"
+msgstr "Diterbitkan pada"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__published_by
+msgid "Published By"
+msgstr "Diterbitkan oleh"
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__publish
+msgid "Published a layout"
+msgstr "Menerbitkan tata letak"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Published. %s changes are now live for everyone."
+msgstr "Diterbitkan. %s perubahan kini berlaku untuk semua."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Published. 1 change is now live for everyone."
+msgstr "Diterbitkan. 1 perubahan kini berlaku untuk semua."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Publishing did not work. Nothing was changed."
+msgstr "Penerbitan gagal. Tidak ada yang berubah."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__res_id
+msgid "Record"
+msgstr "Data"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Record type"
+msgstr "Jenis data"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Remove this choice"
+msgstr "Hapus pilihan ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__is_required
+msgid "Required"
+msgstr "Wajib"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Restricted"
+msgstr "Dibatasi"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Sample record"
+msgstr "Data contoh"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Sample record · nothing here is real"
+msgstr "Data contoh · tidak ada yang asli di sini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved export lists"
+msgstr "Daftar ekspor tersimpan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved searches"
+msgstr "Pencarian tersimpan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved views"
+msgstr "Tampilan tersimpan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "Saved."
+msgstr "Tersimpan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Saved. Everyone sees the change the next time their screen loads."
+msgstr "Tersimpan. Semua orang melihat perubahannya saat layar dimuat berikutnya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__instant
+msgid "Saves at once"
+msgstr "Langsung disimpan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Screen"
+msgstr "Layar"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Screen designs that show it"
+msgstr "Desain layar yang menampilkannya"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Search fields"
+msgstr "Cari kolom"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__sections
+msgid "Sections"
+msgstr "Bagian"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Settings"
+msgstr "Pengaturan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__list_ok
+msgid "Show in lists"
+msgstr "Tampilkan di daftar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_show
+msgid "Show on My Payobook"
+msgstr "Tampilkan di My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Show this field only for people working in these countries."
+msgstr "Tampilkan kolom ini hanya untuk orang yang bekerja di negara-negara ini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Shown"
+msgstr "Ditampilkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Shown in lists"
+msgstr "Tampil di daftar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Shown on the employee's own My Payobook page, even when only HR can see it here."
+msgstr "Tampil di halaman My Payobook milik karyawan itu sendiri, meskipun di sini hanya HR yang bisa melihatnya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Shown when someone points at the label"
+msgstr "Tampil saat seseorang menunjuk label"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Someone published first"
+msgstr "Seseorang menerbitkan lebih dulu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Something above still uses this field. Remove it there first."
+msgstr "Sesuatu di atas masih memakai kolom ini. Hapus dari sana dulu."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__stamp
+msgid "Stamp"
+msgstr "Waktu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Standard field"
+msgstr "Kolom standar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Standard fields come with the product: they can be placed and ordered, never deleted or retyped."
+msgstr "Kolom standar bawaan produk: bisa ditaruh dan diurutkan, tidak pernah dihapus atau diubah jenisnya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again"
+msgstr "Mulai lagi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again from the published layout"
+msgstr "Mulai lagi dari tata letak terbit"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again from their layout"
+msgstr "Mulai lagi dari tata letak mereka"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__date_start
+msgid "Start date"
+msgstr "Tanggal mulai"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__summary
+msgid "Summary"
+msgstr "Ringkasan"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_ir_model_fields__pbfs_groups
+msgid "Technical: the permission list the Form builder applies to this field. Empty means everyone who may open the record."
+msgstr "Teknis: daftar izin yang diterapkan Pembuat formulir pada kolom ini. Kosong berarti semua orang yang boleh membuka data."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Test screen"
+msgstr "Layar uji"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Text"
+msgstr "Teks"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "That could not be deleted."
+msgstr "Tidak bisa dihapus."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "That could not be saved."
+msgstr "Tidak bisa disimpan."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That file could not be read."
+msgstr "Berkas itu tidak bisa dibaca."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That number is too big."
+msgstr "Angka itu terlalu besar."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That record no longer exists."
+msgstr "Data itu sudah tidak ada."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That value cannot be used here."
+msgstr "Nilai itu tidak bisa dipakai di sini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "The Field library could not open."
+msgstr "Pustaka kolom tidak bisa dibuka."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "The Form builder could not open."
+msgstr "Pembuat formulir tidak bisa dibuka."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_layout.py:0
+msgid "The Form builder history cannot be changed."
+msgstr "Riwayat Pembuat formulir tidak bisa diubah."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "The employee can change it on My Payobook."
+msgstr "Karyawan bisa mengubahnya di My Payobook."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "The file is too big (at most 10 MB)."
+msgstr "Berkas terlalu besar (paling besar 10 MB)."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_audit__res_id
+msgid "The record a My Payobook change was saved on."
+msgstr "Data tempat perubahan My Payobook disimpan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "The record could not be read."
+msgstr "Data tidak bisa dibaca."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "The records are busy right now (a pay run or an import may be working on them). Try again in a few minutes."
+msgstr "Data sedang sibuk (mungkin penggajian atau impor sedang memprosesnya). Coba lagi beberapa menit lagi."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The screen being changed"
+msgstr "Layar yang sedang diubah"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "The section \"%(sec)s\" can hold at most %(n)s fields."
+msgstr "Bagian \"%(sec)s\" paling banyak berisi %(n)s kolom."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_field_meta__model
+msgid "The technical name of the model this field belongs to"
+msgstr "Nama teknis jenis data pemilik kolom ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "These still use it. Remove it there first."
+msgstr "Ini masih memakainya. Hapus dari sana dulu."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This cannot be changed here."
+msgstr "Ini tidak bisa diubah di sini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "This deletes the field and every value in it (%s filled in). A copy of the values is kept in the Form builder history."
+msgstr "Ini menghapus kolom dan semua nilainya (%s terisi). Salinan nilainya disimpan di riwayat Pembuat formulir."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field cannot be changed here."
+msgstr "Kolom ini tidak bisa diubah di sini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field does not apply to this record's country of work."
+msgstr "Kolom ini tidak berlaku untuk negara kerja data ini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field is not offered on this screen."
+msgstr "Kolom ini tidak ditawarkan di layar ini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field is still used by: %s. Remove it there first."
+msgstr "Kolom ini masih dipakai oleh: %s. Hapus dari sana dulu."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This kind of record has no self-service page."
+msgstr "Jenis data ini tidak punya halaman layanan mandiri."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This link can be shown, not changed by the employee."
+msgstr "Tautan ini bisa ditampilkan, tidak bisa diubah karyawan."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record cannot be shown here."
+msgstr "Data ini tidak bisa ditampilkan di sini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record no longer exists."
+msgstr "Data ini sudah tidak ada."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record type already has %s custom fields, the most it can have. Delete one you no longer use first."
+msgstr "Jenis data ini sudah punya %s kolom kustom, batas maksimal. Hapus satu yang tidak dipakai lagi dulu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "This record type has no money of its own. Use Decimal instead."
+msgstr "Jenis data ini tidak punya mata uang sendiri. Pakai Desimal saja."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "This screen"
+msgstr "Layar ini"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This screen cannot take custom fields."
+msgstr "Layar ini tidak bisa diberi kolom kustom."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "This test screen is for the administrator, in developer mode."
+msgstr "Layar uji ini untuk administrator, dalam mode pengembang."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This value is worked out by the system."
+msgstr "Nilai ini dihitung oleh sistem."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__titles
+msgid "Titles"
+msgstr "Judul"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Type"
+msgstr "Jenis"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Type %s to confirm."
+msgstr "Ketik %s untuk konfirmasi."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Type the field name exactly to confirm the delete."
+msgstr "Ketik nama kolom persis untuk konfirmasi penghapusan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Type to filter…"
+msgstr "Ketik untuk menyaring…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Type to search…"
+msgstr "Ketik untuk mencari…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__formula_ok
+msgid "Use in pay formulas"
+msgstr "Pakai di rumus gaji"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Used by"
+msgstr "Dipakai oleh"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__user_id model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__user_id
+msgid "User"
+msgstr "Pengguna"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__attachment_id
+msgid "Values saved before deletion"
+msgstr "Nilai yang disimpan sebelum dihapus"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__version
+msgid "Version"
+msgstr "Versi"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__view_id
+msgid "View"
+msgstr "Tampilan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_mode
+msgid "When the employee changes it"
+msgstr "Saat karyawan mengubahnya"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Where it appears"
+msgstr "Di mana muncul"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Where they work"
+msgstr "Tempat kerja"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Who can see"
+msgstr "Siapa yang bisa melihat"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0 model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__vis
+msgid "Who can see it"
+msgstr "Siapa yang bisa melihat"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Whole number"
+msgstr "Bilangan bulat"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Yes / No"
+msgstr "Ya / Tidak"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot change this field."
+msgstr "Anda tidak bisa mengubah kolom ini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot change this record."
+msgstr "Anda tidak bisa mengubah data ini."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot pick that record."
+msgstr "Anda tidak bisa memilih data itu."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Your changes are kept as a draft. Nobody else sees them until you publish."
+msgstr "Perubahan Anda disimpan sebagai draf. Orang lain tidak melihatnya sampai Anda menerbitkan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Your unpublished changes from last time are back."
+msgstr "Perubahan yang belum diterbitkan dari terakhir kali sudah kembali."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "a day"
+msgstr "satu hari"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "another administrator"
+msgstr "administrator lain"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "approved by %s"
+msgstr "disetujui oleh %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "choices"
+msgstr "pilihan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "countries"
+msgstr "negara"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "custom"
+msgstr "kustom"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "employee, department…"
+msgstr "karyawan, departemen…"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "field"
+msgstr "kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "help text"
+msgstr "teks bantuan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "in the company money"
+msgstr "dalam mata uang perusahaan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "name"
+msgstr "nama"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "name in %s"
+msgstr "nama dalam %s"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "notes"
+msgstr "catatan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "pick one"
+msgstr "pilih satu"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "required"
+msgstr "wajib"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "saved at once"
+msgstr "langsung disimpan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "short, one line"
+msgstr "pendek, satu baris"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "show in lists"
+msgstr "tampilkan di daftar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "their shape is fixed by the pay scheme and the official file formats."
+msgstr "bentuknya ditetapkan oleh skema gaji dan format berkas resmi."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "tick box"
+msgstr "kotak centang"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "translations"
+msgstr "terjemahan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "use in pay formulas"
+msgstr "pakai di rumus gaji"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0 code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "who can see it"
+msgstr "siapa yang bisa melihat"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(n)s of %(total)s"
+msgstr "%(n)s dari %(total)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s (not used there)"
+msgstr "%s (tidak dipakai di sana)"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s It cannot be hidden."
+msgstr "%s Kolom ini tidak bisa disembunyikan."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s Its name cannot be changed either."
+msgstr "%s Namanya juga tidak bisa diubah."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s fields"
+msgstr "%s kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s is back to how the product shows it."
+msgstr "%s kembali seperti bawaannya."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/models/ir_model_fields.py:0
+msgid "%s no longer exists: its screen rule was removed."
+msgstr "%s sudah tidak ada: aturan tampilannya dihapus."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 field"
+msgstr "1 kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "All record types"
+msgstr "Semua jenis data"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Any Country of Work"
+msgstr "Semua negara kerja"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "As the product decides"
+msgstr "Sesuai bawaan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Back to how the product shows it"
+msgstr "Kembalikan seperti bawaan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Below the tabs"
+msgstr "Di bawah tab"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Built-in label: %s"
+msgstr "Label bawaan: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cannot be hidden."
+msgstr "Tidak bisa disembunyikan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Choice"
+msgstr "Pilihan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Clear the filter"
+msgstr "Hapus filter"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Clear the search"
+msgstr "Hapus pencarian"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Country of Work"
+msgstr "Negara Kerja"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field"
+msgstr "Cari kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field to add"
+msgstr "Cari kolom untuk ditambahkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a standard field"
+msgstr "Cari kolom standar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_hidden
+msgid "Hidden for everyone"
+msgstr "Disembunyikan untuk semua"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Hidden for people whose Country of Work is one of these. Their values are "
+"kept."
+msgstr ""
+"Disembunyikan untuk orang yang negara kerjanya salah satu dari ini. Nilainya"
+" tetap disimpan."
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_country_ids
+msgid "Hidden for these Countries of Work"
+msgstr "Disembunyikan di negara kerja ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden in %s"
+msgstr "Disembunyikan di %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Hidden in some countries"
+msgstr "Disembunyikan di beberapa negara"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "It must be filled in to save the record, so it always stays on screen."
+msgstr ""
+"Kolom ini wajib diisi untuk menyimpan data, jadi selalu tampil di layar."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"It was hidden before it became locked, so every screen shows it again. "
+"Choose Shown to clear the old rule."
+msgstr ""
+"Kolom ini disembunyikan sebelum dikunci, jadi semua layar menampilkannya "
+"lagi. Pilih Ditampilkan untuk menghapus aturan lama."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Kind of field"
+msgstr "Jenis kolom"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Link"
+msgstr "Tautan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "List of records"
+msgstr "Daftar data"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Locked now, shown"
+msgstr "Sekarang dikunci, tampil"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked now, shown again"
+msgstr "Sekarang dikunci, tampil lagi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "My Payobook, HR approves"
+msgstr "My Payobook, HR menyetujui"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "My Payobook, saves at once"
+msgstr "My Payobook, langsung tersimpan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "No custom fields yet."
+msgstr "Belum ada kolom sendiri."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No field matches"
+msgstr "Tidak ada kolom yang cocok"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Number"
+msgstr "Angka"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "On My Payobook"
+msgstr "Di My Payobook"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "On screen"
+msgstr "Di layar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Only %s"
+msgstr "Hanya %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Only the screens change. The field, its values, pay formulas, imports, "
+"Mapping and reports keep it."
+msgstr ""
+"Hanya layar yang berubah. Kolom, nilainya, rumus gaji, impor, Mapping, dan "
+"laporan tetap memakainya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Only where Country of Work is %s"
+msgstr "Hanya jika negara kerja %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid ""
+"Open a record screen and press Form builder to add the fields your company "
+"needs. The standard fields below can be hidden or renamed already."
+msgstr ""
+"Buka layar data dan tekan Form builder untuk menambah kolom yang dibutuhkan "
+"perusahaan. Kolom standar di bawah sudah bisa disembunyikan atau diganti "
+"namanya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Other fields"
+msgstr "Kolom lain"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Own fields"
+msgstr "Kolom sendiri"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Own label"
+msgstr "Label sendiri"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_labels
+msgid "Own labels"
+msgstr "Label sendiri"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Pick a field to hide it or give it your own label. It stays where the "
+"product draws it."
+msgstr ""
+"Pilih kolom untuk menyembunyikannya atau memberi label sendiri. Kolom tetap "
+"di tempat bawaannya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Pick a field to hide it, give it your own label or tick it for My Payobook. "
+"It stays where the product draws it."
+msgstr ""
+"Pilih kolom untuk menyembunyikannya, memberi label sendiri, atau "
+"mencentangnya untuk My Payobook. Kolom tetap di tempat bawaannya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Pick at least one country, or choose Shown."
+msgstr "Pilih minimal satu negara, atau pilih Ditampilkan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Renamed"
+msgstr "Diganti nama"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Reset to the built-in label"
+msgstr "Kembalikan ke label bawaan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"Shown only where Country of Work is %s: not used in other countries. That "
+"rule comes with the product and cannot be changed here."
+msgstr ""
+"Hanya tampil jika negara kerja %s: tidak dipakai di negara lain. Aturan ini "
+"bawaan dan tidak bisa diubah di sini."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Standard fields"
+msgstr "Kolom standar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Standard fields hidden"
+msgstr "Kolom standar disembunyikan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Standard fields renamed"
+msgstr "Kolom standar diganti nama"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The label cannot be changed."
+msgstr "Label tidak bisa diubah."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Top of the page"
+msgstr "Bagian atas halaman"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid ""
+"Your own fields and the standard ones: where they appear, how filled they "
+"are, what uses them, and which standard fields are hidden or renamed."
+msgstr ""
+"Kolom sendiri dan kolom standar: tampil di mana, seberapa terisi, apa yang "
+"memakainya, dan kolom standar mana yang disembunyikan atau diganti nama."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "built-in label put back"
+msgstr "label bawaan dikembalikan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "hidden for everyone"
+msgstr "disembunyikan untuk semua"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "hidden in %s"
+msgstr "disembunyikan di %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "hidden in some countries"
+msgstr "disembunyikan di beberapa negara"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "label"
+msgstr "label"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "own label"
+msgstr "label sendiri"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown"
+msgstr "tampil"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown again"
+msgstr "tampil lagi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Leave a language empty to keep the built-in label there. Mapping, Updates "
+"sheets and pay data files keep the built-in name. My Payobook shows your "
+"label for the fields you show there."
+msgstr ""
+"Kosongkan sebuah bahasa untuk tetap memakai label bawaan di bahasa itu. "
+"Mapping, lembar Pembaruan, dan file data gaji tetap memakai nama bawaan. My "
+"Payobook menampilkan label Anda untuk kolom yang Anda tampilkan di sana."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(names)s and %(n)s more"
+msgstr "%(names)s dan %(n)s lainnya"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Used by pay formula: %s"
+msgstr "Dipakai rumus gaji: %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Filled by pay data file: %s"
+msgstr "Diisi oleh file data gaji: %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay formula %s"
+msgstr "rumus gaji %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay data file of %s"
+msgstr "file data gaji %s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again because %(thing)s now uses it."
+msgstr "%(box)s ditampilkan lagi karena %(thing)s sekarang memakainya."
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again: %(reason)s"
+msgstr "%(box)s ditampilkan lagi: %(reason)s"
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "shown again, it cannot be hidden."
+msgstr "ditampilkan lagi, tidak bisa disembunyikan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(at)s of %(n)s"
+msgstr "%(at)s dari %(n)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 match"
+msgstr "1 hasil"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A tab of this page. Its fields can be hidden or renamed, not moved."
+msgstr "Tab di halaman ini. Kolomnya bisa disembunyikan atau diganti namanya, tidak dipindahkan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field on this screen"
+msgstr "Cari kolom di layar ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Fixed layout — fields can be hidden or renamed"
+msgstr "Tata letak tetap — kolom bisa disembunyikan atau diganti namanya"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fixed layout: its fields can be hidden or renamed, not moved"
+msgstr "Tata letak tetap: kolom bisa disembunyikan atau diganti namanya, tidak dipindahkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden for %s"
+msgstr "Disembunyikan untuk %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked: %s"
+msgstr "Terkunci: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No fields here: this part of the screen lists records, not fields."
+msgstr "Tidak ada kolom di sini: bagian layar ini berisi daftar catatan, bukan kolom."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Worked out by the screen"
+msgstr "Dihitung oleh layar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Field code: %s"
+msgstr "Kode field: %s"
+

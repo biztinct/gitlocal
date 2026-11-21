@@ -53,7 +53,9 @@ class HrPayslipRun(models.Model):
         ``prev_net`` / ``prev_date`` (the previous payslip's, or None),
         ``change_pct`` (signed, or None), ``flag`` (bool), ``kind``
         ('zero' | 'change' | '') and ``reason`` (a plain sentence in the
-        reader's language, '' when not flagged).
+        reader's language, '' when not flagged). Another module may add
+        ``note`` (WDGAP W2-F): a plain sentence worth knowing that is NOT a
+        flag — both screens show it quietly and never count it.
         """
         self.ensure_one()
         cr = self.env.cr
@@ -146,6 +148,29 @@ class HrPayslipRun(models.Model):
                         _('Net pay down %(pct)s%% on %(month)s',
                           pct=pct, month=month)))
             out[sid] = row
+        self._pb_review_hold_flags(out)
+        return out
+
+    # ---------------------------------------------------------------- holds
+    # WDGAP PR-C, kept apart on purpose: "Pay on hold" is a flag the run's
+    # approver must see, so a held payslip counts under Need review in both
+    # screens that read this answer. `pb_pay_hold` belongs to pb_pay_delivery
+    # (not a dependency), so the block does nothing without that field.
+    # Another module adding its own flag clones this block in its own
+    # override of `pb_review_flags` rather than editing the query above.
+    def _pb_review_hold_flags(self, out):
+        Slip = self.env['hr.payslip']
+        if not out or 'pb_pay_hold' not in Slip._fields:
+            return out
+        held = Slip.sudo().search([('id', 'in', list(out)),
+                                   ('pb_pay_hold', '=', True),
+                                   ('state', '!=', 'cancel')])
+        for slip in held:
+            row = out[slip.id]
+            if row['flag']:
+                row['reason'] = '%s · %s' % (row['reason'], _('Pay on hold'))
+            else:
+                row.update(flag=True, kind='hold', reason=_('Pay on hold'))
         return out
 
 

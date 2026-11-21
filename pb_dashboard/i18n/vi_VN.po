@@ -1387,12 +1387,6 @@ msgstr "về tháng gần nhất"
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "balances"
-msgstr "cân"
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "bn"
 msgstr "tỷ"
 
@@ -1617,3 +1611,123 @@ msgstr "cảnh báo máy chấm công"
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "time-clock alerts"
 msgstr "cảnh báo máy chấm công"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s leave requests approved in 7 days"
+msgstr "%(n)s đơn nghỉ phép được duyệt trong 7 ngày"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people joined this week"
+msgstr "%(n)s người mới vào làm trong tuần này"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people left this week"
+msgstr "%(n)s người nghỉ việc trong tuần này"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s things worth a look"
+msgstr "%(n)s điều nên xem qua"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 leave request approved in 7 days"
+msgstr "1 đơn nghỉ phép được duyệt trong 7 ngày"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person joined this week"
+msgstr "1 người mới vào làm trong tuần này"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person left this week"
+msgstr "1 người nghỉ việc trong tuần này"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 thing worth a look"
+msgstr "1 điều nên xem qua"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "First noticed %(when)s"
+msgstr "Phát hiện lần đầu %(when)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "For your information"
+msgstr "Để bạn biết"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Got it"
+msgstr "Đã hiểu"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Look closer"
+msgstr "Xem kỹ hơn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Needs a look now"
+msgstr "Cần xem ngay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Overtime in %(dept)s is up %(pct)s%"
+msgstr "Làm thêm giờ ở %(dept)s tăng %(pct)s%"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Overtime is up %(pct)s%"
+msgstr "Làm thêm giờ tăng %(pct)s%"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Pay cost is down %(pct)s% on the last three months"
+msgstr "Chi phí lương giảm %(pct)s% so với ba tháng gần nhất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Pay cost is up %(pct)s% on the last three months"
+msgstr "Chi phí lương tăng %(pct)s% so với ba tháng gần nhất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "PayAI noticed"
+msgstr "PayAI nhận thấy"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "That could not be saved. Try again in a moment."
+msgstr "Không lưu được. Hãy thử lại sau giây lát."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Worth a look"
+msgstr "Nên xem qua"

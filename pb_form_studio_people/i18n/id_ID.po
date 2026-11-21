@@ -1,0 +1,899 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 12:07+0000\n"
+"PO-Revision-Date: 2026-11-19 12:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%(filled)s of %(total)s filled in"
+msgstr "%(filled)s dari %(total)s sudah diisi"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s details need a look before they can be saved."
+msgstr "%s detail perlu diperiksa sebelum bisa disimpan."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s standard fields are on My Payobook"
+msgstr "%s kolom standar ada di My Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "%s unsaved changes"
+msgstr "%s perubahan belum disimpan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 detail needs a look before it can be saved."
+msgstr "1 detail perlu diperiksa sebelum bisa disimpan."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 standard field is on My Payobook"
+msgstr "1 kolom standar ada di My Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "1 unsaved change"
+msgstr "1 perubahan belum disimpan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "A field's type cannot be changed after it is published."
+msgstr "Jenis kolom tidak bisa diubah setelah diterbitkan."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "A pay formula reads it, so only HR changes it."
+msgstr "Rumus gaji membacanya, jadi hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Add or move fields"
+msgstr "Tambah atau pindahkan kolom"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/full_form_button.xml:0
+msgid "Add or move fields on this screen"
+msgstr "Tambah atau pindahkan kolom di layar ini"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Add your own fields"
+msgstr "Tambahkan kolom Anda sendiri"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Already on My details: the employee changes it there."
+msgstr "Sudah ada di Detail saya: karyawan mengubahnya di sana."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Bank details are changed through the bank change request."
+msgstr "Detail bank diubah lewat permintaan perubahan bank."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Company details"
+msgstr "Detail perusahaan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Company details saved."
+msgstr "Detail perusahaan tersimpan."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Company, team, manager and job are set by HR."
+msgstr "Perusahaan, tim, atasan, dan jabatan diatur oleh HR."
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__pbfs_country_of_work_id
+msgid "Country of Work"
+msgstr "Negara kerja"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Country of Work decides which rules apply. Only HR changes it."
+msgstr ""
+"Negara kerja menentukan aturan yang berlaku. Hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Details your company keeps for this person."
+msgstr "Detail yang disimpan perusahaan Anda untuk orang ini."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Discard"
+msgstr "Buang"
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_form_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_people__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Documents"
+msgstr "Dokumen"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Drawn by the side panel itself. Fields cannot be placed here."
+msgstr ""
+"Ditampilkan oleh panel samping sendiri. Kolom tidak bisa ditaruh di sini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#: model:ir.model,name:pb_form_studio_people.model_hr_employee
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Every change to this person, newest first. %s"
+msgstr "Setiap perubahan untuk orang ini, terbaru dulu. %s"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Find a field…"
+msgstr "Cari kolom…"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Find a standard field"
+msgstr "Cari kolom standar"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+#: code:addons/pb_form_studio_people/static/src/xml/full_form_button.xml:0
+#: model:ir.model,name:pb_form_studio_people.model_pb_form_studio
+msgid "Form builder"
+msgstr "Pembuat formulir"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Form builder: add your own fields to this panel, or move them"
+msgstr ""
+"Pembuat formulir: tambahkan kolom Anda sendiri ke panel ini, atau pindahkan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"HR fills them in on this tab. You decide who can see each one and in which "
+"countries it applies."
+msgstr ""
+"HR mengisinya di tab ini. Anda menentukan siapa yang bisa melihat tiap kolom"
+" dan di negara mana kolom itu berlaku."
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_form_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_people.field_pb_people__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Identity, contact and family details. %s"
+msgstr "Detail identitas, kontak, dan keluarga. %s"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Job"
+msgstr "Pekerjaan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Keep editing"
+msgstr "Lanjutkan mengubah"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"Keep the details your company tracks for every employee, such as a uniform "
+"size, a locker number or a union membership, right here."
+msgstr ""
+"Simpan di sini detail yang dicatat perusahaan Anda untuk setiap karyawan, "
+"seperti ukuran seragam, nomor loker, atau keanggotaan serikat pekerja."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Leave without saving"
+msgstr "Keluar tanpa menyimpan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Login and access details are set by HR."
+msgstr "Detail login dan akses diatur oleh HR."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "More about the job"
+msgstr "Lebih lanjut tentang pekerjaan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "More about the person"
+msgstr "Lebih lanjut tentang orangnya"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid ""
+"None of the fields made so far apply to people whose Country of Work is %s."
+msgstr "Belum ada kolom yang berlaku untuk orang dengan negara kerja %s."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Not filled in"
+msgstr "Belum diisi"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Nothing matches."
+msgstr "Tidak ada yang cocok."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Nothing to show for this person"
+msgstr "Tidak ada yang ditampilkan untuk orang ini"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Only HR can see these details."
+msgstr "Hanya HR yang bisa melihat detail ini."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Open the Form builder"
+msgstr "Buka Pembuat formulir"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Part of the contract. Only HR changes it."
+msgstr "Bagian dari kontrak. Hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Pay & tax"
+msgstr "Gaji & pajak"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Pay figures are never shown on My Payobook."
+msgstr "Angka gaji tidak pernah ditampilkan di My Payobook."
+
+#. module: pb_form_studio_people
+#: model:ir.model,name:pb_form_studio_people.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr "Data layar Karyawan Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Personal"
+msgstr "Pribadi"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid ""
+"Pick a standard field to tick it for the employee's own My Payobook page. It"
+" stays where it is on this screen."
+msgstr ""
+"Pilih kolom standar untuk dicentang bagi halaman My Payobook milik karyawan."
+" Kolom tetap di tempatnya di layar ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Position, team and place of work. %s"
+msgstr "Jabatan, tim, dan tempat kerja. %s"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Profile"
+msgstr "Profil"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save and go"
+msgstr "Simpan lalu lanjut"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Save them before you leave, or leave without saving."
+msgstr "Simpan sebelum keluar, atau keluar tanpa menyimpan."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Saving did not work. Nothing was changed."
+msgstr "Gagal menyimpan. Tidak ada yang berubah."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Show on My Payobook"
+msgstr "Tampilkan di My Payobook"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown"
+msgstr "Ditampilkan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown · can change, HR approves"
+msgstr "Ditampilkan · bisa diubah, HR menyetujui"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid "Shown · can change, saves at once"
+msgstr "Ditampilkan · bisa diubah, langsung tersimpan"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Standard fields"
+msgstr "Kolom standar"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Tax numbers and status are changed through Tax details."
+msgstr "Nomor dan status pajak diubah lewat Detail pajak."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Tax, insurance and bank details. %s"
+msgstr "Detail pajak, asuransi, dan bank. %s"
+
+#. module: pb_form_studio_people
+#: model:ir.model.fields,help:pb_form_studio_people.field_hr_employee__pbfs_country_of_work_id
+msgid ""
+"The country of the Country of Work box, used to show only the fields that "
+"apply to it."
+msgstr ""
+"Negara dari kotak Negara kerja, dipakai untuk menampilkan hanya kolom yang "
+"berlaku di sana."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "This employee no longer exists."
+msgstr "Karyawan ini sudah tidak ada."
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/js/people_form_patches.js:0
+msgid ""
+"This person has no Country of Work recorded, so only fields for all "
+"countries show here."
+msgstr ""
+"Orang ini belum punya negara kerja, jadi hanya kolom untuk semua negara yang"
+" tampil di sini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Timeline"
+msgstr "Linimasa"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "Unsaved changes"
+msgstr "Perubahan belum disimpan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Uploaded documents, by kind. %s"
+msgstr "Dokumen yang diunggah, per jenis. %s"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Visible to payroll managers only"
+msgstr "Hanya terlihat oleh manajer penggajian"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Wage, department, manager and contract dates. %s"
+msgstr "Gaji, departemen, atasan, dan tanggal kontrak. %s"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/pb_people.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_form_studio_people
+#. odoo-javascript
+#: code:addons/pb_form_studio_people/static/src/xml/people_form_patches.xml:0
+msgid "You can look at these details but not change them."
+msgstr "Anda bisa melihat detail ini tetapi tidak bisa mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Government forms are filled from the home address, so only HR changes it."
+msgstr "Formulir pemerintah diisi dari alamat rumah, jadi hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Social security numbers are set by HR."
+msgstr "Nomor jaminan sosial diatur oleh HR."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "The legal name must match the ID papers, so only HR changes it."
+msgstr "Nama resmi harus sesuai dengan dokumen identitas, jadi hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "This is HR's own note about the person."
+msgstr "Ini adalah catatan HR sendiri tentang orang ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Children who count for tax are added on My details, under Family, where the pay team confirms them."
+msgstr "Anak yang dihitung untuk pajak ditambahkan di Data saya, bagian Keluarga, tempat tim penggajian mengonfirmasinya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "The time zone follows the place of work and is used to count working time, so only HR changes it."
+msgstr "Zona waktu mengikuti tempat kerja dan dipakai untuk menghitung waktu kerja, jadi hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr "File data gaji mengisinya, jadi gaji bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
+msgstr "Rumus gaji membacanya, jadi gaji bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
+msgstr "Persetujuan, akses, dan pengaturan gaji mengikuti kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Bank files depend on this field."
+msgstr "File bank bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Government forms and statutory files print this field."
+msgstr "Formulir pemerintah dan file wajib mencetak kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "It names the person on every payslip and file."
+msgstr "Kolom ini menamai orangnya di setiap slip gaji dan file."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Logins, approvals and the time clock follow this field."
+msgstr "Login, persetujuan, dan absensi mengikuti kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
+msgstr "Gaji atau file wajib bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Pay or statutory files of that country depend on this field."
+msgstr "Gaji atau file wajib negara itu bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Job"
+msgstr "Panel samping: Pekerjaan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Pay & tax"
+msgstr "Panel samping: Gaji & pajak"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Side panel: Personal"
+msgstr "Panel samping: Pribadi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Tax and social insurance files depend on this field."
+msgstr "File pajak dan jaminan sosial bergantung pada kolom ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid ""
+"Pay rules, statutory files and the fields each person sees follow this "
+"field."
+msgstr ""
+"Aturan gaji, file wajib, dan kolom yang dilihat setiap orang mengikuti kolom"
+" ini."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Insurance (BH)"
+msgstr "Asuransi (BH)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Payroll Info"
+msgstr "Info Penggajian"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/hr_employee.py:0
+msgid "Tax & Dependents"
+msgstr "Pajak & Tanggungan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Changed through My details › Family"
+msgstr "Diubah melalui Data saya › Keluarga"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+msgid "Sensitive detail — HR always approves"
+msgstr "Data sensitif — HR selalu menyetujui"
+
+#. module: pb_form_studio_people
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#, python-format
+msgid "%s Only HR changes it."
+msgstr "%s Hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#: code:addons/pb_form_studio_people/models/form_studio.py:0
+#, python-format
+msgid "A pay formula can read it, so only HR changes it."
+msgstr "Rumus gaji dapat membacanya, jadi hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "%s (recorded boxes)"
+msgstr "%s (kotak yang tercatat)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Account holder"
+msgstr "Pemilik rekening"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Account number"
+msgstr "Nomor rekening"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Bank"
+msgstr "Bank"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Bank on file"
+msgstr "Bank tercatat"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Contract dates"
+msgstr "Tanggal kontrak"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Cost centre"
+msgstr "Pusat biaya"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Deduction per registered dependent"
+msgstr "Potongan per tanggungan terdaftar"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent deduction from saved payroll count"
+msgstr "Potongan tanggungan dari jumlah penggajian tersimpan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records"
+msgstr "Catatan tanggungan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records needing verification"
+msgstr "Catatan tanggungan yang perlu diverifikasi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Dependent records saved"
+msgstr "Catatan tanggungan tersimpan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Health insurance (HI)"
+msgstr "Asuransi kesehatan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "How relief is applied"
+msgstr "Cara keringanan diterapkan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Insurance"
+msgstr "Asuransi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Insurance salary basis"
+msgstr "Dasar gaji asuransi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Joined"
+msgstr "Bergabung"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Manager"
+msgstr "Manajer"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Monthly wage"
+msgstr "Gaji bulanan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "On record"
+msgstr "Tercatat"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "One line per dependent record"
+msgstr "Satu baris per catatan tanggungan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "PIT calculation method"
+msgstr "Metode perhitungan pajak penghasilan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "PIT number"
+msgstr "Nomor pajak penghasilan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Payroll scheme"
+msgstr "Skema penggajian"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Personal deduction — scheme rate"
+msgstr "Potongan pribadi — tarif skema"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Phone"
+msgstr "Telepon"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Registered dependents — payroll count"
+msgstr "Tanggungan terdaftar — jumlah penggajian"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "SI number"
+msgstr "Nomor jaminan sosial"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Salary before insurance caps"
+msgstr "Gaji sebelum batas asuransi"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Saved payroll treatment"
+msgstr "Perlakuan penggajian tersimpan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Settings as of"
+msgstr "Pengaturan per"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Social insurance (SI)"
+msgstr "Jaminan sosial"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Structure"
+msgstr "Struktur"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Summary"
+msgstr "Ringkasan"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Tax"
+msgstr "Pajak"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/fixed_sections.py:0
+msgid "Unemployment insurance (UI)"
+msgstr "Asuransi pengangguran"

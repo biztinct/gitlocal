@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         WHO READS WHAT.
+
+         No employee login and no line manager holds ANY right on the four
+         models below: every employee and manager read goes through
+         `pb.review.forms`, which proves the review is theirs (or their
+         team's) and works under sudo. The HR team reads through the access
+         list, scoped to their companies, and NEVER their own review: an HR
+         lead's own review is kept from them exactly as anybody's is.
+         ================================================================== -->
+
+    <record id="rule_review_form_company" model="ir.rule">
+        <field name="name">Review form: my companies</field>
+        <field name="model_id" ref="model_pb_review_form"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_review_entry_company" model="ir.rule">
+        <field name="name">Filled-in review: my companies</field>
+        <field name="model_id" ref="model_pb_review_entry"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_review_entry_not_mine" model="ir.rule">
+        <field name="name">Filled-in review: the HR team, never their own</field>
+        <field name="model_id" ref="model_pb_review_entry"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', False), ('employee_id.user_id', '!=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('pb_goals.group_goals_user'))]"/>
+    </record>
+
+    <!-- ==================================================================
+         RV1 (owner, 2026-11-16): a filed review PDF is for the person, their
+         direct manager and the Goals HR team ONLY. GLOBAL, so it is ANDed
+         with the documents module's own rules (which let every payroll and
+         HR officer read every document): a private review document passes
+         only for those three. Every other document is untouched.
+         ================================================================== -->
+    <record id="rule_review_document_private" model="ir.rule">
+        <field name="name">Employee Document: a private review only for the person, their manager and the Goals HR team</field>
+        <field name="model_id" ref="pb_employee_vault.model_pb_employee_document"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[(1, '=', 1)] if user.has_group('pb_goals.group_goals_user') else ['|', ('pb_rf_private', '=', False), '|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_review_answer_company" model="ir.rule">
+        <field name="name">Review answer: my companies</field>
+        <field name="model_id" ref="model_pb_review_answer"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_review_answer_not_mine" model="ir.rule">
+        <field name="name">Review answer: the HR team, never their own</field>
+        <field name="model_id" ref="model_pb_review_answer"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', False), ('employee_id.user_id', '!=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('pb_goals.group_goals_user'))]"/>
+    </record>
+
+</odoo>

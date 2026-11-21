@@ -1796,6 +1796,33 @@ class PbRecordsDesk(models.AbstractModel):
                                       or self.env.company).id
             account = PartnerBank.create(vals)
         probe._link_employee_bank_account(employee, account)
+        # WDGAP S6-A (FACTS §0.1): the pay bank file and the payslip PDF
+        # password read the four `vietnam_bank_*` fields, not the account, and
+        # nothing used to copy one to the other — an approved change here
+        # never reached the bank file. Now the account this change wrote is
+        # the one read first (`bank_account_ids[:1]`, ordered by sequence)
+        # and the four fields say the same. The branch belongs to the old bank
+        # and is cleared when the bank changes. pb_bank_ocr's audit hook
+        # files the history row, named "Updates or Records".
+        emp = employee.sudo()
+        if 'bank_account_ids' in emp._fields:
+            others = emp.bank_account_ids - account
+            if others and emp.bank_account_ids[:1] != account:
+                account.write({'sequence': min(others.mapped('sequence')) - 1})
+        if 'vietnam_bank_account_number' in emp._fields:
+            file_vals = {
+                'vietnam_bank_account_number': account.acc_number or False,
+                'vietnam_bank_account_name': account.acc_holder_name
+                or emp.vietnam_bank_account_name or False,
+                'vietnam_bank_name': account.bank_id.name
+                or emp.vietnam_bank_name or False,
+            }
+            if (file_vals['vietnam_bank_name'] or '') != (emp.vietnam_bank_name or ''):
+                file_vals['vietnam_bank_branch'] = False
+            file_vals = {k: v for k, v in file_vals.items()
+                         if (emp[k] or '') != (v or '')}
+            if file_vals:
+                emp.with_context(pb_bank_history_source='updates').write(file_vals)
         for entry in step['entries']:
             self._log(apply_rec, employee, 'res.partner.bank', account.id,
                       entry['card'], entry['old'], entry['value'],

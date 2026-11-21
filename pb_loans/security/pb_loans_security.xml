@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         Who reads a loan in the backend (WDGAP PR-B §9).
+
+         NO PORTAL ROW and NO "my own" rule: a person reaches their own
+         loans only through My Payobook (/my/loans), under sudo after an
+         ownership guard (`pb.loan.my_loans`).
+
+         Group rules OR together; the company rule is global (AND).
+           * everyone inside the business: only the loans a published route
+             asked them to decide (`seat_user_ids`, AM60 — a seat is a read
+             AND a write: the engine writes the status as the person who
+             decided);
+           * the pay team (payroll officers, payroll managers): every loan.
+         ================================================================== -->
+
+    <record id="rule_loan_company" model="ir.rule">
+        <field name="name">Loan: company</field>
+        <field name="model_id" ref="model_pb_loan"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_loan_seat" model="ir.rule">
+        <field name="name">Loan: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_loan"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="rule_loan_pay_team" model="ir.rule">
+        <field name="name">Loan: the pay team</field>
+        <field name="model_id" ref="model_pb_loan"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('pb_hr_payroll_base.group_payroll_base_officer')), (4, ref('pb_hr_payroll_base.group_payroll_base_manager'))]"/>
+    </record>
+
+    <record id="rule_loan_repayment_company" model="ir.rule">
+        <field name="name">Loan repayment: company</field>
+        <field name="model_id" ref="model_pb_loan_repayment"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,2801 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_form_studio
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 23:52+0000\n"
+"PO-Revision-Date: 2026-11-19 23:52+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s (%(type)s) in %(section)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s in %(section)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s to %(section)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid ""
+"%(label)s: %(old)s → %(new)s (changed on My Payobook by %(who)s, %(how)s)"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(label)s: %(what)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(n)s of %(total)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid ""
+"%(n)s records use the choice \"%(choice)s\". Change them first, then remove "
+"it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid ""
+"%(who)s published this screen after you started your changes. Publishing now"
+" would replace their layout with yours."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s (not used there)"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s It cannot be hidden."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s Its name cannot be changed either."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s changes not yet published"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s fields"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s is back to how the product shows it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s is deleted."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s is hidden. Find it again under \"Add existing\"."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/models/ir_model_fields.py:0
+msgid "%s no longer exists: its screen rule was removed."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%s records"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "%s unsaved changes"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 change not yet published"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 record"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "1 unsaved change"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice can be at most %s characters."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice list can have at most %s choices."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A choice list needs at least one choice."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_field_meta_field_uniq
+msgid "A field has one set of Form builder settings."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A field name can be at most %s characters."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A field's type cannot be changed. Delete it and add a new one."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"A locked field stays in its own section. You can still change its order "
+"there."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "A new field is made for every record of this kind when you publish."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A pay run is being worked out right now. Try again in a few minutes."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_layout_host_company_uniq
+msgid "A screen has one published layout per company."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "About"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__action
+msgid "Action"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add a choice"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add a country…"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Add existing"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/use_form_studio.js:0
+msgid "Add or move fields on this screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0
+msgid "Add your own fields to record screens and decide who sees them."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Added"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Added %(label)s (%(type)s)"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__create_field
+msgid "Added a field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__admin
+msgid "Administrators only"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "All"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "All countries"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "All record types"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"Another administrator published this screen after you started your changes."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Any Country of Work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Appears in"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "As the product decides"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Automations"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Back to %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Back to how the product shows it"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__base_version
+msgid "Base Version"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Below the tabs"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Built-in label: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · HR approves"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Can change · saves at once"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cannot be hidden."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Cannot delete."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Changed"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Changed %(label)s: %(what)s"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__update_field
+msgid "Changed a field"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__portal_change
+msgid "Changed on My Payobook"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Changes discarded. Nothing was published."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Choice"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Choice list"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Choices"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Choose a file"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__city
+msgid "City"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Clear the filter"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Clear the search"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Click a field on the screen to change it, or drag a type from the left to "
+"add one."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Close the Form builder"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__company_id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__company_id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__company_id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Company details"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Contact"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Countries"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__country_ids
+msgid "Countries of work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Country"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Country of Work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Country of Work decides which fields apply."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__country_id
+msgid "Country of work"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__create_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__create_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__create_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__create_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__create_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__create_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__create_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__create_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__create_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__create_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__custom
+msgid "Custom"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Custom field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Custom fields"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Custom fields cannot be added to this kind of record."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Custom fields cannot be saved on this kind of record."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Date"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Decimal"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Delete"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Delete field…"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Delete this field?"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Deleted"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Deleted %s"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__delete_field
+msgid "Deleted a field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Department"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__detail
+msgid "Detail"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Discard"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__display_name
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__display_name
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__display_name
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__display_name
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__display_name
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__display_name
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__display_name
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_studio__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drag a type onto a section"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drawn by the screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid ""
+"Drawn by the screen itself from the contract and the pay scheme. Fields "
+"cannot be placed here."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drawn by the screen: no fields can be placed"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Drop a field here"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Each choice must be different: \"%s\" is there twice."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Edit"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__email
+msgid "Email"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Employee"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_edit
+msgid "Employee can change it"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a date."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a number."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter a whole number."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Enter an amount."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0
+msgid ""
+"Every custom field in this company: where it appears, who can see it and "
+"what uses it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Every field is already on the screen."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Every record needs its name."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Everyone"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"Everyone, in every company, sees the new layout the next time the screen "
+"loads."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__all
+msgid "Everyone, including the employee"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Feed pay formulas"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__field_id
+msgid "Field"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__field_name
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__name
+msgid "Field Name"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Field code"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Field settings"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_ir_model_fields
+msgid "Fields"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fields to add"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "File"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "File attached"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Fill this in: it is required."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Filled"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Filled on %(n)s of %(total)s records."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field to add"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a standard field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/settings_card.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.actions.client,name:pb_form_studio.action_pb_form_library
+#: model:ir.model,name:pb_form_studio.model_pb_form_studio
+msgid "Form builder"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_layout_draft
+msgid "Form builder draft"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_field_meta
+msgid "Form builder field settings"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_audit
+msgid "Form builder history"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_native_view
+msgid "Form builder page on a standard screen"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_layout
+msgid "Form builder published layout"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model,name:pb_form_studio.model_pb_form_sample
+msgid "Form builder sample record"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.actions.client,name:pb_form_studio.action_pb_form_dev_host
+msgid "Form builder test screen"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__pbfs_groups
+msgid "Form builder visibility"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Formulas"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__name
+msgid "Full name"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Give the field a name."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__approve
+msgid "HR approves the change"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__vis__hr
+msgid "HR staff and administrators"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "HR staff and administrators only"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Help text"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_hidden
+msgid "Hidden for everyone"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Hidden for people whose Country of Work is one of these. Their values are "
+"kept."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_country_ids
+msgid "Hidden for these Countries of Work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden in %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Hidden in some countries"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Hide from this screen"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__host_key
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__host_key
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__host_key
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__host_key
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__host_key
+msgid "Host Key"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_ir_model_fields__id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_studio__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "It cannot be hidden, moved out of its section or deleted."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "It must be filled in to save the record, so it always stays on screen."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"It was hidden before it became locked, so every screen shows it again. "
+"Choose Shown to clear the old rule."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Its type cannot be changed afterwards."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Job position"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Keep editing"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Keep going"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Kind of field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Label"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Label in other languages"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__write_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__write_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__write_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__write_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__write_uid
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__write_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__write_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__write_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__write_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__write_date
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_layout_draft__base_version
+msgid "Layout version the draft was started from."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Leave empty"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Leave the Form builder without publishing?"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Leave, keep the draft"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Link"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Link to a record"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Links to"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "List of records"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Lists"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Loading the Field library…"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Loading…"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Locked"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Locked field: identity or pay depends on it"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Locked now, shown"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked now, shown again"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Locked."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Long text"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_field_meta__custom
+msgid "Made by the Form builder (can be deleted)."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__model
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__model
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__model
+msgid "Model"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__model
+msgid "Model Name"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Money"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Money and files can be shown, not changed by the employee."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Monthly wage"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Moved"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Must be filled in before the record is saved."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "My Payobook"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "My Payobook, HR approves"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "My Payobook, saves at once"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "New %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "New field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"New fields are added to every record of this kind (%s), empty until filled."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "No"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "No changes yet"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "No custom fields yet"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "No custom fields yet."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No field matches"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Not on any screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Not on this screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Not shown"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Not shown on this screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Nothing matches."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Number"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Offered as a column on the lists of these records."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Offered as an input when pay rules are written."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "On My Payobook"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "On a phone, tap a type to add it to the last section."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "On screen"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_native_view_parent_uniq
+msgid "One Form builder page per screen design."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.constraint,message:pb_form_studio.constraint_pb_form_layout_draft_draft_uniq
+msgid "One draft per person per screen."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Only %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Only fields added with the Form builder can be changed here."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Only numbers, money, yes/no, dates and choice lists can feed a formula."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Only some countries of work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_layout.py:0
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Only the administrator can change forms."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Only the screens change. The field, its values, pay formulas, imports, "
+"Mapping and reports keep it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Only where Country of Work is %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid ""
+"Open a record screen and press Form builder to add the fields your company "
+"needs. The standard fields below can be hidden or renamed already."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Open section"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Open section: fields can be added, moved, hidden"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Opening the Form builder…"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option A"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Option B"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Other fields"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Own fields"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Own label"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_labels
+msgid "Own labels"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "PDF, image"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_native_view__titles
+msgid "Page title per language."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__parent_xmlid
+msgid "Parent Xmlid"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pay"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pay data import mappings"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Pay formulas"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Pay scheme"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__payload
+msgid "Payload"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid ""
+"Payslips, payslip lines and government returns cannot take custom fields:"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__phone
+msgid "Phone"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Pick a field to hide it or give it your own label. It stays where the "
+"product draws it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Pick a field to hide it, give it your own label or tick it for My Payobook. "
+"It stays where the product draws it."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Pick at least one country, or choose Shown."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick how a change by the employee is saved."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick one of the choices."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Pick the type carefully. Once published, a field's type cannot be changed; "
+"you would have to delete it and start again."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick what kind of field this is."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick what this field links to."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Pick who can see this field."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Place in section"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish for everyone"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish mine over it"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Publish this layout for everyone?"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Published %(screen)s, version %(v)s"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__published_at
+msgid "Published At"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__published_by
+msgid "Published By"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_audit__action__publish
+msgid "Published a layout"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Published. %s changes are now live for everyone."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Published. 1 change is now live for everyone."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Publishing did not work. Nothing was changed."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__res_id
+msgid "Record"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Record type"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Remove"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Remove this choice"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Renamed"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__is_required
+msgid "Required"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Reset to the built-in label"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Restricted"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Sample record"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Sample record · nothing here is real"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved export lists"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved searches"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Saved views"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "Saved."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Saved. Everyone sees the change the next time their screen loads."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__portal_mode__instant
+msgid "Saves at once"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Screen designs that show it"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__sections
+msgid "Sections"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Settings"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Show"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__list_ok
+msgid "Show in lists"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_show
+msgid "Show on My Payobook"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Show this field only for people working in these countries."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Shown"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Shown in lists"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"Shown on the employee's own My Payobook page, even when only HR can see it "
+"here."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"Shown only where Country of Work is %s: not used in other countries. That "
+"rule comes with the product and cannot be changed here."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Shown when someone points at the label"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Someone published first"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Something above still uses this field. Remove it there first."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__stamp
+msgid "Stamp"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Standard field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Standard fields"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Standard fields come with the product: they can be placed and ordered, never"
+" deleted or retyped."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Standard fields hidden"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Standard fields renamed"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again from the published layout"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Start again from their layout"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_sample__date_start
+msgid "Start date"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__summary
+msgid "Summary"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_ir_model_fields__pbfs_groups
+msgid ""
+"Technical: the permission list the Form builder applies to this field. Empty"
+" means everyone who may open the record."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "Test screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Text"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "That could not be deleted."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "That could not be saved."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That file could not be read."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That number is too big."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That record no longer exists."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "That value cannot be used here."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "The Field library could not open."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "The Form builder could not open."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_layout.py:0
+msgid "The Form builder history cannot be changed."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "The employee can change it on My Payobook."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "The file is too big (at most 10 MB)."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The label cannot be changed."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_audit__res_id
+msgid "The record a My Payobook change was saved on."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/dev_host.js:0
+msgid "The record could not be read."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid ""
+"The records are busy right now (a pay run or an import may be working on "
+"them). Try again in a few minutes."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The screen being changed"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "The section \"%(sec)s\" can hold at most %(n)s fields."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,help:pb_form_studio.field_pb_form_field_meta__model
+msgid "The technical name of the model this field belongs to"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "These still use it. Remove it there first."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This cannot be changed here."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid ""
+"This deletes the field and every value in it (%s filled in). A copy of the "
+"values is kept in the Form builder history."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field cannot be changed here."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field does not apply to this record's country of work."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field is not offered on this screen."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This field is still used by: %s. Remove it there first."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This kind of record has no self-service page."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This link can be shown, not changed by the employee."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record cannot be shown here."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This record no longer exists."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid ""
+"This record type already has %s custom fields, the most it can have. Delete "
+"one you no longer use first."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "This record type has no money of its own. Use Decimal instead."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "This screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This screen cannot take custom fields."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/dev_host.xml:0
+msgid "This test screen is for the administrator, in developer mode."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "This value is worked out by the system."
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__titles
+msgid "Titles"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Top of the page"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Type"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Type %s to confirm."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Type the field name exactly to confirm the delete."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Type to filter…"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Type to search…"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__formula_ok
+msgid "Use in pay formulas"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Used by"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__user_id
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout_draft__user_id
+msgid "User"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_audit__attachment_id
+msgid "Values saved before deletion"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_layout__version
+msgid "Version"
+msgstr ""
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_native_view__view_id
+msgid "View"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__portal_mode
+msgid "When the employee changes it"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Where it appears"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Where they work"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Who can see"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__vis
+msgid "Who can see it"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "Whole number"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/field_grid.js:0
+msgid "Yes"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Yes / No"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot change this field."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot change this record."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "You cannot pick that record."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Your changes are kept as a draft. Nobody else sees them until you publish."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid ""
+"Your own fields and the standard ones: where they appear, how filled they "
+"are, what uses them, and which standard fields are hidden or renamed."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Your unpublished changes from last time are back."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "a day"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "another administrator"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "approved by %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "built-in label put back"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "choices"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "countries"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "custom"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "employee, department…"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "field"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "help text"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "hidden for everyone"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "hidden in %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "hidden in some countries"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "in the company money"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "label"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "name"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "name in %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "notes"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "own label"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "pick one"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "required"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "saved at once"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "short, one line"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "show in lists"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown again"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "their shape is fixed by the pay scheme and the official file formats."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "tick box"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "translations"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "use in pay formulas"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "who can see it"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid ""
+"Leave a language empty to keep the built-in label there. Mapping, Updates "
+"sheets and pay data files keep the built-in name. My Payobook shows your "
+"label for the fields you show there."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Done"
+msgstr ""
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(names)s and %(n)s more"
+msgstr ""
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Used by pay formula: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "Filled by pay data file: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay formula %s"
+msgstr ""
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "the pay data file of %s"
+msgstr ""
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again because %(thing)s now uses it."
+msgstr ""
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "%(box)s is shown again: %(reason)s"
+msgstr ""
+
+#. module: pb_form_studio
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#, python-format
+msgid "shown again, it cannot be hidden."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "%(at)s of %(n)s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "1 match"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_studio.py:0
+msgid "A tab of this page. Its fields can be hidden or renamed, not moved."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Find a field on this screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Fixed layout — fields can be hidden or renamed"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Fixed layout: its fields can be hidden or renamed, not moved"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Hidden for %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Locked: %s"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "No fields here: this part of the screen lists records, not fields."
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Worked out by the screen"
+msgstr ""
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Field code: %s"
+msgstr ""
+

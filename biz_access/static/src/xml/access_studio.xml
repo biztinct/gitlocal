@@ -19,7 +19,7 @@
     <xpath expr="//div[@class='pbva-bar']/div[@class='pbva-chips']" position="replace"><p t-if="state.lens === 'roles' &amp;&amp; !studioCanManage &amp;&amp; !studioLocal" class="pbva-hint">Showing roles owned by the selected access category. Use the category selector to browse another area.</p></xpath>
     <xpath expr="//div[@class='pbva-bar']" position="after"><t t-call="biz_access.StudioPanels"/></xpath>
     <xpath expr="//div[@class='pbva-body' and @t-if=&quot;state.lens === 'roles'&quot;]" position="attributes"><attribute name="t-if">state.lens === 'roles' &amp;&amp; !studioCanManage &amp;&amp; !studioLocal</attribute></xpath>
-    <xpath expr="//div[@class='pbva-bar']/label[contains(@class, 'pbva-field--search')]" position="attributes"><attribute name="t-if">state.lens === 'roles' &amp;&amp; !studioCanManage &amp;&amp; !studioLocal</attribute></xpath>
+    <xpath expr="//div[@class='pbva-bar']/label[contains(@class, concat('pbva-field-', '-search'))]" position="attributes"><attribute name="t-if">state.lens === 'roles' &amp;&amp; !studioCanManage &amp;&amp; !studioLocal</attribute></xpath>
     <xpath expr="//button[@t-on-click=&quot;() => this.exportFile('roles')&quot;]" position="attributes"><attribute name="t-if">!studioLocal</attribute></xpath>
     <xpath expr="//button[@t-on-click='openRoleList']" position="replace"/>
     <xpath expr="//button[@data-coach='ac-newrole']" position="replace"/>
@@ -206,6 +206,7 @@
           <small>The day after the last day on their employee record. Opened again if that date is cleared.</small>
         </span>
       </label>
+      <t t-if="!studioLocal" t-call="biz_access.SignInRulesCard"/>
     </aside>
   </t>
   <t t-name="biz_access.StudioPersonAssignments">

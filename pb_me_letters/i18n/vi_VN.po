@@ -1,0 +1,588 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:32+0000\n"
+"PO-Revision-Date: 2026-11-15 16:32+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<b>Salary certificate</b><span>Also shows your agreed monthly salary.</span>"
+msgstr "<b>Giấy xác nhận thu nhập</b><span>Ghi thêm mức lương tháng đã thoả thuận.</span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<i class=\"pbml-pill-dot\" aria-hidden=\"true\"/>Waiting for HR"
+msgstr "<i class=\"pbml-pill-dot\" aria-hidden=\"true\"/>Chờ nhân sự"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span class=\"pbml-choice-tx\"><b>Employment certificate</b><span>Says you work here, as what, and since when. No pay figures.</span><em>Ready at once</em></span>"
+msgstr "<span class=\"pbml-choice-tx\"><b>Giấy xác nhận công tác</b><span>Xác nhận bạn làm việc tại đây, ở vị trí nào và từ khi nào. Không ghi lương.</span><em>Có ngay</em></span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span>Language</span>"
+msgstr "<span>Ngôn ngữ</span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span>Reason:</span>"
+msgstr "<span>Lý do:</span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span>What it is for</span>"
+msgstr "<span>Dùng để làm gì</span>"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "<span>Who it is for (optional)</span>"
+msgstr "<span>Gửi cho ai (không bắt buộc)</span>"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__purpose__bank
+msgid "A bank or a loan"
+msgstr "Ngân hàng hoặc vay vốn"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "A certificate cannot be edited here."
+msgstr "Không thể sửa giấy xác nhận ở đây."
+
+#. module: pb_me_letters
+#: model:biz.approval.process,description:pb_me_letters.process_me_certificate
+msgid "A certificate showing somebody's agreed salary, asked for on My Payobook."
+msgstr "Giấy xác nhận ghi mức lương đã thoả thuận của một người, được đề nghị trên My Payobook."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "A salary certificate cannot be issued while your pay is on hold. Ask HR."
+msgstr "Không thể cấp giấy xác nhận thu nhập khi lương của bạn đang bị tạm giữ. Hãy hỏi nhân sự."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "A salary certificate is already waiting for HR. You will see it here when it is ready."
+msgstr "Đã có một giấy xác nhận thu nhập đang chờ nhân sự. Bạn sẽ thấy nó ở đây khi xong."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "A salary certificate needs a running contract with a salary on it. Ask HR."
+msgstr "Giấy xác nhận thu nhập cần một hợp đồng đang hiệu lực có ghi lương. Hãy hỏi nhân sự."
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__purpose__visa
+msgid "A visa or travel"
+msgstr "Thị thực hoặc đi lại"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "Agreed monthly salary"
+msgstr "Lương tháng đã thoả thuận"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__approval_state
+msgid "Approval status"
+msgstr "Trạng thái phê duyệt"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Ask for a certificate"
+msgstr "Đề nghị cấp giấy xác nhận"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Ask for a certificate for a bank, a visa or a landlord. Each one is numbered and kept in your documents."
+msgstr "Đề nghị giấy xác nhận để nộp ngân hàng, xin thị thực hoặc thuê nhà. Mỗi giấy đều được đánh số và lưu trong tài liệu của bạn."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Ask for it"
+msgstr "Đề nghị"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__state__draft
+msgid "Asked"
+msgstr "Đã đề nghị"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "Asked for"
+msgstr "Đề nghị"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được đề nghị quyết định"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__kind model_terms:ir.ui.view,arch_db:pb_me_letters.view_pb_me_certificate_form
+msgid "Certificate"
+msgstr "Giấy xác nhận"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "Certificate %s issued."
+msgstr "Đã cấp giấy xác nhận %s."
+
+#. module: pb_me_letters
+#: model:ir.model,name:pb_me_letters.model_pb_me_certificate
+msgid "Certificate asked for on My Payobook"
+msgstr "Giấy xác nhận được đề nghị trên My Payobook"
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_employment_cert model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "Certificate number: <strong>${certificate_no}</strong>"
+msgstr "Số giấy xác nhận: <strong>${certificate_no}</strong>"
+
+#. module: pb_me_letters
+#: model:ir.actions.act_window,name:pb_me_letters.action_pb_me_certificate model_terms:ir.ui.view,arch_db:pb_me_letters.portal_breadcrumbs_certificates model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_home_certificates model_terms:ir.ui.view,arch_db:pb_me_letters.view_pb_me_certificate_list
+msgid "Certificates"
+msgstr "Giấy xác nhận"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "Certificates are asked for on My Payobook."
+msgstr "Giấy xác nhận được đề nghị trên My Payobook."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "Choose which certificate you need."
+msgstr "Hãy chọn loại giấy xác nhận bạn cần."
+
+#. module: pb_me_letters
+#: model:ir.model,name:pb_me_letters.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0 model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__purpose_note
+msgid "Details"
+msgstr "Chi tiết"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_letter_template__display_name model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__display_name model:ir.model.fields,field_description:pb_me_letters.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_me_letters.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0
+msgid "Download it as a PDF"
+msgstr "Tải về dạng PDF"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_me_letters
+#: model:ir.model,name:pb_me_letters.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Dữ liệu trang chủ nhân viên"
+
+#. module: pb_me_letters
+#: model:pb.letter.template,subject:pb_me_letters.letter_template_employment_cert
+msgid "Employment Certificate"
+msgstr "Giấy xác nhận công tác"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_home_certificates
+msgid "Employment and salary certificates"
+msgstr "Giấy xác nhận công tác và thu nhập"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_letter_template__letter_type__employment_cert model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__kind__employment model:pb.letter.template,name:pb_me_letters.letter_template_employment_cert
+msgid "Employment certificate"
+msgstr "Giấy xác nhận công tác"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__seat_user_ids
+msgid "Everyone a published approval route has asked to decide this. Being here is not a permission to change anything."
+msgstr "Mọi người mà quy trình phê duyệt đã đề nghị quyết định việc này. Có tên ở đây không có nghĩa là được thay đổi gì."
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__document_id
+msgid "Filed as"
+msgstr "Lưu thành"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__downloaded_on
+msgid "First downloaded"
+msgstr "Tải về lần đầu"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "For example the name of the bank or the embassy"
+msgstr "Ví dụ tên ngân hàng hoặc đại sứ quán"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "HR checks it first"
+msgstr "Nhân sự kiểm tra trước"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_letter_template__id model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__id model:ir.model.fields,field_description:pb_me_letters.field_pb_me_home__id model:ir.model.fields,field_description:pb_me_letters.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_has_error model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_is_follower
+msgid "Is Follower"
+msgstr "Là người theo dõi"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.view_pb_me_certificate_form
+msgid "Issue it from Approvals: approving it prints the certificate and files it in the employee's documents."
+msgstr "Cấp từ mục Phê duyệt: khi duyệt, giấy xác nhận được in và lưu vào tài liệu của nhân viên."
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__issued_by
+msgid "Issued by"
+msgstr "Người cấp"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__issued_on
+msgid "Issued on"
+msgstr "Ngày cấp"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__lang
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__letter_id
+msgid "Letter"
+msgstr "Thư"
+
+#. module: pb_me_letters
+#: model:ir.model,name:pb_me_letters.model_pb_letter_template
+msgid "Letter Template"
+msgstr "Mẫu thư"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_letter_template__letter_type
+msgid "Letter type"
+msgstr "Loại thư"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "No certificate wording is set up yet. Ask HR."
+msgstr "Chưa có nội dung giấy xác nhận. Hãy hỏi nhân sự."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "None yet. The ones you ask for are kept here and in your documents."
+msgstr "Chưa có. Những giấy bạn đề nghị sẽ được lưu ở đây và trong tài liệu của bạn."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Not available: ask HR"
+msgstr "Chưa có: hãy hỏi nhân sự"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__name
+msgid "Number"
+msgstr "Số"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số việc cần làm"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị lỗi gửi"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__state__issued
+msgid "Ready"
+msgstr "Đã sẵn sàng"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__decision_note
+msgid "Reason given"
+msgstr "Lý do"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__purpose__rental
+msgid "Renting a home"
+msgstr "Thuê nhà"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_me_letters
+#: model:pb.letter.template,subject:pb_me_letters.letter_template_salary_cert
+msgid "Salary Certificate"
+msgstr "Giấy xác nhận thu nhập"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_letter_template__letter_type__salary_cert model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__kind__salary model:pb.letter.template,name:pb_me_letters.letter_template_salary_cert
+msgid "Salary certificate"
+msgstr "Giấy xác nhận thu nhập"
+
+#. module: pb_me_letters
+#: model:biz.approval.process,name:pb_me_letters.process_me_certificate
+msgid "Salary certificates"
+msgstr "Giấy xác nhận thu nhập"
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Sent to HR. You will see the certificate here when it is ready."
+msgstr "Đã gửi nhân sự. Bạn sẽ thấy giấy xác nhận ở đây khi xong."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "Shows pay figures"
+msgstr "Có ghi số liệu lương"
+
+#. module: pb_me_letters
+#: model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__purpose__other
+msgid "Something else"
+msgstr "Việc khác"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "Taken back"
+msgstr "Đã rút lại"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0
+msgid "The certificate"
+msgstr "Giấy xác nhận"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "The certificate could not be printed. Try again in a moment."
+msgstr "Chưa in được giấy xác nhận. Thử lại sau giây lát."
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "Their agreed monthly salary is <strong>${salary}</strong> before tax and other deductions."
+msgstr "Mức lương tháng đã thoả thuận là <strong>${salary}</strong> trước thuế và các khoản khấu trừ khác."
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_employment_cert model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "This certificate is issued on ${date} at the employee's request, for: ${purpose}."
+msgstr "Giấy xác nhận này được cấp ngày ${date} theo đề nghị của nhân viên, để: ${purpose}."
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "This certificate is not ready yet."
+msgstr "Giấy xác nhận này chưa sẵn sàng."
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_employment_cert model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "This is to certify that <strong>${employee_name}</strong> is employed by ${company} as <strong>${job_title}</strong> in the ${department} team, and has been employed since ${joining_date}."
+msgstr "Xác nhận ông/bà <strong>${employee_name}</strong> đang làm việc tại ${company} ở vị trí <strong>${job_title}</strong>, bộ phận ${department}, từ ngày ${joining_date}."
+
+#. module: pb_me_letters
+#: model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_employment_cert model_terms:pb.letter.template,body_html:pb_me_letters.letter_template_salary_cert
+msgid "To whom it may concern,"
+msgstr "Kính gửi quý cơ quan, tổ chức liên quan,"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__state__refused model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_letters.selection__pb_me_certificate__state__hr_review
+msgid "Waiting for HR"
+msgstr "Chờ nhân sự"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trang web"
+
+#. module: pb_me_letters
+#: model:ir.model.fields,help:pb_me_letters.field_pb_me_certificate__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang web"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate_approval.py:0 model:ir.model.fields,field_description:pb_me_letters.field_pb_me_certificate__purpose
+msgid "What it is for"
+msgstr "Dùng để làm gì"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/certificate.py:0
+msgid "You can only ask for your own certificate."
+msgstr "Bạn chỉ được đề nghị giấy xác nhận của chính mình."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Your certificate is ready. Download it below."
+msgstr "Giấy xác nhận đã sẵn sàng. Tải về bên dưới."
+
+#. module: pb_me_letters
+#: model_terms:ir.ui.view,arch_db:pb_me_letters.portal_my_certificates
+msgid "Your certificates"
+msgstr "Giấy xác nhận của bạn"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0
+msgid "Your salary certificate is ready"
+msgstr "Giấy xác nhận thu nhập của bạn đã sẵn sàng"
+
+#. module: pb_me_letters
+#. odoo-python
+#: code:addons/pb_me_letters/models/pb_me_home.py:0
+msgid "Your salary certificate is ready."
+msgstr "Giấy xác nhận thu nhập của bạn đã sẵn sàng."

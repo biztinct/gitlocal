@@ -45,6 +45,9 @@ SWITCH_ESCALATE_DAYS = 'pb_timeoff.escalate_days'    # 2 — days past the due d
 SUBSTANCE_FIELDS = frozenset({
     'request_date_from', 'request_date_to', 'date_from', 'date_to',
     'request_hour_from', 'request_hour_to', 'request_date_from_period',
+    # WDGAP QF3: the end of a half-day request is as much the leave as its
+    # start ("ends in the morning" is half a day less)
+    'request_date_to_period',
     'request_unit_half', 'request_unit_hours', 'number_of_days',
     'holiday_status_id', 'employee_id', 'employee_ids', 'name',
     'private_name', 'holiday_type',
@@ -135,28 +138,18 @@ class HrLeaveRules(models.Model):
         engine = self.env.context.get(ENGINE_APPLY) \
             or self.env.context.get('leave_fast_create')
         officer = self._pb_is_officer()
-        today = fields.Date.today()
         late = []
         if not engine:
             for index, vals in enumerate(vals_list):
-                start = fields.Date.to_date(
-                    vals.get('request_date_from') or vals.get('date_from'))
-                if not start or start >= today:
+                verdict = self._pb_backdate_verdict(vals, as_officer=officer)
+                if not verdict:
                     continue
                 # The FACT is written whoever wrote it, so the queue card can
                 # say "backdated" about HR's own entry too — that is true and
                 # worth seeing. Only the refusal and the alert ask who.
                 vals['pb_backdated'] = True
-                if officer:
-                    continue
-                leave_type = self.env['hr.leave.type'].sudo().browse(
-                    vals.get('holiday_status_id') or 0).exists()
-                if not (leave_type and leave_type.pb_backdate_ok):
-                    raise UserError(_(
-                        "Time off in the past can only be entered by HR. "
-                        "Sick leave is the exception — pick a sick-leave "
-                        "type, and add the certificate if you have one."))
-                late.append(index)
+                if verdict == 'late':
+                    late.append(index)
         leaves = super().create(vals_list)
         # HR is told about the ones a PERSON entered after the fact. Nobody
         # needs an email about something they typed themselves.
@@ -175,6 +168,42 @@ class HrLeaveRules(models.Model):
                     'pb_timeoff: leave %s is backdated and HR was not told',
                     leave.id, exc_info=True)
         return leaves
+
+    @api.model
+    def _pb_backdate_verdict(self, vals, as_officer=False, refuse=True):
+        """THE past-date rule, callable on its own (WDGAP QF3).
+
+        ``create`` asks it with the caller's real officer status. The
+        employee pages create under ``sudo()`` (ledger T-R11), where every
+        caller looks like an officer, so they ask it EXPLICITLY with
+        ``as_officer=False`` before they create — one rule, two doors.
+
+        Returns ``''`` when the request does not start in the past,
+        ``'officer'`` when it does and the caller is HR (nobody is told), and
+        ``'late'`` when a person asked for a kind that may be asked for after
+        the fact (HR is told). Raises the refusal otherwise; with
+        ``refuse=False`` (the lock switched off) it answers ``'late'``
+        instead, so HR still hears about it.
+        """
+        start = fields.Date.to_date(
+            vals.get('request_date_from') or vals.get('date_from'))
+        if not start or start >= fields.Date.today():
+            return ''
+        if as_officer:
+            return 'officer'
+        leave_type = self.env['hr.leave.type'].sudo().browse(
+            vals.get('holiday_status_id') or 0).exists()
+        if not (leave_type and leave_type.pb_backdate_ok) and refuse:
+            raise UserError(_(
+                "Time off in the past can only be entered by HR. "
+                "Sick leave is the exception — pick a sick-leave "
+                "type, and add the certificate if you have one."))
+        return 'late'
+
+    @api.model
+    def _pb_lock_past_on(self):
+        """The `pb_timeoff.lock_past` switch (default on)."""
+        return bool(self._pb_switch(SWITCH_LOCK_PAST, 1))
 
     def _pb_hr_lead(self):
         """Who hears about a backdated request.

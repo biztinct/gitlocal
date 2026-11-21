@@ -226,3 +226,276 @@ msgstr "Tanggal"
 #: code:addons/pb_timeoff/models/workflow_lines.py:0
 msgid "Hours"
 msgstr "Jam"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s sampai %(end)s"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s days"
+msgstr "%s hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s documents attached"
+msgstr "%s dokumen terlampir"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s hours"
+msgstr "%s jam"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 day"
+msgstr "1 hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 document attached"
+msgstr "1 dokumen terlampir"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 hour"
+msgstr "1 jam"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Documents"
+msgstr "Dokumen"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Ends in the morning"
+msgstr "Berakhir pagi hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half a day"
+msgstr "Setengah hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half day, afternoon"
+msgstr "Setengah hari, siang"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half day, morning"
+msgstr "Setengah hari, pagi"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Part of the day"
+msgstr "Bagian hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Starts in the afternoon"
+msgstr "Mulai siang hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Starts in the afternoon, ends in the morning"
+msgstr "Mulai siang hari, berakhir pagi hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Withdrawn"
+msgstr "Ditarik kembali"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave__pb_sent_back
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Sent back to the employee, not refused: %s"
+msgstr "Dikembalikan ke karyawan, bukan ditolak: %s"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Sent back to the employee, not refused."
+msgstr "Dikembalikan ke karyawan, bukan ditolak."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Asked again after the request for %s was sent back"
+msgstr "Diajukan lagi setelah permintaan cuti untuk %s dikembalikan"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Asked again on %s"
+msgstr "Diajukan lagi pada %s"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Only a request that was sent back can be asked again."
+msgstr "Hanya permintaan yang dikembalikan yang dapat diajukan lagi."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "A request can only be asked again for the same person."
+msgstr "Permintaan hanya dapat diajukan lagi untuk orang yang sama."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+#: model:ir.model.constraint,message:pb_timeoff.constraint_hr_leave_pb_again_once
+msgid "This request was already asked again."
+msgstr "Permintaan ini sudah diajukan lagi."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Asked again as a new request (%s)."
+msgstr "Diajukan lagi sebagai permintaan baru (%s)."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Sent back — asked again"
+msgstr "Dikembalikan — sudah diajukan lagi"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Sent back — your turn"
+msgstr "Dikembalikan — giliran Anda"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Documents are not copied. Add them on the new request if they are still needed."
+msgstr "Dokumen tidak disalin. Tambahkan pada permintaan baru jika masih diperlukan."
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Sent back:"
+msgstr "Dikembalikan:"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Ask again"
+msgstr "Ajukan lagi"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Fill in a new request from this one"
+msgstr "Isi permintaan baru dari permintaan ini"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Filled in from the request that was sent back"
+msgstr "Diisi dari permintaan yang dikembalikan"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Part of the day:"
+msgstr "Bagian hari:"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Kept as before while the kind and the days stay the same."
+msgstr "Tetap seperti sebelumnya selama jenis cuti dan harinya tidak berubah."
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Send for approval"
+msgstr "Kirim untuk persetujuan"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
+msgid "Asked again — the new request is waiting for approval."
+msgstr "Diajukan lagi — permintaan baru menunggu persetujuan."
+
+#. module: pb_timeoff
+#: model:ir.model.fields,help:pb_timeoff.field_hr_leave__pb_sent_back
+msgid "The approver sent this request back to the employee instead of refusing it. It is still refused underneath, so no day is held."
+msgstr "Penyetuju mengembalikan permintaan ini ke karyawan alih-alih menolaknya. Di sistem permintaan tetap berstatus ditolak, sehingga tidak ada hari yang ditahan."
+
+#. module: pb_timeoff
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave__pb_again_of_id
+msgid "Asked again after"
+msgstr "Diajukan lagi setelah"
+
+#. module: pb_timeoff
+#: model:ir.model.fields,help:pb_timeoff.field_hr_leave__pb_again_of_id
+msgid "The request that was sent back and that this one asks again."
+msgstr "Permintaan yang dikembalikan dan diajukan lagi oleh permintaan ini."
+
+#. module: pb_timeoff
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave__pb_again_id
+msgid "Asked again as"
+msgstr "Diajukan lagi sebagai"
+
+#. module: pb_timeoff
+#: model:ir.model.fields,help:pb_timeoff.field_hr_leave__pb_again_id
+msgid "The new request made when this one was asked again."
+msgstr "Permintaan baru yang dibuat saat permintaan ini diajukan lagi."
+
+#. module: pb_timeoff
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave__pb_sent_back_note
+msgid "Sent back note"
+msgstr "Catatan pengembalian"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "1 time off request sent back — ask again"
+msgstr "1 permintaan cuti dikembalikan — ajukan lagi"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "%s time off requests sent back — ask again"
+msgstr "%s permintaan cuti dikembalikan — ajukan lagi"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "Your time off request was sent back to you. Change what is needed and ask again."
+msgstr "Permintaan cuti Anda dikembalikan kepada Anda. Ubah yang perlu dan ajukan lagi."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/leave_sent_back.py:0
+msgid "%s time off requests were sent back to you. Change what is needed and ask again."
+msgstr "%s permintaan cuti dikembalikan kepada Anda. Ubah yang perlu dan ajukan lagi."

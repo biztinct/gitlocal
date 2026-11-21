@@ -1050,3 +1050,29 @@ msgstr "· gửi"
 #: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
 msgid "· with"
 msgstr "· đang ở"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "Document"
+msgstr "Giấy tờ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Documents"
+msgstr "Giấy tờ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Half a day"
+msgstr "Nửa ngày"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "hour"
+msgstr "giờ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "hours"
+msgstr "giờ"

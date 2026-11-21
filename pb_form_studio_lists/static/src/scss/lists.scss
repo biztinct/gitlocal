@@ -1,0 +1,10 @@
+// People list / Contracts board › Table (FS-4). The table itself is the
+// filter kit's (pb_filter_kit/list_table.scss); this only fits the boards'
+// own buttons into its last column.
+.ppl-people {
+    .pbf-lt .ppl-contract { margin: 0; }
+    .pbfl-acts { display: inline-flex; gap: 6px; }
+    .pbfl-board .ct-fill-bar { margin-bottom: 10px; }
+    // the table replaces the card stack: give the foot the same breathing room
+    .pbf-lt + .ppl-foot, .pbfl-board + .ppl-foot { margin-top: 12px; }
+}

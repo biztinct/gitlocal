@@ -16,7 +16,7 @@ one-permission-world split: reads sudo, mutations real-user.
 
 from datetime import date, timedelta
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 # Officer set (verified against the installed repo hr_holidays — the officer
@@ -216,6 +216,20 @@ class PbTimeoff(models.AbstractModel):
                        'validate1': _('Second approval'),
                        'validate': _('Approved'),
                        'refuse': _('Refused')}.get(lv.state, lv.state)
+        # WF2 P6c (D36): sent back, not refused — a mark on the request; it
+        # is still refused underneath (`leave_sent_back.py`)
+        sent_back = lv._pb_is_sent_back()
+        if sent_back:
+            state_label = _('Sent back')
+        lines = lv._pb_again_lines()
+        again = None
+        if sent_back and lv._pb_can_ask_again():
+            again = lv._pb_again_prefill()
+            again['employee_country'] = self._emp_country(lv.employee_id)
+            # what the drawer cannot change, said once: "as before"
+            again['documents_note'] = _(
+                "Documents are not copied. Add them on the new request if "
+                "they are still needed.")
         return {
             'id': lv.id,
             'employee': self._emp_card(lv.employee_id),
@@ -234,6 +248,13 @@ class PbTimeoff(models.AbstractModel):
             # when the request was made, so an ordinary request does not
             # become backdated by getting old.
             'backdated': bool(getattr(lv, 'pb_backdated', False)),
+            # WF2 P6c: the mark, the reason under it, the two link lines and
+            # what "Ask again" fills the "Apply for" drawer with
+            'sent_back': sent_back,
+            'sent_back_note': lv._pb_sent_back_note() if sent_back else '',
+            'again_of': lines['of'],
+            'again_as': lines['as'],
+            'again': again,
             # …and the certificate, if one came with it. Names only: this
             # card is a queue, and an officer who wants the file opens the
             # request.
@@ -297,7 +318,14 @@ class PbTimeoff(models.AbstractModel):
 
     def _balances(self, page):
         """Employee × allocation-based leave type: validated allocations −
-        validated taken. Server-paged (never unbounded — the 4.5k demo world)."""
+        validated taken. Server-paged (never unbounded — the 4.5k demo world).
+
+        WDGAP S5-A: days that have RUN OUT (an allocation whose validity ended
+        before today) count no more, and neither do the days taken from them —
+        the same rule core's own "balance after" follows, so the HR board, the
+        employee page and the manager's "left after this" give one number.
+        The kinds are the companies' own and the shared ones (the board used
+        to list every company's kinds)."""
         Emp = self.env['hr.employee']
         co_ids = self._co_ids()
         domain = [('active', '=', True), ('company_id', 'in', co_ids)]
@@ -306,34 +334,23 @@ class PbTimeoff(models.AbstractModel):
                           offset=page * _BALANCE_PAGE, limit=_BALANCE_PAGE)
         # allocation-based types only (requires_allocation Boolean, C18.22)
         types = self.env['hr.leave.type'].search(
-            [('requires_allocation', '=', True)])
-        type_by_id = {t.id: t for t in types}
+            [('requires_allocation', '=', True),
+             '|', ('company_id', '=', False), ('company_id', 'in', co_ids)])
         if not emps or not types:
             return {'page': page, 'page_size': _BALANCE_PAGE, 'total': total,
                     'has_more': (page + 1) * _BALANCE_PAGE < total,
                     'types': [self._type_chip(t) for t in types], 'rows': []}
 
         # validated allocations + taken, grouped once each (bounded to the page)
-        Alloc = self.env['hr.leave.allocation']
-        alloc_g = Alloc.read_group(
-            [('employee_id', 'in', emps.ids), ('state', '=', 'validate'),
-             ('holiday_status_id', 'in', types.ids)],
-            ['number_of_days:sum'], ['employee_id', 'holiday_status_id'],
-            lazy=False)
-        taken_g = self.env['hr.leave'].read_group(
-            [('employee_id', 'in', emps.ids), ('state', '=', 'validate'),
-             ('holiday_status_id', 'in', types.ids)],
-            ['number_of_days:sum'], ['employee_id', 'holiday_status_id'],
-            lazy=False)
-        alloc = self._fold_group(alloc_g)
-        taken = self._fold_group(taken_g)
+        nums = self._pb_balance_numbers(emps.ids, types.ids)
 
         rows = []
         for e in emps:
             cells = {}
             for t in types:
-                a = alloc.get((e.id, t.id), 0.0)
-                k = taken.get((e.id, t.id), 0.0)
+                n = nums.get((e.id, t.id)) or {}
+                a = n.get('allocated', 0.0)
+                k = n.get('taken', 0.0)
                 bal = round(a - k, 2)
                 cells[t.id] = {'allocated': round(a, 2), 'taken': round(k, 2),
                                'balance': bal, 'low': bal <= 2.0 and a > 0}
@@ -353,6 +370,76 @@ class PbTimeoff(models.AbstractModel):
             if not (emp and typ):
                 continue
             out[(emp[0], typ[0])] = g.get('number_of_days') or 0.0
+        return out
+
+    # ------------------------------------------------------------- balances
+    # WDGAP S5-A (FACTS finding 5, ledger S5-4). One balance rule for every
+    # Payobook reader: "validated allocations minus validated taken", as it
+    # always was, LESS the days that have run out. An allocation has run out
+    # when its validity ended before today (`date_to < today`); its days no
+    # longer count, and nor do the days core charged to it while it was
+    # valid (core charges a request to the allocation that runs out first,
+    # `hr.employee._get_consumed_leaves`). With no allocation that has run
+    # out the answer is EXACTLY the old one, read the old way.
+
+    @api.model
+    def _pb_expired_parts(self, emp_ids, type_ids, today=None):
+        """``{(employee_id, type_id): (days_ran_out, taken_from_them)}`` —
+        empty when nothing has run out, without asking core anything."""
+        today = today or fields.Date.context_today(self)
+        if not emp_ids or not type_ids:
+            return {}
+        Alloc = self.env['hr.leave.allocation'].sudo()
+        expired = Alloc.search([
+            ('employee_id', 'in', list(emp_ids)), ('holiday_status_id', 'in', list(type_ids)),
+            ('state', '=', 'validate'), ('date_to', '!=', False), ('date_to', '<', today)])
+        if not expired:
+            return {}
+        emps = expired.employee_id
+        kinds = expired.holiday_status_id
+        consumed = emps._get_consumed_leaves(kinds, target_date=today)[0]
+        out = {}
+        for alloc in expired:
+            key = (alloc.employee_id.id, alloc.holiday_status_id.id)
+            data = consumed.get(alloc.employee_id, {}).get(alloc.holiday_status_id, {}).get(alloc)
+            taken = float((data or {}).get('leaves_taken') or 0.0)
+            if alloc.holiday_status_id.request_unit == 'hour' and taken:
+                # core counts an hours kind in hours; this board in days
+                hours = alloc.number_of_hours_display or 0.0
+                per_day = (hours / alloc.number_of_days) if alloc.number_of_days and hours else (
+                    alloc.employee_id._get_hours_per_day(alloc.date_from) or 8.0)
+                taken = taken / per_day if per_day else 0.0
+            days, used = out.get(key, (0.0, 0.0))
+            out[key] = (days + (alloc.number_of_days or 0.0), used + taken)
+        return out
+
+    @api.model
+    def _pb_balance_numbers(self, emp_ids, type_ids, today=None):
+        """``{(employee_id, type_id): {'allocated', 'taken', 'balance'}}`` for
+        every pair that has an allocation or a taken day (sudo read; the
+        caller has already decided the reader may see these people)."""
+        emp_ids, type_ids = list(emp_ids or []), list(type_ids or [])
+        if not emp_ids or not type_ids:
+            return {}
+        Alloc = self.env['hr.leave.allocation'].sudo()
+        alloc = self._fold_group(Alloc.read_group(
+            [('employee_id', 'in', emp_ids), ('state', '=', 'validate'),
+             ('holiday_status_id', 'in', type_ids)],
+            ['number_of_days:sum'], ['employee_id', 'holiday_status_id'], lazy=False))
+        taken = self._fold_group(self.env['hr.leave'].sudo().read_group(
+            [('employee_id', 'in', emp_ids), ('state', '=', 'validate'),
+             ('holiday_status_id', 'in', type_ids)],
+            ['number_of_days:sum'], ['employee_id', 'holiday_status_id'], lazy=False))
+        gone = self._pb_expired_parts(emp_ids, type_ids, today=today)
+        out = {}
+        for key in set(alloc) | set(taken):
+            a = alloc.get(key, 0.0)
+            k = taken.get(key, 0.0)
+            if key in gone:
+                a -= gone[key][0]
+                k -= gone[key][1]
+            a, k = round(max(a, 0.0), 4), round(max(k, 0.0), 4)
+            out[key] = {'allocated': a, 'taken': k, 'balance': round(a - k, 4)}
         return out
 
     def _apply_types(self):
@@ -423,8 +510,15 @@ class PbTimeoff(models.AbstractModel):
                   'domain': [('state', '=', 'validate1')]},
                  {'value': 'validate', 'label': _('Approved'), 'tone': 'green',
                   'domain': [('state', '=', 'validate')]},
+                 # WF2 P6c (D36): "Refused" is a real refusal only; a
+                 # request sent back to the employee has its own value
+                 {'value': 'sent_back', 'label': _('Sent back'),
+                  'tone': 'amber',
+                  'domain': [('state', '=', 'refuse'),
+                             ('pb_sent_back', '=', True)]},
                  {'value': 'refuse', 'label': _('Refused'), 'tone': 'rose',
-                  'domain': [('state', '=', 'refuse')]},
+                  'domain': [('state', '=', 'refuse'),
+                             ('pb_sent_back', '=', False)]},
              ]},
             {'key': 'type', 'label': _('Leave type'), 'icon': 'umbrella',
              'group': 'other', 'type': 'many2one', 'path': 'holiday_status_id',
@@ -483,6 +577,10 @@ class PbTimeoff(models.AbstractModel):
              'filters': {'status': waiting + ['validate'], 'from': {'preset': 'this_week'}}},
             {'key': 'approved', 'label': _('Approved this month'), 'icon': 'checkCircle',
              'filters': {'status': ['validate'], 'from': {'preset': 'this_month'}}},
+            # WF2 P6c (D36): beside "Refused", which now shows only real
+            # refusals
+            {'key': 'sent_back', 'label': _('Sent back'), 'icon': 'undo',
+             'filters': {'status': ['sent_back']}},
             {'key': 'refused', 'label': _('Refused'), 'icon': 'xCircle',
              'filters': {'status': ['refuse']}},
         ]
@@ -546,11 +644,19 @@ class PbTimeoff(models.AbstractModel):
         return {'ok': True, 'id': leave.id, 'state': leave.state}
 
     @api.model
-    def apply_on_behalf(self, employee_id, type_id, date_from, date_to, note=False):
+    def apply_on_behalf(self, employee_id, type_id, date_from, date_to, note=False,
+                        again_of=False):
         """Create a leave for an employee AS THE REAL USER (no sudo). Core
         validation (overlap, balance, calendar) surfaces verbatim; the created
         leave defaults to 'confirm' (To Approve) — the installed hr_holidays has
-        no separate action_confirm."""
+        no separate action_confirm.
+
+        WF2 P6c (D36): ``again_of`` = the sent-back request this one asks
+        again ("Ask again" on a card). The new request names it; hr.leave's
+        own ``create`` refuses anything but a sent-back request of the same
+        person, once. The part of the day / the times are kept as before when
+        the kind and the days are unchanged (the drawer has no control for
+        them)."""
         self._require_officer()
         emp = self.env['hr.employee'].browse(int(employee_id)).exists()
         if not emp:
@@ -563,13 +669,21 @@ class PbTimeoff(models.AbstractModel):
         type_country = self._type_country(lt) if lt else ''
         if type_country and type_country != self._emp_country(emp.sudo()):
             raise UserError(_("This leave type is for employees in another country."))
-        leave = self.env['hr.leave'].create({
+        vals = {
             'employee_id': emp.id,
             'holiday_status_id': int(type_id),
             'request_date_from': date_from,
             'request_date_to': date_to,
             'name': note or _('Filed by HR'),
-        })
+        }
+        if again_of:
+            old = self.env['hr.leave'].sudo().browse(int(again_of)).exists()
+            if not old:
+                raise UserError(_(
+                    "Only a request that was sent back can be asked again."))
+            vals['pb_again_of_id'] = old.id
+            old._pb_again_carry(vals)
+        leave = self.env['hr.leave'].create(vals)
         # belt-and-braces: the installed core creates at 'confirm', but honour an
         # action_confirm if a future core adds one.
         if hasattr(leave, 'action_confirm'):

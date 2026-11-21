@@ -1,4 +1,4 @@
-PAYOBOOK ATTENDANCE CONNECTOR 1.0.1 — WINDOWS PILOT PACKAGE
+PAYOBOOK ATTENDANCE CONNECTOR 1.0.2 — WINDOWS PILOT PACKAGE
 
 What it does
 Reads CheckInOut from a local Mitaco MDB, queues new records and uploads them
@@ -82,7 +82,18 @@ Updating an existing installation
 Wait for any sync to finish and close setup. Download and extract the new ZIP,
 then run Install.cmd under the SAME Windows account. Pairing, preferences and
 queued records in the data folder are preserved. Do not generate another code
-or pair again. The updated setup shows Connector 1.0.1 and animated activity
+or pair again. The updated setup shows Connector 1.0.2 and animated activity
 with elapsed time. Results are summaries; Show diagnostics displays technical
 details. Check connection on the website reads server status; it does not
 remotely start a Windows sync.
+
+Quiet scheduled sync (version 1.0.2)
+Scheduled tasks use runtime\pythonw.exe so no command window appears.
+After updating, select Enable scheduled sync once. Existing tasks keep their
+account, triggers, conditions and logon mode; only the executable is changed.
+If IT customised the action or Windows asks for credentials, use Task Scheduler
+under the task's original Windows account. In Actions > Edit, change ONLY
+runtime\python.exe to runtime\pythonw.exe. Keep arguments and all other
+settings unchanged. Save, run the task once, and confirm a later automatic run.
+Do not re-pair, delete the task or change the MDB path. The task's Hidden checkbox
+does not suppress the console window. Diagnostics remain in data\status.json.

@@ -63,7 +63,7 @@ patch(UpdReview.prototype, {
     get ytdSums() { return ytdTotals(this.rv); },
     get ytdStripLine() {
         return _t("Tax year %(year)s · before Payobook, up to %(date)s", {
-            year: this.rv.tax_year, date: dayLabel(this.rv.covers_to) || this.rv.covers_label || "" });
+            year: this.rv.tax_year_label || this.rv.tax_year, date: dayLabel(this.rv.covers_to) || this.rv.covers_label || "" });
     },
     get ytdSummary() {
         const t = this.ytdSums;
@@ -89,8 +89,14 @@ patch(UpdReview.prototype, {
 patch(PbUpdatesDesk.prototype, {
     // ------------------------------------------------ Start: the date
     get ytdYear() {
+        // WDGAP W2-A — the tax year a date belongs to: the calendar year it
+        // starts in (the date's own year when the tax year starts in January).
         const d = luxon.DateTime.fromISO(this.state.ytdCovers || "");
-        return d.isValid ? d.year : (this.ytdInfo.this_year || "");
+        const start = this.ytdInfo.start_month || 1;
+        return d.isValid ? (d.month >= start ? d.year : d.year - 1) : (this.ytdInfo.this_year || "");
+    },
+    ytdYearLabel(info, year) {
+        return ((info && info.year_labels) || {})[String(year)] || String(year);
     },
     get ytdCoversLabel() { return dayLabel(this.state.ytdCovers); },
     get ytdYears() {
@@ -100,7 +106,7 @@ patch(PbUpdatesDesk.prototype, {
     setYtdYear(year) {
         const info = this.ytdInfo;
         if (year === info.last_year) {
-            this.state.ytdCovers = `${year}-12-31`;
+            this.state.ytdCovers = info.last_year_end || `${year}-12-31`;
         } else {
             this.state.ytdCovers = info.default || info.today || `${year}-01-31`;
         }
@@ -121,6 +127,10 @@ patch(PbUpdatesDesk.prototype, {
         return "";
     },
     get ytdCoversLine() {
+        if ((this.ytdInfo.start_month || 1) !== 1) {
+            return _t("Tax year %(year)s: what each person was paid and taxed from the start of the tax year to %(date)s, before your company ran payroll here.", {
+                year: this.ytdYearLabel(this.ytdInfo, this.ytdYear), date: this.ytdCoversLabel });
+        }
         return _t("Tax year %(year)s: what each person was paid and taxed from 1 January to %(date)s, before your company ran payroll here.", {
             year: this.ytdYear, date: this.ytdCoversLabel });
     },
@@ -311,7 +321,7 @@ patch(PbUpdatesDesk.prototype, {
         }
         return out;
     },
-    get ytdEmptyTitle() { return _t("No figures for %s yet", this.state.ytd.year); },
+    get ytdEmptyTitle() { return _t("No figures for %s yet", this.ytdYearLabel(this.ytdView, this.state.ytd.year)); },
     ytdWhoLine(r) {
         const where = r.covers_label ? _t("before Payobook up to %s", r.covers_label) : _t("no figures before Payobook");
         return r.code ? `${r.code} · ${where}` : where;
@@ -424,7 +434,7 @@ patch(PbUpdatesDesk.prototype, {
     },
     get ytdHowSubtitle() {
         const h = this.state.ytd.how;
-        return _t("%(figure)s · %(who)s · %(year)s", { figure: h.figure, who: h.who, year: this.state.ytd.year });
+        return _t("%(figure)s · %(who)s · %(year)s", { figure: h.figure, who: h.who, year: this.ytdYearLabel(this.ytdView, this.state.ytd.year) });
     },
     get ytdHowItemsLine() {
         const d = this.state.ytd.how && this.state.ytd.how.data;

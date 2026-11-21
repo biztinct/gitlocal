@@ -1,0 +1,1058 @@
+# Translation of Payobook.
+# * pb_time_pay
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "%(hours)s h given as time off in lieu instead of pay."
+msgstr "%(hours)s giờ được cho nghỉ bù thay vì trả lương."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "%(hours)s h of overtime on %(day)s, given as time off instead of pay."
+msgstr ""
+"%(hours)s giờ làm thêm ngày %(day)s, được cho nghỉ bù thay vì trả lương."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid ""
+"%(name)s is already %(state)s, so whether it is paid or given as time off "
+"can no longer change."
+msgstr ""
+"%(name)s đã ở trạng thái %(state)s, nên không thể đổi giữa trả lương và nghỉ"
+" bù nữa."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s could not be done:"
+msgstr "%s mục không thực hiện được:"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s h"
+msgstr "%s giờ"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/close.py:0
+msgid "%s late or early minute row(s) to confirm or excuse"
+msgstr "%s dòng đi muộn hoặc về sớm cần xác nhận hoặc miễn"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/ot_desk_time_off.js:0
+msgid "%s overtime request(s) approved as time off in lieu."
+msgstr "%s yêu cầu làm thêm đã duyệt dưới dạng nghỉ bù."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s overtime requests sent for approval."
+msgstr "%s yêu cầu làm thêm đã gửi đi duyệt."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s rows confirmed for pay."
+msgstr "%s dòng đã xác nhận để tính lương."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s rows excused."
+msgstr "%s dòng đã được miễn."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "1 overtime request sent for approval."
+msgstr "1 yêu cầu làm thêm đã gửi đi duyệt."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "1 row confirmed for pay."
+msgstr "1 dòng đã xác nhận để tính lương."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "1 row excused."
+msgstr "1 dòng đã được miễn."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Accept"
+msgstr "Chấp nhận"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Accepted hours become time off in lieu when the overtime is approved, hour "
+"for hour, and are not also paid."
+msgstr ""
+"Số giờ được chấp nhận sẽ thành nghỉ bù khi làm thêm được duyệt, giờ đổi giờ,"
+" và không được trả lương thêm."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid ""
+"Accepting overtime and confirming late minutes is for attendance managers "
+"and payroll managers."
+msgstr ""
+"Chỉ quản lý chấm công và quản lý lương mới được chấp nhận làm thêm và xác "
+"nhận số phút đi muộn."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/ot_desk_time_off.js:0
+msgid ""
+"Approve and give the same number of hours as time off in lieu, instead of "
+"paying them"
+msgstr "Duyệt và cho nghỉ bù đúng số giờ đó, thay vì trả lương"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/ot_desk_time_off.xml:0
+msgid "Approve as time off"
+msgstr "Duyệt thành nghỉ bù"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Bonus hours"
+msgstr "Giờ thưởng"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Changed since decided"
+msgstr "Đã thay đổi sau khi quyết định"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Changing pay or time off"
+msgstr "Đổi giữa trả lương và nghỉ bù"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Clock punches"
+msgstr "Dữ liệu chấm công"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__company_id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__basis
+msgid "Compared with"
+msgstr "So với"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__basis__shift
+msgid "Compared with the shift"
+msgstr "So với ca làm việc"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__basis__hours
+msgid "Compared with working hours"
+msgstr "So với giờ làm việc"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__state__confirmed
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Confirmed minutes and approved overtime do not reach these payslips by "
+"themselves."
+msgstr ""
+"Số phút đã xác nhận và giờ làm thêm đã duyệt không tự vào các phiếu lương "
+"này."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid ""
+"Counted from the expected time once past the grace minutes (%(late)s min "
+"late, %(early)s min early)."
+msgstr ""
+"Tính từ giờ dự kiến khi đã quá số phút cho phép (muộn %(late)s phút, sớm "
+"%(early)s phút)."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__create_uid
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__create_date
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__date
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__date
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Day locked"
+msgstr "Ngày đã khóa"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__decided_by_id
+msgid "Decided by"
+msgstr "Người quyết định"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__decided_on
+msgid "Decided on"
+msgstr "Ngày quyết định"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/late_entry.py:0
+msgid "Deciding late minutes"
+msgstr "Quyết định số phút đi muộn"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__state
+msgid "Decision"
+msgstr "Quyết định"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Dismiss"
+msgstr "Đóng"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_attendance_weekentry__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_leave_type__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_close__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_ess_workforce__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_ot_desk__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_pay__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__kind__early
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Early leave"
+msgstr "Về sớm"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Early minutes"
+msgstr "Phút về sớm"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__employee_id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Excuse"
+msgstr "Miễn"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Excuse %s rows"
+msgstr "Miễn %s dòng"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Excuse these minutes"
+msgstr "Miễn số phút này"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__state__excused
+#. odoo-python
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Excused"
+msgstr "Đã miễn"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Excused minutes never reach pay. The decision and your note are kept with "
+"the day."
+msgstr ""
+"Số phút được miễn không bao giờ vào lương. Quyết định và ghi chú của bạn "
+"được lưu cùng ngày đó."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__expected_at
+msgid "Expected"
+msgstr "Dự kiến"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Expected · punched"
+msgstr "Dự kiến · chấm công"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "From"
+msgstr "Nguồn"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__hr_overtime_request__pb_comp_choice__time_off
+msgid "Give time off"
+msgstr "Cho nghỉ bù"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.view_overtime_request_form_time_pay
+msgid "Give time off instead"
+msgstr "Cho nghỉ bù thay thế"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "Given as time off"
+msgstr "Đã cho nghỉ bù"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Hide the figures"
+msgstr "Ẩn số liệu"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Hours"
+msgstr "Giờ"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_attendance_weekentry__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_leave_type__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_payslip__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_close__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_ess_workforce__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_ot_desk__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_pay__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_time_pay
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__pay_state__held
+msgid "In a payslip"
+msgstr "Đã vào phiếu lương"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__kind
+msgid "Kind of overtime"
+msgstr "Loại làm thêm"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__write_uid
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__write_date
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/close.py:0
+msgid "Late and early minutes all decided"
+msgstr "Đã quyết định hết số phút đi muộn và về sớm"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_payslip__pb_late_ids
+msgid "Late and early minutes taken"
+msgstr "Số phút đi muộn và về sớm đã lấy"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__kind__late
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Late arrival"
+msgstr "Đi muộn"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Late arrivals and early leaving"
+msgstr "Đi muộn và về sớm"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Late minutes"
+msgstr "Phút đi muộn"
+
+#. module: pb_time_pay
+#: model:ir.model,name:pb_time_pay.model_pb_time_late
+msgid "Late or early minutes, decided"
+msgstr "Số phút đi muộn hoặc về sớm, đã quyết định"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Late or early to decide"
+msgstr "Đi muộn hoặc về sớm cần quyết định"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Marked as not overtime."
+msgstr "Đã đánh dấu không phải làm thêm."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__user_id
+msgid "Marked by"
+msgstr "Người đánh dấu"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__minutes
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Minutes"
+msgstr "Phút"
+
+#. module: pb_time_pay
+#: model:ir.model.constraint,message:pb_time_pay.constraint_pb_time_late_minutes_positive
+msgid "Minutes cannot be negative."
+msgstr "Số phút không được âm."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Minutes confirmed"
+msgstr "Số phút đã xác nhận"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Night"
+msgstr "Ban đêm"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/ot_desk.py:0
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "No longer exists."
+msgstr "Không còn tồn tại."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "No overtime suggested this week."
+msgstr "Tuần này không có gợi ý làm thêm."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Nobody was late or left early this week."
+msgstr "Tuần này không ai đi muộn hay về sớm."
+
+#. module: pb_time_pay
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__pay_state__free
+msgid "Not in a payslip yet"
+msgstr "Chưa vào phiếu lương"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Not overtime"
+msgstr "Không phải làm thêm"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__note
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Note (optional)"
+msgstr "Ghi chú (không bắt buộc)"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Only confirmed minutes reach pay."
+msgstr "Chỉ số phút đã xác nhận mới vào lương."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Only somebody who may decide %s can choose between pay and time off."
+msgstr "Chỉ người được quyết định %s mới chọn được giữa trả lương và nghỉ bù."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Only suggestions. Accepting one sends an ordinary overtime request on the "
+"usual approval route."
+msgstr ""
+"Chỉ là gợi ý. Chấp nhận sẽ gửi một yêu cầu làm thêm bình thường theo quy "
+"trình duyệt thông thường."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Overtime suggested from clock punches"
+msgstr "Làm thêm gợi ý từ dữ liệu chấm công"
+
+#. module: pb_time_pay
+#: model:ir.model,name:pb_time_pay.model_pb_time_ot_dismiss
+msgid "Overtime suggestion marked as not overtime"
+msgstr "Gợi ý làm thêm được đánh dấu không phải làm thêm"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Overtime suggestions"
+msgstr "Gợi ý làm thêm"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__pay_state__paid
+msgid "Paid"
+msgstr "Đã trả"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Paid from a pay data file"
+msgstr "Trả lương từ tệp dữ liệu lương"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__pb_comp_label
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.view_overtime_request_form_time_pay
+msgid "Paid or time off"
+msgstr "Trả lương hay nghỉ bù"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__pay_state
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__hr_overtime_request__pb_comp_choice__pay
+msgid "Pay it"
+msgstr "Trả lương"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.view_overtime_request_form_time_pay
+msgid "Pay it instead"
+msgstr "Trả lương thay thế"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,help:pb_time_pay.field_hr_overtime_request__pb_comp_choice
+msgid ""
+"Pay it: the hours are paid as overtime. Give time off: the same number of "
+"hours become time off in lieu and are not also paid."
+msgstr ""
+"Trả lương: số giờ được trả như làm thêm. Cho nghỉ bù: đúng số giờ đó thành "
+"nghỉ bù và không được trả lương thêm."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Person · day"
+msgstr "Người · ngày"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Public holiday"
+msgstr "Ngày lễ"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__actual_at
+msgid "Punched"
+msgstr "Đã chấm công"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Rest day"
+msgstr "Ngày nghỉ"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Show the figures for %s"
+msgstr "Xem số liệu tháng %s"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid ""
+"Showing the first %(shown)s of %(total)s. Narrow the department or the "
+"search to see the rest."
+msgstr ""
+"Đang hiện %(shown)s trên %(total)s dòng đầu. Thu hẹp phòng ban hoặc tìm kiếm"
+" để xem phần còn lại."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Shown for information: no pay scheme has a late minutes pay item yet, so "
+"these minutes do not hold the week."
+msgstr ""
+"Chỉ để tham khảo: chưa có chính sách lương nào có khoản phút đi muộn, nên số"
+" phút này không giữ tuần lại."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Something went wrong."
+msgstr "Đã xảy ra lỗi."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__pb_from_punches
+msgid "Suggested from clock punches"
+msgstr "Gợi ý từ dữ liệu chấm công"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid ""
+"Suggested from clock punches: worked %(worked)s h, expected %(expected)s h "
+"(%(basis)s)."
+msgstr ""
+"Gợi ý từ dữ liệu chấm công: làm %(worked)s giờ, dự kiến %(expected)s giờ "
+"(%(basis)s)."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__hours
+msgid "Suggested hours"
+msgstr "Số giờ gợi ý"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__payslip_id
+msgid "Taken by payslip"
+msgstr "Phiếu lương đã lấy"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid ""
+"The \"Time off in lieu\" kind of leave is switched off for %s. Switch it "
+"back on before giving time off."
+msgstr "Loại nghỉ \"Nghỉ bù\" đang tắt cho %s. Hãy bật lại trước khi cho nghỉ bù."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,help:pb_time_pay.field_hr_leave_type__pb_toil_kind
+msgid ""
+"The kind of leave that overtime given as time off goes into. Made the first "
+"time a manager gives time off; one per company."
+msgstr ""
+"Loại nghỉ nhận giờ làm thêm được cho nghỉ bù. Được tạo lần đầu khi quản lý "
+"cho nghỉ bù; mỗi công ty một loại."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"The suggestion stops showing. Nothing is paid and no overtime request is "
+"made."
+msgstr "Gợi ý sẽ không hiện nữa. Không trả gì và không tạo yêu cầu làm thêm."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid ""
+"The time off for %s could not be given (it needs another approval in Time "
+"Off), so this overtime was not approved. Pay it instead, or ask HR."
+msgstr ""
+"Không thể cho nghỉ bù cho %s (cần thêm một bước duyệt trong Nghỉ phép), nên "
+"giờ làm thêm này chưa được duyệt. Hãy chọn trả lương, hoặc hỏi bộ phận nhân "
+"sự."
+
+#. module: pb_time_pay
+#: model:ir.model.constraint,message:pb_time_pay.constraint_pb_time_late_one_per_day_kind
+msgid "There is already a decision for these minutes."
+msgstr "Số phút này đã có quyết định."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/late_entry.py:0
+msgid ""
+"These minutes of %(name)s on %(day)s are already paid in payslip %(slip)s, "
+"so the decision stays."
+msgstr ""
+"Số phút này của %(name)s ngày %(day)s đã được trả trong phiếu lương "
+"%(slip)s, nên quyết định được giữ nguyên."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "They are shown here for you to include in the file."
+msgstr "Chúng được hiện ở đây để bạn đưa vào tệp."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid ""
+"This overtime is already approved, so whether it is paid or given as time "
+"off can no longer change."
+msgstr ""
+"Giờ làm thêm này đã được duyệt, nên không thể đổi giữa trả lương và nghỉ bù "
+"nữa."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "This row is no longer on the board."
+msgstr "Dòng này không còn trên bảng."
+
+#. module: pb_time_pay
+#: model:ir.model.constraint,message:pb_time_pay.constraint_pb_time_ot_dismiss_one_per_day_kind
+msgid "This suggestion is already marked as not overtime."
+msgstr "Gợi ý này đã được đánh dấu không phải làm thêm."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "This suggestion is no longer on the board."
+msgstr "Gợi ý này không còn trên bảng."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Time into pay"
+msgstr "Thời gian vào lương"
+
+#. module: pb_time_pay
+#: model:ir.model,name:pb_time_pay.model_pb_time_pay
+msgid "Time into pay: suggestions and late minutes"
+msgstr "Thời gian vào lương: gợi ý và số phút đi muộn"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/ot_desk_time_off.xml:0
+msgid "Time off"
+msgstr "Nghỉ bù"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__pb_toil_allocation_id
+msgid "Time off given"
+msgstr "Nghỉ bù đã cho"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_leave_type__pb_toil_kind
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "Time off in lieu"
+msgstr "Nghỉ bù"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Time off in lieu for overtime on %s"
+msgstr "Nghỉ bù cho giờ làm thêm ngày %s"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Time off when approved"
+msgstr "Nghỉ bù khi được duyệt"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "To decide"
+msgstr "Cần quyết định"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "Unknown choice."
+msgstr "Lựa chọn không hợp lệ."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "Unknown decision."
+msgstr "Quyết định không hợp lệ."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Weekday"
+msgstr "Ngày thường"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"What the clock punches say about this week. Nothing here is paid until a "
+"manager decides."
+msgstr ""
+"Dữ liệu chấm công cho thấy gì về tuần này. Không có gì ở đây được trả lương "
+"cho đến khi quản lý quyết định."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__pb_comp_choice
+msgid "When approved"
+msgstr "Khi được duyệt"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid ""
+"Whether overtime is paid or given as time off changes only through the "
+"overtime screens."
+msgstr ""
+"Việc trả lương hay cho nghỉ bù chỉ đổi được trên các màn hình làm thêm."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "You cannot accept overtime for yourself."
+msgstr "Bạn không thể chấp nhận làm thêm cho chính mình."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/late_entry.py:0
+msgid "You cannot confirm or excuse your own late minutes."
+msgstr "Bạn không thể xác nhận hoặc miễn số phút đi muộn của chính mình."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "You cannot decide about your own overtime."
+msgstr "Bạn không thể quyết định về giờ làm thêm của chính mình."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Yours"
+msgstr "Của bạn"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "h"
+msgstr "giờ"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "was %s"
+msgstr "trước là %s"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "worked %(worked)s h, expected %(expected)s h"
+msgstr "làm %(worked)s giờ, dự kiến %(expected)s giờ"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "worked %s h"
+msgstr "làm %s giờ"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "<b>Late and early minutes</b>"
+msgstr "<b>Số phút đi muộn và về sớm</b>"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "<span>My Overtime</span>"
+msgstr "<span>Tăng ca của tôi</span>"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Late and early minutes"
+msgstr "Số phút đi muộn và về sớm"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "My Work"
+msgstr "Công việc của tôi"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "No late or early minutes"
+msgstr "Không có phút đi muộn hay về sớm"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Nothing counted"
+msgstr "Không tính phút nào"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Something looks wrong? Talk to your manager — they can change a decision until it is paid."
+msgstr "Có gì không đúng? Hãy trao đổi với quản lý của bạn — họ có thể thay đổi quyết định cho đến khi được trả lương."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "What"
+msgstr "Loại"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "What your manager confirmed from your clock times"
+msgstr "Những gì quản lý của bạn đã xác nhận từ giờ chấm công"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "What your manager confirmed from your clock times. Only counted minutes reach your pay."
+msgstr "Những gì quản lý của bạn đã xác nhận từ giờ chấm công. Chỉ số phút được tính mới ảnh hưởng đến lương."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "When your manager confirms minutes from your clock times, they show up here."
+msgstr "Khi quản lý của bạn xác nhận số phút từ giờ chấm công, chúng sẽ hiện ở đây."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "min counted"
+msgstr "phút được tính"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "minutes counted this month"
+msgstr "phút được tính trong tháng này"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Counted"
+msgstr "Được tính"

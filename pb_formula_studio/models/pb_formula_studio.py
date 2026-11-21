@@ -16,7 +16,7 @@ try:
 except Exception:  # pragma: no cover
     requests = None
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 # MAPFIX A — one code generator for every path that names a column.
 from odoo.addons.pb_hr_payroll_formula.models import component_code as component_code_mod
@@ -2486,10 +2486,19 @@ class PbFormulaStudio(models.AbstractModel):
         saved = 0
         config = False
         changed_codes = []
+        refused = []
         for it in (items or []):
             rule = Rule.browse(int(it.get('rule_id')))
             if not rule.exists() or rule.column_type != 'formula':
                 continue
+            # WDGAP PR-A — a changed formula with an unusable function is not
+            # written (the editors check the same thing live before sending).
+            new_text = it.get('formula') or ''
+            if new_text != (rule.excel_formula or ''):
+                why = rule._pb_formula_refusal(new_text)
+                if why:
+                    refused.append({'rule_id': rule.id, 'msg': why})
+                    continue
             config = rule.config_id
             column_map = {r.column_letter: r.code for r in config.rule_ids if r.column_letter}
             # F7: N formulas → N version rows, one reason, one shared seen-set (C4)
@@ -2509,7 +2518,7 @@ class PbFormulaStudio(models.AbstractModel):
                 _logger.debug("bulk_save_formulas skip %s: %s", rule.id, e)
         # W82: one test run for the whole batch (C4 one-batch rule), not per item.
         tests = self._run_tests_after_save(config, changed_codes)
-        return {'ok': True, 'saved': saved, 'tests': tests}
+        return {'ok': True, 'saved': saved, 'tests': tests, 'refused': refused}
 
     # ------------------------------------------------------------------
     # W17 smart paste — the ONE server ladder (D-L5): normalize + validate
@@ -2572,6 +2581,13 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': 'Component not found'}
         config = rule.config_id
         column_map = {r.column_letter: r.code for r in config.rule_ids if r.column_letter}
+        # WDGAP PR-A — an unknown function, TODAY()/NOW() or a function given
+        # the wrong number of values is refused HERE, in plain words, instead
+        # of being saved and reading 0 on the payslip.
+        if rule.column_type == 'formula' and (excel_formula or '') != (rule.excel_formula or ''):
+            refusal = rule._pb_formula_refusal(excel_formula)
+            if refusal:
+                return {'ok': False, 'msg': refusal}
         try:
             rule.excel_formula = excel_formula
             if rule.column_type == 'formula':
@@ -2686,6 +2702,14 @@ class PbFormulaStudio(models.AbstractModel):
                                % (write_vals['code'], dup[0].column_letter or '?')}
         # excel_formula handled separately so we can convert + validate
         new_formula = vals.get('excel_formula')
+        # WDGAP PR-A — refuse an unusable function before anything is written.
+        # Only a CHANGED formula is checked: the editor sends the whole draft,
+        # and a stored formula is never re-validated by renaming its component.
+        if (new_formula is not None and (new_formula or '') != (rule.excel_formula or '')
+                and write_vals.get('column_type', rule.column_type) == 'formula'):
+            refusal = rule._pb_formula_refusal(new_formula)
+            if refusal:
+                return {'ok': False, 'msg': refusal}
         # F7: this method may write metadata AND the formula in two steps — a
         # shared 'seen' set collapses both into ONE version row for the rule.
         rule = rule.with_context(formula_version_reason='edit',
@@ -13342,7 +13366,8 @@ class PbFormulaStudio(models.AbstractModel):
             # F11 — expand BRACKET(code, value) first so the validator sees the
             # compiled nested-IF (BRACKET is not one of its known functions).
             expanded = self.env['hr.formula.rate.table'].expand_brackets(formula or '', config)
-            return FormulaValidator().validate_formula(expanded, cols)
+            # WDGAP PR-A: the function check speaks the reader's language.
+            return FormulaValidator().validate_formula(expanded, cols, translate=self.env._)
         except Exception as e:  # pragma: no cover
             return False, str(e)
 
@@ -13651,7 +13676,58 @@ class PbFormulaStudio(models.AbstractModel):
                 'scope_label': c.name or '',
                 'company_id': (c.company_id or self.env.company).id,
             },
+            'tax_year': self._tax_year_payload(c),
         }
+
+    # ------------------------------------------------------------------
+    # WDGAP W2-F (F-4) — "Tax year starts in" on the Studio's Health tab.
+    # The same field, label, change warning and write path as the scheme
+    # form (W2-A): a direct, tracked write of `tax_year_start_month` through
+    # the scheme's own `write` (scheme settings follow no approval today —
+    # `scheme_gate` gates components and money fields only).
+    # ------------------------------------------------------------------
+    @api.model
+    def _tax_year_payload(self, c):
+        Config = self.env['hr.formula.config']
+        if 'tax_year_start_month' not in Config._fields:
+            return False
+        field = Config._fields['tax_year_start_month']
+        try:
+            can_edit = c.has_access('write')
+        except Exception:       # noqa: BLE001 — a read-only answer, never an error
+            can_edit = False
+        return {
+            'month': c.tax_year_start_month or '1',
+            'label': field._description_string(self.env),
+            'help': field._description_help(self.env) or '',
+            'options': [[k, v] for k, v in field._description_selection(self.env)],
+            'can_edit': bool(can_edit),
+        }
+
+    @api.model
+    def save_tax_year_start(self, config_id, month, confirmed=False):
+        """Change a scheme's tax year start from the Studio. When finished
+        payslips exist, the first call answers with the scheme form's own
+        warning and changes nothing; the call with ``confirmed`` saves."""
+        c = self.env['hr.formula.config'].browse(int(config_id or 0))
+        if not c.exists():
+            return {'ok': False, 'msg': _('This pay scheme no longer exists.')}
+        month = str(month or '')
+        options = dict(c._fields['tax_year_start_month']._description_selection(self.env))
+        if month not in options:
+            return {'ok': False, 'msg': _('Pick a month.')}
+        if month == (c.tax_year_start_month or '1'):
+            return {'ok': True, 'unchanged': True, 'tax_year': self._tax_year_payload(c)}
+        warning = c._pb_tax_year_change_warning(month)
+        if warning and not confirmed:
+            return {'ok': False, 'needs_confirm': True, 'warning': warning,
+                    'month_label': options[month]}
+        try:
+            c.write({'tax_year_start_month': month})
+        except (AccessError, UserError, ValidationError) as e:
+            return {'ok': False, 'msg': str(e)}
+        return {'ok': True, 'tax_year': self._tax_year_payload(c),
+                'msg': _('The tax year now starts in %s.', options[month])}
 
     @api.model
     def save_config_settings(self, config_id, vals):
@@ -13926,11 +14002,15 @@ class PbFormulaStudio(models.AbstractModel):
         # only" figures — insurance caps, tax reliefs, the tax base — and the
         # gross line on top of its own parts: ₫159M of "deductions" against a
         # ₫17.8M net on the demo Retail scheme (2026-10-11).
-        Line = self.env['hr.payslip.line'].sudo()
-        lines = Line.browse()
-        for vals in slip_lines:
-            lines |= Line.new(vals)
-        totals = lines.pb_pay_totals()
+        #
+        # WDGAP W2-F (F-5): the lines must BELONG to an in-memory payslip.
+        # pb_payruns' `pb_pay_totals` totals per `slip_id`, so bare
+        # `hr.payslip.line.new()` lines added up to 0 for everything and the
+        # Earnings / Deductions boxes never showed (ledger W2C-1). Still
+        # `.new()` — nothing is saved.
+        totals = self.env['hr.payslip'].sudo().new({
+            'line_ids': [Command.create(vals) for vals in slip_lines],
+        }).line_ids.pb_pay_totals()
         sub_list = [{'group': g, 'value': round(totals[k], 2)}
                     for g, k in (('Earnings', 'gross'), ('Deductions', 'deductions'),
                                  (EMPLOYER_GROUP, 'employer_cost'))

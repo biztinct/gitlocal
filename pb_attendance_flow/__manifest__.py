@@ -46,7 +46,7 @@ is more than one. Corrections now judge "is this punch on the correction's
 day" by the person's local day, like the exception feed.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

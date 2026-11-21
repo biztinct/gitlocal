@@ -608,6 +608,7 @@
                 <span t-attf-class="pbme-badge pbme-badge--#{c['state']}"><t t-esc="c['state']"/></span>
               </div>
               <div class="pbme-pay-range"><t t-esc="c['range']"/></div>
+              <div t-if="c.get('run')" class="pbme-pay-run" t-att-title="c['run']"><t t-esc="c['run']"/></div>
               <div class="pbme-pay-net" t-if="c['net'] is not None">
                 <span class="pbme-pay-net-l">Net pay</span>
                 <span class="pbme-pay-net-v" t-out="c['net']" t-options='{"widget": "monetary", "display_currency": currency}'/>
@@ -636,6 +637,7 @@
         <t t-call="pb_me_portal.ess_hero">
           <t t-set="hero_eyebrow">Payslip</t>
           <t t-set="hero_title" t-value="period"/>
+          <t t-set="hero_sub" t-value="run or None"/>
         </t>
 
         <div class="pbme-detail">
@@ -691,13 +693,13 @@
                 </div>
               </div>
               <div class="pbme-kv-grid">
-                <div class="pbme-kv"><span>Work Email</span><b><t t-esc="profile['work_email'] or '—'"/></b></div>
-                <div class="pbme-kv"><span>Work Phone</span><b><t t-esc="profile['work_phone'] or '—'"/></b></div>
-                <div class="pbme-kv"><span>Private Phone</span><b><t t-esc="profile['private_phone'] or '—'"/></b></div>
-                <div class="pbme-kv"><span>Private Email</span><b><t t-esc="profile['private_email'] or '—'"/></b></div>
-                <div class="pbme-kv"><span>Address</span><b><t t-esc="profile['address'] or '—'"/></b></div>
-                <div class="pbme-kv"><span>Emergency Contact</span><b><t t-esc="profile['emergency_contact'] or '—'"/></b></div>
-                <div class="pbme-kv"><span>Emergency Phone</span><b><t t-esc="profile['emergency_phone'] or '—'"/></b></div>
+                <div class="pbme-kv"><span t-out="profile['labels'].get('work_email')">Work Email</span><b><t t-esc="profile['work_email'] or '—'"/></b></div>
+                <div class="pbme-kv"><span t-out="profile['labels'].get('work_phone')">Work Phone</span><b><t t-esc="profile['work_phone'] or '—'"/></b></div>
+                <div class="pbme-kv"><span t-out="profile['labels'].get('private_phone')">Private Phone</span><b><t t-esc="profile['private_phone'] or '—'"/></b></div>
+                <div class="pbme-kv"><span t-out="profile['labels'].get('private_email')">Private Email</span><b><t t-esc="profile['private_email'] or '—'"/></b></div>
+                <div class="pbme-kv"><span t-out="profile['labels'].get('private_street')">Address</span><b><t t-esc="profile['address'] or '—'"/></b></div>
+                <div class="pbme-kv"><span t-out="profile['labels'].get('emergency_contact')">Emergency Contact</span><b><t t-esc="profile['emergency_contact'] or '—'"/></b></div>
+                <div class="pbme-kv"><span t-out="profile['labels'].get('emergency_phone')">Emergency Phone</span><b><t t-esc="profile['emergency_phone'] or '—'"/></b></div>
               </div>
             </div>
 
@@ -708,15 +710,15 @@
               <form action="/my/profile/request" method="post">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                 <div class="pbme-form-grid">
-                  <label t-if="'x_phone' in editable_fields"><span>Private Phone</span>
+                  <label t-if="'x_phone' in editable_fields"><span t-out="profile['labels'].get('private_phone')">Private Phone</span>
                     <input type="text" name="x_phone" t-att-value="profile['private_phone']"/></label>
-                  <label t-if="'x_private_email' in editable_fields"><span>Private Email</span>
+                  <label t-if="'x_private_email' in editable_fields"><span t-out="profile['labels'].get('private_email')">Private Email</span>
                     <input type="email" name="x_private_email" t-att-value="profile['private_email']"/></label>
-                  <label t-if="'x_address' in editable_fields" class="pbme-form-wide"><span>Address</span>
+                  <label t-if="'x_address' in editable_fields" class="pbme-form-wide"><span t-out="profile['labels'].get('private_street')">Address</span>
                     <input type="text" name="x_address" t-att-value="profile['address']"/></label>
-                  <label t-if="'x_emergency_contact' in editable_fields"><span>Emergency Contact</span>
+                  <label t-if="'x_emergency_contact' in editable_fields"><span t-out="profile['labels'].get('emergency_contact')">Emergency Contact</span>
                     <input type="text" name="x_emergency_contact" t-att-value="profile['emergency_contact']"/></label>
-                  <label t-if="'x_emergency_phone' in editable_fields"><span>Emergency Phone</span>
+                  <label t-if="'x_emergency_phone' in editable_fields"><span t-out="profile['labels'].get('emergency_phone')">Emergency Phone</span>
                     <input type="text" name="x_emergency_phone" t-att-value="profile['emergency_phone']"/></label>
                   <label class="pbme-form-wide"><span>Note to HR (optional)</span>
                     <textarea name="note" rows="2"/></label>
@@ -924,7 +926,7 @@
               <div class="pbme-tile">
                 <div class="pbme-tile-l"><t t-esc="labels[c_index]"/></div>
                 <div class="pbme-tile-v" t-out="ytd[c]" t-options='{"widget": "monetary", "display_currency": currency}'/>
-                <div class="pbme-tile-y" t-if="ytd_year">YTD <t t-esc="ytd_year"/></div>
+                <div class="pbme-tile-y" t-if="ytd_year"><t t-if="ytd_label">Tax year <t t-esc="ytd_label"/></t><t t-else="">YTD <t t-esc="ytd_year"/></t></div>
               </div>
             </t>
           </div>

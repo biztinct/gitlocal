@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Contracts board › Table (FS-4). Extension of pb_contracts.PbContracts,
+       the People pattern: tools in the filter bar's slot, the cards step
+       aside while the table shows, the table carries the ct-roster anchor. -->
+  <t t-inherit="pb_contracts.PbContracts" t-inherit-mode="extension">
+    <xpath expr="//PbFilterLayout" position="inside">
+      <t t-set-slot="toolbar">
+        <PbTableTools cols="pbfl" kit="kit"/>
+      </t>
+    </xpath>
+    <xpath expr="//div[@data-coach='ct-roster']" position="attributes">
+      <attribute name="t-elif">state.contracts.length and !pbfl.table</attribute>
+    </xpath>
+    <xpath expr="//div[@data-coach='ct-roster']" position="after">
+      <div t-elif="state.contracts.length" class="pbfl-board">
+        <!-- the review list's one bulk action, as on the cards -->
+        <div t-if="fillinView and state.canCheck and state.listTotal" class="ct-fill-bar">
+          <span class="ct-fill-bar-ic" t-out="ic('sparkles',16)"/>
+          <div class="ct-fill-bar-tx">
+            <b>Answers Payobook filled in by itself</b>
+            <span>From the usual answers of the scheme that pays each person. Confirm the ones that are right; change the rest.</span>
+          </div>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="allLookRight">
+            <t t-out="ic('checkCheck',14)"/> <t t-esc="allLookRightLabel"/>
+          </button>
+        </div>
+        <PbListTable cols="pbfl" kit="kit" rows="state.contracts" coach="'ct-roster'"
+                     cell.bind="pbflCell" money.bind="money" onRowClick.bind="pbflOpen">
+          <t t-set-slot="actions" t-slot-scope="s">
+            <span t-if="fillinView and fillinCount(s.row)" class="pbfl-acts">
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click.stop="() => this.changeAnswers(s.row)">
+                <t t-out="ic('pencil',13)"/> Change
+              </button>
+              <button t-if="state.canCheck" class="pbim-btn outline pbim-btn-sm"
+                      t-att-disabled="state.checking === s.row.id" t-on-click.stop="() => this.looksRight(s.row)">
+                <t t-out="ic('check',13)"/> Looks right
+              </button>
+            </span>
+          </t>
+        </PbListTable>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

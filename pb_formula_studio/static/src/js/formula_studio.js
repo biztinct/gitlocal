@@ -11,6 +11,9 @@ import { GridStudio } from "./grid/grid_studio";
 import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
+// WDGAP W2-C — "Work back from take-home", opened at the root.
+import { openTakeHome } from "./take_home";
+import { parseFormula as parseFlowFormula, evalFlowNode } from "./formula_flow_eval";
 import { DocDrop } from "@biz_doc_ocr/js/doc_drop";
 import { detectDocumentCells } from './payslip_document_tools';
 import { PayslipDocumentDesigner } from './payslip_document_designer';
@@ -132,6 +135,7 @@ export class PbFormulaStudio extends Component {
         this.notif = useService("notification");
         this.action = useService("action");
         this.dialog = useService("dialog");
+        this.overlay = useService("overlay");
         // Read ONCE, from props, never written back — the arrival protocol's
         // rule since Cycle 1. Null unless a caller passed `pb_back`.
         this.back = hubBack(this.props);
@@ -411,6 +415,10 @@ export class PbFormulaStudio extends Component {
             // The status + meta payload the Health tab reads. The five-sub-tab
             // settings panel that used to own it is gone (SCHEMECTX P3).
             settings: null,
+            // WDGAP W2-F — "Tax year starts in" on the Health tab: a change
+            // waiting for the "finished payslips are not changed" answer.
+            taxYearBusy: false,
+            taxYearPending: null,
             // W97 — period comparison view (state.view === 'compare')
             cmpRuns: [],
             cmpA: null,
@@ -481,6 +489,10 @@ export class PbFormulaStudio extends Component {
             draft: {},
             editBusy: false,
             liveValid: null,
+            // WDGAP PR-A — the one function list (server table), and whether
+            // the editor shows all of it or only the everyday ones.
+            fnList: [],
+            fnAllOpen: false,
             editError: "",
             labelsMsg: "",
             advOpen: false,
@@ -731,8 +743,15 @@ export class PbFormulaStudio extends Component {
             this.state.previewExtra = {};
             this.state.folds = {};           // W8 — folds are per-config, client-session only
             this.state.peopleOpen = false;   // COLROLES — a new structure opens quiet
+            // WDGAP W2-F — the Health tab's status and tax year belong to the
+            // scheme they were read for; another scheme reads its own.
+            this.state.settings = null;
+            this.state.taxYearPending = null;
         }
         this.state.config = d.config;
+        if (!this.state.settings && this.state.view === "health") {
+            this.loadSettings();
+        }
         // Approval Matrix P4 — what the business published for changing THIS
         // scheme, so the buttons can say what pressing them will actually do.
         // Never awaited into the critical path: a studio that would not open
@@ -771,6 +790,15 @@ export class PbFormulaStudio extends Component {
             this.state.snippets = await this.orm.call("pb.formula.studio", "list_snippets", []);
         } catch (e) {
             this.state.snippets = [];
+        }
+        // WDGAP PR-A — every function a formula can use, from the engine's one
+        // table (never a second hand-kept list). Once per session; non-fatal.
+        if (!this.state.fnList.length) {
+            try {
+                this.state.fnList = await this.orm.call("hr.formula.rule", "pb_formula_functions", []);
+            } catch (e) {
+                this.state.fnList = [];
+            }
         }
         this.state.loaded = true;
     }
@@ -1201,6 +1229,7 @@ export class PbFormulaStudio extends Component {
         add("view.compare", _t("Views"), _t("Compare periods"), "compare periods payrun delta difference month", () => this.openCompare());
         add("view.budget", _t("Views"), _t("Compare vs budget"), "budget variance vs actual target plan compare", () => this.openCompareBudget());
         add("act.offer", _t("Actions"), _t("Offer calculator"), "offer calculator hypothetical hire net breakdown simulate salary", () => this.openOfferCalc());
+        add("act.takehome", _t("Actions"), _t("Take-home calculator"), "take-home net to gross gross up work back salary agreed net", () => this.openTakeHome());
         add("view.settings", _t("Views"), _t("Settings"), "settings configuration setup", () => this.openSettings());
         add("view.health", _t("Views"), _t("Health"), "health order unused circular execution intelligence lifecycle", () => this.openHealth());
         add("view.shortcuts", _t("Views"), _t("Keyboard shortcuts"), "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
@@ -1284,6 +1313,7 @@ export class PbFormulaStudio extends Component {
                 T("depmap", _t("Dependency map"), _t("The whole configuration as a graph"), "depmap", "blue", () => this.openDepMap()),
                 T("simulate", _t("Simulate"), _t("Run this configuration against last period's real payslips before putting it live"), "simulate", "amber", () => this.openSimulate()),
                 T("offer", _t("Offer calculator"), _t("Type hypothetical inputs, see the full breakdown"), "offer", "green", () => this.openOfferCalc()),
+                T("takehome", _t("Take-home calculator"), _t("Work back from a take-home figure to the pay that gives it"), "offer", "indigo", () => this.openTakeHome()),
             ] },
             { id: "design", label: _t("Design"), tools: [
                 T("payslip", _t("Payslip Studio"), _t("Design the payslip layout"), "payslip", "indigo", () => this.openPayslip()),
@@ -2914,7 +2944,52 @@ export class PbFormulaStudio extends Component {
     // formula builder
     get paletteColumns() { return this.state.components.filter(c => c.id !== this.state.editId); }
     get paletteOps() { return [{ t: "+", g: "+" }, { t: "-", g: "−" }, { t: "*", g: "×" }, { t: "/", g: "÷" }, { t: "(", g: "(" }, { t: ")", g: ")" }]; }
-    get paletteFns() { return ["IF", "SUM", "ROUND", "MIN", "MAX", "AND", "OR"]; }
+    // WDGAP PR-A — the everyday functions stay one click away; "All functions"
+    // opens the whole list, grouped, each with its help line. All of it comes
+    // from the server's one table, so everything offered here really works.
+    get paletteFns() {
+        const everyday = ["IF", "SUM", "ROUND", "MIN", "MAX", "AND", "OR"];
+        const list = this.state.fnList || [];
+        if (!list.length) return everyday.map(name => ({ name, signature: name + "(…)", help: "" }));
+        return everyday.map(name => list.find(f => f.name === name)).filter(Boolean);
+    }
+    get paletteFnGroups() {
+        const groups = [];
+        for (const fn of this.state.fnList || []) {
+            let g = groups.find(x => x.key === fn.category);
+            if (!g) { g = { key: fn.category, label: fn.category_label, fns: [] }; groups.push(g); }
+            g.fns.push(fn);
+        }
+        return groups;
+    }
+    toggleFnAll() { this.state.fnAllOpen = !this.state.fnAllOpen; }
+    fnTitle(fn) { return fn.help ? `${fn.signature} — ${fn.help}` : fn.signature; }
+    // The function the person is typing, with its help line and an example —
+    // shown under the palette: the innermost call still open at the end of
+    // the draft, or, once every bracket is closed, the outermost one.
+    get draftFnHelp() {
+        const f = (this.state.draft.excel_formula || "").replace(/"[^"]*"/g, '""');
+        const known = (name) => (this.state.fnList || []).find(fn => fn.name === name);
+        const stack = [];
+        let first = null;
+        const re = /([A-Za-z_][A-Za-z0-9_]*)\s*\(|\(|\)/g;
+        let m;
+        while ((m = re.exec(f))) {
+            if (m[1]) {
+                const name = m[1].toUpperCase();
+                stack.push(name);
+                if (!first && known(name)) first = name;
+            } else if (m[0] === "(") {
+                stack.push(null);
+            } else {
+                stack.pop();
+            }
+        }
+        for (let i = stack.length - 1; i >= 0; i--) {
+            if (stack[i] && known(stack[i])) return known(stack[i]);
+        }
+        return first ? known(first) : null;
+    }
     get draftChips() { return this.chips(this.state.draft.excel_formula || ""); }
 
     insertToken(text) {
@@ -3010,65 +3085,12 @@ export class PbFormulaStudio extends Component {
     }
 
     // ---- tiny Excel-ish parser (client-side; no backend change) ----
-    parseFormula(formula) {
-        const toks = [];
-        const re = /\s*("[^"]*"|[A-Za-z_]+(?=\()|[A-Za-z]+\d+|\d+\.?\d*|<=|>=|<>|[-+*/^&(),:<>=])/g;
-        let m; const f = (formula || "").replace(/^=/, "");
-        while ((m = re.exec(f))) toks.push(m[1]);
-        let p = 0;
-        const peek = () => toks[p];
-        const next = () => toks[p++];
-        const parseExpr = () => parseCmp();
-        const parseCmp = () => { let l = parseAdd(); while (["<", ">", "<=", ">=", "<>", "="].includes(peek())) { const op = next(); l = { t: "cmp", op, l, r: parseAdd() }; } return l; };
-        const parseAdd = () => { let l = parseMul(); while (["+", "-"].includes(peek())) { const op = next(); l = { t: "op", op, l, r: parseMul() }; } return l; };
-        const parseMul = () => { let l = parseUnary(); while (["*", "/"].includes(peek())) { const op = next(); l = { t: "op", op, l, r: parseUnary() }; } return l; };
-        const parseUnary = () => { if (peek() === "-") { next(); return { t: "op", op: "-", l: { t: "num", v: 0 }, r: parseUnary() }; } return parsePrimary(); };
-        const parsePrimary = () => {
-            const tk = peek();
-            // never consume a delimiter as a value (keeps IF arg lists intact)
-            if (tk === undefined || tk === "," || tk === ")") return { t: "num", v: 0 };
-            if (tk === "(") { next(); const e = parseExpr(); if (peek() === ")") next(); return e; }
-            if (tk[0] === '"') { next(); return { t: "str", v: tk.slice(1, -1) }; }
-            if (/^[A-Za-z]+\d+$/.test(tk)) {
-                next(); const col = tk.replace(/\d+$/, "").toUpperCase();
-                if (peek() === ":" && /^[A-Za-z]+\d+$/.test(toks[p + 1] || "")) {
-                    next(); const end = next().replace(/\d+$/, "").toUpperCase();
-                    return { t: "range", start: col, end };
-                }
-                return { t: "ref", col };
-            }
-            if (/^\d/.test(tk)) { next(); return { t: "num", v: parseFloat(tk) }; }
-            if (/^[A-Za-z_]+$/.test(tk)) {
-                const name = next().toUpperCase(); const args = [];
-                if (peek() === "(") { next(); if (peek() !== ")") { args.push(parseExpr()); while (peek() === ",") { next(); args.push(parseExpr()); } } if (peek() === ")") next(); }
-                return { t: "fn", name, args };
-            }
-            next(); return { t: "num", v: 0 };
-        };
-        try { return parseExpr(); } catch (e) { return null; }
-    }
+    // WDGAP PR-A — the parser and evaluator live in formula_flow_eval.js
+    // (moved unchanged, plus the date functions) so the date cases can run
+    // against them outside the browser.
+    parseFormula(formula) { return parseFlowFormula(formula); }
     evalNode(a) {
-        try {
-            if (!a) return 0;
-            if (a.t === "num") return a.v;
-            if (a.t === "str") return 0;
-            if (a.t === "ref") return this.state.preview.values[a.col] || 0;
-            if (a.t === "op") { const l = this.evalNode(a.l), r = this.evalNode(a.r); return a.op === "+" ? l + r : a.op === "-" ? l - r : a.op === "*" ? l * r : a.op === "/" ? (r ? l / r : 0) : a.op === "^" ? Math.pow(l, r) : 0; }
-            if (a.t === "cmp") { const l = this.evalNode(a.l), r = this.evalNode(a.r), o = a.op; return (o === ">" ? l > r : o === "<" ? l < r : o === ">=" ? l >= r : o === "<=" ? l <= r : o === "<>" ? l !== r : l === r) ? 1 : 0; }
-            if (a.t === "range") return this.expandRange(a.start, a.end).reduce((s, col) => s + (this.state.preview.values[col] || 0), 0);
-            if (a.t === "fn") {
-                const g = (a.args || []).flatMap(x => x.t === "range" ? this.expandRange(x.start, x.end).map(col => ({ t: "ref", col })) : [x]);
-                const n = a.name;
-                if (n === "IF") return this.evalNode(g[0]) ? this.evalNode(g[1]) : this.evalNode(g[2] || { t: "num", v: 0 });
-                if (n === "SUM") return g.reduce((s, x) => s + this.evalNode(x), 0);
-                if (n === "MAX") return Math.max(...g.map(x => this.evalNode(x)));
-                if (n === "MIN") return Math.min(...g.map(x => this.evalNode(x)));
-                if (n === "ROUND") { const v = this.evalNode(g[0]), d = g[1] ? this.evalNode(g[1]) : 0, f = Math.pow(10, d); return Math.round(v * f) / f; }
-                if (n === "IFERROR") { const v = this.evalNode(g[0]); return isFinite(v) ? v : this.evalNode(g[1] || { t: "num", v: 0 }); }
-                return this.evalNode(g[0] || { t: "num", v: 0 });
-            }
-            return 0;
-        } catch (e) { return 0; }
+        return evalFlowNode(a, { values: this.state.preview.values, expandRange: (s, e) => this.expandRange(s, e) });
     }
     fmtNum(v) { return (Number.isInteger(v) ? v.toString() : String(v)); }
 
@@ -3480,6 +3502,30 @@ export class PbFormulaStudio extends Component {
     }
     closePersonPicker() { this.state.personPicker = false; }
 
+    // WDGAP W2-C — work back from take-home, for the real person on screen.
+    // The card is a calculator: it reads this person's payslip inputs and
+    // writes nothing. Without a person there is nobody's pay to work from,
+    // so the picker opens instead of an empty card.
+    openTakeHome() {
+        const cfg = this.state.config;
+        if (!cfg || !cfg.id) { return; }
+        this.state.cmdOpen = false;
+        this.state.paletteOpen = false;
+        if (!this.state.personPayslipId) {
+            this.notif.add(_t("Pick a real employee first — the calculator works from their own pay."),
+                { type: "info" });
+            this.state.previewDrawer = true;
+            this.state.previewCollapsed = false;
+            this.openPersonPicker();
+            return;
+        }
+        // One card at a time: a double click must not stack two.
+        if (this._takeHomeOpen) { return; }
+        this._takeHomeOpen = true;
+        openTakeHome(this.overlay, { configId: cfg.id, payslipId: this.state.personPayslipId },
+            () => { this._takeHomeOpen = false; });
+    }
+
     async pickPersonRun(runId) {
         this.state.personBusy = true;
         this.state.personRunId = runId;
@@ -3691,6 +3737,51 @@ export class PbFormulaStudio extends Component {
         const d = await this.orm.call("pb.formula.studio", "get_config_settings", [this.state.config.id]);
         if (!d || !d.ok) { this.notif.add(_t("Could not read this configuration's health."), { type: "warning" }); return; }
         this.state.settings = d;
+    }
+
+    /**
+     * WDGAP W2-F (F-4) — "Tax year starts in", the scheme form's own field.
+     * The server answers with the scheme form's warning when finished
+     * payslips exist; nothing is saved until the person says "Change it".
+     */
+    async onTaxYearChange(ev) {
+        const ty = this.state.settings && this.state.settings.tax_year;
+        const month = ev.target.value;
+        if (!ty || !month || month === ty.month) { return; }
+        ev.target.value = ty.month;     // the select shows what is saved
+        await this._saveTaxYear(month, false);
+    }
+
+    async confirmTaxYear() {
+        const pending = this.state.taxYearPending;
+        if (pending) { await this._saveTaxYear(pending.month, true); }
+    }
+
+    cancelTaxYear() { this.state.taxYearPending = null; }
+
+    async _saveTaxYear(month, confirmed) {
+        if (!this.state.config || this.state.taxYearBusy) { return; }
+        this.state.taxYearBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "save_tax_year_start",
+                [this.state.config.id, month, confirmed]);
+            if (r && r.needs_confirm) {
+                this.state.taxYearPending = { month, label: r.month_label, warning: r.warning };
+                return;
+            }
+            this.state.taxYearPending = null;
+            if (r && r.ok) {
+                if (r.tax_year) { this.state.settings.tax_year = r.tax_year; }
+                if (r.msg) { this.notif.add(r.msg, { type: "success" }); }
+            } else {
+                this.notif.add((r && r.msg) || _t("The tax year could not be changed."), { type: "warning" });
+            }
+        } catch (e) {
+            this.state.taxYearPending = null;
+            this.notif.add(_t("The tax year could not be changed."), { type: "warning" });
+        } finally {
+            this.state.taxYearBusy = false;
+        }
     }
     // ---- W97 — period comparison view ----
     async openCompare() {

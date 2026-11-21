@@ -105,6 +105,9 @@ class PbHiringOfferClosure(models.Model):
             self._ensure_contract)
         leg(self.env, 'the pay package on offer %s' % self.name,
             self._ensure_package)
+        # WDGAP QF4 (B2): plans that cover everyone from the day they join.
+        leg(self.env, 'the benefit plans on offer %s' % self.name,
+            self._ensure_benefits)
         leg(self.env, 'the login on offer %s' % self.name,
             self._ensure_login)
         leg(self.env, 'the joining checklist on offer %s' % self.name,
@@ -325,6 +328,20 @@ class PbHiringOfferClosure(models.Model):
     # =====================================================================
     #  4. The pay package
     # =====================================================================
+    def _ensure_benefits(self):
+        """Put the joiner on every plan that covers people from day one.
+
+        The joining checklist that opens a few legs later does the same
+        (`pb_comp_ben`, `pb.journey.case.action_open`); both call the ONE
+        method, which never makes a second enrollment, so whichever runs
+        first wins and the other finds nothing to do.
+        """
+        self.ensure_one()
+        if not self.employee_id:
+            return False
+        return self.env['pb.benefit.plan'].sudo()._enrol_who_qualifies(
+            self.employee_id, 'join', on_date=self._anchor_date())
+
     def _ensure_package(self):
         """The offer's own lines, as the package the Comp team will activate.
 

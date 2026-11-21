@@ -73,12 +73,12 @@ async function finishDrag(){
    S.sheetMoveAct='section-up';await moveSection(d.section,to);return;
   }
   const t=targets(S.w.definition).find(t=>t.id===slot.dataset.slot);
-  if(!t)throw Error('Choose an available position.');
+  if(!t)throw Error(_t('Choose an available position.'));
   if(d.type){await addNode(d.type,t);return;}
   const moved=moveStep(S.w.definition,d.id,t);
   if(moved===S.w.definition)return;
   mutate(()=>{S.w.definition=moved;S.selected=d.id;});
-  notify('Step moved. Undo is available.');
+  notify(_t('Step moved. Undo is available.'));
  }catch(err){notify(err.message,true);}
 }
 document.addEventListener('pointerdown',e=>{

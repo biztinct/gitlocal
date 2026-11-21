@@ -1,0 +1,586 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 08:20+0000\n"
+"PO-Revision-Date: 2026-11-16 08:20+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "%(n)s approved claims (%(total)s) are already set to be paid in the pay run. They stay that way whatever you choose here."
+msgstr "%(n)s yêu cầu đã duyệt (%(total)s) đã được đặt để trả trong kỳ lương. Chúng giữ nguyên dù bạn chọn gì ở đây."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_expense.py:0
+msgid "%(receipt)s is part of claim %(claim)s, which is paid back in the pay run. Finance does not pay it."
+msgstr "%(receipt)s thuộc yêu cầu %(claim)s, được hoàn trong kỳ lương. Bộ phận tài chính không trả khoản này."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "1 approved claim (%s) is already set to be paid in the pay run. It stays that way whatever you choose here."
+msgstr "1 yêu cầu đã duyệt (%s) đã được đặt để trả trong kỳ lương. Yêu cầu này giữ nguyên dù bạn chọn gì ở đây."
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.portal_expense_new_pay
+msgid "<span class=\"pbex-next-n\">3</span><span><b>It is paid back in your next pay</b><span>A separate line on your payslip, with no tax. The claim shows which pay it was in.</span></span>"
+msgstr "<span class=\"pbex-next-n\">3</span><span><b>Được hoàn vào kỳ lương tới của bạn</b><span>Một dòng riêng trên phiếu lương, không tính thuế. Yêu cầu sẽ ghi rõ đã trả vào kỳ lương nào.</span></span>"
+
+#. module: pb_expense_payroll
+#: model:ir.model.constraint,message:pb_expense_payroll.constraint_pb_expense_payline_amount_not_negative
+msgid "A claim paid back cannot be below zero."
+msgstr "Khoản hoàn không thể nhỏ hơn 0."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_line__pb_extra_kind model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_line_analytics__pb_extra_kind
+msgid "Added after the pay items"
+msgstr "Thêm sau các khoản lương"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__amount
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "An approved expense claim is in another currency than this pay scheme, so it is not paid here"
+msgstr "Một yêu cầu đã duyệt dùng loại tiền khác với chính sách lương này nên không được trả ở đây"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "An expense claim waits until its trip's cash advance is settled"
+msgstr "Một yêu cầu đang chờ quyết toán tạm ứng của chuyến công tác"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__paid_by model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__pb_claims_paid_by
+msgid "Approved claims are paid"
+msgstr "Yêu cầu đã duyệt được trả"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Approved expense claims are not paid here: this payslip has no take-home line"
+msgstr "Yêu cầu đã duyệt không được trả ở đây: phiếu lương này không có dòng thực lĩnh"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Approved expense claims of %s are not in this payslip: this pay scheme is paid from a pay data file. Include them in the file."
+msgstr "Các yêu cầu đã duyệt %s không có trong phiếu lương này: chính sách lương này trả theo tệp dữ liệu lương. Hãy đưa chúng vào tệp."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0 code:addons/pb_expense_payroll/models/pay_setup.py:0 model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_claim__pb_pay_route__finance model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_pay_setup__paid_by__finance model:ir.model.fields.selection,name:pb_expense_payroll.selection__res_company__pb_claims_paid_by__finance
+msgid "By finance"
+msgstr "Do tài chính trả"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,help:pb_expense_payroll.field_res_company__pb_claims_paid_by
+msgid "By finance: finance pays approved claims back as today. In the next pay run: each approved claim is a separate line on the person's next regular payslip, with no tax."
+msgstr "Do tài chính trả: tài chính hoàn tiền như hiện nay. Trong kỳ lương tới: mỗi yêu cầu đã duyệt là một dòng riêng trên phiếu lương thường kỳ tới, không tính thuế."
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__changed_words
+msgid "Changed Words"
+msgstr "Thay đổi"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__pb_claims_paid_by_changed_by
+msgid "Changed by"
+msgstr "Người thay đổi"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__pb_claims_paid_by_changed_on
+msgid "Changed on"
+msgstr "Ngày thay đổi"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__claim_id
+msgid "Claim"
+msgstr "Yêu cầu hoàn tiền"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Claim %s has nothing left to pay back."
+msgstr "Yêu cầu %s không còn gì để hoàn."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Claim %s is already in a pay run, so it is paid there."
+msgstr "Yêu cầu %s đã có trong một kỳ lương nên được trả ở đó."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__hr_payslip_line__pb_extra_kind__claim model:ir.model.fields.selection,name:pb_expense_payroll.selection__hr_payslip_line_analytics__pb_extra_kind__claim
+msgid "Claim paid back"
+msgstr "Khoản hoàn chi phí"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip__pb_extras_note
+msgid "Claims and advances not taken"
+msgstr "Yêu cầu và tạm ứng chưa tính"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip__pb_claim_payline_ids
+msgid "Claims paid back"
+msgstr "Khoản hoàn chi phí"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/payline.py:0
+msgid "Claims paid back in pay are recorded by the system."
+msgstr "Khoản hoàn qua lương do hệ thống ghi nhận."
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__company_id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Covered by the trip's cash advance"
+msgstr "Đã được bù bằng tạm ứng công tác"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Covered by your trip's cash advance. Nothing more comes in your pay for it."
+msgstr "Đã được bù bằng tạm ứng công tác của bạn. Không có thêm khoản nào trong lương cho yêu cầu này."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__create_uid model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__create_date model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_expense__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_line__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_run__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claims__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_pb_me_expense__display_name model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "Each approved claim becomes a separate line on the person's next regular payslip, added to take-home with no tax. Finance no longer pays those receipts. Top-up and extra runs never take a claim. For pay schemes paid from a pay data file, the claims are listed on the pay run for you to include in the file."
+msgstr "Mỗi yêu cầu đã duyệt thành một dòng riêng trên phiếu lương thường kỳ tới, cộng vào thực lĩnh, không tính thuế. Tài chính không trả các hóa đơn đó nữa. Kỳ lương bổ sung và kỳ lương thêm không bao giờ tính yêu cầu. Với chính sách lương trả theo tệp dữ liệu lương, các yêu cầu được liệt kê trên kỳ lương để bạn đưa vào tệp."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_hr_expense
+msgid "Expense"
+msgstr "Chi phí"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_expense_claim
+msgid "Expense claim"
+msgstr "Yêu cầu hoàn tiền chi phí"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_expense_payline
+msgid "Expense claim paid back in pay"
+msgstr "Khoản hoàn chi phí qua lương"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Expense claim paid back · %s"
+msgstr "Hoàn chi phí · %s"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Expense claims could not be added to this payslip; they wait for the next pay run"
+msgstr "Không thể thêm yêu cầu hoàn tiền vào phiếu lương này; chúng chờ kỳ lương tới"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_expense_claims
+msgid "Expense claims list (filter panel)"
+msgstr "Danh sách yêu cầu hoàn tiền (bảng lọc)"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Expense claims paid back: %s (no tax)"
+msgstr "Hoàn chi phí: %s (không tính thuế)"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "Expenses and trip advances"
+msgstr "Chi phí và tạm ứng công tác"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_me_expense
+msgid "Expenses on the employee pages"
+msgstr "Chi phí trên trang của nhân viên"
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "Finance pays approved claims back, as it does today. Nothing reaches a payslip."
+msgstr "Tài chính hoàn tiền các yêu cầu đã duyệt như hiện nay. Không có gì vào phiếu lương."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__state__released
+msgid "Given back"
+msgstr "Đã trả lại"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/payline.py:0
+msgid "Given back: %s."
+msgstr "Đã trả lại: %s."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__kind
+msgid "How"
+msgstr "Cách"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "How a claim is paid back is set by the system when it is approved."
+msgstr "Cách hoàn tiền do hệ thống đặt khi yêu cầu được duyệt."
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "How approved claims are paid back"
+msgstr "Cách hoàn tiền yêu cầu đã duyệt"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_pb_expense_pay_setup
+msgid "How approved expense claims are paid back"
+msgstr "Cách hoàn tiền các yêu cầu đã duyệt"
+
+#. module: pb_expense_payroll
+#. odoo-javascript
+#: code:addons/pb_expense_payroll/static/src/xml/claims_lens_pay.xml:0 model:ir.actions.act_window,name:pb_expense_payroll.action_pb_expense_pay_setup model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "How claims are paid"
+msgstr "Cách trả yêu cầu hoàn tiền"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0
+msgid "How it is paid"
+msgstr "Cách trả"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_hr_expense__id model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip__id model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_line__id model:ir.model.fields,field_description:pb_expense_payroll.field_hr_payslip_run__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claims__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__id model:ir.model.fields,field_description:pb_expense_payroll.field_pb_me_expense__id model:ir.model.fields,field_description:pb_expense_payroll.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__state__reserved
+msgid "In a pay run"
+msgstr "Trong một kỳ trả lương"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "In pay run %s (not finished yet)"
+msgstr "Trong kỳ lương %s (chưa hoàn tất)"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0 model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_claim__pb_pay_route__payrun model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_pay_setup__paid_by__payrun model:ir.model.fields.selection,name:pb_expense_payroll.selection__res_company__pb_claims_paid_by__payrun
+msgid "In the next pay run"
+msgstr "Trong kỳ lương tới"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0
+msgid "In the pay run"
+msgstr "Trong kỳ lương"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "In your %s pay. It shows as a separate line on that payslip, with no tax."
+msgstr "Trong lương %s của bạn. Hiển thị là một dòng riêng trên phiếu lương đó, không tính thuế."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Included in the pay data file by %s."
+msgstr "Đã đưa vào tệp dữ liệu lương bởi %s."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "It is paid back in your next pay, as a separate line with no tax."
+msgstr "Được hoàn vào kỳ lương tới của bạn, là một dòng riêng, không tính thuế."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__write_uid model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__write_date model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "Last changed by %(who)s on %(when)s."
+msgstr "Thay đổi lần cuối bởi %(who)s ngày %(when)s."
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_claim_view_form_pay
+msgid "Mark this claim as paid in this month's pay data file? Only do this once the amount is in the file."
+msgstr "Đánh dấu yêu cầu này đã trả trong tệp dữ liệu lương tháng này? Chỉ làm khi số tiền đã có trong tệp."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "Not changed yet: finance pays claims back, as it always has."
+msgstr "Chưa thay đổi: tài chính hoàn tiền như trước nay."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Only an approved claim that is paid back in pay can be marked as paid in the pay data file."
+msgstr "Chỉ yêu cầu đã duyệt được hoàn qua lương mới có thể đánh dấu đã trả trong tệp dữ liệu lương."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "Only an expense manager or a payroll manager can choose how claims are paid."
+msgstr "Chỉ quản lý chi phí hoặc quản lý lương mới có thể chọn cách trả yêu cầu."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Only the pay team can say a claim was paid in the pay data file."
+msgstr "Chỉ nhóm lương mới có thể xác nhận yêu cầu đã trả trong tệp dữ liệu lương."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__state__paid
+msgid "Paid"
+msgstr "Đã trả"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__pb_pay_route
+msgid "Paid back"
+msgstr "Hoàn tiền"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__pb_payline_ids model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_claim_view_form_pay
+msgid "Paid back in pay"
+msgstr "Hoàn qua lương"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid back in the pay data file (marked by %s)."
+msgstr "Đã hoàn trong tệp dữ liệu lương (đánh dấu bởi %s)."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0
+msgid "Paid in pay"
+msgstr "Đã trả qua lương"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid in pay run %s"
+msgstr "Đã trả trong kỳ lương %s"
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_claim_view_form_pay
+msgid "Paid in the pay data file"
+msgstr "Đã trả trong tệp dữ liệu lương"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid in the pay data file (%s)"
+msgstr "Đã trả trong tệp dữ liệu lương (%s)"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid in your %s pay. It is a separate line on that payslip, with no tax."
+msgstr "Đã trả trong lương %s của bạn. Là một dòng riêng trên phiếu lương đó, không tính thuế."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__paid_on
+msgid "Paid on"
+msgstr "Ngày trả"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid with your %s pay."
+msgstr "Đã trả cùng lương %s của bạn."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "Paid with your pay."
+msgstr "Đã trả cùng lương của bạn."
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Phiếu lương"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__kind__file
+msgid "Pay data file"
+msgstr "Tệp dữ liệu lương"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__pay_month
+msgid "Pay month"
+msgstr "Tháng lương"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__run_id model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__kind__payroll
+msgid "Pay run"
+msgstr "Kỳ trả lương"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__payslip_id
+msgid "Payslip"
+msgstr "Phiếu lương"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Kỳ trả lương"
+
+#. module: pb_expense_payroll
+#: model:ir.model,name:pb_expense_payroll.model_hr_payslip_line
+msgid "Payslip Line"
+msgstr "Dòng phiếu lương"
+
+#. module: pb_expense_payroll
+#: model_terms:ir.ui.view,arch_db:pb_expense_payroll.pb_expense_pay_setup_view_form
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,help:pb_expense_payroll.field_pb_expense_claim__pb_pay_route
+msgid "Set when the claim is approved, from the company's setting at that moment. Empty: by finance."
+msgstr "Đặt khi yêu cầu được duyệt, theo thiết lập của công ty lúc đó. Trống: tài chính trả."
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_payline__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_expense_payroll
+#: model:ir.model.constraint,message:pb_expense_payroll.constraint_pb_expense_payline_one_live_per_claim
+msgid "This claim is already being paid back."
+msgstr "Yêu cầu này đang được hoàn."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/expense_claim.py:0
+msgid "To pay in the next regular pay run"
+msgstr "Chờ trả trong kỳ lương thường kỳ tới"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/claims_lens.py:0
+msgid "To pay in the pay run"
+msgstr "Chờ trả trong kỳ lương"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__hr_payslip_line__pb_extra_kind__advance model:ir.model.fields.selection,name:pb_expense_payroll.selection__hr_payslip_line_analytics__pb_extra_kind__advance
+msgid "Trip advance taken back"
+msgstr "Thu hồi tạm ứng công tác"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields.selection,name:pb_expense_payroll.selection__pb_expense_payline__kind__advance
+msgid "Trip cash advance"
+msgstr "Tạm ứng công tác"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_pay_setup__waiting_words
+msgid "Waiting Words"
+msgstr "Đang chờ"
+
+#. module: pb_expense_payroll
+#: model:ir.model.fields,field_description:pb_expense_payroll.field_pb_expense_claim__pb_pay_words
+msgid "Where the money is"
+msgstr "Tiền đang ở đâu"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/pay_setup.py:0
+msgid "You do not work for %s."
+msgstr "Bạn không làm việc cho %s."
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "it could not be added to payslip %s"
+msgstr "không thể thêm vào phiếu lương %s"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "pay run deleted"
+msgstr "kỳ lương đã xóa"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "payslip %s no longer takes it"
+msgstr "phiếu lương %s không còn tính khoản này"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/payline.py:0
+msgid "payslip cancelled"
+msgstr "phiếu lương đã hủy"
+
+#. module: pb_expense_payroll
+#. odoo-python
+#: code:addons/pb_expense_payroll/models/hr_payslip.py:0
+msgid "payslip deleted"
+msgstr "phiếu lương đã xóa"

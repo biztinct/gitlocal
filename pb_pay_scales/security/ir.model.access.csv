@@ -1,0 +1,27 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_pay_scale_viewer,pay scale read,model_pb_pay_scale,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_manager,pay scale manager,model_pb_pay_scale,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_scale_system,pay scale system,model_pb_pay_scale,base.group_system,1,1,1,1
+access_pb_pay_scale_grade_viewer,scale grade read,model_pb_pay_scale_grade,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_grade_manager,scale grade manager,model_pb_pay_scale_grade,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_scale_grade_system,scale grade system,model_pb_pay_scale_grade,base.group_system,1,1,1,1
+access_pb_pay_scale_version_viewer,scale version read,model_pb_pay_scale_version,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_version_manager,scale version manager,model_pb_pay_scale_version,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_scale_version_system,scale version system,model_pb_pay_scale_version,base.group_system,1,1,1,1
+access_pb_pay_scale_cell_viewer,scale amount read,model_pb_pay_scale_cell,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_cell_manager,scale amount manager,model_pb_pay_scale_cell,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_scale_cell_system,scale amount system,model_pb_pay_scale_cell,base.group_system,1,1,1,1
+access_pb_pay_scale_package_viewer,scale allowance read,model_pb_pay_scale_package,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_package_manager,scale allowance manager,model_pb_pay_scale_package,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_scale_package_system,scale allowance system,model_pb_pay_scale_package,base.group_system,1,1,1,1
+access_pb_pay_scale_placement_viewer,scale place read,model_pb_pay_scale_placement,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_placement_manager,scale place manager,model_pb_pay_scale_placement,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_scale_placement_system,scale place system,model_pb_pay_scale_placement,base.group_system,1,1,1,1
+access_pb_pay_scale_raise_viewer,scale rise read,model_pb_pay_scale_raise,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_raise_manager,scale rise manager,model_pb_pay_scale_raise,pb_pay.group_pay_manager,1,1,1,0
+access_pb_pay_scale_raise_system,scale rise system,model_pb_pay_scale_raise,base.group_system,1,1,1,1
+access_pb_pay_scale_raise_seat,scale rise anyone asked to decide,model_pb_pay_scale_raise,base.group_user,1,0,0,0
+access_pb_pay_scale_raise_line_viewer,scale rise person read,model_pb_pay_scale_raise_line,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_scale_raise_line_manager,scale rise person manager,model_pb_pay_scale_raise_line,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_scale_raise_line_system,scale rise person system,model_pb_pay_scale_raise_line,base.group_system,1,1,1,1
+access_pb_pay_scale_raise_line_seat,scale rise person anyone asked to decide,model_pb_pay_scale_raise_line,base.group_user,1,0,0,0

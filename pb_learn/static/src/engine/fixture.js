@@ -2123,6 +2123,34 @@ const PRACTICE = {
     handover: { to: ROUTE.steps[0].who, until: "21/08/2026" },
   },
 
+  /* ----------------------------------------------- Settings › Form builder
+     pb_form_studio's Field library (field_library.xml): the fields this
+     company added itself, then the standard ones. FS-10: the two own fields
+     are the ones the payobook demo keeps (DEMO Shirt size on the employee,
+     DEMO Parking bay on the contract); nothing feeds a pay formula, nothing
+     is hidden or renamed. A few standard rows stand for the full list; two
+     of them are locked (a pay formula reads Place of Birth). The numbers
+     line is the library's own six (field_library.js kpis); the lesson
+     quotes none of them, because they differ from company to company. */
+  formbuilder: {
+    rows: [
+      { label: B("DEMO Shirt size", "DEMO Shirt size"), code: "x_pbfs_demo_shirt_size", rt: "emp",
+        kind: B("Choice", "Lựa chọn"), opts: "S · M · L", where: ["screen", "lists"],
+        filled: 1, of: 52, who: "hr", countries: null, portal: B("Shown", "Đã hiện"), used: 0 },
+      { label: B("DEMO Parking bay", "DEMO Parking bay"), code: "x_pbfs_demo_parking_bay", rt: "contract",
+        kind: B("Text", "Văn bản"), opts: "", where: ["screen", "lists"],
+        filled: 1, of: 50, who: "hr", countries: null, portal: null, used: 0 },
+    ],
+    std: [
+      { label: B("Employee Name", "Tên nhân viên"), code: "name", rt: "emp", kind: B("Text", "Văn bản"),
+        tab: B("Top of the page", "Đầu trang"), locked: true, hidden: false, renamed: false },
+      { label: B("Place of Birth", "Nơi sinh"), code: "place_of_birth", rt: "emp", kind: B("Text", "Văn bản"),
+        tab: B("Private Information", "Thông tin cá nhân"), locked: true, hidden: false, renamed: false },
+      { label: B("Blood type", "Nhóm máu"), code: "pb_blood_type", rt: "emp", kind: B("Choice", "Lựa chọn"),
+        tab: B("Private Information", "Thông tin cá nhân"), locked: false, hidden: false, renamed: false },
+    ],
+  },
+
   /* ----------------------------------------------- Compliance › Bank / Young workers / Audit */
   compliance: {
     bank: [[B("Draft", "Nháp"), 1], [B("HR Review", "Nhân sự xét duyệt"), 1], [B("Finance Review", "Tài chính xét duyệt"), 0],
@@ -2358,6 +2386,9 @@ const MENU = [
       { key: "system", label: B("System", "Hệ thống"), cats: [
         { key: "guided_setup", label: B("Guided setup", "Thiết lập có hướng dẫn"),
           card: B("New configuration", "Cấu hình mới"), screen: "blueprint" },
+        /* FORM STUDIO (2026-11-20): the Form builder card (pb_form_studio
+           settings_card.js, group "system"; administrators only). */
+        { key: "form_builder", label: B("Form builder", "Trình tạo biểu mẫu"), screen: "formbuilder" },
         { key: "about", label: B("About Payobook", "Về Payobook") },
         { key: "demo_data", label: B("Demo data", "Dữ liệu mẫu") },
       ] },

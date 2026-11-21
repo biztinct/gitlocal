@@ -94,4 +94,43 @@
             </form>
         </field>
     </record>
+
+    <!-- WDGAP S6-A BK2: on the standard employee form the "Bank accounts"
+         field is read-only — where pay goes changes only through the bank
+         screen (or My Payobook / the Updates sheet), with a second person.
+         By inheritance; the standard view file is not edited. -->
+    <record id="view_employee_form_bank_read_only" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb.bank.read.only</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <xpath expr="(//field[@name='bank_account_ids'])[1]" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="(//field[@name='bank_account_ids'])[2]" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="(//field[@name='bank_account_ids'])[3]" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="(//field[@name='bank_account_ids'])[3]" position="after">
+                <div class="text-muted small pb-bank-ro-note">To change where this person is paid, use Compliance › Bank: a second person approves it.</div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- WDGAP S6-A BK2: the pay data load says how many bank changes wait. -->
+    <record id="view_payroll_import_batch_form_bank_waiting" model="ir.ui.view">
+        <field name="name">hr.payroll.import.batch.form.pb.bank.waiting</field>
+        <field name="model">hr.payroll.import.batch</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_payroll_import_batch_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning mb-0" role="status" invisible="not pb_bank_waiting_note">
+                    <field name="pb_bank_waiting_note" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
 </odoo>

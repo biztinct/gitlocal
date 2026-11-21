@@ -1,0 +1,61 @@
+SAME admin__con_ID.json           rows=122 vu False->True errors 0->0
+SAME admin__con_IN.json           rows=122 vu False->True errors 0->0
+SAME admin__con_SG.json           rows=122 vu False->True errors 0->0
+SAME admin__con_VN.json           rows=122 vu False->True errors 0->0
+SAME admin__con_none.json         rows=122 vu False->True errors 0->0
+SAME admin__emp_ID.json           rows=276 vu False->True errors 0->0
+SAME admin__emp_IN.json           rows=276 vu False->True errors 0->0
+SAME admin__emp_SG.json           rows=272 vu False->True errors 0->0
+SAME admin__emp_VN.json           rows=298 vu False->True errors 0->0
+SAME admin__emp_none.json         rows=266 vu False->True errors 0->0
+SAME hrmanager__con_ID.json       rows=120 vu False->True errors 0->0
+SAME hrmanager__con_IN.json       rows=120 vu False->True errors 0->0
+SAME hrmanager__con_SG.json       rows=120 vu False->True errors 0->0
+SAME hrmanager__con_VN.json       rows=120 vu False->True errors 0->0
+SAME hrmanager__con_none.json     rows=120 vu False->True errors 0->0
+SAME hrmanager__emp_ID.json       rows=258 vu False->True errors 0->0
+SAME hrmanager__emp_IN.json       rows=258 vu False->True errors 0->0
+SAME hrmanager__emp_SG.json       rows=254 vu False->True errors 0->0
+SAME hrmanager__emp_VN.json       rows=280 vu False->True errors 0->0
+SAME hrmanager__emp_none.json     rows=248 vu False->True errors 0->0
+DIFF hruser__con_ID.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+DIFF hruser__con_IN.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+DIFF hruser__con_SG.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+DIFF hruser__con_VN.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+DIFF hruser__con_none.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+SAME hruser__emp_ID.json          rows=235 vu False->True errors 0->0
+SAME hruser__emp_IN.json          rows=235 vu False->True errors 0->0
+SAME hruser__emp_SG.json          rows=231 vu False->True errors 0->0
+SAME hruser__emp_VN.json          rows=257 vu False->True errors 0->0
+SAME hruser__emp_none.json        rows=225 vu False->True errors 0->0
+DIFF payroll__con_ID.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+DIFF payroll__con_IN.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+DIFF payroll__con_SG.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+DIFF payroll__con_VN.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+DIFF payroll__con_none.json errors 0 -> 0 None None
+   - 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '230')
+   + 1x ('F', 'page:pb_vn_payroll_facts', 'pb_vn_service_days', 1, 'ro', '', '231')
+SAME payroll__emp_ID.json         rows=237 vu False->True errors 0->0
+SAME payroll__emp_IN.json         rows=237 vu False->True errors 0->0
+SAME payroll__emp_SG.json         rows=233 vu False->True errors 0->0
+SAME payroll__emp_VN.json         rows=259 vu False->True errors 0->0
+SAME payroll__emp_none.json       rows=227 vu False->True errors 0->0
+TOTAL same=30 diff=10

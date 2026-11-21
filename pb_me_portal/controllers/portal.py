@@ -63,6 +63,13 @@ class PbMePortal(CustomerPortal):
         return emp or Emp.search(
             [('user_id', '=', request.env.user.id)], limit=1)
 
+    def _ess_field_labels(self, emp):
+        """`{employee field: label}` — a company's own name for a standard
+        box (set in the Form builder, R27), in the reader's language. Empty
+        here; the Form builder fills it. A box with no entry shows its
+        built-in words (the template's own text)."""
+        return {}
+
     def _ess_own_employees(self):
         """EVERY employee record of the session user (one per company), sudo.
 
@@ -184,6 +191,7 @@ class PbMePortal(CustomerPortal):
             'emergency_contact': emp.emergency_contact or '',
             'emergency_phone': emp.emergency_phone or '',
             'avatar_url': request.env['pb.me.home']._photo_url(emp, 'avatar_256'),
+            'labels': self._ess_field_labels(emp),
         }
 
     def _request_payload(self, r):
@@ -456,7 +464,8 @@ class PbMePortal(CustomerPortal):
         # done only — a CANCELLED slip's figures must never inflate the
         # employee's stated GROSS/PIT (review I-M2)
         slips = Slip.search([('employee_id', '=', emp.id),
-                             ('state', '=', 'done')],
+                             ('state', '=', 'done')]
+                            + Slip._ess_visible_domain(),
                             order='date_to desc', limit=48)
         codes = Slip._ess_tax_codes()
         # column labels: first label seen per code across the slips
@@ -464,11 +473,16 @@ class PbMePortal(CustomerPortal):
         rows = []
         ytd = {c: 0.0 for c in codes}
         current_year = None
+        # WDGAP W2-A — the year to date is the current TAX year of the scheme
+        # of the most recent payslip (the calendar year when that scheme's tax
+        # year starts in January — every scheme until one is changed). Each
+        # row's `year` is the tax year it belongs to, counted the same way.
+        start_month, tax_year_of = self._ess_tax_year(slips[:1])
         for slip in slips:
             data = slip._ess_tax_rows(codes)
             for c, cell in data.items():
                 labels.setdefault(c, cell['label'])
-            year = slip.date_to.year if slip.date_to else None
+            year = tax_year_of(slip.date_to) if slip.date_to else None
             rows.append({
                 'id': slip.id,
                 'name': slip.name,
@@ -490,9 +504,35 @@ class PbMePortal(CustomerPortal):
             'rows': rows,
             'ytd': ytd,
             'ytd_year': current_year,
+            # WDGAP W2-A — set only for a tax year that does not start in
+            # January: the tile then reads "Tax year 2026–27".
+            'ytd_start_month': start_month,
+            'ytd_label': self._ess_tax_year_label(start_month, current_year),
             'currency': emp.company_id.currency_id,
         }
         return request.render('pb_me_portal.portal_my_taxsheet', values)
+
+    def _ess_tax_year(self, slip):
+        """`(start month, day -> tax year)` for the employee tax sheet: the
+        tax year of `slip`'s pay scheme, through the pay engine's one helper
+        when it is installed; the calendar year otherwise."""
+        config = slip.formula_config_id if slip and 'formula_config_id' in slip._fields \
+            else None
+        if config and hasattr(config, '_pb_tax_year_month'):
+            month = config._pb_tax_year_month()
+            if month != 1:
+                return month, lambda day: config._pb_tax_year_key(day)
+        return 1, lambda day: day.year
+
+    def _ess_tax_year_label(self, start_month, year):
+        """"2026–27" for a tax year that does not start in January, else ''
+        (the tile keeps its "YTD 2026" wording)."""
+        if not year or start_month == 1:
+            return ''
+        Config = request.env['hr.formula.config'] if 'hr.formula.config' in request.env else None
+        if Config is None or not hasattr(Config, '_pb_tax_year_label_for'):
+            return ''
+        return Config._pb_tax_year_label_for(start_month, year)
 
     # =================================================================
     #  Payslips  —  WOW re-skin of the stock list + detail (F–J rule)
@@ -511,6 +551,10 @@ class PbMePortal(CustomerPortal):
             cards.append({
                 'id': slip.id,
                 'name': slip.name,
+                # WDGAP PR-D — the run's name under the month, for a payslip
+                # that is not the month's regular one (an Extra run, a top-up),
+                # so two payslips for one month can be told apart.
+                'run': self._ess_run_label(slip),
                 'period': slip.date_to.strftime('%B %Y') if slip.date_to else slip.name,
                 'range': '%s → %s' % (
                     slip.date_from.strftime('%d %b') if slip.date_from else '',
@@ -538,7 +582,10 @@ class PbMePortal(CustomerPortal):
         emp = self._ess_employee()
         if not emp:
             return list(Domain.FALSE)
-        return [('employee_id', '=', emp.id), ('state', 'in', _PAYSLIP_STATES)]
+        # a payslip whose pay is on hold stays out of sight until the hold is
+        # released (WDGAP PR-C; `_ess_visible_domain`)
+        return [('employee_id', '=', emp.id), ('state', 'in', _PAYSLIP_STATES)] \
+            + request.env['hr.payslip']._ess_visible_domain()
 
     def _prepare_my_payslips_values(self, page, date_begin, date_end, sortby,
                                     filterby, domain=None, url='/my/payslips'):
@@ -581,6 +628,9 @@ class PbMePortal(CustomerPortal):
         if model_name == 'hr.payslip':
             slip = request.env['hr.payslip'].sudo().browse(int(document_id)).exists()
             if slip and slip.employee_id in self._ess_own_employees():
+                if not slip._ess_visible():
+                    # on hold (WDGAP PR-C): not theirs to open yet
+                    raise MissingError(_("This payslip is not available yet."))
                 return slip
         return super()._document_check_access(model_name, document_id,
                                               access_token=access_token)
@@ -605,12 +655,29 @@ class PbMePortal(CustomerPortal):
         values = {
             'page_name': 'payslip',
             'payslip': payslip_sudo,
+            'run': self._ess_run_label(payslip_sudo),       # WDGAP PR-D
             'net': net,
             'lines': lines,
             'period': payslip_sudo.date_to.strftime('%B %Y') if payslip_sudo.date_to else payslip_sudo.name,
             'pdf_url': payslip_sudo.get_portal_url(report_type='pdf', download=True),
         }
         return request.render('pb_me_portal.portal_payslip_page', values)
+
+    @staticmethod
+    def _ess_run_label(slip):
+        """The pay run's name when it is not the month's regular run, else ''.
+
+        A month can hold more than one payslip for a person since WDGAP PR-D
+        (an Extra run beside the regular one), and both cards read the same
+        month. The regular payslip looks exactly as before; the other one
+        names its run. `pb_run_kind` belongs to pb_payruns, which this module
+        does not depend on — without it nothing is shown.
+        """
+        run = slip.payslip_run_id
+        kind = getattr(run, 'pb_run_kind', False) if run else False
+        if kind and kind != 'regular':
+            return run.name or ''
+        return ''
 
     def _ess_payslip_report_ref(self):
         """Prefer the themed report when the Formula-Engine build is deployed,

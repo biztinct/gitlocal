@@ -22,7 +22,9 @@ class TestPayslipDocument(TransactionCase):
                 ('BASIC', 'Prorated fixed salary VND', 'money'),
                 ('NET', 'Net payment VND', 'money'),
                 ('FX', 'VND per USD exchange rate', 'decimal'),
-                ('DAYS', 'Standard working days', 'quantity'),
+                # WDGAP PR-A: DAYS is a formula function now, so a NEW
+                # component may not take it as its code.
+                ('WORKDAYS', 'Standard working days', 'quantity'),
                 ('SI', 'Employee SI VND', 'money'),
                 ('SIR', 'Employer SI including accident VND', 'money')]):
             cls.rules[code] = cls.env['hr.formula.rule'].create({

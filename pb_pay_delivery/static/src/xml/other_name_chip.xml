@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <!-- WDGAP S2-C ruling BL4: side panel notice + "Mark as seen" -->
+  <t t-name="pb_pay_delivery.OtherNameChip">
+    <span t-if="state.show" class="pbon-chip" t-att-title="tooltip">
+      <span class="ico" t-out="icon('userX',13)"/>
+      <span class="txt" t-esc="label"/>
+      <button class="pbon-seen" t-att-disabled="state.busy" t-on-click.stop="markSeen">
+        <span t-out="icon('eye',12)"/> <span>Mark as seen</span>
+      </button>
+    </span>
+  </t>
+</templates>

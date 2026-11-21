@@ -30,7 +30,7 @@ Two properties of that facade are worth knowing before reading it:
 Coverage is a SERVER answer: a country whose module is not installed here keeps
 the old modal, and the board asks rather than assuming.
 """,
-    'version': '19.0.1.2.2',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -41,11 +41,14 @@ the old modal, and the board asks rather than assuming.
     # pb_hr_payroll_base carries the payroll roles this module had never
     # checked; biz_approval_workflow carries the proposal a filing is now
     # produced from.
+    # WDGAP FG1: pb_form_lines (the tax returns) so the "Government reports"
+    # permission gets its access rows on the forms and filings here.
     'depends': ['web', 'pb_import_kit', 'pb_hr_govt', 'pb_hub',
-                'pb_hr_payroll_base', 'biz_approval_workflow'],
+                'pb_hr_payroll_base', 'biz_approval_workflow', 'pb_form_lines'],
     'data': [
         'security/ir.model.access.csv',
         'security/filing_approval_rules.xml',
+        'security/filings_fg1_rules.xml',
         'views/pb_govt_reports_action.xml',
         'views/pb_filing_flow_action.xml',
     ],

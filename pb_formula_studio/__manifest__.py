@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.211.0',
+    'version': '19.0.1.214.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -69,6 +69,8 @@
             'pb_formula_studio/static/src/scss/hover.scss',
             'pb_formula_studio/static/src/scss/compare.scss',
             'pb_formula_studio/static/src/scss/offer.scss',
+            # WDGAP W2-C — the take-home calculator card.
+            'pb_formula_studio/static/src/scss/take_home.scss',
             'pb_formula_studio/static/src/scss/shortcuts.scss',
             'pb_formula_studio/static/src/scss/snippet.scss',
             'pb_formula_studio/static/src/scss/reclass.scss',
@@ -105,6 +107,11 @@
             'pb_formula_studio/static/src/js/payslip_document_tools.js',
             'pb_formula_studio/static/src/js/payslip_document_designer.js',
             'pb_formula_studio/static/src/js/value_format.js',
+            # WDGAP PR-A — the flowchart calculator (with date functions), a
+            # self-contained module the node date battery also loads.
+            'pb_formula_studio/static/src/js/formula_flow_eval.js',
+            # WDGAP W2-C — the take-home card; before the studio that imports it.
+            'pb_formula_studio/static/src/js/take_home.js',
             'pb_formula_studio/static/src/js/formula_studio.js',
             'pb_formula_studio/static/src/js/studio_experience.js',
             'pb_formula_studio/static/src/js/formula_config_views.js',
@@ -122,6 +129,7 @@
             'pb_formula_studio/static/src/scss/connection_desk.scss',
             'pb_formula_studio/static/src/xml/mapping_studio.xml',
             'pb_formula_studio/static/src/xml/studio.xml',
+            'pb_formula_studio/static/src/xml/take_home.xml',
             'pb_formula_studio/static/src/xml/payslip_document_designer.xml',
             'pb_formula_studio/static/src/xml/studio_experience.xml',
             'pb_formula_studio/static/src/scss/studio_experience.scss',

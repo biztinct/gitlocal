@@ -13,7 +13,7 @@ from odoo import fields, models
 from odoo.exceptions import AccessError, MissingError
 
 from .application_payroll_source import (
-    checked_read, readable_field, HISTORY_START_UNCONFIRMED_REASON)
+    application_memo, checked_read, readable_field, HISTORY_START_UNCONFIRMED_REASON)
 
 
 EMPLOYEE_FIELDS = (
@@ -75,6 +75,21 @@ DOMAIN_SOURCES = {
     'leave.annual.balance': ('Annual leave balance as of period end', 'days', 'hr.leave.allocation'),
     'leave.sick.balance': ('Sick leave balance as of period end', 'days', 'hr.leave.allocation'),
 }
+#: WDGAP W2-A — the posted running totals of a money/quantity component, and the
+#: catalogue wording of each (the established "Posted year-to-date: " pattern).
+HISTORY_KINDS = (
+    ('history.ytd.', 'Posted year-to-date: '),
+    ('history.qtd.', 'Posted quarter-to-date: '),
+    ('history.mtd.', 'Posted month-to-date: '),
+)
+HISTORY_PREFIXES = tuple(prefix for prefix, _words in HISTORY_KINDS)
+#: Kinds of pay run whose payslips are paid ON TOP of the period's regular
+#: payslip (`pb_payruns` PB_RUN_KINDS, read by name only — this engine does
+#: not depend on that module). Their payslips count once in a running total
+#: and are not links of the unbroken run of periods.
+ADDITIONAL_RUN_KINDS = ('topup', 'extra')
+#: Memo keys (inside the scheme's request memo, `_application_memo`).
+HISTORY_PEOPLE_KEY = ('pb_history_people',)
 
 
 def source_result(value=None, status='missing', records=None, **evidence):
@@ -186,12 +201,16 @@ class HrFormulaConfigApplicationDomains(models.Model):
                     'certification_zero_allowed': False,
                 }
             for rule in config.rule_ids.filtered(lambda r: r.value_kind in ('money', 'quantity')):
-                result['history.ytd.' + rule.code] = {
-                    'label': 'Posted year-to-date: ' + rule.name,
-                    'unit': rule.value_kind, 'model': 'hr.payslip',
-                    'component_code': rule.code, 'writable': False,
-                    'requires_complete_history': True,
-                }
+                # WDGAP W2-A: year-to-date follows the scheme's tax year; the
+                # quarter is a quarter of that tax year; month-to-date is the
+                # earlier finished payslips of the same calendar month.
+                for prefix, words in HISTORY_KINDS:
+                    result[prefix + rule.code] = {
+                        'label': words + rule.name,
+                        'unit': rule.value_kind, 'model': 'hr.payslip',
+                        'component_code': rule.code, 'writable': False,
+                        'requires_complete_history': True,
+                    }
         return result
 
     def _application_domain_values(self, employee, contract, date_from, date_to):
@@ -223,7 +242,7 @@ class HrFormulaConfigApplicationDomains(models.Model):
                     review_note=rules[:1].application_source_note)
                 continue
             if not (key in DOMAIN_SOURCES or key in RELATED_FIELDS
-                    or key.startswith(('employee.', 'contract.', 'bank.', 'history.ytd.'))):
+                    or key.startswith(('employee.', 'contract.', 'bank.') + HISTORY_PREFIXES)):
                 continue
             try:
                 result[key] = self._application_domain_value(
@@ -288,7 +307,7 @@ class HrFormulaConfigApplicationDomains(models.Model):
             return self._application_document_value(key, employee, end)
         if key.startswith('awards.'):
             return self._application_award_value(key, employee, start, end)
-        if key.startswith('history.ytd.'):
+        if key.startswith(HISTORY_PREFIXES):
             return self._application_history_value(key, employee, contract, start)
         if key.startswith('leave.'):
             if not hasattr(employee, '_pb_policy_payroll_metrics'):
@@ -475,56 +494,206 @@ class HrFormulaConfigApplicationDomains(models.Model):
                              consumption_required=True, currency=self.currency_id.name)
 
     def _application_history_value(self, key, employee, contract, start):
-        code = key[len('history.ytd.'):]
-        if code not in set(self.rule_ids.mapped('code')):
+        """A posted running total of one component for one person, before the
+        period that starts on `start` (application-data runs only).
+
+        * ``history.ytd.<CODE>`` — since the first day of the scheme's TAX year
+          (WDGAP W2-A; January = the calendar year, exactly as before);
+        * ``history.qtd.<CODE>`` — since the first day of the quarter of that
+          tax year;
+        * ``history.mtd.<CODE>`` — the finished payslips of the same calendar
+          month: its earlier periods, and a finished payslip of the month that
+          starts on or after this period's start (an Extra run or a top-up
+          reads the month's regular payslip here).
+
+        Unchanged rules (UPDATES U41/D27): the lower bound is the later of the
+        window start and the joining date; a blank joining date never gives a
+        confident 0; the periods before `start` must join with no gap. A
+        payslip of an Extra run or a top-up is a finished payslip like any
+        other and counts ONCE, beside the regular period it belongs to (it is
+        not a link of the unbroken run of periods).
+
+        The payslips are read once per chunk of people (`_pb_history_rows`),
+        not one search per person."""
+        prefix = key[:len('history.ytd.')]
+        code = key[len(prefix):]
+        # The scheme's codes, once per request memo (the same memo entry the
+        # dependency walk keeps); outside a memo, read as before.
+        codes = self._application_memoize(
+            ('rule_codes',), lambda: {r.id: r.code for r in self.rule_ids})
+        if code not in set(codes.values()):
             return source_result(reason='history_component_not_in_scheme')
-        year_start = start.replace(month=1, day=1)
+        month_mode = prefix == 'history.mtd.'
+        if prefix == 'history.qtd.':
+            window_start = self._pb_tax_quarter_bounds(start)[0]
+            zero_reason = 'no_prior_service_days_this_quarter'
+        elif month_mode:
+            window_start = start.replace(day=1)
+            zero_reason = 'no_prior_service_days_this_month'
+        else:
+            window_start = self._pb_tax_year_bounds(start)[0]
+            zero_reason = 'no_prior_service_days_this_year'
         start_known = bool(employee.date_of_joining)
         joined = employee.date_of_joining or (contract.date_start if contract else False)
         if not joined:
             return source_result(reason='employment_start_required_for_history_coverage')
-        lower = max(year_start, joined)
+        lower = max(window_start, joined)
         if lower >= start:
-            if not start_known and joined > year_start:
+            if not start_known and joined > window_start:
                 # UPDATES P5b (D27): the contract start alone (a contract made
                 # at go-live) cannot prove nothing was paid earlier this year.
-                # Not known — never a confident 0. A January period (the year
-                # starts with it) keeps its legitimate 0.
+                # Not known — never a confident 0. A period the window starts
+                # with (January for a calendar tax year) keeps its legitimate 0.
                 return source_result(reason=HISTORY_START_UNCONFIRMED_REASON,
                                      why='employment_start_unconfirmed_for_history')
-            return source_result(0.0, 'zero_confirmed', reason='no_prior_service_days_this_year')
-        slips = self.env['hr.payslip'].search([
-            ('employee_id', '=', employee.id), ('company_id', '=', self.company_id.id),
-            ('formula_config_id', '=', self.id), ('state', '=', 'done'),
-            ('date_from', '<', start), ('date_to', '>=', lower),
-        ], order='date_from, date_to, id')
+            if not month_mode:
+                return source_result(0.0, 'zero_confirmed', reason=zero_reason)
+        rows = self._pb_history_rows(employee, start)
+        before = [r for r in rows if r['date_from'] < start and r['date_to'] >= lower]
+        same = []
+        if month_mode:
+            # Never the payslip being computed: that one is not finished.
+            month_last = _month_last(start)
+            same = [r for r in rows if r['date_from'] >= start and r['date_to'] <= month_last]
+            if lower >= start and not same:
+                return source_result(0.0, 'zero_confirmed', reason=zero_reason)
+        slips = self.env['hr.payslip'].browse([r['id'] for r in before + same])
         if not slips:
             return source_result(reason='posted_history_or_opening_balances_missing')
-        cursor, total = lower, 0.0
-        for slip in slips:
-            if slip.date_to >= start or slip.date_from < lower:
+        cursor, total, additional = lower, 0.0, 0
+        for row in before:
+            if row['date_to'] >= start or row['date_from'] < lower:
                 return source_result(status='conflict', records=slips,
                                      reason='posted_period_straddles_history_boundary')
-            if slip.date_from != cursor:
-                return source_result(status='conflict' if slip.date_from < cursor else 'missing',
+            extra = row['kind'] in ADDITIONAL_RUN_KINDS
+            if not extra and row['date_from'] != cursor:
+                return source_result(status='conflict' if row['date_from'] < cursor else 'missing',
                                      records=slips, reason='history_overlap_or_gap',
-                                     expected_from=str(cursor), actual_from=str(slip.date_from))
-            try:
-                payload = json.loads(slip.formula_computed_values or '{}')
-                value = payload[code]
-            except (ValueError, KeyError, TypeError):
-                return source_result(records=slips, reason='posted_component_not_available', component=code)
-            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
-                return source_result(status='conflict', records=slips,
-                                     reason='posted_component_not_numeric', component=code)
+                                     expected_from=str(cursor), actual_from=str(row['date_from']))
+            value, stop = self._pb_history_amount(row, code, slips)
+            if stop:
+                return stop
             total += value
-            cursor = slip.date_to + timedelta(days=1)
-        if cursor != start:
+            if extra:
+                additional += 1
+            else:
+                cursor = row['date_to'] + timedelta(days=1)
+        if lower < start and cursor != start:
             return source_result(records=slips, reason='posted_history_incomplete',
                                  covered_until=str(cursor - timedelta(days=1)))
-        return source_result(total, 'resolved', slips, component=code,
-                             period_from=str(lower), period_to=str(start - timedelta(days=1)),
-                             coverage='complete_contiguous_posted_periods')
+        for row in same:
+            value, stop = self._pb_history_amount(row, code, slips)
+            if stop:
+                return stop
+            total += value
+            additional += 1
+        evidence = {'component': code, 'period_from': str(lower),
+                    'period_to': str(start - timedelta(days=1)),
+                    'coverage': 'complete_contiguous_posted_periods'}
+        # Extra keys only where they are true, so a calendar-year answer with
+        # no Extra run or top-up is the old answer to the byte.
+        if same:
+            evidence['period_to'] = str(max(r['date_to'] for r in same))
+        if additional:
+            evidence['additional_payslips'] = additional
+        if not month_mode and self._pb_tax_year_month() != 1:
+            evidence['tax_year'] = self._pb_tax_year_label(start)
+        return source_result(total, 'resolved', slips, **evidence)
+
+    def _pb_history_amount(self, row, code, slips):
+        """`(value, None)` or `(None, the answer that stops)` — one finished
+        payslip's stored amount of `code`, with the old reader's checks."""
+        try:
+            payload = row['payload']
+            if payload is _UNPARSED:
+                payload = row['payload'] = json.loads(row['text'] or '{}')
+            value = payload[code]
+        except (ValueError, KeyError, TypeError):
+            return None, source_result(records=slips, reason='posted_component_not_available',
+                                       component=code)
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+            return None, source_result(status='conflict', records=slips,
+                                       reason='posted_component_not_numeric', component=code)
+        return value, None
+
+    # ------------------------------------------------------------------
+    # WDGAP W2-A — one batch read per chunk of people, on the request memo
+    # ------------------------------------------------------------------
+    def _pb_history_prefetch(self, employee_ids):
+        """Tell each scheme's request memo which people the current call is
+        about, so the first running-total question reads all their finished
+        payslips at once. Outside a memo it does nothing."""
+        ids = {int(i) for i in (employee_ids or []) if i}
+        if not ids:
+            return
+        for config in self:
+            memo = application_memo(config.env, config.id)
+            if memo is not None:
+                memo.setdefault(HISTORY_PEOPLE_KEY, set()).update(ids)
+
+    def _pb_history_rows(self, employee, start):
+        """The person's finished payslips of this scheme and company that a
+        running total before `start` can need (ending on or after the tax
+        year's first day, starting up to the month's last day), in the old
+        reader's order (date_from, date_to, id).
+
+        Inside a request memo, the payslips of every person the call named
+        (`_pb_history_prefetch`) are read with ONE search and ONE column read
+        and kept for the rest of the call (precedent: pb_updates `_ledger`);
+        outside one, only this person's. The search runs as the caller, so
+        access rights, record rules and the company filter are exactly those
+        of the old per-person search."""
+        self.ensure_one()
+        memo = application_memo(self.env, self.id)
+        if memo is None:
+            return self._pb_history_read([employee.id], start).get(employee.id, [])
+        cache = memo.setdefault((self.env.uid, self.env.su, 'pb_history_rows', start), {})
+        if employee.id not in cache:
+            wanted = (set(memo.get(HISTORY_PEOPLE_KEY) or ()) | {employee.id}) - set(cache)
+            found = self._pb_history_read(sorted(wanted), start)
+            for emp_id in wanted:
+                cache[emp_id] = found.get(emp_id, [])
+        return cache[employee.id]
+
+    def _pb_history_read(self, emp_ids, start):
+        """`{employee id: [row]}` for `emp_ids`; see `_pb_history_rows`."""
+        first = self._pb_tax_year_bounds(start)[0]
+        Slip = self.env['hr.payslip']
+        ids = Slip.search([
+            ('employee_id', 'in', list(emp_ids)), ('company_id', '=', self.company_id.id),
+            ('formula_config_id', '=', self.id), ('state', '=', 'done'),
+            ('date_to', '>=', first), ('date_from', '<=', _month_last(start)),
+        ]).ids
+        out = {}
+        if not ids:
+            return out
+        Slip.flush_model(['employee_id', 'date_from', 'date_to', 'formula_computed_values',
+                          'payslip_run_id'])
+        Run = self.env['hr.payslip.run']
+        kind = 'NULL'
+        if 'pb_run_kind' in Run._fields:
+            Run.flush_model(['pb_run_kind'])
+            kind = 'r.pb_run_kind'
+        self.env.cr.execute("""
+            SELECT s.id, s.employee_id, s.date_from, s.date_to, s.formula_computed_values, %s
+              FROM hr_payslip s
+              LEFT JOIN hr_payslip_run r ON r.id = s.payslip_run_id
+             WHERE s.id = ANY(%%s)""" % kind, [ids])
+        for sid, emp_id, dfrom, dto, text, run_kind in sorted(
+                self.env.cr.fetchall(), key=lambda r: (r[2], r[3], r[0])):
+            out.setdefault(emp_id, []).append({
+                'id': sid, 'date_from': dfrom, 'date_to': dto, 'text': text,
+                'payload': _UNPARSED, 'kind': run_kind or ''})
+        return out
+
+
+#: A row's JSON is parsed once, the first time one of its components is asked for.
+_UNPARSED = object()
+
+
+def _month_last(day):
+    return (day.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+
 
 
 class HrFormulaRuleApplicationOwner(models.Model):

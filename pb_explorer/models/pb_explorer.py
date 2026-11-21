@@ -24,7 +24,10 @@ Doctrine
 """
 
 import calendar
+import contextvars
+import hashlib
 import logging
+import re
 import time
 from datetime import date
 
@@ -208,7 +211,24 @@ _FILTERS = {
 # the ordering left to the registries above. Pre-existing since this board
 # shipped; closed in LOOK P4 because its own hero depends on it.
 
+#
+# WDGAP QF2 — a scheduled email is built in a job, with no web request to
+# read a language from, so these module-level `_()` calls fell back to English
+# and logged "no translation language detected" once per word. The sender
+# sets `WORDS_LANG` to the recipient's language around the build; the
+# platform's translator reads a local called `context` from the calling frame
+# first (`odoo/tools/translate.py` `_get_lang`), so each helper names one.
+# Unset (every screen), `context` is None and nothing changes.
+WORDS_LANG = contextvars.ContextVar('pb_explorer_words_lang', default=None)
+
+
+def _words_context():
+    lang = WORDS_LANG.get()
+    return {'lang': lang} if lang else None
+
+
 def _measure_words():
+    context = _words_context()  # noqa: F841 — read by `_()` from this frame
     return {
         'net': _("Net pay"), 'gross': _("Gross pay"),
         'basic': _("Basic salary"), 'allowances': _("Allowances"),
@@ -223,6 +243,7 @@ def _measure_words():
 
 
 def _dimension_words():
+    context = _words_context()  # noqa: F841 — read by `_()` from this frame
     return {
         'department_id': _("Department"), 'division_id': _("Division"),
         'division': _("Division"), 'category_type': _("Component type"),
@@ -234,11 +255,13 @@ def _dimension_words():
 
 
 def _grain_words():
+    context = _words_context()  # noqa: F841 — read by `_()` from this frame
     return {'month': _("Month"), 'quarter': _("Quarter"), 'year': _("Year"),
             'run': _("Pay run"), 'none': _("No split")}
 
 
 def _kind_words():
+    context = _words_context()  # noqa: F841 — read by `_()` from this frame
     return {'regular': _("Regular"), 'mid_cycle': _("Mid-month advance"),
             'end_cycle': _("End of month"), 'full_final': _("Final settlement"),
             '': _("Not from a scheme")}
@@ -254,6 +277,28 @@ def _dimension_word(key):
 
 def _grain_word(key):
     return _grain_words().get(key) or _GRAINS.get(key, {}).get('label', key)
+
+
+# ------------------------------------------------------ run-time breakdowns
+# FS-8. Another module may add breakdowns AT RUN TIME (`_pbx_extra_dims`) —
+# for instance a field somebody made on a live database, with no upgrade and
+# no restart. They are answered per call, never kept in a module constant or
+# a cache that outlives the request, and always on the EMPLOYEE grain: the
+# value is joined to `pb_fact_emp` by the module that offers it
+# (`_pbx_extra_source`). A key of one of them always contains ':' — that is
+# how a stored key that is no longer offered (deleted, hidden, unmarked) is
+# told from a typo: it falls back to NO split, never to a different one.
+_EXTRA_KEY = re.compile(r'^[a-z_]+:[A-Za-z0-9_.:]{1,120}$')
+
+
+def _is_extra_key(key):
+    return isinstance(key, str) and bool(_EXTRA_KEY.match(key))
+
+
+def _extra_col(key):
+    """The column a run-time key is carried in, inside the stand-in table.
+    Short and fixed, whatever the key: identifiers stop at 63 characters."""
+    return 'pbx_' + hashlib.md5(key.encode('utf-8')).hexdigest()[:12]
 
 
 _CURRENCY_MODES = ('group', 'own')
@@ -377,6 +422,95 @@ class PbExplorer(models.AbstractModel):
         # elsewhere: they see nothing, and the screen says why.
         return tuple(self._visible_companies(chosen)) or (0,)
 
+    # ------------------------------------------------- run-time breakdowns
+    # FS-8 hooks. Each answers NOTHING here, so without a module that fills
+    # them in the board is exactly what it was. Every one is asked as the
+    # REAL reader: what may be split by is decided per person, on the server,
+    # in the query path — never by the picker alone.
+    @api.model
+    def _pbx_extra_dims(self):
+        """`{key: {'label', 'sub', 'icon'}}` — breakdowns (and filters) the
+        current reader may use, beyond the built-in ones. Keys contain ':'."""
+        return {}
+
+    @api.model
+    def _pbx_extra_group(self):
+        """`{'title', 'note'}` — the heading and the one help line the
+        pickers show above those breakdowns."""
+        return {}
+
+    @api.model
+    def _pbx_extra_source(self, keys, run_ids, alias):
+        """SQL text standing in for `pb_fact_emp` (`… AS <alias>`), carrying
+        every column of it plus one text column per key
+        (`_extra_col(key)`). Fully bound — no placeholder may be left in it.
+        `None` when the keys cannot be answered."""
+        return None
+
+    @api.model
+    def _pbx_extra_labels(self, key, values):
+        """`{value: label}` for the raw values a breakdown returned."""
+        return {}
+
+    @api.model
+    def _pbx_extra_options(self, key):
+        """`[{'value', 'label'}]` a filter on `key` may pick from."""
+        return []
+
+    @api.model
+    def _pbx_extra_gone(self, keys):
+        """The keys whose source is gone for good (deleted, not merely hidden
+        from this reader): a saved view stops carrying them."""
+        return []
+
+    @api.model
+    def _pbx_dim_meta(self, key):
+        """The registry entry of a built-in breakdown, or the run-time one."""
+        if key in _DIMENSIONS:
+            return _DIMENSIONS[key]
+        if _is_extra_key(key):
+            meta = self._pbx_extra_dims().get(key)
+            if meta:
+                return dict(meta, extra=True)
+        return {}
+
+    def _pbx_dim_word(self, key):
+        """A breakdown's name in the reader's language — never its key."""
+        if key in _DIMENSIONS:
+            return _dimension_word(key)
+        return self._pbx_dim_meta(key).get('label') or _('Total')
+
+    @staticmethod
+    def _pbx_extra_keys(spec):
+        """The run-time keys a cleaned spec uses — its breakdown and its
+        filters — in a fixed order, so every statement agrees on them."""
+        keys = set()
+        if _is_extra_key(spec.get('dimension')):
+            keys.add(spec['dimension'])
+        keys.update(k for k in (spec.get('filters') or {}) if _is_extra_key(k))
+        return sorted(keys)
+
+    def _pbx_from(self, spec, table, run_ids, alias=None):
+        """What a statement reads FROM: the fact table itself, or — when the
+        spec uses a run-time breakdown — the stand-in that carries it. Only
+        the employee grain can carry one (`_resolve_table` routes there)."""
+        alias = alias or 'pb_fact_%s' % table
+        keys = self._pbx_extra_keys(spec) if table == 'emp' else []
+        if keys:
+            source = self._pbx_extra_source(keys, run_ids, alias)
+            if not source:
+                # Unreachable through `_clean_spec`, which keeps only keys
+                # that are offered right now. Said in words, never a SQL error.
+                raise UserError(_("This breakdown is not available right now. "
+                                  "Open the board again."))
+            # The text is already bound; it is placed into statements that
+            # are executed WITH parameters, so a literal percent sign must not
+            # be read as a placeholder.
+            return source.replace('%', '%%')
+        if alias == 'pb_fact_%s' % table:
+            return 'pb_fact_%s' % table
+        return 'pb_fact_%s %s' % (table, alias)
+
     # -------------------------------------------------------------- entry
     @api.model
     def resolve_spec(self, lens=None, spec=None):
@@ -424,13 +558,35 @@ class PbExplorer(models.AbstractModel):
         if not isinstance(spec, dict):
             spec = {}
         measure = self._pick(spec, 'measure', _MEASURES, 'net')
-        dimension = self._pick(spec, 'dimension', _DIMENSIONS, 'department_id')
+        # FS-8 — a run-time breakdown is kept only when it is offered to THIS
+        # reader right now (`_pbx_extra_dims` asks the field's own "who can
+        # see it"); otherwise the answer has NO split rather than a different
+        # one, and nothing of the field reaches the payload.
+        raw_dim = spec.get('dimension')
+        raw_filters = spec.get('filters')
+        raw_filters = raw_filters if isinstance(raw_filters, dict) else {}
+        extra = self._pbx_extra_dims() if (
+            _is_extra_key(raw_dim)
+            or any(_is_extra_key(k) for k in raw_filters)) else {}
+        if _is_extra_key(raw_dim):
+            dimension = raw_dim if raw_dim in extra else 'none'
+        else:
+            dimension = self._pick(spec, 'dimension', _DIMENSIONS, 'department_id')
         grain = self._pick(spec, 'grain', _GRAINS, 'month')
         chart = self._pick(spec, 'chart', _CHARTS, 'column')
 
         filters = {}
-        raw_filters = spec.get('filters')
-        for key, raw in (raw_filters if isinstance(raw_filters, dict) else {}).items():
+        for key, raw in raw_filters.items():
+            if _is_extra_key(key):
+                if key not in extra:
+                    continue
+                vals = raw if isinstance(raw, (list, tuple)) else [raw]
+                vals = [str(v)[:200] for v in vals
+                        if isinstance(v, (str, int)) and not isinstance(v, bool)
+                        and v not in (None, '')]
+                if vals:
+                    filters[key] = vals
+                continue
             if key not in _FILTERS:
                 continue
             _col, typ = _FILTERS[key]
@@ -559,6 +715,21 @@ class PbExplorer(models.AbstractModel):
                      or 'split' in spec['filters'])
         needs_line = (d in _T1_ONLY or m == 'component'
                       or 'code' in spec['filters'])
+        # FS-8 — a run-time breakdown belongs to a PERSON (their record, or
+        # the contract their payslip was made with), so it lives on the
+        # employee grain like the job position does.
+        extra = self._pbx_extra_keys(spec)
+        if extra:
+            if needs_line:
+                raise UserError(_(
+                    "“%(measure)s” cannot be split or filtered by “%(dim)s”. "
+                    "That field belongs to a person, while component-level "
+                    "figures are counted per pay component — one person "
+                    "appears in many components. Pick another measure, or "
+                    "take the component off the filters.",
+                    measure=_measure_word(m),
+                    dim=self._pbx_dim_word(d if _is_extra_key(d) else extra[0])))
+            needs_emp = True
         if needs_emp and needs_line:
             raise UserError(_(
                 "“%(measure)s” cannot be broken down by “%(dim)s”. Headcount "
@@ -647,16 +818,18 @@ class PbExplorer(models.AbstractModel):
         That sentence is on the screen next to the number, because "headcount"
         is the figure people most often quietly disagree about.
         """
-        sub = dict(spec, measure='headcount')
+        # The breakdown does not change who is behind the figures; only the
+        # filters do — so a run-time breakdown is not joined in for nothing.
+        sub = dict(spec, measure='headcount', dimension='none')
         where, params = self._where(sub, 'emp', run_ids)
         self.env.cr.execute("""
             SELECT COUNT(*), COALESCE(SUM(fte), 0) FROM (
                 SELECT COALESCE(NULLIF(person_id, 0), employee_id) AS person,
                        MAX(fte) AS fte
-                  FROM pb_fact_emp WHERE {where}
+                  FROM {src} WHERE {where}
                  GROUP BY 1
             ) t
-        """.format(where=where), params)
+        """.format(where=where, src=self._pbx_from(sub, 'emp', run_ids)), params)
         people, fte = self.env.cr.fetchone() or (0, 0.0)
         return {'people': int(people or 0), 'fte': round(float(fte or 0.0), 1)}
 
@@ -692,7 +865,7 @@ class PbExplorer(models.AbstractModel):
         return {
             'measure_label': label,
             'measure_kind': m.get('kind', 'money'),
-            'dimension_label': _dimension_word(spec['dimension']),
+            'dimension_label': self._pbx_dim_word(spec['dimension']),
             'grain_label': _grain_word(spec['grain']),
         }
 
@@ -793,6 +966,13 @@ class PbExplorer(models.AbstractModel):
         if spec.get('advances', 'main') == 'main':
             clauses.append('COALESCE(is_advance, FALSE) = FALSE')
         for key, vals in spec['filters'].items():
+            if _is_extra_key(key):
+                # FS-8 — carried by the stand-in table `_pbx_from` reads, which
+                # exists on the employee grain only (`_resolve_table`).
+                if table == 'emp':
+                    clauses.append('%s IN %%s' % _extra_col(key))
+                    params.append(tuple(str(v) for v in vals))
+                continue
             col, typ = _FILTERS[key]
             if key == 'run_id':          # already in the run scope
                 continue
@@ -868,6 +1048,9 @@ class PbExplorer(models.AbstractModel):
             # path: the distinct pairs are counted in dozens.
             return ("(COALESCE(config_id, 0)::text || ':' "
                     "|| COALESCE(company_id, 0)::text)", 'company_id')
+        if _is_extra_key(d):
+            col = _extra_col(d)
+            return col, col
         col = _DIMENSIONS[d].get('col', d)
         return col, col
 
@@ -886,6 +1069,7 @@ class PbExplorer(models.AbstractModel):
         if limit is not None:
             sub['limit'] = limit
         where, params = self._where(sub, table, run_ids)
+        src = self._pbx_from(sub, table, run_ids)
         dim_col, _d = self._dim_expr(spec, table)
         time_col = self._time_expr(spec)
         meas = _MEASURES[measure_key]
@@ -902,12 +1086,12 @@ class PbExplorer(models.AbstractModel):
                 SELECT dkey, tkey, ckey, SUM(fte) AS val FROM (
                     SELECT {dim} AS dkey, {tim} AS tkey, {cur} AS ckey,
                            {person} AS person, MAX(fte) AS fte
-                      FROM pb_fact_{tbl}
+                      FROM {src}
                      WHERE {where}
                      GROUP BY 1, 2, 3, 4
                 ) t GROUP BY 1, 2, 3
             """.format(dim=dim_col, tim=time_col, cur=cur_col, person=person,
-                       tbl=table, where=where)
+                       src=src, where=where)
         elif agg_kind in ('charged_to', 'charged_from'):
             # GROUP P5 — a charge is a property of the PERSON'S MONTH, not of
             # each component row they appear on, so it is deduped per person
@@ -918,23 +1102,23 @@ class PbExplorer(models.AbstractModel):
                 SELECT dkey, tkey, ckey, SUM(val) AS val FROM (
                     SELECT {dim} AS dkey, {tim} AS tkey, {cur} AS ckey,
                            {person} AS person, MAX({col}) AS val
-                      FROM pb_fact_{tbl}
+                      FROM {src}
                      WHERE {where}
                      GROUP BY 1, 2, 3, 4
                 ) t GROUP BY 1, 2, 3
             """.format(dim=dim_col, tim=time_col, cur=cur_col, person=person,
-                       col=agg_kind, tbl=table, where=where)
+                       col=agg_kind, src=src, where=where)
         else:
             agg = ('COUNT(DISTINCT %s)' % person
                    if agg_kind in ('distinct_person', 'distinct_employee')
                    else 'SUM(amount)')
             sql = """
                 SELECT {dim} AS dkey, {tim} AS tkey, {cur} AS ckey, {agg} AS val
-                  FROM pb_fact_{tbl}
+                  FROM {src}
                  WHERE {where}
                  GROUP BY 1, 2, 3
             """.format(dim=dim_col, tim=time_col, cur=cur_col, agg=agg,
-                       tbl=table, where=where)
+                       src=src, where=where)
         self.env.cr.execute(sql, params)
         rows = self.env.cr.fetchall()
         return self._dim_remap(spec, rows), meas, sub['limit']
@@ -947,7 +1131,7 @@ class PbExplorer(models.AbstractModel):
         aggregate already returned are rewritten to their country or their
         group and re-bucketed here, over at most a few dozen distinct values.
         """
-        derive = _DIMENSIONS[spec['dimension']].get('derive')
+        derive = _DIMENSIONS.get(spec['dimension'], {}).get('derive')
         if not derive:
             return rows
 
@@ -1242,7 +1426,11 @@ class PbExplorer(models.AbstractModel):
         """
         num_key, den_key = self._derived_pair(spec)
         wide = _UNCAPPED
-        num = self._query_one(spec, 'line', run_ids, num_key, limit=wide)
+        # FS-8 — a run-time breakdown exists on the employee grain only, and
+        # money there is the same money (roll-ups skipped on both grains), so
+        # the numerator moves with it. Every built-in question is unchanged.
+        num_table = 'emp' if self._pbx_extra_keys(spec) else 'line'
+        num = self._query_one(spec, num_table, run_ids, num_key, limit=wide)
         den = self._query_one(spec, 'emp', run_ids, den_key, limit=wide)
         den_map = {(s['key'], c['key']): v
                    for s in den['series']
@@ -1322,6 +1510,12 @@ class PbExplorer(models.AbstractModel):
         ranked = sorted(totals, key=lambda k: abs(totals[k]), reverse=True)
         truncated = max(0, len(ranked) - limit)
         ranked = ranked[:limit]
+        # FS-8 — a run-time breakdown over time (a date by month, quarter or
+        # year) reads in calendar order; the largest are still the ones kept,
+        # and a value that is not a date ("Not filled in", "—") comes last.
+        if _is_extra_key(spec['dimension']) \
+                and self._pbx_dim_meta(spec['dimension']).get('order') == 'key':
+            ranked.sort(key=lambda k: (str(k or '').startswith('_'), str(k or '')))
 
         labels = self._dim_labels(spec['dimension'], ranked)
         series = []
@@ -1643,6 +1837,8 @@ class PbExplorer(models.AbstractModel):
             sub['measure'] = derived[0]
             measure = derived[0]
         table = _MEASURES[measure].get('table') or 'line'
+        if self._pbx_extra_keys(sub):
+            table = 'emp'        # FS-8: an own-field filter lives there
         run_ids = self._period_run_ids(sub)
         if not run_ids:
             return {}
@@ -1685,6 +1881,11 @@ class PbExplorer(models.AbstractModel):
 
     def _dim_labels(self, dimension, keys):
         """Display labels read through the ORM so translated names are correct."""
+        if _is_extra_key(dimension):
+            # FS-8 — the module that offers the breakdown names its values.
+            words = self._pbx_extra_labels(dimension, list(keys)) or {}
+            return {k: words.get(k) or words.get(str(k)) or str(k or '')
+                    for k in keys}
         meta = _DIMENSIONS[dimension]
         if dimension == 'none':
             return {k: _('Total') for k in keys}
@@ -1831,7 +2032,7 @@ class PbExplorer(models.AbstractModel):
                               for g in self.env.companies.sudo()
                               .mapped('pb_group_id')]
 
-        return {
+        out = {
             'measures': [{'value': k, 'label': _measure_word(k),
                           'kind': v.get('kind', 'money')}
                          for k, v in _MEASURES.items()],
@@ -1882,7 +2083,28 @@ class PbExplorer(models.AbstractModel):
             'trail': self._trail(self._clean_spec({})),
             'lenses': self._lenses(),
             'classic': self._classic(),
+            # WDGAP QF2 — the reader's saved views ride on the first paint.
+            'views': self.my_views(),
         }
+        # FS-8 — breakdowns another module offers THIS reader right now. They
+        # join the "By" list (marked as their own group) and the filter list;
+        # with none, the schema is exactly what it always was.
+        extra = self._pbx_extra_dims()
+        if extra:
+            group = self._pbx_extra_group() or {}
+            for key, meta in extra.items():
+                out['dimensions'].append({
+                    'value': key, 'label': meta.get('label') or key,
+                    'group': 'extra', 'sub': meta.get('sub') or '',
+                    'icon': meta.get('icon') or 'sparkles'})
+                out['options'][key] = self._pbx_extra_options(key) or []
+            out['extra_filters'] = [
+                {'key': key, 'label': meta.get('label') or key,
+                 'sub': meta.get('sub') or ''}
+                for key, meta in extra.items() if out['options'].get(key)]
+            out['extra_group'] = {'title': group.get('title') or '',
+                                  'note': group.get('note') or ''}
+        return out
 
     def _money_schema(self, currency_ids):
         """What the header chip has to say about money before anything loads."""
@@ -1981,6 +2203,10 @@ class PbExplorer(models.AbstractModel):
             elif dim in ('division', 'cycle', 'kind'):
                 clauses.append('fe.%s = %%s' % _DIMENSIONS[dim].get('col', dim))
                 params.append(str(series_key))
+            elif _is_extra_key(dim):
+                # FS-8 — the same stand-in table the chart was read from.
+                clauses.append('fe.%s = %%s' % _extra_col(dim))
+                params.append(str(series_key))
         if category_key not in (None, '', '_all'):
             cell['period'] = category_key
             g = spec['grain']
@@ -2007,6 +2233,10 @@ class PbExplorer(models.AbstractModel):
             clauses.append('COALESCE(fe.is_advance, FALSE) = FALSE')
         for key, vals in spec['filters'].items():
             if key in ('run_id',):
+                continue
+            if _is_extra_key(key):
+                clauses.append('fe.%s IN %%s' % _extra_col(key))
+                params.append(tuple(str(v) for v in vals))
                 continue
             if key == 'code':
                 clauses.append('pl.code IN %s')
@@ -2046,12 +2276,12 @@ class PbExplorer(models.AbstractModel):
               FROM hr_payslip_line pl
               JOIN hr_payslip p ON p.id = pl.slip_id
               LEFT JOIN hr_salary_rule_category c ON c.id = pl.category_id
-              JOIN pb_fact_emp fe
+              JOIN {fe}
                 ON fe.run_id = p.payslip_run_id
                AND fe.employee_id = p.employee_id
                AND fe.category_type = COALESCE(c.category_type, 'allowance')
              WHERE {where}
-        """.format(where=where)
+        """.format(where=where, fe=self._pbx_from(spec, 'emp', run_ids, 'fe'))
 
         self.env.cr.execute(
             "SELECT COUNT(*) FROM (SELECT p.employee_id %s GROUP BY p.employee_id) t"
@@ -2094,6 +2324,78 @@ class PbExplorer(models.AbstractModel):
 
     # ------------------------------------------------------------- export
     @api.model
+    def _export_rows(self, spec=None):
+        """The rows every download is made of, ONCE, so the CSV and the Excel
+        file cannot drift apart (WDGAP QF2 B).
+
+        One block per currency PART, each with its own heading and its own
+        total — never a total across two currencies (R3) — then the amounts
+        that could not be converted. The row cap is counted here and reported.
+        """
+        payload = self.query(spec)
+        period = payload.get('period') or {}
+        head_rows = [[_('Period'), period.get('label') or _('Everything')]]
+        if period.get('date_from') or period.get('date_to'):
+            head_rows.append([_('From'), period.get('date_from') or '',
+                              _('To'), period.get('date_to') or ''])
+        parts = payload.get('parts') or [payload]
+        blocks = []
+        written = 0
+        for part in parts:
+            currency = part.get('currency') or {}
+            rows = []
+            for s in part['series']:
+                if written >= _EXPORT_CAP:
+                    break
+                rows.append([s['label']] + list(s['values']) + [s['total']])
+                written += 1
+            blocks.append({
+                'currency': currency,
+                'currency_name': currency.get('name') or '',
+                'head': ([payload['dimension_label']]
+                         + [c['label'] for c in part['categories']]
+                         + [_('Total')]),
+                'rows': rows,
+                'grand_total': part.get('grand_total') or 0.0,
+            })
+        money = payload.get('money') or {}
+        unconverted = [[(row.get('currency') or {}).get('name') or '',
+                        row.get('period') or '', row.get('amount') or 0.0,
+                        row.get('note') or '']
+                       for row in (money.get('unconverted') or [])]
+        return {
+            'payload': payload,
+            'period': period,
+            'head_rows': head_rows,
+            'blocks': blocks,
+            'unconverted': unconverted,
+            'written': written,
+            'truncated': max(0, sum(len(p['series']) for p in parts) - written)
+                         + payload.get('truncated', 0),
+        }
+
+    @staticmethod
+    def _export_word(text):
+        """A screen word made safe for a file name: letters and digits of any
+        language kept, everything else one underscore."""
+        out = ''.join(c if c.isalnum() else '_' for c in (text or '').lower())
+        return '_'.join(p for p in out.split('_') if p)[:40] or 'report'
+
+    def _export_name(self, payload, ext):
+        """`payobook_net_pay_by_department_2026-04-01..2026-04-30.csv` — the
+        tenant's own product name, never a hard-coded brand, and the SCREEN
+        words for what is measured and how it is split, never the code keys
+        (FS-8: the file used to say `department_id`)."""
+        return '%s_%s_by_%s_%s.%s' % (
+            product_label(self.env).lower(),
+            self._export_word(payload.get('measure_label')
+                              or _measure_word(payload['spec']['measure'])),
+            self._export_word(payload.get('dimension_label')
+                              or self._pbx_dim_word(payload['spec']['dimension'])),
+            (payload.get('period') or {}).get('key')
+            or date.today().isoformat(), ext)
+
+    @api.model
     def export_csv(self, spec=None):
         """The current lens as CSV. Follows the house pattern (OT desk,
         pb_hr_workforce/models/ot_desk.py:393): a base64 payload the cockpit
@@ -2108,57 +2410,261 @@ class PbExplorer(models.AbstractModel):
         import csv
         import io
 
-        payload = self.query(spec)
+        ex = self._export_rows(spec)
+        payload = ex['payload']
         buf = io.StringIO()
         w = csv.writer(buf)
-        written = 0
         # THE PERIOD IS IN THE CONTENT, not only in the file name. A sheet that
         # names its months only in a name somebody can rename is a sheet whose
         # numbers stop being checkable the first time it is forwarded.
-        period = payload.get('period') or {}
-        w.writerow([_('Period'), period.get('label') or _('Everything')])
-        if period.get('date_from') or period.get('date_to'):
-            w.writerow([_('From'), period.get('date_from') or '',
-                        _('To'), period.get('date_to') or ''])
+        for row in ex['head_rows']:
+            w.writerow(row)
         w.writerow([])
-        parts = payload.get('parts') or [payload]
-        for part in parts:
-            currency = (part.get('currency') or {}).get('name') or ''
-            if currency:
+        for block in ex['blocks']:
+            if block['currency_name']:
                 # The money is named on the sheet, once per block. A column of
                 # numbers with no currency is the export equivalent of the bug
                 # this whole phase is about.
-                w.writerow([_('Amounts in %s', currency)])
-            head = [payload['dimension_label']] + [c['label'] for c in
-                                                   part['categories']]
-            w.writerow(head + [_('Total')])
-            for s in part['series']:
-                if written >= _EXPORT_CAP:
-                    break
-                w.writerow([s['label']] + list(s['values']) + [s['total']])
-                written += 1
+                w.writerow([_('Amounts in %s', block['currency_name'])])
+            w.writerow(block['head'])
+            for row in block['rows']:
+                w.writerow(row)
             w.writerow([])
-        money = payload.get('money') or {}
-        if money.get('unconverted'):
+        if ex['unconverted']:
             w.writerow([_('Not converted — no exchange rate on file')])
             w.writerow([_('Currency'), _('Period'), _('Amount'), _('Why')])
-            for row in money['unconverted']:
-                w.writerow([(row.get('currency') or {}).get('name') or '',
-                            row.get('period') or '', row.get('amount') or 0.0,
-                            row.get('note') or ''])
+            for row in ex['unconverted']:
+                w.writerow(row)
         data = buf.getvalue().encode('utf-8-sig')   # BOM: Excel reads UTF-8
         return {
             'ok': True,
             'csv_b64': base64.b64encode(data).decode('ascii'),
-            'filename': '%s_%s_by_%s_%s.csv' % (
-                product_label(self.env).lower(),
-                payload['spec']['measure'], payload['spec']['dimension'],
-                (payload.get('period') or {}).get('key')
-                or date.today().isoformat()),
-            'rows': written,
-            'truncated': max(0, sum(len(p['series']) for p in parts) - written)
-                         + payload.get('truncated', 0),
+            'filename': self._export_name(payload, 'csv'),
+            'rows': ex['written'],
+            'truncated': ex['truncated'],
             'cap': _EXPORT_CAP,
+        }
+
+    @api.model
+    def export_xlsx(self, spec=None, view_id=None):
+        """The current answer as an Excel workbook (WDGAP QF2 B1).
+
+        Cloned from `pb_payrun_results.export_grid`: openpyxl inside a try,
+        the same `{ok, file_b64, mimetype, filename}` return, downloaded by the
+        browser — nothing is stored, so this facade stays a reader.
+        """
+        self._require()
+        import base64
+        try:
+            import openpyxl  # noqa: F401
+        except Exception:                                   # noqa: BLE001
+            return {'ok': False,
+                    'msg': _("Excel files cannot be made on this server yet.")}
+        title, note = '', ''
+        if view_id:
+            try:
+                view = self.env['pb.explorer.view'].browse(int(view_id)).exists()
+                if view:
+                    view.check_access('read')
+                    title, note = view.name, view._pbx_period_label()
+            except (AccessError, TypeError, ValueError):
+                title, note = '', ''
+        data, ex = self._xlsx_bytes(spec, title=title, period_note=note)
+        return {
+            'ok': True,
+            'file_b64': base64.b64encode(data).decode('ascii'),
+            'mimetype': 'application/vnd.openxmlformats-officedocument'
+                        '.spreadsheetml.sheet',
+            'filename': self._export_name(ex['payload'], 'xlsx'),
+            'rows': ex['written'],
+            'truncated': ex['truncated'],
+        }
+
+    def _xlsx_number_format(self, currency, kind):
+        """A real number cell in the money's own number of decimals."""
+        if kind != 'money':
+            return '#,##0.##'
+        places = 2
+        if currency and currency.get('id'):
+            rec = self.env['res.currency'].sudo().with_context(
+                active_test=False).browse(currency['id']).exists()
+            if rec:
+                places = rec.decimal_places
+        return '#,##0' if not places else '#,##0.' + '0' * places
+
+    def _xlsx_filter_words(self, spec):
+        """"Department: Retail, Bread · Payroll scheme: Main" — the WHERE
+        clause in words, read through the same labels the chart uses."""
+        out = []
+        # FS-8 — every filter is named in SCREEN words. The ones that are not
+        # breakdowns used to print their code key ("basis: approved").
+        names = {'basis': _("Basis"), 'split': _("Where they work"),
+                 'employee_id': _("Employee"), 'cycle': _("Kind of run")}
+        for key, vals in (spec.get('filters') or {}).items():
+            if key in _DIMENSIONS or _is_extra_key(key):
+                try:
+                    labels = self._dim_labels(key, vals)
+                except Exception:                           # noqa: BLE001
+                    labels = {}
+                shown = [str(labels.get(v) or v) for v in vals]
+                name = self._pbx_dim_word(key)
+            elif key == 'cycle':
+                words = _kind_words()
+                shown = [words.get(str(v), str(v)) for v in vals]
+                name = names[key]
+            elif key == 'basis':
+                words = dict(self.env['pb.fact.run']._fields['basis']
+                             ._description_selection(self.env))
+                shown = [words.get(str(v), str(v)) for v in vals]
+                name = names[key]
+            elif key == 'split':
+                shown = [_("Paid in two places")]
+                name = names[key]
+            elif key == 'employee_id':
+                emps = self.env['hr.employee'].sudo().with_context(
+                    active_test=False).browse(
+                        [int(v) for v in vals if str(v).isdigit()]).exists()
+                shown = [e.display_name for e in emps] or [str(v) for v in vals]
+                name = names[key]
+            else:
+                shown = [str(v) for v in vals]
+                name = key
+            out.append('%s: %s' % (name, ', '.join(shown)))
+        return ' · '.join(out)
+
+    def _xlsx_bytes(self, spec=None, title='', period_note=''):
+        """(workbook bytes, export rows). Also used by the regular email, as
+        the recipient, so the attachment carries the recipient's own numbers."""
+        import io
+        from openpyxl import Workbook
+        from openpyxl.styles import Alignment, Font, PatternFill
+        from openpyxl.utils import get_column_letter
+
+        ex = self._export_rows(spec)
+        payload = ex['payload']
+        kind = payload.get('measure_kind', 'money')
+        wb = Workbook()
+        ws = wb.active
+        sheet = ''.join(c for c in (title or _('Explorer'))
+                        if c not in '[]:*?/\\')[:31].strip()
+        ws.title = sheet or 'Sheet1'
+        bold = Font(bold=True)
+        muted = Font(color='64748B')
+        head_fill = PatternFill('solid', fgColor='EDEAF8')
+        head_font = Font(bold=True, color='241F52')
+
+        r = 1
+        ws.cell(r, 1, title or _('%(measure)s by %(dimension)s',
+                                 measure=payload.get('measure_label') or '',
+                                 dimension=payload.get('dimension_label') or '')
+                ).font = Font(bold=True, size=14, color='241F52')
+        r += 1
+        period = ex['period']
+        clean = payload.get('spec') or {}
+        info = [
+            (_('Measure'), payload.get('measure_label') or ''),
+            (_('Split by'), payload.get('dimension_label') or ''),
+            (_('Over'), payload.get('grain_label') or ''),
+            (_('Period'), period_note or period.get('label') or _('Everything')),
+        ]
+        if period.get('date_from') or period.get('date_to'):
+            info.append((_('Dates'), _('%(start)s to %(end)s',
+                                       start=period.get('date_from') or '…',
+                                       end=period.get('date_to') or '…')))
+        info.append((_('Filters'), self._xlsx_filter_words(clean) or _('None')))
+        info.append((_('Made on'), fields.Datetime.context_timestamp(
+            self, fields.Datetime.now()).strftime('%Y-%m-%d %H:%M')))
+        for label, value in info:
+            ws.cell(r, 1, label).font = muted
+            ws.cell(r, 2, value)
+            r += 1
+        if ex['truncated']:
+            ws.cell(r, 1, _('Only the largest %(shown)s are shown; %(more)s '
+                            'more were left out.', shown=_MAX_SERIES,
+                            more=ex['truncated'])).font = Font(
+                                italic=True, color='92400E')
+            r += 1
+        r += 1
+
+        widest = 12
+        freeze = None
+        last_col = 2
+        for block in ex['blocks']:
+            fmt = self._xlsx_number_format(block['currency'], kind)
+            if block['currency_name']:
+                ws.cell(r, 1, _('Amounts in %s', block['currency_name'])
+                        ).font = bold
+                r += 1
+            for j, label in enumerate(block['head'], start=1):
+                cell = ws.cell(r, j, label)
+                cell.font = head_font
+                cell.fill = head_fill
+                cell.alignment = Alignment(
+                    horizontal='left' if j == 1 else 'right')
+            last_col = max(last_col, len(block['head']))
+            if freeze is None:
+                freeze = 'B%d' % (r + 1)
+            r += 1
+            width = len(block['head']) - 1        # value columns incl. Total
+            sums = [0.0] * width
+            for row in block['rows']:
+                ws.cell(r, 1, row[0])
+                widest = max(widest, len(str(row[0] or '')))
+                for j, value in enumerate(row[1:], start=2):
+                    num = float(value or 0.0)
+                    cell = ws.cell(r, j, num)
+                    cell.number_format = fmt
+                    if j - 2 < width:
+                        sums[j - 2] += num
+                r += 1
+            # This block's OWN total, in this block's own money (R3).
+            ws.cell(r, 1, _('Total')).font = bold
+            for j, num in enumerate(sums, start=2):
+                cell = ws.cell(r, j, round(num, 6))
+                cell.number_format = fmt
+                cell.font = bold
+            r += 2
+
+        if ex['unconverted']:
+            ws.cell(r, 1, _('Not converted — no exchange rate on file')
+                    ).font = bold
+            r += 1
+            for j, label in enumerate((_('Currency'), _('Period'),
+                                       _('Amount'), _('Why')), start=1):
+                cell = ws.cell(r, j, label)
+                cell.font = head_font
+                cell.fill = head_fill
+            r += 1
+            for name, when, amount, note in ex['unconverted']:
+                ws.cell(r, 1, name)
+                ws.cell(r, 2, when)
+                cell = ws.cell(r, 3, float(amount or 0.0))
+                cell.number_format = '#,##0.00'
+                ws.cell(r, 4, note)
+                r += 1
+
+        if freeze:
+            ws.freeze_panes = freeze
+        ws.column_dimensions['A'].width = min(max(widest + 2, 18), 44)
+        for j in range(2, last_col + 1):
+            ws.column_dimensions[get_column_letter(j)].width = 16
+        out = io.BytesIO()
+        wb.save(out)
+        return out.getvalue(), ex
+
+    # ------------------------------------------------------- saved views
+    @api.model
+    def my_views(self):
+        """The reader's own saved views and the ones shared with them. The
+        record rules decide what `search` may return (R1)."""
+        self._require()
+        uid = self.env.uid
+        views = self.env['pb.explorer.view'].search(
+            ['|', ('user_id', '=', uid), ('shared', '=', True)],
+            order='sequence, name, id', limit=200)
+        return {
+            'mine': [v._pbx_payload() for v in views if v.user_id.id == uid],
+            'shared': [v._pbx_payload() for v in views if v.user_id.id != uid],
         }
 
     # ==================================================================
@@ -2219,10 +2725,16 @@ class PbExplorer(models.AbstractModel):
             if spec['filters'].get(key):
                 clauses.append('%s IN %%s' % _FILTERS[key][0])
                 params.append(tuple(spec['filters'][key]))
+        # FS-8 — an own-field filter narrows the movement to the same people.
+        sub = dict(spec, dimension='none')
+        for key in self._pbx_extra_keys(sub):
+            clauses.append('%s IN %%s' % _extra_col(key))
+            params.append(tuple(str(v) for v in spec['filters'][key]))
         self.env.cr.execute("""
             SELECT employee_id, category_type, SUM(amount)
-              FROM pb_fact_emp WHERE %s GROUP BY 1, 2
-        """ % ' AND '.join(clauses), params)
+              FROM %s WHERE %s GROUP BY 1, 2
+        """ % (self._pbx_from(sub, 'emp', [fact_run.run_id.id]),
+               ' AND '.join(clauses)), params)
         out = {}
         for emp_id, ctype, amt in self.env.cr.fetchall():
             out.setdefault(emp_id, {})[ctype] = float(amt or 0.0)
@@ -2488,6 +3000,14 @@ class PbExplorer(models.AbstractModel):
             ('by type', 'category_type'),
             ('by team', 'department_id'),
         ]
+        # FS-8 — "people by shirt size": a breakdown offered at run time is
+        # matched by its own name first (the longest first), because the
+        # reader's own words for their own field are the most specific ones.
+        extra = sorted(((meta.get('ask') or '').lower(), key)
+                       for key, meta in self._pbx_extra_dims().items()
+                       if len(meta.get('ask') or '') >= 3)
+        dims = [('by %s' % ask, key) for ask, key in
+                sorted(extra, key=lambda p: -len(p[0]))] + dims
         for phrase, key in dims:
             if phrase in t:
                 spec['dimension'] = key
@@ -2634,6 +3154,8 @@ class PbExplorer(models.AbstractModel):
             provider = cfg.get_provider()
             if not provider or not provider.is_available():
                 return None
+            # FS-8 — the reader's own breakdowns are allowed answers too.
+            extra = self._pbx_extra_dims()
             prompt = (
                 "Translate the payroll analytics question into JSON.\n"
                 "Question: %s\n"
@@ -2644,8 +3166,8 @@ class PbExplorer(models.AbstractModel):
                 "A keyword parser proposed: %s\n"
                 "Reply with ONLY a JSON object using those exact keys; keep the "
                 "proposed value when the question does not clearly say otherwise."
-                % (text, list(_MEASURES), list(_DIMENSIONS), list(_GRAINS),
-                   list(_CHARTS), seed)
+                % (text, list(_MEASURES), list(_DIMENSIONS) + list(extra),
+                   list(_GRAINS), list(_CHARTS), seed)
             )
             raw = provider.generate_structured(
                 prompt, schema_hint='{"measure":"","dimension":"","grain":"","chart":""}',
@@ -2653,7 +3175,8 @@ class PbExplorer(models.AbstractModel):
             if not isinstance(raw, dict):
                 return None
             out = dict(seed)
-            for key, allowed in (('measure', _MEASURES), ('dimension', _DIMENSIONS),
+            dims = dict(_DIMENSIONS, **extra)
+            for key, allowed in (('measure', _MEASURES), ('dimension', dims),
                                  ('grain', _GRAINS)):
                 if raw.get(key) in allowed:
                     out[key] = raw[key]

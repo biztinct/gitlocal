@@ -14,3 +14,7 @@ from . import payroll_profile
 
 # WORKFLOW-2 P5c (D31): the document-expiry timetable, declared to Workflow Studio.
 from . import workflow_timetable
+
+from . import employee_profile_tools
+
+from . import weekday_location

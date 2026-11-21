@@ -309,3 +309,19 @@
         .pev-kv-row:nth-last-child(2):nth-child(odd) { border-bottom: 1px solid var(--line); }
     }
 }
+
+.pev-upload-draft {
+    margin-top: 12px; padding: 16px; border: 1px solid #cbd5e1; border-radius: 10px;
+    background: #f8fafc;
+    h4 { font-size: 14px; margin: 0 0 8px; }
+    p { color: #52637c; font-size: 12px; }
+}
+.pev-upload-row { padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+.pev-upload-name { display: flex; align-items: center; justify-content: space-between; gap: 12px; strong { overflow-wrap: anywhere; } }
+.pev-upload-dates {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 10px;
+    label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; }
+    input { width: 100%; min-width: 0; padding: 8px; border: 1px solid #b8c6d8; border-radius: 6px; background: white; }
+}
+.pev-upload-buttons { display: flex; gap: 10px; margin-top: 14px; }
+@media (max-width: 420px) { .pev-upload-dates { grid-template-columns: 1fr; } }

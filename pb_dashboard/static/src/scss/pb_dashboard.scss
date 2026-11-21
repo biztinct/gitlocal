@@ -515,6 +515,38 @@
     }
     .pbd-note-nx { display: block; color: var(--pbd-ink2); font-weight: 600; margin-top: 2px; }
 
+    // WDGAP QF1 — PayAI noticed. One line per alert: a dot (grey unless it
+    // needs acting on), the sentence, when it was first noticed, and two
+    // quiet buttons. Colour only where there is something to do.
+    .pbd-ai {
+        list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column;
+    }
+    .pbd-ai-i {
+        display: flex; gap: 10px; align-items: flex-start; padding: 9px 0;
+        border-top: 1px solid var(--pbd-line);
+        &:first-child { border-top: 0; padding-top: 2px; }
+    }
+    .pbd-ai-dot {
+        flex: none; width: 8px; height: 8px; border-radius: 50%; margin-top: 6px;
+        background: var(--pbd-faint);
+        &.is-amber { background: var(--pbd-amber); }
+        &.is-rose { background: var(--pbd-rose); }
+    }
+    .pbd-ai-x { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbd-ai-t { font-size: 13px; font-weight: 700; color: var(--pbd-ink); line-height: 1.35; }
+    .pbd-ai-s { font-size: 11.5px; color: var(--pbd-muted); }
+    .pbd-ai-act { display: flex; gap: 14px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+    .pbd-ai-go {
+        display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700;
+        color: var(--pbd-p600); border-radius: 6px;
+        svg { width: 13px; height: 13px; }
+        &:hover { color: var(--pbd-p); }
+    }
+    .pbd-ai-ok {
+        font-size: 12px; font-weight: 600; color: var(--pbd-muted); border-radius: 6px;
+        &:hover { color: var(--pbd-ink); }
+    }
+
     // hiring
     .pbd-hlist {
         list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column;

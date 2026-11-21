@@ -1,0 +1,11 @@
+// FS-8 — "in reports" marks on the Form builder screens. Quiet: brand tint,
+// never the amber of "Used by" (a saved report does not block a delete).
+.pbfx-repn {
+    display: inline-flex; align-items: center; gap: 4px; margin-left: 6px;
+    padding: 2px 8px; border-radius: 999px;
+    font-weight: 700; font-size: 12px;
+    color: var(--pbim-primary); background: var(--pbim-primary-light);
+    svg { flex: none; }
+}
+.pbfx-reports .pbfb-used-row b { color: var(--pbim-primary); }
+.pbfx-warn .names { margin-top: 4px; font-size: 12px; opacity: .85; overflow-wrap: anywhere; }

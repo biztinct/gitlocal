@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_employee_family_hr,pb.employee.family hr,model_pb_employee_family,hr.group_hr_user,1,1,1,0
+access_pb_employee_family_pay,pb.employee.family pay team,model_pb_employee_family,om_hr_payroll.group_hr_payroll_user,1,1,1,0
+access_pb_employee_family_system,pb.employee.family system,model_pb_employee_family,base.group_system,1,1,1,1
+access_pb_me_detail_request_hr,pb.me.detail.request hr,model_pb_me_detail_request,hr.group_hr_user,1,1,0,0
+access_pb_me_detail_request_pay,pb.me.detail.request pay team,model_pb_me_detail_request,om_hr_payroll.group_hr_payroll_user,1,1,0,0
+access_pb_me_detail_request_seat,pb.me.detail.request seat read,model_pb_me_detail_request,base.group_user,1,0,0,0
+access_pb_me_detail_request_system,pb.me.detail.request system,model_pb_me_detail_request,base.group_system,1,1,0,1

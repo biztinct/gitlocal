@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- On the existing AI settings: the switch and the daily limits, beside
+         PayAI's other company switches. Home › Policies holds the same
+         switch with the files and the counts. -->
+    <record id="res_config_settings_view_form_pb_me_payai" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pb.me.payai</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="priority" eval="122"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='companies']" position="after">
+                <div id="pb_me_payai_settings">
+                    <block title="PayAI for employees" name="pb_me_payai">
+                        <setting id="pb_policy_ai_on_setting"
+                                 string="Employees may ask PayAI about company policies"
+                                 help="Answers come only from the policy files HR publishes under Home, Policies. Never personal figures. Uses this company's AI account.">
+                            <field name="pb_policy_ai_on"/>
+                        </setting>
+                        <setting id="pb_policy_ai_limits_setting" string="Daily limits"
+                                 help="Each question PayAI answers costs a little on the AI account.">
+                            <div class="d-flex gap-3 align-items-center">
+                                <label for="pb_policy_ai_person_day" string="Per person"/>
+                                <field name="pb_policy_ai_person_day" class="o_light_label" style="width: 6rem;"/>
+                                <label for="pb_policy_ai_company_day" string="Per company"/>
+                                <field name="pb_policy_ai_company_day" class="o_light_label" style="width: 6rem;"/>
+                            </div>
+                        </setting>
+                    </block>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

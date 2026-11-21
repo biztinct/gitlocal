@@ -1316,3 +1316,49 @@ msgstr "Đang chờ phê duyệt"
 #: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__done
 msgid "Approved and done"
 msgstr "Đã duyệt và hoàn tất"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid ""
+"\"%s\" moves money out of the company, so each one is approved on its own. "
+"It cannot be approved several at once."
+msgstr ""
+"\"%s\" làm tiền ra khỏi công ty, nên mỗi yêu cầu được duyệt riêng. Không thể"
+" duyệt nhiều yêu cầu cùng lúc."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,help:biz_approval_workflow.field_biz_approval_process__bulk_ok
+msgid ""
+"A manager may tick several of these in the Approvals inbox and approve them "
+"together. Never allowed where money leaves the company."
+msgstr ""
+"Người quản lý có thể đánh dấu nhiều yêu cầu loại này trong hộp Phê duyệt và "
+"duyệt cùng lúc. Không bao giờ áp dụng khi tiền ra khỏi công ty."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_process__bulk_ok
+msgid "Can be approved several at once"
+msgstr "Có thể duyệt nhiều yêu cầu cùng lúc"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_binding__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_decision__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_delegation__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_event__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_exception_grant__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_generic_request__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_proposal_mixin__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_request__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_request_seat__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_request_step__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_responsibility__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_workflow__company_id
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_workflow_version__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_process__area__other
+msgid "Other"
+msgstr "Khác"

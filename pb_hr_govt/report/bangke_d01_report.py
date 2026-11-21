@@ -36,18 +36,18 @@ class BangKeD01ReportXlsx(ReportXlsxAbstract):
         for col, head in enumerate(headers):
             sheet.write(self.start_row - 1, col, head, bold)
 
-        doc_name = wizard.d01_doc_name or "Văn bản mẫu"  # TODO replace with document name/type
-        doc_number = wizard.d01_doc_number or "Số VB-001"  # TODO replace with document number
+        doc_name = wizard.d01_doc_name or ""
+        doc_number = wizard.d01_doc_number or ""
         issue_date = wizard.d01_issue_date or wizard.date_from
         effective_date = wizard.d01_effective_date or wizard.date_to
         agency = wizard.d01_agency or company.name
-        summary = wizard.d01_summary or "Trích yếu nội dung"  # TODO replace with actual summary
-        appraisal = wizard.d01_appraisal or "Nội dung thẩm định"  # TODO replace with actual review content
+        summary = wizard.d01_summary or ""
+        appraisal = wizard.d01_appraisal or ""
 
         for offset, emp in enumerate(employees):
             row = self.start_row + offset
             sheet.write(row, 0, emp.name or "")
-            sheet.write(row, 1, emp.identification_id or "")
+            sheet.write(row, 1, base._insurance_book(emp))
             sheet.write(row, 2, doc_name)
             sheet.write(row, 3, doc_number)
             sheet.write(row, 4, _fmt(issue_date))

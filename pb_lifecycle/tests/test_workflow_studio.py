@@ -4359,3 +4359,145 @@ class TestWorkflowStudio(TransactionCase):
                 stage = self.env['hr.recruitment.stage'].sudo().search([('pb_key', '=', 'shortlist')], limit=1)
                 if stage and stage.with_context(lang='en_US').name == 'Shortlist':
                     self.assertNotEqual(stage.with_context(lang=code).name, 'Shortlist', code)
+
+    # ------------------------------------------------------------ WF2 P6b
+    def _p6b_words(self, lang):
+        from odoo.addons.pb_lifecycle.controllers import workbench_words as WW
+        return WW, WW.workbench_words(lang)
+
+    def test_wf2p6b_w1_workbench_words_only_and_by_language(self):
+        """The workbench dictionary holds only the workbench's own phrases
+        (JavaScript entries with an occurrence on a workbench file), in the
+        language asked; English gets none, so the English screens keep the
+        words written in the files."""
+        WW, vi = self._p6b_words('vi_VN')
+        _, idn = self._p6b_words('id_ID')
+        self.assertEqual(WW.workbench_words('en_US'), {})
+        self.assertEqual(WW.workbench_words(''), {})
+        self.assertGreater(len(vi), 1000)
+        self.assertGreater(len(idn), 1000)
+        # a workbench phrase, in each language
+        for words in (vi, idn):
+            self.assertIn('Working out the next starts…', words)
+            self.assertIn('Repeat for each…', words)
+        self.assertNotEqual(vi['Repeat for each…'], idn['Repeat for each…'])
+        # a server-only sentence (Python, never on a workbench file) is not served
+        self.assertNotIn('%(role)s was told on %(day)s', vi)
+        # a sentence both sides say is served with the server's own words
+        self.assertEqual(vi.get('Every weekday at %(time)s'), 'Từ Thứ Hai đến Thứ Sáu lúc %(time)s')
+        # every key is a workbench phrase: read the files' _t literals
+        here = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'workflow')
+        text = ''.join(open(os.path.join(here, f), encoding='utf-8').read() for f in os.listdir(here) if f.endswith('.js'))
+        for msgid in list(vi)[:200]:
+            self.assertTrue(json.dumps(msgid, ensure_ascii=False)[1:-1].replace('\\"', '"') in text or msgid in text, msgid)
+
+    def test_wf2p6b_w2_placeholders_and_banned_words(self):
+        """Every translation keeps its named holes (a translation of the
+        month-day sentence may use the plain day instead of "21st"), keeps
+        its tags, and never names the underlying platform."""
+        hole = re.compile(r'%\((\w+)\)s')
+        tag = re.compile(r'</?[a-z][^>]*>')
+        for lang in ('vi_VN', 'id_ID'):
+            _, words = self._p6b_words(lang)
+            for msgid, msgstr in words.items():
+                a, b = sorted(hole.findall(msgid)), sorted(hole.findall(msgstr))
+                if 'nth' in a:
+                    b = sorted('nth' if x == 'day' else x for x in b)
+                self.assertEqual(a, b, '%s: %r → %r' % (lang, msgid, msgstr))
+                self.assertEqual(sorted(tag.findall(msgid)), sorted(tag.findall(msgstr)), msgid)
+                self.assertNotRegex(msgstr, r'(?i)odoo', msgid)
+
+    def test_wf2p6b_w3_served_once_per_language_and_version_signed_in_only(self):
+        """The words script is built once per (language, module version),
+        is plain ASCII JavaScript calling `_t.load`, and the route asks for a
+        signed-in person (the public gets the login page, never words)."""
+        WW, _ = self._p6b_words('vi_VN')
+        WW._CACHE.clear()
+        body, etag = WW.payload('vi_VN', '19.0.test')
+        again = WW.payload('vi_VN', '19.0.test')
+        self.assertIs(again[0], body)
+        self.assertTrue(body.startswith('_t.load(') and body.endswith(');\n'))
+        self.assertTrue(body.isascii())
+        data = json.loads(body[len('_t.load('):-3])
+        self.assertEqual(data['lang'], 'vi_VN')
+        self.assertGreater(len(data['words']), 1000)
+        other, other_tag = WW.payload('id_ID', '19.0.test')
+        self.assertNotEqual(other_tag, etag)
+        newer = WW.payload('vi_VN', '19.0.test2')
+        self.assertNotEqual(newer[1], etag)
+        english = WW.payload('en_US', '19.0.test')[0]
+        self.assertEqual(json.loads(english[len('_t.load('):-3])['words'], {})
+        route = WW.WorkbenchWords.workbench_words
+        routing = getattr(route, 'original_routing', None) or getattr(route, 'routing', {})
+        self.assertEqual(routing.get('auth'), 'user')
+        WW._CACHE.clear()
+
+    def test_wf2p6b_w4_definition_checks_read_in_the_readers_language(self):
+        """The pure definition checks keep their codes and, in English, their
+        exact words; every fixed sentence has a Vietnamese and an Indonesian
+        server translation, so Review and the save message follow the
+        reader's language."""
+        from odoo.addons.pb_lifecycle.models.workflow_studio import _definition_words
+        from odoo.tools.translate import code_translations
+        issues = D.validate({'schema': 'nope'}, {}, {})
+        self.assertTrue(issues)
+        self.assertEqual(_definition_words(issues), issues)
+        here = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models', 'workflow_definition.py')
+        fixed = set(re.findall(r"error\([^,]+,\s*'\w+',\s*'([^'%]+)'\)", open(here, encoding='utf-8').read()))
+        self.assertGreater(len(fixed), 50)
+        for lang in ('vi_VN', 'id_ID'):
+            words = code_translations.get_python_translations('pb_lifecycle', lang)
+            missing = sorted(m for m in fixed if not words.get(m))
+            self.assertFalse(missing, '%s: %s' % (lang, missing[:5]))
+            self.assertFalse([m for m in fixed if re.search(r'(?i)odoo', words[m])])
+
+    def test_wf2p6b_w5_next_start_days_in_the_readers_language(self):
+        """"Next 5 starts" and the start history name the day as before in
+        English and in the reader's own words otherwise."""
+        from datetime import datetime
+        from odoo.addons.pb_lifecycle.models.workflow_schedule_run import _schedule_day
+        moment = datetime(2026, 11, 23, 9, 0)
+        self.assertEqual(_schedule_day(moment), 'Mon 23 Nov 2026')
+        self.assertEqual(_schedule_day(moment, 'en_US'), 'Mon 23 Nov 2026')
+        self.assertNotEqual(_schedule_day(moment, 'vi_VN'), 'Mon 23 Nov 2026')
+        self.assertIn('2026', _schedule_day(moment, 'id_ID'))
+        self.assertEqual(_schedule_day(moment, 'xx_XX'), 'Mon 23 Nov 2026')
+
+    def test_wf2p6e_w6_words_address_follows_the_language_change(self):
+        """WF2 P6e (G103/G104): the Studio asks for its words at an address the
+        web server does not cache for days (no `.js`/`.css`/image ending), the
+        answer is `no-cache` with an ETag that changes with the language, so
+        en → vi → id → en each gets its own words at the next normal page load;
+        the iframe openers carry the same new key as index.html, so browsers
+        holding the old index.html (cached 10 days under /static/) fetch the
+        new one."""
+        from odoo.addons.pb_lifecycle.controllers import workbench_words as WW
+        cached = re.compile(r'(?i)\.(js|css|png|jpe?g|gif|ico)$')
+        routes = WW.WorkbenchWords.workbench_words
+        routing = getattr(routes, 'original_routing', None) or getattr(routes, 'routing', {})
+        self.assertIn('/pb_lifecycle/workflow/words', routing.get('routes') or WW.ROUTES)
+        self.assertIn('/pb_lifecycle/workflow/words', WW.ROUTES)
+        self.assertIn('/pb_lifecycle/workflow/words.js', WW.ROUTES, 'old index.html copies keep working')
+        base = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+        html = open(os.path.join(base, 'workflow', 'index.html'), encoding='utf-8').read()
+        src = re.findall(r'<script src="(/pb_lifecycle/workflow/words[^"]*)"', html)
+        self.assertEqual(len(src), 1, src)
+        path, _, query = src[0].partition('?')
+        self.assertEqual(path, '/pb_lifecycle/workflow/words')
+        self.assertFalse(cached.search(path), path)
+        key = dict(p.split('=', 1) for p in query.split('&') if '=' in p).get('v')
+        self.assertTrue(key)
+        openers = {
+            'workflow_studio.js': r'\{v: "([^"]+)"',
+            'workflow_strip.js': r'STRIP_CACHE_KEY = "([^"]+)"',
+            'workflow_inbox.js': r'const CACHE_KEY = "([^"]+)"',
+        }
+        for name, pattern in openers.items():
+            text = open(os.path.join(base, 'src', 'js', name), encoding='utf-8').read()
+            self.assertEqual(re.findall(pattern, text), [key], name)
+        # one person, three language changes: every answer differs from the last
+        WW._CACHE.clear()
+        tags = [WW.payload(lang, '19.0.test')[1] for lang in ('en_US', 'vi_VN', 'id_ID', 'en_US')]
+        self.assertEqual(tags[0], tags[3])
+        self.assertEqual(len(set(tags[:3])), 3)
+        WW._CACHE.clear()

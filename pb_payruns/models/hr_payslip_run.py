@@ -59,10 +59,16 @@ PB_STAGE_NAME = dict(PB_STATES)
 #: rejected run is an outcome, not a stage on the way somewhere.
 PB_BOARD_STATES = ('draft', 'approval_pending', 'done')
 
-#: PRS P3 (R8) — the two kinds of pay run. Regular is every run made before
+#: PRS P3 (R8) — the kinds of pay run. Regular is every run made before
 #: this existed; a top-up pays a few people something extra in a month that
-#: already has its regular run.
-PB_RUN_KINDS = [('regular', 'Regular'), ('topup', 'Top-up')]
+#: already has its regular run. WDGAP PR-D adds the Extra run: only the
+#: people somebody picks, any number of times a month, never meeting,
+#: clearing or adopting another run's payslips (the wizard's rails), and
+#: never fed the once-a-month values (approved overtime, trips, loans).
+#: The keys are a contract other modules read (pb_loans takes instalments in
+#: `regular` runs only): add, never rename.
+PB_RUN_KINDS = [('regular', 'Regular'), ('topup', 'Top-up'),
+                ('extra', 'Extra run')]
 
 #: The payslip state a run in each state expects. Slips wait in the standard
 #: "Waiting" state while an approval is open, so the bank export — which filters
@@ -354,7 +360,10 @@ class HrPayslipRun(models.Model):
         tracking=False,
         help="Top-up: an extra run that pays a few people something on top "
              "of their normal month — a bonus, a correction, an award. "
-             "Top-ups are only compared with other top-ups.")
+             "Top-ups are only compared with other top-ups. "
+             "Extra run: only the people picked for it — a bonus, a "
+             "correction or one extra payslip. It never changes another run "
+             "and is not compared with any.")
 
     @api.depends('slip_ids.formula_config_id')
     def _compute_pb_division(self):

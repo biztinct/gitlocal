@@ -20,6 +20,14 @@ TECHNICAL = ('ir.', 'base.', 'mail.', 'bus.', 'web.', 'sms.', 'digest.',
              'res.users', 'res.groups', 'pb.workflow.', 'biz.access', 'biz.approval.')
 
 
+
+def _definition_words(issues):
+    """The pure checks in `workflow_definition` speak English; each fixed
+    sentence is looked up in this module's translations in the reader's
+    language (WF2 P6b — the editor's Review and save messages). A sentence
+    built with a name in it stays as written. Codes are untouched (G2)."""
+    return [dict(i, text=_(i['text'])) if isinstance(i.get('text'), str) and i['text'] else i for i in issues]
+
 class WorkflowStudio(models.AbstractModel):
     _name = 'pb.workflow.studio'
     _description = 'Workflow Studio'
@@ -268,7 +276,7 @@ class WorkflowStudio(models.AbstractModel):
     def _validate(self, w, definition):
         fields_meta = {f['key']: f for f in self._source_fields(w.source_model)}
         after = isinstance(definition, dict) and isinstance(definition.get('trigger'), dict) and definition['trigger'].get('kind') == 'approval_applied'
-        errors = D.validate(definition, fields_meta, self._actions(w.source_model))
+        errors = _definition_words(D.validate(definition, fields_meta, self._actions(w.source_model)))
         if errors:
             return errors
         def error(key, code, text):
@@ -452,7 +460,7 @@ class WorkflowStudio(models.AbstractModel):
         # code, never by wording (ledger G2).
         blocking = [i for i in structural if i.get('code') in D.STRUCTURAL]
         if blocking:
-            raise UserError('\n'.join(i['text'] for i in blocking))
+            raise UserError('\n'.join(i['text'] for i in _definition_words(blocking)))
         vals = {'draft': definition, 'name': str(definition.get('name', '')).strip()[:120] or w.name,
                 'revision': w.revision+1}
         if starter_group_ids is not None:

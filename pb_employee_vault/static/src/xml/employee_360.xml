@@ -200,6 +200,7 @@
                         </div>
                         <div class="pev-doc-meta">
                           <span t-if="doc.issue_date"><t t-esc="doc.issue_date"/></span>
+                          <span t-if="doc.expiry_date">Expiry: <t t-esc="doc.expiry_date"/></span>
                           <span t-attf-class="pev-exp {{ expiryCls(doc) }}" t-esc="expiryLabel(doc)"/>
                         </div>
                         <div class="pev-doc-actions">
@@ -215,13 +216,32 @@
                     <div class="pev-drop" t-on-click="() => this.triggerPick(grp.cat.id)"
                          t-on-drop="(ev) => this.onDrop(grp.cat.id, ev)" t-on-dragover="onDragOver">
                       <t t-out="ic('upload',20)"/>
-                      <span>Drop a file or click to upload</span>
-                      <small>JPG · PNG · PDF</small>
+                      <span>Choose files or drop them here</span>
+                      <small>JPG · PNG · PDF · up to 10 MB each</small>
                       <input type="file" class="pev-hidden-file" t-att-id="'pev-file-' + grp.cat.id"
-                             accept="image/png,image/jpeg,application/pdf"
+                             accept="image/png,image/jpeg,application/pdf" multiple="multiple"
                              t-on-change="(ev) => this.onFilePicked(grp.cat.id, ev)"/>
                     </div>
                   </div>
+                  <form t-if="state.uploadDraft and state.uploadDraft.catId === grp.cat.id" class="pev-upload-draft" t-on-submit.prevent="uploadSelected">
+                    <h4>Selected files — <t t-esc="grp.cat.name"/></h4>
+                    <p t-if="grp.cat.requires_expiry">Enter an expiry date for each file before uploading.</p>
+                    <div t-foreach="state.uploadDraft.files" t-as="row" t-key="row.key" class="pev-upload-row">
+                      <div class="pev-upload-name"><strong t-esc="row.name"/>
+                        <button type="button" class="pev-mini danger" t-att-disabled="state.uploading" t-on-click="() => this.removeUploadFile(row.key)">Remove</button>
+                      </div>
+                      <div class="pev-upload-dates">
+                        <label>Issue date (optional)<input type="date" t-model="row.issueDate" t-att-disabled="state.uploading"/></label>
+                        <label>Expiry date <span t-if="grp.cat.requires_expiry">(required)</span><span t-else="">(optional)</span>
+                          <input type="date" t-model="row.expiryDate" t-att-required="grp.cat.requires_expiry" t-att-min="row.issueDate || undefined" t-att-disabled="state.uploading"/>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="pev-upload-buttons">
+                      <button type="submit" class="pev-btn" t-att-disabled="state.uploading">Upload <t t-esc="state.uploadDraft.files.length"/> file(s)</button>
+                      <button type="button" class="pev-btn ghost" t-att-disabled="state.uploading" t-on-click="() => { this.state.uploadDraft = null; }">Cancel</button>
+                    </div>
+                  </form>
                 </div>
               </t>
               <div t-if="!(d.categories || []).length" class="pev-empty"><t t-out="ic('inbox',30)"/><p>No document categories configured.</p></div>

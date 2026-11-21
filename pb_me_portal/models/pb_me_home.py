@@ -102,6 +102,9 @@ _TILE_ROWS = (
     ('/my/requests', 'me', 'list-checks', 'teal', {}),
     # ETP E1: pb_me_expense's claims (soft — the row is inert without it)
     ('/my/expenses', 'me', 'receipt', 'green', {}),
+    # WDGAP S9-B: pb_conduct's letters from HR (soft — drawn only while the
+    # person has a letter)
+    ('/my/letters', 'me', 'file-text', 'indigo', {}),
     # --- Time ---
     # TIERS T3b: pb_ess_workforce's Clock page (drawn only when the company
     # has the switch on)
@@ -118,6 +121,9 @@ _TILE_ROWS = (
     ('/my/work/leave', 'time', 'umbrella', 'green', {'hidden': True}),
     # --- Growth ---
     ('/my/goals', 'growth', 'target', 'indigo', {}),
+    # WDGAP S9-A (RV4): pb_review_forms' end-of-year review (soft — drawn only
+    # while the person has a review on a form)
+    ('/my/review', 'growth', 'clipboard-list', 'indigo', {}),
     ('/my/growth', 'growth', 'trending-up', 'green', {}),
     ('/my/training', 'growth', 'graduation-cap', 'blue', {}),
     ('/my/training/claims', 'growth', 'wallet', 'teal', {}),
@@ -160,6 +166,9 @@ _TILE_WORDS = {
     '/my/work/timesheet': {'text': _lt('Scheduled against worked, day by day')},
     '/my/work/overtime': {'text': _lt('Recorded, approved, and at which rate')},
     '/my/goals': {'text': _lt('What you are working towards')},
+    '/my/review': {'title': _lt('My review'),
+                   'text': _lt('Your end-of-year review, both sides')},
+    '/my/letters': {'text': _lt('Letters HR has sent you')},
     '/my/growth': {'text': _lt('What you and your manager agreed')},
     '/my/training': {'text': _lt('Your courses and their tests')},
     '/my/training/claims': {'text': _lt('What you may spend on a course')},
@@ -478,7 +487,8 @@ class PbMeHome(models.AbstractModel):
     @api.model
     def _pbme_pay(self, Slip, emp, today):
         Slip = Slip.sudo()
-        domain = [('employee_id', '=', emp.id), ('state', '=', 'done')]
+        domain = [('employee_id', '=', emp.id), ('state', '=', 'done')] \
+            + Slip._ess_visible_domain()     # held pay stays hidden (WDGAP PR-C)
         next_pay = self._pbme_next_pay_date(emp, today)
         common = {
             'next_pay_date': next_pay,

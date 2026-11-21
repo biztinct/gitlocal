@@ -962,6 +962,19 @@
     .pay-badrow-t { color: var(--pbim-ink); }
     .pay-badrow-w { color: var(--pbim-rose); }
     .pay-skipped { margin-top: 16px; }
+    // WDGAP QF4: the "Read scores from Goals" drawer
+    .pay-goal-counts {
+        display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px;
+        // the shared badge title-cases its text; these are sentences
+        .pbim-badge { text-transform: none; }
+    }
+    .pay-goal-h {
+        margin: 14px 0 4px; font-size: 12px; font-weight: 700;
+        color: var(--pbim-muted);
+    }
+    .pay-goal-map { justify-content: space-between; }
+    .pay-goal-map--head { font-size: 11px; font-weight: 700; color: var(--pbim-muted); }
+    .pay-goal-quiet { color: var(--pbim-muted); margin-left: auto; }
 
     .pay-grid {
         width: 100%; border-collapse: collapse; margin: 12px 0;

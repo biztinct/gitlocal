@@ -648,9 +648,21 @@ class PbContractReview(models.Model):
             'structure_type_id': prefill.get('structure_type_id'),
             'resource_calendar_id': prefill.get('resource_calendar_id'),
             'activate': False,
+            # WDGAP S8-D (EX1): the wizard carries the old contract's pay lines
+            # onto the new one (each logged, dated the new start). The new
+            # contract is a draft, so HR still changes them before it runs.
+            'renew_from': old.id,
         }
         if date_end:
             vals['date_end'] = str(date_end)
+        else:
+            # WDGAP W3-B (RN1): the wizard now carries the old contract's
+            # Vietnam contract kind; a contract with no end date ("Make it
+            # permanent") is open-ended, as it always was.
+            vals['vn_kind'] = 'indefinite'
+            # RN3: "Make it permanent" stays as it was — the Vietnam payroll
+            # treatment is not carried onto the new contract.
+            vals['pay_treatment'] = ''
         res = Wizard.create_contract(vals)
         if res.get('error') or not res.get('contract_id'):
             self.message_post(body=_(

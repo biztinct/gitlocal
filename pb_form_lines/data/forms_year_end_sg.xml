@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-B — Singapore: Form IR8A for the Auto-Inclusion Scheme (the AIS-API 2.0
+         submission payload, the myTax Portal import workbook, a summary and a per-person
+         IR8A). Line codes are the form's item letters. Generated from the tables in
+         WDGAP_S2B1_REPORT.md; see pb_form_lines/models/render_sg.py. -->
+
+    <record id="form_sg_ir8a" model="pb.gov.form">
+        <field name="code">SG_IR8A</field>
+        <field name="country_code">SG</field>
+        <field name="sequence">140</field>
+        <field name="tile_group">year_end</field>
+        <field name="filing_section">year_end</field>
+        <field name="year_start_month">1</field>
+        <field name="name">Employee income for the year — Form IR8A (Auto-Inclusion Scheme)</field>
+        <field name="official_name">Form IR8A — Return of Employee's Remuneration (AIS)</field>
+        <field name="authority">IRAS</field>
+        <field name="period_kind">tax_year</field>
+        <field name="output_kinds">json,xlsx,pdf</field>
+        <field name="total_line_code">TOTAL</field>
+        <field name="screen_note">The submission payload for AIS software, the IR8A import workbook for the myTax Portal, a summary, and an IR8A for each person.</field>
+        <field name="source_url">https://www.iras.gov.sg/taxes/individual-income-tax/employers/auto-inclusion-scheme-(ais)-for-employment-income/technical-format-specifications</field>
+        <field name="source_note">IRAS, "AIS-API 2.0" interface specification v2.6 (11 September 2026, https://file.go.gov.sg/aisapi2-specs.pdf) and "Data Items and Validation Rules" v2.5 (30 January 2026, https://go.gov.sg/aisapi2-dataitems) for the submission payload; IRAS "IR8A Import Template" version 1.0 (https://go.gov.sg/ir8a-import-template) for the myTax Portal upload; Form IR8A for YA 2027 and its explanatory notes for the item letters. The older fixed-length text and XML files are no longer accepted by IRAS. Read on 18 November 2026.</field>
+        <field name="inferred_note">softwareCompanyName (the payroll software's APEX organisation name) is left empty for the person who sends the file to fill in. The authorised person is the person who prepared the filing. Commencement and cessation dates come from the employment contracts. Appendix 8A (benefits in kind) and Appendix 8B (share gains) are not made: when such items are on the form the check step says so. The import workbook repeats the official template's sheet and columns but is not the template file itself.</field>
+        <field name="employee_certificates" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_sg_ir8a_la" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">a</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="label">Gross salary, fees, leave pay, wages and overtime pay</field>
+        <field name="official_label">a) Gross Salary</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">basic salary,salary,wages,overtime,gross salary</field>
+        <field name="suggest_roles">earning</field>
+    </record>
+    <record id="form_sg_ir8a_lb" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">b</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="label">Bonus</field>
+        <field name="official_label">b) Bonus</field>
+        <field name="suggest_words">bonus,aws,13th month</field>
+        <field name="suggest_roles">earning</field>
+    </record>
+    <record id="form_sg_ir8a_lc" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">c</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="label">Director's fees</field>
+        <field name="official_label">c) Director's fee</field>
+        <field name="suggest_words">director's fee,director fee</field>
+        <field name="suggest_roles">earning</field>
+    </record>
+    <record id="form_sg_ir8a_ld1" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d1</field>
+        <field name="sequence">40</field>
+        <field name="kind">money</field>
+        <field name="label">Allowances</field>
+        <field name="official_label">d1) Allowances</field>
+        <field name="suggest_words">allowance,transport,meal</field>
+        <field name="suggest_roles">earning</field>
+    </record>
+    <record id="form_sg_ir8a_ld2" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d2</field>
+        <field name="sequence">50</field>
+        <field name="kind">money</field>
+        <field name="label">Gross commission</field>
+        <field name="official_label">d2) Gross Commission</field>
+        <field name="suggest_words">commission</field>
+        <field name="suggest_roles">earning</field>
+    </record>
+    <record id="form_sg_ir8a_ld3" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d3</field>
+        <field name="sequence">60</field>
+        <field name="kind">money</field>
+        <field name="label">Gratuity, notice pay, ex-gratia payment and others</field>
+        <field name="official_label">d3(a) Gratuity/ Notice Pay/ Ex-gratia payment/ Others</field>
+        <field name="suggest_words">gratuity,notice pay,ex-gratia</field>
+        <field name="suggest_roles">earning</field>
+    </record>
+    <record id="form_sg_ir8a_ld3b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d3b</field>
+        <field name="sequence">70</field>
+        <field name="kind">money</field>
+        <field name="label">Compensation for loss of office</field>
+        <field name="official_label">d3(b) Compensation for loss of office</field>
+    </record>
+    <record id="form_sg_ir8a_ld4" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d4</field>
+        <field name="sequence">80</field>
+        <field name="kind">money</field>
+        <field name="label">Retirement benefits accrued from 1993</field>
+        <field name="official_label">d4(b) Amount accrued from 01/01/1993</field>
+    </record>
+    <record id="form_sg_ir8a_ld5" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d5</field>
+        <field name="sequence">90</field>
+        <field name="kind">money</field>
+        <field name="label">Employer contributions to an overseas pension or provident fund without tax concession</field>
+        <field name="official_label">d5) Contributions made by employer to any Pension/Provident Fund constituted outside Singapore without tax concession</field>
+    </record>
+    <record id="form_sg_ir8a_ld6" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d6</field>
+        <field name="sequence">100</field>
+        <field name="kind">money</field>
+        <field name="label">Excess or voluntary CPF contribution by the employer</field>
+        <field name="official_label">d6) Excess / voluntary contribution to CPF by employer</field>
+    </record>
+    <record id="form_sg_ir8a_ld7a" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d7a</field>
+        <field name="sequence">110</field>
+        <field name="kind">money</field>
+        <field name="label">Gains from share options, section 10(1)(b)</field>
+        <field name="official_label">d7(a) Gains &amp; profits via share options for Sec.10(1)(b)</field>
+        <field name="note">Needs Appendix 8B, which Payobook does not make.</field>
+    </record>
+    <record id="form_sg_ir8a_ld7b" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d7b</field>
+        <field name="sequence">120</field>
+        <field name="kind">money</field>
+        <field name="label">Gains from share options, section 10(1)(g)</field>
+        <field name="official_label">d7(b) Gains &amp; profits via share options for Sec.10(1)(g)</field>
+        <field name="note">Needs Appendix 8B, which Payobook does not make.</field>
+    </record>
+    <record id="form_sg_ir8a_ld8" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">d8</field>
+        <field name="sequence">130</field>
+        <field name="kind">money</field>
+        <field name="label">Value of benefits in kind</field>
+        <field name="official_label">d8) Value of benefits-in-kind</field>
+        <field name="note">Needs Appendix 8A, which Payobook does not make.</field>
+    </record>
+    <record id="form_sg_ir8a_lothers" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">OTHERS</field>
+        <field name="sequence">140</field>
+        <field name="kind">computed</field>
+        <field name="label">Total of items d1 to d8</field>
+        <field name="official_label">Others income (d1 to d8)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">d1,d2,d3,d4,d5,d6,d7a,d8</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_sg_ir8a_ltotal" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">TOTAL</field>
+        <field name="sequence">150</field>
+        <field name="kind">computed</field>
+        <field name="label">Total income</field>
+        <field name="official_label">Total income (a + b + c + d)</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">a,b,c,OTHERS</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_sg_ir8a_le" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">e</field>
+        <field name="sequence">160</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt income or income under tax remission</field>
+        <field name="official_label">e) Remission/ Overseas Posting/ Exempt income</field>
+    </record>
+    <record id="form_sg_ir8a_lcpf" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">CPF</field>
+        <field name="sequence">170</field>
+        <field name="kind">money</field>
+        <field name="label">Employee's compulsory CPF contribution</field>
+        <field name="official_label">Employee's compulsory CPF contribution</field>
+        <field name="suggest_words">cpf employee,employee cpf,cpf ee,cpf</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_ir8a_ldon" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">DON</field>
+        <field name="sequence">180</field>
+        <field name="kind">money</field>
+        <field name="label">Donations deducted from salary</field>
+        <field name="official_label">Donations deducted from salaries for Yayasan Mendaki Fund/ Community Chest of Singapore/ SINDA/ CDAC/ ECF/ other tax exempt donations</field>
+        <field name="suggest_words">cdac,sinda,mbmf,ecf,mendaki,donation,shg</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_ir8a_lmbf" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">MBF</field>
+        <field name="sequence">190</field>
+        <field name="kind">money</field>
+        <field name="label">Contributions to the Mosque Building Fund</field>
+        <field name="official_label">Contributions deducted from salaries to Mosque Building Fund</field>
+        <field name="suggest_words">mosque building fund,mbf</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_ir8a_llife" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">LIFE</field>
+        <field name="sequence">200</field>
+        <field name="kind">money</field>
+        <field name="label">Life insurance premiums deducted from salary</field>
+        <field name="official_label">Life insurance premiums deducted from salaries</field>
+        <field name="suggest_words">life insurance</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_sg_ir8a_lpeople" model="pb.gov.form.line">
+        <field name="form_id" ref="form_sg_ir8a"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">210</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Total number of IR8A records</field>
+        <field name="mappable" eval="False"/>
+    </record>
+</odoo>

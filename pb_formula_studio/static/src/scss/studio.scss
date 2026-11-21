@@ -291,6 +291,21 @@
     .ce-chip.col .ce-chip-nm { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ce-chip.op { font-size: 15px; font-weight: 800; color: var(--i); min-width: 34px; justify-content: center; }
     .ce-chip.fn { font-family: "JetBrains Mono", ui-monospace, monospace; color: var(--i-deep); }
+    /* WDGAP PR-A — the whole function list, from the engine's one table */
+    .ce-chip.ce-fn-more { color: var(--i); font-weight: 700; background: transparent; border-style: dashed; }
+    .ce-chip.ce-fn-more svg { transition: transform .15s; }
+    .ce-fn-all { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px 16px; padding-top: 4px; border-top: 1px solid var(--line); }
+    .ce-fn-grp { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .ce-fn-grp-lbl { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 6px 8px 4px; }
+    .ce-fn-row { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; text-align: left; border: 0; background: transparent; border-radius: 8px; padding: 6px 8px; cursor: pointer; font-family: inherit; min-width: 0; }
+    .ce-fn-row:hover { background: var(--i-soft); }
+    .ce-fn-sig { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; font-weight: 700; color: var(--i-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .ce-fn-help { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+    .ce-fn-now { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; font-size: 12px; color: var(--ink); background: #fff; border: 1px solid var(--i-border); border-radius: 10px; padding: 8px 12px; }
+    .ce-fn-now svg { color: var(--i); align-self: center; flex-shrink: 0; }
+    .ce-fn-now .ce-fn-help { font-size: 12px; }
+    code.ce-fn-eg { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11.5px; color: var(--i-deep); background: var(--i-soft); padding: 1px 6px; border-radius: 5px; }
+    @media (max-width: 620px) { .ce-fn-all { grid-template-columns: 1fr; } }
 
     .ce-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
     .ce-field { display: flex; flex-direction: column; gap: 6px; }
@@ -1523,8 +1538,44 @@
     .pbfs-health {
         .pbcfg-rail { margin-bottom: 14px; }
         .ed-errbox { margin-bottom: 14px; }
+        // WDGAP W2-F — "Tax year starts in", one quiet row
+        .pbfs-taxyear { margin-bottom: 14px; padding: 14px 18px; }
+        .pbfs-taxyear-row { display: flex; align-items: center; gap: 14px; }
+        .pbfs-taxyear-ic {
+            flex: none; display: inline-grid; place-items: center; width: 34px; height: 34px;
+            border-radius: 10px; background: #F1EFFA; color: #5A4BB0;
+            svg { width: 17px; height: 17px; }
+        }
+        .pbfs-taxyear-txt { flex: 1; min-width: 0; }
+        .pbfs-taxyear-l { display: block; font-size: 13.5px; font-weight: 700; color: #1E1B2E; margin: 0; }
+        .pbfs-taxyear-help { font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+        .pbfs-taxyear-sel {
+            // the panel's form rules make every select full width; this one sits
+            // at the end of its row
+            flex: none; width: auto; min-width: 150px; max-width: 220px;
+            height: 36px; padding: 0 12px; border-radius: 10px;
+            border: 1px solid var(--line); background: #fff; color: #1E1B2E; font-size: 13px; font-weight: 600;
+            &:focus { outline: none; border-color: #5A4BB0; box-shadow: 0 0 0 3px rgba(90,75,176,.15); }
+            &:disabled { background: #F7F7FA; color: var(--muted); cursor: not-allowed; }
+        }
+        .pbfs-taxyear-warn {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+            padding: 10px 12px; border-radius: 10px; background: #FEF6E7; border: 1px solid #F3DDB0;
+            color: #7A4E07; font-size: 12.5px; line-height: 1.45;
+            animation: pbfsTyIn .2s ease-out both;
+            > svg { flex: none; width: 16px; height: 16px; color: #B7791F; }
+        }
+        .pbfs-taxyear-wt { flex: 1; min-width: 200px; }
+        .pbfs-taxyear-acts { display: inline-flex; gap: 8px; }
+        @media (max-width: 640px) {
+            .pbfs-taxyear-row { flex-wrap: wrap; }
+            .pbfs-taxyear-sel { width: 100%; }
+        }
     }
 }
+
+@keyframes pbfsTyIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pbfs .pbfs-health .pbfs-taxyear-warn { animation: none; } }
 
 /* SCHEMECTX P3 — where the settings panel used to be. Only ever seen on a
    database that has the studio without the guided setup, which is why it is

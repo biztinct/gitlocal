@@ -140,7 +140,10 @@ const PEOPLE_CONTRACTS = ["pb_records.group_records_viewer",
                           "pb_demo.group_payobook_demo"];
 // Compliance › Filings / Bank / Safeguards / Audit: pb_compliance_hub's
 // lens gates (compliance_hub.js).
-const CMP_FILINGS = ["pb_hr_govt.group_pb_hr_govt_user"];
+// WDGAP S2 (owner ruling FG1): the Filings lens is shown to payroll
+// officers/managers AND the "Government reports" permission — the same three
+// groups as pb_compliance_hub FILINGS_GATE and pb_form_lines OFFICER_GROUPS.
+const CMP_FILINGS = ["pb_hr_payroll_base.group_payroll_base_officer", "pb_hr_payroll_base.group_payroll_base_manager", "pb_hr_govt.group_pb_hr_govt_user"];
 const CMP_BANK = ["base.group_user"];
 const CMP_YOUNG = [PAYROLL_USER, "hr_attendance.group_hr_attendance_officer"];
 const CMP_AUDIT = [PAYROLL_MGR, SYSTEM];

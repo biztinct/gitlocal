@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- R22: the Form builder button on the full contract form, in
+       the form's top bar beside "Set up workflow" (same slot, same button
+       style). Administrator only: drawn when the server says so (see
+       full_form_button.js). W22: no double hyphen in an XML comment. W23:
+       one class attribute per element. PRD-3: one sentence per line. -->
+  <t t-name="pb_form_studio_contracts.FullFormButton" t-inherit="web.FormView" t-inherit-mode="extension">
+    <xpath expr="//t[@t-set-slot='layout-actions']" position="inside">
+      <button t-if="fs3Full and fs3Full.can" type="button" class="btn btn-outline-primary ms-2 pbfs-fullbtn" t-att-disabled="fs3Full.busy" t-on-click="fs3FullOpen" title="Add or move fields on this screen" aria-label="Form builder">
+        <t t-out="fs3FullIc('wand', 15)"/><span class="pbfs-fullbtn-t">Form builder</span>
+      </button>
+    </xpath>
+  </t>
+
+</templates>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         Who sees a pattern: attendance officers read, attendance managers
+         change and make drafts (ACL), only for the companies they work in
+         (these global rules). The board checks the same groups first.
+         ================================================================== -->
+
+    <record id="rule_pb_shift_pattern_company" model="ir.rule">
+        <field name="name">Shift pattern: company</field>
+        <field name="model_id" ref="model_pb_shift_pattern"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_shift_pattern_slot_company" model="ir.rule">
+        <field name="name">Shift pattern day: company</field>
+        <field name="model_id" ref="model_pb_shift_pattern_slot"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_shift_pattern_team_company" model="ir.rule">
+        <field name="name">Shift pattern team: company</field>
+        <field name="model_id" ref="model_pb_shift_pattern_team"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_shift_pattern_member_company" model="ir.rule">
+        <field name="name">Shift pattern person: company</field>
+        <field name="model_id" ref="model_pb_shift_pattern_member"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

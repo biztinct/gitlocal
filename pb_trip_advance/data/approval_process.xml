@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Owner ruling TA1: the catalogue row a trip cash advance settlement is
+         approved under. It decides how much of a person's claims the advance
+         covers and what comes off their pay, so it is money: never one of an
+         "approve selected" batch in the Approvals inbox. -->
+    <record id="process_tripadvance" model="biz.approval.process">
+        <field name="key">tripadvance</field>
+        <field name="name">Trip cash advance settlements</field>
+        <field name="area">pay</field>
+        <field name="model_name">pb.trip.advance</field>
+        <field name="money" eval="True"/>
+        <field name="description">What a trip's cash advance covered, and the part not spent taken back.</field>
+        <field name="sequence">207</field>
+    </record>
+</odoo>

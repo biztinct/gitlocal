@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The notice is written here and published here. The board that shows
+         who has answered is People > Privacy (privacy_lens.js); these two
+         views are where its "Write the notice" / "New version" buttons land. -->
+    <record id="view_pb_privacy_notice_form" model="ir.ui.view">
+        <field name="name">pb.privacy.notice.form</field>
+        <field name="model">pb.privacy.notice</field>
+        <field name="arch" type="xml">
+            <form string="Privacy notice">
+                <header>
+                    <button name="action_publish" type="object" string="Publish"
+                            class="btn-primary" invisible="state != 'draft'"
+                            confirm="Everybody in this company will be asked to read this notice and answer it on their next visit to My Payobook. Publish it now?"/>
+                    <button name="action_new_version" type="object" string="Write a new version"
+                            invisible="state != 'published'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,published"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="status" invisible="state != 'draft'">
+                        This is a starting point. Read it carefully and change it so that it says what your company really does with people's details, then publish it.
+                    </div>
+                    <div class="alert alert-secondary" role="status" invisible="state == 'draft'">
+                        A published notice cannot be changed, because people have answered it. Use "Write a new version" to change the words; everybody is then asked again.
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="state != 'draft'" placeholder="How we use your personal details"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="version" invisible="not version"/>
+                        </group>
+                        <group>
+                            <field name="published_on" invisible="not published_on"/>
+                            <field name="published_by" invisible="not published_by"/>
+                            <field name="replaced_on" invisible="not replaced_on"/>
+                        </group>
+                    </group>
+                    <field name="body" readonly="state != 'draft'" options="{'height': 320}"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_privacy_notice_list" model="ir.ui.view">
+        <field name="name">pb.privacy.notice.list</field>
+        <field name="model">pb.privacy.notice</field>
+        <field name="arch" type="xml">
+            <list string="Privacy notices" create="false">
+                <field name="company_id"/>
+                <field name="name"/>
+                <field name="version"/>
+                <field name="state" widget="badge" decoration-success="state == 'published'" decoration-muted="state == 'replaced'"/>
+                <field name="published_on"/>
+                <field name="published_by"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_privacy_notice" model="ir.actions.act_window">
+        <field name="name">Privacy notices</field>
+        <field name="res_model">pb.privacy.notice</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

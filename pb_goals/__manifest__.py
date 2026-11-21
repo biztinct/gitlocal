@@ -65,10 +65,15 @@ WHAT THIS MODULE IS
     what people asked to change and how the scores came out — by manager and
     by part of the business, with a spreadsheet.
 
-WHAT IT DELIBERATELY DOES NOT DO. Calibration and bell curves, any link to
-pay, and 360-degree feedback are not here and are not planned in this shape.
+  * **Into the pay review.** When a year is closed, each person's score
+    becomes their latest performance score, and the pay review can read the
+    scores of a goals year. Where a review form is in use, the pay review
+    starts from the overall review result instead.
+
+WHAT IT DELIBERATELY DOES NOT DO. Calibration and bell curves and 360-degree
+feedback are not here and are not planned in this shape.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

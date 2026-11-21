@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-C — "Your yearly limits" on /my/expenses (read-only, only
+       when the company set a limit). No inline style: the bar is a native
+       <progress> (UPDATES G95). -->
+  <template id="portal_my_expenses_limits" name="Expenses: yearly limits (ESS)"
+            inherit_id="pb_me_expense.portal_my_expenses">
+    <xpath expr="//div[hasclass('pbex')]/t[@t-call='pb_me_portal.ess_hero']" position="after">
+      <section t-if="pb_limits" class="pbal-sect" aria-labelledby="pbal-h">
+        <h2 class="pbex-h2" id="pbal-h">Your yearly limits</h2>
+        <ul class="pbal-list">
+          <li t-foreach="pb_limits" t-as="l" t-att-class="'pbal-row is-none' if l['none_left'] else 'pbal-row'">
+            <span class="pbal-what" t-out="l['what']"/>
+            <progress class="pbal-bar" max="100" t-att-value="l['pct']"/>
+            <span class="pbal-facts">
+              <span>Limit <b t-out="l['limit']"/></span>
+              <span>Used <b t-out="l['used']"/></span>
+              <span t-if="l['waiting']">Waiting <b t-out="l['waiting']"/></span>
+              <span class="pbal-left">Left <b t-out="l['left']"/></span>
+            </span>
+          </li>
+        </ul>
+      </section>
+    </xpath>
+  </template>
+
+</odoo>

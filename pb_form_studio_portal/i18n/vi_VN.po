@@ -1,0 +1,1338 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "\"%s\" cannot be shown on My Payobook."
+msgstr "\"%s\" không thể hiển thị trên My Payobook."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s in %(s)s"
+msgstr "%(f)s trong %(s)s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s: %(w)s"
+msgstr "%(f)s: %(w)s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s: %(what)s"
+msgstr "%(f)s: %(what)s"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(label)s: \"Employee can change it\" switched off: %(why)s"
+msgstr "%(label)s: đã tắt \"Nhân viên có thể thay đổi\": %(why)s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(n)s of %(total)s"
+msgstr "%(n)s / %(total)s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(s)s: %(n)s"
+msgstr "%(s)s: %(n)s"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(what)s can be at most %(n)s characters."
+msgstr "%(what)s tối đa %(n)s ký tự."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(who)s published this page after you started your changes. Publishing now would replace their page with yours."
+msgstr "%(who)s đã đăng trang này sau khi bạn bắt đầu thay đổi. Đăng bây giờ sẽ thay trang của họ bằng trang của bạn."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s changes not yet published"
+msgstr "%s thay đổi chưa đăng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s fields"
+msgstr "%s trường"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s gets its own page"
+msgstr "%s có trang riêng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s moved"
+msgstr "Đã chuyển %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s removed"
+msgstr "Đã xóa %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s taken off the page"
+msgstr "Đã gỡ %s khỏi trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s uses the page for all companies again"
+msgstr "%s lại dùng trang chung cho mọi công ty"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: My Payobook tick put back as before the page"
+msgstr "%s: dấu chọn My Payobook trở lại như trước khi có trang"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: placed on the My Payobook page"
+msgstr "%s: đặt lên trang My Payobook"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: taken off the My Payobook page"
+msgstr "%s: gỡ khỏi trang My Payobook"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid ". Look only: nothing here can be changed or sent."
+msgstr ". Chỉ xem: không thể thay đổi hay gửi gì ở đây."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "1 change not yet published"
+msgstr "1 thay đổi chưa đăng"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<option value=\"\">Choose…</option>"
+msgstr "<option value=\"\">Chọn…</option>"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_details_page_door
+msgid "<span class=\"pbmd-door-tx\"><b>Company details</b><span>See them and ask for a change on My Profile</span></span>"
+msgstr "<span class=\"pbmd-door-tx\"><b>Thông tin công ty</b><span>Xem và yêu cầu thay đổi trên Hồ sơ của tôi</span></span>"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<span class=\"pbmd-door-tx\"><b>Family, ID papers, photo and bank account</b><span>See them all and ask for a change</span></span>"
+msgstr "<span class=\"pbmd-door-tx\"><b>Gia đình, giấy tờ tùy thân, ảnh và tài khoản ngân hàng</b><span>Xem tất cả và yêu cầu thay đổi</span></span>"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<span>Note to HR (optional)</span>"
+msgstr "<span>Ghi chú cho Nhân sự (không bắt buộc)</span>"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "A change is already waiting for HR; sending again replaces it."
+msgstr "Đã có một thay đổi đang chờ Nhân sự; gửi lại sẽ thay thế nó."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A page can have at most %s sections."
+msgstr "Một trang có tối đa %s phần."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A section can hold at most %s fields."
+msgstr "Một phần chứa tối đa %s trường."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A section name"
+msgstr "Tên phần"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Add a picture"
+msgstr "Thêm ảnh"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Add a section"
+msgstr "Thêm một phần"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "All companies"
+msgstr "Mọi công ty"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always first on the page"
+msgstr "Luôn đứng đầu trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always on the page; the order can change"
+msgstr "Luôn có trên trang; có thể đổi thứ tự"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always shown"
+msgstr "Luôn hiển thị"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Amber"
+msgstr "Hổ phách"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Another administrator published this page after you started your changes."
+msgstr "Một quản trị viên khác đã đăng trang này sau khi bạn bắt đầu thay đổi."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Any Country of Work"
+msgstr "Mọi quốc gia làm việc"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/settings_card.js:0
+msgid "Arrange the employee's My Profile page: sections, fields, headings and a banner picture."
+msgstr "Sắp xếp trang Hồ sơ của tôi của nhân viên: phần, trường, tiêu đề và ảnh bìa."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Banner picture"
+msgstr "Ảnh bìa"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Banner picture removed"
+msgstr "Đã gỡ ảnh bìa"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Blue"
+msgstr "Xanh dương"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Build"
+msgstr "Thiết kế"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Build or preview"
+msgstr "Thiết kế hoặc xem trước"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Change the picture"
+msgstr "Đổi ảnh"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Change what is wrong and send it. Some details are saved at once; the others change on your record once HR approves them."
+msgstr "Sửa phần chưa đúng rồi gửi. Một số thông tin được lưu ngay; phần còn lại thay đổi trong hồ sơ khi Nhân sự duyệt."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Changes discarded. Nothing was published."
+msgstr "Đã bỏ thay đổi. Không có gì được đăng."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Changes once HR approves it."
+msgstr "Thay đổi khi Nhân sự duyệt."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Clear the filter"
+msgstr "Xóa bộ lọc"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Close the page builder"
+msgstr "Đóng trình dựng trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Colour"
+msgstr "Màu"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Columns"
+msgstr "Cột"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Company details"
+msgstr "Thông tin công ty"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Country of Work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Desktop"
+msgstr "Máy tính"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Discard"
+msgstr "Bỏ"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Drag a field onto a section, or tap it to add it to the section you picked. Every field the employee may see is here; pay figures never are."
+msgstr "Kéo một trường vào một phần, hoặc chạm để thêm vào phần bạn đã chọn. Mọi trường nhân viên được xem đều ở đây; số liệu lương thì không bao giờ."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Drop a field here"
+msgstr "Thả một trường vào đây"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Each section needs its own name tag. Start again from the published page."
+msgstr "Mỗi phần cần một mã riêng. Hãy bắt đầu lại từ trang đã đăng."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_profile_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "Edit this page"
+msgstr "Sửa trang này"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Employee can change"
+msgstr "Nhân viên có thể thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Employee can change it"
+msgstr "Nhân viên có thể thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Employees see the standard page again at once. Fields go back to how they were shown on My Payobook before the page was first published. The history is kept, so you can restore this page later."
+msgstr "Nhân viên thấy lại trang chuẩn ngay. Các trường trở lại như trước khi trang được đăng lần đầu. Lịch sử được giữ, nên bạn có thể khôi phục trang này sau."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Every employee sees it the next time they open My Profile."
+msgstr "Mọi nhân viên sẽ thấy khi mở Hồ sơ của tôi lần tới."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Family, ID papers, photo and bank account"
+msgstr "Gia đình, giấy tờ tùy thân, ảnh và tài khoản ngân hàng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Fields"
+msgstr "Trường"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Fields and page settings"
+msgstr "Trường và thiết lập trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Find a field"
+msgstr "Tìm một trường"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.model,name:pb_form_studio_portal.model_pb_form_studio
+msgid "Form builder"
+msgstr "Trình tạo biểu mẫu"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Full"
+msgstr "Toàn bộ"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Give this company its own page"
+msgstr "Cho công ty này một trang riêng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Green"
+msgstr "Xanh lá"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Grey"
+msgstr "Xám"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "HR approves"
+msgstr "Nhân sự duyệt"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "HR approves the change"
+msgstr "Nhân sự duyệt thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Half"
+msgstr "Một nửa"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Header"
+msgstr "Đầu trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Header colour: %s"
+msgstr "Màu đầu trang: %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Heading"
+msgstr "Tiêu đề"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "History"
+msgstr "Lịch sử"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "JPG, PNG or WebP, at most 2 MB. It is cut to the width of the header."
+msgstr "JPG, PNG hoặc WebP, tối đa 2 MB. Ảnh được cắt theo chiều rộng đầu trang."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep editing"
+msgstr "Tiếp tục sửa"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep going"
+msgstr "Tiếp tục"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep this page"
+msgstr "Giữ trang này"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Label"
+msgstr "Nhãn"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Leave a language empty to keep the standard words."
+msgstr "Để trống một ngôn ngữ để giữ chữ chuẩn."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Line under the heading"
+msgstr "Dòng dưới tiêu đề"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Move down"
+msgstr "Chuyển xuống"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Move up"
+msgstr "Chuyển lên"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "My %s"
+msgstr "%s của tôi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/settings_card.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.actions.client,name:pb_form_studio_portal.action_page_builder
+msgid "My Payobook page"
+msgstr "Trang My Payobook"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "My Profile"
+msgstr "Hồ sơ của tôi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "My Profile is the standard page again."
+msgstr "Hồ sơ của tôi đã trở lại trang chuẩn."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "My requests"
+msgstr "Yêu cầu của tôi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "New section"
+msgstr "Phần mới"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "No"
+msgstr "Không"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "No change requests yet."
+msgstr "Chưa có yêu cầu thay đổi."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "No changes yet"
+msgstr "Chưa có thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "No field matches"
+msgstr "Không có trường phù hợp"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Nobody with a My Payobook login was found to preview as."
+msgstr "Không tìm thấy ai có tài khoản My Payobook để xem trước."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Not on the page"
+msgstr "Không có trên trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Nothing published yet: employees see the standard page."
+msgstr "Chưa đăng gì: nhân viên thấy trang chuẩn."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+msgid "Nothing was changed."
+msgstr "Không có gì thay đổi."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Offered in \"Request a change\" on the page."
+msgstr "Có trong \"Yêu cầu thay đổi\" trên trang."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "On the page"
+msgstr "Trên trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "On the page means shown on My Payobook: the same tick as in the employee Form builder. Taking a field off never deletes what is stored."
+msgstr "Trên trang nghĩa là hiển thị trên My Payobook: cùng dấu chọn như trong trình tạo biểu mẫu nhân viên. Gỡ một trường không bao giờ xóa dữ liệu đã lưu."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "On the page, employee can change"
+msgstr "Trên trang, nhân viên có thể thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "One column"
+msgstr "Một cột"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Only %s"
+msgstr "Chỉ %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Only an empty section can be removed, and the page keeps at least one."
+msgstr "Chỉ xóa được phần trống, và trang luôn giữ ít nhất một phần."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Open my own My Profile"
+msgstr "Mở Hồ sơ của tôi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Opening the page builder…"
+msgstr "Đang mở trình dựng trang…"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Order in %s"
+msgstr "Thứ tự trong %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Own"
+msgstr "Riêng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Own field"
+msgstr "Trường riêng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio_portal.field_pb_form_layout__page
+msgid "Page"
+msgstr "Trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Page for"
+msgstr "Trang cho"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Photo, name and department"
+msgstr "Ảnh, tên và phòng ban"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Pick a header colour from the list."
+msgstr "Chọn màu đầu trang trong danh sách."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Pick the header, a section or a field on the page to change it."
+msgstr "Chọn đầu trang, một phần hoặc một trường trên trang để thay đổi."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Picture description"
+msgstr "Mô tả ảnh"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Preview"
+msgstr "Xem trước"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Preview as"
+msgstr "Xem trước như"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Preview of My Profile"
+msgstr "Xem trước Hồ sơ của tôi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish"
+msgstr "Đăng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish for everyone"
+msgstr "Đăng cho mọi người"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish mine over it"
+msgstr "Đăng bản của tôi đè lên"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish this page for every employee?"
+msgstr "Đăng trang này cho mọi nhân viên?"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Published the My Payobook page, version %s"
+msgstr "Đã đăng trang My Payobook, phiên bản %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Published. %s changes are now live for every employee."
+msgstr "Đã đăng. %s thay đổi đã có hiệu lực cho mọi nhân viên."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Published. 1 change is now live for every employee."
+msgstr "Đã đăng. 1 thay đổi đã có hiệu lực cho mọi nhân viên."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Publishing did not work. Nothing was changed."
+msgstr "Đăng không thành công. Không có gì thay đổi."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Purple"
+msgstr "Tím"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Put it on the page"
+msgstr "Đặt lên trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Remove"
+msgstr "Gỡ"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Remove this section"
+msgstr "Xóa phần này"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Request a change"
+msgstr "Yêu cầu thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Reset My Profile to the standard page?"
+msgstr "Đặt lại Hồ sơ của tôi về trang chuẩn?"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Reset the My Payobook page to the standard page"
+msgstr "Đã đặt lại trang My Payobook về trang chuẩn"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Reset to the standard page"
+msgstr "Đặt lại về trang chuẩn"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Restore"
+msgstr "Khôi phục"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Restored the page published %s"
+msgstr "Đã khôi phục trang đăng lúc %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Rose"
+msgstr "Hồng"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Saved at once."
+msgstr "Được lưu ngay."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Saves at once"
+msgstr "Lưu ngay"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Screen size"
+msgstr "Cỡ màn hình"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Section"
+msgstr "Phần"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Section name: %s"
+msgstr "Tên phần: %s"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Send"
+msgstr "Gửi"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Sent to HR. Nothing changes on your record until it is approved."
+msgstr "Đã gửi Nhân sự. Hồ sơ của bạn không đổi cho đến khi được duyệt."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Settings"
+msgstr "Thiết lập"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Shown only to people whose Country of Work is"
+msgstr "Chỉ hiển thị với người có quốc gia làm việc là"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Shown when a field on the page can be changed by the employee"
+msgstr "Hiện khi nhân viên có thể thay đổi một trường trên trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Someone published first"
+msgstr "Có người đã đăng trước"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Standard"
+msgstr "Chuẩn"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Standard field"
+msgstr "Trường chuẩn"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again"
+msgstr "Làm lại"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again from the published page"
+msgstr "Làm lại từ trang đã đăng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again from their page"
+msgstr "Làm lại từ trang của họ"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Take it off the page"
+msgstr "Gỡ khỏi trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Teal"
+msgstr "Xanh mòng két"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That did not work. Nothing was changed."
+msgstr "Không thành công. Không có gì thay đổi."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That file could not be read."
+msgstr "Không đọc được tệp đó."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "That file is empty."
+msgstr "Tệp đó trống."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That version is loaded. Publish to make it live again."
+msgstr "Đã nạp phiên bản đó. Hãy đăng để áp dụng lại."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The banner image could not be found. Upload it again."
+msgstr "Không tìm thấy ảnh bìa. Hãy tải lên lại."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee"
+msgstr "Nhân viên"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee can change it"
+msgstr "Nhân viên có thể thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee changes it with \"Request a change\"; HR approves every change."
+msgstr "Nhân viên thay đổi bằng \"Yêu cầu thay đổi\"; Nhân sự duyệt mọi thay đổi."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The heading"
+msgstr "Tiêu đề"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The label is the field's own: it changes on every screen, as in the Form builder."
+msgstr "Nhãn là của chính trường: đổi ở mọi màn hình, như trong trình tạo biểu mẫu."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The line under the heading"
+msgstr "Dòng dưới tiêu đề"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The page being changed"
+msgstr "Trang đang được sửa"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "The page builder could not open."
+msgstr "Không mở được trình dựng trang."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The page needs at least one section."
+msgstr "Trang cần ít nhất một phần."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The picture description"
+msgstr "Mô tả ảnh"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "The picture is too big: at most 2 MB."
+msgstr "Ảnh quá lớn: tối đa 2 MB."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+msgid "This change could not be sent."
+msgstr "Không gửi được thay đổi này."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "This company shows the page for all companies."
+msgstr "Công ty này dùng trang chung cho mọi công ty."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "This version cannot be restored."
+msgstr "Không khôi phục được phiên bản này."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Two columns"
+msgstr "Hai cột"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Undo the last publish"
+msgstr "Hoàn tác lần đăng cuối"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Untitled section"
+msgstr "Phần chưa đặt tên"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Uploaded a banner picture for My Payobook (%s KB)"
+msgstr "Đã tải ảnh bìa cho My Payobook (%s KB)"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Use a JPG, PNG or WebP picture."
+msgstr "Hãy dùng ảnh JPG, PNG hoặc WebP."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Use the page for all companies again"
+msgstr "Dùng lại trang chung cho mọi công ty"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "What the picture shows (for screen readers)"
+msgstr "Ảnh thể hiện gì (cho trình đọc màn hình)"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "When the employee changes it"
+msgstr "Khi nhân viên thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "White"
+msgstr "Trắng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Width"
+msgstr "Độ rộng"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Your details"
+msgstr "Thông tin của bạn"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Your details on file. Bank changes go through a separate secure flow."
+msgstr "Thông tin của bạn trong hồ sơ. Thay đổi ngân hàng đi theo một quy trình bảo mật riêng."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Your unpublished changes from last time are back."
+msgstr "Các thay đổi chưa đăng lần trước đã được khôi phục."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "another administrator"
+msgstr "một quản trị viên khác"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "changeable fields, in page order"
+msgstr "trường có thể thay đổi, theo thứ tự trang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "employee can change it"
+msgstr "nhân viên có thể thay đổi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "full width"
+msgstr "toàn chiều rộng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "half width"
+msgstr "nửa chiều rộng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "label"
+msgstr "nhãn"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "look only"
+msgstr "chỉ xem"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "one column"
+msgstr "một cột"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "saves at once"
+msgstr "lưu ngay"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "two columns"
+msgstr "hai cột"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s to publish"
+msgstr "%s chờ đăng"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "no login yet"
+msgstr "chưa có tài khoản"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Field code: %s"
+msgstr "Mã trường: %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "No employee was found to preview as."
+msgstr "Không tìm thấy nhân viên nào để xem trước."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "There is no page to preview."
+msgstr "Không có trang nào để xem trước."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "Your login has no employee record"
+msgstr "Tài khoản của bạn chưa gắn với hồ sơ nhân viên nào"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "My Profile shows a person's own details, so there is nothing to show for you here."
+msgstr "Hồ sơ của tôi hiển thị thông tin của chính mỗi người, nên ở đây không có gì để hiển thị cho bạn."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "You can still arrange this page for your employees and preview it as any of them."
+msgstr "Bạn vẫn có thể sắp xếp trang này cho nhân viên và xem trước dưới tên bất kỳ ai trong số họ."
+

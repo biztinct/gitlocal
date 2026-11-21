@@ -154,11 +154,14 @@ class PbGoalCycle(models.Model):
         return True
 
     def action_close(self):
+        """The old form button. WDGAP QF4 (A4): it used to write
+        ``state='closed'`` and nothing else — no freeze, no filing, no score
+        stamped on anybody. It now goes through the real close, with its
+        checks (HR lead only, refuses while anything is unscored)."""
         for cycle in self:
             if cycle.state == 'closed':
                 continue
-            cycle.write({'state': 'closed'})
-            cycle.message_post(body=_("Closed."))
+            self.env['pb.goal.cycle'].close_cycle(cycle.id, with_gaps=False)
         return True
 
     def action_back_to_draft(self):

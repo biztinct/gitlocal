@@ -129,7 +129,24 @@
                 &.no { background: var(--rose-s); color: var(--rose); }
                 // D1 — asked for after the days had gone. Amber, because it
                 // is something to LOOK at rather than something wrong.
-                &.backdated { background: #FEF3C7; color: #92400E; } } }
+                &.backdated { background: #FEF3C7; color: #92400E; }
+                // WF2 P6c (D36): sent back to the employee, not refused —
+                // the Approvals inbox's own "Sent back" amber, with a ring so
+                // it never reads as the "Backdated" flag beside it
+                &.back { background: #FFF7E6; color: #B45309; box-shadow: inset 0 0 0 1px #FCD9A0; } } }
+        // the reason the approver gave, under the chip
+        .why { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; padding: 6px 9px;
+            border-radius: 8px; background: #FFFBF2; border: 1px solid #FCE7C2; color: #7C4A03;
+            font-size: 11.5px; line-height: 1.45;
+            .i { display: inline-grid; flex: none; margin-top: 1px; color: #B45309; }
+            b { font-weight: 700; } }
+        // "Asked again after …" / "Asked again on …": a quiet link line
+        .again { display: inline-flex; align-items: center; gap: 5px; margin-top: 5px; padding: 0; border: 0;
+            background: none; color: var(--p); font-size: 11.5px; font-weight: 600; cursor: pointer;
+            text-align: left;
+            &:hover span:last-child { text-decoration: underline; }
+            &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; border-radius: 4px; } }
+        .again-btn { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
         // The certificate, when one came with the request.
         .papers { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
             .paper { display: inline-flex; align-items: center; gap: 4px; max-width: 220px;
@@ -185,7 +202,15 @@
         textarea, input, select { width: 100%; border: 1px solid var(--line); border-radius: var(--r-sm);
             padding: 9px 11px; font-family: inherit; font-size: 13px; color: var(--ink); background: #fff;
             &:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 3px rgba(5,150,105,.15); } }
-        textarea { min-height: 68px; resize: vertical; } }
+        textarea { min-height: 68px; resize: vertical; }
+        // WF2 P6c (D36): "Ask again" — what the drawer was filled in from
+        .again-box { display: flex; gap: 10px; padding: 11px 12px; border-radius: var(--r-sm);
+            background: #F4F2FC; border: 1px solid #DCD6F3; color: #3B2F86;
+            .i { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 8px;
+                background: #5A4BB0; color: #fff; }
+            .tx { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+            .t { font-weight: 700; font-size: 13px; }
+            .s { font-size: 12px; line-height: 1.45; color: #4B4377; overflow-wrap: anywhere; b { font-weight: 700; } } } }
     .fld { display: flex; flex-direction: column; gap: 5px; position: relative;
         > span { font-size: 11.5px; font-weight: 600; color: var(--muted); } }
     .fld-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

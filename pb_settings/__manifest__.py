@@ -51,13 +51,14 @@ caller's own user account and never accepted from the browser, and thirteen
 whitelisted fields on it. `pb.company.profile` is the whole guard; `res.company`
 gains the product's audit mixin so a change is recorded wherever it came from.
 """,
-    'version': '19.0.1.10.1',
+    'version': '19.0.1.10.3',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': [
         'web',
+        'auth_signup',
         'pb_hub',               # HubShell's back chip + openHub + the ⌘K registry
         'pb_import_kit',        # pbim tokens + the shared Lucide ic() registry
         # The three modules whose ACTIONS and GROUPS this hub names directly. The
@@ -77,7 +78,9 @@ gains the product's audit mixin so a change is recorded wherever it came from.
     ],
     'data': [
         'security/pb_settings_security.xml',
+        'security/ir.model.access.csv',
         'views/pb_settings_action.xml',
+        'views/outgoing_email_views.xml',
         'data/pb_sidebar.xml',
         'data/biz_audit_rule.xml',
     ],

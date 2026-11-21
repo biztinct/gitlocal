@@ -117,6 +117,13 @@ class PbGoalCycleClose(models.Model):
                 "%(n)s %(word)s never agreed and will be closed unscored.",
                 n=len(never),
                 word=counted(len(never), _('sheet was'), _('sheets were'))))
+        # WDGAP QF4 (R4): closing also stamps each score on the person as
+        # their latest performance score — said here, before the press.
+        if live and 'pb_performance_rating' in self.env['hr.employee']._fields:
+            extra.append(_(
+                "Each score also becomes the person's latest performance "
+                "score, which the next pay review starts from. Reopening the "
+                "year does not take that back."))
         return {
             'ok': True,
             'cycle': cycle.name or '',

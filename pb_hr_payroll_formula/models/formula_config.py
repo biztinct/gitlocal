@@ -1388,7 +1388,7 @@ class HrFormulaConfig(models.Model):
                     expanded = self.env['hr.formula.rate.table'].expand_brackets(
                         formula, self)
                     is_valid, message = validator.validate_formula(
-                        expanded, column_map)
+                        expanded, column_map, translate=self.env._)
                 rule.write({
                     'is_valid': is_valid,
                     'validation_message': message if not is_valid else ''

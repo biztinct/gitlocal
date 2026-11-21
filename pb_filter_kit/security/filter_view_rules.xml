@@ -31,4 +31,11 @@
         <field name="groups" eval="[(4, ref('base.group_system'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
+
+    <!-- kit 1.5.0: a company's default columns are that company's. -->
+    <record id="rule_pb_list_layout_company" model="ir.rule">
+        <field name="name">List columns for everyone: own companies</field>
+        <field name="model_id" ref="model_pb_list_layout"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
 </odoo>

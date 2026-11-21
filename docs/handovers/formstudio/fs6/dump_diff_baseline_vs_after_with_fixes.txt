@@ -1,0 +1,139 @@
+SAME admin__con_ID.json           rows=122 vu False->True errors 0->0
+SAME admin__con_IN.json           rows=122 vu False->True errors 0->0
+SAME admin__con_SG.json           rows=122 vu False->True errors 0->0
+SAME admin__con_VN.json           rows=122 vu False->True errors 0->0
+SAME admin__con_none.json         rows=122 vu False->True errors 0->0
+DIFF admin__emp_ID.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF admin__emp_IN.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF admin__emp_SG.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF admin__emp_VN.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_info', 'tham_gia_bhxh', 1, 'Tham gia BHXH')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:payroll_info', 'tham_gia_bhxh', 1, 'Social insurance (BHXH)')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF admin__emp_none.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+SAME hrmanager__con_ID.json       rows=120 vu False->True errors 0->0
+SAME hrmanager__con_IN.json       rows=120 vu False->True errors 0->0
+SAME hrmanager__con_SG.json       rows=120 vu False->True errors 0->0
+SAME hrmanager__con_VN.json       rows=120 vu False->True errors 0->0
+SAME hrmanager__con_none.json     rows=120 vu False->True errors 0->0
+DIFF hrmanager__emp_ID.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF hrmanager__emp_IN.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF hrmanager__emp_SG.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF hrmanager__emp_VN.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_info', 'tham_gia_bhxh', 1, 'Tham gia BHXH')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:payroll_info', 'tham_gia_bhxh', 1, 'Social insurance (BHXH)')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF hrmanager__emp_none.json errors 0 -> 0 None None
+   - 1x ('A', 'page:payroll_information', 1, '')
+   - 1x ('F', 'page:payroll_information', 'contract_date_start', 1, 'rw', '')
+   - 1x ('F', 'page:payroll_information', 'wage', 1, 'rw', '')
+   - 1x ('L', 'page:payroll_information', 'contract_date_start', 1, 'Contract')
+   - 1x ('L', 'page:payroll_information', 'wage', 1, 'Wage?')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+SAME hruser__con_ID.json          rows=120 vu False->True errors 0->0
+SAME hruser__con_IN.json          rows=120 vu False->True errors 0->0
+SAME hruser__con_SG.json          rows=120 vu False->True errors 0->0
+SAME hruser__con_VN.json          rows=120 vu False->True errors 0->0
+SAME hruser__con_none.json        rows=120 vu False->True errors 0->0
+DIFF hruser__emp_ID.json errors 0 -> 0 None None
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF hruser__emp_IN.json errors 0 -> 0 None None
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF hruser__emp_SG.json errors 0 -> 0 None None
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF hruser__emp_VN.json errors 0 -> 0 None None
+   - 1x ('L', 'page:payroll_info', 'tham_gia_bhxh', 1, 'Tham gia BHXH')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:payroll_info', 'tham_gia_bhxh', 1, 'Social insurance (BHXH)')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF hruser__emp_none.json errors 0 -> 0 None None
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+SAME payroll__con_ID.json         rows=120 vu False->True errors 0->0
+SAME payroll__con_IN.json         rows=120 vu False->True errors 0->0
+SAME payroll__con_SG.json         rows=120 vu False->True errors 0->0
+SAME payroll__con_VN.json         rows=120 vu False->True errors 0->0
+SAME payroll__con_none.json       rows=120 vu False->True errors 0->0
+DIFF payroll__emp_ID.json errors 0 -> 0 None None
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF payroll__emp_IN.json errors 0 -> 0 None None
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF payroll__emp_SG.json errors 0 -> 0 None None
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF payroll__emp_VN.json errors 0 -> 0 None None
+   - 1x ('L', 'page:payroll_info', 'tham_gia_bhxh', 1, 'Tham gia BHXH')
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:payroll_info', 'tham_gia_bhxh', 1, 'Social insurance (BHXH)')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+DIFF payroll__emp_none.json errors 0 -> 0 None None
+   - 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee Id')
+   + 1x ('L', 'page:work_information', 'employee_id', 1, 'Employee ID')
+TOTAL same=20 diff=20

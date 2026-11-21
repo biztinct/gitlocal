@@ -1,0 +1,22 @@
+{
+ "base": "http://fs6.localhost:8616",
+ "db": "fs_6_t",
+ "users": [
+  {"key": "admin", "login": "admin", "env": "FS6_PW_ADMIN"},
+  {"key": "hrmanager", "login": "fs6.hrmanager", "env": "FS6_PW_HRM"},
+  {"key": "payroll", "login": "fs6.payroll", "env": "FS6_PW_PAY"},
+  {"key": "hruser", "login": "fs6.hruser", "env": "FS6_PW_HRU"}
+ ],
+ "records": [
+  {"key": "emp_VN", "model": "hr.employee", "id": 5124, "cid": 257},
+  {"key": "emp_ID", "model": "hr.employee", "id": 5125, "cid": 258},
+  {"key": "emp_IN", "model": "hr.employee", "id": 5126, "cid": 259},
+  {"key": "emp_SG", "model": "hr.employee", "id": 5127, "cid": 260},
+  {"key": "emp_none", "model": "hr.employee", "id": 5128, "cid": 1},
+  {"key": "con_VN", "model": "hr.contract", "id": 2656, "cid": 257},
+  {"key": "con_ID", "model": "hr.contract", "id": 2657, "cid": 258},
+  {"key": "con_IN", "model": "hr.contract", "id": 2658, "cid": 259},
+  {"key": "con_SG", "model": "hr.contract", "id": 2659, "cid": 260},
+  {"key": "con_none", "model": "hr.contract", "id": 2660, "cid": 1}
+ ]
+}

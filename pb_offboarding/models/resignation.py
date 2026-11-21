@@ -183,6 +183,55 @@ class PbResignation(models.Model):
                     vals['company_id'] = emp.company_id.id
         return super().create(vals_list)
 
+    def write(self, vals):
+        res = super().write(vals)
+        # WDGAP QF4 (B4): the agreed last day moved after approval — the
+        # benefit end dates stamped from it follow.
+        if 'approved_lwd' in vals or 'requested_lwd' in vals:
+            for rec in self.filtered(lambda r: r.state == 'approved'):
+                rec._benefits_follow_last_day()
+        return res
+
+    # ------------------------------------------------- WDGAP QF4: benefits
+    def _benefits_follow_last_day(self):
+        """Every plan the leaver is on ends on their last working day.
+
+        PROBED, never depended on: this module does not depend on the
+        benefits module. Never raises — an approval that has been written
+        must not be undone because a benefit row could not move (R2).
+        """
+        self.ensure_one()
+        if 'pb.benefit.plan' not in self.env:
+            return 0
+        lwd = self.approved_lwd or self.requested_lwd
+        if not self.employee_id or not lwd:
+            return 0
+        try:
+            with self.env.cr.savepoint():
+                return self.env['pb.benefit.plan'].sudo()._stamp_leaving(
+                    self.employee_id, lwd)
+        except Exception:               # noqa: BLE001
+            _logger.exception('pb_offboarding: could not end the benefits '
+                              'for resignation %s', self.id)
+            return 0
+
+    def _benefits_call_off(self):
+        """The exit is off: undo only the end dates this exit stamped."""
+        self.ensure_one()
+        if 'pb.benefit.plan' not in self.env:
+            return 0
+        lwd = self.approved_lwd or self.requested_lwd
+        if not self.employee_id or not lwd:
+            return 0
+        try:
+            with self.env.cr.savepoint():
+                return self.env['pb.benefit.plan'].sudo()._clear_leaving(
+                    self.employee_id, only_day=lwd)
+        except Exception:               # noqa: BLE001
+            _logger.exception('pb_offboarding: could not clear the benefit '
+                              'end dates for resignation %s', self.id)
+            return 0
+
     # ------------------------------------------------------------- the notice
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
@@ -354,6 +403,7 @@ class PbResignation(models.Model):
             rec.message_post(body=_(
                 "Taken back by %(who)s.", who=self.env.user.name))
             rec._notify_withdrawn()
+            rec._benefits_call_off()
         return True
 
     # ------------------------------------------------------- what approval does
@@ -637,7 +687,11 @@ class PbResignation(models.Model):
         approval transaction and the caller swallows the exception, so a
         failure here is a log line rather than a resignation that half
         happened.
+
+        WDGAP QF4 (B4): this module's own use of it — benefit cover ends on
+        the last working day (probed; never raises).
         """
+        self._benefits_follow_last_day()
         return True
 
     # ------------------------------------------------------------- convenience

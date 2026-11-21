@@ -1,0 +1,315 @@
+# Translation of Payobook module pb_contract_rules (Indonesian).
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid ", plus %s typed in as earlier ones"
+msgstr ", ditambah %s yang diketik sebagai kontrak sebelumnya"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__max_months_each
+msgid "0 = no limit on one contract."
+msgstr "0 = tanpa batas untuk satu kontrak."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__gap_days
+msgid "A break longer than this starts a new row (days)"
+msgstr "Jeda lebih lama dari ini memulai urutan baru (hari)"
+
+#. module: pb_contract_rules
+#: model_terms:ir.actions.act_window,help:pb_contract_rules.action_pb_contract_rule
+msgid "Add one per country: how many fixed-term contracts may follow each other, and how long they may run in total."
+msgstr "Tambahkan satu per negara: berapa kontrak waktu tertentu boleh berturut-turut, dan berapa lama totalnya."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__max_months_total
+msgid "All fixed-term contracts in a row together, extensions included. 0 = no limit."
+msgstr "Semua kontrak waktu tertentu berturut-turut, termasuk perpanjangan. 0 = tanpa batas."
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "Archived"
+msgstr "Diarsipkan"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "Asked to extend past the fixed-term rule (%(rule)s). %(why)s Reason given: %(reason)s"
+msgstr "Diminta memperpanjang melewati aturan kontrak waktu tertentu (%(rule)s). %(why)s Alasan: %(reason)s"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__gap_days
+msgid "Contracts linked by a renewal always count as in a row. Other contracts count when the next one starts within this many days of the last one ending."
+msgstr "Kontrak yang terhubung lewat perpanjangan selalu dihitung berturut-turut. Kontrak lain dihitung bila kontrak berikutnya mulai dalam sekian hari setelah yang sebelumnya berakhir."
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "Counted: %(n)s fixed-term contract(s) in a row on the system"
+msgstr "Dihitung: %(n)s kontrak waktu tertentu berturut-turut di sistem"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__country_id
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_hr_employee__pb_fixed_term_before
+msgid "Earlier fixed-term contracts (before this system)"
+msgstr "Kontrak waktu tertentu sebelumnya (sebelum sistem ini)"
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,counts_note:pb_contract_rules.rule_vn
+msgid "Every fixed-term labour contract with this employer counts, also the ones signed before this system: type their number on the person. A trial (probation) agreement does not count."
+msgstr "Setiap kontrak kerja waktu tertentu dengan pemberi kerja ini dihitung, juga yang ditandatangani sebelum sistem ini: ketik jumlahnya di data karyawan. Perjanjian masa percobaan tidak dihitung."
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,counts_note:pb_contract_rules.rule_id
+msgid "Every time-based fixed-term contract (PKWT) with this employer counts, extensions included, also the ones signed before this system: type their number and months on the person."
+msgstr "Setiap PKWT berdasarkan jangka waktu dengan pemberi kerja ini dihitung, termasuk perpanjangan, juga yang ditandatangani sebelum sistem ini: ketik jumlah dan bulannya di data karyawan."
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "Fixed-term contract %(n)s in a row"
+msgstr "Kontrak waktu tertentu ke-%(n)s berturut-turut"
+
+#. module: pb_contract_rules
+#: model:ir.model,name:pb_contract_rules.model_pb_contract_rule model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "Fixed-term contract rule"
+msgstr "Aturan kontrak waktu tertentu"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/js/contract_rules.js:0 model:ir.actions.act_window,name:pb_contract_rules.action_pb_contract_rule model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_list
+msgid "Fixed-term contract rules"
+msgstr "Aturan kontrak waktu tertentu"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__max_in_row
+msgid "Fixed-term contracts allowed in a row"
+msgstr "Kontrak waktu tertentu berturut-turut yang diizinkan"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_employee_form_fixed_term
+msgid "Fixed-term contracts before this system"
+msgstr "Kontrak waktu tertentu sebelum sistem ini"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "Fixed-term contracts in a row would come to %(total)s months, more than the %(max)s months %(rule)s allows."
+msgstr "Kontrak waktu tertentu berturut-turut akan mencapai %(total)s bulan, lebih dari %(max)s bulan yang diizinkan %(rule)s."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_hr_employee__pb_fixed_term_before
+msgid "Fixed-term contracts this person had with you, in a row, before their contracts were kept here. They count towards the fixed-term rule."
+msgstr "Kontrak waktu tertentu berturut-turut yang dimiliki orang ini dengan Anda sebelum kontraknya disimpan di sini. Ikut dihitung dalam aturan."
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "Fixed-term rule"
+msgstr "Aturan kontrak waktu tertentu"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "Goes past it"
+msgstr "Melewatinya"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "Goes past the fixed-term rule"
+msgstr "Melewati aturan kontrak waktu tertentu"
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,source_note:pb_contract_rules.rule_id
+msgid "Government Regulation 35/2021, article 8: a time-based fixed-term contract (PKWT), extensions included, runs at most 5 years in total. To confirm with an adviser."
+msgstr "Peraturan Pemerintah 35/2021, pasal 8: PKWT berdasarkan jangka waktu, termasuk perpanjangan, paling lama 5 tahun secara keseluruhan. Perlu dikonfirmasi dengan penasihat."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_hr_employee__pb_fixed_term_months_before
+msgid "How long those earlier contracts ran in total, in months."
+msgstr "Berapa lama total kontrak sebelumnya itu, dalam bulan."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__max_in_row
+msgid "How many fixed-term contracts may follow each other before the next one should be permanent. 0 = no limit on the number."
+msgstr "Berapa kontrak waktu tertentu boleh berturut-turut sebelum yang berikutnya harus tetap. 0 = tanpa batas jumlah."
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "In a row since"
+msgstr "Berturut-turut sejak"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "In plain words"
+msgstr "Dengan kata sederhana"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__counts_note
+msgid "In plain words, for the people who decide contracts."
+msgstr "Dengan kata sederhana, untuk orang yang memutuskan kontrak."
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,name:pb_contract_rules.rule_id
+msgid "Indonesia rule"
+msgstr "Aturan Indonesia"
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,source_note:pb_contract_rules.rule_vn
+msgid "Labour Code 2019, article 20: a fixed-term contract runs at most 36 months; when it ends, one more fixed-term contract may be signed, and after that the contract should be permanent. There are exceptions (older workers, foreign workers, some union officials and state-enterprise managers). To confirm with an adviser."
+msgstr "UU Ketenagakerjaan Vietnam 2019, pasal 20: kontrak waktu tertentu paling lama 36 bulan; setelah berakhir, satu kontrak waktu tertentu lagi boleh ditandatangani, dan sesudahnya kontrak harus tetap. Ada pengecualian (pekerja lanjut usia, pekerja asing, sebagian pengurus serikat dan manajer BUMN). Perlu dikonfirmasi dengan penasihat."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__company_id
+msgid "Leave empty for every company in this country."
+msgstr "Kosongkan untuk semua perusahaan di negara ini."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__max_months_each
+msgid "Longest single contract (months)"
+msgstr "Satu kontrak terpanjang (bulan)"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__max_months_total
+msgid "Longest time in a row (months)"
+msgstr "Waktu berturut-turut terpanjang (bulan)"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "Make it permanent instead"
+msgstr "Jadikan tetap saja"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_hr_employee__pb_fixed_term_months_before
+msgid "Months on earlier fixed-term contracts (before this system)"
+msgstr "Bulan pada kontrak waktu tertentu sebelumnya (sebelum sistem ini)"
+
+#. module: pb_contract_rules
+#: model_terms:ir.actions.act_window,help:pb_contract_rules.action_pb_contract_rule
+msgid "No fixed-term contract rules yet"
+msgstr "Belum ada aturan kontrak waktu tertentu"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "One contract of %(span)s months is longer than the %(max)s months %(rule)s allows."
+msgstr "Satu kontrak %(span)s bulan lebih lama dari %(max)s bulan yang diizinkan %(rule)s."
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__name
+msgid "Rule"
+msgstr "Aturan"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "The law or policy, and who confirmed it"
+msgstr "Undang-undang atau kebijakan, dan siapa yang mengonfirmasi"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,help:pb_contract_rules.field_pb_contract_rule__source_note
+msgid "The law or policy, and who confirmed it."
+msgstr "Undang-undang atau kebijakan, dan siapa yang mengonfirmasi."
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "The limits"
+msgstr "Batasnya"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "The next one should be permanent under %s."
+msgstr "Menurut %s, kontrak berikutnya harus tetap."
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "The numbers on a fixed-term rule cannot be below zero."
+msgstr "Angka pada aturan tidak boleh di bawah nol."
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "The rule"
+msgstr "Aturannya"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "This contract goes past the fixed-term rule (%(rule)s): %(why)s"
+msgstr "Kontrak ini melewati aturan kontrak waktu tertentu (%(rule)s): %(why)s"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "This goes past the fixed-term rule"
+msgstr "Ini melewati aturan kontrak waktu tertentu"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule_hooks.py:0
+msgid "This goes past the fixed-term rule (%(rule)s). %(why)s"
+msgstr "Ini melewati aturan kontrak waktu tertentu (%(rule)s). %(why)s"
+
+#. module: pb_contract_rules
+#. odoo-python
+#: code:addons/pb_contract_rules/models/contract_rule.py:0
+msgid "This would be fixed-term contract number %(n)s in a row. %(rule)s allows %(max)s, then the next one should be permanent."
+msgstr "Ini akan menjadi kontrak waktu tertentu ke-%(n)s berturut-turut. %(rule)s mengizinkan %(max)s, lalu yang berikutnya harus tetap."
+
+#. module: pb_contract_rules
+#: model:pb.contract.rule,name:pb_contract_rules.rule_vn
+msgid "Vietnam rule"
+msgstr "Aturan Vietnam"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__counts_note
+msgid "What counts"
+msgstr "Yang dihitung"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "What counts towards the limit"
+msgstr "Yang dihitung terhadap batas"
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "Where it applies"
+msgstr "Berlaku di mana"
+
+#. module: pb_contract_rules
+#: model:ir.model.fields,field_description:pb_contract_rules.field_pb_contract_rule__source_note model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "Where the rule comes from"
+msgstr "Asal aturan"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "You can still extend it: write down why in the box above. The reason is kept with the extension and its sign-off."
+msgstr "Anda tetap bisa memperpanjang: tulis alasannya di kotak di atas. Alasan disimpan bersama perpanjangan dan persetujuannya."
+
+#. module: pb_contract_rules
+#: model_terms:ir.ui.view,arch_db:pb_contract_rules.view_pb_contract_rule_form
+msgid "e.g. Vietnam rule"
+msgstr "mis. Aturan Vietnam"
+
+#. module: pb_contract_rules
+#. odoo-javascript
+#: code:addons/pb_contract_rules/static/src/xml/contract_rules.xml:0
+msgid "includes earlier contracts typed on the person"
+msgstr "termasuk kontrak sebelumnya yang diketik di data karyawan"

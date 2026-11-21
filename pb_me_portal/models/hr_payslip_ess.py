@@ -20,6 +20,26 @@ class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
     @api.model
+    def _ess_visible_domain(self):
+        """What an employee may see of their own payslips beyond the state.
+
+        WDGAP PR-C: a payslip whose pay the pay team has put ON HOLD is not
+        shown on My Payobook until the hold is released (pb_pay_delivery owns
+        `pb_pay_hold`; this module does not depend on it, so the filter is
+        applied only where the field exists).
+        """
+        if 'pb_pay_hold' in self._fields:
+            return [('pb_pay_hold', '=', False)]
+        return []
+
+    def _ess_visible(self):
+        """These payslips, minus the ones the employee may not see yet."""
+        domain = self._ess_visible_domain()
+        if not domain:
+            return self
+        return self.filtered_domain(domain)
+
+    @api.model
     def _ess_tax_codes(self):
         raw = self.env['ir.config_parameter'].sudo().get_param(
             _TAXCODES_PARAM, _DEFAULT_TAXCODES)

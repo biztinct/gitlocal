@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-10-31 08:07+0000\n"
 "PO-Revision-Date: 2026-10-31 08:07+0000\n"
@@ -6153,4 +6153,155 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_settings.py:0
 msgid "“Your pay, explained” is switched off for this company."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "%(count)s scores read from Goals."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"%(good)s people have a goals score, %(changed)s of them will change and "
+"%(missing)s have none."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "%(name)s · not closed yet"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"1 person has a goals score (%(changed)s will change) and %(missing)s have "
+"none."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"Each person's score for a goals year, turned into this review's scale. "
+"Nothing is saved until you press “Use these scores”."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "Goals is not switched on here, so there are no goal scores to read."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Goals score (out of 5)"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Goals year"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "How a goals score becomes a review score"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "No goals score"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "No goals score for this year."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"No goals year has been opened for this company yet, so there are no goal "
+"scores to read."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "Nobody on this review has a goals score for that year."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_rating__source__goals
+msgid "Read from Goals"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Read scores from Goals"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Reading the goals year…"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Review score"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "That goals year is not one this review can read."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The goal scores could not be read."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "This goals year is not closed yet, so these scores can still move."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Use these scores"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "have a score"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "have none"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "will change"
 msgstr ""

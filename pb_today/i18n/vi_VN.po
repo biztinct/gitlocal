@@ -319,3 +319,21 @@ msgstr "trên bảng"
 #: code:addons/pb_today/static/src/xml/pb_today.xml:0
 msgid "people"
 msgstr "người"
+
+#. module: pb_today
+#. odoo-python
+#: code:addons/pb_today/models/pb_today.py:0
+msgid "%(type)s · %(start)s to %(end)s"
+msgstr "%(type)s · %(start)s đến %(end)s"
+
+#. module: pb_today
+#. odoo-python
+#: code:addons/pb_today/models/pb_today.py:0
+msgid "%s · half day, afternoon"
+msgstr "%s · nửa ngày, buổi chiều"
+
+#. module: pb_today
+#. odoo-python
+#: code:addons/pb_today/models/pb_today.py:0
+msgid "%s · half day, morning"
+msgstr "%s · nửa ngày, buổi sáng"

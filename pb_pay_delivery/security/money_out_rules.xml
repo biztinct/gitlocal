@@ -107,4 +107,41 @@
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
+    <!-- WDGAP IDB2: the payment list (any bank) is read exactly like the
+         bank file whose approval gate it shares. -->
+    <record id="rule_payment_list_file_company" model="ir.rule">
+        <field name="name">Payment list: company</field>
+        <field name="model_id" ref="model_pb_payment_list_file"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_payment_list_file_seat" model="ir.rule">
+        <field name="name">Payment list: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_payment_list_file"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <!-- WDGAP IDB1-F: exactly the people who may make / download the bank
+         file. The groups are the bank file's own (`rule_bank_file_payroll`),
+         and the list's stored files — every account number of the run — are
+         read in full only when the person ALSO passes the bank file's
+         download gate (`_pay_groups_held`: administrator, payroll manager or
+         a finance role; `approval_common.PAY_GROUPS`). A payroll officer
+         without that gate reads only a list they were asked to decide (the
+         seat rule above); the bank file lets them read every bank file
+         record, the list deliberately does not (IDB2).
+         IDB2 shipped this rule as "payroll manager only", which refused a
+         payroll officer with administrator rights the bank file lets through
+         (IDB1M-2); the upgrade rewrites it (migrations/19.0.1.8.1). -->
+    <record id="rule_payment_list_file_payroll" model="ir.rule">
+        <field name="name">Payment list: payroll people who may download the bank file</field>
+        <field name="model_id" ref="model_pb_payment_list_file"/>
+        <field name="groups" eval="[
+            (4, ref('om_hr_payroll.group_hr_payroll_user')),
+            (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)] if user.env['pb.money.approval.mixin']._pay_groups_held(user) else [('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
 </odoo>

@@ -1,0 +1,255 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_form_studio_contracts
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 10:00+0000\n"
+"PO-Revision-Date: 2026-11-19 10:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "%s is required. Fill it in before saving."
+msgstr "%s là bắt buộc. Hãy điền trước khi lưu."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A field that has since been deleted"
+msgstr "Một trường đã bị xóa"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A field you cannot see"
+msgstr "Một trường bạn không được xem"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A file"
+msgstr "Một tệp"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A new file"
+msgstr "Một tệp mới"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
+msgid "Add or move fields on this screen"
+msgstr "Thêm hoặc di chuyển trường trên màn hình này"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+msgid "Add your own fields"
+msgstr "Thêm trường của riêng bạn"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "Choose a file"
+msgstr "Chọn một tệp"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Company details"
+msgstr "Thông tin công ty"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "Contract change · %s"
+msgstr "Thay đổi hợp đồng · %s"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__pb_country_of_work_id
+msgid "Country of Work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contract_proposal__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_form_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_people_contract_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Drawn by the contract screen itself. Fields cannot be placed here."
+msgstr "Do chính màn hình hợp đồng hiển thị. Không thể đặt trường vào đây."
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_hr_contract
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_form_studio
+msgid "Form builder"
+msgstr "Trình tạo biểu mẫu"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contract_proposal__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_form_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_people_contract_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "Not filled in"
+msgstr "Chưa điền"
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "PDF or image, up to 10 MB"
+msgstr "PDF hoặc hình ảnh, tối đa 10 MB"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr "Dữ liệu bảng hợp đồng Payobook"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_people_contract_wizard
+msgid "Payobook guided contract creation"
+msgstr "Tạo hợp đồng có hướng dẫn của Payobook"
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_contract_proposal
+msgid "Proposed contract change"
+msgstr "Đề xuất thay đổi hợp đồng"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "That is not something this screen can change, so it was left alone."
+msgstr "Màn hình này không thể thay đổi mục đó, nên đã giữ nguyên."
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid ""
+"The fields on this screen were changed. Save or discard your changes to see "
+"them."
+msgstr "Các trường trên màn hình này đã được thay đổi. Hãy lưu hoặc bỏ thay đổi của bạn để xem chúng."
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,help:pb_form_studio_contracts.field_hr_contract__pb_country_of_work_id
+msgid "The person's Country of Work, read from their employee record."
+msgstr "Quốc gia làm việc của người này, lấy từ hồ sơ nhân viên."
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+msgid ""
+"Uniform size, union number, a signed copy: anything your company keeps on a "
+"contract."
+msgstr "Cỡ đồng phục, số thẻ công đoàn, bản ký: bất cứ thông tin nào công ty bạn lưu trên hợp đồng."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "name"
+msgstr "tên"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr ""
+"Tệp dữ liệu lương điền trường này, nên lương phụ thuộc vào trường này."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
+msgstr ""
+"Một công thức lương đọc trường này, nên lương phụ thuộc vào trường này."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
+msgstr "Phê duyệt, quyền truy cập và thiết lập lương dựa vào trường này."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Contract panel: %s"
+msgstr "Bảng hợp đồng: %s"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It names the contract on every payslip and file."
+msgstr "Trường này đặt tên hợp đồng trên mọi phiếu lương và tệp."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It says whose contract this is."
+msgstr "Trường này cho biết hợp đồng của ai."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
+msgstr "Lương hoặc hồ sơ pháp định phụ thuộc vào trường này."
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Payroll facts"
+msgstr "Dữ kiện tính lương"

@@ -49,6 +49,15 @@ class VietnamBankExportWizard(models.TransientModel):
     export_file = fields.Binary(string='Generated File', readonly=True)
     export_filename = fields.Char(string='Generated Filename', readonly=True)
     excluded_note = fields.Text(string='Excluded Rows', readonly=True)
+    #: WDGAP PR-C: `pb.bank.file.prepare` sets this so a payment file never
+    #: carries anybody whose money has already been released (a follow-up
+    #: file after a hold is lifted pays only the people not yet paid).
+    pb_unpaid_only = fields.Boolean(string='Only people not paid yet')
+    #: WDGAP S2-C (ledger S2F-1): the layout to use when its key is not one of
+    #: the `bank_format` selection values (a company's copy, a bank added as
+    #: data). `bank_format` stays a selection for the old callers; the layout
+    #: and the file name follow this key whenever it is set.
+    pb_layout_key = fields.Char(string='Bank layout key')
 
     # ------------------------------------------------------------- access
     def _check_pay_access(self):
@@ -66,6 +75,20 @@ class VietnamBankExportWizard(models.TransientModel):
             "This requires the Payroll Manager or a Finance role."))
 
     # ------------------------------------------------------------- helpers
+    def _pb_layout_key(self):
+        """The layout this file is made with (WDGAP S2-C, S2F-1)."""
+        return self.pb_layout_key or self.bank_format
+
+    @api.model
+    def _pb_wizard_values(self, key):
+        """`bank_format` + `pb_layout_key` for a layout key: a key the
+        selection knows is passed exactly as before (same bytes, same name);
+        any other key rides on `pb_layout_key`."""
+        known = [k for k, _label in self._fields['bank_format']._description_selection(self.env)]
+        if key in known:
+            return {'bank_format': key}
+        return {'bank_format': 'generic', 'pb_layout_key': key}
+
     @api.model
     def _slip_net(self, slip):
         """The amount to pay this person: the scheme's own take-home line.
@@ -84,7 +107,14 @@ class VietnamBankExportWizard(models.TransientModel):
         slips = self.payslip_ids
         if not slips and self.payslip_run_id:
             slips = self.payslip_run_id.slip_ids
-        return slips.filtered(lambda s: s.state == 'done')
+        slips = slips.filtered(lambda s: s.state == 'done')
+        # WDGAP PR-E: pay that was paid another way (cash, cheque, …) is never
+        # in any bank file, whichever door asks for one.
+        if 'pb_paid_method' in slips._fields:
+            slips = slips.filtered(lambda s: not s.pb_paid_method)
+        if self.pb_unpaid_only:
+            slips = slips.filtered(lambda s: not s.pb_paid_on)
+        return slips
 
     def _period_label(self):
         run = self.payslip_run_id
@@ -106,6 +136,10 @@ class VietnamBankExportWizard(models.TransientModel):
         matched = registry.match(bank_raw)
 
         reasons = []
+        # WDGAP PR-C: a held payslip never reaches a bank file. Said first, so
+        # the left-out list reads "On hold" before any bank-detail reason.
+        if slip.pb_pay_hold:
+            reasons.append(_('On hold'))
         if not vnd.account_ok(account):
             reasons.append(_('invalid account'))
         if not holder:
@@ -224,15 +258,28 @@ class VietnamBankExportWizard(models.TransientModel):
         self.ensure_one()
         self._check_pay_access()
 
-        layout = self.env['pb.bank.file.layout']._for_format(self.bank_format)
+        key = self._pb_layout_key()
+        layout = self.env['pb.bank.file.layout']._for_format(key)
         if not layout:
             raise UserError(_(
                 "No bank-file layout is configured for '%s'. A layout is a data "
                 "record (pb.bank.file.layout) — add one to support this bank.",
-                self.bank_format))
+                key))
+        if 'target' in layout._fields and layout.target != 'bank_file':
+            # WDGAP S2-C: a payment-list layout reads the approved account on
+            # record, not the Vietnamese bank-file fields
+            raise UserError(_(
+                "“%s” is a layout for the payment list (any bank), not for the "
+                "Vietnamese bank file. Choose it under the payment list.",
+                layout.name))
 
         slips = self._resolve_slips()
         if not slips:
+            if self.pb_unpaid_only and self.payslip_run_id.slip_ids.filtered(
+                    lambda s: s.state == 'done'):
+                raise UserError(_(
+                    "Everybody in this pay run has been paid already, so "
+                    "there is nobody to put in a new bank file."))
             raise UserError(_(
                 "There are no confirmed (Done) payslips to export for this "
                 "selection."))
@@ -243,24 +290,45 @@ class VietnamBankExportWizard(models.TransientModel):
                         if c.number_format and c.number_format != 'none'}
 
         rows, excluded, valid_count, total_amount = [], [], 0, 0.0
+        included, held_count, held_total = [], 0, 0.0
         for idx, slip in enumerate(slips.sorted(key=lambda s: s.employee_id.name or ''), start=1):
             sources, reasons, net = self._row_sources(slip, valid_count + 1, registry)
             if reasons:
-                excluded.append({
+                row = {
                     'employee': slip.employee_id.name or '',
                     'employee_id': slip.employee_id.id,
                     'reasons': reasons,
-                })
+                }
+                if slip.pb_pay_hold:
+                    # WDGAP PR-C: who, why, by whom and how much, so the
+                    # approver of the file sees the held people by name.
+                    held_count += 1
+                    held_total += net
+                    row.update({
+                        'on_hold': True, 'slip_id': slip.id, 'amount': net,
+                        # payroll-only details, read for the file's approver
+                        'hold_reason': slip.sudo().pb_hold_reason or '',
+                        'hold_by': slip.sudo().pb_hold_by.name or '',
+                    })
+                excluded.append(row)
                 continue
             valid_count += 1
             total_amount += net
+            included.append(slip.id)
             rows.append([self._render_cell(c, sources) for c in cols])
 
+        if not rows and excluded and held_count == len(excluded):
+            raise UserError(_(
+                "Everybody left to pay in this pay run is on hold, so there "
+                "is nobody to put in a bank file yet."))
         if not rows:
             raise UserError(_(
                 "No valid rows to export — every payslip failed validation "
                 "(check the employee bank accounts). %s row(s) were excluded.",
-                len(excluded)))
+                len(excluded)) + ' ' + _(
+                # WDGAP IDB1: the people a bank this file does not know leaves
+                # out can be paid from the payment list instead
+                "People with an approved bank account at a bank this file does not know can be paid from the payment list (any bank) on Pay & deliver."))
 
         if layout.file_type == 'xlsx':
             data = self._build_xlsx(layout, rows, numeric_cols)
@@ -273,7 +341,7 @@ class VietnamBankExportWizard(models.TransientModel):
             ext = 'csv'
 
         filename = '%s_%s.%s' % (
-            self.bank_format, (self._period_label() or 'transfer').replace(' ', ''), ext)
+            key, (self._period_label() or 'transfer').replace(' ', ''), ext)
         return {
             'file_b64': base64.b64encode(data).decode(),
             'filename': filename,
@@ -286,6 +354,11 @@ class VietnamBankExportWizard(models.TransientModel):
             # the file rather than to anything written about it afterwards.
             # `pb.bank.file` re-takes it from the attachment on every check.
             'file_hash': hashlib.sha256(data).hexdigest(),
+            # WDGAP PR-C: exactly which payslips this file pays — the payment
+            # release stamps these and nobody else.
+            'slip_ids': included,
+            'held_count': held_count,
+            'held_total': held_total,
         }
 
     def _soft_log_export(self, result):

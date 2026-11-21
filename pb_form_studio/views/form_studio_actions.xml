@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Settings › Form builder (the card is registered in settings_card.js;
+         gated to the administrator on the server in every facade method). -->
+    <record id="action_pb_form_library" model="ir.actions.client">
+        <field name="name">Form builder</field>
+        <field name="tag">pb_form_library</field>
+    </record>
+
+    <!-- Dev-only test host: no menu, opened by its tag in debug mode by the
+         administrator. Lets the Form builder be exercised end to end before a
+         real screen hosts it. -->
+    <record id="action_pb_form_dev_host" model="ir.actions.client">
+        <field name="name">Form builder test screen</field>
+        <field name="tag">pb_form_dev_host</field>
+    </record>
+</odoo>

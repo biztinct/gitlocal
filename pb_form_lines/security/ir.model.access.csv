@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_gov_form_officer,pb.gov.form payroll officer,model_pb_gov_form,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_gov_form_system,pb.gov.form system,model_pb_gov_form,base.group_system,1,1,1,1
+access_pb_gov_form_line_officer,pb.gov.form.line payroll officer,model_pb_gov_form_line,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_gov_form_line_system,pb.gov.form.line system,model_pb_gov_form_line,base.group_system,1,1,1,1
+access_pb_gov_form_map_officer,pb.gov.form.map payroll officer,model_pb_gov_form_map,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,1
+access_pb_gov_form_company_officer,pb.gov.form.company payroll officer,model_pb_gov_form_company,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
+access_pb_gov_filing_officer,pb.gov.filing payroll officer,model_pb_gov_filing,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
+access_pb_gov_filing_seat,pb.gov.filing anyone asked to decide,model_pb_gov_filing,base.group_user,1,0,0,0
+access_pb_gov_filing_system,pb.gov.filing system,model_pb_gov_filing,base.group_system,1,1,1,1
+access_pb_gov_filing_file_officer,pb.gov.filing.file payroll officer,model_pb_gov_filing_file,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_gov_filing_file_system,pb.gov.filing.file system,model_pb_gov_filing_file,base.group_system,1,1,1,1
+access_pb_gov_filing_certificate_officer,pb.gov.filing.certificate payroll officer,model_pb_gov_filing_certificate,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_gov_filing_certificate_system,pb.gov.filing.certificate system,model_pb_gov_filing_certificate,base.group_system,1,1,1,1
+access_pb_gov_year_settlement_officer,pb.gov.year.settlement payroll officer,model_pb_gov_year_settlement,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
+access_pb_gov_year_settlement_system,pb.gov.year.settlement system,model_pb_gov_year_settlement,base.group_system,1,1,1,1

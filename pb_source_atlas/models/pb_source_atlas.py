@@ -135,6 +135,7 @@ VIA_LABELS = {
     'worked_days': 'taken from a worked-days line',
     'overtime_request': 'from the employee\'s approved overtime',
     'timesheet_packet': 'from the approved timesheet for that week',
+    'late_minutes': 'from the late and early minutes confirmed in the weekly Close',
     'business_trip': 'from the employee\'s approved business trip',
     'constant': 'it is a fixed value',
     'pay_period': 'the dates of this pay run answered it',

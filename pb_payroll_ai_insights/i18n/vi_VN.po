@@ -1608,3 +1608,43 @@ msgstr "Đã ghim biểu đồ vào bảng điều khiển."
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
 msgid "Send"
 msgstr "Gửi"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_pulse__dedupe_key
+msgid "Company, kind and department: one open alert per key."
+msgstr "Công ty, loại và phòng ban: mỗi mã chỉ có một cảnh báo đang mở."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__direction
+msgid "Direction"
+msgstr "Chiều thay đổi"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_pulse__ack_level
+msgid "How bad it was when somebody pressed \"Got it\"."
+msgstr "Mức độ lúc có người bấm \"Đã hiểu\"."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_pulse__ack_severity
+msgid "Its severity when somebody pressed \"Got it\"."
+msgstr "Mức nghiêm trọng lúc có người bấm \"Đã hiểu\"."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__ack_level
+msgid "Level when put away"
+msgstr "Mức khi đã xem"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__dedupe_key
+msgid "Same-alert key"
+msgstr "Mã cảnh báo trùng"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__ack_severity
+msgid "Severity when put away"
+msgstr "Mức nghiêm trọng khi đã xem"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_pulse__direction
+msgid "Which way it moved: up, down, joined, left, approved."
+msgstr "Thay đổi theo chiều nào: tăng, giảm, vào làm, nghỉ việc, được duyệt."

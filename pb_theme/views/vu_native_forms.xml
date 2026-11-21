@@ -5,7 +5,14 @@
       their own carefully-built layout (avatar hero, multi-column identity,
       smart buttons) that fights the generic hero/card skin. The `vu-form-native`
       class on the <form> root makes the VU compiler return the stock template
-      (see pb_theme/static/src/js/vu_form_compiler.js — per-view opt-out).
+      (see biz_theme/static/src/js/vu_form_compiler.js — per-view opt-out).
+
+      FS-6 (2026-11-19): the employee and contract forms are now taken back
+      INTO the engine by pb_form_native_look (priority 100, removes this class
+      and adds the fixes for what did not fit: cut-off tabs, oversized header,
+      phone padding, sub-list scroll). Where that module is installed these two
+      records are overridden; uninstall it to get the stock look back. They
+      stay here so pb_theme alone keeps its old, safe behaviour.
     -->
     <record id="vu_native_hr_employee_form" model="ir.ui.view">
         <field name="name">hr.employee.form.vu-native</field>

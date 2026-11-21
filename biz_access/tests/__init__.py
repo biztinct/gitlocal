@@ -12,3 +12,6 @@ from . import test_pdr_attribute_hook
 from . import test_account_password
 from . import test_account_desk
 from . import test_first_password
+from . import test_wdgap_qf5_two_step
+from . import test_wdgap_qf5_idle
+from . import test_template_debug_comments

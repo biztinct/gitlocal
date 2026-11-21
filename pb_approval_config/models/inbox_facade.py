@@ -17,7 +17,7 @@ am covering. It is never "somebody in my team", and never "anybody in HR".
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 from odoo.addons.biz_approval_workflow.models import definition as D
 
@@ -53,6 +53,9 @@ ORG_GROUPS = ('biz_approval_workflow.group_approval_config',
 #: to say what to change.
 MIN_EXCEPTION_REASON = 12
 MIN_REASON = 6
+
+#: WDGAP QF1 — "Approve selected": the most requests one press may approve.
+MAX_BULK = 50
 
 
 def _clip(text, size=MAX_TEXT):
@@ -297,14 +300,14 @@ class PbApprovalInbox(models.AbstractModel):
                   'domain': [('due_at', '=', False)]},
              ]},
             # ---- more filters
-            {'key': 'my_turn', 'label': _('My turn'), 'icon': 'userCheck',
+            {'key': 'my_turn', 'label': _('My approvals'), 'icon': 'userCheck',
              'group': 'people', 'type': 'choice',
-             'help': _('A request is your turn when the step that is waiting '
-                       'names you: your own seat, or one you are covering.'),
+             'help': _('Requests waiting for your approval, including requests '
+                       'you are covering for someone else.'),
              'options': [
                  {'value': 'yes', 'label': _('Waiting on me'), 'tone': 'blue',
                   'domain_method': '_pbf_my_turn'},
-                 {'value': 'no', 'label': _('Not my turn'), 'tone': 'slate',
+                 {'value': 'no', 'label': _('Not awaiting my approval'), 'tone': 'slate',
                   'domain_method': '_pbf_not_my_turn'},
              ]},
             {'key': 'process', 'label': _('What kind of request'), 'icon': 'workflow',
@@ -331,7 +334,7 @@ class PbApprovalInbox(models.AbstractModel):
     def _pbf_builtin_views(self):
         return [
             # the four tabs, in their own words (42 lessons and PayAI say them)
-            {'key': 'mine', 'label': _('My turn'), 'icon': 'userCheck',
+            {'key': 'mine', 'label': _('My approvals'), 'icon': 'userCheck',
              'filters': {'my_turn': ['yes']}},
             {'key': 'all', 'label': _('All I can see'),
              'filters': {'pile': ['waiting']}},
@@ -340,7 +343,7 @@ class PbApprovalInbox(models.AbstractModel):
             {'key': 'done', 'label': _('Finished'),
              'filters': {'pile': ['done']}},
             # and the questions asked most after them
-            {'key': 'today', 'label': _('My turn today'),
+            {'key': 'today', 'label': _('My approvals today'),
              'filters': {'my_turn': ['yes'], 'due': ['late', 'today']}},
             {'key': 'late', 'label': _('Late'), 'filters': {'due': ['late']}},
             {'key': 'back_to_me', 'label': _('Sent back to me'),
@@ -533,9 +536,55 @@ class PbApprovalInbox(models.AbstractModel):
             lambda s: s.status == 'open'
             and s.acting_user_id.id == self.env.uid))
 
+    def _can_bulk(self, request, step=None, mine=None):
+        """(may this be approved together with others, why not) — WDGAP QF1.
+
+        True only when it is my turn on a request that is waiting and not
+        stuck, its kind allows several at once (`bulk_ok`), no money leaves
+        the company with it, and I am not too close to it (the route's
+        independence safeguard). A request that would need an exception is
+        never one of a batch. The reason is a short plain sentence for the
+        tooltip on a box that cannot be ticked.
+
+        A SHAPER, LIKE EVERYTHING HERE: `decide_many` asks this again and
+        then goes through the engine's own `decide`, which re-checks the seat,
+        the account, the record and the independence rule regardless.
+        """
+        step = step if step is not None else self._current_step(request)
+        mine = self._is_mine(request) if mine is None else mine
+        process = request.process_id
+        if request.state not in PILES['waiting']:
+            return False, _("This is no longer waiting for a decision.")
+        if request.state == 'blocked':
+            return False, _("This is stuck, so it has to be sorted out on "
+                            "its own.")
+        if not mine or request.state != 'pending':
+            return False, _("This request is not waiting for your approval.")
+        if process.money:
+            return False, _("Money leaves the company with this one, so it "
+                            "is approved on its own.")
+        if not process.bulk_ok:
+            return False, _("This kind of request is approved one at a "
+                            "time.")
+        safeguards = D.normalise(request.version_id.definition)['safeguards']
+        if safeguards.get('independent'):
+            seat = step.seat_ids.filtered(
+                lambda s: s.status == 'open'
+                and s.acting_user_id.id == self.env.uid)[:1]
+            ctx = {'submitter_uid': request.submitter_uid.id,
+                   'maker_uids': request.maker_uids or [],
+                   'subject_uids': request.subject_uids or []}
+            engine = self._engine()
+            if engine._conflict_kind(self.env.uid, ctx) \
+                    or engine._conflict_kind(seat.user_id.id, ctx):
+                return False, _("You were part of this one, so somebody "
+                                "else has to approve it.")
+        return True, ''
+
     def _card(self, request):
         step = self._current_step(request)
         mine = self._is_mine(request)
+        bulk_ok, bulk_why = self._can_bulk(request, step, mine)
         waiting = ''
         if step and request.state == 'blocked':
             waiting = step.block_reason or request.block_reason or ''
@@ -594,6 +643,11 @@ class PbApprovalInbox(models.AbstractModel):
             'state_label': dict(
                 request._fields['state'].selection).get(request.state, ''),
             'mine': mine,
+            # WDGAP QF1 — may this card be ticked and approved with others?
+            # The server's answer, re-asked by `decide_many` on every press.
+            'can_bulk': bulk_ok,
+            'bulk_why': bulk_why,
+            'lock_revision': request.lock_revision,
             'blocked': request.state == 'blocked',
             'block_reason': request.block_reason or '',
             'return_note': request.return_note or '',
@@ -1230,6 +1284,99 @@ class PbApprovalInbox(models.AbstractModel):
             request.id, step_key, action, reason,
             expected_lock_revision, idempotency_key, grant_id)
         return self.get_request(request.id)
+
+    @api.model
+    def decide_many(self, request_ids, revisions=None):
+        """WDGAP QF1 — "Approve selected": approve several requests, one by one.
+
+        APPROVE ONLY. Sending back and turning down need a written reason
+        each, so they stay one at a time.
+
+        Each request is decided in its own savepoint, as the person pressing
+        (no `sudo()` anywhere near the decision), through the SAME engine call
+        the drawer's Approve button uses (`biz.approval.engine.decide`), with
+        no exception: every engine guard stays in force — the row lock, the
+        seat, a lapsed cover, the independence rule, the change carried out in
+        its own savepoint. Before that, `_can_bulk` is asked again here; the
+        screen's tick box is never trusted.
+
+        `revisions` maps a request id to the lock revision the card showed.
+        It becomes both the engine's "changed while you were looking" check
+        and part of the idempotency key (person, request, step, revision), so
+        a second press of the same batch cannot approve the NEXT step of a
+        request that moved on in between.
+
+        A request approved but not carried out (`approved` with a reason on
+        it) is reported as not done — exactly as the dock's `act()` did.
+        """
+        if not isinstance(request_ids, (list, tuple)):
+            raise UserError(_("Choose the requests to approve."))
+        ids = []
+        for raw in request_ids:
+            try:
+                value = int(raw)
+            except (TypeError, ValueError):
+                continue
+            if value > 0 and value not in ids:
+                ids.append(value)
+        if len(ids) > MAX_BULK:
+            raise UserError(_(
+                "You can approve up to %(max)s requests at once. Choose "
+                "fewer and try again.", max=MAX_BULK))
+        revisions = revisions if isinstance(revisions, dict) else {}
+        Request = self.env['biz.approval.request']
+        results = []
+        for request_id in ids:
+            row = {'id': request_id, 'ok': False, 'title': '', 'error': ''}
+            try:
+                with self.env.cr.savepoint():
+                    request = Request.browse(request_id).exists()
+                    if not request:
+                        raise UserError(_("That request no longer exists."))
+                    try:
+                        request.check_access('read')
+                    except AccessError:
+                        raise UserError(_(
+                            "You cannot open this request.")) from None
+                    row['title'] = request.title or ''
+                    step = self._current_step(request)
+                    allowed, why = self._can_bulk(request, step)
+                    if not allowed:
+                        raise UserError(why)
+                    seen = revisions.get(str(request_id),
+                                         revisions.get(request_id))
+                    try:
+                        seen = int(seen)
+                    except (TypeError, ValueError):
+                        seen = request.lock_revision
+                    key = 'bulk-%s-%s-%s-%s' % (
+                        self.env.uid, request.id, step.key, seen)
+                    self._engine().decide(
+                        request.id, step.key, 'approve', '', seen, key, None)
+                    request.invalidate_recordset()
+                    if request.state == 'approved' and request.block_reason:
+                        # approved, but the change itself could not be made:
+                        # the approval stands (as a single approve leaves it)
+                        # and the row is reported as not done
+                        row['error'] = request.block_reason
+                    else:
+                        row['ok'] = True
+            except (UserError, AccessError, ValidationError) as exc:
+                row['error'] = str(exc.args[0]) if exc.args else _(
+                    "This one could not be approved.")
+            except Exception as exc:  # noqa: BLE001 — one bad row spoils nothing
+                _logger.warning('Approve selected: request %s failed: %s',
+                                request_id, exc)
+                row['error'] = _("This one could not be approved. Nothing "
+                                 "was changed; try it on its own.")
+            results.append(row)
+        # the per-request "my turn" answer was worked out before deciding;
+        # anything that recounts after this call must ask again
+        self.env.cr.cache.pop(('pb_approval_inbox.my_turn', self.env.uid),
+                              None)
+        done = sum(1 for r in results if r['ok'])
+        return {'results': results, 'done': done,
+                'failed': len(results) - done}
 
     @api.model
     def repair(self, request_id):

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-A — certificates on My Payobook. Pages reuse pb_me_portal's
+       .pbme kit; `.pbml-*` is this module's thin layer. Every sentence sits
+       on one line (ledger PRD-3). No %-formatting inside t-att-* (PRB-W5).
+       Loop names: certificates `ct`, options `op`. -->
+
+  <template id="portal_breadcrumbs_certificates" name="Certificates breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="40">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'certificates'" class="breadcrumb-item active">Certificates</li>
+    </xpath>
+  </template>
+
+  <template id="portal_my_home_certificates" name="Certificates home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="23">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Certificates</t>
+        <t t-set="text">Employment and salary certificates</t>
+        <t t-set="url" t-value="'/my/certificates'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <template id="portal_my_certificates" name="My certificates (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbml">
+        <div t-if="done" class="pbml-toast" role="status" aria-live="polite">
+          <span class="pbml-toast-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></span>
+          <span t-if="done == 'issued'">Your certificate is ready. Download it below.</span>
+          <span t-else="">Sent to HR. You will see the certificate here when it is ready.</span>
+        </div>
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Certificates</t>
+          <t t-set="hero_sub">Ask for a certificate for a bank, a visa or a landlord. Each one is numbered and kept in your documents.</t>
+        </t>
+
+        <div class="pbml-grid">
+          <section class="pbme-card pbml-ask">
+            <h2 class="pbml-h2">Ask for a certificate</h2>
+            <div t-if="error" class="pbml-alert" role="alert"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t><span t-esc="error"/></div>
+            <form action="/my/certificates/ask" method="post" class="pbml-form">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <div class="pbml-choices" role="radiogroup">
+                <label class="pbml-choice">
+                  <input type="radio" name="kind" value="employment" t-att-checked="v.get('kind') != 'salary'"/>
+                  <span class="pbml-choice-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'briefcase'"/><t t-set="isz" t-value="18"/></t></span>
+                  <span class="pbml-choice-tx"><b>Employment certificate</b><span>Says you work here, as what, and since when. No pay figures.</span><em>Ready at once</em></span>
+                </label>
+                <label t-att-class="'pbml-choice' + ('' if salary_ok else ' is-off')">
+                  <input type="radio" name="kind" value="salary" t-att-checked="v.get('kind') == 'salary'" t-att-disabled="not salary_ok"/>
+                  <span class="pbml-choice-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'banknote'"/><t t-set="isz" t-value="18"/></t></span>
+                  <span class="pbml-choice-tx"><b>Salary certificate</b><span>Also shows your agreed monthly salary.</span><em t-if="salary_ok">HR checks it first</em><em t-else="">Not available: ask HR</em></span>
+                </label>
+              </div>
+              <div class="pbme-form-grid">
+                <label><span>What it is for</span>
+                  <select name="purpose">
+                    <option t-foreach="purposes" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == v.get('purpose')" t-esc="op[1]"/>
+                  </select>
+                </label>
+                <label t-if="len(langs) &gt; 1"><span>Language</span>
+                  <select name="lang">
+                    <option t-foreach="langs" t-as="op" t-att-value="op[0]" t-att-selected="op[0] == (v.get('lang') or lang)" t-esc="op[1]"/>
+                  </select>
+                </label>
+                <label class="pbme-form-wide"><span>Who it is for (optional)</span><input type="text" name="note" maxlength="80" placeholder="For example the name of the bank or the embassy" t-att-value="v.get('note') or ''"/></label>
+              </div>
+              <div class="pbml-actions">
+                <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="15"/></t>Ask for it</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="pbme-card pbml-list">
+            <h2 class="pbml-h2">Your certificates</h2>
+            <div t-if="not certs" class="pbml-empty">
+              <span class="pbml-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="22"/></t></span>
+              <p>None yet. The ones you ask for are kept here and in your documents.</p>
+            </div>
+            <ul t-else="" class="pbml-rows">
+              <li t-foreach="certs" t-as="ct" class="pbml-row">
+                <div class="pbml-row-main">
+                  <div class="pbml-row-t" t-esc="kinds.get(ct.kind)"/>
+                  <div class="pbml-row-s"><t t-esc="ct.name"/><span class="pbml-dot" aria-hidden="true"/><span t-out="ct.issued_on or ct.create_date" t-options="{'widget': 'date'}"/></div>
+                  <div t-if="ct.state == 'refused' and ct.decision_note" class="pbml-row-s pbml-why"><span>Reason:</span> <t t-esc="ct.decision_note"/></div>
+                </div>
+                <a t-if="ct.state == 'issued'" class="pbme-btn pbme-btn--primary pbml-dl" t-att-href="'/my/certificates/' + str(ct.id) + '/pdf'"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>PDF</a>
+                <span t-elif="ct.state in ('draft', 'hr_review')" class="pbml-pill pbml-pill--wait"><i class="pbml-pill-dot" aria-hidden="true"/>Waiting for HR</span>
+                <span t-else="" class="pbml-pill">Turned down</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S9-B — Letters from HR on My Payobook. Reuses pb_me_portal's
+       .pbme kit; `.pbc-*` is this module's layer (static/src/scss/
+       conduct_portal.scss). No inline style attribute (UPDATES G95), no
+       `%` formatting in t-att (PRB-W5). Neutral words: the page never says
+       "disciplinary" or "warning" itself; each letter's title does. -->
+
+  <template id="pbc_icon" name="Letters from HR icon">
+    <t t-set="isz" t-value="isz or 16"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbc-ic" aria-hidden="true" focusable="false">
+      <t t-if="icon == 'download'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'send'"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></t>
+      <t t-elif="icon == 'message'"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></t>
+      <t t-else=""><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></t>
+    </svg>
+  </template>
+
+  <template id="portal_breadcrumbs_hr_letters" name="Letters from HR breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="39">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'my_hr_letters'" class="breadcrumb-item active">Letters from HR</li>
+    </xpath>
+  </template>
+
+  <!-- Under "More" on the home, ONLY while there is a letter (C-3: no
+       pb_me_portal edit, so no tile of its own). -->
+  <template id="portal_my_home_hr_letters" name="Letters from HR home entry"
+            inherit_id="portal.portal_my_home" priority="31">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="has_hr_letters">
+        <t t-call="portal.portal_docs_entry">
+          <t t-set="title">Letters from HR</t>
+          <t t-set="text">Letters HR has sent you</t>
+          <t t-set="url" t-value="'/my/letters'"/>
+          <t t-set="config_card" t-value="True"/>
+        </t>
+      </t>
+    </xpath>
+  </template>
+
+  <template id="portal_my_letters" name="Letters from HR">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbc">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Letters from HR</t>
+          <t t-set="hero_sub">Letters HR has sent you. Only you and the people in HR who handle them can see these.</t>
+        </t>
+
+        <div t-if="pbc_done == 'reply'" class="pbc-flash is-ok" role="status">Your reply has been sent to HR.</div>
+        <div t-if="pbc_done == 'read'" class="pbc-flash is-ok" role="status">Thank you. HR can see that you have read it.</div>
+        <div t-if="pbc_error" class="pbc-flash is-warn" role="alert">Your reply could not be sent. Write something first, or ask HR if you have already replied.</div>
+
+        <div t-if="not pbc_linked" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_conduct.pbc_icon"><t t-set="isz" t-value="26"/></t></div>
+          <h3>Your login is not linked to an employee record</h3>
+          <p>Ask HR to link it, then letters they send you appear here.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+        </div>
+
+        <div t-elif="not pbc['letters']" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_conduct.pbc_icon"><t t-set="isz" t-value="26"/></t></div>
+          <h3>No letters from HR</h3>
+          <p>When HR sends you a letter, you can read it here and reply.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+        </div>
+
+        <t t-else="">
+          <article t-foreach="pbc['letters']" t-as="lt0" class="pbc-letter">
+            <header class="pbc-letter-head">
+              <div>
+                <h3 class="pbc-letter-title" t-out="lt0['title']"/>
+                <p class="pbc-letter-date">Sent on <t t-out="lt0['issued_on']"/></p>
+              </div>
+              <span t-if="lt0['read']" class="pbc-pill is-done"><t t-call="pb_conduct.pbc_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="13"/></t>Read</span>
+              <span t-else="" class="pbc-pill is-new">New</span>
+            </header>
+
+            <div class="pbc-letter-body" t-out="lt0['body']"/>
+
+            <div class="pbc-letter-actions">
+              <a t-if="lt0['has_pdf']" class="pbme-btn" t-att-href="'/my/letters/' + str(lt0['id']) + '/pdf'"><t t-call="pb_conduct.pbc_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>Download the letter</a>
+              <form t-if="not lt0['read']" t-att-action="'/my/letters/' + str(lt0['id']) + '/read'" method="post" class="pbc-inline">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_conduct.pbc_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>I have read this</button>
+              </form>
+            </div>
+
+            <div t-if="lt0['reply']" class="pbc-reply is-sent">
+              <p class="pbc-reply-k"><t t-call="pb_conduct.pbc_icon"><t t-set="icon" t-value="'message'"/><t t-set="isz" t-value="14"/></t>Your reply, sent on <t t-out="lt0['reply_on']"/></p>
+              <p class="pbc-reply-tx" t-out="lt0['reply']"/>
+            </div>
+            <details t-else="" class="pbc-reply">
+              <summary><t t-call="pb_conduct.pbc_icon"><t t-set="icon" t-value="'message'"/><t t-set="isz" t-value="14"/></t>Reply to HR</summary>
+              <form t-att-action="'/my/letters/' + str(lt0['id']) + '/reply'" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <label class="pbc-reply-label" t-att-for="'pbc-reply-' + str(lt0['id'])">Your reply goes to the people in HR who handle this letter. You can reply once.</label>
+                <textarea class="pbc-reply-box" name="reply" rows="5" maxlength="4000" required="required" t-att-id="'pbc-reply-' + str(lt0['id'])"/>
+                <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_conduct.pbc_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send my reply</button>
+              </form>
+            </details>
+          </article>
+          <p class="pbc-help">Something not clear? Ask HR. You can also find these letters in your documents.</p>
+        </t>
+      </div>
+    </t>
+  </template>
+
+</odoo>

@@ -28,7 +28,8 @@ CORE_MODELS = {'hr.employee', 'hr.contract', 'hr.payslip', 'hr.payslip.run'}
 
 TOP_KEYS = ('user', 'company', 'currency', 'today', 'period', 'needs_you',
             'approvals_total', 'months', 'runs', 'steps', 'upcoming', 'people',
-            'hiring', 'learn', 'schemes', 'activation', 'timing_ms')
+            'hiring', 'learn', 'schemes', 'payai_noticed', 'activation',
+            'timing_ms')
 PERIOD_KEYS = ('key', 'date_start', 'date_end', 'stage', 'total', 'run_count',
                'delivered_count', 'cutoff', 'payday', 'prepared', 'expected',
                'net_so_far', 'awaiting_me', 'awaiting_run', 'now_run')
@@ -36,7 +37,7 @@ MONTH_KEYS = ('key', 'year_mark', 'people', 'net', 'gross', 'ded', 'er',
               'total', 'avg', 'runs', 'balance_ok', 'done', 'latest',
               'inprogress', 'approved', 'delivered', 'note', 'foreign_runs')
 TIMING_KEYS = ('period', 'needs_you', 'months', 'runs', 'people', 'hiring',
-               'learn', 'schemes', 'total')
+               'learn', 'schemes', 'payai', 'total')
 NEEDS_ORDER = ('runs_to_approve', 'leave_to_approve', 'other_to_approve',
                'settlements_to_check', 'renewals_to_start', 'writeups_overdue',
                'clock_alerts')
@@ -316,7 +317,8 @@ class TestHomeData(TransactionCase):
 
     def test_02c_an_account_number_on_the_employee_is_a_bank_account(self):
         """H31: the pay data keeps the account on the employee; a person with
-        one is not counted as having no bank account."""
+        one is not counted as having no bank account — until FS-9's approved
+        account rule is installed (then only an approved account counts)."""
         Employee = self.env['hr.employee']
         if 'account_number' not in Employee._fields:
             self.skipTest('this build keeps no account number on the employee')
@@ -330,8 +332,14 @@ class TestHomeData(TransactionCase):
         self.env.flush_all()
         Dash = self.env['pb.dashboard']
         cos = [self.company.id]
-        self.assertEqual(Dash._home_no_bank(run.ids, cos).get(run.id, 0),
-                         0 if without.bank_account_ids else 1)
+        # FS-9: where the side-panel bank module is installed, Home reads the
+        # APPROVED account (the Payroll-ready rule) and the old free-text box
+        # alone no longer counts — so both people are "no bank account".
+        approved_rule = bool(self.env['ir.module.module'].sudo().search_count(
+            [('name', '=', 'pb_employee_bank_panel'), ('state', '=', 'installed')]))
+        expected = (0 if without.bank_account_ids else 1) + \
+            (0 if (with_acct.bank_account_ids or not approved_rule) else 1)
+        self.assertEqual(Dash._home_no_bank(run.ids, cos).get(run.id, 0), expected)
 
     # =============================================================== test 3
     def test_03_another_company_s_run_is_not_mine(self):

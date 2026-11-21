@@ -158,6 +158,11 @@ class HrPayslipFormula(models.Model):
         # PDR D4 — one request memo for the whole batch (scheme-level answers
         # are shared between payslips; a rule write empties it).
         with self.formula_config_id._application_memo():
+            # WDGAP W2-A — the running totals (`history.*`) of everyone in
+            # this batch are read in one go, not one search per person.
+            for config in self.formula_config_id:
+                config._pb_history_prefetch(self.filtered(
+                    lambda s, c=config: s.formula_config_id == c).employee_id.ids)
             return self._pb_compute_sheet_with_formulas()
 
     def _pb_compute_sheet_with_formulas(self):
@@ -1145,6 +1150,11 @@ class HrPayslipFormula(models.Model):
                 payslip.formula_input_values = json.dumps(input_values)
                 payslip.formula_input_sources = json.dumps(input_sources)
                 payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
+                # WDGAP W2-F (F-1): the same answer the inputs were built on;
+                # written only when it says something or changes.
+                kept_out = batch._pb_advance_kept_out(payslip.employee_id)
+                if kept_out != payslip.pb_advance_taken_in_id:
+                    payslip.pb_advance_taken_in_id = kept_out.id or False
                 payslip.line_ids.unlink()
                 batch._compute_and_create_payslip_lines(payslip, input_values)
             else:

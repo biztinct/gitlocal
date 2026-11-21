@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  WDGAP S2-B2 — the fund files' own words on the two S2-A screens, by template
+  inheritance (the S2-A board JS and templates belong to the other wave-2
+  builder; this file only extends them):
+
+    * the note until a form is accepted: a fund file says "Check with the
+      fund before the first upload" (`form.adviser_wording === 'fund'`);
+    * Form lines: the company's own number is named per form
+      (`form.employer_label`); the pay items the Vietnamese social-insurance
+      reports read (`form.section === 'reports'`) have no file, so no
+      "Prepare a filing", no note and no company number.
+-->
+<templates xml:space="preserve">
+
+  <t t-inherit="pb_form_lines.PbFormLines" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbgf-detail-acts')]//button[@t-on-click='prepare']" position="attributes">
+      <attribute name="t-if">form.can_prepare !== false</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbgf-detail-head')]" position="after">
+      <p t-if="form.section === 'reports'" class="pbgf-mark is-ok pbgf-reports-note"><t t-out="icon('info', 15)"/><span>These pay items are read by the Vietnamese social-insurance reports on Compliance › Filings. Until a pay item is on a line, the reports read their usual codes.</span></p>
+    </xpath>
+    <xpath expr="//section[hasclass('pbgf-detail')]/div[hasclass('pbgf-mark')]" position="attributes">
+      <attribute name="t-if">form.section !== 'reports'</attribute>
+    </xpath>
+    <xpath expr="//section[hasclass('pbgf-detail')]/div[hasclass('pbgf-mark')]/t[@t-else='']/span" position="replace">
+      <span t-if="form.adviser_wording === 'fund'">Check with the fund before the first upload. Every file says so until a payroll manager marks this form accepted.</span>
+      <span t-else="">Check with your adviser before first filing. Every file says so until a payroll manager marks this form accepted by the authority.</span>
+    </xpath>
+    <xpath expr="//div[hasclass('pbgf-settings')]" position="attributes">
+      <attribute name="t-if">form.needs_settings !== false</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbgf-settings')]/label[1]/span" position="replace">
+      <span t-if="form.employer_label" t-esc="form.employer_label"/>
+      <span t-else="">Employer's tax number</span>
+    </xpath>
+  </t>
+
+  <t t-inherit="pb_form_lines.PbGovFiling" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbgf-mark')]/t[@t-else='']/span" position="replace">
+      <span t-if="form.adviser_wording === 'fund'">Check with the fund before the first upload. The files say so too.</span>
+      <span t-else="">Check with your adviser before first filing. The files say so too.</span>
+    </xpath>
+    <xpath expr="//p[@t-if='F.adviser_mark']" position="replace">
+      <p t-if="F.adviser_mark and form.adviser_wording === 'fund'" class="pbgf-amber-text pbgf-small"><t t-out="icon('triangleAlert', 12)"/> These files say “Check with the fund before the first upload”.</p>
+      <p t-elif="F.adviser_mark" class="pbgf-amber-text pbgf-small"><t t-out="icon('triangleAlert', 12)"/> These files say “Check with your adviser before first filing”.</p>
+    </xpath>
+  </t>
+
+</templates>

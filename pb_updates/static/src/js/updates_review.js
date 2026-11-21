@@ -653,7 +653,7 @@ export class UpdReview extends Component {
                 ? _t("This sheet sets %(figures)s for %(people)s: tax year %(year)s, before Payobook up to %(date)s.", {
                     figures: plural(c.changes, _t("1 year-to-date figure"), _t("%s year-to-date figures")),
                     people: plural(c.people, _t("1 person"), _t("%s people")),
-                    year: this.rv.tax_year || "", date: dayLabel(this.rv.covers_to) || this.rv.covers_label || "" })
+                    year: this.rv.tax_year_label || this.rv.tax_year || "", date: dayLabel(this.rv.covers_to) || this.rv.covers_label || "" })
                 : this.rv.leave
                 ? _t("This sheet sets %(balances)s for %(people)s, as at %(date)s.", {
                     balances: plural(this.leaveSums.balances, _t("1 opening balance"), _t("%s opening balances")),

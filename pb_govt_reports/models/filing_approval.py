@@ -48,7 +48,11 @@ class PbFilingProposal(models.Model):
 
     _approval_process_key = FILING_PROCESS_KEY
     _proposal_prefix = 'FIL'
-    _proposal_gate_groups = (FILING_GROUP,)
+    # WDGAP FG1: whoever may produce a filing may carry an approved one out
+    # (the flow's own `_FILING_GROUPS`); WHO approves stays the route's.
+    _proposal_gate_groups = (FILING_GROUP,
+                             'pb_hr_payroll_base.group_payroll_base_manager',
+                             'pb_hr_govt.group_pb_hr_govt_user')
     _proposal_kind_labels = {'filing': 'Statutory filing'}
     _proposal_fact_specs = {
         'country': {'type': 'char', 'label': 'Country'},

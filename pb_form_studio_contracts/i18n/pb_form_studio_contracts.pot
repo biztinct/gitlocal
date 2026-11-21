@@ -1,0 +1,253 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_form_studio_contracts
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-20 01:40+0000\n"
+"PO-Revision-Date: 2026-11-20 01:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "%s is required. Fill it in before saving."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A field that has since been deleted"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A field you cannot see"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A file"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "A new file"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay data file fills it, so pay depends on this field."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "A pay formula reads it, so pay depends on this field."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
+msgid "Add or move fields on this screen"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+msgid "Add your own fields"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Approvals, access and the pay set-up follow this field."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "Choose a file"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Company details"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Contract"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "Contract change · %s"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Contract panel: %s"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__pb_country_of_work_id
+msgid "Country of Work"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contract_proposal__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_form_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_people_contract_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "Download"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/form_studio_host.py:0
+msgid "Drawn by the contract screen itself. Fields cannot be placed here."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_hr_contract
+msgid "Employee Contract"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+#: code:addons/pb_form_studio_contracts/static/src/xml/full_form_button.xml:0
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_form_studio
+msgid "Form builder"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contract_proposal__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_form_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_contracts.field_pb_people_contract_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It names the contract on every payslip and file."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "It says whose contract this is."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "No"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "Not filled in"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid "PDF or image, up to 10 MB"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Pay or statutory files depend on this field."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_people_contract_wizard
+msgid "Payobook guided contract creation"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/standard_fields.py:0
+msgid "Payroll facts"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#: model:ir.model,name:pb_form_studio_contracts.model_pb_contract_proposal
+msgid "Proposed contract change"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "That is not something this screen can change, so it was left alone."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/js/contract_drawer_patch.js:0
+msgid ""
+"The fields on this screen were changed. Save or discard your changes to see "
+"them."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#: model:ir.model.fields,help:pb_form_studio_contracts.field_hr_contract__pb_country_of_work_id
+msgid "The person's Country of Work, read from their employee record."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-javascript
+#: code:addons/pb_form_studio_contracts/static/src/xml/contract_drawer_patch.xml:0
+msgid ""
+"Uniform size, union number, a signed copy: anything your company keeps on a "
+"contract."
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+#: code:addons/pb_form_studio_contracts/models/contract_proposal.py:0
+msgid "Yes"
+msgstr ""
+
+#. module: pb_form_studio_contracts
+#. odoo-python
+#: code:addons/pb_form_studio_contracts/models/contract_drawer.py:0
+msgid "name"
+msgstr ""

@@ -1,0 +1,11 @@
+{
+ "_why": "Literals the coverage check flags that are not visible English: CSS and HTML fragments, entity maps, selectors, form paths, a console message, and English constants a phrase is compared with (a value saved in English by an older draft or by the server). Reviewed by hand in WF2 P6b.",
+ "graph.js": ["px;top:", "px;height:", "px;transform:scale("],
+ "app.js": ["&amp;", "&lt;", "&gt;", "&quot;"],
+ "templates.js": ["body{font:15px/1.6 system-ui;color:#302e42;padding:12px;overflow-wrap:anywhere}img{max-width:100%}", "{{ object."],
+ "stages.js": ["stageForm.owner", "stageForm.rule"],
+ "steps.js": ["Done", "Cannot do", "Yes", "No", "I confirm", ".button-rows .button-row:last-of-type input", ".drawer .filter-section:last-of-type"],
+ "actions.js": ["Workflow action failed:", "stageForm.owner.id", "stageForm.owner.kind"],
+ "insights.js": ["1 0;background:", ";color:"],
+ "repeat.js": ["\u0000none", "px;top:", "px;width:", "px;height:", "for each", "Repeat for each…"]
+}

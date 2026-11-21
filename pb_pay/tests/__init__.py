@@ -7,3 +7,5 @@ from . import test_p7_vietnamese
 from . import test_t3b_letter_token
 from . import test_wf2p2b_pay
 from . import test_wf2p5a_pay
+# WDGAP QF4
+from . import test_wdgap_qf4

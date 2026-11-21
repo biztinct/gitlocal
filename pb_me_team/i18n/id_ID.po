@@ -1052,3 +1052,29 @@ msgstr "· dikirim"
 #: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
 msgid "· with"
 msgstr "· sedang di"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "Document"
+msgstr "Dokumen"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Documents"
+msgstr "Dokumen"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Half a day"
+msgstr "Setengah hari"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "hour"
+msgstr "jam"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "hours"
+msgstr "jam"

@@ -14,6 +14,8 @@ from . import account_type
 from . import account_password
 from . import account_desk
 from . import account_workers
+from . import two_step_rule
+from . import idle_rule
 from . import ir_http
 from . import studio_models
 from . import studio_service

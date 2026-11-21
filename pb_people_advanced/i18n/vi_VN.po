@@ -338,7 +338,6 @@ msgstr "Vai trò"
 msgid "Employee created; contract: %(error)s"
 msgstr "Nhân viên được tạo ra; hợp đồng: %(error)s"
 
-
 # ===================================================================
 #  Approval Matrix phase 7 — the doors whose press IS the change.
 # ===================================================================
@@ -459,7 +458,6 @@ msgstr "người phê duyệt của nó"
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
 
-
 # ===================================================================
 #  Approval Matrix phase 7 — what the browser walk found.
 # ===================================================================
@@ -565,3 +563,90 @@ msgstr "Báo cáo cho"
 #: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
 msgid "— set from the org chart"
 msgstr "— đặt từ sơ đồ tổ chức"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Carried from %s"
+msgstr "Chuyển từ %s"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Pay lines carried over"
+msgstr "Các khoản lương được chuyển sang"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Put back"
+msgstr "Đưa lại"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_newhire_proposal__name
+msgid "Reference"
+msgstr "Mã"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Take off"
+msgstr "Bỏ ra"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid ""
+"The new contract starts with the same pay lines as the one it renews. Change"
+" an amount, or take a line off, before you create it."
+msgstr "Hợp đồng mới bắt đầu với các khoản lương giống hợp đồng được gia hạn. Hãy sửa số tiền, hoặc bỏ một khoản, trước khi tạo."
+
+#. module: pb_people_advanced
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_newhire_proposal__note
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Fixed-term"
+msgstr "Có thời hạn"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Kind of contract (Vietnam)"
+msgstr "Loại hợp đồng (Việt Nam)"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Open-ended"
+msgstr "Không thời hạn"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Seasonal"
+msgstr "Theo mùa vụ"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Payroll treatment (Vietnam)"
+msgstr "Cách tính lương (Việt Nam)"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Permanent"
+msgstr "Chính thức"

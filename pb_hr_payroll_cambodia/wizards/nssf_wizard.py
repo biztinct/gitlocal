@@ -53,26 +53,12 @@ class NSSFWizard(models.TransientModel):
                     if nssf_employer_line:
                         record.total_nssf_employer += sum(nssf_employer_line.mapped('amount'))
     
-    def action_generate_nssf_file(self):
-        """Generate NSSF submission file"""
-        self.ensure_one()
-        
-        if not self.total_employees:
-            raise UserError(_('No employees found for NSSF submission in the selected period.'))
-        
-        # This would generate the actual NSSF submission file
-        # For now, return a success message
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('NSSF Submission'),
-                'message': _('NSSF submission file generated successfully for %d employees.') % self.total_employees,
-                'type': 'success',
-                'sticky': False,
-            }
-        }
-    
+    def action_generate_nssf_file(self, *args, **kwargs):
+        """WDGAP S2-A (S2F-4): RETIRED. This door used to say a file was
+        made (or data imported) and made none. It now says so and makes
+        no claim. (Cambodia NSSF submission)"""
+        raise UserError(_("This file is not available yet, so nothing was made. Government filings are prepared on Compliance › Filings."))
+
     def action_preview_nssf_data(self):
         """Preview NSSF submission data"""
         self.ensure_one()

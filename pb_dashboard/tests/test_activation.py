@@ -56,6 +56,8 @@ HOME_MODELS = {
     'hr.formula.config', 'hr.formula.test.result',
     # CLOCK-3: the time-clock chip (pb_clock, soft)
     'pb.clock.alert',
+    # WDGAP QF1: PayAI's daily alerts (pb_payroll_ai_insights, soft)
+    'payroll.ai.pulse',
 }
 
 # Every foreign model the Home payloads read.

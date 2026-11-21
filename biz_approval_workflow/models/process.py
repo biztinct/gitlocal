@@ -1,7 +1,8 @@
 # Part of Payobook. See LICENSE file for full copyright and licensing details.
 """The catalogue: one row per business object that can need a sign-off."""
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 AREAS = [
     ('pay', 'Pay'),
@@ -13,6 +14,23 @@ AREAS = [
     ('platform', 'Platform'),
     ('other', 'Other'),
 ]
+
+#: WDGAP QF1 — the kinds of request a manager may approve several at once
+#: when the product is first given the choice. Everything else (pay, money
+#: out, pay data, set-up, platform, every `money` process, leavers, verdicts,
+#: hires, contracts, pay and bank changes, hiring, "Other request", workflow
+#: studio) is decided one at a time. Applied ONCE: a row created later gets
+#: it at creation (`create`), the rows already there get it from the
+#: 19.0.1.8.0 post-migration (`_seed_bulk_defaults`), and nothing re-asserts
+#: it afterwards, so a customer's own choice survives every upgrade.
+BULK_DEFAULT_KEYS = frozenset({
+    'leave', 'overtime', 'timesheet', 'correction', 'trip',
+    'training_request', 'goal_set', 'goal_change', 'recognition',
+    'hr_comm_post', 'letters',
+})
+
+#: The marker that says the existing rows have had their one-time default.
+BULK_SEEDED_PARAM = 'biz_approval_workflow.bulk_ok_seeded'
 
 
 class BizApprovalProcess(models.Model):
@@ -36,6 +54,11 @@ class BizApprovalProcess(models.Model):
         string='Money leaves the company',
         help='Publishing a one-person route for this process raises a '
              'warning the publisher confirms.')
+    bulk_ok = fields.Boolean(
+        string='Can be approved several at once',
+        help='A manager may tick several of these in the Approvals inbox and '
+             'approve them together. Never allowed where money leaves the '
+             'company.')
     connected = fields.Boolean(compute='_compute_connected',
                                string='Wired up')
     #: ANOTHER ROW ALREADY ANSWERS THIS ONE.
@@ -68,6 +91,43 @@ class BizApprovalProcess(models.Model):
     _key_uniq = models.Constraint(
         'unique(key)',
         'Another process already uses that identifier.')
+
+    @api.constrains('bulk_ok', 'money')
+    def _check_bulk_not_money(self):
+        for rec in self:
+            if rec.bulk_ok and rec.money:
+                raise ValidationError(_(
+                    "\"%s\" moves money out of the company, so each one is "
+                    "approved on its own. It cannot be approved several at "
+                    "once.", rec.name))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # A row born after the one-time default still gets it: the catalogue
+        # rows live in other modules' data files, installed in any order.
+        for vals in vals_list:
+            if 'bulk_ok' not in vals and vals.get('key') in BULK_DEFAULT_KEYS \
+                    and not vals.get('money'):
+                vals['bulk_ok'] = True
+        return super().create(vals_list)
+
+    @api.model
+    def _seed_bulk_defaults(self):
+        """Give the rows that already exist their one-time default.
+
+        Runs once per database (the marker parameter), so a customer who later
+        turns a kind on or off keeps that choice through every upgrade. Only a
+        row still at the field's default (False) is touched, and never a money
+        process. Returns the keys it switched on."""
+        params = self.env['ir.config_parameter'].sudo()
+        if params.get_param(BULK_SEEDED_PARAM):
+            return []
+        rows = self.sudo().search([('key', 'in', sorted(BULK_DEFAULT_KEYS)),
+                                   ('bulk_ok', '=', False),
+                                   ('money', '=', False)])
+        rows.write({'bulk_ok': True})
+        params.set_param(BULK_SEEDED_PARAM, '1')
+        return sorted(rows.mapped('key'))
 
     @api.depends('model_name', 'key')
     def _compute_connected(self):

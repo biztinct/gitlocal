@@ -23,9 +23,10 @@
  * would offer the audit console to a payroll officer whose first click gets an
  * AccessError.
  *
- *   filings   `pb.govt.report.wizard` has exactly one `ir.model.access` row and
- *             it names `pb_hr_govt.group_pb_hr_govt_user`, which itself implies
- *             the payroll-user group. One group, and no more.
+ *   filings   the payroll officer or manager — the right that PRODUCES a
+ *             filing (WDGAP S2-A, S2F-8: before, the lens followed
+ *             `pb_hr_govt.group_pb_hr_govt_user` while generating needed the
+ *             officer role, so people saw a board that refused them).
  *
  *   bank      `pb.bank.change.request` grants read+write+create to
  *             `base.group_user`: on this surface an employee uploads their own
@@ -62,8 +63,18 @@ import { PbBankOcr } from "@pb_bank_ocr/js/pb_bank_ocr";
 import { PbYoungWorker } from "@pb_young_worker/js/pb_young_worker";
 import { PbAudit } from "@pb_audit/js/pb_audit";
 
-/** `pb.govt.report.wizard`'s only ACL row. */
-export const FILINGS_GATE = ["pb_hr_govt.group_pb_hr_govt_user"];
+/**
+ * WDGAP S2-A (S2F-8): seeing the Filings lens and producing a filing are ONE
+ * right — the payroll officer or manager (`pb.filing.flow._FILING_GROUPS`,
+ * `pb.gov.form.rights`). `pb.govt.report.wizard` carries an ACL row for both
+ * (pb_govt_reports), so the Vietnamese social-insurance tiles keep working.
+ */
+export const FILINGS_GATE = [
+    "pb_hr_payroll_base.group_payroll_base_officer",
+    "pb_hr_payroll_base.group_payroll_base_manager",
+    // WDGAP FG1 (owner): the Government reports permission keeps the lens
+    "pb_hr_govt.group_pb_hr_govt_user",
+];
 
 /** `pb.bank.change.request` — every internal user, on purpose. */
 export const BANK_GATE = ["base.group_user"];

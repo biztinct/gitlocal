@@ -365,6 +365,14 @@
         <field name="model">pb.benefit.plan</field>
         <field name="arch" type="xml">
             <form string="Benefit plan">
+                <header>
+                    <!-- WDGAP QF4 (B3): existing staff and imported people -->
+                    <button name="action_cover_everyone" type="object"
+                            string="Cover everyone who qualifies now"
+                            class="btn-secondary"
+                            groups="pb_comp_ben.group_comp_head"
+                            invisible="auto_cover == 'none' or not id"/>
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Health cover"/></h1>
@@ -378,6 +386,7 @@
                         </group>
                         <group>
                             <field name="country_id"/>
+                            <field name="auto_cover" widget="radio"/>
                             <field name="active"/>
                             <field name="company_id"
                                    groups="base.group_multi_company"/>
@@ -395,6 +404,14 @@
                                     <field name="start_date"/>
                                     <field name="end_date"/>
                                     <field name="state"/>
+                                    <field name="end_reason" column_invisible="1"/>
+                                    <field name="end_note" string=" "
+                                           widget="badge" decoration-warning="end_reason == 'leaving'"
+                                           invisible="not end_note"/>
+                                    <field name="started_by" string=" "
+                                           widget="badge" decoration-muted="1"
+                                           width="230px"
+                                           invisible="started_by != 'auto'"/>
                                 </list>
                             </field>
                         </page>
@@ -426,7 +443,35 @@
                 <field name="start_date"/>
                 <field name="end_date"/>
                 <field name="state"/>
+                <field name="end_reason" column_invisible="1"/>
+                <field name="end_note" string=" " widget="badge"
+                       decoration-warning="end_reason == 'leaving'"
+                       invisible="not end_note"/>
+                <field name="started_by" string=" " widget="badge"
+                       decoration-muted="1" width="230px"
+                       invisible="started_by != 'auto'"/>
             </list>
+        </field>
+    </record>
+
+    <!-- WDGAP QF4 (B3): the preview before covering everyone -->
+    <record id="view_pb_benefit_cover_wizard_form" model="ir.ui.view">
+        <field name="name">pb.benefit.cover.wizard.form</field>
+        <field name="model">pb.benefit.cover.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cover everyone who qualifies now">
+                <field name="plan_id" invisible="1"/>
+                <field name="to_add" invisible="1"/>
+                <p class="lead"><field name="sentence" readonly="1" nolabel="1"/></p>
+                <p class="text-muted">The people added show "Started automatically" on the plan. Cover starts today, or on their first day if they have not started yet.</p>
+                <footer>
+                    <button name="action_confirm" type="object"
+                            string="Add them" class="btn-primary"
+                            invisible="to_add == 0"/>
+                    <button string="Cancel" special="cancel"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
         </field>
     </record>
 

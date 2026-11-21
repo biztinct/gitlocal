@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ONE JOB, ONCE A DAY. Quiet on a database with no survey: it reads an
+         empty table and stops. It closes rounds whose last day has passed,
+         sends due reminders ONLY where this system sends email (tenant
+         databases have email off on purpose — then nothing is queued; the
+         "Needs you" row on My Payobook is the reminder), and removes any
+         sealed folder a closed round left behind. `numbercall` / `doall`
+         do not exist on Odoo 19 (pb_goals precedent). -->
+    <record id="cron_voice_daily" model="ir.cron">
+        <field name="name">Employee surveys: close, remind, tidy</field>
+        <field name="model_id" ref="model_pb_voice_round"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_voice_daily()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

@@ -3757,8 +3757,8 @@
     },
     {
       "definition": {
-        "en": "Use the file's values once, for this run, and change nothing in Payobook except each person's manager, when the file has one. Every pay data file works this way: lasting changes to people's records go through People › Updates.",
-        "vi": "Dùng các giá trị trong tệp một lần, cho đợt này, và không thay đổi gì trong Payobook trừ người quản lý của từng người, khi tệp có cột đó. Mọi tệp dữ liệu lương đều như vậy: thay đổi lâu dài trong hồ sơ được thực hiện qua Nhân sự › Cập nhật."
+        "en": "Use the file's values once, for this run, and change nothing in Payobook except each person's manager, when the file has one. The other answer, Update Payobook, saves them onto people's records from now on.",
+        "vi": "Dùng các giá trị trong tệp một lần, cho đợt này, và không thay đổi gì trong Payobook trừ người quản lý của từng người, khi tệp có cột đó. Câu trả lời còn lại, Cập nhật Payobook, lưu chúng vào hồ sơ từ nay về sau."
       },
       "key": "thisRunOnly",
       "match": {
@@ -5948,8 +5948,8 @@
         },
         {
           "body": {
-            "en": "A value that should last — a new allowance, a new wage — is changed in People › Updates, so it reaches every run computed from then on. The pay data file is for this run only.",
-            "vi": "Một giá trị cần giữ lâu dài — một khoản phụ cấp mới, một mức lương mới — được thay đổi trong Nhân sự › Cập nhật, nên ảnh hưởng tới mọi đợt được tính từ đó về sau. Tệp dữ liệu lương chỉ dùng cho đợt này."
+            "en": "\"Update Payobook\" is different: it saves values onto people's records, so it reaches every run computed from then on. Use This run only for a one-off.",
+            "vi": "\"Cập nhật Payobook\" thì khác: nó lưu giá trị vào hồ sơ của từng người, nên ảnh hưởng tới mọi đợt được tính từ đó về sau. Hãy dùng Chỉ đợt này cho khoản chỉ có một lần."
           },
           "capability": "any",
           "kind": "warn",
@@ -8309,8 +8309,8 @@
             {
               "anchor": "pw-paymode",
               "text": {
-                "en": "If the scheme reads a spreadsheet, load the file: it is used for this run only",
-                "vi": "Nếu chương trình đọc bảng tính, tải tệp lên: tệp chỉ dùng cho đợt này"
+                "en": "If the scheme reads a spreadsheet, load the file and choose Update Payobook or This run only",
+                "vi": "Nếu chương trình đọc bảng tính, tải tệp lên và chọn Cập nhật Payobook hoặc Chỉ đợt này"
               }
             },
             {
@@ -10267,8 +10267,8 @@
       "blocks": [
         {
           "body": {
-            "en": "A pay data file is used <b>for this run only</b>: its values are used once and nothing in Payobook changes except managers from the file. The batch then says \"This run only — nothing saved but managers\". To change employee, contract or bank records for good, use <b>People › Updates</b>.",
-            "vi": "Tệp dữ liệu lương được dùng <b>chỉ cho đợt này</b>: các giá trị được dùng một lần và không thay đổi gì trong Payobook ngoài người quản lý từ tệp. Đợt nhập khi đó ghi \"Chỉ đợt này — chỉ lưu người quản lý\". Để thay đổi lâu dài hồ sơ nhân viên, hợp đồng hoặc tài khoản ngân hàng, hãy dùng <b>Nhân sự › Cập nhật</b>."
+            "en": "<b>Update Payobook</b> saves the file's values onto employee and contract records and uses them from now on. <b>This run only</b> uses them once, for this run, and changes nothing in Payobook except managers from the file. The batch then says \"This run only — nothing saved but managers\".",
+            "vi": "<b>Cập nhật Payobook</b> lưu các giá trị trong tệp vào hồ sơ nhân viên và hợp đồng, và dùng chúng từ nay về sau. <b>Chỉ đợt này</b> dùng chúng một lần, cho đợt này, và không thay đổi gì trong Payobook ngoài người quản lý từ tệp. Đợt nhập khi đó ghi \"Chỉ đợt này — chỉ lưu người quản lý\"."
           },
           "capability": "any",
           "kind": "p",
@@ -10277,8 +10277,8 @@
         },
         {
           "body": {
-            "en": "A one-off bonus or a correction: the pay data file, for this run. A new allowance everyone keeps getting: People › Updates.",
-            "vi": "Một khoản thưởng một lần hoặc một lần sửa: tệp dữ liệu lương, cho đợt này. Một khoản phụ cấp mới mà mọi người sẽ tiếp tục nhận: Nhân sự › Cập nhật."
+            "en": "A one-off bonus or a correction: This run only. A new allowance everyone keeps getting: Update Payobook.",
+            "vi": "Một khoản thưởng một lần hoặc một lần sửa: Chỉ đợt này. Một khoản phụ cấp mới mà mọi người sẽ tiếp tục nhận: Cập nhật Payobook."
           },
           "capability": "any",
           "kind": "ok",
@@ -10299,8 +10299,8 @@
       "dynamic": "none",
       "key": "thisrunonly",
       "label": {
-        "en": "Is a pay data file kept?",
-        "vi": "Tệp dữ liệu lương có được lưu lại không?"
+        "en": "Update Payobook or This run only?",
+        "vi": "Cập nhật Payobook hay Chỉ đợt này?"
       },
       "offer": true,
       "phrases": [
@@ -10311,8 +10311,8 @@
         "chi dot nay",
         "chỉ đợt này",
         "cap nhat payobook",
-        "Is a pay data file kept?",
-        "Tệp dữ liệu lương có được lưu lại không?"
+        "Update Payobook or This run only?",
+        "Cập nhật Payobook hay Chỉ đợt này?"
       ],
       "practice_key": "",
       "screens": "import,runpayroll,importwizard",
@@ -13632,8 +13632,8 @@
             "vi": "Các giá trị này dùng để làm gì?"
           },
           "means": {
-            "en": "The pay data file is used for this run only. Lasting changes to people's records go through People › Updates.",
-            "vi": "Tệp dữ liệu lương chỉ dùng cho đợt này. Thay đổi lâu dài trong hồ sơ được thực hiện qua Nhân sự › Cập nhật."
+            "en": "Update Payobook saves the file's values onto people's records from now on. This run only uses them once.",
+            "vi": "Cập nhật Payobook lưu các giá trị của tệp vào hồ sơ từ nay về sau. Chỉ đợt này dùng chúng một lần."
           },
           "modes": [
             "try"
@@ -13643,8 +13643,8 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "For this run only",
-            "vi": "Chỉ cho đợt này"
+            "en": "Update Payobook, or This run only",
+            "vi": "Cập nhật Payobook, hoặc Chỉ đợt này"
           },
           "value": ""
         },
@@ -20547,8 +20547,8 @@
         "pb_payrun_wizard.action_pb_payrun_wizard"
       ],
       "next_step": {
-        "en": "Pick the pay scheme under \"Pay run for\" and check the month. If the scheme reads a spreadsheet, load the file: it is used for this run only. Computing makes drafts only — nothing is paid, sent or approved.",
-        "vi": "Chọn chương trình lương trong mục \"Đợt lương cho\" và kiểm tra tháng. Nếu chương trình đọc một bảng tính, hãy tải tệp lên: tệp chỉ dùng cho đợt này. Tính chỉ tạo bản nháp — chưa có gì được chi, gửi hay phê duyệt."
+        "en": "Pick the pay scheme under \"Pay run for\" and check the month. If the scheme reads a spreadsheet, load the file and choose Update Payobook or This run only. Computing makes drafts only — nothing is paid, sent or approved.",
+        "vi": "Chọn chương trình lương trong mục \"Đợt lương cho\" và kiểm tra tháng. Nếu chương trình đọc một bảng tính, hãy tải tệp và chọn Cập nhật Payobook hoặc Chỉ đợt này. Tính chỉ tạo bản nháp — chưa có gì được chi, gửi hay phê duyệt."
       },
       "open": "",
       "places": [
@@ -20772,8 +20772,8 @@
         {
           "key": "thisrunonly",
           "label": {
-            "en": "Is a pay data file kept?",
-            "vi": "Tệp dữ liệu lương có được lưu lại không?"
+            "en": "Update Payobook or This run only?",
+            "vi": "Cập nhật Payobook hay Chỉ đợt này?"
           }
         },
         {
@@ -23238,6 +23238,39 @@
       ]
     },
     {
+      "action_tags": "pb_form_library",
+      "blurb": {
+        "en": "Form builder: every field your company added, where it appears, who can see it and what uses it.",
+        "vi": "Trình tạo biểu mẫu: mọi trường công ty bạn đã thêm, nó xuất hiện ở đâu, ai được xem và cái gì đang dùng nó."
+      },
+      "hub": null,
+      "key": "formbuilder",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Add your own fields",
+        "vi": "Thêm các trường của riêng bạn"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Add a field on the record screen itself with the Form builder button. Here, open a row to rename it, change who can see it or delete it.",
+        "vi": "Thêm trường ngay trên màn hình hồ sơ bằng nút Trình tạo biểu mẫu. Ở đây, mở một dòng để đổi tên, đổi người được xem hoặc xoá nó."
+      },
+      "open": "pb_form_studio.action_pb_form_library",
+      "places": [],
+      "sequence": 540,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        }
+      ]
+    },
+    {
       "action_tags": "pb_access_board",
       "blurb": {
         "en": "Access & delegation: who can do what, as roles, and handing your access over while you are away.",
@@ -23258,7 +23291,7 @@
       },
       "open": "biz_access.action_pb_access_board",
       "places": [],
-      "sequence": 540,
+      "sequence": 550,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23298,7 +23331,7 @@
       },
       "open": "pb_govt_reports.action_pb_filing_flow",
       "places": [],
-      "sequence": 550,
+      "sequence": 560,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23342,7 +23375,7 @@
         "pb_compliance_hub:young",
         "pb_compliance_hub:audit"
       ],
-      "sequence": 560,
+      "sequence": 570,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23464,7 +23497,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 570,
+      "sequence": 580,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23647,7 +23680,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 580,
+      "sequence": 590,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23840,7 +23873,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 590,
+      "sequence": 600,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23959,7 +23992,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 600,
+      "sequence": 610,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24125,7 +24158,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 610,
+      "sequence": 620,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24207,7 +24240,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 620,
+      "sequence": 630,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24356,7 +24389,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 630,
+      "sequence": 640,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24458,7 +24491,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 640,
+      "sequence": 650,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24550,7 +24583,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 650,
+      "sequence": 660,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24729,7 +24762,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 660,
+      "sequence": 670,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24821,7 +24854,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 670,
+      "sequence": 680,
       "sidebar_key": "",
       "suggest": [
         {
@@ -25097,7 +25130,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 680,
+      "sequence": 690,
       "sidebar_key": "",
       "suggest": [
         {
@@ -25256,7 +25289,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 690,
+      "sequence": 700,
       "sidebar_key": "",
       "suggest": [
         {
@@ -25631,7 +25664,7 @@
         "vi": "báo cáo nộp cơ quan, nộp báo cáo bảo hiểm hằng tháng, tạo hồ sơ, bảo hiểm xã hội"
       },
       "section": "payroll",
-      "sequence": 310,
+      "sequence": 320,
       "sidebar_key": "pb_sidebar.item_govt_reports",
       "star": true,
       "summary": {
@@ -25913,7 +25946,7 @@
         "vi": "xác minh ngân hàng, yêu cầu đổi ngân hàng, lao động chưa thành niên, nhật ký kiểm toán, ai đã sửa gì"
       },
       "section": "payroll",
-      "sequence": 320,
+      "sequence": 330,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -26234,7 +26267,7 @@
         "vi": "phân tích, tổng quan, diễn biến chi phí, lương thực chi, bình quân đầu người"
       },
       "section": "payroll",
-      "sequence": 270,
+      "sequence": 280,
       "sidebar_key": "pb_sidebar.item_analytics",
       "star": false,
       "summary": {
@@ -26558,7 +26591,7 @@
         "vi": "khám phá dữ liệu, chỉ tiêu, chia theo, so sánh chương trình lương, bộ lọc, giải thích biến động"
       },
       "section": "payroll",
-      "sequence": 280,
+      "sequence": 290,
       "sidebar_key": "pb_sidebar.item_explorer",
       "star": false,
       "summary": {
@@ -26848,7 +26881,7 @@
         "vi": "phân tích lực lượng lao động, nhân viên được trả lương, người vào, người nghỉ, chi phí bình quân"
       },
       "section": "payroll",
-      "sequence": 290,
+      "sequence": 300,
       "sidebar_key": "pb_sidebar.item_workforce_insights",
       "star": false,
       "summary": {
@@ -27174,7 +27207,7 @@
         "vi": "báo cáo lương, ngân sách, đúng nhịp, đang nóng lên, đã chi so với ngân sách"
       },
       "section": "payroll",
-      "sequence": 300,
+      "sequence": 310,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -27619,7 +27652,7 @@
         "vi": "tuyển dụng, mở một vị trí, đề xuất tuyển dụng, nhờ quản lý, vị trí mới, yêu cầu đã được đồng ý"
       },
       "section": "payroll",
-      "sequence": 330,
+      "sequence": 340,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -28099,7 +28132,7 @@
         "vi": "ứng viên, chuyển ứng viên, giai đoạn, danh sách chọn, chia sẻ ứng viên, phiếu đánh giá, so sánh ứng viên cuối, đăng tin vị trí, chờ nhận việc, xác nhận đã vào làm"
       },
       "section": "payroll",
-      "sequence": 340,
+      "sequence": 350,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -28432,7 +28465,7 @@
         "vi": "nhân viên mới, ngày đầu tiên, người đồng hành, nhận việc, sắp vào làm"
       },
       "section": "payroll",
-      "sequence": 350,
+      "sequence": 360,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -28728,7 +28761,7 @@
         "vi": "thử việc, hết thử việc, xác nhận chính thức, kéo dài thử việc"
       },
       "section": "payroll",
-      "sequence": 360,
+      "sequence": 370,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -29013,7 +29046,7 @@
         "vi": "kế hoạch phát triển, kèm cặp, kế hoạch cải thiện, mục tiêu có rủi ro"
       },
       "section": "payroll",
-      "sequence": 370,
+      "sequence": 380,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -29292,7 +29325,7 @@
         "vi": "hợp đồng sắp hết hạn, gia hạn hợp đồng, chuyển chính thức"
       },
       "section": "payroll",
-      "sequence": 380,
+      "sequence": 390,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -29625,7 +29658,7 @@
         "vi": "nghỉ việc, thôi việc, đơn nghỉ việc, bàn giao, quyết toán, ngày làm cuối"
       },
       "section": "payroll",
-      "sequence": 390,
+      "sequence": 400,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -30034,7 +30067,7 @@
         "vi": "thiết lập tuyển dụng, giai đoạn, cột, mẫu đơn ứng tuyển, phiếu đánh giá, email ứng viên, tự động hoá, đơn vị tuyển dụng, kênh đăng tin, số liệu tuyển dụng, số ngày tuyển"
       },
       "section": "payroll",
-      "sequence": 400,
+      "sequence": 410,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -30481,7 +30514,7 @@
       "roles": [],
       "search": "",
       "section": "payroll",
-      "sequence": 190,
+      "sequence": 200,
       "sidebar_key": "pb_sidebar.item_dashboard",
       "star": true,
       "summary": {
@@ -31023,7 +31056,7 @@
       "roles": [],
       "search": "",
       "section": "payroll",
-      "sequence": 200,
+      "sequence": 210,
       "sidebar_key": "pb_sidebar.item_approvals",
       "star": true,
       "summary": {
@@ -31266,20 +31299,20 @@
               },
               "lines": [],
               "look": {
-                "en": "The line saying the file is used for this pay run only, with the way to People › Updates.",
-                "vi": "Dòng cho biết tệp chỉ dùng cho đợt trả lương này, kèm lối vào Nhân sự › Cập nhật."
+                "en": "What should these values do?, with Update Payobook and This run only.",
+                "vi": "Các giá trị này dùng để làm gì?, với Cập nhật Payobook và Chỉ đợt này."
               },
               "means": {
-                "en": "The pay data file is used for this run only. Lasting changes to people's records go through People › Updates.",
-                "vi": "Tệp dữ liệu lương chỉ dùng cho đợt này. Thay đổi lâu dài trong hồ sơ được thực hiện qua Nhân sự › Cập nhật."
+                "en": "Update Payobook saves the file's values to employee and contract records from now on. This run only uses them once.",
+                "vi": "Cập nhật Payobook lưu các giá trị của tệp vào hồ sơ nhân viên và hợp đồng từ nay về sau. Chỉ đợt này dùng chúng một lần."
               },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "press": {
-                "en": "Continue with the file: it is used for this run only.",
-                "vi": "Tiếp tục với tệp: tệp chỉ dùng cho đợt này."
+                "en": "This run only, or Update Payobook, then continue with the file.",
+                "vi": "Chỉ đợt này, hoặc Cập nhật Payobook, rồi tiếp tục với tệp."
               },
               "screen": "runpayroll",
               "tip": {
@@ -31492,8 +31525,8 @@
             "vi": "Chọn nhầm chương trình lương. Cuối tháng là quyết toán cả tháng; Tạm ứng giữa tháng là trả trước một phần. Đó không phải hai cách nhìn của cùng một thứ."
           },
           {
-            "en": "Putting a lasting change, such as a new allowance, only in the pay data file. The file is used for this run only, so next month it is gone. Lasting changes go through People › Updates.",
-            "vi": "Chỉ đưa một thay đổi lâu dài, như một khoản phụ cấp mới, vào tệp dữ liệu lương. Tệp chỉ dùng cho đợt này, nên tháng sau nó không còn. Thay đổi lâu dài được thực hiện qua Nhân sự › Cập nhật."
+            "en": "Choosing Update Payobook for a one-off amount. That saves the value onto the person's records for every month after. A one-off bonus belongs in This run only.",
+            "vi": "Chọn Cập nhật Payobook cho một khoản chỉ có một lần. Làm vậy là lưu giá trị đó vào hồ sơ của người đó cho mọi tháng sau. Một khoản thưởng một lần thuộc về Chỉ đợt này."
           },
           {
             "en": "Reading \"Need review\" as \"nothing else to check\". It flags take-home pay that moved more than 30% on the person's last payslip — not a single line that jumped. Hùng's overtime nearly quadrupled and his take-home rose 26%, under the line.",
@@ -32771,8 +32804,8 @@
               },
               "lines": [],
               "look": {
-                "en": "What should these values do? Two choices: For this run only.",
-                "vi": "Các giá trị này dùng để làm gì? Hai lựa chọn: Chỉ cho đợt này."
+                "en": "What should these values do? Two choices: Update Payobook, or This run only.",
+                "vi": "Các giá trị này dùng để làm gì? Hai lựa chọn: Cập nhật Payobook, hoặc Chỉ đợt này."
               },
               "means": {
                 "en": "Asked when the scheme reads a spreadsheet.",
@@ -32788,12 +32821,12 @@
               },
               "screen": "runpayroll",
               "tip": {
-                "en": "The pay data file is used for this run only. Lasting changes to people's records go through People › Updates.",
-                "vi": "Tệp dữ liệu lương chỉ dùng cho đợt này. Thay đổi lâu dài trong hồ sơ được thực hiện qua Nhân sự › Cập nhật."
+                "en": "Update Payobook saves the values onto employee and contract records. This run only uses them once.",
+                "vi": "Cập nhật Payobook lưu các giá trị vào hồ sơ nhân viên và hợp đồng. Chỉ đợt này dùng chúng một lần."
               },
               "title": {
-                "en": "For this run only",
-                "vi": "Chỉ cho đợt này"
+                "en": "Update Payobook, or This run only",
+                "vi": "Cập nhật Payobook, hoặc Chỉ đợt này"
               },
               "uses": [
                 {
@@ -34456,7 +34489,7 @@
         "vi": "nhân viên, hợp đồng, ngăn hợp đồng, sẵn sàng trả lương, thông tin ngân hàng, lương tháng"
       },
       "section": "payroll",
-      "sequence": 210,
+      "sequence": 220,
       "sidebar_key": "pb_sidebar.item_employees",
       "star": false,
       "summary": {
@@ -34932,7 +34965,7 @@
         "vi": "sơ đồ tổ chức, ai báo cáo cho ai, quản lý, đổi quản lý, cấp trên, nhóm, tái cơ cấu, lập kế hoạch"
       },
       "section": "payroll",
-      "sequence": 220,
+      "sequence": 230,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -35275,7 +35308,7 @@
         "vi": "khoảng lương, dải lương, công bằng, chênh lệch lương, ai được trả dưới khoảng lương"
       },
       "section": "payroll",
-      "sequence": 230,
+      "sequence": 240,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -35722,7 +35755,7 @@
         "vi": "xét lương, tăng lương, ai ký đợt xét lương, thay đổi lương"
       },
       "section": "payroll",
-      "sequence": 240,
+      "sequence": 250,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -36054,7 +36087,7 @@
         "vi": "phòng quyết định, kế hoạch năm sau, nếu như, kế hoạch nhân sự, chi phí chính xác"
       },
       "section": "payroll",
-      "sequence": 250,
+      "sequence": 260,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -36320,7 +36353,7 @@
         "vi": "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc, địa điểm"
       },
       "section": "payroll",
-      "sequence": 260,
+      "sequence": 270,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -40811,6 +40844,280 @@
     },
     {
       "after": "",
+      "duration_min": 5,
+      "icon": "sparkles",
+      "key": "formbuilder",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 5,
+          "goal": {
+            "en": "Know where your company's own fields live, what each one reaches, and why a field cannot simply be deleted.",
+            "vi": "Biết các trường riêng của công ty nằm ở đâu, mỗi trường đi tới những đâu, và vì sao không thể xoá một trường một cách đơn giản."
+          },
+          "key": "L42",
+          "name": {
+            "en": "Add your own fields",
+            "vi": "Thêm các trường của riêng bạn"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Choose another source for the formula first; then the field can go.",
+                    "vi": "Đúng vậy. Hãy chọn nguồn khác cho công thức trước; sau đó mới xoá được trường."
+                  },
+                  "label": {
+                    "en": "The delete is refused and the formula is named",
+                    "vi": "Việc xoá bị từ chối và công thức được nêu tên"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. A pay formula never silently loses its input — the delete stops first.",
+                    "vi": "Hãy nghĩ lại một chút. Công thức tính lương không bao giờ âm thầm mất đầu vào — việc xoá sẽ dừng lại trước."
+                  },
+                  "label": {
+                    "en": "The field goes and the formula reads zero",
+                    "vi": "Trường bị xoá và công thức đọc số 0"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "A pay formula reads one of your own fields. You want to delete that field. What happens?",
+                "vi": "Một công thức tính lương đọc một trường riêng của bạn. Bạn muốn xoá trường đó. Điều gì xảy ra?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "affects": {
+                "en": "Only the administrator can open it or change a field. Everyone else just sees the fields on the screens.",
+                "vi": "Chỉ quản trị viên mở được trang này hoặc sửa một trường. Những người khác chỉ thấy các trường trên màn hình."
+              },
+              "anchor": "fb-head",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "What & why",
+                "vi": "Là gì & vì sao"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Form builder page under Settings: its title and the line under it.",
+                "vi": "Trang Trình tạo biểu mẫu trong Cài đặt: tiêu đề và dòng chữ bên dưới."
+              },
+              "means": {
+                "en": "Your own fields are added on the record screens with the Form builder button. This page lists them, and the standard fields, in one place.",
+                "vi": "Trường riêng được thêm trên màn hình hồ sơ bằng nút Trình tạo biểu mẫu. Trang này liệt kê chúng, cùng các trường chuẩn, ở một chỗ."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "formbuilder",
+              "tip": "",
+              "title": {
+                "en": "One list of your fields and the standard ones",
+                "vi": "Một danh sách trường riêng và trường chuẩn"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Reading them changes nothing.",
+                "vi": "Đọc chúng không thay đổi gì."
+              },
+              "anchor": "fb-kpis",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "The numbers",
+                "vi": "Các con số"
+              },
+              "lines": [],
+              "look": {
+                "en": "The numbers line: Custom fields, Feed pay formulas, Shown in lists, Not on any screen, Standard fields hidden and Standard fields renamed.",
+                "vi": "Dòng con số: Trường tuỳ chỉnh, Dùng trong công thức lương, Hiện trong danh sách, Không có trên màn hình nào, Trường chuẩn đã ẩn và Trường chuẩn đã đổi tên."
+              },
+              "means": {
+                "en": "Each counts your company's fields, so yours will differ. A grey number is zero. A field on no screen is kept, but nobody can fill it in.",
+                "vi": "Mỗi con số đếm các trường của công ty bạn, nên số của bạn sẽ khác. Số màu xám là số 0. Trường không có trên màn hình nào vẫn được giữ, nhưng không ai điền được."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "formbuilder",
+              "tip": "",
+              "title": {
+                "en": "How many, and where they reach",
+                "vi": "Bao nhiêu, và đi tới đâu"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The chips and the search only narrow this list.",
+                "vi": "Các nút và ô tìm kiếm chỉ thu hẹp danh sách này."
+              },
+              "anchor": "fb-filters",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Find a field",
+                "vi": "Tìm một trường"
+              },
+              "lines": [],
+              "look": {
+                "en": "Find a field, the chips All, Own fields, Standard fields, Hidden and On My Payobook, the record types, and Any Country of Work.",
+                "vi": "Ô Tìm trường, các nút Tất cả, Trường riêng, Trường chuẩn, Đã ẩn và Trên My Payobook, các loại hồ sơ, và Mọi quốc gia làm việc."
+              },
+              "means": {
+                "en": "A field belongs to one record type: DEMO Parking bay is on the contract, DEMO Shirt size on the employee.",
+                "vi": "Mỗi trường thuộc một loại hồ sơ: DEMO Parking bay nằm trên hợp đồng, DEMO Shirt size nằm trên nhân viên."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "formbuilder",
+              "tip": "",
+              "title": {
+                "en": "Your own, standard, employee or contract",
+                "vi": "Trường riêng, trường chuẩn, nhân viên hay hợp đồng"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Edit changes its name or who can see it. A field in use cannot be deleted until that use is changed.",
+                "vi": "Sửa đổi tên hoặc người được xem. Một trường đang được dùng thì không xoá được cho tới khi chỗ dùng nó được sửa."
+              },
+              "anchor": "fb-table",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "One row a field",
+                "vi": "Mỗi trường một dòng"
+              },
+              "lines": [],
+              "look": {
+                "en": "The DEMO Shirt size row: a choice on the employee, and where it appears. Below your own fields come the standard ones; a lock means it cannot be hidden.",
+                "vi": "Dòng DEMO Shirt size: một lựa chọn trên nhân viên, và nơi nó xuất hiện. Dưới các trường riêng là các trường chuẩn; biểu tượng khoá nghĩa là không ẩn được."
+              },
+              "means": {
+                "en": "Used by counts the pay formulas, mappings, saved views and waiting My Payobook changes that read a field. A standard field a pay formula reads can be renamed, never hidden.",
+                "vi": "Được dùng bởi đếm các công thức tính lương, ánh xạ, chế độ xem đã lưu và thay đổi đang chờ trên My Payobook có đọc trường đó. Trường chuẩn mà công thức tính lương đọc thì đổi tên được, không bao giờ ẩn được."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "formbuilder",
+              "tip": "",
+              "title": {
+                "en": "Where it appears, who sees it, what uses it",
+                "vi": "Xuất hiện ở đâu, ai thấy, cái gì dùng nó"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "A pay formula can still read a ticked field, so its value reaches the payslip as an amount.",
+                "vi": "Công thức tính lương vẫn đọc được một trường đã đánh dấu, nên giá trị của nó tới phiếu lương dưới dạng một khoản tiền."
+              },
+              "anchor": "fb-foot",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "The limit",
+                "vi": "Giới hạn"
+              },
+              "lines": [],
+              "look": {
+                "en": "The line under the list: payslips, payslip lines and government returns cannot take custom fields.",
+                "vi": "Dòng dưới danh sách: phiếu lương, dòng phiếu lương và tờ khai nộp cơ quan nhà nước không nhận trường tuỳ chỉnh."
+              },
+              "means": {
+                "en": "Their shape is fixed by the pay scheme and the official file formats.",
+                "vi": "Hình dạng của chúng do chương trình lương và mẫu tệp chính thức quy định."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "formbuilder",
+              "tip": "",
+              "title": {
+                "en": "What cannot take a field",
+                "vi": "Cái gì không nhận trường"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "setup",
+      "name": {
+        "en": "Add your own fields",
+        "vi": "Thêm các trường của riêng bạn"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Picking the wrong type. A field's type cannot be changed after it is published; delete it and add a new one while it is still empty.",
+            "vi": "Chọn sai loại. Loại của một trường không đổi được sau khi đã xuất bản; hãy xoá và thêm trường mới khi nó còn trống."
+          },
+          {
+            "en": "Leaving a private detail visible to everyone. Set Who can see it before anyone fills it in.",
+            "vi": "Để một thông tin riêng tư hiện cho mọi người. Hãy đặt Ai được xem trước khi có người điền vào."
+          },
+          {
+            "en": "Trying to delete a field a pay formula, a mapping or a saved view still uses. The Field library says what uses it; change those first.",
+            "vi": "Cố xoá một trường mà công thức tính lương, ánh xạ hoặc chế độ xem đã lưu vẫn đang dùng. Thư viện trường cho biết cái gì đang dùng nó; hãy sửa những chỗ đó trước."
+          }
+        ],
+        "prereq": {
+          "en": "Only the administrator can add, change or delete fields. Who can see each field is chosen field by field.",
+          "vi": "Chỉ quản trị viên mới thêm, sửa hoặc xoá được trường. Ai được xem từng trường được chọn riêng cho mỗi trường."
+        },
+        "what": {
+          "en": "Settings › Form builder lists every field your company added, where it appears, how many records fill it and what uses it. Below them come the standard fields, with any you hid or renamed. Fields are added on the record screens themselves, with the Form builder button.",
+          "vi": "Cài đặt › Trình tạo biểu mẫu liệt kê mọi trường công ty bạn đã thêm, nó xuất hiện ở đâu, bao nhiêu hồ sơ đã điền và cái gì đang dùng nó. Bên dưới là các trường chuẩn, cùng những trường bạn đã ẩn hoặc đổi tên. Trường được thêm ngay trên màn hình hồ sơ, bằng nút Trình tạo biểu mẫu."
+        },
+        "when": {
+          "en": "When HR keeps a detail in a spreadsheet beside Payobook. When a pay formula needs a fact that is not on the record. When employees should see or update a detail themselves.",
+          "vi": "Khi nhân sự giữ một thông tin trong bảng tính bên ngoài Payobook, khi công thức tính lương cần một dữ kiện chưa có trên hồ sơ, và khi nhân viên cần tự xem hoặc cập nhật một thông tin của công ty."
+        },
+        "why": {
+          "en": "A uniform size, a locker number, a site allowance: each company keeps something nobody else does. A real field is checked, translated, kept in history and can be read by a pay formula — a note in a comment box is none of those.",
+          "vi": "Cỡ đồng phục, số tủ đồ, phụ cấp công trường: công ty nào cũng có thứ riêng. Một trường thật được kiểm tra, dịch, lưu lịch sử và công thức tính lương đọc được — một ghi chú trong ô bình luận thì không."
+        }
+      },
+      "required": false,
+      "roles": [
+        "owner"
+      ],
+      "search": {
+        "en": "form builder, add a field, custom field, company details, field library, my own fields",
+        "vi": "trình tạo biểu mẫu, thêm trường, trường riêng, thông tin công ty, thư viện trường"
+      },
+      "section": "payroll",
+      "sequence": 190,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "The details your company keeps that Payobook does not ask for: add them once, and they reach lists, sheets, pay formulas and My Payobook.",
+        "vi": "Những thông tin công ty bạn cần mà Payobook không hỏi sẵn: thêm một lần, và chúng có mặt ở danh sách, bảng tính, công thức tính lương và My Payobook."
+      }
+    },
+    {
+      "after": "",
       "duration_min": 6,
       "icon": "sun",
       "key": "wftoday",
@@ -41093,7 +41400,7 @@
         "vi": "hôm nay, ai có mặt, ai đi trễ, cần bạn, duyệt tăng ca sạch"
       },
       "section": "payroll",
-      "sequence": 410,
+      "sequence": 420,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -41461,7 +41768,7 @@
         "vi": "chấm công, ngoại lệ chấm công, nghỉ phép, đơn nghỉ phép, duyệt tăng ca"
       },
       "section": "payroll",
-      "sequence": 420,
+      "sequence": 430,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -41790,7 +42097,7 @@
         "vi": "chốt tuần, khoá tuần, gửi vào bảng lương, cờ chấm công"
       },
       "section": "payroll",
-      "sequence": 430,
+      "sequence": 440,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -41799,5 +42106,5 @@
       }
     }
   ],
-  "version": "2f6c3cbf0aa9"
+  "version": "cf927ef9da8c"
 }

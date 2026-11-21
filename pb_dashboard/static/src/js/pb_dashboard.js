@@ -189,6 +189,52 @@ const NEEDS = {
     },
 };
 
+/* WDGAP QF1 — "PayAI noticed". Keys are the alert kinds the server sends
+   (home_data.py PAYAI_KINDS; a test pins both directions). The sentence is
+   built HERE, from the alert's figures, so it reads in the reader's own
+   language — the alert's stored title is English and never reaches Home. */
+const PAYAI = {
+    cost: {
+        text: (a) => (a.direction === "down"
+            ? _t("Pay cost is down %(pct)s% on the last three months", { pct: int(a.pct) })
+            : _t("Pay cost is up %(pct)s% on the last three months", { pct: int(a.pct) })),
+    },
+    overtime: {
+        text: (a) => (a.department
+            ? _t("Overtime in %(dept)s is up %(pct)s%", { dept: a.department, pct: int(a.pct) })
+            : _t("Overtime is up %(pct)s%", { pct: int(a.pct) })),
+    },
+    headcount: {
+        text: (a) => {
+            const one = Math.round(Number(a.value) || 0) === 1;
+            const n = int(a.value);
+            if (a.direction === "left") {
+                return one ? _t("1 person left this week")
+                    : _t("%(n)s people left this week", { n });
+            }
+            return one ? _t("1 person joined this week")
+                : _t("%(n)s people joined this week", { n });
+        },
+    },
+    leave: {
+        text: (a) => {
+            const one = Math.round(Number(a.value) || 0) === 1;
+            const n = int(a.value);
+            return one ? _t("1 leave request approved in 7 days")
+                : _t("%(n)s leave requests approved in 7 days", { n });
+        },
+    },
+};
+
+/** "Look closer": the door key the server sends -> the screen it opens. */
+const PAYAI_DOORS = {
+    explorer: { xmlid: "pb_insights_hub.action_pb_insights_hub", lens: "explorer" },
+    workforce: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "workforce" },
+    people: { xmlid: "pb_people_hub.action_pb_people_hub" },
+    timeoff: { xmlid: "pb_mission.action_pb_workforce", lens: "timeoff",
+               lensKey: "pb_shell_lens" },
+};
+
 /** The five steps: the journey label (hero) and the row title (steps card). */
 const STEPS = {
     setup: {
@@ -511,8 +557,14 @@ export class PbDashboard extends Component {
         this.heroSparkRef = useRef("heroSpark");
         this.stackRef = useRef("stack");
         this.stepsRef = useRef("steps");
+        // WDGAP QF1 — the "PayAI noticed" row icon, made ONCE: `ic()` returns a
+        // new markup() on every call, and a new one in a loop re-inserts the
+        // DOM on every redraw (OWL markup flicker).
+        this.payaiArrow = ic("arrowRight", 13);
         this.state = useState({
             d: null,
+            // alerts "Got it" took off the card on this visit
+            payaiGone: {},
             loaded: false,
             failed: false,
             loading: false,
@@ -1567,6 +1619,49 @@ export class PbDashboard extends Component {
             rows, bankLine, sourceLine,
             empty: !n ? { text: _t("No pay run this month yet"), act: this.primary } : null,
         };
+    }
+
+    // ------------------------------------------- WDGAP QF1: PayAI noticed
+    /** Up to three of PayAI's daily alerts in plain words, or null (no
+     *  card) when PayAI is absent, the reader may not see them, or nothing
+     *  is open. Quiet board: only a critical or warning alert gets colour. */
+    get payaiCard() {
+        const p = this.d.payai_noticed;
+        if (!p || !p.alerts) { return null; }
+        const rows = p.alerts.filter((a) => PAYAI[a.category] && !this.state.payaiGone[a.id]).map((a) => ({
+            id: a.id,
+            text: PAYAI[a.category].text(a),
+            tone: a.severity === "critical" ? "rose" : a.severity === "warning" ? "amber" : "quiet",
+            level: a.severity === "critical" ? _t("Needs a look now")
+                : a.severity === "warning" ? _t("Worth a look") : _t("For your information"),
+            since: a.since ? _t("First noticed %(when)s", {
+                when: DateTime.fromISO(a.since).toFormat("d LLL") }) : "",
+            door: a.door && PAYAI_DOORS[a.door] ? a.door : "",
+        }));
+        if (!rows.length) { return null; }
+        return {
+            rows,
+            sub: rows.length === 1 ? _t("1 thing worth a look")
+                : _t("%(n)s things worth a look", { n: rows.length }),
+        };
+    }
+
+    /** "Got it": the alert stays out of sight until it gets worse. */
+    async payaiGotIt(row) {
+        try {
+            await this.orm.call("payroll.ai.pulse", "rpc_acknowledge_alert", [row.id]);
+            this.state.payaiGone = { ...this.state.payaiGone, [row.id]: true };
+        } catch (e) {
+            console.warn("pb_dashboard: the alert could not be put away", e);
+            this.notification.add(_t("That could not be saved. Try again in a moment."), {
+                type: "warning",
+            });
+        }
+    }
+
+    payaiLook(row) {
+        const d = PAYAI_DOORS[row.door];
+        if (d) { this.door(d.xmlid, d); }
     }
 
     get hiringCard() {

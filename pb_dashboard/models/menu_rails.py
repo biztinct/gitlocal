@@ -9,10 +9,11 @@ PAYROLL_HOME_XMLID = 'pb_dashboard.action_pb_dashboard'
 TENANT_SLUG_PARAM = 'pb.tenant.slug'
 RECOVERY_LOGIN_PARAM = 'pb_tenancy.recovery_login'
 RECOVERY_LOGIN_DEFAULT = 'platform.recovery@payobook.com'
+PLATFORM_NAVIGATION_GROUP = 'pb_dashboard.group_platform_navigation'
 
 
 def may_use_full_launcher(env, user=None):
-    """Platform admins on the apex, and only recovery on a tenant."""
+    """Platform admins on the apex; explicitly designated admins on tenants."""
     user = user or env.user
     if not user._is_system():
         return False
@@ -22,7 +23,12 @@ def may_use_full_launcher(env, user=None):
     recovery = (config.get_param(RECOVERY_LOGIN_PARAM,
                                  RECOVERY_LOGIN_DEFAULT)
                 or RECOVERY_LOGIN_DEFAULT).strip().lower()
-    return (user.login or '').strip().lower() == recovery
+    if (user.login or '').strip().lower() == recovery:
+        return True
+    # Keep recovery available and make named platform operators explicit.
+    # Membership alone never grants system permissions or bypasses model ACLs.
+    group = env.ref(PLATFORM_NAVIGATION_GROUP, raise_if_not_found=False)
+    return bool(group and user.has_group(PLATFORM_NAVIGATION_GROUP))
 
 
 class IrUiMenu(models.Model):
@@ -109,6 +115,8 @@ class IrHttp(models.AbstractModel):
     def session_info(self):
         info = super().session_info()
         user = self.env.user
+        info['pb_platform_navigation'] = bool(
+            info.get('uid') and may_use_full_launcher(self.env, user))
         if (info.get('uid') and user._is_internal() and
                 not may_use_full_launcher(self.env, user)):
             payroll_home = self.env.ref(PAYROLL_HOME_XMLID,

@@ -11,3 +11,5 @@ from . import test_updates_p4b
 from . import test_updates_p5c
 from . import test_updates_p5d
 from . import test_updates_p5e
+# WDGAP W2-A — the year-to-date sheet and the tax sheet follow the tax year.
+from . import test_wdgap_w2a_tax_year

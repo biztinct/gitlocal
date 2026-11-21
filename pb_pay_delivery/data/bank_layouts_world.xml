@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- =====================================================================
+         WDGAP S2-C — payment-list bank layouts for banks outside Vietnam
+         (target = payment_list: made from the payment list's rows — the
+         approved account on record, take-home from the one pay-band reading).
+
+         WHY THERE IS NO BCA / MANDIRI / BNI / BRI / HDFC / ICICI / DBS / OCBC
+         / UOB LAYOUT HERE. Each bank hands its upload template to its own
+         corporate customers inside its online banking (a "Download template"
+         link, a converter tool); none of the nine publishes a complete upload
+         specification on the open web (searched 2026-11-18; sources tried
+         are listed in docs/handovers/wdgap/WDGAP_S2C_REPORT.md). Inventing
+         one would break the rule "published specification or INFERRED, never
+         a field invented silently". What ships instead: one GENERAL layout
+         per country with the fields every bank asks for, marked "not
+         confirmed by the bank", for a company to copy and shape to its bank's
+         template on Settings › Payroll › Bank layouts. Every note says:
+         Check with your bank before the first upload.
+         ===================================================================== -->
+
+    <!-- ============================ Indonesia ============================ -->
+    <record id="layout_id_general" model="pb.bank.file.layout">
+        <field name="name">Indonesia — bank transfer list (general)</field>
+        <field name="bank_format">id_general</field>
+        <field name="target">payment_list</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="file_type">csv</field>
+        <field name="delimiter">,</field>
+        <field name="encoding">utf-8</field>
+        <field name="with_header" eval="True"/>
+        <field name="amount_format">dec2</field>
+        <field name="date_format">%Y%m%d</field>
+        <field name="code_label">Bank code</field>
+        <field name="code_pattern">^[0-9]{3}$</field>
+        <field name="inferred" eval="True"/>
+        <field name="note">General layout, not a bank's own: the fields Indonesian banks ask for in a bulk transfer (3-digit bank code, account number, account holder, amount, reference). Bank codes come from the account, the bank record, or the bank directory (public bank-code lists). NOT CONFIRMED BY ANY BANK — BCA, Mandiri, BNI and BRI give their upload templates to their own customers only. Copy this layout and shape it to your bank's template. Check with your bank before the first upload.</field>
+    </record>
+    <record id="col_id_general_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_id_general"/>
+        <field name="sequence">10</field><field name="header">No</field>
+        <field name="source">row_number</field>
+    </record>
+    <record id="col_id_general_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_id_general"/>
+        <field name="sequence">20</field><field name="header">Bank code</field>
+        <field name="source">bank_clearing_code</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_id_general_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_id_general"/>
+        <field name="sequence">30</field><field name="header">Bank</field>
+        <field name="source">bank_name</field>
+    </record>
+    <record id="col_id_general_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_id_general"/>
+        <field name="sequence">40</field><field name="header">Account number</field>
+        <field name="source">account_number</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_id_general_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_id_general"/>
+        <field name="sequence">50</field><field name="header">Account holder</field>
+        <field name="source">account_name</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_id_general_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_id_general"/>
+        <field name="sequence">60</field><field name="header">Amount</field>
+        <field name="source">net_amount</field><field name="number_format">dec2</field>
+    </record>
+    <record id="col_id_general_7" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_id_general"/>
+        <field name="sequence">70</field><field name="header">Currency</field>
+        <field name="source">currency</field>
+    </record>
+    <record id="col_id_general_8" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_id_general"/>
+        <field name="sequence">80</field><field name="header">Reference</field>
+        <field name="source">reference</field>
+    </record>
+
+    <!-- ============================== India ============================== -->
+    <record id="layout_in_neft" model="pb.bank.file.layout">
+        <field name="name">India — NEFT / RTGS bulk transfer (general)</field>
+        <field name="bank_format">in_neft_general</field>
+        <field name="target">payment_list</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="file_type">csv</field>
+        <field name="delimiter">,</field>
+        <field name="encoding">utf-8</field>
+        <field name="with_header" eval="True"/>
+        <field name="amount_format">dec2</field>
+        <field name="date_format">%d/%m/%Y</field>
+        <field name="code_label">IFSC</field>
+        <field name="code_pattern">^[A-Z]{4}0[A-Z0-9]{6}$</field>
+        <field name="inferred" eval="True"/>
+        <field name="note">General NEFT / RTGS bulk layout, not a bank's own: beneficiary name, account number, IFSC, amount, payment date, reference. The IFSC form (11 characters, the 5th always 0) is from ICICI Bank's published "File Format for Bulk upload in CIB" (version 3.3, https://www.icici.bank.in/content/dam/icicibank/missing-assets/File_Format_Bulk_%20Transfers_3.3.pdf); the IFSC must be recorded on each person's account. HDFC and ICICI give their full salary-upload templates to their own customers only. NOT CONFIRMED BY ANY BANK. Check with your bank before the first upload.</field>
+    </record>
+    <record id="col_in_neft_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_in_neft"/>
+        <field name="sequence">10</field><field name="header">Beneficiary name</field>
+        <field name="source">account_name</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_in_neft_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_in_neft"/>
+        <field name="sequence">20</field><field name="header">Beneficiary account number</field>
+        <field name="source">account_number</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_in_neft_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_in_neft"/>
+        <field name="sequence">30</field><field name="header">IFSC</field>
+        <field name="source">bank_clearing_code</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_in_neft_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_in_neft"/>
+        <field name="sequence">40</field><field name="header">Amount</field>
+        <field name="source">net_amount</field><field name="number_format">dec2</field>
+    </record>
+    <record id="col_in_neft_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_in_neft"/>
+        <field name="sequence">50</field><field name="header">Payment date</field>
+        <field name="source">payment_date</field>
+    </record>
+    <record id="col_in_neft_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_in_neft"/>
+        <field name="sequence">60</field><field name="header">Remarks</field>
+        <field name="source">reference</field>
+    </record>
+
+    <!-- ============================ Singapore ============================ -->
+    <record id="layout_sg_giro" model="pb.bank.file.layout">
+        <field name="name">Singapore — GIRO / FAST bulk transfer (general)</field>
+        <field name="bank_format">sg_giro_general</field>
+        <field name="target">payment_list</field>
+        <field name="country_id" ref="base.sg"/>
+        <field name="file_type">csv</field>
+        <field name="delimiter">,</field>
+        <field name="encoding">utf-8</field>
+        <field name="with_header" eval="True"/>
+        <field name="amount_format">dec2</field>
+        <field name="date_format">%Y%m%d</field>
+        <field name="code_label">Bank / branch code</field>
+        <field name="code_pattern">^[0-9]{4}([0-9]{3})?$</field>
+        <field name="inferred" eval="True"/>
+        <field name="note">General GIRO / FAST bulk layout, not a bank's own: beneficiary name, bank / branch code, account number, amount, value date, reference. Bank codes from OCBC's published "ACH Bank and Branch Code Guide" (as at 09 Dec 2011, https://www.ocbc.com/assets/pdf/ach-bank-and-branch-code-guide.pdf): 4-digit bank code, 3-digit branch code recorded on the account where the bank needs it. DBS (IDEAL Universal File Format), OCBC Velocity and UOB give their upload specifications to their own customers only. NOT CONFIRMED BY ANY BANK. Check with your bank before the first upload.</field>
+    </record>
+    <record id="col_sg_giro_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_sg_giro"/>
+        <field name="sequence">10</field><field name="header">Beneficiary name</field>
+        <field name="source">account_name</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_sg_giro_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_sg_giro"/>
+        <field name="sequence">20</field><field name="header">Bank / branch code</field>
+        <field name="source">bank_clearing_code</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_sg_giro_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_sg_giro"/>
+        <field name="sequence">30</field><field name="header">Account number</field>
+        <field name="source">account_number</field><field name="required" eval="True"/>
+    </record>
+    <record id="col_sg_giro_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_sg_giro"/>
+        <field name="sequence">40</field><field name="header">Amount</field>
+        <field name="source">net_amount</field><field name="number_format">dec2</field>
+    </record>
+    <record id="col_sg_giro_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_sg_giro"/>
+        <field name="sequence">50</field><field name="header">Value date</field>
+        <field name="source">payment_date</field>
+    </record>
+    <record id="col_sg_giro_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_sg_giro"/>
+        <field name="sequence">60</field><field name="header">Reference</field>
+        <field name="source">reference</field>
+    </record>
+</odoo>

@@ -328,6 +328,32 @@
                         <button t-if="hc.note" type="button" class="pbd-note is-rose" t-on-click="() => this.openDoor('hiring')"><t t-out="ic('clock', 14)"/><span><b t-esc="hc.note.head"/><span class="pbd-note-nx" t-esc="hc.note.next"/></span></button>
                         <button type="button" class="pbd-link" t-on-click="() => this.openDoor('hiring')">Open Hiring<t t-out="ic('arrowRight', 14)"/></button>
                     </section>
+
+                    <!-- WDGAP QF1: what PayAI noticed in its daily check. Not
+                         drawn when PayAI is absent, the reader may not see
+                         its alerts, or nothing is open. The sentence is built
+                         in the browser from the figures; "Got it" puts one
+                         away until it gets worse. -->
+                    <t t-set="ai" t-value="payaiCard"/>
+                    <section t-if="ai" class="pbd-card pbd-payai" aria-label="PayAI noticed">
+                        <div class="pbd-head"><div>
+                            <h2><t t-out="ic('sparkles', 16)"/>PayAI noticed</h2>
+                            <p class="pbd-sub" t-esc="ai.sub"/>
+                        </div></div>
+                        <ul class="pbd-ai">
+                            <li t-foreach="ai.rows" t-as="ar" t-key="ar.id" class="pbd-ai-i">
+                                <span class="pbd-ai-dot" t-att-class="'is-' + ar.tone" t-att-title="ar.level" role="img" t-att-aria-label="ar.level"/>
+                                <span class="pbd-ai-x">
+                                    <span class="pbd-ai-t" t-esc="ar.text"/>
+                                    <span class="pbd-ai-s" t-if="ar.since" t-esc="ar.since"/>
+                                    <span class="pbd-ai-act">
+                                        <button t-if="ar.door" type="button" class="pbd-ai-go" t-on-click="() => this.payaiLook(ar)">Look closer<t t-out="payaiArrow"/></button>
+                                        <button type="button" class="pbd-ai-ok" t-on-click="() => this.payaiGotIt(ar)">Got it</button>
+                                    </span>
+                                </span>
+                            </li>
+                        </ul>
+                    </section>
                 </div>
 
                 <!-- 7. THE CLOSING ROW: the next lesson, and the pay schemes in

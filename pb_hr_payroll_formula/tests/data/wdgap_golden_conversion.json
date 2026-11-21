@@ -1,0 +1,5028 @@
+[
+ {
+  "column_map": [
+   [
+    "A",
+    "BASIC"
+   ],
+   [
+    "B",
+    "DEPS"
+   ],
+   [
+    "C",
+    "MARRIED"
+   ],
+   [
+    "D",
+    "ALLOWIN"
+   ],
+   [
+    "E",
+    "BONUS"
+   ],
+   [
+    "F",
+    "JHTEE"
+   ],
+   [
+    "G",
+    "JHTER"
+   ],
+   [
+    "H",
+    "JPEE"
+   ],
+   [
+    "I",
+    "JPER"
+   ],
+   [
+    "J",
+    "JPCAP"
+   ],
+   [
+    "K",
+    "JKKER"
+   ],
+   [
+    "L",
+    "JKMER"
+   ],
+   [
+    "M",
+    "KESEE"
+   ],
+   [
+    "N",
+    "KESER"
+   ],
+   [
+    "O",
+    "KESCAP"
+   ],
+   [
+    "P",
+    "PTKPBASE"
+   ],
+   [
+    "Q",
+    "PTKPADD"
+   ],
+   [
+    "R",
+    "BIAYARATE"
+   ],
+   [
+    "S",
+    "BIAYACAP"
+   ],
+   [
+    "T",
+    "GROSS"
+   ],
+   [
+    "U",
+    "JHTDED"
+   ],
+   [
+    "V",
+    "JHTCOMP"
+   ],
+   [
+    "W",
+    "JPBASE"
+   ],
+   [
+    "X",
+    "JPDED"
+   ],
+   [
+    "Y",
+    "JPCOMP"
+   ],
+   [
+    "Z",
+    "KESBASE"
+   ],
+   [
+    "AA",
+    "KESDED"
+   ],
+   [
+    "AB",
+    "KESCOMP"
+   ],
+   [
+    "AC",
+    "JKKCOMP"
+   ],
+   [
+    "AD",
+    "JKMCOMP"
+   ],
+   [
+    "AE",
+    "EEBPJS"
+   ],
+   [
+    "AF",
+    "BIAYAJAB"
+   ],
+   [
+    "AG",
+    "PTKPAMT"
+   ],
+   [
+    "AH",
+    "TAXBASE"
+   ],
+   [
+    "AI",
+    "ANNTAX"
+   ],
+   [
+    "AJ",
+    "PPHYEAR"
+   ],
+   [
+    "AK",
+    "PPHMONTH"
+   ],
+   [
+    "AL",
+    "NET"
+   ],
+   [
+    "AM",
+    "ERCOST"
+   ]
+  ],
+  "converted": {
+   "=A1*F1": "values.get('BASIC', 0)*values.get('JHTEE', 0)",
+   "=A1*G1": "values.get('BASIC', 0)*values.get('JHTER', 0)",
+   "=A1*K1": "values.get('BASIC', 0)*values.get('JKKER', 0)",
+   "=A1*L1": "values.get('BASIC', 0)*values.get('JKMER', 0)",
+   "=A1+D1+E1": "values.get('BASIC', 0)+values.get('ALLOWIN', 0)+values.get('BONUS', 0)",
+   "=AJ1/12": "values.get('PPHYEAR', 0)/12",
+   "=BRACKET(PPH21,AI1)": "BRACKET(values.get('PPH', 0),values.get('ANNTAX', 0))",
+   "=MAX(0,AH1*12-AG1)": "max([0,values.get('TAXBASE', 0)*12-values.get('PTKPAMT', 0)])",
+   "=MIN(A1,J1)": "min([values.get('BASIC', 0),values.get('JPCAP', 0)])",
+   "=MIN(A1,O1)": "min([values.get('BASIC', 0),values.get('KESCAP', 0)])",
+   "=MIN(S1,T1*R1)": "min([values.get('BIAYACAP', 0),values.get('GROSS', 0)*values.get('BIAYARATE', 0)])",
+   "=P1+C1*Q1+MIN(B1,3)*Q1": "values.get('PTKPBASE', 0)+values.get('MARRIED', 0)*values.get('PTKPADD', 0)+min([values.get('DEPS', 0),3])*values.get('PTKPADD', 0)",
+   "=T1+V1+Y1+AB1+AC1+AD1": "values.get('GROSS', 0)+values.get('JHTCOMP', 0)+values.get('JPCOMP', 0)+values.get('KESCOMP', 0)+values.get('JKKCOMP', 0)+values.get('JKMCOMP', 0)",
+   "=T1-AE1-AK1": "values.get('GROSS', 0)-values.get('EEBPJS', 0)-values.get('PPHMONTH', 0)",
+   "=T1-AF1-U1-X1": "values.get('GROSS', 0)-values.get('BIAYAJAB', 0)-values.get('JHTDED', 0)-values.get('JPDED', 0)",
+   "=U1+X1+AA1": "values.get('JHTDED', 0)+values.get('JPDED', 0)+values.get('KESDED', 0)",
+   "=W1*H1": "values.get('JPBASE', 0)*values.get('JPEE', 0)",
+   "=W1*I1": "values.get('JPBASE', 0)*values.get('JPER', 0)",
+   "=Z1*M1": "values.get('KESBASE', 0)*values.get('KESEE', 0)",
+   "=Z1*N1": "values.get('KESBASE', 0)*values.get('KESER', 0)"
+  },
+  "formulas": [
+   "=A1*F1",
+   "=A1*G1",
+   "=A1*K1",
+   "=A1*L1",
+   "=A1+D1+E1",
+   "=AJ1/12",
+   "=BRACKET(PPH21,AI1)",
+   "=MAX(0,AH1*12-AG1)",
+   "=MIN(A1,J1)",
+   "=MIN(A1,O1)",
+   "=MIN(S1,T1*R1)",
+   "=P1+C1*Q1+MIN(B1,3)*Q1",
+   "=T1+V1+Y1+AB1+AC1+AD1",
+   "=T1-AE1-AK1",
+   "=T1-AF1-U1-X1",
+   "=U1+X1+AA1",
+   "=W1*H1",
+   "=W1*I1",
+   "=Z1*M1",
+   "=Z1*N1"
+  ],
+  "source": "pb_pack_id/data/config_template_id.xml#tpl_id_standard_2026"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BASIC"
+   ],
+   [
+    "B",
+    "ALLOWIN"
+   ],
+   [
+    "C",
+    "BONUS"
+   ],
+   [
+    "D",
+    "EPFEE"
+   ],
+   [
+    "E",
+    "EPFER"
+   ],
+   [
+    "F",
+    "EPFWAGE"
+   ],
+   [
+    "G",
+    "ESIEE"
+   ],
+   [
+    "H",
+    "ESIER"
+   ],
+   [
+    "I",
+    "ESILIMIT"
+   ],
+   [
+    "J",
+    "PTAMT"
+   ],
+   [
+    "K",
+    "STDDED"
+   ],
+   [
+    "L",
+    "REBATE"
+   ],
+   [
+    "M",
+    "CESSRATE"
+   ],
+   [
+    "N",
+    "GROSS"
+   ],
+   [
+    "O",
+    "EPFBASE"
+   ],
+   [
+    "P",
+    "EPFDED"
+   ],
+   [
+    "Q",
+    "EPFCOMP"
+   ],
+   [
+    "R",
+    "ESIDED"
+   ],
+   [
+    "S",
+    "ESICOMP"
+   ],
+   [
+    "T",
+    "PTDED"
+   ],
+   [
+    "U",
+    "EEDED"
+   ],
+   [
+    "V",
+    "ANNTAX"
+   ],
+   [
+    "W",
+    "SLABTAX"
+   ],
+   [
+    "X",
+    "TAXAFTERREB"
+   ],
+   [
+    "Y",
+    "CESSDUE"
+   ],
+   [
+    "Z",
+    "TDSYEAR"
+   ],
+   [
+    "AA",
+    "TDSMONTH"
+   ],
+   [
+    "AB",
+    "NET"
+   ],
+   [
+    "AC",
+    "ERCOST"
+   ]
+  ],
+  "converted": {
+   "=A1+B1+C1": "values.get('BASIC', 0)+values.get('ALLOWIN', 0)+values.get('BONUS', 0)",
+   "=BRACKET(INTAX,V1)": "BRACKET(values.get('INTAX', 0),values.get('ANNTAX', 0))",
+   "=IF(N1<=I1,N1*G1,0)": "((values.get('GROSS', 0)*values.get('ESIEE', 0)) if (values.get('GROSS', 0)<=values.get('ESILIMIT', 0)) else (0))",
+   "=IF(N1<=I1,N1*H1,0)": "((values.get('GROSS', 0)*values.get('ESIER', 0)) if (values.get('GROSS', 0)<=values.get('ESILIMIT', 0)) else (0))",
+   "=IF(N1>15000,J1,0)": "((values.get('PTAMT', 0)) if (values.get('GROSS', 0)>15000) else (0))",
+   "=IF(V1<=L1,0,W1)": "((0) if (values.get('ANNTAX', 0)<=values.get('REBATE', 0)) else (values.get('SLABTAX', 0)))",
+   "=MAX(0,N1*12-K1)": "max([0,values.get('GROSS', 0)*12-values.get('STDDED', 0)])",
+   "=MIN(A1,F1)": "min([values.get('BASIC', 0),values.get('EPFWAGE', 0)])",
+   "=N1+Q1+S1": "values.get('GROSS', 0)+values.get('EPFCOMP', 0)+values.get('ESICOMP', 0)",
+   "=N1-U1-AA1": "values.get('GROSS', 0)-values.get('EEDED', 0)-values.get('TDSMONTH', 0)",
+   "=O1*D1": "values.get('EPFBASE', 0)*values.get('EPFEE', 0)",
+   "=O1*E1": "values.get('EPFBASE', 0)*values.get('EPFER', 0)",
+   "=P1+R1+T1": "values.get('EPFDED', 0)+values.get('ESIDED', 0)+values.get('PTDED', 0)",
+   "=X1*M1": "values.get('TAXAFTERREB', 0)*values.get('CESSRATE', 0)",
+   "=X1+Y1": "values.get('TAXAFTERREB', 0)+values.get('CESSDUE', 0)",
+   "=Z1/12": "values.get('TDSYEAR', 0)/12"
+  },
+  "formulas": [
+   "=A1+B1+C1",
+   "=BRACKET(INTAX,V1)",
+   "=IF(N1<=I1,N1*G1,0)",
+   "=IF(N1<=I1,N1*H1,0)",
+   "=IF(N1>15000,J1,0)",
+   "=IF(V1<=L1,0,W1)",
+   "=MAX(0,N1*12-K1)",
+   "=MIN(A1,F1)",
+   "=N1+Q1+S1",
+   "=N1-U1-AA1",
+   "=O1*D1",
+   "=O1*E1",
+   "=P1+R1+T1",
+   "=X1*M1",
+   "=X1+Y1",
+   "=Z1/12"
+  ],
+  "source": "pb_pack_in/data/config_template_in.xml#tpl_in_standard_2026"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BASIC"
+   ],
+   [
+    "B",
+    "ALLOWIN"
+   ],
+   [
+    "C",
+    "BONUS"
+   ],
+   [
+    "D",
+    "EPFEE"
+   ],
+   [
+    "E",
+    "EPFERLO"
+   ],
+   [
+    "F",
+    "EPFERHI"
+   ],
+   [
+    "G",
+    "EPFWAGE"
+   ],
+   [
+    "H",
+    "SOCEE"
+   ],
+   [
+    "I",
+    "SOCER"
+   ],
+   [
+    "J",
+    "SOCCAP"
+   ],
+   [
+    "K",
+    "EISEE"
+   ],
+   [
+    "L",
+    "EISER"
+   ],
+   [
+    "M",
+    "EISCAP"
+   ],
+   [
+    "N",
+    "PERSRELIEF"
+   ],
+   [
+    "O",
+    "EPFRELCAP"
+   ],
+   [
+    "P",
+    "GROSS"
+   ],
+   [
+    "Q",
+    "EPFDED"
+   ],
+   [
+    "R",
+    "EPFCOMP"
+   ],
+   [
+    "S",
+    "SOCBASE"
+   ],
+   [
+    "T",
+    "SOCDED"
+   ],
+   [
+    "U",
+    "SOCCOMP"
+   ],
+   [
+    "V",
+    "EISBASE"
+   ],
+   [
+    "W",
+    "EISDED"
+   ],
+   [
+    "X",
+    "EISCOMP"
+   ],
+   [
+    "Y",
+    "EEDED"
+   ],
+   [
+    "Z",
+    "EPFRELAMT"
+   ],
+   [
+    "AA",
+    "CHARGEABLE"
+   ],
+   [
+    "AB",
+    "PCBYEAR"
+   ],
+   [
+    "AC",
+    "PCBMONTH"
+   ],
+   [
+    "AD",
+    "NET"
+   ],
+   [
+    "AE",
+    "ERCOST"
+   ]
+  ],
+  "converted": {
+   "=A1*D1": "values.get('BASIC', 0)*values.get('EPFEE', 0)",
+   "=A1*IF(A1>G1,F1,E1)": "values.get('BASIC', 0)*((values.get('EPFERHI', 0)) if (values.get('BASIC', 0)>values.get('EPFWAGE', 0)) else (values.get('EPFERLO', 0)))",
+   "=A1+B1+C1": "values.get('BASIC', 0)+values.get('ALLOWIN', 0)+values.get('BONUS', 0)",
+   "=AB1/12": "values.get('PCBYEAR', 0)/12",
+   "=BRACKET(MYTAX,AA1)": "BRACKET(values.get('MYTAX', 0),values.get('CHARGEABLE', 0))",
+   "=MAX(0,P1*12-N1-Z1)": "max([0,values.get('GROSS', 0)*12-values.get('PERSRELIEF', 0)-values.get('EPFRELAMT', 0)])",
+   "=MIN(A1,J1)": "min([values.get('BASIC', 0),values.get('SOCCAP', 0)])",
+   "=MIN(A1,M1)": "min([values.get('BASIC', 0),values.get('EISCAP', 0)])",
+   "=MIN(O1,Q1*12)": "min([values.get('EPFRELCAP', 0),values.get('EPFDED', 0)*12])",
+   "=P1+R1+U1+X1": "values.get('GROSS', 0)+values.get('EPFCOMP', 0)+values.get('SOCCOMP', 0)+values.get('EISCOMP', 0)",
+   "=P1-Y1-AC1": "values.get('GROSS', 0)-values.get('EEDED', 0)-values.get('PCBMONTH', 0)",
+   "=Q1+T1+W1": "values.get('EPFDED', 0)+values.get('SOCDED', 0)+values.get('EISDED', 0)",
+   "=S1*H1": "values.get('SOCBASE', 0)*values.get('SOCEE', 0)",
+   "=S1*I1": "values.get('SOCBASE', 0)*values.get('SOCER', 0)",
+   "=V1*K1": "values.get('EISBASE', 0)*values.get('EISEE', 0)",
+   "=V1*L1": "values.get('EISBASE', 0)*values.get('EISER', 0)"
+  },
+  "formulas": [
+   "=A1*D1",
+   "=A1*IF(A1>G1,F1,E1)",
+   "=A1+B1+C1",
+   "=AB1/12",
+   "=BRACKET(MYTAX,AA1)",
+   "=MAX(0,P1*12-N1-Z1)",
+   "=MIN(A1,J1)",
+   "=MIN(A1,M1)",
+   "=MIN(O1,Q1*12)",
+   "=P1+R1+U1+X1",
+   "=P1-Y1-AC1",
+   "=Q1+T1+W1",
+   "=S1*H1",
+   "=S1*I1",
+   "=V1*K1",
+   "=V1*L1"
+  ],
+  "source": "pb_pack_my/data/config_template_my.xml#tpl_my_standard_2026"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BASIC"
+   ],
+   [
+    "B",
+    "AGE"
+   ],
+   [
+    "C",
+    "AWIN"
+   ],
+   [
+    "D",
+    "SHGAMT"
+   ],
+   [
+    "E",
+    "OWCEIL"
+   ],
+   [
+    "F",
+    "PEE1"
+   ],
+   [
+    "G",
+    "PEE2"
+   ],
+   [
+    "H",
+    "PEE3"
+   ],
+   [
+    "I",
+    "PEE4"
+   ],
+   [
+    "J",
+    "PEE5"
+   ],
+   [
+    "K",
+    "PER1"
+   ],
+   [
+    "L",
+    "PER2"
+   ],
+   [
+    "M",
+    "PER3"
+   ],
+   [
+    "N",
+    "PER4"
+   ],
+   [
+    "O",
+    "PER5"
+   ],
+   [
+    "P",
+    "SDLRATE"
+   ],
+   [
+    "Q",
+    "SDLMIN"
+   ],
+   [
+    "R",
+    "SDLCAP"
+   ],
+   [
+    "S",
+    "OWCAP"
+   ],
+   [
+    "T",
+    "RTEMP"
+   ],
+   [
+    "U",
+    "RTCOMP"
+   ],
+   [
+    "V",
+    "CPFEMP"
+   ],
+   [
+    "W",
+    "CPFCOMP"
+   ],
+   [
+    "X",
+    "GROSS"
+   ],
+   [
+    "Y",
+    "SDLAMT"
+   ],
+   [
+    "Z",
+    "TOTDED"
+   ],
+   [
+    "AA",
+    "NET"
+   ],
+   [
+    "AB",
+    "ERCOST"
+   ]
+  ],
+  "converted": {
+   "=A1+C1": "values.get('BASIC', 0)+values.get('AWIN', 0)",
+   "=IF(B1>70,J1,IF(B1>65,I1,IF(B1>60,H1,IF(B1>55,G1,F1))))": "((values.get('PEE5', 0)) if (values.get('AGE', 0)>70) else (((values.get('PEE4', 0)) if (values.get('AGE', 0)>65) else (((values.get('PEE3', 0)) if (values.get('AGE', 0)>60) else (((values.get('PEE2', 0)) if (values.get('AGE', 0)>55) else (values.get('PEE1', 0)))))))))",
+   "=IF(B1>70,O1,IF(B1>65,N1,IF(B1>60,M1,IF(B1>55,L1,K1))))": "((values.get('PER5', 0)) if (values.get('AGE', 0)>70) else (((values.get('PER4', 0)) if (values.get('AGE', 0)>65) else (((values.get('PER3', 0)) if (values.get('AGE', 0)>60) else (((values.get('PER2', 0)) if (values.get('AGE', 0)>55) else (values.get('PER1', 0)))))))))",
+   "=IF(X1>0,MIN(R1,MAX(Q1,X1*P1)),0)": "((min([values.get('SDLCAP', 0),max([values.get('SDLMIN', 0),values.get('GROSS', 0)*values.get('SDLRATE', 0)])])) if (values.get('GROSS', 0)>0) else (0))",
+   "=MIN(A1,E1)": "min([values.get('BASIC', 0),values.get('OWCEIL', 0)])",
+   "=S1*T1": "values.get('OWCAP', 0)*values.get('RTEMP', 0)",
+   "=S1*U1": "values.get('OWCAP', 0)*values.get('RTCOMP', 0)",
+   "=V1+D1": "values.get('CPFEMP', 0)+values.get('SHGAMT', 0)",
+   "=X1+W1+Y1": "values.get('GROSS', 0)+values.get('CPFCOMP', 0)+values.get('SDLAMT', 0)",
+   "=X1-Z1": "values.get('GROSS', 0)-values.get('TOTDED', 0)"
+  },
+  "formulas": [
+   "=A1+C1",
+   "=IF(B1>70,J1,IF(B1>65,I1,IF(B1>60,H1,IF(B1>55,G1,F1))))",
+   "=IF(B1>70,O1,IF(B1>65,N1,IF(B1>60,M1,IF(B1>55,L1,K1))))",
+   "=IF(X1>0,MIN(R1,MAX(Q1,X1*P1)),0)",
+   "=MIN(A1,E1)",
+   "=S1*T1",
+   "=S1*U1",
+   "=V1+D1",
+   "=X1+W1+Y1",
+   "=X1-Z1"
+  ],
+  "source": "pb_pack_sg/data/config_template_sg.xml#tpl_sg_standard_2026"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BASIC"
+   ],
+   [
+    "B",
+    "ALLOWIN"
+   ],
+   [
+    "C",
+    "BONUS"
+   ],
+   [
+    "D",
+    "SSFRATE"
+   ],
+   [
+    "E",
+    "SSFCAP"
+   ],
+   [
+    "F",
+    "PERSALLOW"
+   ],
+   [
+    "G",
+    "EXPRATE"
+   ],
+   [
+    "H",
+    "EXPCAP"
+   ],
+   [
+    "I",
+    "GROSS"
+   ],
+   [
+    "J",
+    "SSFBASE"
+   ],
+   [
+    "K",
+    "SSFDED"
+   ],
+   [
+    "L",
+    "SSFCOMP"
+   ],
+   [
+    "M",
+    "EXPDED"
+   ],
+   [
+    "N",
+    "ASSESS"
+   ],
+   [
+    "O",
+    "PITYEAR"
+   ],
+   [
+    "P",
+    "PITMONTH"
+   ],
+   [
+    "Q",
+    "NET"
+   ],
+   [
+    "R",
+    "ERCOST"
+   ]
+  ],
+  "converted": {
+   "=A1+B1+C1": "values.get('BASIC', 0)+values.get('ALLOWIN', 0)+values.get('BONUS', 0)",
+   "=BRACKET(THTAX,N1)": "BRACKET(values.get('THTAX', 0),values.get('ASSESS', 0))",
+   "=I1+L1": "values.get('GROSS', 0)+values.get('SSFCOMP', 0)",
+   "=I1-K1-P1": "values.get('GROSS', 0)-values.get('SSFDED', 0)-values.get('PITMONTH', 0)",
+   "=J1*D1": "values.get('SSFBASE', 0)*values.get('SSFRATE', 0)",
+   "=MAX(0,I1*12-M1-F1-K1*12)": "max([0,values.get('GROSS', 0)*12-values.get('EXPDED', 0)-values.get('PERSALLOW', 0)-values.get('SSFDED', 0)*12])",
+   "=MIN(A1,E1)": "min([values.get('BASIC', 0),values.get('SSFCAP', 0)])",
+   "=MIN(H1,I1*12*G1)": "min([values.get('EXPCAP', 0),values.get('GROSS', 0)*12*values.get('EXPRATE', 0)])",
+   "=O1/12": "values.get('PITYEAR', 0)/12"
+  },
+  "formulas": [
+   "=A1+B1+C1",
+   "=BRACKET(THTAX,N1)",
+   "=I1+L1",
+   "=I1-K1-P1",
+   "=J1*D1",
+   "=MAX(0,I1*12-M1-F1-K1*12)",
+   "=MIN(A1,E1)",
+   "=MIN(H1,I1*12*G1)",
+   "=O1/12"
+  ],
+  "source": "pb_pack_th/data/config_template_th.xml#tpl_th_standard_2026"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BASIC"
+   ],
+   [
+    "B",
+    "DEPS"
+   ],
+   [
+    "C",
+    "STDDAYS"
+   ],
+   [
+    "D",
+    "OTHRS15"
+   ],
+   [
+    "E",
+    "OTHRS20"
+   ],
+   [
+    "F",
+    "OTHRS30"
+   ],
+   [
+    "G",
+    "BONUS"
+   ],
+   [
+    "H",
+    "ALLOWIN"
+   ],
+   [
+    "I",
+    "DEDUCTSELF"
+   ],
+   [
+    "J",
+    "DEDUCTDEP"
+   ],
+   [
+    "K",
+    "SIRATE"
+   ],
+   [
+    "L",
+    "HIRATE"
+   ],
+   [
+    "M",
+    "UIRATE"
+   ],
+   [
+    "N",
+    "SIEMPR"
+   ],
+   [
+    "O",
+    "HIEMPR"
+   ],
+   [
+    "P",
+    "UIEMPR"
+   ],
+   [
+    "Q",
+    "CAPLO"
+   ],
+   [
+    "R",
+    "CAPHI"
+   ],
+   [
+    "S",
+    "MULT15"
+   ],
+   [
+    "T",
+    "MULT20"
+   ],
+   [
+    "U",
+    "MULT30"
+   ],
+   [
+    "V",
+    "HOURRATE"
+   ],
+   [
+    "W",
+    "OTPAY"
+   ],
+   [
+    "X",
+    "GROSS"
+   ],
+   [
+    "Y",
+    "SIBASE"
+   ],
+   [
+    "Z",
+    "UIBASE"
+   ],
+   [
+    "AA",
+    "SIDED"
+   ],
+   [
+    "AB",
+    "HIDED"
+   ],
+   [
+    "AC",
+    "UIDED"
+   ],
+   [
+    "AD",
+    "EEDED"
+   ],
+   [
+    "AE",
+    "TAXABLE"
+   ],
+   [
+    "AF",
+    "PIT"
+   ],
+   [
+    "AG",
+    "NET"
+   ],
+   [
+    "AH",
+    "SICOMP"
+   ],
+   [
+    "AI",
+    "HICOMP"
+   ],
+   [
+    "AJ",
+    "UICOMP"
+   ],
+   [
+    "AK",
+    "ERCOST"
+   ]
+  ],
+  "converted": {
+   "=A1+H1+W1+G1": "values.get('BASIC', 0)+values.get('ALLOWIN', 0)+values.get('OTPAY', 0)+values.get('BONUS', 0)",
+   "=A1/(C1*8)": "values.get('BASIC', 0)/(values.get('STDDAYS', 0)*8)",
+   "=AA1+AB1+AC1": "values.get('SIDED', 0)+values.get('HIDED', 0)+values.get('UIDED', 0)",
+   "=BRACKET(VNTAX,AE1)": "BRACKET(values.get('VNTAX', 0),values.get('TAXABLE', 0))",
+   "=MAX(0,X1-AD1-I1-J1*B1)": "max([0,values.get('GROSS', 0)-values.get('EEDED', 0)-values.get('DEDUCTSELF', 0)-values.get('DEDUCTDEP', 0)*values.get('DEPS', 0)])",
+   "=MIN(A1,Q1)": "min([values.get('BASIC', 0),values.get('CAPLO', 0)])",
+   "=MIN(A1,R1)": "min([values.get('BASIC', 0),values.get('CAPHI', 0)])",
+   "=V1*(D1*S1+E1*T1+F1*U1)": "values.get('HOURRATE', 0)*(values.get('OTHRS15', 0)*values.get('MULT15', 0)+values.get('OTHRS20', 0)*values.get('MULT20', 0)+values.get('OTHRS30', 0)*values.get('MULT30', 0))",
+   "=X1+AH1+AI1+AJ1": "values.get('GROSS', 0)+values.get('SICOMP', 0)+values.get('HICOMP', 0)+values.get('UICOMP', 0)",
+   "=X1-AD1-AF1": "values.get('GROSS', 0)-values.get('EEDED', 0)-values.get('PIT', 0)",
+   "=Y1*K1": "values.get('SIBASE', 0)*values.get('SIRATE', 0)",
+   "=Y1*L1": "values.get('SIBASE', 0)*values.get('HIRATE', 0)",
+   "=Y1*N1": "values.get('SIBASE', 0)*values.get('SIEMPR', 0)",
+   "=Y1*O1": "values.get('SIBASE', 0)*values.get('HIEMPR', 0)",
+   "=Z1*M1": "values.get('UIBASE', 0)*values.get('UIRATE', 0)",
+   "=Z1*P1": "values.get('UIBASE', 0)*values.get('UIEMPR', 0)"
+  },
+  "formulas": [
+   "=A1+H1+W1+G1",
+   "=A1/(C1*8)",
+   "=AA1+AB1+AC1",
+   "=BRACKET(VNTAX,AE1)",
+   "=MAX(0,X1-AD1-I1-J1*B1)",
+   "=MIN(A1,Q1)",
+   "=MIN(A1,R1)",
+   "=V1*(D1*S1+E1*T1+F1*U1)",
+   "=X1+AH1+AI1+AJ1",
+   "=X1-AD1-AF1",
+   "=Y1*K1",
+   "=Y1*L1",
+   "=Y1*N1",
+   "=Y1*O1",
+   "=Z1*M1",
+   "=Z1*P1"
+  ],
+  "source": "pb_pack_vn/data/config_template_vn.xml#tpl_vn_standard_2026"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BASIC"
+   ],
+   [
+    "B",
+    "DEPS"
+   ],
+   [
+    "C",
+    "STDDAYS"
+   ],
+   [
+    "D",
+    "PAIDDAYS"
+   ],
+   [
+    "E",
+    "HOURSDAY"
+   ],
+   [
+    "F",
+    "PAYMONTH"
+   ],
+   [
+    "G",
+    "ISLOCAL"
+   ],
+   [
+    "H",
+    "ISINSURED"
+   ],
+   [
+    "I",
+    "ISUNION"
+   ],
+   [
+    "J",
+    "ISRESIDENT"
+   ],
+   [
+    "K",
+    "CONTRACTMTH"
+   ],
+   [
+    "L",
+    "TAXCOMMIT"
+   ],
+   [
+    "M",
+    "ROLEGRADE"
+   ],
+   [
+    "N",
+    "SERVDAYS"
+   ],
+   [
+    "O",
+    "ANNUALDAYS"
+   ],
+   [
+    "P",
+    "HRSWD"
+   ],
+   [
+    "Q",
+    "HRSWE"
+   ],
+   [
+    "R",
+    "HRSHOL"
+   ],
+   [
+    "S",
+    "HRSNIGHT"
+   ],
+   [
+    "T",
+    "ENROLPREM"
+   ],
+   [
+    "U",
+    "ENROLHLTH"
+   ],
+   [
+    "V",
+    "ENROLDEP"
+   ],
+   [
+    "W",
+    "PRIVINSAMT"
+   ],
+   [
+    "X",
+    "HLTHEEAMT"
+   ],
+   [
+    "Y",
+    "HLTHDEPAMT"
+   ],
+   [
+    "Z",
+    "ADJDEDAMT"
+   ],
+   [
+    "AA",
+    "PAIDVAR"
+   ],
+   [
+    "AB",
+    "DEDUCTSELF"
+   ],
+   [
+    "AC",
+    "DEDUCTDEP"
+   ],
+   [
+    "AD",
+    "SIRATE"
+   ],
+   [
+    "AE",
+    "HIRATE"
+   ],
+   [
+    "AF",
+    "UIRATE"
+   ],
+   [
+    "AG",
+    "SIEMPR"
+   ],
+   [
+    "AH",
+    "HIEMPR"
+   ],
+   [
+    "AI",
+    "UIEMPR"
+   ],
+   [
+    "AJ",
+    "CAPLO"
+   ],
+   [
+    "AK",
+    "CAPHI"
+   ],
+   [
+    "AL",
+    "UNIONCAP"
+   ],
+   [
+    "AM",
+    "UNIONRATE"
+   ],
+   [
+    "AN",
+    "UNIONEMPR"
+   ],
+   [
+    "AO",
+    "NONRESRATE"
+   ],
+   [
+    "AP",
+    "SHORTRATE"
+   ],
+   [
+    "AQ",
+    "SHORTTHRESH"
+   ],
+   [
+    "AR",
+    "SALARYPAID"
+   ],
+   [
+    "AS",
+    "UNIFORM"
+   ],
+   [
+    "AT",
+    "SEVERSTAT"
+   ],
+   [
+    "AU",
+    "OTHEREXMP"
+   ],
+   [
+    "AV",
+    "ALENCASH"
+   ],
+   [
+    "AW",
+    "TRANSPADD"
+   ],
+   [
+    "AX",
+    "TRANSPORT"
+   ],
+   [
+    "AY",
+    "PHONEALLOW"
+   ],
+   [
+    "AZ",
+    "PRIVINSALW"
+   ],
+   [
+    "BA",
+    "PREMINSALW"
+   ],
+   [
+    "BB",
+    "LOGISINC"
+   ],
+   [
+    "BC",
+    "AGROINC"
+   ],
+   [
+    "BD",
+    "LAUNCHINC"
+   ],
+   [
+    "BE",
+    "VARPAY"
+   ],
+   [
+    "BF",
+    "REFERINC"
+   ],
+   [
+    "BG",
+    "OTHERTAX"
+   ],
+   [
+    "BH",
+    "ADJADD"
+   ],
+   [
+    "BI",
+    "ADJDEDUCT"
+   ],
+   [
+    "BJ",
+    "NONCASHBEN"
+   ],
+   [
+    "BK",
+    "OTWD"
+   ],
+   [
+    "BL",
+    "OTWE"
+   ],
+   [
+    "BM",
+    "OTHOL"
+   ],
+   [
+    "BN",
+    "NIGHTPREM"
+   ],
+   [
+    "BO",
+    "MONTH13"
+   ],
+   [
+    "BP",
+    "SIBASE"
+   ],
+   [
+    "BQ",
+    "UIBASE"
+   ],
+   [
+    "BR",
+    "SIDED"
+   ],
+   [
+    "BS",
+    "HIDED"
+   ],
+   [
+    "BT",
+    "UIDED"
+   ],
+   [
+    "BU",
+    "UNIONDUES"
+   ],
+   [
+    "BV",
+    "EEDED"
+   ],
+   [
+    "BW",
+    "ASSESSPAY"
+   ],
+   [
+    "BX",
+    "TAXABLE"
+   ],
+   [
+    "BY",
+    "PIT"
+   ],
+   [
+    "BZ",
+    "ADVANCE"
+   ],
+   [
+    "CA",
+    "PRIORDED"
+   ],
+   [
+    "CB",
+    "OTHERDED"
+   ],
+   [
+    "CC",
+    "SICOMP"
+   ],
+   [
+    "CD",
+    "HICOMP"
+   ],
+   [
+    "CE",
+    "UICOMP"
+   ],
+   [
+    "CF",
+    "PRIVHLTHEE"
+   ],
+   [
+    "CG",
+    "PRIVHLTHDEP"
+   ],
+   [
+    "CH",
+    "UNIONER"
+   ],
+   [
+    "CI",
+    "OTHERBEN"
+   ],
+   [
+    "CJ",
+    "SHUILOCAL"
+   ],
+   [
+    "CK",
+    "SHUIFOREIGN"
+   ],
+   [
+    "CL",
+    "GROSS"
+   ],
+   [
+    "CM",
+    "BENEFITVAL"
+   ],
+   [
+    "CN",
+    "NET"
+   ],
+   [
+    "CO",
+    "ERCOST"
+   ]
+  ],
+  "converted": {
+   "=(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BB+BC+BD+BE+BF+BG+BH+BI+BK+BL+BM+BN+BO)": "(values.get('SALARYPAID', 0)+values.get('UNIFORM', 0)+values.get('SEVERSTAT', 0)+values.get('OTHEREXMP', 0)+values.get('ALENCASH', 0)+values.get('TRANSPADD', 0)+values.get('TRANSPORT', 0)+values.get('PHONEALLOW', 0)+values.get('PRIVINSALW', 0)+values.get('LOGISINC', 0)+values.get('AGROINC', 0)+values.get('LAUNCHINC', 0)+values.get('VARPAY', 0)+values.get('REFERINC', 0)+values.get('OTHERTAX', 0)+values.get('ADJADD', 0)+values.get('ADJDEDUCT', 0)+values.get('OTWD', 0)+values.get('OTWE', 0)+values.get('OTHOL', 0)+values.get('NIGHTPREM', 0)+values.get('MONTH13', 0))",
+   "=(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BB+BC+BD+BE+BF+BG+BH+BI+BK+BL+BM+BN+BO)+(CC+CD+CE+CF+CG+CH+CI)+BJ": "(values.get('SALARYPAID', 0)+values.get('UNIFORM', 0)+values.get('SEVERSTAT', 0)+values.get('OTHEREXMP', 0)+values.get('ALENCASH', 0)+values.get('TRANSPADD', 0)+values.get('TRANSPORT', 0)+values.get('PHONEALLOW', 0)+values.get('PRIVINSALW', 0)+values.get('LOGISINC', 0)+values.get('AGROINC', 0)+values.get('LAUNCHINC', 0)+values.get('VARPAY', 0)+values.get('REFERINC', 0)+values.get('OTHERTAX', 0)+values.get('ADJADD', 0)+values.get('ADJDEDUCT', 0)+values.get('OTWD', 0)+values.get('OTWE', 0)+values.get('OTHOL', 0)+values.get('NIGHTPREM', 0)+values.get('MONTH13', 0))+(values.get('SICOMP', 0)+values.get('HICOMP', 0)+values.get('UICOMP', 0)+values.get('PRIVHLTHEE', 0)+values.get('PRIVHLTHDEP', 0)+values.get('UNIONER', 0)+values.get('OTHERBEN', 0))+values.get('NONCASHBEN', 0)",
+   "=(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BB+BC+BD+BE+BF+BG+BH+BI+BK+BL+BM+BN+BO)-(BR+BS+BT+BU+BY+BZ+CA+CB)": "(values.get('SALARYPAID', 0)+values.get('UNIFORM', 0)+values.get('SEVERSTAT', 0)+values.get('OTHEREXMP', 0)+values.get('ALENCASH', 0)+values.get('TRANSPADD', 0)+values.get('TRANSPORT', 0)+values.get('PHONEALLOW', 0)+values.get('PRIVINSALW', 0)+values.get('LOGISINC', 0)+values.get('AGROINC', 0)+values.get('LAUNCHINC', 0)+values.get('VARPAY', 0)+values.get('REFERINC', 0)+values.get('OTHERTAX', 0)+values.get('ADJADD', 0)+values.get('ADJDEDUCT', 0)+values.get('OTWD', 0)+values.get('OTWE', 0)+values.get('OTHOL', 0)+values.get('NIGHTPREM', 0)+values.get('MONTH13', 0))-(values.get('SIDED', 0)+values.get('HIDED', 0)+values.get('UIDED', 0)+values.get('UNIONDUES', 0)+values.get('PIT', 0)+values.get('ADVANCE', 0)+values.get('PRIORDED', 0)+values.get('OTHERDED', 0))",
+   "=(BA+BJ)": "(values.get('PREMINSALW', 0)+values.get('NONCASHBEN', 0))",
+   "=(BR+BS+BT)": "(values.get('SIDED', 0)+values.get('HIDED', 0)+values.get('UIDED', 0))",
+   "=-(ROUND(Z,0))": "-(self._round(values.get('ADJDEDAMT', 0),0))",
+   "=IF(J=0,ROUND(BW*AO,0),IF(K<3,IF(AND(BW>=AQ,L=0),ROUND(BW*AP,0),0),ROUND(BRACKET(VNTAX,BX),0)))": "((self._round(values.get('ASSESSPAY', 0)*values.get('NONRESRATE', 0),0)) if (values.get('ISRESIDENT', 0)==0) else (((((self._round(values.get('ASSESSPAY', 0)*values.get('SHORTRATE', 0),0)) if (all([values.get('ASSESSPAY', 0)>=values.get('SHORTTHRESH', 0),values.get('TAXCOMMIT', 0)==0])) else (0))) if (values.get('CONTRACTMTH', 0)<3) else (self._round(BRACKET(values.get('VNTAX', 0),values.get('TAXABLE', 0)),0)))))",
+   "=MAX(0,(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BA+BB+BC+BD+BE+BF+BG+BH+BI+BJ+BK+BL+BM+BN+BO))": "max([0,(values.get('SALARYPAID', 0)+values.get('UNIFORM', 0)+values.get('SEVERSTAT', 0)+values.get('OTHEREXMP', 0)+values.get('ALENCASH', 0)+values.get('TRANSPADD', 0)+values.get('TRANSPORT', 0)+values.get('PHONEALLOW', 0)+values.get('PRIVINSALW', 0)+values.get('PREMINSALW', 0)+values.get('LOGISINC', 0)+values.get('AGROINC', 0)+values.get('LAUNCHINC', 0)+values.get('VARPAY', 0)+values.get('REFERINC', 0)+values.get('OTHERTAX', 0)+values.get('ADJADD', 0)+values.get('ADJDEDUCT', 0)+values.get('NONCASHBEN', 0)+values.get('OTWD', 0)+values.get('OTWE', 0)+values.get('OTHOL', 0)+values.get('NIGHTPREM', 0)+values.get('MONTH13', 0))])",
+   "=MAX(0,(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BA+BB+BC+BD+BE+BF+BG+BH+BI+BJ+BK+BL+BM+BN+BO)-(BR+BS+BT)-AB-(B*AC))": "max([0,(values.get('SALARYPAID', 0)+values.get('UNIFORM', 0)+values.get('SEVERSTAT', 0)+values.get('OTHEREXMP', 0)+values.get('ALENCASH', 0)+values.get('TRANSPADD', 0)+values.get('TRANSPORT', 0)+values.get('PHONEALLOW', 0)+values.get('PRIVINSALW', 0)+values.get('PREMINSALW', 0)+values.get('LOGISINC', 0)+values.get('AGROINC', 0)+values.get('LAUNCHINC', 0)+values.get('VARPAY', 0)+values.get('REFERINC', 0)+values.get('OTHERTAX', 0)+values.get('ADJADD', 0)+values.get('ADJDEDUCT', 0)+values.get('NONCASHBEN', 0)+values.get('OTWD', 0)+values.get('OTWE', 0)+values.get('OTHOL', 0)+values.get('NIGHTPREM', 0)+values.get('MONTH13', 0))-(values.get('SIDED', 0)+values.get('HIDED', 0)+values.get('UIDED', 0))-values.get('DEDUCTSELF', 0)-(values.get('DEPS', 0)*values.get('DEDUCTDEP', 0))])",
+   "=MIN(AR,AJ)": "min([values.get('SALARYPAID', 0),values.get('CAPLO', 0)])",
+   "=MIN(AR,AK)": "min([values.get('SALARYPAID', 0),values.get('CAPHI', 0)])",
+   "=ROUND((500000*(D/C)),0)": "self._round((500000*(values.get('PAIDDAYS', 0)/values.get('STDDAYS', 0))),0)",
+   "=ROUND((A*(D/C)),0)": "self._round((values.get('BASIC', 0)*(values.get('PAIDDAYS', 0)/values.get('STDDAYS', 0))),0)",
+   "=ROUND((P*(A/(C*E))*150/100),0)": "self._round((values.get('HRSWD', 0)*(values.get('BASIC', 0)/(values.get('STDDAYS', 0)*values.get('HOURSDAY', 0)))*150/100),0)",
+   "=ROUND((Q*(A/(C*E))*200/100),0)": "self._round((values.get('HRSWE', 0)*(values.get('BASIC', 0)/(values.get('STDDAYS', 0)*values.get('HOURSDAY', 0)))*200/100),0)",
+   "=ROUND((R*(A/(C*E))*300/100),0)": "self._round((values.get('HRSHOL', 0)*(values.get('BASIC', 0)/(values.get('STDDAYS', 0)*values.get('HOURSDAY', 0)))*300/100),0)",
+   "=ROUND((S*(A/(C*E))*30/100),0)": "self._round((values.get('HRSNIGHT', 0)*(values.get('BASIC', 0)/(values.get('STDDAYS', 0)*values.get('HOURSDAY', 0)))*30/100),0)",
+   "=ROUND(IF(AA=1,(A*10/100),0),0)": "self._round((((values.get('BASIC', 0)*10/100)) if (values.get('PAIDVAR', 0)==1) else (0)),0)",
+   "=ROUND(IF(AND(G=1,H=1),(BQ*AF),0),0)": "self._round((((values.get('UIBASE', 0)*values.get('UIRATE', 0))) if (all([values.get('ISLOCAL', 0)==1,values.get('ISINSURED', 0)==1])) else (0)),0)",
+   "=ROUND(IF(AND(G=1,H=1),(BQ*AI),0),0)": "self._round((((values.get('UIBASE', 0)*values.get('UIEMPR', 0))) if (all([values.get('ISLOCAL', 0)==1,values.get('ISINSURED', 0)==1])) else (0)),0)",
+   "=ROUND(IF(F=1,MIN(A,A*N/O),0),0)": "self._round(((min([values.get('BASIC', 0),values.get('BASIC', 0)*values.get('SERVDAYS', 0)/values.get('ANNUALDAYS', 0)])) if (values.get('PAYMONTH', 0)==1) else (0)),0)",
+   "=ROUND(IF(G=0,(CC+CD+CE),0),0)": "self._round((((values.get('SICOMP', 0)+values.get('HICOMP', 0)+values.get('UICOMP', 0))) if (values.get('ISLOCAL', 0)==0) else (0)),0)",
+   "=ROUND(IF(G=0,W,0),0)": "self._round(((values.get('PRIVINSAMT', 0)) if (values.get('ISLOCAL', 0)==0) else (0)),0)",
+   "=ROUND(IF(G=1,(CC+CD+CE),0),0)": "self._round((((values.get('SICOMP', 0)+values.get('HICOMP', 0)+values.get('UICOMP', 0))) if (values.get('ISLOCAL', 0)==1) else (0)),0)",
+   "=ROUND(IF(H=1,(BP*AD),0),0)": "self._round((((values.get('SIBASE', 0)*values.get('SIRATE', 0))) if (values.get('ISINSURED', 0)==1) else (0)),0)",
+   "=ROUND(IF(H=1,(BP*AE),0),0)": "self._round((((values.get('SIBASE', 0)*values.get('HIRATE', 0))) if (values.get('ISINSURED', 0)==1) else (0)),0)",
+   "=ROUND(IF(H=1,(BP*AG),0),0)": "self._round((((values.get('SIBASE', 0)*values.get('SIEMPR', 0))) if (values.get('ISINSURED', 0)==1) else (0)),0)",
+   "=ROUND(IF(H=1,(BP*AH),0),0)": "self._round((((values.get('SIBASE', 0)*values.get('HIEMPR', 0))) if (values.get('ISINSURED', 0)==1) else (0)),0)",
+   "=ROUND(IF(I=1,(BP*AN),0),0)": "self._round((((values.get('SIBASE', 0)*values.get('UNIONEMPR', 0))) if (values.get('ISUNION', 0)==1) else (0)),0)",
+   "=ROUND(IF(I=1,MIN((BP*AM),AL),0),0)": "self._round(((min([(values.get('SIBASE', 0)*values.get('UNIONRATE', 0)),values.get('UNIONCAP', 0)])) if (values.get('ISUNION', 0)==1) else (0)),0)",
+   "=ROUND(IF(M>0,(IF(M=1,1200000,IF(M=2,800000,IF(M=3,500000,0)))*(D/C)),0),0)": "self._round((((((1200000) if (values.get('ROLEGRADE', 0)==1) else (((800000) if (values.get('ROLEGRADE', 0)==2) else (((500000) if (values.get('ROLEGRADE', 0)==3) else (0))))))*(values.get('PAIDDAYS', 0)/values.get('STDDAYS', 0)))) if (values.get('ROLEGRADE', 0)>0) else (0)),0)",
+   "=ROUND(IF(T=1,CG,0),0)": "self._round(((values.get('PRIVHLTHDEP', 0)) if (values.get('ENROLPREM', 0)==1) else (0)),0)",
+   "=ROUND(IF(U=1,X,0),0)": "self._round(((values.get('HLTHEEAMT', 0)) if (values.get('ENROLHLTH', 0)==1) else (0)),0)",
+   "=ROUND(IF(V=1,Y,0),0)": "self._round(((values.get('HLTHDEPAMT', 0)) if (values.get('ENROLDEP', 0)==1) else (0)),0)"
+  },
+  "formulas": [
+   "=(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BB+BC+BD+BE+BF+BG+BH+BI+BK+BL+BM+BN+BO)",
+   "=(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BB+BC+BD+BE+BF+BG+BH+BI+BK+BL+BM+BN+BO)+(CC+CD+CE+CF+CG+CH+CI)+BJ",
+   "=(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BB+BC+BD+BE+BF+BG+BH+BI+BK+BL+BM+BN+BO)-(BR+BS+BT+BU+BY+BZ+CA+CB)",
+   "=(BA+BJ)",
+   "=(BR+BS+BT)",
+   "=-(ROUND(Z,0))",
+   "=IF(J=0,ROUND(BW*AO,0),IF(K<3,IF(AND(BW>=AQ,L=0),ROUND(BW*AP,0),0),ROUND(BRACKET(VNTAX,BX),0)))",
+   "=MAX(0,(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BA+BB+BC+BD+BE+BF+BG+BH+BI+BJ+BK+BL+BM+BN+BO))",
+   "=MAX(0,(AR+AS+AT+AU+AV+AW+AX+AY+AZ+BA+BB+BC+BD+BE+BF+BG+BH+BI+BJ+BK+BL+BM+BN+BO)-(BR+BS+BT)-AB-(B*AC))",
+   "=MIN(AR,AJ)",
+   "=MIN(AR,AK)",
+   "=ROUND((500000*(D/C)),0)",
+   "=ROUND((A*(D/C)),0)",
+   "=ROUND((P*(A/(C*E))*150/100),0)",
+   "=ROUND((Q*(A/(C*E))*200/100),0)",
+   "=ROUND((R*(A/(C*E))*300/100),0)",
+   "=ROUND((S*(A/(C*E))*30/100),0)",
+   "=ROUND(IF(AA=1,(A*10/100),0),0)",
+   "=ROUND(IF(AND(G=1,H=1),(BQ*AF),0),0)",
+   "=ROUND(IF(AND(G=1,H=1),(BQ*AI),0),0)",
+   "=ROUND(IF(F=1,MIN(A,A*N/O),0),0)",
+   "=ROUND(IF(G=0,(CC+CD+CE),0),0)",
+   "=ROUND(IF(G=0,W,0),0)",
+   "=ROUND(IF(G=1,(CC+CD+CE),0),0)",
+   "=ROUND(IF(H=1,(BP*AD),0),0)",
+   "=ROUND(IF(H=1,(BP*AE),0),0)",
+   "=ROUND(IF(H=1,(BP*AG),0),0)",
+   "=ROUND(IF(H=1,(BP*AH),0),0)",
+   "=ROUND(IF(I=1,(BP*AN),0),0)",
+   "=ROUND(IF(I=1,MIN((BP*AM),AL),0),0)",
+   "=ROUND(IF(M>0,(IF(M=1,1200000,IF(M=2,800000,IF(M=3,500000,0)))*(D/C)),0),0)",
+   "=ROUND(IF(T=1,CG,0),0)",
+   "=ROUND(IF(U=1,X,0),0)",
+   "=ROUND(IF(V=1,Y,0),0)"
+  ],
+  "source": "pb_blueprint/data/config_template_vn_complete.xml#tpl_vn_complete_2026"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "E",
+    "COLE"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "G",
+    "COLG"
+   ],
+   [
+    "H",
+    "COLH"
+   ],
+   [
+    "I",
+    "COLI"
+   ]
+  ],
+  "converted": {
+   "=A1*0.01": "values.get('COLA', 0)*0.01",
+   "=A1*0.015": "values.get('COLA', 0)*0.015",
+   "=A1*0.08": "values.get('COLA', 0)*0.08",
+   "=A1*0.2": "values.get('COLA', 0)*0.2",
+   "=A1+B1+C1+D1": "values.get('COLA', 0)+values.get('COLB', 0)+values.get('COLC', 0)+values.get('COLD', 0)",
+   "=E1-I1": "values.get('COLE', 0)-values.get('COLI', 0)",
+   "=F1+G1+H1": "values.get('COLF', 0)+values.get('COLG', 0)+values.get('COLH', 0)"
+  },
+  "formulas": [
+   "=A1*0.01",
+   "=A1*0.015",
+   "=A1*0.08",
+   "=A1*0.2",
+   "=A1+B1+C1+D1",
+   "=E1-I1",
+   "=F1+G1+H1"
+  ],
+  "source": "pb_hr_payroll_formula/data/demo_formula_config.xml"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "BASIC"
+   ],
+   [
+    "D",
+    "LOOPA"
+   ],
+   [
+    "E",
+    "LOOPB"
+   ]
+  ],
+  "converted": {
+   "=A1": "values.get('COLA', 0)",
+   "=B1": "values.get('COLB', 0)"
+  },
+  "formulas": [
+   "=A1",
+   "=B1"
+  ],
+  "source": "pb_blueprint/tests/test_blueprint.py"
+ },
+ {
+  "column_map": [
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "K",
+    "COLK"
+   ],
+   [
+    "S",
+    "COLS"
+   ],
+   [
+    "V",
+    "COLV"
+   ],
+   [
+    "Y",
+    "COLY"
+   ],
+   [
+    "A",
+    "CAPLO"
+   ],
+   [
+    "B",
+    "SIBASE"
+   ],
+   [
+    "C",
+    "SIRATE"
+   ],
+   [
+    "E",
+    "SITEALLOW"
+   ],
+   [
+    "F",
+    "UNIFORM"
+   ],
+   [
+    "G",
+    "WEEKENDOT"
+   ]
+  ],
+  "converted": {
+   "=MIN(SIBASE,": "min([values.get('SIBASE', 0),",
+   "=MIN(SIBASE,CAPLO)*SIRATE": "min([values.get('SIBASE', 0),values.get('CAPLO', 0)])*values.get('SIRATE', 0)",
+   "=V1*(D1*S1)+%s1": "values.get('COLV', 0)*(values.get('COLD', 0)*values.get('COLS', 0))+%s1",
+   "=Y*K*2": "values.get('COLY', 0)*values.get('COLK', 0)*2",
+   "=Y1*K1*2": "values.get('COLY', 0)*values.get('COLK', 0)*2"
+  },
+  "formulas": [
+   "=MIN(SIBASE,",
+   "=MIN(SIBASE,CAPLO)*SIRATE",
+   "=V1*(D1*S1)+%s1",
+   "=Y*K*2",
+   "=Y1*K1*2"
+  ],
+  "source": "pb_blueprint/tests/test_components_rpc.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "BASICPAY"
+   ],
+   [
+    "C",
+    "NETPAY"
+   ],
+   [
+    "D",
+    "P3ROUNDTRIP"
+   ]
+  ],
+  "converted": {
+   "=A": "values.get('COLA', 0)"
+  },
+  "formulas": [
+   "=A"
+  ],
+  "source": "pb_blueprint/tests/test_edit_mode.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "B6NEWIN"
+   ],
+   [
+    "D",
+    "LOOPA"
+   ],
+   [
+    "E",
+    "LOOPB"
+   ]
+  ],
+  "converted": {
+   "=A1": "values.get('COLA', 0)",
+   "=B1": "values.get('COLB', 0)"
+  },
+  "formulas": [
+   "=A1",
+   "=B1"
+  ],
+  "source": "pb_blueprint/tests/test_finish.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BASIC"
+   ],
+   [
+    "B",
+    "FRESHCMP"
+   ],
+   [
+    "C",
+    "TAKEHOME"
+   ]
+  ],
+  "converted": {
+   "=%s2*0.1": "%s2*0.1",
+   "=BASIC*0.1": "values.get('BASIC', 0)*0.1"
+  },
+  "formulas": [
+   "=%s2*0.1",
+   "=BASIC*0.1"
+  ],
+  "source": "pb_blueprint/tests/test_imported_excel_components.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "NET"
+   ]
+  ],
+  "converted": {
+   "=ROUND(400000,0)": "self._round(400000,0)"
+  },
+  "formulas": [
+   "=ROUND(400000,0)"
+  ],
+  "source": "pb_blueprint/tests/test_outputs.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "AA",
+    "COLAA"
+   ],
+   [
+    "AB",
+    "COLAB"
+   ],
+   [
+    "AC",
+    "COLAC"
+   ],
+   [
+    "AE",
+    "COLAE"
+   ],
+   [
+    "AF",
+    "COLAF"
+   ],
+   [
+    "AH",
+    "COLAH"
+   ],
+   [
+    "AI",
+    "COLAI"
+   ],
+   [
+    "AJ",
+    "COLAJ"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "G",
+    "COLG"
+   ],
+   [
+    "H",
+    "COLH"
+   ],
+   [
+    "I",
+    "COLI"
+   ],
+   [
+    "J",
+    "COLJ"
+   ],
+   [
+    "K",
+    "COLK"
+   ],
+   [
+    "L",
+    "COLL"
+   ],
+   [
+    "M",
+    "COLM"
+   ],
+   [
+    "N",
+    "COLN"
+   ],
+   [
+    "O",
+    "COLO"
+   ],
+   [
+    "P",
+    "COLP"
+   ],
+   [
+    "Q",
+    "COLQ"
+   ],
+   [
+    "R",
+    "COLR"
+   ],
+   [
+    "W",
+    "COLW"
+   ],
+   [
+    "Y",
+    "COLY"
+   ],
+   [
+    "Z",
+    "COLZ"
+   ],
+   [
+    "AL",
+    "AD"
+   ],
+   [
+    "AM",
+    "AG"
+   ],
+   [
+    "AN",
+    "AK"
+   ],
+   [
+    "AO",
+    "BASIC"
+   ],
+   [
+    "AP",
+    "D"
+   ],
+   [
+    "AQ",
+    "E"
+   ],
+   [
+    "AR",
+    "F"
+   ],
+   [
+    "AS",
+    "IN"
+   ],
+   [
+    "AT",
+    "PAYMONTH"
+   ],
+   [
+    "AU",
+    "S"
+   ],
+   [
+    "AV",
+    "T"
+   ],
+   [
+    "AW",
+    "U"
+   ],
+   [
+    "AX",
+    "UNIFORM"
+   ],
+   [
+    "AY",
+    "V"
+   ],
+   [
+    "AZ",
+    "VNTAX"
+   ],
+   [
+    "BA",
+    "X"
+   ]
+  ],
+  "converted": {
+   "=(A+G+H+W)": "(values.get('COLA', 0)+values.get('COLG', 0)+values.get('COLH', 0)+values.get('COLW', 0))",
+   "=(A+G+H+W)+(AH+AI+AJ)": "(values.get('COLA', 0)+values.get('COLG', 0)+values.get('COLH', 0)+values.get('COLW', 0))+(values.get('COLAH', 0)+values.get('COLAI', 0)+values.get('COLAJ', 0))",
+   "=(A+G+H+W)-(AA+AB+AC+AF)": "(values.get('COLA', 0)+values.get('COLG', 0)+values.get('COLH', 0)+values.get('COLW', 0))-(values.get('COLAA', 0)+values.get('COLAB', 0)+values.get('COLAC', 0)+values.get('COLAF', 0))",
+   "=(A+H+W)": "(values.get('COLA', 0)+values.get('COLH', 0)+values.get('COLW', 0))",
+   "=(AA+AB+AC)": "(values.get('COLAA', 0)+values.get('COLAB', 0)+values.get('COLAC', 0))",
+   "=(Y*0.5/100)": "(values.get('COLY', 0)*0.5/100)",
+   "=(Y*K)": "(values.get('COLY', 0)*values.get('COLK', 0))",
+   "=(Y*L)": "(values.get('COLY', 0)*values.get('COLL', 0))",
+   "=(Y*N)": "(values.get('COLY', 0)*values.get('COLN', 0))",
+   "=(Y*O)": "(values.get('COLY', 0)*values.get('COLO', 0))",
+   "=(Z*M)": "(values.get('COLZ', 0)*values.get('COLM', 0))",
+   "=(Z*P)": "(values.get('COLZ', 0)*values.get('COLP', 0))",
+   "=BRACKET(VNTAX,AE)": "BRACKET(values.get('VNTAX', 0),values.get('COLAE', 0))",
+   "=MAX(0,(A+G+H+W)-(AA+AB+AC)-I-(B*J))": "max([0,(values.get('COLA', 0)+values.get('COLG', 0)+values.get('COLH', 0)+values.get('COLW', 0))-(values.get('COLAA', 0)+values.get('COLAB', 0)+values.get('COLAC', 0))-values.get('COLI', 0)-(values.get('COLB', 0)*values.get('COLJ', 0))])",
+   "=MIN(A,Q)": "min([values.get('COLA', 0),values.get('COLQ', 0)])",
+   "=MIN(A,R)": "min([values.get('COLA', 0),values.get('COLR', 0)])",
+   "=ROUND((%s*(A/(C*%s))*200/100),0)": "self._round((%s*(values.get('COLA', 0)/(values.get('COLC', 0)*%s))*200/100),0)",
+   "=ROUND((A*(%s/C)),0)": "self._round((values.get('COLA', 0)*(%s/values.get('COLC', 0))),0)",
+   "=ROUND(IF(%s=1,200000,0),0)": "self._round(((200000) if (%s==1) else (0)),0)",
+   "=ROUND(IF(%s=1,500000,0),0)": "self._round(((500000) if (%s==1) else (0)),0)",
+   "=ROUND(IF(%s=1,MIN(A,A*%s/%s),0),0)": "self._round(((min([values.get('COLA', 0),values.get('COLA', 0)*%s/%s])) if (%s==1) else (0)),0)"
+  },
+  "formulas": [
+   "=(A+G+H+W)",
+   "=(A+G+H+W)+(AH+AI+AJ)",
+   "=(A+G+H+W)-(AA+AB+AC+AF)",
+   "=(A+H+W)",
+   "=(AA+AB+AC)",
+   "=(Y*0.5/100)",
+   "=(Y*K)",
+   "=(Y*L)",
+   "=(Y*N)",
+   "=(Y*O)",
+   "=(Z*M)",
+   "=(Z*P)",
+   "=BRACKET(VNTAX,AE)",
+   "=MAX(0,(A+G+H+W)-(AA+AB+AC)-I-(B*J))",
+   "=MIN(A,Q)",
+   "=MIN(A,R)",
+   "=ROUND((%s*(A/(C*%s))*200/100),0)",
+   "=ROUND((A*(%s/C)),0)",
+   "=ROUND(IF(%s=1,200000,0),0)",
+   "=ROUND(IF(%s=1,500000,0),0)",
+   "=ROUND(IF(%s=1,MIN(A,A*%s/%s),0),0)"
+  ],
+  "source": "pb_blueprint/tests/test_recipe_compiler.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "OTWD"
+   ],
+   [
+    "E",
+    "VNTAX"
+   ]
+  ],
+  "converted": {
+   "=MIN((A*B),C)": "min([(values.get('COLA', 0)*values.get('COLB', 0)),values.get('COLC', 0)])",
+   "=MIN(A,C)": "min([values.get('COLA', 0),values.get('COLC', 0)])",
+   "=MIN(B,C)": "min([values.get('COLB', 0),values.get('COLC', 0)])",
+   "=ROUND(BRACKET(VNTAX,A),0)": "self._round(BRACKET(values.get('VNTAX', 0),values.get('COLA', 0)),0)",
+   "=ROUND(IF(B=1,(A*10/100),0),0)": "self._round((((values.get('COLA', 0)*10/100)) if (values.get('COLB', 0)==1) else (0)),0)",
+   "=ROUNDDOWN(A,0)": "self._rounddown(values.get('COLA', 0),0)"
+  },
+  "formulas": [
+   "=MIN((A*B),C)",
+   "=MIN(A,C)",
+   "=MIN(B,C)",
+   "=ROUND(BRACKET(VNTAX,A),0)",
+   "=ROUND(IF(B=1,(A*10/100),0),0)",
+   "=ROUNDDOWN(A,0)"
+  ],
+  "source": "pb_blueprint/tests/test_vn_complete.py"
+ },
+ {
+  "column_map": [
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "G",
+    "COLG"
+   ],
+   [
+    "A",
+    "EMP002"
+   ],
+   [
+    "B",
+    "EMP003"
+   ]
+  ],
+  "converted": {
+   "=C%d+D%d": "values.get('COLC', 0)%d+values.get('COLD', 0)%d",
+   "=C{row}+D{row}": "values.get('COLC', 0){row}+values.get('COLD', 0){row}",
+   "=F%d-G%d": "values.get('COLF', 0)%d-values.get('COLG', 0)%d",
+   "=F{row}-G{row}": "values.get('COLF', 0){row}-values.get('COLG', 0){row}",
+   "=ROUND(C%d*0.105,0)": "self._round(values.get('COLC', 0)%d*0.105,0)",
+   "=ROUND(C{row}*0.105,0)": "self._round(values.get('COLC', 0){row}*0.105,0)"
+  },
+  "formulas": [
+   "=C%d+D%d",
+   "=C{row}+D{row}",
+   "=F%d-G%d",
+   "=F{row}-G{row}",
+   "=ROUND(C%d*0.105,0)",
+   "=ROUND(C{row}*0.105,0)"
+  ],
+  "source": "pb_blueprint/tools/gen_fixture_workbook.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "ADVPAY"
+   ],
+   [
+    "B",
+    "ADVRATEHI"
+   ],
+   [
+    "C",
+    "ADVRATELO"
+   ],
+   [
+    "D",
+    "ADVTHRESH"
+   ],
+   [
+    "E",
+    "ALW"
+   ],
+   [
+    "F",
+    "ATTEND"
+   ],
+   [
+    "G",
+    "BASIC"
+   ],
+   [
+    "H",
+    "BON"
+   ],
+   [
+    "I",
+    "BONCOMM"
+   ],
+   [
+    "J",
+    "BONKPI"
+   ],
+   [
+    "K",
+    "BONPERF"
+   ],
+   [
+    "L",
+    "BONPROD"
+   ],
+   [
+    "M",
+    "BONTET"
+   ],
+   [
+    "N",
+    "CAPHI"
+   ],
+   [
+    "O",
+    "CAPLO"
+   ],
+   [
+    "P",
+    "CNHEAT"
+   ],
+   [
+    "Q",
+    "CNHIGH"
+   ],
+   [
+    "R",
+    "CNSITE"
+   ],
+   [
+    "S",
+    "COHOUSE"
+   ],
+   [
+    "T",
+    "COMGMT"
+   ],
+   [
+    "U",
+    "COMP"
+   ],
+   [
+    "V",
+    "DAYSTD"
+   ],
+   [
+    "W",
+    "DED"
+   ],
+   [
+    "X",
+    "DEDUCTDEP"
+   ],
+   [
+    "Y",
+    "DEDUCTSELF"
+   ],
+   [
+    "Z",
+    "DEPS"
+   ],
+   [
+    "AA",
+    "EEHI"
+   ],
+   [
+    "AB",
+    "EESI"
+   ],
+   [
+    "AC",
+    "EEUI"
+   ],
+   [
+    "AD",
+    "ERHI"
+   ],
+   [
+    "AE",
+    "ERSI"
+   ],
+   [
+    "AF",
+    "ERUI"
+   ],
+   [
+    "AG",
+    "ERUNION"
+   ],
+   [
+    "AH",
+    "FULLPAY"
+   ],
+   [
+    "AI",
+    "GROSS"
+   ],
+   [
+    "AJ",
+    "HICOMP"
+   ],
+   [
+    "AK",
+    "HIEMP"
+   ],
+   [
+    "AL",
+    "HRSTD"
+   ],
+   [
+    "AM",
+    "INCOMM"
+   ],
+   [
+    "AN",
+    "INKPI"
+   ],
+   [
+    "AO",
+    "INLOAN"
+   ],
+   [
+    "AP",
+    "INPERF"
+   ],
+   [
+    "AQ",
+    "INPROD"
+   ],
+   [
+    "AR",
+    "INS"
+   ],
+   [
+    "AS",
+    "INSCO"
+   ],
+   [
+    "AT",
+    "INTET"
+   ],
+   [
+    "AU",
+    "INTRIP"
+   ],
+   [
+    "AV",
+    "ITCALL"
+   ],
+   [
+    "AW",
+    "ITREMOTE"
+   ],
+   [
+    "AX",
+    "ITSKILL"
+   ],
+   [
+    "AY",
+    "LGFUEL"
+   ],
+   [
+    "AZ",
+    "LGNIGHT"
+   ],
+   [
+    "BA",
+    "LGTRIP"
+   ],
+   [
+    "BB",
+    "LOANDED"
+   ],
+   [
+    "BC",
+    "LOANREP"
+   ],
+   [
+    "BD",
+    "MEAL"
+   ],
+   [
+    "BE",
+    "MFMACH"
+   ],
+   [
+    "BF",
+    "MFSHIFT"
+   ],
+   [
+    "BG",
+    "MULTHO"
+   ],
+   [
+    "BH",
+    "MULTWD"
+   ],
+   [
+    "BI",
+    "MULTWE"
+   ],
+   [
+    "BJ",
+    "NET"
+   ],
+   [
+    "BK",
+    "OT"
+   ],
+   [
+    "BL",
+    "OTHO"
+   ],
+   [
+    "BM",
+    "OTPAYHO"
+   ],
+   [
+    "BN",
+    "OTPAYWD"
+   ],
+   [
+    "BO",
+    "OTPAYWE"
+   ],
+   [
+    "BP",
+    "OTWD"
+   ],
+   [
+    "BQ",
+    "OTWE"
+   ],
+   [
+    "BR",
+    "PARAM"
+   ],
+   [
+    "BS",
+    "PCTMGMT"
+   ],
+   [
+    "BT",
+    "PCTRESP"
+   ],
+   [
+    "BU",
+    "PCTSKILL"
+   ],
+   [
+    "BV",
+    "PHONE"
+   ],
+   [
+    "BW",
+    "PIT"
+   ],
+   [
+    "BX",
+    "RESPALW"
+   ],
+   [
+    "BY",
+    "RTSTORE"
+   ],
+   [
+    "BZ",
+    "RTWKND"
+   ],
+   [
+    "CA",
+    "SICOMP"
+   ],
+   [
+    "CB",
+    "SIEMP"
+   ],
+   [
+    "CC",
+    "TAX"
+   ],
+   [
+    "CD",
+    "TRANSPORT"
+   ],
+   [
+    "CE",
+    "TRIPRATE"
+   ],
+   [
+    "CF",
+    "TXBASE"
+   ],
+   [
+    "CG",
+    "UICOMP"
+   ],
+   [
+    "CH",
+    "UIEMP"
+   ],
+   [
+    "CI",
+    "UNIONF"
+   ]
+  ],
+  "converted": {
+   "=-INLOAN": "-values.get('INLOAN', 0)",
+   "=-MAX(0,IF(TXBASE<=0,0,IF(TXBASE<=5000000,TXBASE*0.05,IF(TXBASE<=10000000,TXBASE*0.1-250000,IF(TXBASE<=18000000,TXBASE*0.15-750000,IF(TXBASE<=32000000,TXBASE*0.2-1650000,IF(TXBASE<=52000000,TXBASE*0.25-3250000,IF(TXBASE<=80000000,TXBASE*0.3-5850000,TXBASE*0.35-9850000))))))))": "-max([0,((0) if (values.get('TXBASE', 0)<=0) else (((values.get('TXBASE', 0)*0.05) if (values.get('TXBASE', 0)<=5000000) else (((values.get('TXBASE', 0)*0.1-250000) if (values.get('TXBASE', 0)<=10000000) else (((values.get('TXBASE', 0)*0.15-750000) if (values.get('TXBASE', 0)<=18000000) else (((values.get('TXBASE', 0)*0.2-1650000) if (values.get('TXBASE', 0)<=32000000) else (((values.get('TXBASE', 0)*0.25-3250000) if (values.get('TXBASE', 0)<=52000000) else (((values.get('TXBASE', 0)*0.3-5850000) if (values.get('TXBASE', 0)<=80000000) else (values.get('TXBASE', 0)*0.35-9850000))))))))))))))])",
+   "=-ROUND(MIN(BASIC,CAPHI)*EEUI)": "-self._round(min([values.get('BASIC', 0),values.get('CAPHI', 0)])*values.get('EEUI', 0))",
+   "=-ROUND(MIN(BASIC,CAPLO)*EEHI)": "-self._round(min([values.get('BASIC', 0),values.get('CAPLO', 0)])*values.get('EEHI', 0))",
+   "=-ROUND(MIN(BASIC,CAPLO)*EESI)": "-self._round(min([values.get('BASIC', 0),values.get('CAPLO', 0)])*values.get('EESI', 0))",
+   "=ADVPAY": "values.get('ADVPAY', 0)",
+   "=FULLPAY-ADVPAY": "values.get('FULLPAY', 0)-values.get('ADVPAY', 0)",
+   "=GROSS+SIEMP+HIEMP+UIEMP+PIT+LOANREP": "values.get('GROSS', 0)+values.get('SIEMP', 0)+values.get('HIEMP', 0)+values.get('UIEMP', 0)+values.get('PIT', 0)+values.get('LOANREP', 0)",
+   "=GROSS+SIEMP+HIEMP+UIEMP-DEDUCTSELF-DEDUCTDEP*DEPS": "values.get('GROSS', 0)+values.get('SIEMP', 0)+values.get('HIEMP', 0)+values.get('UIEMP', 0)-values.get('DEDUCTSELF', 0)-values.get('DEDUCTDEP', 0)*values.get('DEPS', 0)",
+   "=INCOMM": "values.get('INCOMM', 0)",
+   "=INKPI": "values.get('INKPI', 0)",
+   "=INPERF": "values.get('INPERF', 0)",
+   "=INPROD": "values.get('INPROD', 0)",
+   "=INTET": "values.get('INTET', 0)",
+   "=INTRIP*TRIPRATE": "values.get('INTRIP', 0)*values.get('TRIPRATE', 0)",
+   "=ROUND(BASIC*PCTMGMT)": "self._round(values.get('BASIC', 0)*values.get('PCTMGMT', 0))",
+   "=ROUND(BASIC*PCTRESP)": "self._round(values.get('BASIC', 0)*values.get('PCTRESP', 0))",
+   "=ROUND(BASIC*PCTSKILL)": "self._round(values.get('BASIC', 0)*values.get('PCTSKILL', 0))",
+   "=ROUND(BASIC/DAYSTD/HRSTD*MULTHO*OTHO)": "self._round(values.get('BASIC', 0)/values.get('DAYSTD', 0)/values.get('HRSTD', 0)*values.get('MULTHO', 0)*values.get('OTHO', 0))",
+   "=ROUND(BASIC/DAYSTD/HRSTD*MULTWD*OTWD)": "self._round(values.get('BASIC', 0)/values.get('DAYSTD', 0)/values.get('HRSTD', 0)*values.get('MULTWD', 0)*values.get('OTWD', 0))",
+   "=ROUND(BASIC/DAYSTD/HRSTD*MULTWE*OTWE)": "self._round(values.get('BASIC', 0)/values.get('DAYSTD', 0)/values.get('HRSTD', 0)*values.get('MULTWE', 0)*values.get('OTWE', 0))",
+   "=ROUND(FULLPAY*IF(GROSS>=ADVTHRESH,ADVRATEHI,ADVRATELO))": "self._round(values.get('FULLPAY', 0)*((values.get('ADVRATEHI', 0)) if (values.get('GROSS', 0)>=values.get('ADVTHRESH', 0)) else (values.get('ADVRATELO', 0))))",
+   "=ROUND(MIN(BASIC,CAPHI)*ERUI)": "self._round(min([values.get('BASIC', 0),values.get('CAPHI', 0)])*values.get('ERUI', 0))",
+   "=ROUND(MIN(BASIC,CAPLO)*ERHI)": "self._round(min([values.get('BASIC', 0),values.get('CAPLO', 0)])*values.get('ERHI', 0))",
+   "=ROUND(MIN(BASIC,CAPLO)*ERSI)": "self._round(min([values.get('BASIC', 0),values.get('CAPLO', 0)])*values.get('ERSI', 0))",
+   "=ROUND(MIN(BASIC,CAPLO)*ERUNION)": "self._round(min([values.get('BASIC', 0),values.get('CAPLO', 0)])*values.get('ERUNION', 0))"
+  },
+  "formulas": [
+   "=-INLOAN",
+   "=-MAX(0,IF(TXBASE<=0,0,IF(TXBASE<=5000000,TXBASE*0.05,IF(TXBASE<=10000000,TXBASE*0.1-250000,IF(TXBASE<=18000000,TXBASE*0.15-750000,IF(TXBASE<=32000000,TXBASE*0.2-1650000,IF(TXBASE<=52000000,TXBASE*0.25-3250000,IF(TXBASE<=80000000,TXBASE*0.3-5850000,TXBASE*0.35-9850000))))))))",
+   "=-ROUND(MIN(BASIC,CAPHI)*EEUI)",
+   "=-ROUND(MIN(BASIC,CAPLO)*EEHI)",
+   "=-ROUND(MIN(BASIC,CAPLO)*EESI)",
+   "=ADVPAY",
+   "=FULLPAY-ADVPAY",
+   "=GROSS+SIEMP+HIEMP+UIEMP+PIT+LOANREP",
+   "=GROSS+SIEMP+HIEMP+UIEMP-DEDUCTSELF-DEDUCTDEP*DEPS",
+   "=INCOMM",
+   "=INKPI",
+   "=INPERF",
+   "=INPROD",
+   "=INTET",
+   "=INTRIP*TRIPRATE",
+   "=ROUND(BASIC*PCTMGMT)",
+   "=ROUND(BASIC*PCTRESP)",
+   "=ROUND(BASIC*PCTSKILL)",
+   "=ROUND(BASIC/DAYSTD/HRSTD*MULTHO*OTHO)",
+   "=ROUND(BASIC/DAYSTD/HRSTD*MULTWD*OTWD)",
+   "=ROUND(BASIC/DAYSTD/HRSTD*MULTWE*OTWE)",
+   "=ROUND(FULLPAY*IF(GROSS>=ADVTHRESH,ADVRATEHI,ADVRATELO))",
+   "=ROUND(MIN(BASIC,CAPHI)*ERUI)",
+   "=ROUND(MIN(BASIC,CAPLO)*ERHI)",
+   "=ROUND(MIN(BASIC,CAPLO)*ERSI)",
+   "=ROUND(MIN(BASIC,CAPLO)*ERUNION)"
+  ],
+  "source": "pb_demo/models/demo_catalog.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "=like": "like"
+  },
+  "formulas": [
+   "=like"
+  ],
+  "source": "pb_ess_workforce/tests/test_p8_demo.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "E",
+    "COLE"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "G",
+    "COLG"
+   ],
+   [
+    "H",
+    "COLH"
+   ],
+   [
+    "I",
+    "COLI"
+   ],
+   [
+    "K",
+    "BASIC"
+   ],
+   [
+    "L",
+    "J"
+   ]
+  ],
+  "converted": {
+   "=A5": "values.get('COLA', 0)",
+   "=A5*2": "values.get('COLA', 0)*2",
+   "=A5*8%": "values.get('COLA', 0)*(8/100)",
+   "=F5+B5+E5": "values.get('COLF', 0)+values.get('COLB', 0)+values.get('COLE', 0)",
+   "=G5-I5": "values.get('COLG', 0)-values.get('COLI', 0)",
+   "=H5": "values.get('COLH', 0)",
+   "=ROUND(A5/C5*D5,0)": "self._round(values.get('COLA', 0)/values.get('COLC', 0)*values.get('COLD', 0),0)"
+  },
+  "formulas": [
+   "=A5",
+   "=A5*2",
+   "=A5*8%",
+   "=F5+B5+E5",
+   "=G5-I5",
+   "=H5",
+   "=ROUND(A5/C5*D5,0)"
+  ],
+  "source": "pb_formula_studio/tests/test_category_review.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "AAA"
+   ],
+   [
+    "B",
+    "BBB"
+   ],
+   [
+    "C",
+    "GROSS"
+   ],
+   [
+    "D",
+    "RATE"
+   ]
+  ],
+  "converted": {
+   "=AAA+BBB": "values.get('AAA', 0)+values.get('BBB', 0)"
+  },
+  "formulas": [
+   "=AAA+BBB"
+  ],
+  "source": "pb_formula_studio/tests/test_cleanmap_journey.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "=%s2*%s2": "%s2*%s2",
+   "=%s2*1": "%s2*1",
+   "=1": "1"
+  },
+  "formulas": [
+   "=%s2*%s2",
+   "=%s2*1",
+   "=1"
+  ],
+  "source": "pb_formula_studio/tests/test_column_roles.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "N",
+    "COLN"
+   ],
+   [
+    "C",
+    "NETPAY"
+   ],
+   [
+    "D",
+    "USDNET"
+   ],
+   [
+    "E",
+    "VND"
+   ]
+  ],
+  "converted": {
+   "=#N/A": "#values.get('COLN', 0)/values.get('COLA', 0)",
+   "=0": "0",
+   "=A2+1": "values.get('COLA', 0)+1",
+   "=A3+1": "values.get('COLA', 0)+1",
+   "=B2": "values.get('COLB', 0)",
+   "=B2*2": "values.get('COLB', 0)*2",
+   "=B3*2": "values.get('COLB', 0)*2",
+   "=B4": "values.get('COLB', 0)",
+   "=B4*0.9": "values.get('COLB', 0)*0.9",
+   "=B5*0.9": "values.get('COLB', 0)*0.9"
+  },
+  "formulas": [
+   "=#N/A",
+   "=0",
+   "=A2+1",
+   "=A3+1",
+   "=B2",
+   "=B2*2",
+   "=B3*2",
+   "=B4",
+   "=B4*0.9",
+   "=B5*0.9"
+  ],
+  "source": "pb_formula_studio/tests/test_excel_onramp.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "OT3HOURS"
+   ]
+  ],
+  "converted": {
+   "=== \"api\"": "== \"api\""
+  },
+  "formulas": [
+   "=== \"api\""
+  ],
+  "source": "pb_formula_studio/tests/test_journey_j6_defects.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "J8CLASH"
+   ],
+   [
+    "B",
+    "J8CLASH2"
+   ],
+   [
+    "C",
+    "J8REF"
+   ],
+   [
+    "D",
+    "J8REF2"
+   ],
+   [
+    "E",
+    "J8SEED"
+   ],
+   [
+    "F",
+    "J8STATE"
+   ]
+  ],
+  "converted": {
+   "=1": "1",
+   "=2": "2"
+  },
+  "formulas": [
+   "=1",
+   "=2"
+  ],
+  "source": "pb_formula_studio/tests/test_journey_j8_components.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "J9GASALLOW"
+   ],
+   [
+    "B",
+    "J9NET"
+   ]
+  ],
+  "converted": {
+   "=1": "1"
+  },
+  "formulas": [
+   "=1"
+  ],
+  "source": "pb_formula_studio/tests/test_journey_j9_display.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "GRADEX"
+   ]
+  ],
+  "converted": {
+   "=%s2*2": "%s2*2"
+  },
+  "formulas": [
+   "=%s2*2"
+  ],
+  "source": "pb_formula_studio/tests/test_mapping_catalogue.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ]
+  ],
+  "converted": {
+   "=8": "8",
+   "=A2*12": "values.get('COLA', 0)*12",
+   "=A2*2": "values.get('COLA', 0)*2",
+   "=A2*B2": "values.get('COLA', 0)*values.get('COLB', 0)"
+  },
+  "formulas": [
+   "=8",
+   "=A2*12",
+   "=A2*2",
+   "=A2*B2"
+  ],
+  "source": "pb_formula_studio/tests/test_mapping_create_guard.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "DEDUPEMANAGER"
+   ],
+   [
+    "B",
+    "DEDUPEOTHER"
+   ],
+   [
+    "C",
+    "DESKASSET"
+   ],
+   [
+    "D",
+    "DESKHISTORY"
+   ],
+   [
+    "E",
+    "DESKHOURS"
+   ],
+   [
+    "F",
+    "DESKMERGED"
+   ],
+   [
+    "G",
+    "DESKNEW"
+   ],
+   [
+    "H",
+    "DESKPENDING"
+   ],
+   [
+    "I",
+    "DESKRESULT"
+   ],
+   [
+    "J",
+    "DESKTEST"
+   ]
+  ],
+  "converted": {
+   "=IF(DESKHOURS=\"Yes\",1,0)": "((1) if (self._streq(raw_values.get('DESKHOURS'), 'Yes')) else (0))"
+  },
+  "formulas": [
+   "=IF(DESKHOURS=\"Yes\",1,0)"
+  ],
+  "source": "pb_formula_studio/tests/test_mapping_experience.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "AJ",
+    "COLAJ"
+   ],
+   [
+    "AL",
+    "COLAL"
+   ],
+   [
+    "AZ",
+    "COLAZ"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "BA",
+    "COLBA"
+   ],
+   [
+    "BG",
+    "COLBG"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "J",
+    "COLJ"
+   ],
+   [
+    "K",
+    "COLK"
+   ],
+   [
+    "X",
+    "COLX"
+   ],
+   [
+    "E",
+    "BC"
+   ],
+   [
+    "F",
+    "BH"
+   ],
+   [
+    "G",
+    "D"
+   ],
+   [
+    "H",
+    "OTH"
+   ]
+  ],
+  "converted": {
+   "=A2*2": "values.get('COLA', 0)*2",
+   "=AJ2*10%": "values.get('COLAJ', 0)*(10/100)",
+   "=AJ2+AL2": "values.get('COLAJ', 0)+values.get('COLAL', 0)",
+   "=AJ2-AL2-AZ2": "values.get('COLAJ', 0)-values.get('COLAL', 0)-values.get('COLAZ', 0)",
+   "=B2+A2": "values.get('COLB', 0)+values.get('COLA', 0)",
+   "=BA2+BG2": "values.get('COLBA', 0)+values.get('COLBG', 0)",
+   "=C2-B2": "values.get('COLC', 0)-values.get('COLB', 0)",
+   "=J2+X2": "values.get('COLJ', 0)+values.get('COLX', 0)",
+   "=K2*8%": "values.get('COLK', 0)*(8/100)"
+  },
+  "formulas": [
+   "=A2*2",
+   "=AJ2*10%",
+   "=AJ2+AL2",
+   "=AJ2-AL2-AZ2",
+   "=B2+A2",
+   "=BA2+BG2",
+   "=C2-B2",
+   "=J2+X2",
+   "=K2*8%"
+  ],
+  "source": "pb_formula_studio/tests/test_net_pay_candidates.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BASICPAY"
+   ],
+   [
+    "B",
+    "DOUBLED"
+   ]
+  ],
+  "converted": {
+   "=%s*2": "%s*2",
+   "=%s*3": "%s*3",
+   "=%s*7": "%s*7"
+  },
+  "formulas": [
+   "=%s*2",
+   "=%s*3",
+   "=%s*7"
+  ],
+  "source": "pb_formula_studio/tests/test_rd46_person_preview.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "RD47"
+   ]
+  ],
+  "converted": {
+   "=1": "1"
+  },
+  "formulas": [
+   "=1"
+  ],
+  "source": "pb_formula_studio/tests/test_rd47_group_and_required.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "SGBASIC"
+   ],
+   [
+    "C",
+    "SGGROSS"
+   ]
+  ],
+  "converted": {
+   "=A1": "values.get('COLA', 0)",
+   "=A1*2": "values.get('COLA', 0)*2",
+   "=A1*3": "values.get('COLA', 0)*3"
+  },
+  "formulas": [
+   "=A1",
+   "=A1*2",
+   "=A1*3"
+  ],
+  "source": "pb_formula_studio/tests/test_scheme_gate.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "BASE"
+   ],
+   [
+    "D",
+    "EMPKEY"
+   ],
+   [
+    "E",
+    "GAP"
+   ],
+   [
+    "F",
+    "NONETPROBE"
+   ],
+   [
+    "G",
+    "PITGAP"
+   ],
+   [
+    "H",
+    "PROBECONST"
+   ],
+   [
+    "I",
+    "SALARYCAP"
+   ],
+   [
+    "J",
+    "STUDIOEXPERIENCE"
+   ],
+   [
+    "K",
+    "TAKEHOMELOCAL"
+   ]
+  ],
+  "converted": {
+   "=2": "2",
+   "=A1+1": "values.get('COLA', 0)+1",
+   "=IF(A1=\"0017\",B1,0)": "((values.get('COLB', 0)) if (self._streq(raw_values.get('COLA'), '0017')) else (0))"
+  },
+  "formulas": [
+   "=2",
+   "=A1+1",
+   "=IF(A1=\"0017\",B1,0)"
+  ],
+  "source": "pb_formula_studio/tests/test_studio_experience.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "BADTEXTMATH"
+   ],
+   [
+    "C",
+    "EMPKEY"
+   ],
+   [
+    "D",
+    "PTKPSTATUS"
+   ],
+   [
+    "E",
+    "TAXTEST"
+   ]
+  ],
+  "converted": {
+   "=A1+1": "values.get('COLA', 0)+1",
+   "=IF(A1=\"S/0\",100,\"Review tax status\")": "((100) if (self._streq(raw_values.get('COLA'), 'S/0')) else (\"Review tax status\"))",
+   "=SUM(IF(A1=\"S/0\",100,0))": "sum([((100) if (self._streq(raw_values.get('COLA'), 'S/0')) else (0))])"
+  },
+  "formulas": [
+   "=A1+1",
+   "=IF(A1=\"S/0\",100,\"Review tax status\")",
+   "=SUM(IF(A1=\"S/0\",100,0))"
+  ],
+  "source": "pb_formula_studio/tests/test_tax_input_preview.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "=ilike": "ilike"
+  },
+  "formulas": [
+   "=ilike"
+  ],
+  "source": "pb_hiring/tests/test_channels_p7.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "CONNECTER"
+   ],
+   [
+    "C",
+    "CONNECTGROSS"
+   ],
+   [
+    "D",
+    "CONNECTMISSING"
+   ]
+  ],
+  "converted": {
+   "=A1*0.1": "values.get('COLA', 0)*0.1"
+  },
+  "formulas": [
+   "=A1*0.1"
+  ],
+  "source": "pb_hiring/tests/test_connections.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "BASICPAY"
+   ],
+   [
+    "C",
+    "NETPAY"
+   ],
+   [
+    "D",
+    "PIT"
+   ],
+   [
+    "E",
+    "SIBASE"
+   ]
+  ],
+  "converted": {
+   "=A": "values.get('COLA', 0)"
+  },
+  "formulas": [
+   "=A"
+  ],
+  "source": "pb_hr_fullandfinal/tests/test_ready_to_check.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "APPFRACTION"
+   ],
+   [
+    "D",
+    "APPMODE"
+   ],
+   [
+    "E",
+    "APPNET"
+   ],
+   [
+    "F",
+    "APPOTHERTEST"
+   ],
+   [
+    "G",
+    "APPPAIDDAYS"
+   ],
+   [
+    "H",
+    "APPSOURCETEST"
+   ],
+   [
+    "I",
+    "BASIC"
+   ],
+   [
+    "J",
+    "OLDQTY"
+   ],
+   [
+    "K",
+    "OTHERPAY"
+   ],
+   [
+    "L",
+    "OTREPORT"
+   ],
+   [
+    "M",
+    "PROFILEDISPLAY"
+   ],
+   [
+    "N",
+    "PROFILEVALUE"
+   ],
+   [
+    "O",
+    "TRACEBONUS"
+   ],
+   [
+    "P",
+    "TRACEMODE"
+   ],
+   [
+    "Q",
+    "TRACENET"
+   ],
+   [
+    "R",
+    "TRACESALARY"
+   ],
+   [
+    "S",
+    "TRACESOURCEOTHER"
+   ]
+  ],
+  "converted": {
+   "=154217.112": "154217.112",
+   "=A2*100": "values.get('COLA', 0)*100",
+   "=B2-10": "values.get('COLB', 0)-10",
+   "=IF(APPMODE=1,APPPAIDDAYS,OLDQTY*100)": "((values.get('APPPAIDDAYS', 0)) if (values.get('APPMODE', 0)==1) else (values.get('OLDQTY', 0)*100))",
+   "=OLDQTY*2": "values.get('OLDQTY', 0)*2",
+   "=PROFILEVALUE": "values.get('PROFILEVALUE', 0)"
+  },
+  "formulas": [
+   "=154217.112",
+   "=A2*100",
+   "=B2-10",
+   "=IF(APPMODE=1,APPPAIDDAYS,OLDQTY*100)",
+   "=OLDQTY*2",
+   "=PROFILEVALUE"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_application_payroll_source.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "JOINDATE"
+   ],
+   [
+    "B",
+    "READERCOL"
+   ]
+  ],
+  "converted": {
+   "=%s*1": "%s*1",
+   "=JOINDATE": "values.get('JOINDATE', 0)"
+  },
+  "formulas": [
+   "=%s*1",
+   "=JOINDATE"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_bank_destinations.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "INCOME"
+   ],
+   [
+    "D",
+    "NOSUCHTAX"
+   ],
+   [
+    "E",
+    "OTHER"
+   ],
+   [
+    "F",
+    "TAXDUE"
+   ],
+   [
+    "G",
+    "TESTTAX"
+   ]
+  ],
+  "converted": {
+   "=A1+B1": "values.get('COLA', 0)+values.get('COLB', 0)",
+   "=BRACKET(NOSUCHTAX,A1)": "BRACKET(values.get('NOSUCHTAX', 0),values.get('COLA', 0))",
+   "=BRACKET(OTHER,A1)": "BRACKET(values.get('OTHER', 0),values.get('COLA', 0))",
+   "=BRACKET(TESTTAX,A1)": "BRACKET(values.get('TESTTAX', 0),values.get('COLA', 0))",
+   "=WOBBLE(A1)": "WOBBLE(values.get('COLA', 0))"
+  },
+  "formulas": [
+   "=A1+B1",
+   "=BRACKET(NOSUCHTAX,A1)",
+   "=BRACKET(OTHER,A1)",
+   "=BRACKET(TESTTAX,A1)",
+   "=WOBBLE(A1)"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_bracket_lint.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "HOUSEALLOW"
+   ],
+   [
+    "D",
+    "HOUSEHIST"
+   ],
+   [
+    "E",
+    "HOUSINGALLOW"
+   ],
+   [
+    "F",
+    "MAPFIXRENAME"
+   ],
+   [
+    "G",
+    "MAPFIXSIB"
+   ]
+  ],
+  "converted": {
+   "=A1+B1": "values.get('COLA', 0)+values.get('COLB', 0)"
+  },
+  "formulas": [
+   "=A1+B1"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_code_rename.py"
+ },
+ {
+  "column_map": [
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "A",
+    "ACCOUNTNORPC"
+   ],
+   [
+    "B",
+    "ACCOUNTNOSKIP"
+   ],
+   [
+    "D",
+    "BANKACCTEXP"
+   ],
+   [
+    "E",
+    "BANKNAMEACC"
+   ],
+   [
+    "F",
+    "BANKNAMEDRY"
+   ],
+   [
+    "G",
+    "BANKNAMERPC"
+   ],
+   [
+    "H",
+    "BOUNDEDALLOW"
+   ],
+   [
+    "I",
+    "CODESUM"
+   ],
+   [
+    "J",
+    "DIVISIONEXP"
+   ],
+   [
+    "K",
+    "GASALLOWTEST"
+   ],
+   [
+    "L",
+    "GRADETEXT"
+   ],
+   [
+    "M",
+    "MANUALCOLUMN"
+   ],
+   [
+    "N",
+    "MSNVCOL"
+   ],
+   [
+    "O",
+    "PAYASUM"
+   ],
+   [
+    "P",
+    "PAYBSUM"
+   ],
+   [
+    "Q",
+    "PERSONNELNUM"
+   ],
+   [
+    "R",
+    "STAFFNOEXP"
+   ]
+  ],
+  "converted": {
+   "=C3": "values.get('COLC', 0)"
+  },
+  "formulas": [
+   "=C3"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_column_roles.py"
+ },
+ {
+  "column_map": [
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "J",
+    "COLJ"
+   ],
+   [
+    "A",
+    "LARGECAP"
+   ],
+   [
+    "C",
+    "MAPPEDRATE"
+   ],
+   [
+    "E",
+    "TESTTER"
+   ]
+  ],
+  "converted": {
+   "=ROUND(SUM(IF(AND(J30=\"S/0\",B30>0),B30,0)),0)": "self._round(sum([((values.get('COLB', 0)) if (all([self._streq(raw_values.get('COLJ'), 'S/0'),values.get('COLB', 0)>0])) else (0))]),0)",
+   "=ROUND(SUM(IF(D7=\"S/0\",IF(B7<=$B$1,B7*$B$2,B7*$B$4),0)),0)": "self._round(sum([((((values.get('COLB', 0)*values.get('COLB', 0)) if (values.get('COLB', 0)<=values.get('COLB', 0)) else (values.get('COLB', 0)*values.get('COLB', 0)))) if (self._streq(raw_values.get('COLD'), 'S/0')) else (0))]),0)",
+   "=ROUND(SUM(IF(D8=\"S/0\",IF(B8<=$B$1,B8*$B$2,B8*$B$4),0)),0)": "self._round(sum([((((values.get('COLB', 0)*values.get('COLB', 0)) if (values.get('COLB', 0)<=values.get('COLB', 0)) else (values.get('COLB', 0)*values.get('COLB', 0)))) if (self._streq(raw_values.get('COLD'), 'S/0')) else (0))]),0)",
+   "=SUM(IF(J30=\"S/0\",B30,0))+J30*2": "sum([((values.get('COLB', 0)) if (self._streq(raw_values.get('COLJ'), 'S/0')) else (0))])+values.get('COLJ', 0)*2"
+  },
+  "formulas": [
+   "=ROUND(SUM(IF(AND(J30=\"S/0\",B30>0),B30,0)),0)",
+   "=ROUND(SUM(IF(D7=\"S/0\",IF(B7<=$B$1,B7*$B$2,B7*$B$4),0)),0)",
+   "=ROUND(SUM(IF(D8=\"S/0\",IF(B8<=$B$1,B8*$B$2,B8*$B$4),0)),0)",
+   "=SUM(IF(J30=\"S/0\",B30,0))+J30*2"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_country_tax_mapping.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "FIFLAG"
+   ],
+   [
+    "B",
+    "FIP1OTHER"
+   ],
+   [
+    "C",
+    "FIP1SCHEME"
+   ]
+  ],
+  "converted": {
+   "=No": "No"
+  },
+  "formulas": [
+   "=No"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_fillin_p1.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "L",
+    "COLL"
+   ],
+   [
+    "M",
+    "COLM"
+   ],
+   [
+    "ZZ",
+    "COLZZ"
+   ]
+  ],
+  "converted": {
+   "=\"x\"": "\"x\"",
+   "=IF(C2=\"\",1,0)": "((1) if (self._isblank_value(raw_values.get('COLC'))) else (0))",
+   "=IF(C2=\"%s\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), '%s')) else (0))",
+   "=IF(C2=\"Analyst (Payroll\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'Analyst (Payroll')) else (0))",
+   "=IF(C2=\"Analyst (Payroll)\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'Analyst (Payroll)')) else (0))",
+   "=IF(C2=\"Band C+\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'Band C+')) else (0))",
+   "=IF(C2=\"Export – Sales\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'Export – Sales')) else (0))",
+   "=IF(C2=\"Export – Sales\",L2 – M2,0)": "((values.get('COLL', 0) – values.get('COLM', 0)) if (self._streq(raw_values.get('COLC'), 'Export – Sales')) else (0))",
+   "=IF(C2=\"Grade A++\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'Grade A++')) else (0))",
+   "=IF(C2=\"Head of \"\"Special\"\" Projects\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'Head of ')\"Special\"\" Projects\") else (0))",
+   "=IF(C2=\"PAYROLL(Senior)\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'PAYROLL(Senior)')) else (0))",
+   "=IF(C2=\"Trainee ()\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'Trainee ()')) else (0))",
+   "=IF(C2=\"ZZ99 Warehouse\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'ZZ99 Warehouse')) else (0))",
+   "=IF(C2=\"a\"&\"b\",1,0)": "<ERROR ValueError: Excel '&' text concatenation is not supported yet — rewrite the formula without '&'.>",
+   "=IF(C2=\"a\",1,0)": "((1) if (self._streq(raw_values.get('COLC'), 'a')) else (0))",
+   "=IF(C2=\"oops,L2,0)": "((L2) if (values.get('COLC', 0)==\"oops) else (0))",
+   "=IF(OR(C2=\"Junior Agronomist\",C2=\"Research Agronomist\",C2=\"Senior Agronomist\",C2=\"Supply Chain Specialist\",C2=\"Compliance Officer – Export & Sustainability\"),ROUND((800000/L2)*M2,0),IF(C2=\"Territory Manager\", ROUND((960000/L2)*M2,0),0))": "((self._round((800000/values.get('COLL', 0))*values.get('COLM', 0),0)) if (any([self._streq(raw_values.get('COLC'), 'Junior Agronomist'),self._streq(raw_values.get('COLC'), 'Research Agronomist'),self._streq(raw_values.get('COLC'), 'Senior Agronomist'),self._streq(raw_values.get('COLC'), 'Supply Chain Specialist'),self._streq(raw_values.get('COLC'), 'Compliance Officer – Export & Sustainability')])) else (((self._round((960000/values.get('COLL', 0))*values.get('COLM', 0),0)) if (self._streq(raw_values.get('COLC'), 'Territory Manager')) else (0))))",
+   "=L2 – M2": "values.get('COLL', 0) – values.get('COLM', 0)",
+   "=L2**M2": "values.get('COLL', 0)**values.get('COLM', 0)",
+   "=L2+M2": "values.get('COLL', 0)+values.get('COLM', 0)",
+   "=ROUND((800000/L2)*M2,0": "self._round((800000/values.get('COLL', 0))*values.get('COLM', 0),0",
+   "=ROUND((800000/L2)*M2,0)": "self._round((800000/values.get('COLL', 0))*values.get('COLM', 0),0)",
+   "=SUM(A2:C2)": "sum([values.get('COLA', 0), values.get('B', 0), values.get('COLC', 0)])",
+   "=XLOOKUP(C2,L2,M2)": "XLOOKUP(values.get('COLC', 0),values.get('COLL', 0),values.get('COLM', 0))",
+   "=ZZ2+L2": "values.get('COLZZ', 0)+values.get('COLL', 0)"
+  },
+  "formulas": [
+   "=\"x\"",
+   "=IF(C2=\"\",1,0)",
+   "=IF(C2=\"%s\",1,0)",
+   "=IF(C2=\"Analyst (Payroll\",1,0)",
+   "=IF(C2=\"Analyst (Payroll)\",1,0)",
+   "=IF(C2=\"Band C+\",1,0)",
+   "=IF(C2=\"Export – Sales\",1,0)",
+   "=IF(C2=\"Export – Sales\",L2 – M2,0)",
+   "=IF(C2=\"Grade A++\",1,0)",
+   "=IF(C2=\"Head of \"\"Special\"\" Projects\",1,0)",
+   "=IF(C2=\"PAYROLL(Senior)\",1,0)",
+   "=IF(C2=\"Trainee ()\",1,0)",
+   "=IF(C2=\"ZZ99 Warehouse\",1,0)",
+   "=IF(C2=\"a\"&\"b\",1,0)",
+   "=IF(C2=\"a\",1,0)",
+   "=IF(C2=\"oops,L2,0)",
+   "=IF(OR(C2=\"Junior Agronomist\",C2=\"Research Agronomist\",C2=\"Senior Agronomist\",C2=\"Supply Chain Specialist\",C2=\"Compliance Officer – Export & Sustainability\"),ROUND((800000/L2)*M2,0),IF(C2=\"Territory Manager\", ROUND((960000/L2)*M2,0),0))",
+   "=L2 – M2",
+   "=L2**M2",
+   "=L2+M2",
+   "=ROUND((800000/L2)*M2,0",
+   "=ROUND((800000/L2)*M2,0)",
+   "=SUM(A2:C2)",
+   "=XLOOKUP(C2,L2,M2)",
+   "=ZZ2+L2"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_formula_string_literals.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "J9MIGSEALED"
+   ],
+   [
+    "B",
+    "NETPAY"
+   ],
+   [
+    "C",
+    "SITEBONUS"
+   ],
+   [
+    "D",
+    "SITEBONUSB"
+   ]
+  ],
+  "converted": {
+   "=SITEBONUS": "values.get('SITEBONUS', 0)"
+  },
+  "formulas": [
+   "=SITEBONUS"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_journey_j9_sources.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "JTEXTFALLBACK"
+   ],
+   [
+    "B",
+    "JTEXTREADER"
+   ],
+   [
+    "C",
+    "JTEXTVALUE"
+   ]
+  ],
+  "converted": {
+   "=IF(JTEXTVALUE=\"Stored\",1,0)": "((1) if (self._streq(raw_values.get('JTEXTVALUE'), 'Stored')) else (0))"
+  },
+  "formulas": [
+   "=IF(JTEXTVALUE=\"Stored\",1,0)"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_journey_text_readback.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "E",
+    "COLE"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "I",
+    "BASIC"
+   ],
+   [
+    "J",
+    "G"
+   ],
+   [
+    "K",
+    "GROSSAGG"
+   ],
+   [
+    "L",
+    "H"
+   ],
+   [
+    "M",
+    "LRNETWORDS"
+   ]
+  ],
+  "converted": {
+   "=A5+B5": "values.get('COLA', 0)+values.get('COLB', 0)",
+   "=C5-D5": "values.get('COLC', 0)-values.get('COLD', 0)",
+   "=E5+F5": "values.get('COLE', 0)+values.get('COLF', 0)",
+   "=ROUND(A5*0.175,0)": "self._round(values.get('COLA', 0)*0.175,0)"
+  },
+  "formulas": [
+   "=A5+B5",
+   "=C5-D5",
+   "=E5+F5",
+   "=ROUND(A5*0.175,0)"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_learnrev_net_words.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "E",
+    "COLE"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "G",
+    "COLG"
+   ],
+   [
+    "H",
+    "COLH"
+   ],
+   [
+    "I",
+    "COLI"
+   ],
+   [
+    "J",
+    "COLJ"
+   ],
+   [
+    "K",
+    "COLK"
+   ],
+   [
+    "L",
+    "COLL"
+   ],
+   [
+    "M",
+    "COLM"
+   ],
+   [
+    "N",
+    "COLN"
+   ],
+   [
+    "Q",
+    "ALPHAONE"
+   ],
+   [
+    "R",
+    "BASE"
+   ],
+   [
+    "S",
+    "BASIC"
+   ],
+   [
+    "T",
+    "BETATWO"
+   ],
+   [
+    "U",
+    "CYCONE"
+   ],
+   [
+    "V",
+    "DEDAGG"
+   ],
+   [
+    "W",
+    "NEGADD"
+   ],
+   [
+    "X",
+    "NETPAY"
+   ],
+   [
+    "Y",
+    "NETROLECYCLE"
+   ],
+   [
+    "Z",
+    "NETROLEMINI"
+   ],
+   [
+    "AA",
+    "NETROLENONET"
+   ],
+   [
+    "AB",
+    "O"
+   ],
+   [
+    "AC",
+    "ONLYBASE"
+   ],
+   [
+    "AD",
+    "OTH"
+   ],
+   [
+    "AE",
+    "P"
+   ],
+   [
+    "AF",
+    "PLUSMINUS"
+   ],
+   [
+    "AG",
+    "REFUND"
+   ],
+   [
+    "AH",
+    "SCALEDONLY"
+   ],
+   [
+    "AI",
+    "SENTNET"
+   ],
+   [
+    "AJ",
+    "SIAMT"
+   ],
+   [
+    "AK",
+    "TWOINNET"
+   ],
+   [
+    "AL",
+    "TWONETS"
+   ]
+  ],
+  "converted": {
+   "=A5": "values.get('COLA', 0)",
+   "=A5*0.9": "values.get('COLA', 0)*0.9",
+   "=A5*2": "values.get('COLA', 0)*2",
+   "=A5+1": "values.get('COLA', 0)+1",
+   "=A5+B5": "values.get('COLA', 0)+values.get('COLB', 0)",
+   "=A5+B5+C5": "values.get('COLA', 0)+values.get('COLB', 0)+values.get('COLC', 0)",
+   "=A5-B5": "values.get('COLA', 0)-values.get('COLB', 0)",
+   "=B5+1": "values.get('COLB', 0)+1",
+   "=C5+B5": "values.get('COLC', 0)+values.get('COLB', 0)",
+   "=C5-B5": "values.get('COLC', 0)-values.get('COLB', 0)",
+   "=C5-D5": "values.get('COLC', 0)-values.get('COLD', 0)",
+   "=D5": "values.get('COLD', 0)",
+   "=D5+C5": "values.get('COLD', 0)+values.get('COLC', 0)",
+   "=D5-I5+J5+L5": "values.get('COLD', 0)-values.get('COLI', 0)+values.get('COLJ', 0)+values.get('COLL', 0)",
+   "=E5": "values.get('COLE', 0)",
+   "=E5+F5": "values.get('COLE', 0)+values.get('COLF', 0)",
+   "=G5+H5": "values.get('COLG', 0)+values.get('COLH', 0)",
+   "=IF(B5>0,K5,0-K5)": "((values.get('COLK', 0)) if (values.get('COLB', 0)>0) else (0-values.get('COLK', 0)))",
+   "=M5+N5": "values.get('COLM', 0)+values.get('COLN', 0)",
+   "=MIN(A5,E5)": "min([values.get('COLA', 0),values.get('COLE', 0)])",
+   "=ROUND(F5*0.105,0)": "self._round(values.get('COLF', 0)*0.105,0)",
+   "=ROUND(F5*0.175,0)": "self._round(values.get('COLF', 0)*0.175,0)",
+   "=SUM(A5:C5)": "sum([values.get('COLA', 0), values.get('COLB', 0), values.get('COLC', 0)])"
+  },
+  "formulas": [
+   "=A5",
+   "=A5*0.9",
+   "=A5*2",
+   "=A5+1",
+   "=A5+B5",
+   "=A5+B5+C5",
+   "=A5-B5",
+   "=B5+1",
+   "=C5+B5",
+   "=C5-B5",
+   "=C5-D5",
+   "=D5",
+   "=D5+C5",
+   "=D5-I5+J5+L5",
+   "=E5",
+   "=E5+F5",
+   "=G5+H5",
+   "=IF(B5>0,K5,0-K5)",
+   "=M5+N5",
+   "=MIN(A5,E5)",
+   "=ROUND(F5*0.105,0)",
+   "=ROUND(F5*0.175,0)",
+   "=SUM(A5:C5)"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_net_role_classifier.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "E",
+    "COLE"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "G",
+    "COLG"
+   ],
+   [
+    "H",
+    "COLH"
+   ],
+   [
+    "I",
+    "COLI"
+   ],
+   [
+    "K",
+    "BASESALARY"
+   ],
+   [
+    "L",
+    "BASIC"
+   ],
+   [
+    "M",
+    "J"
+   ],
+   [
+    "N",
+    "NETROLEQTY"
+   ],
+   [
+    "O",
+    "STANWORKHOUR"
+   ]
+  ],
+  "converted": {
+   "=F5+E5+G5": "values.get('COLF', 0)+values.get('COLE', 0)+values.get('COLG', 0)",
+   "=H5-I5": "values.get('COLH', 0)-values.get('COLI', 0)",
+   "=IF(C5=0,0,($A5/$B5*D5*210%))": "((0) if (values.get('COLC', 0)==0) else ((values.get('COLA', 0)/values.get('COLB', 0)*values.get('COLD', 0)*(210/100))))",
+   "=ROUND(A5/B5*C5,0)": "self._round(values.get('COLA', 0)/values.get('COLB', 0)*values.get('COLC', 0),0)"
+  },
+  "formulas": [
+   "=F5+E5+G5",
+   "=H5-I5",
+   "=IF(C5=0,0,($A5/$B5*D5*210%))",
+   "=ROUND(A5/B5*C5,0)"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_net_role_quantity.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "BONUS13"
+   ],
+   [
+    "B",
+    "DEPS"
+   ],
+   [
+    "C",
+    "PAYMONTH"
+   ],
+   [
+    "D",
+    "PPSCHEME"
+   ]
+  ],
+  "converted": {
+   "=IF(PAYMONTH=12,5000000,0)": "((5000000) if (values.get('PAYMONTH', 0)==12) else (0))"
+  },
+  "formulas": [
+   "=IF(PAYMONTH=12,5000000,0)"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_pay_period_source.py"
+ },
+ {
+  "column_map": [
+   [
+    "ZX",
+    "COLZX"
+   ],
+   [
+    "ZY",
+    "COLZY"
+   ],
+   [
+    "A",
+    "APPPAIDDAYS"
+   ],
+   [
+    "B",
+    "BASE"
+   ],
+   [
+    "C",
+    "CHOICEMETHOD"
+   ],
+   [
+    "D",
+    "CHOICERESULT"
+   ],
+   [
+    "E",
+    "DIVZERO"
+   ],
+   [
+    "F",
+    "LATER"
+   ],
+   [
+    "G",
+    "NESTED"
+   ],
+   [
+    "H",
+    "OPTIONALINTEGER"
+   ],
+   [
+    "I",
+    "OPTIONALMONEY"
+   ],
+   [
+    "J",
+    "OPTIONALQUANTITY"
+   ],
+   [
+    "K",
+    "OPTIONALRATE"
+   ],
+   [
+    "L",
+    "OPTIONALTOTAL"
+   ],
+   [
+    "M",
+    "OTHERPAYMENT"
+   ],
+   [
+    "N",
+    "PDRECHO"
+   ],
+   [
+    "O",
+    "PDREVAL"
+   ],
+   [
+    "P",
+    "PDRFINAL"
+   ],
+   [
+    "Q",
+    "PDRRECORD"
+   ],
+   [
+    "R",
+    "RATE"
+   ],
+   [
+    "S",
+    "REQUIREDAMOUNT"
+   ],
+   [
+    "T",
+    "REVIEWBONUS"
+   ],
+   [
+    "U",
+    "REVIEWCOMPONENT"
+   ],
+   [
+    "V",
+    "REVIEWDEPENDENTS"
+   ],
+   [
+    "W",
+    "REVIEWFLAG"
+   ],
+   [
+    "X",
+    "REVIEWOT"
+   ],
+   [
+    "Y",
+    "REVIEWRESULT"
+   ],
+   [
+    "Z",
+    "REVIEWSTANDARD"
+   ],
+   [
+    "AA",
+    "REVIEWWAGE"
+   ],
+   [
+    "AB",
+    "ROUNDED"
+   ],
+   [
+    "AC",
+    "SAFE"
+   ],
+   [
+    "AD",
+    "TEXTIN"
+   ],
+   [
+    "AE",
+    "WORDS"
+   ],
+   [
+    "AF",
+    "ZEROIN"
+   ]
+  ],
+  "converted": {
+   "=100+OPTIONALMONEY+OPTIONALQUANTITY+OPTIONALINTEGER+OPTIONALRATE": "100+values.get('OPTIONALMONEY', 0)+values.get('OPTIONALQUANTITY', 0)+values.get('OPTIONALINTEGER', 0)+values.get('OPTIONALRATE', 0)",
+   "=BASE/ZEROIN": "values.get('BASE', 0)/values.get('ZEROIN', 0)",
+   "=IF(APPPAIDDAYS<0,\"Review, days\",IF($ZX$2=\"Custom\",$ZY$2,42))": "((\"Review, days\") if (values.get('APPPAIDDAYS', 0)<0) else (((values.get('COLZY', 0)) if (self._streq(raw_values.get('COLZX'), 'Custom')) else (42))))",
+   "=IF(BASE>1000,IF(LATER>0,BASE*RATE,1),IF(TEXTIN=\"Alpha\",2,3))": "((((values.get('BASE', 0)*values.get('RATE', 0)) if (values.get('LATER', 0)>0) else (1))) if (values.get('BASE', 0)>1000) else (((2) if (self._streq(raw_values.get('TEXTIN'), 'Alpha')) else (3))))",
+   "=IF(TEXTIN=\"Alpha\",\"yes, sir (a, b)\",\"no, thanks\")": "((\"yes, sir (a, b)\") if (self._streq(raw_values.get('TEXTIN'), 'Alpha')) else (\"no, thanks\"))",
+   "=IFERROR(BASE/ZEROIN,7)": "self._iferror(lambda: (values.get('BASE', 0)/values.get('ZEROIN', 0)), (7))",
+   "=MAX(BASE-500,0)": "max([values.get('BASE', 0)-500,0])",
+   "=PDRFINAL*10+5": "values.get('PDRFINAL', 0)*10+5",
+   "=REVIEWBONUS*2": "values.get('REVIEWBONUS', 0)*2",
+   "=REVIEWBONUS+1": "values.get('REVIEWBONUS', 0)+1",
+   "=ROUND(NESTED+SAFE+DIVZERO,2)": "self._round(values.get('NESTED', 0)+values.get('SAFE', 0)+values.get('DIVZERO', 0),2)"
+  },
+  "formulas": [
+   "=100+OPTIONALMONEY+OPTIONALQUANTITY+OPTIONALINTEGER+OPTIONALRATE",
+   "=BASE/ZEROIN",
+   "=IF(APPPAIDDAYS<0,\"Review, days\",IF($ZX$2=\"Custom\",$ZY$2,42))",
+   "=IF(BASE>1000,IF(LATER>0,BASE*RATE,1),IF(TEXTIN=\"Alpha\",2,3))",
+   "=IF(TEXTIN=\"Alpha\",\"yes, sir (a, b)\",\"no, thanks\")",
+   "=IFERROR(BASE/ZEROIN,7)",
+   "=MAX(BASE-500,0)",
+   "=PDRFINAL*10+5",
+   "=REVIEWBONUS*2",
+   "=REVIEWBONUS+1",
+   "=ROUND(NESTED+SAFE+DIVZERO,2)"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_payroll_preparation.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "PDRP2CONTRACT"
+   ],
+   [
+    "B",
+    "PDRP2WORDS"
+   ],
+   [
+    "C",
+    "PWALLOW"
+   ],
+   [
+    "D",
+    "PWBONUS"
+   ],
+   [
+    "E",
+    "PWBPJS"
+   ],
+   [
+    "F",
+    "PWFINAL"
+   ],
+   [
+    "G",
+    "PWMODE"
+   ],
+   [
+    "H",
+    "PWUSE"
+   ],
+   [
+    "I",
+    "Y"
+   ],
+   [
+    "J",
+    "YES"
+   ]
+  ],
+  "converted": {
+   "=PWFINAL*100+PWMODE*10+PWBONUS": "values.get('PWFINAL', 0)*100+values.get('PWMODE', 0)*10+values.get('PWBONUS', 0)"
+  },
+  "formulas": [
+   "=PWFINAL*100+PWMODE*10+PWBONUS"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_pdr_p2_words.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "NOPE([v])": "NOPE([v])",
+   "[totalWorkedHours]/3600 + HOURS([paidLeaveHours])": "[totalWorkedHours]/3600 + HOURS([paidLeaveHours])",
+   "[v]": "[v]",
+   "[v] + NOPE([v])": "[v] + NOPE([v])"
+  },
+  "formulas": [
+   "NOPE([v])",
+   "[totalWorkedHours]/3600 + HOURS([paidLeaveHours])",
+   "[v]",
+   "[v] + NOPE([v])"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_rule_composer.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "IFERROR([LOPDays]/[stddays], 0)": "self._iferror(lambda: ([LOPDays]/[stddays]), (0))",
+   "[Actual_Pay_Hour]": "[Actual_Pay_Hour]",
+   "[stddays]": "[stddays]"
+  },
+  "formulas": [
+   "IFERROR([LOPDays]/[stddays], 0)",
+   "[Actual_Pay_Hour]",
+   "[stddays]"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_runsrc_pd_transformations.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "SCBASIC"
+   ],
+   [
+    "C",
+    "SCBRANCH"
+   ],
+   [
+    "D",
+    "SCGROSS"
+   ],
+   [
+    "E",
+    "SCWORK"
+   ]
+  ],
+  "converted": {
+   "=A1": "values.get('COLA', 0)",
+   "=A1*2": "values.get('COLA', 0)*2",
+   "=A1*3": "values.get('COLA', 0)*3",
+   "=A1+1": "values.get('COLA', 0)+1",
+   "=A1+99": "values.get('COLA', 0)+99"
+  },
+  "formulas": [
+   "=A1",
+   "=A1*2",
+   "=A1*3",
+   "=A1+1",
+   "=A1+99"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_scheme_proposal.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "E",
+    "COLE"
+   ],
+   [
+    "I",
+    "BASICT"
+   ],
+   [
+    "J",
+    "F"
+   ],
+   [
+    "K",
+    "G"
+   ],
+   [
+    "L",
+    "H"
+   ],
+   [
+    "M",
+    "NAMET"
+   ],
+   [
+    "N",
+    "NETPAYT"
+   ],
+   [
+    "O",
+    "TAXT"
+   ]
+  ],
+  "converted": {
+   "=A5+B5": "values.get('COLA', 0)+values.get('COLB', 0)",
+   "=C2-D2": "values.get('COLC', 0)-values.get('COLD', 0)",
+   "=C5-D5": "values.get('COLC', 0)-values.get('COLD', 0)",
+   "=D%d-E%d": "values.get('COLD', 0)%d-values.get('COLE', 0)%d"
+  },
+  "formulas": [
+   "=A5+B5",
+   "=C2-D2",
+   "=C5-D5",
+   "=D%d-E%d"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_treatment_classification.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "AB",
+    "COLAB"
+   ],
+   [
+    "AD",
+    "COLAD"
+   ],
+   [
+    "AE",
+    "COLAE"
+   ],
+   [
+    "AS",
+    "COLAS"
+   ],
+   [
+    "AX",
+    "COLAX"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "BM",
+    "COLBM"
+   ],
+   [
+    "BS",
+    "COLBS"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "X",
+    "COLX"
+   ],
+   [
+    "E",
+    "BASESALARY"
+   ],
+   [
+    "G",
+    "FULLNAME"
+   ]
+  ],
+  "converted": {
+   "=A1+B1+C1+D1": "values.get('COLA', 0)+values.get('COLB', 0)+values.get('COLC', 0)+values.get('COLD', 0)",
+   "=DATE(2026,1,1)": "DATE(2026,1,1)",
+   "=IF(": "self._if(",
+   "=IF(A1=\"a+b\",1,2)": "((1) if (self._streq(raw_values.get('COLA'), 'a+b')) else (2))",
+   "=IF(A2=\"YES\",100,0)": "((100) if (self._streq(raw_values.get('COLA'), 'YES')) else (0))",
+   "=IF(A2>0,\"YES\",\"NO\")": "((\"YES\") if (values.get('COLA', 0)>0) else (\"NO\"))",
+   "=IF(F5=\"La Nga\",0,(X5/AB5*AD5))": "((0) if (self._streq(raw_values.get('COLF'), 'La Nga')) else ((values.get('COLX', 0)/values.get('COLAB', 0)*values.get('COLAD', 0))))",
+   "=IF(F5=\"La Nga\",0,IF(F5=\"HCM\",IF(AS5=\"YES\",IF($BS5>0,45000))))": "((0) if (self._streq(raw_values.get('COLF'), 'La Nga')) else (((((((45000) if (values.get('COLBS', 0)>0) else (0))) if (self._streq(raw_values.get('COLAS'), 'YES')) else (0))) if (self._streq(raw_values.get('COLF'), 'HCM')) else (0))))",
+   "=IF(F5=\"X\",0,A1*2)": "((0) if (self._streq(raw_values.get('COLF'), 'X')) else (values.get('COLA', 0)*2))",
+   "=LEFT(FULLNAME,3)": "LEFT(values.get('FULLNAME', 0),3)",
+   "=ROUND(BASESALARY*0.105,0)": "self._round(values.get('BASESALARY', 0)*0.105,0)",
+   "=SUM(AE5:AX5)+BM5": "sum([values.get('COLAE', 0), values.get('AF', 0), values.get('AG', 0), values.get('AH', 0), values.get('AI', 0), values.get('AJ', 0), values.get('AK', 0), values.get('AL', 0), values.get('AM', 0), values.get('AN', 0), values.get('AO', 0), values.get('AP', 0), values.get('AQ', 0), values.get('AR', 0), values.get('COLAS', 0), values.get('AT', 0), values.get('AU', 0), values.get('AV', 0), values.get('AW', 0), values.get('COLAX', 0)])+values.get('COLBM', 0)",
+   "=TEXT(A2,\"000\")": "TEXT(values.get('COLA', 0),\"000\")",
+   "=TEXT(A2,\"000\")+1": "TEXT(values.get('COLA', 0),\"000\")+1"
+  },
+  "formulas": [
+   "=A1+B1+C1+D1",
+   "=DATE(2026,1,1)",
+   "=IF(",
+   "=IF(A1=\"a+b\",1,2)",
+   "=IF(A2=\"YES\",100,0)",
+   "=IF(A2>0,\"YES\",\"NO\")",
+   "=IF(F5=\"La Nga\",0,(X5/AB5*AD5))",
+   "=IF(F5=\"La Nga\",0,IF(F5=\"HCM\",IF(AS5=\"YES\",IF($BS5>0,45000))))",
+   "=IF(F5=\"X\",0,A1*2)",
+   "=LEFT(FULLNAME,3)",
+   "=ROUND(BASESALARY*0.105,0)",
+   "=SUM(AE5:AX5)+BM5",
+   "=TEXT(A2,\"000\")",
+   "=TEXT(A2,\"000\")+1"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_value_kind_classifier.py"
+ },
+ {
+  "column_map": [
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "E",
+    "COLE"
+   ],
+   [
+    "A",
+    "APPRSTATUS"
+   ],
+   [
+    "C",
+    "MARITALSTAT"
+   ],
+   [
+    "D",
+    "RESIDENCSTAT"
+   ],
+   [
+    "F",
+    "VKFRESH"
+   ],
+   [
+    "G",
+    "VKNOSIGNAL"
+   ],
+   [
+    "H",
+    "VKSCHEME"
+   ]
+  ],
+  "converted": {
+   "=IF(B5=\"La Nga\",0,E5*0.1)": "((0) if (self._streq(raw_values.get('COLB'), 'La Nga')) else (values.get('COLE', 0)*0.1))"
+  },
+  "formulas": [
+   "=IF(B5=\"La Nga\",0,E5*0.1)"
+  ],
+  "source": "pb_hr_payroll_formula/tests/test_value_kinds.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "AA",
+    "COLAA"
+   ],
+   [
+    "AAA",
+    "COLAAA"
+   ],
+   [
+    "AB",
+    "COLAB"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "X",
+    "COLX"
+   ]
+  ],
+  "converted": {
+   "=$AA$11*2": "values.get('COLAA', 0)*2",
+   "=$AA$2*2": "values.get('COLAA', 0)*2",
+   "=$B$2+C$2+$D2": "values.get('COLB', 0)+values.get('COLC', 0)+values.get('COLD', 0)",
+   "=$B$5+C$5+$D5": "values.get('COLB', 0)+values.get('COLC', 0)+values.get('COLD', 0)",
+   "=-MAX(0,IF((A2)>=5000000,0.1*((A2)-5000000),0.05*(A2)))": "-max([0,((0.1*(values.get('COLA', 0)-5000000)) if (values.get('COLA', 0)>=5000000) else (0.05*values.get('COLA', 0)))])",
+   "=-MAX(0,IF((A3)>=5000000,0.1*((A3)-5000000),0.05*(A3)))": "-max([0,((0.1*(values.get('COLA', 0)-5000000)) if (values.get('COLA', 0)>=5000000) else (0.05*values.get('COLA', 0)))])",
+   "=A2+AB2": "values.get('COLA', 0)+values.get('COLAB', 0)",
+   "=A2+AB2*X2": "values.get('COLA', 0)+values.get('COLAB', 0)*values.get('COLX', 0)",
+   "=A2+B2": "values.get('COLA', 0)+values.get('COLB', 0)",
+   "=A2+MAX(AB2,5000)*X2": "values.get('COLA', 0)+max([values.get('COLAB', 0),5000])*values.get('COLX', 0)",
+   "=A3+AB3": "values.get('COLA', 0)+values.get('COLAB', 0)",
+   "=A4+AB4": "values.get('COLA', 0)+values.get('COLAB', 0)",
+   "=A7+MAX(AB7,5000)*X7": "values.get('COLA', 0)+max([values.get('COLAB', 0),5000])*values.get('COLX', 0)",
+   "=B2*C2": "values.get('COLB', 0)*values.get('COLC', 0)",
+   "=B2*C2-D2": "values.get('COLB', 0)*values.get('COLC', 0)-values.get('COLD', 0)",
+   "=B5*C5": "values.get('COLB', 0)*values.get('COLC', 0)",
+   "=B5*C5-D5": "values.get('COLB', 0)*values.get('COLC', 0)-values.get('COLD', 0)",
+   "=CONCATENATE(\"A2\",B2)": "CONCATENATE(\"A2\",values.get('COLB', 0))",
+   "=CONCATENATE(\"A2\",B4)": "CONCATENATE(\"A2\",values.get('COLB', 0))",
+   "=IF($B$2>0,C2,D2)": "((values.get('COLC', 0)) if (values.get('COLB', 0)>0) else (values.get('COLD', 0)))",
+   "=IF(A2=\"X2\",B2,C2)": "((values.get('COLB', 0)) if (self._streq(raw_values.get('COLA'), 'X2')) else (values.get('COLC', 0)))",
+   "=IF(A2='row5',B2,0)": "((values.get('COLB', 0)) if (self._streq(raw_values.get('COLA'), 'row5')) else (0))",
+   "=IF(A2>5000000,AAA2*0.1,B2)": "((values.get('COLAAA', 0)*0.1) if (values.get('COLA', 0)>5000000) else (values.get('COLB', 0)))",
+   "=IF(A3='row5',B3,0)": "((values.get('COLB', 0)) if (self._streq(raw_values.get('COLA'), 'row5')) else (0))",
+   "=IF(A5=\"X2\",B5,C5)": "((values.get('COLB', 0)) if (self._streq(raw_values.get('COLA'), 'X2')) else (values.get('COLC', 0)))",
+   "=IF(A9>5000000,AAA9*0.1,B9)": "((values.get('COLAAA', 0)*0.1) if (values.get('COLA', 0)>5000000) else (values.get('COLB', 0)))",
+   "=MIN(A2,B2)+MAX(C2,D2)": "min([values.get('COLA', 0),values.get('COLB', 0)])+max([values.get('COLC', 0),values.get('COLD', 0)])",
+   "=MIN(A8,B8)+MAX(C8,D8)": "min([values.get('COLA', 0),values.get('COLB', 0)])+max([values.get('COLC', 0),values.get('COLD', 0)])",
+   "=ROUND(A2/B2,2)": "self._round(values.get('COLA', 0)/values.get('COLB', 0),2)",
+   "=ROUND(A6/B6,2)": "self._round(values.get('COLA', 0)/values.get('COLB', 0),2)",
+   "=ROUND(MIN(A2,B2)*0.1,0)": "self._round(min([values.get('COLA', 0),values.get('COLB', 0)])*0.1,0)"
+  },
+  "formulas": [
+   "=$AA$11*2",
+   "=$AA$2*2",
+   "=$B$2+C$2+$D2",
+   "=$B$5+C$5+$D5",
+   "=-MAX(0,IF((A2)>=5000000,0.1*((A2)-5000000),0.05*(A2)))",
+   "=-MAX(0,IF((A3)>=5000000,0.1*((A3)-5000000),0.05*(A3)))",
+   "=A2+AB2",
+   "=A2+AB2*X2",
+   "=A2+B2",
+   "=A2+MAX(AB2,5000)*X2",
+   "=A3+AB3",
+   "=A4+AB4",
+   "=A7+MAX(AB7,5000)*X7",
+   "=B2*C2",
+   "=B2*C2-D2",
+   "=B5*C5",
+   "=B5*C5-D5",
+   "=CONCATENATE(\"A2\",B2)",
+   "=CONCATENATE(\"A2\",B4)",
+   "=IF($B$2>0,C2,D2)",
+   "=IF(A2=\"X2\",B2,C2)",
+   "=IF(A2='row5',B2,0)",
+   "=IF(A2>5000000,AAA2*0.1,B2)",
+   "=IF(A3='row5',B3,0)",
+   "=IF(A5=\"X2\",B5,C5)",
+   "=IF(A9>5000000,AAA9*0.1,B9)",
+   "=MIN(A2,B2)+MAX(C2,D2)",
+   "=MIN(A8,B8)+MAX(C8,D8)",
+   "=ROUND(A2/B2,2)",
+   "=ROUND(A6/B6,2)",
+   "=ROUND(MIN(A2,B2)*0.1,0)"
+  ],
+  "source": "pb_hr_payroll_formula/tools/cell_refs_battery.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "E",
+    "COLE"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "G",
+    "COLG"
+   ],
+   [
+    "H",
+    "COLH"
+   ],
+   [
+    "OT",
+    "COLOT"
+   ],
+   [
+    "I",
+    "BASE"
+   ]
+  ],
+  "converted": {
+   "=\"A\"&B1": "<ERROR ValueError: Excel '&' text concatenation is not supported yet — rewrite the formula without '&'.>",
+   "=\"VN\"&\"1\"": "<ERROR ValueError: Excel '&' text concatenation is not supported yet — rewrite the formula without '&'.>",
+   "=$A$1*2": "values.get('COLA', 0)*2",
+   "=(A1+B1)*2": "(values.get('COLA', 0)+values.get('COLB', 0))*2",
+   "=(A1>50)*10": "(values.get('COLA', 0)>50)*10",
+   "=(B1)": "values.get('COLB', 0)",
+   "=-A1+5": "-values.get('COLA', 0)+5",
+   "=A1*2": "values.get('COLA', 0)*2",
+   "=A1*8%": "values.get('COLA', 0)*(8/100)",
+   "=A1*8.5%": "values.get('COLA', 0)*(8.5/100)",
+   "=A1*B1+C1": "values.get('COLA', 0)*values.get('COLB', 0)+values.get('COLC', 0)",
+   "=A1/B1*C1": "values.get('COLA', 0)/values.get('COLB', 0)*values.get('COLC', 0)",
+   "=A1^2": "values.get('COLA', 0)**2",
+   "=ABS(A1)": "abs(values.get('COLA', 0))",
+   "=AVERAGE(A1:C1)": "self._avg([values.get('COLA', 0), values.get('COLB', 0), values.get('COLC', 0)])",
+   "=B1^3": "values.get('COLB', 0)**3",
+   "=BASE*0.1+B1": "values.get('BASE', 0)*0.1+values.get('COLB', 0)",
+   "=CEILING(A1+47,100)": "self._ceiling(values.get('COLA', 0)+47,100)",
+   "=FLOOR(147,100)": "self._floor(147,100)",
+   "=IF(A1>50,7)": "((7) if (values.get('COLA', 0)>50) else (0))",
+   "=IF(A1>50,IF(B1>1,5,6),7)": "((((5) if (values.get('COLB', 0)>1) else (6))) if (values.get('COLA', 0)>50) else (7))",
+   "=IF(A1>50,TRUE,FALSE)": "((True) if (values.get('COLA', 0)>50) else (False))",
+   "=IF(A1>50,TRUE,FALSE)*5": "((True) if (values.get('COLA', 0)>50) else (False))*5",
+   "=IF(AND(A1>50,B1>1),1,0)": "((1) if (all([values.get('COLA', 0)>50,values.get('COLB', 0)>1])) else (0))",
+   "=IF(B1<>2,10,20)": "((10) if (values.get('COLB', 0)!=2) else (20))",
+   "=IF(B1=0,0,A1/B1)": "((0) if (values.get('COLB', 0)==0) else (values.get('COLA', 0)/values.get('COLB', 0)))",
+   "=IF(B1=0,999,A1/B1)": "((999) if (values.get('COLB', 0)==0) else (values.get('COLA', 0)/values.get('COLB', 0)))",
+   "=IF(B1=2,10,20)": "((10) if (values.get('COLB', 0)==2) else (20))",
+   "=IF(B1>1.5,A1*75%,A1*50%)": "((values.get('COLA', 0)*(75/100)) if (values.get('COLB', 0)>1.5) else (values.get('COLA', 0)*(50/100)))",
+   "=IF(B1>=2,1,0)": "((1) if (values.get('COLB', 0)>=2) else (0))",
+   "=IF(D1<>\"\",1,0)": "((1) if ((not self._isblank_value(raw_values.get('COLD')))) else (0))",
+   "=IF(D1=\"\",1,0)": "((1) if (self._isblank_value(raw_values.get('COLD'))) else (0))",
+   "=IF(D1=\"CT\",1,0)": "((1) if (self._streq(raw_values.get('COLD'), 'CT')) else (0))",
+   "=IF(D1=\"HN\",\"Ha Noi, VN\",\"Other\")": "((\"Ha Noi, VN\") if (self._streq(raw_values.get('COLD'), 'HN')) else (\"Other\"))",
+   "=IF(D1=\"HN\",\"Hanoi\",\"Other\")": "((\"Hanoi\") if (self._streq(raw_values.get('COLD'), 'HN')) else (\"Other\"))",
+   "=IF(D1=\"HN\",1,0)": "((1) if (self._streq(raw_values.get('COLD'), 'HN')) else (0))",
+   "=IF(F1=1,IF(B1>1,A1/B1,0),MAX(A1*0.5,B1))": "((((values.get('COLA', 0)/values.get('COLB', 0)) if (values.get('COLB', 0)>1) else (0))) if (values.get('COLF', 0)==1) else (max([values.get('COLA', 0)*0.5,values.get('COLB', 0)])))",
+   "=IF(ISBLANK(D1),1,0)": "((1) if (self._isblank(raw_values.get('COLD'))) else (0))",
+   "=IF(ISBLANK(G1),1,0)": "((1) if (self._isblank(raw_values.get('COLG'))) else (0))",
+   "=IF(OR(A1>500,B1>1),1,0)": "((1) if (any([values.get('COLA', 0)>500,values.get('COLB', 0)>1])) else (0))",
+   "=IFERROR(A1/B1,7)": "self._iferror(lambda: (values.get('COLA', 0)/values.get('COLB', 0)), (7))",
+   "=IFERROR(A1/B1,999)": "self._iferror(lambda: (values.get('COLA', 0)/values.get('COLB', 0)), (999))",
+   "=IFERROR(SUM(A1:C1)/B1,7)": "self._iferror(lambda: (sum([values.get('COLA', 0), values.get('COLB', 0), values.get('COLC', 0)])/values.get('COLB', 0)), (7))",
+   "=MAX(A1,B1)": "max([values.get('COLA', 0),values.get('COLB', 0)])",
+   "=MAX(A1,IF(B1>1,500,0))": "max([values.get('COLA', 0),((500) if (values.get('COLB', 0)>1) else (0))])",
+   "=MIN(A1,B1,C1)": "min([values.get('COLA', 0),values.get('COLB', 0),values.get('COLC', 0)])",
+   "=MOD(A1,30)": "self._mod(values.get('COLA', 0),30)",
+   "=NOT(A1>50)": "self._not(values.get('COLA', 0)>50)",
+   "=NOT(A1>500)*5": "self._not(values.get('COLA', 0)>500)*5",
+   "=POWER(A1,2)": "pow(values.get('COLA', 0),2)",
+   "=ROUND(100.5,0)": "self._round(100.5,0)",
+   "=ROUND(12500,-3)": "self._round(12500,-3)",
+   "=ROUND(2.5,0)": "self._round(2.5,0)",
+   "=ROUND(A1*0.105,0)": "self._round(values.get('COLA', 0)*0.105,0)",
+   "=ROUND(A1*IF(A1+E1>=120,H1/10,H1/15))": "self._round(values.get('COLA', 0)*((values.get('COLH', 0)/10) if (values.get('COLA', 0)+values.get('COLE', 0)>=120) else (values.get('COLH', 0)/15)))",
+   "=ROUND(A1/3,2)": "self._round(values.get('COLA', 0)/3,2)",
+   "=ROUND(IF(D1=\"x\",(A1+E1)*H1,0),0)": "self._round((((values.get('COLA', 0)+values.get('COLE', 0))*values.get('COLH', 0)) if (self._streq(raw_values.get('COLD'), 'x')) else (0)),0)",
+   "=ROUNDDOWN(-1.8,0)": "self._rounddown(-1.8,0)",
+   "=ROUNDUP(-1.2,0)": "self._roundup(-1.2,0)",
+   "=ROUNDUP(1.2,0)": "self._roundup(1.2,0)",
+   "=ROUNDUP(1.2,1)": "self._roundup(1.2,1)",
+   "=SIGN(B1-10)": "self._sign(values.get('COLB', 0)-10)",
+   "=SQRT(ABS(-4))": "math.sqrt(abs(-4))",
+   "=SUM(A1)": "sum([values.get('COLA', 0)])",
+   "=SUM(A1:C1)": "sum([values.get('COLA', 0), values.get('COLB', 0), values.get('COLC', 0)])",
+   "=SUM(A1:C1)+SUM(A1:B1)": "sum([values.get('COLA', 0), values.get('COLB', 0), values.get('COLC', 0)])+sum([values.get('COLA', 0), values.get('COLB', 0)])",
+   "=SUM(A:C)": "sum([values.get('COLA', 0), values.get('COLB', 0), values.get('COLC', 0)])",
+   "=SUM(BASE:OT)": "sum([values.get('BASE', 0):values.get('COLOT', 0)])",
+   "=VLOOKUP(D1,$A$1:$C$1,3,0)": "values.get('COLC', 0)",
+   "=self.env['res.users']": "self.env['res.users']"
+  },
+  "formulas": [
+   "=\"A\"&B1",
+   "=\"VN\"&\"1\"",
+   "=$A$1*2",
+   "=(A1+B1)*2",
+   "=(A1>50)*10",
+   "=(B1)",
+   "=-A1+5",
+   "=A1*2",
+   "=A1*8%",
+   "=A1*8.5%",
+   "=A1*B1+C1",
+   "=A1/B1*C1",
+   "=A1^2",
+   "=ABS(A1)",
+   "=AVERAGE(A1:C1)",
+   "=B1^3",
+   "=BASE*0.1+B1",
+   "=CEILING(A1+47,100)",
+   "=FLOOR(147,100)",
+   "=IF(A1>50,7)",
+   "=IF(A1>50,IF(B1>1,5,6),7)",
+   "=IF(A1>50,TRUE,FALSE)",
+   "=IF(A1>50,TRUE,FALSE)*5",
+   "=IF(AND(A1>50,B1>1),1,0)",
+   "=IF(B1<>2,10,20)",
+   "=IF(B1=0,0,A1/B1)",
+   "=IF(B1=0,999,A1/B1)",
+   "=IF(B1=2,10,20)",
+   "=IF(B1>1.5,A1*75%,A1*50%)",
+   "=IF(B1>=2,1,0)",
+   "=IF(D1<>\"\",1,0)",
+   "=IF(D1=\"\",1,0)",
+   "=IF(D1=\"CT\",1,0)",
+   "=IF(D1=\"HN\",\"Ha Noi, VN\",\"Other\")",
+   "=IF(D1=\"HN\",\"Hanoi\",\"Other\")",
+   "=IF(D1=\"HN\",1,0)",
+   "=IF(F1=1,IF(B1>1,A1/B1,0),MAX(A1*0.5,B1))",
+   "=IF(ISBLANK(D1),1,0)",
+   "=IF(ISBLANK(G1),1,0)",
+   "=IF(OR(A1>500,B1>1),1,0)",
+   "=IFERROR(A1/B1,7)",
+   "=IFERROR(A1/B1,999)",
+   "=IFERROR(SUM(A1:C1)/B1,7)",
+   "=MAX(A1,B1)",
+   "=MAX(A1,IF(B1>1,500,0))",
+   "=MIN(A1,B1,C1)",
+   "=MOD(A1,30)",
+   "=NOT(A1>50)",
+   "=NOT(A1>500)*5",
+   "=POWER(A1,2)",
+   "=ROUND(100.5,0)",
+   "=ROUND(12500,-3)",
+   "=ROUND(2.5,0)",
+   "=ROUND(A1*0.105,0)",
+   "=ROUND(A1*IF(A1+E1>=120,H1/10,H1/15))",
+   "=ROUND(A1/3,2)",
+   "=ROUND(IF(D1=\"x\",(A1+E1)*H1,0),0)",
+   "=ROUNDDOWN(-1.8,0)",
+   "=ROUNDUP(-1.2,0)",
+   "=ROUNDUP(1.2,0)",
+   "=ROUNDUP(1.2,1)",
+   "=SIGN(B1-10)",
+   "=SQRT(ABS(-4))",
+   "=SUM(A1)",
+   "=SUM(A1:C1)",
+   "=SUM(A1:C1)+SUM(A1:B1)",
+   "=SUM(A:C)",
+   "=SUM(BASE:OT)",
+   "=VLOOKUP(D1,$A$1:$C$1,3,0)",
+   "=self.env['res.users']"
+  ],
+  "source": "pb_hr_payroll_formula/tools/excel_semantics_battery.py"
+ },
+ {
+  "column_map": [
+   [
+    "AQ",
+    "COLAQ"
+   ],
+   [
+    "X",
+    "COLX"
+   ],
+   [
+    "A",
+    "ALLOW"
+   ],
+   [
+    "B",
+    "BASIC"
+   ],
+   [
+    "C",
+    "PIT"
+   ],
+   [
+    "D",
+    "TXBASE"
+   ]
+  ],
+  "converted": {
+   "=-(%s)": "-(%s)",
+   "=-(BRACKET(PIT,AQ2))": "-(BRACKET(values.get('PIT', 0),values.get('COLAQ', 0)))",
+   "=-MAX(0,": "-max([0,",
+   "=-MAX(0,BRACKET(PIT,TXBASE))": "-max([0,BRACKET(values.get('PIT', 0),values.get('TXBASE', 0))])",
+   "=-MAX(0,IF(TXBASE<=0,0,IF(TXBASE<=5000000,TXBASE*0.05,IF(TXBASE<=10000000,TXBASE*0.1-250000,IF(TXBASE<=18000000,TXBASE*0.15-750000,IF(TXBASE<=32000000,TXBASE*0.2-1650000,IF(TXBASE<=52000000,TXBASE*0.25-3250000,IF(TXBASE<=80000000,TXBASE*0.3-5850000,TXBASE*0.35-9850000))))))))": "-max([0,((0) if (values.get('TXBASE', 0)<=0) else (((values.get('TXBASE', 0)*0.05) if (values.get('TXBASE', 0)<=5000000) else (((values.get('TXBASE', 0)*0.1-250000) if (values.get('TXBASE', 0)<=10000000) else (((values.get('TXBASE', 0)*0.15-750000) if (values.get('TXBASE', 0)<=18000000) else (((values.get('TXBASE', 0)*0.2-1650000) if (values.get('TXBASE', 0)<=32000000) else (((values.get('TXBASE', 0)*0.25-3250000) if (values.get('TXBASE', 0)<=52000000) else (((values.get('TXBASE', 0)*0.3-5850000) if (values.get('TXBASE', 0)<=80000000) else (values.get('TXBASE', 0)*0.35-9850000))))))))))))))])",
+   "=BASIC*0.1+ALLOW": "values.get('BASIC', 0)*0.1+values.get('ALLOW', 0)",
+   "=IF(X<=1000000,0,IF(X<=5000000,X*0.05,X*0.1-300000))": "((0) if (values.get('COLX', 0)<=1000000) else (((values.get('COLX', 0)*0.05) if (values.get('COLX', 0)<=5000000) else (values.get('COLX', 0)*0.1-300000))))",
+   "=MAX(0,TXBASE-11000000)": "max([0,values.get('TXBASE', 0)-11000000])",
+   "=ROUND(-MAX(0,": "self._round(-max([0,",
+   "=ROUND(-MAX(0,%s),0)": "self._round(-max([0,%s]),0)",
+   "=ROUND(-MAX(0,BRACKET(PIT,TXBASE)),0)": "self._round(-max([0,BRACKET(values.get('PIT', 0),values.get('TXBASE', 0))]),0)"
+  },
+  "formulas": [
+   "=-(%s)",
+   "=-(BRACKET(PIT,AQ2))",
+   "=-MAX(0,",
+   "=-MAX(0,BRACKET(PIT,TXBASE))",
+   "=-MAX(0,IF(TXBASE<=0,0,IF(TXBASE<=5000000,TXBASE*0.05,IF(TXBASE<=10000000,TXBASE*0.1-250000,IF(TXBASE<=18000000,TXBASE*0.15-750000,IF(TXBASE<=32000000,TXBASE*0.2-1650000,IF(TXBASE<=52000000,TXBASE*0.25-3250000,IF(TXBASE<=80000000,TXBASE*0.3-5850000,TXBASE*0.35-9850000))))))))",
+   "=BASIC*0.1+ALLOW",
+   "=IF(X<=1000000,0,IF(X<=5000000,X*0.05,X*0.1-300000))",
+   "=MAX(0,TXBASE-11000000)",
+   "=ROUND(-MAX(0,",
+   "=ROUND(-MAX(0,%s),0)",
+   "=ROUND(-MAX(0,BRACKET(PIT,TXBASE)),0)"
+  ],
+  "source": "pb_hr_payroll_formula/tools/if_chain_battery.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "AA",
+    "COLAA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "C",
+    "COLC"
+   ],
+   [
+    "D",
+    "COLD"
+   ],
+   [
+    "K",
+    "COLK"
+   ],
+   [
+    "L",
+    "COLL"
+   ],
+   [
+    "R",
+    "COLR"
+   ],
+   [
+    "X",
+    "COLX"
+   ],
+   [
+    "E",
+    "BONUS"
+   ],
+   [
+    "F",
+    "IFERROR"
+   ],
+   [
+    "G",
+    "LUONG"
+   ],
+   [
+    "H",
+    "REF"
+   ],
+   [
+    "I",
+    "TAXRATE"
+   ]
+  ],
+  "converted": {
+   "=#REF!": "#values.get('REF', 0)!",
+   "='Rates'!C2*2": "'Rates'!values.get('COLC', 0)*2",
+   "='Sheet'!A1": "'Sheet'!values.get('COLA', 0)",
+   "=A1+B1": "values.get('COLA', 0)+values.get('COLB', 0)",
+   "=A2*B2+3": "values.get('COLA', 0)*values.get('COLB', 0)+3",
+   "=A2+B2": "values.get('COLA', 0)+values.get('COLB', 0)",
+   "=AA2*1%": "values.get('COLAA', 0)*(1/100)",
+   "=B5+B4": "values.get('COLB', 0)+values.get('COLB', 0)",
+   "=BONUS+#REF!": "values.get('BONUS', 0)+#values.get('REF', 0)!",
+   "=BONUS+3": "values.get('BONUS', 0)+3",
+   "=BONUS+BONUS": "values.get('BONUS', 0)+values.get('BONUS', 0)",
+   "=IF(#REF!>0,1,0)": "((1) if (#values.get('REF', 0)!>0) else (0))",
+   "=IF(BONUS>0,1,0)": "((1) if (values.get('BONUS', 0)>0) else (0))",
+   "=IF(Nope!B2>0,1,0)": "((1) if (Nope!values.get('COLB', 0)>0) else (0))",
+   "=IF(Sheet2!B2>0,1,0)": "((1) if (Sheet2!values.get('COLB', 0)>0) else (0))",
+   "=IFERROR": "values.get('IFERROR', 0)",
+   "=IFERROR(VLOOKUP(A8,#REF!,4,0),0)": "values.get('IFERROR', 0)(VLOOKUP(values.get('COLA', 0),#values.get('REF', 0)!,4,0),0)",
+   "=IFERROR(VLOOKUP(A8,Rates!C:D,2,0),0)": "values.get('IFERROR', 0)(VLOOKUP(values.get('COLA', 0),Rates!values.get('COLC', 0), values.get('COLD', 0),2,0),0)",
+   "=K8*1%": "values.get('COLK', 0)*(1/100)",
+   "=LUONG+1": "values.get('LUONG', 0)+1",
+   "=Lương!A2+1": "values.get('COLL', 0)ương!values.get('COLA', 0)+1",
+   "=Sheet2!B2": "Sheet2!values.get('COLB', 0)",
+   "=Sheet2!B2+Zzz!C9": "Sheet2!values.get('COLB', 0)+Zzz!values.get('COLC', 0)",
+   "=TAXRATE": "values.get('TAXRATE', 0)",
+   "=TAXRATE*2": "values.get('TAXRATE', 0)*2",
+   "=VLOOKUP(B2,'R'!A:C,3,0)": "VLOOKUP(values.get('COLB', 0),'R'!values.get('COLA', 0), values.get('COLB', 0), values.get('COLC', 0),3,0)",
+   "=X": "values.get('COLX', 0)"
+  },
+  "formulas": [
+   "=#REF!",
+   "='Rates'!C2*2",
+   "='Sheet'!A1",
+   "=A1+B1",
+   "=A2*B2+3",
+   "=A2+B2",
+   "=AA2*1%",
+   "=B5+B4",
+   "=BONUS+#REF!",
+   "=BONUS+3",
+   "=BONUS+BONUS",
+   "=IF(#REF!>0,1,0)",
+   "=IF(BONUS>0,1,0)",
+   "=IF(Nope!B2>0,1,0)",
+   "=IF(Sheet2!B2>0,1,0)",
+   "=IFERROR",
+   "=IFERROR(VLOOKUP(A8,#REF!,4,0),0)",
+   "=IFERROR(VLOOKUP(A8,Rates!C:D,2,0),0)",
+   "=K8*1%",
+   "=LUONG+1",
+   "=Lương!A2+1",
+   "=Sheet2!B2",
+   "=Sheet2!B2+Zzz!C9",
+   "=TAXRATE",
+   "=TAXRATE*2",
+   "=VLOOKUP(B2,'R'!A:C,3,0)",
+   "=X"
+  ],
+  "source": "pb_hr_payroll_formula/tools/import_resolution_battery.py"
+ },
+ {
+  "column_map": [
+   [
+    "AP",
+    "COLAP"
+   ],
+   [
+    "A",
+    "ALLOW"
+   ],
+   [
+    "B",
+    "BASIC"
+   ]
+  ],
+  "converted": {
+   "=-MAX(0,BRACKET(": "-max([0,BRACKET(",
+   "=-MAX(0,IF(AP2<=0,0,IF(AP2<=5000000,AP2*0.05,IF(AP2<=10000000,AP2*0.1-250000,IF(AP2<=18000000,AP2*0.15-750000,IF(AP2<=32000000,AP2*0.2-1650000,IF(AP2<=52000000,AP2*0.25-3250000,IF(AP2<=80000000,AP2*0.3-5850000,AP2*0.35-9850000))))))))": "-max([0,((0) if (values.get('COLAP', 0)<=0) else (((values.get('COLAP', 0)*0.05) if (values.get('COLAP', 0)<=5000000) else (((values.get('COLAP', 0)*0.1-250000) if (values.get('COLAP', 0)<=10000000) else (((values.get('COLAP', 0)*0.15-750000) if (values.get('COLAP', 0)<=18000000) else (((values.get('COLAP', 0)*0.2-1650000) if (values.get('COLAP', 0)<=32000000) else (((values.get('COLAP', 0)*0.25-3250000) if (values.get('COLAP', 0)<=52000000) else (((values.get('COLAP', 0)*0.3-5850000) if (values.get('COLAP', 0)<=80000000) else (values.get('COLAP', 0)*0.35-9850000))))))))))))))])",
+   "=BASIC*0.1+ALLOW": "values.get('BASIC', 0)*0.1+values.get('ALLOW', 0)",
+   "=BASIC+1": "values.get('BASIC', 0)+1"
+  },
+  "formulas": [
+   "=-MAX(0,BRACKET(",
+   "=-MAX(0,IF(AP2<=0,0,IF(AP2<=5000000,AP2*0.05,IF(AP2<=10000000,AP2*0.1-250000,IF(AP2<=18000000,AP2*0.15-750000,IF(AP2<=32000000,AP2*0.2-1650000,IF(AP2<=52000000,AP2*0.25-3250000,IF(AP2<=80000000,AP2*0.3-5850000,AP2*0.35-9850000))))))))",
+   "=BASIC*0.1+ALLOW",
+   "=BASIC+1"
+  ],
+  "source": "pb_hr_payroll_formula/tools/w42_promotion_check.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "IFERROR([unpaid days]/[stddays], 0)": "self._iferror(lambda: ([unpaid days]/[stddays]), (0))"
+  },
+  "formulas": [
+   "IFERROR([unpaid days]/[stddays], 0)"
+  ],
+  "source": "pb_integrations/models/rule_composer.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "[Actual_Pay_Hour] + NOPE([Actual_Pay_Hour])": "[Actual_Pay_Hour] + NOPE([Actual_Pay_Hour])",
+   "[Ghost]*2": "[Ghost]*2",
+   "__import__(\"os\")": "__import__(\"os\")"
+  },
+  "formulas": [
+   "[Actual_Pay_Hour] + NOPE([Actual_Pay_Hour])",
+   "[Ghost]*2",
+   "__import__(\"os\")"
+  ],
+  "source": "pb_integrations/tests/test_rule_composer_rpc.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "IFERROR([LOPDays]/[stddays], 0)": "self._iferror(lambda: ([LOPDays]/[stddays]), (0))",
+   "IFERROR([ghostfield]/[stddays], 0)": "self._iferror(lambda: ([ghostfield]/[stddays]), (0))",
+   "[anything at all]": "[anything at all]"
+  },
+  "formulas": [
+   "IFERROR([LOPDays]/[stddays], 0)",
+   "IFERROR([ghostfield]/[stddays], 0)",
+   "[anything at all]"
+  ],
+  "source": "pb_integrations/tests/test_runsrc_pd_composer.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "=HYPERLINK(\"x\")": "HYPERLINK(\"x\")"
+  },
+  "formulas": [
+   "=HYPERLINK(\"x\")"
+  ],
+  "source": "pb_learn/tests/test_learnrev_p5.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "=\\s*this\\s*[;,)]": "\\s*this\\s*[;,)]"
+  },
+  "formulas": [
+   "=\\s*this\\s*[;,)]"
+  ],
+  "source": "pb_learn/tests/test_practice.py"
+ },
+ {
+  "column_map": [],
+  "converted": {
+   "=ilike": "ilike"
+  },
+  "formulas": [
+   "=ilike"
+  ],
+  "source": "pb_orgchart/tests/test_orgchart_p2.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "OTHERREVIEW"
+   ],
+   [
+    "B",
+    "OTHERWORKBOOK"
+   ],
+   [
+    "C",
+    "WBAMBSALARY"
+   ],
+   [
+    "D",
+    "WBCLOSED"
+   ],
+   [
+    "E",
+    "WBPITGAP"
+   ],
+   [
+    "F",
+    "WBUSD"
+   ],
+   [
+    "G",
+    "WBVND"
+   ],
+   [
+    "H",
+    "WBVNDSALARY"
+   ],
+   [
+    "I",
+    "WORKBOOKTEST"
+   ],
+   [
+    "J",
+    "Y"
+   ],
+   [
+    "K",
+    "YES"
+   ]
+  ],
+  "converted": {
+   "=1+1": "1+1"
+  },
+  "formulas": [
+   "=1+1"
+  ],
+  "source": "pb_payroll_templates/tests/test_templates.py"
+ },
+ {
+  "column_map": [
+   [
+    "A",
+    "COLA"
+   ],
+   [
+    "B",
+    "COLB"
+   ],
+   [
+    "F",
+    "COLF"
+   ],
+   [
+    "G",
+    "COLG"
+   ],
+   [
+    "I",
+    "ATLASMINI"
+   ],
+   [
+    "J",
+    "BASIC"
+   ],
+   [
+    "K",
+    "C"
+   ],
+   [
+    "L",
+    "D"
+   ],
+   [
+    "M",
+    "E"
+   ],
+   [
+    "N",
+    "H"
+   ]
+  ],
+  "converted": {
+   "=A5+B5": "values.get('COLA', 0)+values.get('COLB', 0)",
+   "=F5-G5": "values.get('COLF', 0)-values.get('COLG', 0)",
+   "=ROUND(F5*0.1,0)": "self._round(values.get('COLF', 0)*0.1,0)"
+  },
+  "formulas": [
+   "=A5+B5",
+   "=F5-G5",
+   "=ROUND(F5*0.1,0)"
+  ],
+  "source": "pb_source_atlas/tests/test_atlas.py"
+ }
+]

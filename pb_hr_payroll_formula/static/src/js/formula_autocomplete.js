@@ -103,34 +103,11 @@ export class FunctionHelp extends Component {
         onClose: { type: Function, optional: true },
     };
 
+    // WDGAP PR-A — the example comes with the function from the engine's one
+    // table (hr.formula.rule.pb_formula_functions), not a second hand-kept list.
     getExamples() {
-        const funcName = this.props.func?.name;
-
-        const examples = {
-            "SUM": [
-                { formula: "=SUM(A1, B1, C1)", result: _t("Sum of values") },
-                { formula: "=SUM(A1:A10)", result: _t("Sum of range") },
-            ],
-            "IF": [
-                { formula: "=IF(A1>100, \"High\", \"Low\")", result: _t("Conditional text") },
-                { formula: "=IF(B1=0, 0, A1/B1)", result: _t("Avoid division by zero") },
-            ],
-            "ROUND": [
-                { formula: "=ROUND(3.14159, 2)", result: "3.14" },
-                { formula: "=ROUND(A1, 0)", result: _t("Round to integer") },
-            ],
-            "AVERAGE": [
-                { formula: "=AVERAGE(A1, B1, C1)", result: _t("Average of values") },
-            ],
-            "VLOOKUP": [
-                { formula: "=VLOOKUP(A1, B1:C10, 2, FALSE)", result: _t("Exact match lookup") },
-            ],
-            "IFERROR": [
-                { formula: "=IFERROR(A1/B1, 0)", result: _t("0 if error") },
-            ],
-        };
-
-        return examples[funcName] || [];
+        const func = this.props.func || {};
+        return func.example ? [{ formula: func.example, result: func.description || "" }] : [];
     }
 
     getCategoryBadgeClass() {

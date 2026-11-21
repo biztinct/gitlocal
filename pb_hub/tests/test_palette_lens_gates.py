@@ -53,6 +53,11 @@ _NARROWER = {
     # People › Org chart › planning mode and "suggest a chart": changing the
     # chart is HR's, reading it is everybody's who sees Employees.
     'orgchart_plan', 'orgchart_suggest',
+    # Mission Control › Patterns › "Make shifts from a pattern": making draft
+    # shifts is the attendance MANAGER's; reading patterns is the officers'
+    # (pb_shift_patterns patterns_palette.js, PATTERN_MAKERS vs
+    # PATTERN_READERS; WDGAP ledger S8M-5).
+    'wf_patterns_make',
 }
 
 # pb_hub deep links whose screen is ALSO a hub tab: row id -> (hub tag, tab).

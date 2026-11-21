@@ -68,7 +68,9 @@ class TestLearnrevLessonDoor(TransactionCase):
     def test_01_every_content_screen_has_its_own_station_or_is_listed(self):
         stations = {s['key'] for s in self.tree['stations']}
         content = [s['key'] for s in self.tree['screens'] if not s['key'].startswith('hub_')]
-        self.assertEqual(len(content), 56, 'the content screen count moved: review the list')
+        # 57: FORM STUDIO (2026-11-20) added Settings › Form builder, which has
+        # its own station (formbuilder), so the list below is unchanged.
+        self.assertEqual(len(content), 57, 'the content screen count moved: review the list')
         missing = sorted(k for k in content if k not in stations)
         self.assertEqual(missing, sorted(NO_OWN_STATION))
 

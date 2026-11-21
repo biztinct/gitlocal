@@ -161,6 +161,8 @@ export class PbPayReview extends Component {
             drafting: null,
             // the paste drawer, the guidance drawer, the limits drawer
             pasting: null,
+            // WDGAP QF4: the "Read scores from Goals" drawer
+            goalScores: null,
             guidance: null,
             limits: null,
             preview: null,
@@ -747,6 +749,51 @@ export class PbPayReview extends Component {
             this.notif.add(answer.sentence, { type: "info" });
         } catch (error) {
             this._fail(error, _t("The scores could not be read in."));
+        }
+        this.state.busy = false;
+    }
+
+    // ======================================================= goals (QF4)
+    get hasGoals() {
+        const open = this.state.open;
+        return Boolean(open && open.has_goals);
+    }
+
+    async openGoalScores(cycleId = 0) {
+        this.state.dialogError = "";
+        const keep = this.state.goalScores;
+        this.state.goalScores = { cycleId, answer: (keep && keep.answer) || null,
+                                  loading: true };
+        try {
+            const answer = await this.orm.call(REVIEWS, "goal_scores", [
+                this.card.id, cycleId || false, true]);
+            this.state.goalScores = { cycleId: answer.cycle_id || 0, answer,
+                                      loading: false };
+        } catch (error) {
+            this.state.goalScores = { cycleId, answer: null, loading: false };
+            this.state.dialogError = this._msg(error, _t(
+                "The goal scores could not be read."));
+        }
+    }
+
+    pickGoalYear(value) {
+        const id = parseInt(value, 10) || 0;
+        if (id) { this.openGoalScores(id); }
+    }
+
+    async commitGoalScores() {
+        const job = this.state.goalScores;
+        if (!job || !job.answer || !job.answer.read) { return; }
+        this.state.busy = true;
+        try {
+            const answer = await this.orm.call(REVIEWS, "goal_scores", [
+                this.card.id, job.cycleId || false, false]);
+            this.state.goalScores = null;
+            await this.reopen();
+            this.notif.add(answer.sentence, { type: "success" });
+        } catch (error) {
+            this.state.dialogError = this._msg(error, _t(
+                "Those scores could not be saved."));
         }
         this.state.busy = false;
     }
@@ -1455,6 +1502,7 @@ export class PbPayReview extends Component {
     closeDrawers() {
         this.state.drafting = null;
         this.state.pasting = null;
+        this.state.goalScores = null;
         this.state.guidance = null;
         this.state.limits = null;
         this.state.preview = null;
@@ -1464,6 +1512,7 @@ export class PbPayReview extends Component {
 
     get anyDrawer() {
         return Boolean(this.state.drafting || this.state.pasting
+                       || this.state.goalScores
                        || this.state.guidance || this.state.limits
                        || this.state.preview || this.state.sendBack);
     }

@@ -254,6 +254,13 @@
                 <span t-out="ic('arrow', 13)"/>
               </button>
             </div>
+
+            <!-- Sections other modules add (CLOSE_SECTIONS). Each gets the
+                 whole payload, the workspace context and a re-read. -->
+            <t t-foreach="sections" t-as="sec" t-key="sec.key">
+              <t t-component="sec.Component" data="state.data"
+                 ctx="sectionCtx" onChanged.bind="reloadBoard"/>
+            </t>
           </div>
 
           <!-- ========================= the handoff rail ========================= -->

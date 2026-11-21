@@ -21,6 +21,8 @@ from . import review
 from . import scoring
 from . import change
 from . import close
+# WDGAP QF4: the sheet's score as a pay review score, stamped at close.
+from . import pay_score
 from . import goal_set_approval
 from . import change_approval
 from . import approval_engine_ext

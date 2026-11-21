@@ -93,6 +93,24 @@ class PbJourneyCaseOffboarding(models.Model):
                     'checklist %s', rec.id)
         return res
 
+    def action_cancel(self):
+        """WDGAP QF4 (B4): a leaving checklist called off takes back the
+        benefit end dates its last day stamped (probed; never raises)."""
+        res = super().action_cancel()
+        if 'pb.benefit.plan' not in self.env:
+            return res
+        for rec in self:
+            if rec.case_type != 'offboarding' or not rec.anchor_date:
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    self.env['pb.benefit.plan'].sudo()._clear_leaving(
+                        rec.employee_id, only_day=rec.anchor_date)
+            except Exception:           # noqa: BLE001
+                _logger.exception('pb_offboarding: could not clear benefit '
+                                  'end dates for journey %s', rec.id)
+        return res
+
     def setup_offboarding(self):
         """Everything a leaving checklist needs beside its steps.
 

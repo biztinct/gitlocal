@@ -73,3 +73,12 @@ from . import test_mapping_experience
 
 # LEARNREV P0 T4 — every lane the server emits has a label on the board.
 from . import test_lane_labels
+
+# WDGAP PR-A — unusable functions refused on save; the one function list.
+from . import test_wdgap_pra_studio
+
+# WDGAP W2-C — work back from take-home (net to gross).
+from . import test_wdgap_w2c_take_home
+
+# WDGAP W2-F — tax year on the Health tab; offer calculator boxes.
+from . import test_wdgap_w2f

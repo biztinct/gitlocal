@@ -41,10 +41,54 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
 
     @api.model
     def _leave_days(self, employee_ids, df, dt):
-        """{emp_id: set(iso)} of VALIDATED leave days overlapping [df, dt]."""
-        out = defaultdict(set)
+        """{emp_id: set(iso)} of VALIDATED leave days overlapping [df, dt]
+        that are WHOLE days off. A half day, or a few hours, is not a day off:
+        the person still works the rest of it (WDGAP QF3 — see
+        `_leave_parts`)."""
+        return self._leave_maps(employee_ids, df, dt)[0]
+
+    @api.model
+    def _leave_parts(self, employee_ids, df, dt):
+        """{(emp_id, iso): [(start_utc, end_utc)]} of VALIDATED leave that
+        covers only PART of a day (half days, hours)."""
+        return self._leave_maps(employee_ids, df, dt)[1]
+
+    @api.model
+    def _leave_partial_days(self, leave):
+        """The local days of ``leave`` it covers only in part: every day of
+        an hour leave; the first day of a half-day leave that starts in the
+        afternoon and the last of one that ends in the morning (a single half
+        day is both). A whole-day leave has none."""
+        if getattr(leave, 'request_unit_hours', False):
+            start, end = leave.request_date_from, leave.request_date_to
+            if not start:
+                return None     # unknown shape: treated as before
+            days, cur = set(), start
+            while cur <= (end or start):
+                days.add(cur.isoformat())
+                cur += timedelta(days=1)
+            return days
+        if not getattr(leave, 'request_unit_half', False):
+            return set()
+        start, end = leave.request_date_from, leave.request_date_to
+        if not start:
+            return set()
+        p_from = leave.request_date_from_period
+        p_to = leave.request_date_to_period
+        if start == (end or start):
+            return {start.isoformat()} if p_from == p_to else set()
+        days = set()
+        if p_from == 'pm':
+            days.add(start.isoformat())
+        if p_to == 'am':
+            days.add(end.isoformat())
+        return days
+
+    @api.model
+    def _leave_maps(self, employee_ids, df, dt):
+        full, parts = defaultdict(set), defaultdict(list)
         if 'hr.leave' not in self.env:
-            return out
+            return full, parts
         # leaves carry datetimes; compare against the whole last day
         start_dt = datetime.combine(df, time.min)
         end_dt = datetime.combine(dt, time.max)
@@ -54,13 +98,19 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
             ('date_from', '<=', end_dt), ('date_to', '>=', start_dt),
         ])
         for lv in leaves:
+            partial = self._leave_partial_days(lv) or set()
             d0 = max(lv.date_from.date(), df)
             d1 = min(lv.date_to.date(), dt)
             cur = d0
             while cur <= d1:
-                out[lv.employee_id.id].add(cur.isoformat())
+                iso = cur.isoformat()
+                if iso not in partial:
+                    full[lv.employee_id.id].add(iso)
                 cur += timedelta(days=1)
-        return out
+            for iso in partial:
+                parts[(lv.employee_id.id, iso)].append(
+                    (lv.date_from, lv.date_to))
+        return full, parts
 
     @api.model
     def _first_contract_day(self, employee_ids):
@@ -103,7 +153,7 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
         now = fields.Datetime.now()
 
         trip_map = self._trip_days(emp_ids, df, dt)
-        leave_map = self._leave_days(emp_ids, df, dt)
+        leave_map, part_map = self._leave_maps(emp_ids, df, dt)
         first_contract = self._first_contract_day(emp_ids)
         Rule = self.env['pb.attendance.rule']
         threshold_cache = {}  # company_id -> open_checkout_hours
@@ -117,6 +167,20 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
         def excluded(emp_id, iso):
             return (iso in trip_map.get(emp_id, ())
                     or iso in leave_map.get(emp_id, ()))
+
+        def covered(emp_id, iso, moment, closing=False):
+            """Is ``moment`` (a shift's start, or its end) inside a part-day
+            leave? Then lateness / an early leave there is the leave, not an
+            exception (WDGAP QF3). A missing punch is never covered: the
+            person still works the other half."""
+            if not moment:
+                return False
+            for start, end in part_map.get((emp_id, iso), ()):
+                if closing and start < moment <= end:
+                    return True
+                if not closing and start <= moment < end:
+                    return True
+            return False
 
         # --- batch read: published shifts (1 query) ---
         shifts = self.env['hr.shift.planning'].sudo().search([
@@ -183,6 +247,10 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
                 continue
             status = shift.compliance_status
             day_atts = att_days.get((emp.id, iso), [])
+            # a part-day leave that in fact spans the whole shift is a day off
+            if covered(emp.id, iso, shift.start_datetime) \
+                    and covered(emp.id, iso, shift.end_datetime, closing=True):
+                continue
             if status == 'absent':
                 # a punch may exist but be unlinked to the shift — only a truly
                 # punchless day is a missing punch (never invent an absence)
@@ -191,12 +259,14 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
                         _("No punch against the published %s shift.",
                           shift.shift_template_id.code or _('scheduled')),
                         shift=shift)
-            elif status == 'late' and shift.actual_check_in and shift.start_datetime:
+            elif status == 'late' and shift.actual_check_in and shift.start_datetime \
+                    and not covered(emp.id, iso, shift.start_datetime):
                 mins = (shift.actual_check_in - shift.start_datetime).total_seconds() / 60.0
                 add(emp, d, KIND_LATE,
                     _("Checked in %(m)d min after the shift start.", m=round(mins)),
                     minutes=mins, shift=shift)
-            elif status == 'early_leave' and shift.actual_check_out and shift.end_datetime:
+            elif status == 'early_leave' and shift.actual_check_out and shift.end_datetime \
+                    and not covered(emp.id, iso, shift.end_datetime, closing=True):
                 mins = (shift.end_datetime - shift.actual_check_out).total_seconds() / 60.0
                 add(emp, d, KIND_EARLY,
                     _("Left %(m)d min before the shift end.", m=round(mins)),

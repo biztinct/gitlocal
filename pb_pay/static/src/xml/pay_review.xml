@@ -227,6 +227,12 @@
                 <t t-out="ic('refresh', 15)"/>
                 <span>Read scores in</span>
               </button>
+              <button class="pbim-btn ghost sm" t-if="hasGoals"
+                      t-on-click="() => this.openGoalScores()"
+                      t-att-disabled="state.busy">
+                <t t-out="ic('award', 15)"/>
+                <span>Read scores from Goals</span>
+              </button>
               <button class="pbim-btn ghost sm"
                       t-on-click="() => this.openGuidance()">
                 <t t-out="ic('sparkles', 15)"/>
@@ -643,6 +649,72 @@
                   t-on-click="() => this.commitPaste()"
                   t-att-disabled="state.busy"
                   t-esc="pasteLabel"/>
+        </div>
+      </div>
+
+      <!-- WDGAP QF4: read scores from Goals (cloned from the paste drawer) -->
+      <div class="pay-drawer" t-if="state.goalScores">
+        <div class="pay-drawer-h">
+          <p class="pay-h">Read scores from Goals</p>
+          <button class="pbim-btn ghost sm"
+                  t-on-click="() => this.closeDrawers()">
+            <t t-out="ic('x', 15)"/>
+          </button>
+        </div>
+        <div class="pay-drawer-b">
+          <p class="pay-sub">Each person's score for a goals year, turned into this review's scale. Nothing is saved until you press “Use these scores”.</p>
+          <t t-set="ga" t-value="state.goalScores.answer"/>
+          <t t-if="ga and ga.years and ga.years.length">
+            <label class="pay-field">
+              <span>Goals year</span>
+              <select class="pbim-input"
+                      t-on-change="(ev) => this.pickGoalYear(ev.target.value)"
+                      t-att-disabled="state.goalScores.loading">
+                <option t-foreach="ga.years" t-as="y" t-key="y.id"
+                        t-att-value="y.id"
+                        t-att-selected="y.id === state.goalScores.cycleId"
+                        t-esc="y.label"/>
+              </select>
+            </label>
+            <p class="pbim-note" t-if="!ga.cycle_closed">This goals year is not closed yet, so these scores can still move.</p>
+          </t>
+          <p class="pay-sub" t-if="state.goalScores.loading">Reading the goals year…</p>
+          <t t-if="ga">
+            <p class="pay-lead" t-esc="ga.sentence"/>
+            <div class="pay-goal-counts" t-if="ga.available and ga.cycle_id">
+              <span class="pbim-badge"><b t-esc="ga.read"/> have a score</span>
+              <span class="pbim-badge"><b t-esc="ga.changed"/> will change</span>
+              <span class="pbim-badge"><b t-esc="ga.missing"/> have none</span>
+            </div>
+            <t t-if="ga.mapping and ga.mapping.length and ga.cycle_id">
+              <p class="pay-goal-h">How a goals score becomes a review score</p>
+              <div class="pay-badrow pay-goal-map pay-goal-map--head">
+                <span>Goals score (out of 5)</span>
+                <span>Review score</span>
+              </div>
+              <div t-foreach="ga.mapping" t-as="m" t-key="m.rating"
+                   class="pay-badrow pay-goal-map">
+                <span class="pay-badrow-t" t-esc="m.label"/>
+                <b t-esc="m.rating"/>
+              </div>
+            </t>
+            <t t-if="ga.rows and ga.rows.length">
+              <p class="pay-goal-h">No goals score</p>
+              <div t-foreach="ga.rows" t-as="bad" t-key="bad.row"
+                   class="pay-badrow">
+                <span class="pay-badrow-t" t-esc="bad.text"/>
+                <span class="pay-goal-quiet" t-esc="bad.why"/>
+              </div>
+            </t>
+          </t>
+          <p class="pbim-note" t-if="state.dialogError"
+             t-esc="state.dialogError"/>
+        </div>
+        <div class="pay-drawer-f">
+          <button class="pbim-btn primary"
+                  t-if="state.goalScores.answer and state.goalScores.answer.read"
+                  t-on-click="() => this.commitGoalScores()"
+                  t-att-disabled="state.busy or state.goalScores.loading">Use these scores</button>
         </div>
       </div>
 

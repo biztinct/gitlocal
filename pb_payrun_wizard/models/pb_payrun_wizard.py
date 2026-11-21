@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 import functools
+import json
 import logging
 from datetime import date, datetime, time as dtime
 from dateutil.relativedelta import relativedelta
@@ -641,7 +642,21 @@ class PbPayrunWizard(models.AbstractModel):
             # PRS P3 (R8) — the "Kind of run" choice on the first step, shown
             # only where pb_payruns gives the run that field.
             'run_kinds': 'pb_run_kind' in self.env['hr.payslip.run']._fields,
+            # WDGAP PR-D — which kinds this build offers. The screen shows the
+            # Extra run choice only where the run's field knows the value, so
+            # a wizard newer than pb_payruns can never send one it refuses.
+            'run_kind_options': self._run_kind_options(),
         }
+
+    @api.model
+    def _run_kind_options(self):
+        field = self.env['hr.payslip.run']._fields.get('pb_run_kind')
+        if field is None:
+            return []
+        selection = field.selection
+        if callable(selection):
+            selection = selection(self.env['hr.payslip.run'])
+        return [key for key, _label in (selection or [])]
 
     def _eligible_employees(self, statuses=None, employee_ids=None,
                             formula_config_id=None, date_start=None,
@@ -835,22 +850,27 @@ class PbPayrunWizard(models.AbstractModel):
         self._check_period(ds, de)
         config = self._require_scheme(vals)
         config_id = config.id if config else 0
-        emp_ids = self._eligible_employees(
-            statuses=vals.get('statuses'),
-            employee_ids=vals.get('employee_ids'),
-            formula_config_id=config_id or None,
-            date_start=ds, date_end=de)
+        kind = self._run_kind_from_vals(vals)
+        if kind == 'extra':
+            # WDGAP PR-D — the people picked, or the refusal that names why.
+            self._extra_run_name(vals)
+            emp_ids = self._extra_run_people(vals, config, ds, de)
+        else:
+            emp_ids = self._eligible_employees(
+                statuses=vals.get('statuses'),
+                employee_ids=vals.get('employee_ids'),
+                formula_config_id=config_id or None,
+                date_start=ds, date_end=de)
         covered, not_covered = len(emp_ids), 0
-        if config_id:
+        if config_id and kind != 'extra':
             preview = self.scheme_preview(dict(vals, formula_config_id=config_id))
             covered = preview.get('covered', covered)
             not_covered = preview.get('not_covered', 0)
-        kind = self._run_kind_from_vals(vals)
         existing = self._period_runs(ds, de, config=config, kind=kind)
         blockers = self._clean_blockers(existing) if existing else []
-        # A top-up adopts nothing (see `_adopt_loose_slips`).
+        # A top-up and an Extra run adopt nothing (see `_adopt_loose_slips`).
         adopt = self._loose_slips(ds, de, config=config) \
-            if not existing and kind != 'topup' else self.env['hr.payslip']
+            if not existing and kind == 'regular' else self.env['hr.payslip']
         return {
             'formula_config_id': config_id,
             'covered': covered,
@@ -865,13 +885,95 @@ class PbPayrunWizard(models.AbstractModel):
     # ---------------- Kind of run (PRS P3, owner ruling R8) ----------------
     @api.model
     def _run_kind_from_vals(self, vals):
-        """'topup' when the person picked Top-up, else 'regular'.
+        """'topup' or 'extra' when the person picked one, else 'regular'.
 
-        Anything that is not exactly 'topup' — no key at all (PayAI, the
-        older door, every caller before R8), or a value nobody offers — is a
-        Regular run, which is what every run was before the choice existed.
+        Anything that is not exactly 'topup' or 'extra' — no key at all
+        (PayAI, the older door, every caller before R8), or a value nobody
+        offers — is a Regular run, which is what every run was before the
+        choice existed. 'extra' counts only where the run's field knows it
+        (WDGAP PR-D), so an older pb_payruns never receives it.
         """
-        return 'topup' if (vals or {}).get('run_kind') == 'topup' else 'regular'
+        kind = (vals or {}).get('run_kind')
+        if kind == 'topup':
+            return 'topup'
+        if kind == 'extra' and 'extra' in self._run_kind_options():
+            return 'extra'
+        return 'regular'
+
+    # ---------------- WDGAP PR-D: the Extra run ----------------
+    # An Extra run is for the people somebody picks — a bonus, a correction,
+    # one extra payslip. It may be run any number of times in a month, so it
+    # never meets another run (`_period_runs`), never clears one
+    # (`_clean_period`) and never adopts the month's loose payslips
+    # (`_adopt_loose_slips`). What makes that safe is asked here, BEFORE any
+    # run exists: a name a person can tell from the month's regular run, at
+    # least one person, and nobody the scheme does not pay for the period.
+    @api.model
+    def _extra_run_name(self, vals):
+        name = ((vals or {}).get('name') or '').strip()
+        if not name:
+            raise UserError(_(
+                "Give the extra run a name, so everybody can tell it from the "
+                "month’s regular run — for example “Extra run — bonus — "
+                "%(month)s”.", month=self._month_words(
+                    (vals or {}).get('date_start'))))
+        return name
+
+    @api.model
+    def _month_words(self, day):
+        try:
+            day = fields.Date.to_date(day) if day else date.today()
+        except Exception:       # noqa: BLE001
+            day = date.today()
+        return day.strftime('%B %Y')
+
+    @api.model
+    def _extra_run_people(self, vals, config, ds, de, payable=None):
+        """The people an Extra run pays, in the order they were picked.
+
+        Picked one by one, so the employment-status ticks meant for the
+        whole-month run are not applied: they would quietly drop somebody
+        the person chose on purpose. Everybody picked must be somebody this
+        run's scheme pays for the period (a running contract in this company,
+        and the scheme map's answer) — the same population every wizard door
+        uses; anybody else is refused by name rather than left out.
+
+        `payable` — a door with its own population (the demo's division run)
+        passes the ids it would pay instead, and gets the same refusals.
+        """
+        picked = []
+        for value in (vals or {}).get('employee_ids') or []:
+            try:
+                employee_id = int(value)
+            except (TypeError, ValueError):
+                continue
+            if employee_id and employee_id not in picked:
+                picked.append(employee_id)
+        if not picked:
+            raise UserError(_(
+                "An extra run is only for the people you pick. Pick at least "
+                "one person, then run it."))
+        if payable is None:
+            payable = self._eligible_employees(
+                employee_ids=picked,
+                formula_config_id=config.id if config else None,
+                date_start=ds, date_end=de)
+        payable = set(payable)
+        missing = [e for e in picked if e not in payable]
+        if missing:
+            names = self.env['hr.employee'].sudo().browse(missing).exists()
+            label = ', '.join(names.mapped('name')[:10]) or _("Somebody you picked")
+            if config:
+                raise UserError(_(
+                    "%(names)s cannot be in this extra run: the payroll scheme "
+                    "“%(scheme)s” does not pay them for this period. Take them "
+                    "off the list, or pick the scheme that pays them.",
+                    names=label, scheme=config.name))
+            raise UserError(_(
+                "%(names)s cannot be in this extra run: they have no contract "
+                "running in this company for this period. Take them off the "
+                "list and try again.", names=label))
+        return [e for e in picked if e in payable]
 
     @api.model
     def _run_kind_vals(self, kind):
@@ -887,6 +989,213 @@ class PbPayrunWizard(models.AbstractModel):
     @api.model
     def _run_kind_of(self, run):
         return getattr(run, 'pb_run_kind', False) or 'regular'
+
+    @api.model
+    def _slip_name(self, run, employee, suggested, run_name):
+        """A payslip's name. Unchanged for Regular and Top-up runs; on an
+        Extra run it carries the run's own name (WDGAP PR-D), so the extra
+        payslip — its PDF file name, the lists that show it — can be told
+        from the same month's regular one."""
+        if run and self._run_kind_of(run) == 'extra':
+            return '%s - %s' % (employee.name, run.name or run_name or '')
+        return suggested or ('%s - %s' % (employee.name, run_name))
+
+    # ---------------- WDGAP PR-E (E1): an Extra run and a pay data file ------
+    # See `extra_run_file.py` for the whole story. The picks are written on
+    # the run by the two doors that create one, after `_extra_run_people`
+    # has checked them; `attach_spreadsheet` keeps only their rows.
+    @api.model
+    def _extra_picks_vals(self, Run, extra_people):
+        """{'pb_extra_employee_ids': …} for an Extra run, else {}."""
+        if extra_people is None or 'pb_extra_employee_ids' not in Run._fields:
+            return {}
+        return {'pb_extra_employee_ids': [(6, 0, list(extra_people))]}
+
+    @api.model
+    def _extra_picks_of(self, run):
+        """The people an Extra run is for, in id order (an empty recordset
+        when the run is not an Extra run or names nobody)."""
+        Employee = self.env['hr.employee'].sudo()
+        if self._run_kind_of(run) != 'extra':
+            return Employee.browse()
+        picked = run.sudo().pb_extra_employee_ids \
+            if 'pb_extra_employee_ids' in run._fields else Employee.browse()
+        if not picked:
+            # A run made before the picks were stored, or by a door that does
+            # not write them: the people it already has payslips for.
+            picked = run.sudo().slip_ids.mapped('employee_id')
+        return picked.sorted('id')
+
+    @api.model
+    def _extra_file_words(self, rows, kept, absent):
+        """The calm line about what the file and the run have in common, and
+        the plain warning naming anybody picked who is not in the file."""
+        if rows == 1:
+            head = _("This file has 1 person.")
+        else:
+            head = _("This file has %s people.", rows)
+        if not kept:
+            keep = _("Nobody you picked is in it.")
+        elif kept == 1:
+            keep = _("This extra run keeps the 1 you picked.")
+        else:
+            keep = _("This extra run keeps the %s you picked.", kept)
+        sentence = '%s %s' % (head, keep)
+        warning = ''
+        if absent:
+            names = ', '.join(absent[:10])
+            if len(absent) > 10:
+                names = _("%(names)s and %(more)s more", names=names,
+                          more=len(absent) - 10)
+            if len(absent) == 1:
+                warning = _(
+                    "%s is not in this file. Their payslip is worked out "
+                    "without it, from their contract and records — the same "
+                    "as a regular run does for anybody the file leaves out.",
+                    names)
+            else:
+                warning = _(
+                    "%s are not in this file. Their payslips are worked out "
+                    "without it, from their contracts and records — the same "
+                    "as a regular run does for anybody the file leaves out.",
+                    names)
+        return sentence, warning
+
+    # ---------------- WDGAP W2-F (F-1): the mid-month advance, said plainly --
+    @api.model
+    def _extra_advance_kept_words(self, wheres, picked_count):
+        """"The mid-month advance was already taken in <run> for 3 of the
+        people picked. This extra run will not take it again." """
+        names = []
+        for where in wheres:
+            if where and where not in names:
+                names.append(where)
+        runs = ', '.join(names[:3]) or _("another payslip of this month")
+        if len(names) > 3:
+            runs = _("%(names)s and %(more)s other runs", names=runs, more=len(names) - 3)
+        count = len(wheres)
+        if picked_count == 1 and count == 1:
+            return _("The mid-month advance was already taken in %s for the "
+                     "person picked. This extra run will not take it again.", runs)
+        return _("The mid-month advance was already taken in %(runs)s for "
+                 "%(count)s of the people picked. This extra run will not take "
+                 "it again.", runs=runs, count=count)
+
+    @api.model
+    def _extra_advance_taken_words(self, run, took):
+        """What the result step says about extra payslips that DID take the
+        advance. Nothing else has taken it: PR-E's sentence, unchanged
+        (handover F-1: "behaviour is unchanged — the Extra run may be the one
+        that takes it"). The month's regular payslip not worked out yet: why
+        it could not be told."""
+        verdicts = run._pb_advance_verdicts_of(took) \
+            if hasattr(run, '_pb_advance_verdicts_of') else {}
+        kinds = [(verdicts.get(s.employee_id.id) or {}).get('verdict') for s in took]
+        n = len(took)
+        if 'undecided' in kinds and all(k in ('free', 'undecided') for k in kinds):
+            return (_("1 payslip in this extra run takes the mid-month advance. "
+                      "The month's regular payslip is not worked out yet, so it "
+                      "could not be told whether it takes it too.") if n == 1 else _(
+                "%s payslips in this extra run take the mid-month advance. The "
+                "month's regular payslips are not all worked out yet, so it "
+                "could not be told whether they take it too.", n))
+        return (_("1 payslip in this extra run also takes the mid-month "
+                  "advance off. Check it has not been taken already.") if n == 1 else _(
+            "%s payslips in this extra run also take the mid-month "
+            "advance off. Check it has not been taken already.", n))
+
+    @api.model
+    def _extra_advance_preflight(self, config, found, date_start, date_end, picked_count):
+        """Before computing: for how many of the people picked (and in the
+        file) the month's advance was already taken — {} when nobody, or when
+        the scheme types no advance."""
+        if not found or not date_start or not date_end \
+                or not hasattr(config, '_pb_advance_verdicts') \
+                or config.cycle_type != 'end_cycle':
+            return {}
+        verdicts = config._pb_advance_verdicts(
+            found, fields.Date.to_date(date_start), fields.Date.to_date(date_end))
+        kept = [v for v in verdicts.values() if v['verdict'] == 'taken']
+        if not kept:
+            return {}
+        return {'advance_kept': len(kept),
+                'advance_kept_sentence': self._extra_advance_kept_words(
+                    [v['where'] for v in kept], picked_count)}
+
+    @api.model
+    def _extra_keep_picked(self, batch, picked):
+        """Take every row of `batch` that is not about somebody in `picked`
+        out of it — after matching, before validating or processing — and
+        say what happened. Rows that match nobody are taken out too: an Extra
+        run never creates anybody from a file."""
+        lines = batch.import_line_ids
+        rows = len(lines)
+        keep = lines.filtered(
+            lambda l: l.employee_id and l.employee_id in picked)
+        drop = lines - keep
+        if drop:
+            drop.unlink()
+        found = keep.mapped('employee_id')
+        absent = (picked - found).sorted('name')
+        sentence, warning = self._extra_file_words(
+            rows, len(found), absent.mapped('name'))
+        _logger.info(
+            "Payrun wizard: extra run %s keeps %s of %s pay data row(s) "
+            "(%s picked, %s not in the file).", batch.payslip_run_id.id,
+            len(keep), rows, len(picked), len(absent))
+        return {
+            'rows': rows, 'kept': len(found), 'picked': len(picked),
+            'absent': absent.mapped('name'),
+            'absent_ids': absent.ids,
+            'sentence': sentence, 'warning': warning,
+        }
+
+    @api.model
+    def _extra_people_in_file(self, config, content, filename, picked,
+                              date_start=None, date_end=None):
+        """For the pay-data step, BEFORE anything is computed: which of the
+        people picked are in this file. Reads the file the way the loader
+        reads it and matches each row the way the loader matches it, on
+        in-memory records only — nothing is created. None when it cannot
+        tell (the step then says nothing rather than something wrong)."""
+        Batch = self.env['hr.payroll.import.batch'].sudo()
+        Line = self.env['hr.payroll.import.line'].sudo()
+        vals = {'import_filename': filename or '',
+                'formula_config_id': config.id,
+                'source_type': 'excel'}
+        for fname, value in Batch.default_get(
+                ['file_header_row', 'file_data_start_row', 'file_sheet_name',
+                 'company_id', 'match_by_code', 'match_by_email']).items():
+            if value is not None:
+                vals[fname] = value
+        probe = Batch.new(vals)
+        data = probe._parse_source_file(
+            content, filename or '', connector=probe._get_excel_connector())
+        headers = list(data.get('headers') or [])
+        rows = data.get('rows') or []
+        found = self.env['hr.employee'].sudo().browse()
+        for row in rows:
+            raw = probe._raw_data_from_row(headers, row)
+            code, name, email = probe._identity_from_file_row(raw)
+            line = Line.new({
+                'raw_data_json': json.dumps(raw, default=str),
+                'employee_code': code, 'employee_name': name,
+                'employee_email': email})
+            employee = probe._find_employee(line)
+            if employee:
+                found |= employee
+        found &= picked
+        absent = (picked - found).sorted('name')
+        sentence, warning = self._extra_file_words(
+            len(rows), len(found), absent.mapped('name'))
+        out = {'rows': len(rows), 'kept': len(found), 'picked': len(picked),
+               'absent': absent.mapped('name'),
+               'sentence': sentence, 'warning': warning}
+        # WDGAP W2-F (F-1): only the people the file feeds can take the
+        # advance from it; the others are worked out without the file.
+        out.update(self._extra_advance_preflight(
+            config, found, date_start, date_end, len(picked)))
+        return out
 
     # ---------------- Existing-payroll detection + cleanup ----------------
     @api.model
@@ -927,7 +1236,15 @@ class PbPayrunWizard(models.AbstractModel):
         preview can never reach the other kind's payslips. Every wizard door
         passes the kind (no `run_kind` in the request = Regular). `kind=None`
         is the old kind-blind answer, kept for direct callers.
+
+        WDGAP PR-D — **an Extra run meets nothing.** It is for the people
+        somebody picked and may be run any number of times in a month, so
+        nothing is its duplicate, and there is nothing for *Clean and Run* to
+        be offered. Regular and Top-up never see an Extra run either, by the
+        same kind filter as before.
         """
+        if kind == 'extra':
+            return self.env['hr.payslip.run'].browse()
         runs = self.env['hr.payslip.run'].search([
             ('date_start', '<=', de), ('date_end', '>=', ds),
             ('company_id', 'in', self.env.companies.ids)
@@ -1018,7 +1335,8 @@ class PbPayrunWizard(models.AbstractModel):
         """
         # PRS P3 (R8): a top-up never claims the period's loose payslips —
         # they are the month's regular pay, not an extra on top of it.
-        if self._run_kind_of(run) == 'topup':
+        # WDGAP PR-D: nor does an Extra run, for the same reason.
+        if self._run_kind_of(run) in ('topup', 'extra'):
             return self.env['hr.payslip']
         config = (run.pb_formula_config_id
                   if 'pb_formula_config_id' in run._fields else None) or None
@@ -1050,7 +1368,12 @@ class PbPayrunWizard(models.AbstractModel):
         PRS P3 (R9): with `kind`, only runs of that kind are ever cleared — a
         second rail behind `_period_runs`, so a Regular run can never clear a
         top-up nor a top-up a Regular run, whatever recordset arrives here.
+
+        WDGAP PR-D: an Extra run clears nothing at all — not another Extra
+        run, not the month's regular run, not a top-up.
         """
+        if kind == 'extra':
+            return 0
         if kind in ('regular', 'topup'):
             runs = runs.filtered(lambda r: self._run_kind_of(r) == kind)
         if not runs:
@@ -1108,6 +1431,11 @@ class PbPayrunWizard(models.AbstractModel):
         self._check_period(ds, de)
         # PRS P3 (R8, R9): the guard and the clean see this kind of run only.
         kind = self._run_kind_from_vals(vals)
+        extra_people = None
+        if kind == 'extra':
+            # WDGAP PR-D — asked before anything is created.
+            name = self._extra_run_name(vals)
+            extra_people = self._extra_run_people(vals, config, ds, de)
         existing = self._period_runs(ds, de, config=config, kind=kind)
         if existing:
             blockers = self._clean_blockers(existing)      # PAYAI P0
@@ -1135,14 +1463,18 @@ class PbPayrunWizard(models.AbstractModel):
         if 'pb_prepared_uid' in Run._fields:
             run_vals['pb_prepared_uid'] = self.env.uid
         run_vals.update(self._run_kind_vals(kind))
+        run_vals.update(self._extra_picks_vals(Run, extra_people))
         run = Run.create(run_vals)
 
         adopted = self._adopt_loose_slips(run, ds, de)      # see prepare_run
-        emp_ids = [e for e in self._eligible_employees(
-                       statuses=vals.get('statuses'), employee_ids=vals.get('employee_ids'),
-                       formula_config_id=config.id if config else None,
-                       date_start=ds, date_end=de)
-                   if e not in set(adopted.mapped('employee_id').ids)]
+        if extra_people is not None:
+            emp_ids = extra_people
+        else:
+            emp_ids = [e for e in self._eligible_employees(
+                           statuses=vals.get('statuses'), employee_ids=vals.get('employee_ids'),
+                           formula_config_id=config.id if config else None,
+                           date_start=ds, date_end=de)
+                       if e not in set(adopted.mapped('employee_id').ids)]
         exceptions = []
         created = Slip
         for emp in self.env['hr.employee'].browse(emp_ids):
@@ -1156,7 +1488,7 @@ class PbPayrunWizard(models.AbstractModel):
                     continue
                 slip = Slip.create({
                     'employee_id': emp.id,
-                    'name': v.get('name') or ('%s - %s' % (emp.name, name)),
+                    'name': self._slip_name(run, emp, v.get('name'), name),
                     'struct_id': v.get('struct_id'),
                     'contract_id': v.get('contract_id'),
                     'payslip_run_id': run.id,
@@ -1245,6 +1577,12 @@ class PbPayrunWizard(models.AbstractModel):
         # of run — a top-up never clears the month's regular run, nor a
         # regular run a top-up.
         kind = self._run_kind_from_vals(vals)
+        extra_people = None
+        if kind == 'extra':
+            # WDGAP PR-D — a name, at least one person, nobody the scheme
+            # does not pay: refused here, before any run exists (R3).
+            name = self._extra_run_name(vals)
+            extra_people = self._extra_run_people(vals, config, ds, de)
         existing = self._period_runs(ds, de, config=config, kind=kind)
         if existing:
             # PAYAI P0 — approved, paid or pending payroll is never offered
@@ -1288,6 +1626,9 @@ class PbPayrunWizard(models.AbstractModel):
             run_vals['pb_prepared_uid'] = self.env.uid
         # PRS P3 (R8) — Regular or Top-up, as picked on the first step.
         run_vals.update(self._run_kind_vals(kind))
+        # WDGAP PR-E (E1) — an Extra run remembers who it is for, so a pay
+        # data file loaded into it keeps only their rows.
+        run_vals.update(self._extra_picks_vals(Run, extra_people))
         run = Run.create(run_vals)
 
         # Claim the period's existing payslips before computing anything, and
@@ -1295,12 +1636,15 @@ class PbPayrunWizard(models.AbstractModel):
         # payslips on one person for one month, which is the pay-run shape of the
         # duplicate this system already refuses everywhere else.
         adopted = self._adopt_loose_slips(run, ds, de)
-        emp_ids = [e for e in self._eligible_employees(
-                       statuses=vals.get('statuses'),
-                       employee_ids=vals.get('employee_ids'),
-                       formula_config_id=config.id if config else None,
-                       date_start=ds, date_end=de)
-                   if e not in set(adopted.mapped('employee_id').ids)]
+        if extra_people is not None:
+            emp_ids = extra_people          # WDGAP PR-D: exactly the picks
+        else:
+            emp_ids = [e for e in self._eligible_employees(
+                           statuses=vals.get('statuses'),
+                           employee_ids=vals.get('employee_ids'),
+                           formula_config_id=config.id if config else None,
+                           date_start=ds, date_end=de)
+                       if e not in set(adopted.mapped('employee_id').ids)]
         payload = {
             'run_id': run.id, 'name': name,
             'date_start': ds, 'date_end': de,
@@ -1346,6 +1690,7 @@ class PbPayrunWizard(models.AbstractModel):
         already = set(Slip.search([
             ('payslip_run_id', '=', run_id), ('employee_id', 'in', emp_ids),
         ]).mapped('employee_id').ids)
+        run = self.env['hr.payslip.run'].sudo().browse(run_id)
         for emp in self.env['hr.employee'].sudo().browse(emp_ids):
             if emp.id in already:
                 continue
@@ -1359,7 +1704,7 @@ class PbPayrunWizard(models.AbstractModel):
                     continue
                 slip_vals = {
                     'employee_id': emp.id,
-                    'name': v.get('name') or ('%s - %s' % (emp.name, name)),
+                    'name': self._slip_name(run, emp, v.get('name'), name),
                     'struct_id': v.get('struct_id'),
                     'contract_id': v.get('contract_id'),
                     'payslip_run_id': run_id,
@@ -1959,8 +2304,15 @@ class PbPayrunWizard(models.AbstractModel):
 
     @api.model
     @runner_only
-    def preflight_spreadsheet(self, config_id, file_b64, filename):
+    def preflight_spreadsheet(self, config_id, file_b64, filename,
+                              employee_ids=None, date_start=None, date_end=None):
         """Read a file's headings and say what it feeds. Creates nothing.
+
+        `employee_ids` (WDGAP PR-E): the people an Extra run is for. With
+        them, the answer also says how many people the file has and which
+        of the picks it does not carry (`extra`). With the run's dates as
+        well (WDGAP W2-F), it says for how many of them the month's
+        mid-month advance was already taken (`extra.advance_kept_sentence`).
 
         `peek_source_columns` parses through an in-memory `new()` record: no
         batch row, no import line, no employee touched, no pay value written.
@@ -2018,7 +2370,24 @@ class PbPayrunWizard(models.AbstractModel):
         except Exception:       # noqa: BLE001
             employees_col = False
 
-        return {
+        # WDGAP PR-E (E1) — an Extra run says, before anything is computed,
+        # how many people the file has, how many of the picks it keeps, and
+        # names anybody picked who is not in it. Additive and optional: every
+        # other caller passes no people and gets exactly the old answer.
+        extra = None
+        picked_ids = [int(e) for e in (employee_ids or []) if e]
+        if picked_ids:
+            picked = self.env['hr.employee'].sudo().browse(picked_ids).exists()
+            try:
+                extra = self._extra_people_in_file(
+                    config, content, filename, picked,
+                    date_start=date_start, date_end=date_end) if picked else None
+            except Exception:   # noqa: BLE001 — a hint never blocks the step
+                _logger.info("Payrun wizard: could not tell who is in %s",
+                             filename, exc_info=True)
+                extra = None
+
+        answer = {
             'ok': True,
             'config_id': config.id,
             'config_name': config.display_name or config.name or '',
@@ -2030,6 +2399,9 @@ class PbPayrunWizard(models.AbstractModel):
             'missing': missing,
             'employees_col': employees_col,
         }
+        if extra is not None:
+            answer['extra'] = extra
+        return answer
 
     @api.model
     @runner_only
@@ -2088,6 +2460,17 @@ class PbPayrunWizard(models.AbstractModel):
         if not file_b64:
             return {'ok': False, 'msg': _("No file was received.")}
 
+        # WDGAP PR-E (E1) — an Extra run keeps only the rows of the people
+        # picked. Asked BEFORE the batch exists, so a run that names nobody
+        # is refused with nothing created.
+        extra = self._run_kind_of(run) == 'extra'
+        picked = self._extra_picks_of(run) if extra else None
+        if extra and not picked:
+            return {'ok': False, 'msg': _(
+                "This extra run does not say who it is for, so the pay data "
+                "file cannot be loaded into it. Start the extra run again and "
+                "pick the people.")}
+
         Batch = self.env['hr.payroll.import.batch'].sudo()
         once = bool(one_time)
         # Belt and braces: the one-time branch does not depend on these, but a
@@ -2096,6 +2479,12 @@ class PbPayrunWizard(models.AbstractModel):
         once_vals = {'one_time': True,
                      'auto_create_employees': False,
                      'auto_create_contracts': False} if once else {}
+        if extra:
+            # An Extra run never creates anybody from a file (rows that match
+            # nobody are taken out below anyway).
+            once_vals.update({'auto_create_employees': False,
+                              'auto_create_contracts': False})
+        extra_note = None
         try:
             with self.env.cr.savepoint():
                 batch = Batch.create({
@@ -2112,6 +2501,10 @@ class PbPayrunWizard(models.AbstractModel):
                 })
                 batch.action_load_file()
                 batch.action_match_employees()
+                if extra:
+                    # after matching, before anything is validated, written
+                    # back or paid: the other rows are no business of this run
+                    extra_note = self._extra_keep_picked(batch, picked)
                 batch.action_validate()
                 batch.action_process()
         except (AccessError, UserError) as e:
@@ -2163,10 +2556,48 @@ class PbPayrunWizard(models.AbstractModel):
             except Exception:   # noqa: BLE001
                 fed = []
 
+        answer_extra = {}
+        if extra_note is not None:
+            # the mid-month advance: which of the extra payslips the file
+            # also took it off (see extra_run_file.py)
+            made = batch.created_payslip_ids
+            took = made.filtered(
+                lambda s: run._pb_took_advance(s)) \
+                if hasattr(run, '_pb_took_advance') else self.env['hr.payslip']
+            extra_note['advance'] = len(took)
+            extra_note['advance_sentence'] = \
+                self._extra_advance_taken_words(run, took) if took else ''
+            # WDGAP W2-F (F-1): the people the advance was kept out for
+            kept = made.filtered(lambda s: s.pb_advance_taken_in_id) \
+                if 'pb_advance_taken_in_id' in made._fields else made.browse()
+            extra_note['advance_kept'] = len(kept)
+            extra_note['advance_kept_sentence'] = self._extra_advance_kept_words(
+                [run._pb_advance_where(s.pb_advance_taken_in_id) for s in kept],
+                len(picked)) if kept else ''
+            answer_extra = {'extra': extra_note}
+
+        # WDGAP S6-A BK2: bank details a file brings wait for a second person
+        # (pb_bank_ocr holds them during the load). Say so on the result
+        # screen, as the load's own log does. Soft: without pb_bank_ocr (or
+        # with nothing waiting) the key is absent and the line is not drawn.
+        bank_waiting = ''
+        Req = self.env.get('pb.bank.change.request')
+        if Req is not None and hasattr(Req, '_pb_import_sentence'):
+            try:
+                bank_waiting = Req._pb_import_sentence(
+                    'hr.payroll.import.batch,%s' % batch.id) or ''
+            except Exception:   # noqa: BLE001 — a note is never fatal
+                _logger.warning("Payrun wizard: bank-waiting note failed "
+                                "for batch %s", batch.id, exc_info=True)
+
         return {
             'ok': True,
             'batch_id': batch.id,
+            # only when something waits: an answer with no bank change is
+            # exactly what it was (the E1 golden pins the keys)
+            **({'bank_waiting': bank_waiting} if bank_waiting else {}),
             'run_id': run.id,
+            **answer_extra,
             'rows': len(lines),
             'created': len(batch.created_payslip_ids),
             'matched': len(lines.filtered(lambda l: l.employee_id)),
@@ -2284,6 +2715,8 @@ class PbPayrunWizard(models.AbstractModel):
                 'employee_id': s.employee_id.id,
                 'net': net, 'flag': bool(fl.get('flag')),
                 'why': fl.get('reason') or '',
+                # WDGAP W2-F: a line worth knowing that is not a flag
+                'note': fl.get('note') or '',
                 'flag_kind': fl.get('kind') or '',
                 'split': bool(chip),
                 'split_why': (chip or {}).get('why', ''),

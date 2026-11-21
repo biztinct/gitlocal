@@ -101,6 +101,9 @@ class PbAccessDesk(models.AbstractModel):
             if user.login_date else '',
             'devices': self._devices(user),
             'two_step': bool(self._has_two_step() and user.totp_enabled),
+            # WDGAP QF5 A7: the company rule asks this person for it.
+            'two_step_required': bool(self._has_two_step()
+                                      and self._two_step_required_for(user)),
             'email': user.email or '',
             'lang': user.lang or '',
             'tz': user.tz or '',
@@ -134,6 +137,11 @@ class PbAccessDesk(models.AbstractModel):
         user.write({'totp_secret': False})
         _logger.info('biz_access: user %s turned off two-step sign-in for '
                      'user %s', self.env.uid, user.id)
+        if self._two_step_required_for(user):
+            # WDGAP QF5 A7: the company rule still covers them.
+            return {'ok': True, 'message': _(
+                "Two-step sign-in is off for %s. They will be asked to set it "
+                "up again the next time they sign in.", user.name)}
         return {'ok': True, 'message': _(
             "Two-step sign-in is off for %s. They sign in with their "
             "password and can set it up again from their profile.", user.name)}

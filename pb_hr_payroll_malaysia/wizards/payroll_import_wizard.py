@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, UserError
 
 class PayrollImportWizardMalaysia(models.TransientModel):
     _name = 'payroll.import.wizard.malaysia'
@@ -15,19 +15,9 @@ class PayrollImportWizardMalaysia(models.TransientModel):
         ('epf_data', 'EPF Data')
     ], required=True, default='employee_data')
     
-    @api.model
-    def action_import_malaysia_data(self):
-        """Import Malaysia payroll data"""
-        if not self.file_data:
-            raise ValidationError("Please upload a file to import")
-        
-        # Process Malaysia-specific import logic
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': 'Malaysia payroll data imported successfully',
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+    def action_import_malaysia_data(self, *args, **kwargs):
+        """WDGAP S2-A (S2F-4): RETIRED. This door used to say a file was
+        made (or data imported) and made none. It now says so and makes
+        no claim. (Malaysia payroll import)"""
+        raise UserError(_("This import is not available yet, so nothing was imported. Load pay data with the pay data file on the pay run instead."))
+

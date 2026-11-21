@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Past-month re-work lens.
+
+       Comments ruled with `=`, never a doubled hyphen. No `t-as` variable is
+       named lt / gt / lte / gte / and / or / not / in: rows `rw`, schemes
+       `sc`, months `mo`, people `pe`, changes `ch`, what-ifs `wi`, slips
+       `so`, items `it`, strips `sx`, person cards `pc`, months of a card
+       `pm`, lines `ln`, reasons `wy`, issues `is`, drift items `di`, steps
+       `ws`, glance items `gi`.
+       Every sentence a person reads sits on one line (ledger PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_retro.PbRetroBoard">
+    <div class="pbim pbim-page pbrw" t-att-class="{ 'pbrw--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the re-works…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pbrw-locked">
+          <div class="pbrw-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for the people who approve pay runs</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <!-- ============================ the list ============================ -->
+        <t t-elif="state.view === 'list'">
+          <div class="pbrw-head">
+            <div class="pbrw-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Past-month re-work</h1>
+              <p class="pbim-sub">Work finished payslips out again with today's figures, see exactly what would change, and pay the difference in the next pay run once it is approved.</p>
+            </div>
+            <div class="pbrw-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again" aria-label="Read the board again">
+                <t t-out="icon('refresh', 15)"/>
+              </button>
+              <button class="pbim-btn primary" t-on-click="newReview">
+                <t t-out="icon('plus', 15)"/> New re-work
+              </button>
+            </div>
+          </div>
+
+          <div t-if="!state.total" class="pbrw-start">
+            <div class="pbrw-start-ic"><t t-out="icon('history', 30)"/></div>
+            <div class="pbrw-start-tx">
+              <h2>What would last month's payslips say with what you know now?</h2>
+              <p>A pay rise entered late, a corrected allowance, a figure you want to try: Payobook works the finished payslips out again with the scheme's own tax and insurance formulas and shows every difference, person by person and month by month.</p>
+              <ul class="pbrw-start-list">
+                <li><t t-out="icon('shieldCheck', 15)"/> <span>Read-only. No payslip, pay run, loan or one-off is touched.</span></li>
+                <li><t t-out="icon('scale', 15)"/> <span>Checked first: each payslip is worked out again with nothing changed, so you know the comparison is fair.</span></li>
+                <li><t t-out="icon('fileSpreadsheet', 15)"/> <span>Kept as a record, with an Excel file to share.</span></li>
+              </ul>
+              <button class="pbim-btn primary" t-on-click="newReview"><t t-out="icon('plus', 15)"/> Start a re-work</button>
+            </div>
+          </div>
+
+          <t t-else="">
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
+
+            <PbFilterLayout kit="kit" coach="'retro-filters'" searchPlaceholder="searchLabel">
+              <div t-if="state.listError" class="pbim-empty pbrw-empty">
+                <div class="pbrw-empty-ic"><t t-out="icon('alert', 30)"/></div>
+                <h3>The re-works could not load</h3>
+                <p>The connection may have dropped. Your filters are kept.</p>
+                <button class="pbim-btn primary" t-on-click="retry"><t t-out="icon('refresh', 14)"/> Try again</button>
+              </div>
+
+              <div t-elif="state.rows.length" class="pbim-tablewrap pbrw-tablewrap">
+                <table class="pbim-table pbrw-table">
+                  <thead>
+                    <tr>
+                      <th>Re-work</th>
+                      <th>Months</th>
+                      <th class="num">People</th>
+                      <th class="num">Take-home difference</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="state.rows" t-as="rw" t-key="rw.id" class="pbrw-row" tabindex="0"
+                        t-on-click="() => this.openReview(rw.id)" t-on-keydown="(ev) => ev.key === 'Enter' and this.openReview(rw.id)">
+                      <td>
+                        <span class="pbrw-who">
+                          <span class="pbrw-av"><t t-out="icon('history', 15)"/></span>
+                          <span class="pbrw-who-tx">
+                            <b t-esc="rw.scheme"/>
+                            <small t-esc="rw.reason"/>
+                          </span>
+                        </span>
+                      </td>
+                      <td><span t-esc="rw.months"/><small class="pbrw-sub" t-if="rw.when"><t t-esc="rw.when"/> · <t t-esc="rw.by"/></small></td>
+                      <td class="num"><t t-if="rw.people" t-esc="fmtInt(rw.people)"/><span t-else="" class="pbrw-dash">—</span></td>
+                      <td class="num"><b t-if="rw.net_label" t-att-class="signClass(rw.net_sign)" t-esc="rw.net_label"/><span t-else="" class="pbrw-dash">—</span></td>
+                      <td>
+                        <span class="pbim-badge pbrw-badge" t-att-class="'is-' + rw.state" t-esc="rw.state_label"/>
+                        <span t-if="rw.pay_label" class="pbim-badge pbrw-badge pbrw-paybadge" t-att-class="'is-pay-' + rw.pay_state" t-esc="rw.pay_label"/>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div t-elif="!state.listLoaded" class="pbrw-skeleton" aria-label="Loading">
+                <div t-foreach="[1,2,3]" t-as="i" t-key="i" class="pbrw-skel-row"/>
+              </div>
+
+              <div t-else="" class="pbim-empty pbrw-empty">
+                <div class="pbrw-empty-ic"><t t-out="icon('search', 30)"/></div>
+                <h3>No re-works match these filters</h3>
+                <p>Remove a filter, or start again from every re-work.</p>
+                <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show every re-work</button>
+              </div>
+
+              <div t-if="state.rows.length and !state.listError" class="pbrw-foot">
+                Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+                <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                  <t t-if="state.loadingMore">Loading…</t>
+                  <t t-else="">Show <t t-esc="nextPage"/> more</t>
+                </button>
+              </div>
+            </PbFilterLayout>
+          </t>
+        </t>
+
+        <!-- ============================ one re-work ============================ -->
+        <t t-else="">
+          <t t-set="R" t-value="state.result"/>
+          <div t-if="state.resultBusy and !R" class="pbim-busy"><div class="pbim-spin"/><span>Opening the re-work…</span></div>
+          <t t-elif="R">
+            <div class="pbrw-rhead">
+              <button class="pbim-btn-sm ghost pbrw-back" t-on-click="backToList" aria-label="Back to every re-work"><t t-out="icon('chevronLeft', 16)"/> Every re-work</button>
+              <div class="pbrw-rhead-main">
+                <div class="pbrw-rhead-id">
+                  <span class="pbrw-av lg"><t t-out="icon('history', 20)"/></span>
+                  <div>
+                    <h2><t t-esc="R.scheme"/> <span class="pbrw-rhead-months" t-esc="R.months"/></h2>
+                    <p class="pbrw-reason" t-esc="R.reason"/>
+                    <p class="pbrw-meta">
+                      <span class="pbim-badge pbrw-badge" t-att-class="'is-' + R.state" t-esc="R.state_label"/>
+                      <span t-if="R.worked_out">Worked out <t t-esc="R.worked_out"/> by <t t-esc="R.worked_by"/></span>
+                      <span t-else="">Made <t t-esc="R.made"/> by <t t-esc="R.by"/></span>
+                      <span t-if="R.worked_out"> · <t t-esc="fmtInt(R.payslips)"/> payslips in <t t-esc="R.seconds"/> s</span>
+                    </p>
+                  </div>
+                </div>
+                <div class="pbrw-rhead-actions">
+                  <button t-if="R.can.edit" class="pbim-btn ghost" t-att-disabled="!!state.work" t-on-click="editReview"><t t-out="icon('pencil', 14)"/> Change</button>
+                  <button t-if="R.can.export" class="pbim-btn ghost" t-on-click="exportXlsx"><t t-out="icon('fileSpreadsheet', 14)"/> Excel</button>
+                  <button t-if="R.can.close" class="pbim-btn ghost" t-att-disabled="!!state.work" t-on-click="() => this.move('close')"><t t-out="icon('archive', 14)"/> Close</button>
+                  <button t-if="R.can.cancel" class="pbim-btn ghost danger" t-att-disabled="!!state.work" t-on-click="() => this.move('cancel')"><t t-out="icon('ban', 14)"/> Cancel</button>
+                  <button t-if="R.can.work" class="pbim-btn primary" t-att-disabled="!!state.work" t-on-click="() => this.workOut(R.id)">
+                    <t t-out="icon('calculator', 15)"/>
+                    <t t-if="R.state === 'draft'"> Work it out</t>
+                    <t t-else=""> Work out again</t>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- the progress -->
+            <div t-if="state.work" class="pbrw-progress" role="status">
+              <div class="pbrw-progress-tx">
+                <t t-out="icon('loader', 16)"/>
+                <span t-if="state.work.phase === 'start'">Finding the finished payslips…</span>
+                <span t-elif="state.work.phase === 'finish'">Putting the result together…</span>
+                <span t-else="">Working out <b t-esc="fmtInt(state.work.done)"/> of <b t-esc="fmtInt(state.work.total)"/> payslips…</span>
+              </div>
+              <div class="pbrw-bar"><span t-att-style="'width:' + workPct + '%'"/></div>
+            </div>
+
+            <!-- a draft: nothing worked out yet -->
+            <div t-if="R.state === 'draft' and !state.work" class="pbrw-draft">
+              <div class="pbrw-start-ic"><t t-out="icon('calculator', 26)"/></div>
+              <div>
+                <h3>Not worked out yet</h3>
+                <p>Press “Work it out” to compare every finished payslip of <t t-esc="R.months"/> with what it would say today.</p>
+              </div>
+            </div>
+
+            <t t-if="R.state !== 'draft' and !state.work">
+              <!-- the scheme version -->
+              <div t-if="R.scheme_banner.today" class="pbrw-banner is-amber" role="note">
+                <span class="pbrw-banner-ic"><t t-out="icon('gitBranch', 18)"/></span>
+                <div>
+                  <b>Worked out with today's version of the scheme</b>
+                  <span t-if="R.scheme_banner.older"><t t-esc="fmtInt(R.scheme_banner.older)"/> of <t t-esc="fmtInt(R.scheme_banner.total)"/> payslips were worked out with an earlier version. Payobook does not keep earlier versions as a whole, so today's formulas are used for every month.</span>
+                  <span t-if="R.scheme_banner.unknown"><t t-esc="fmtInt(R.scheme_banner.unknown)"/> payslips carry no record of which version worked them out.</span>
+                </div>
+              </div>
+              <div t-else="" class="pbrw-banner is-soft" role="note">
+                <span class="pbrw-banner-ic"><t t-out="icon('checkCircle', 18)"/></span>
+                <div><b>Same version of the scheme</b><span>Every payslip was worked out by the version of the scheme in use today.</span></div>
+              </div>
+              <div t-if="R.scheme_banner.moved_since" class="pbrw-banner is-amber" role="note">
+                <span class="pbrw-banner-ic"><t t-out="icon('rotate', 18)"/></span>
+                <div><b>The scheme changed after this was worked out</b><span>Work it out again to compare with the scheme as it is now.</span></div>
+              </div>
+
+              <!-- the hero: what would change -->
+              <section t-foreach="R.strips" t-as="sx" t-key="sx.currency" class="pbrw-hero">
+                <div class="pbrw-hero-main">
+                  <span class="pbrw-k">Take-home</span>
+                  <b class="pbrw-hero-big" t-att-class="signClass(sx.net_sign)" t-esc="sx.net"/>
+                  <span class="pbrw-hero-sub">
+                    <t t-if="sx.people === 1">for 1 person</t>
+                    <t t-else="">across <t t-esc="fmtInt(sx.people)"/> people</t>
+                    · <t t-esc="sx.currency"/>
+                  </span>
+                </div>
+                <div class="pbrw-hero-parts">
+                  <div><span>Gross pay</span><b t-att-class="signClass(sx.gross_sign)" t-esc="sx.gross"/></div>
+                  <div t-foreach="sx.items" t-as="it" t-key="it.name"><span t-esc="it.name"/><b t-att-class="signClass(-it.sign)" t-esc="it.amount"/></div>
+                  <div t-if="!sx.items.length"><span>Deductions</span><b t-esc="sx.deductions"/></div>
+                  <div><span>Employer cost</span><b t-att-class="signClass(-sx.employer_sign)" t-esc="sx.employer"/></div>
+                </div>
+              </section>
+              <section t-if="!R.strips.length" class="pbrw-hero is-zero">
+                <div class="pbrw-hero-main">
+                  <span class="pbrw-k">Take-home</span>
+                  <b class="pbrw-hero-big is-zero">No change</b>
+                  <span class="pbrw-hero-sub">No finished payslip was found for these months.</span>
+                </div>
+              </section>
+
+              <!-- what happens next (WDGAP W2-D2: follows the payment) -->
+              <t t-set="PY" t-value="R.payment"/>
+              <section class="pbrw-next" t-att-class="{ 'is-pay': PY and PY.state }">
+                <span class="pbrw-next-ic"><t t-out="icon(PY and PY.state ? 'wallet' : 'shieldCheck', 20)"/></span>
+                <div class="pbrw-next-tx">
+                  <b>What happens next</b>
+                  <p t-esc="nextWords"/>
+                </div>
+                <div class="pbrw-next-actions">
+                  <button t-if="PY and PY.can_send" class="pbim-btn primary" t-att-disabled="state.pay.busy" t-on-click="() => this.payMove('send')"><t t-out="icon('wallet', 14)"/> Pay the difference in the next pay run</button>
+                  <button t-if="R.updates_xmlid and !(PY and PY.state)" class="pbim-btn ghost" t-on-click="openUpdates"><t t-out="icon('arrowRight', 14)"/> Open Updates</button>
+                </div>
+              </section>
+
+              <!-- the payment strip -->
+              <section t-if="PY and PY.state" class="pbrw-sec pbrw-pay" t-att-class="'is-pay-' + PY.state">
+                <div class="pbrw-pay-head">
+                  <span class="pbrw-pay-ic"><t t-out="icon('wallet', 18)"/></span>
+                  <div class="pbrw-pay-tx">
+                    <h3><span>Payment</span> <span class="pbim-badge pbrw-badge pbrw-paybadge" t-att-class="'is-pay-' + PY.state" t-esc="PY.state_label"/></h3>
+                    <p>
+                      <span t-if="PY.with_line" t-esc="PY.with_line"/>
+                      <b t-att-class="signClass(PY.net_sign)" t-esc="PY.summary"/>
+                      <span t-if="PY.runs_line" class="pbrw-muted" t-esc="PY.runs_line"/>
+                    </p>
+                    <p t-if="PY.cancel_line" class="pbrw-muted" t-esc="PY.cancel_line"/>
+                  </div>
+                  <div class="pbrw-pay-actions">
+                    <button t-if="PY.can_withdraw" class="pbim-btn ghost" t-att-disabled="state.pay.busy" t-on-click="() => this.payMove('withdraw')"><t t-out="icon('undo', 14)"/> Withdraw</button>
+                    <button t-if="PY.can_cancel" class="pbim-btn ghost danger" t-att-disabled="state.pay.busy" t-on-click="() => this.askCancelPay(null)"><t t-out="icon('ban', 14)"/> Cancel the back pay</button>
+                  </div>
+                </div>
+                <div t-if="state.pay.cancelFor !== null" class="pbrw-pay-cancel" role="dialog" aria-label="Cancel back pay">
+                  <b t-esc="cancelQuestion"/>
+                  <p class="pbrw-muted">Back pay already in a payslip that is not finished is taken out of it. Paid back pay stays paid.</p>
+                  <input type="text" class="pbrw-in" placeholder="Why, in a few words" t-att-value="state.pay.reason" t-on-input="onPayReason" t-on-keydown="(ev) => ev.key === 'Enter' and this.confirmCancelPay()"/>
+                  <div class="pbrw-pay-cancel-actions">
+                    <button class="pbim-btn ghost" t-on-click="closeCancelPay">Keep it</button>
+                    <button class="pbim-btn primary danger" t-att-disabled="state.pay.busy or !state.pay.reason.trim()" t-on-click="confirmCancelPay">Cancel the back pay</button>
+                  </div>
+                </div>
+                <div class="pbrw-pay-list">
+                  <div t-foreach="payPayable" t-as="pp" t-key="pp.id" class="pbrw-pay-row">
+                    <span class="pbrw-pay-who"><b t-esc="pp.name"/><small t-esc="pp.months"/></span>
+                    <b class="pbrw-pay-net" t-att-class="signClass(pp.net_sign)" t-esc="pp.net"/>
+                    <span class="pbrw-chip" t-att-class="pp.tone ? 'is-' + pp.tone : ''" t-esc="pp.where"/>
+                    <button t-if="pp.can_cancel and PY.can_cancel" class="pbim-btn-sm ghost" t-on-click="() => this.askCancelPay(pp)" title="Cancel this person's back pay" aria-label="Cancel this person's back pay"><t t-out="icon('ban', 13)"/></button>
+                  </div>
+                </div>
+                <div t-if="payOthers.length" class="pbrw-pay-others">
+                  <button class="pbrw-issues-head" t-on-click="togglePayPeople" t-att-aria-expanded="state.pay.open ? 'true' : 'false'">
+                    <span t-esc="othersLabel"/>
+                    <t t-out="icon(state.pay.open ? 'chevronUp' : 'chevronDown', 16)"/>
+                  </button>
+                  <div t-if="state.pay.open" class="pbrw-pay-list">
+                    <div t-foreach="payOthers" t-as="po" t-key="po.id" class="pbrw-pay-row is-muted">
+                      <span class="pbrw-pay-who"><b t-esc="po.name"/><small t-esc="po.months"/></span>
+                      <b class="pbrw-pay-net" t-esc="po.net"/>
+                      <span class="pbrw-chip" t-esc="po.why"/>
+                    </div>
+                    <p class="pbrw-muted">A difference that is not paid automatically can still be paid as a one-off in Updates.</p>
+                  </div>
+                </div>
+              </section>
+
+              <!-- what changed -->
+              <section class="pbrw-sec">
+                <h3>What changed</h3>
+                <p t-if="!R.changes.length" class="pbrw-muted">Nothing: no contract amount was changed after these payslips were worked out, and no what-if value was typed. Every difference below would be zero.</p>
+                <ul t-else="" class="pbrw-changes">
+                  <li t-foreach="R.changes" t-as="ch" t-key="ch.key" t-att-class="{ 'is-off': !ch.applied }">
+                    <span class="pbrw-ch-ic" t-att-class="ch.kind === 'whatif' ? 'is-whatif' : ''">
+                      <t t-if="ch.kind === 'whatif'"><t t-out="icon('wand', 14)"/></t>
+                      <t t-else=""><t t-out="icon('fileText', 14)"/></t>
+                    </span>
+                    <div class="pbrw-ch-tx">
+                      <b t-esc="ch.person"/>
+                      <span t-esc="ch.label"/>
+                      <small>
+                        <t t-esc="ch.months_label"/>
+                        <t t-if="ch.total_label and ch.applied"> · <t t-esc="ch.total_label"/> on the pay item</t>
+                        <t t-foreach="ch.prorated" t-as="wy" t-key="wy_index"> · <t t-esc="wy"/></t>
+                      </small>
+                      <small t-if="ch.paid_back" class="pbrw-warn">Already paid back<t t-if="ch.paid_back_in"> in <t t-esc="ch.paid_back_in"/></t>, so not counted again.</small>
+                      <small t-elif="ch.left_out" class="pbrw-warn">Left out of this re-work.</small>
+                      <small t-elif="ch.replaced" class="pbrw-warn">Replaced by a what-if value for the same pay item.</small>
+                    </div>
+                  </li>
+                </ul>
+              </section>
+
+              <!-- what could not be compared -->
+              <section t-if="R.status.drift or R.status.error or R.status.skipped" class="pbrw-sec pbrw-issues">
+                <button class="pbrw-issues-head" t-on-click="toggleIssues" t-att-aria-expanded="state.issuesOpen ? 'true' : 'false'">
+                  <h3>Worth a look</h3>
+                  <span t-if="R.status.drift" class="pbrw-chip is-amber"><t t-esc="fmtInt(R.status.drift)"/> cannot be compared exactly</span>
+                  <span t-if="R.status.error" class="pbrw-chip is-rose"><t t-esc="fmtInt(R.status.error)"/> could not be worked out</span>
+                  <span t-if="R.status.skipped" class="pbrw-chip"><t t-esc="fmtInt(R.status.skipped)"/> not re-worked</span>
+                  <t t-out="icon(state.issuesOpen ? 'chevronUp' : 'chevronDown', 16)"/>
+                </button>
+                <div t-if="state.issuesOpen" class="pbrw-issues-body">
+                  <div t-if="R.issues.drift.length" class="pbrw-issue-block">
+                    <p class="pbrw-issue-lead"><t t-out="icon('scale', 14)"/> Worked out again with nothing changed, these payslips do not give the figures stored on them: today's scheme or data has moved since. Their differences are measured against that worked-out-again figure, not the stored one, and are marked ≈.</p>
+                    <div t-foreach="R.issues.drift" t-as="is" t-key="is.id" class="pbrw-issue">
+                      <b t-esc="is.person"/> <span t-esc="is.month"/>
+                      <span t-if="is.no_inputs" class="pbrw-muted"> · This payslip kept no record of the figures it was worked out from.</span>
+                      <small t-foreach="is.drift" t-as="di" t-key="di_index"><t t-esc="di.name"/>: stored <t t-esc="di.stored"/>, worked out again <t t-esc="di.today"/></small>
+                      <small t-if="is.drift_more">and <t t-esc="is.drift_more"/> more pay items</small>
+                    </div>
+                  </div>
+                  <div t-if="R.issues.error.length" class="pbrw-issue-block">
+                    <p class="pbrw-issue-lead"><t t-out="icon('triangleAlert', 14)"/> A formula has an error for these people, so their payslips could not be worked out. The rest were.</p>
+                    <div t-foreach="R.issues.error" t-as="is" t-key="is.id" class="pbrw-issue">
+                      <b t-esc="is.person"/> <span t-esc="is.month"/>
+                      <small t-if="is.error_item">The formula for “<t t-esc="is.error_item"/>”: <t t-esc="is.error_why"/>. Fix it in Formula Studio, then work it out again.</small>
+                      <small t-else="">It could not be worked out. Work it out again; if it stays, ask your administrator.</small>
+                    </div>
+                  </div>
+                  <div t-if="R.issues.skipped.length" class="pbrw-issue-block">
+                    <p class="pbrw-issue-lead"><t t-out="icon('info', 14)"/> Extra and top-up runs are not re-worked: they pay something on top of the month, not the month itself.</p>
+                    <div t-foreach="R.issues.skipped" t-as="is" t-key="is.id" class="pbrw-issue">
+                      <b t-esc="is.person"/> <span t-esc="is.month"/> <small><t t-esc="is.skip"/> · <t t-esc="is.run"/></small>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- person by person -->
+              <section class="pbrw-sec">
+                <div class="pbrw-people-head">
+                  <h3>Person by person</h3>
+                  <div class="pbim-seg pbrw-seg" role="tablist">
+                    <button class="pbim-segbtn" t-att-class="{ on: state.people.show === 'changed' }" t-on-click="() => this.setShow('changed')">Would change</button>
+                    <button class="pbim-segbtn" t-att-class="{ on: state.people.show === 'issues' }" t-on-click="() => this.setShow('issues')">Worth a look</button>
+                    <button class="pbim-segbtn" t-att-class="{ on: state.people.show === 'all' }" t-on-click="() => this.setShow('all')">Everyone</button>
+                  </div>
+                  <input type="search" class="pbrw-in pbrw-find" placeholder="Find a person" t-att-value="state.people.search" t-on-input="onPeopleSearch"/>
+                  <button t-if="state.people.rows.length > 1" class="pbim-btn-sm ghost" t-on-click="() => this.expandAll(true)">Open all</button>
+                </div>
+                <div t-if="state.people.loading and !state.people.rows.length" class="pbrw-skeleton"><div t-foreach="[1,2]" t-as="i" t-key="i" class="pbrw-skel-row"/></div>
+                <p t-elif="!state.people.rows.length" class="pbrw-muted">
+                  <t t-if="state.people.show === 'changed'">Nobody's pay would change.</t>
+                  <t t-elif="state.people.show === 'issues'">Nothing needs a look.</t>
+                  <t t-else="">Nobody matches.</t>
+                </p>
+                <div t-foreach="state.people.rows" t-as="pc" t-key="pc.key" class="pbrw-person" t-att-class="{ 'is-open': isOpen(pc) }">
+                  <button class="pbrw-person-head" t-on-click="() => this.togglePerson(pc)" t-att-aria-expanded="isOpen(pc) ? 'true' : 'false'">
+                    <span class="pbrw-av"><t t-out="icon('user', 15)"/></span>
+                    <span class="pbrw-person-id">
+                      <b t-esc="pc.name"/>
+                      <small t-esc="personSub(pc)"/>
+                    </span>
+                    <span class="pbrw-person-net"><small>Take-home</small><b t-att-class="signClass(pc.net_sign)" t-esc="pc.net"/></span>
+                    <t t-out="icon(isOpen(pc) ? 'chevronUp' : 'chevronDown', 16)"/>
+                  </button>
+                  <div t-if="isOpen(pc)" class="pbrw-person-body">
+                    <div t-foreach="pc.months" t-as="pm" t-key="pm.id" class="pbrw-month">
+                      <div class="pbrw-month-head">
+                        <b t-esc="pm.month"/>
+                        <small t-esc="pm.run"/>
+                        <span t-if="pm.status === 'drift'" class="pbrw-chip is-amber" title="This payslip cannot be compared exactly">≈ cannot be compared exactly</span>
+                        <span t-elif="pm.status === 'error'" class="pbrw-chip is-rose">Could not be worked out</span>
+                        <span t-elif="pm.status === 'skipped'" class="pbrw-chip">Not re-worked</span>
+                        <span t-elif="pm.status === 'same'" class="pbrw-chip is-soft">No difference</span>
+                        <span class="pbrw-month-net" t-if="pm.lines.length">Take-home <b t-att-class="signClass(pm.net_sign)" t-esc="pm.net"/></span>
+                        <button t-if="pm.payslip_id" class="pbim-btn-sm ghost" t-on-click="() => this.openPayslip(pm.payslip_id)"><t t-out="icon('external', 13)"/> Payslip</button>
+                      </div>
+                      <p t-if="pm.why.length" class="pbrw-month-why"><t t-out="icon('info', 13)"/> <span><t t-foreach="pm.why" t-as="wy" t-key="wy_index"><t t-if="wy_index"> · </t><t t-esc="wy"/></t></span></p>
+                      <table t-if="pm.lines.length" class="pbrw-lines">
+                        <thead><tr><th>Pay item</th><th class="num">Was</th><th class="num">Would be</th><th class="num">Difference</th></tr></thead>
+                        <tbody>
+                          <tr t-foreach="pm.lines" t-as="ln" t-key="ln.id" t-att-class="'is-' + ln.band + (ln.counts ? '' : ' is-detail')">
+                            <td>
+                              <span class="pbrw-line-name" t-esc="ln.name"/>
+                              <small t-foreach="ln.why" t-as="wy" t-key="wy_index" class="pbrw-why" t-esc="wy"/>
+                            </td>
+                            <td class="num" t-esc="ln.was"/>
+                            <td class="num"><t t-if="pm.approx">≈ </t><t t-esc="ln.would_be"/></td>
+                            <td class="num"><b t-att-class="signClass(ln.sign)" t-esc="ln.diff"/></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <p t-elif="pm.issue and pm.issue.status === 'error'" class="pbrw-muted">
+                        <t t-if="pm.issue.error_item">The formula for “<t t-esc="pm.issue.error_item"/>” has an error for this person (<t t-esc="pm.issue.error_why"/>).</t>
+                        <t t-else="">It could not be worked out.</t>
+                      </p>
+                      <p t-elif="pm.issue and pm.issue.status === 'skipped'" class="pbrw-muted"><t t-esc="pm.issue.skip"/>: not re-worked.</p>
+                    </div>
+                  </div>
+                </div>
+                <div t-if="peopleHasMore" class="pbrw-foot">
+                  <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.people.loading" t-on-click="() => this.loadPeople({ more: true })">Show more people</button>
+                </div>
+              </section>
+            </t>
+          </t>
+        </t>
+
+        <!-- ============================ the guided new re-work ============================ -->
+        <div t-if="state.wiz" class="pbim-modal-scrim pbrw-scrim" t-on-click="closeWizard">
+          <div class="pbim-modal pbrw-modal" t-on-click.stop="() => {}" role="dialog" aria-label="New re-work">
+            <t t-set="W" t-value="state.wiz"/>
+            <div class="pbrw-modal-head">
+              <h3 t-if="W.id">Change this re-work</h3>
+              <h3 t-else="">New re-work</h3>
+              <button class="pbim-btn-sm ghost" t-on-click="closeWizard" aria-label="Close"><t t-out="icon('x', 14)"/></button>
+            </div>
+            <ol class="pbrw-wsteps">
+              <li t-foreach="wizSteps" t-as="ws" t-key="ws.n" t-att-class="{ 'is-on': ws.on, 'is-done': ws.done }">
+                <button type="button" t-on-click="() => this.goStep(ws.n)">
+                  <span class="pbrw-wstep-n"><t t-if="ws.done"><t t-out="icon('check', 12)"/></t><t t-else="" t-esc="ws.n"/></span>
+                  <span t-esc="ws.label"/>
+                </button>
+              </li>
+            </ol>
+
+            <div t-if="W.loading" class="pbim-busy"><div class="pbim-spin"/></div>
+
+            <div t-else="" class="pbrw-wbody">
+              <!-- 1 scheme -->
+              <t t-if="W.step === 1">
+                <p class="pbrw-muted">Which pay scheme's payslips should be worked out again?</p>
+                <p t-if="!W.schemes.length" class="pbrw-empty-line">No pay scheme has finished payslips yet. A re-work starts once a pay run is finished.</p>
+                <div class="pbrw-schemes">
+                  <button t-foreach="W.schemes" t-as="sc" t-key="sc.id" type="button" class="pbrw-pick" t-att-class="{ 'is-on': W.configId === sc.id }" t-on-click="() => this.pickScheme(sc)">
+                    <span class="pbrw-av"><t t-out="icon('layers', 15)"/></span>
+                    <span class="pbrw-pick-id">
+                      <b t-esc="sc.name"/>
+                      <small><t t-esc="sc.currency"/> · <t t-esc="sc.months.length"/> months with finished payslips · latest <t t-esc="sc.months[0] and sc.months[0].label"/></small>
+                    </span>
+                    <t t-if="W.configId === sc.id"><t t-out="icon('checkCircle', 18)"/></t>
+                  </button>
+                </div>
+              </t>
+
+              <!-- 2 months -->
+              <t t-elif="W.step === 2">
+                <p class="pbrw-muted">Click the first month, then the last. At most <t t-esc="W.monthCap"/> months.</p>
+                <div class="pbrw-months">
+                  <button t-foreach="wizMonths" t-as="mo" t-key="mo.month" type="button" class="pbrw-month-pick" t-att-class="monthState(mo)" t-att-disabled="!mo.payslips" t-on-click="() => this.pickMonth(mo)">
+                    <b t-esc="mo.short"/>
+                    <small><t t-esc="fmtInt(mo.payslips)"/> payslips</small>
+                    <small t-if="mo.other" class="pbrw-month-other">+<t t-esc="mo.other"/> extra</small>
+                  </button>
+                </div>
+                <p t-if="W.monthFrom" class="pbrw-pickline"><t t-out="icon('calendar', 14)"/> <b t-esc="monthsLabel"/> · <t t-esc="monthCount"/> months</p>
+                <p t-if="monthCount > W.monthCap" class="pbrw-warn">That is more than <t t-esc="W.monthCap"/> months. Split it into two re-works.</p>
+              </t>
+
+              <!-- 3 people -->
+              <t t-elif="W.step === 3">
+                <div class="pbim-seg pbrw-seg">
+                  <button class="pbim-segbtn" t-att-class="{ on: W.people === 'all' }" t-on-click="() => this.setPeopleMode('all')">Everyone in those pay runs</button>
+                  <button class="pbim-segbtn" t-att-class="{ on: W.people === 'picked' }" t-on-click="() => this.setPeopleMode('picked')">Only the people I pick</button>
+                </div>
+                <p t-if="W.people === 'all' and W.preview" class="pbrw-pickline"><t t-out="icon('users', 14)"/> <b t-esc="fmtInt(W.preview.people)"/> people · <t t-esc="fmtInt(W.preview.payslips)"/> payslips</p>
+                <p t-if="W.preview and W.preview.too_many_people and W.people === 'all'" class="pbrw-warn">That is more than <t t-esc="W.preview.people_cap"/> people. Pick the people, or fewer months.</p>
+                <t t-if="W.people === 'picked'">
+                  <div class="pbrw-people-tools">
+                    <input type="search" class="pbrw-in" placeholder="Find a person by name or code" t-att-value="W.peopleTerm" t-on-input="onPeopleTerm"/>
+                    <button class="pbim-btn-sm ghost" t-on-click="() => this.pickAllShown(true)">Pick all shown</button>
+                    <button class="pbim-btn-sm ghost" t-on-click="() => this.pickAllShown(false)">Clear</button>
+                    <span class="pbrw-muted"><t t-esc="pickedCount"/> picked</span>
+                  </div>
+                  <div class="pbrw-plist">
+                    <p t-if="W.peopleLoading and !W.peopleRows.length" class="pbrw-muted">Reading…</p>
+                    <p t-elif="!W.peopleRows.length" class="pbrw-muted">Nobody found.</p>
+                    <label t-foreach="W.peopleRows" t-as="pe" t-key="pe.id" class="pbrw-pperson" t-att-class="{ 'is-on': W.picked[pe.id] }">
+                      <input type="checkbox" t-att-checked="W.picked[pe.id]" t-on-change="() => this.togglePick(pe)"/>
+                      <span class="pbrw-pick-id"><b t-esc="pe.name"/><small><t t-if="pe.code"><t t-esc="pe.code"/> · </t><t t-esc="pe.months"/> months</small></span>
+                    </label>
+                    <p t-if="W.peopleMore" class="pbrw-muted">and <t t-esc="W.peopleMore"/> more: type a name to find them.</p>
+                  </div>
+                </t>
+              </t>
+
+              <!-- 4 what changed -->
+              <t t-else="">
+                <div t-if="W.previewBusy and !W.preview" class="pbim-busy"><div class="pbim-spin"/></div>
+                <t t-elif="W.preview">
+                  <p class="pbrw-pickline"><t t-out="icon('calendar', 14)"/> <b t-esc="W.preview.label"/> · <t t-esc="fmtInt(W.preview.people)"/> people · <t t-esc="fmtInt(W.preview.payslips)"/> payslips<t t-if="W.preview.other"> · <t t-esc="W.preview.other"/> Extra or top-up payslips are listed but not re-worked</t></p>
+
+                  <h4 class="pbrw-wh">Contract amounts changed after the payslips were worked out</h4>
+                  <p t-if="!W.preview.changes.length" class="pbrw-muted">None found. Use the what-if values below to try a figure.</p>
+                  <div t-foreach="W.preview.changes" t-as="ch" t-key="ch.id" class="pbrw-wchange" t-att-class="{ 'is-off': isExcluded(ch) or ch.paid_back }">
+                    <label class="pbrw-wchange-tick">
+                      <input type="checkbox" t-att-checked="!isExcluded(ch) and !ch.paid_back" t-att-disabled="ch.paid_back" t-on-change="() => this.toggleChange(ch)"/>
+                    </label>
+                    <div class="pbrw-pick-id">
+                      <b><t t-esc="ch.person"/> · <t t-esc="ch.name"/></b>
+                      <small><t t-esc="ch.old"/> to <t t-esc="ch.new"/> from <t t-esc="ch.effective"/><t t-if="ch.entered">, entered <t t-esc="ch.entered"/></t></small>
+                      <small><t t-esc="ch.months_label"/><t t-if="!ch.paid_back"> · <t t-esc="ch.total_label"/> in all</t></small>
+                      <small t-if="ch.paid_back" class="pbrw-warn">Already paid back<t t-if="ch.paid_back_in"> in <t t-esc="ch.paid_back_in"/></t>: not counted again.</small>
+                    </div>
+                  </div>
+
+                  <h4 class="pbrw-wh">What if <small>a corrected figure for one person and month</small></h4>
+                  <table t-if="W.whatifs.length" class="pbrw-wgrid">
+                    <thead><tr><th>Person</th><th>Month</th><th>Pay item</th><th class="num">Was</th><th class="num">New value</th><th>Note</th><th/></tr></thead>
+                    <tbody>
+                      <tr t-foreach="W.whatifs" t-as="wi" t-key="wi.key">
+                        <td>
+                          <select class="pbrw-in" t-on-change="(ev) => this.onWhatifPerson(wi, ev)" aria-label="Person">
+                            <option value="0" t-att-selected="!wi.employee_id">Pick…</option>
+                            <option t-if="wi.employee_id and !hasWhatifPerson(wi)" t-att-value="wi.employee_id" selected="selected" t-esc="wi.person"/>
+                            <option t-foreach="whatifPeople" t-as="pe" t-key="pe.id" t-att-value="pe.id" t-att-selected="pe.id === wi.employee_id" t-esc="pe.name"/>
+                          </select>
+                        </td>
+                        <td>
+                          <select class="pbrw-in" t-on-change="(ev) => this.onWhatif(wi, 'payslip_id', ev)" aria-label="Month">
+                            <option value="0" t-att-selected="!wi.payslip_id">Pick…</option>
+                            <option t-foreach="slipsOf(wi)" t-as="so" t-key="so.id" t-att-value="so.id" t-att-selected="so.id === wi.payslip_id" t-esc="so.short"/>
+                          </select>
+                        </td>
+                        <td>
+                          <select class="pbrw-in" t-on-change="(ev) => this.onWhatif(wi, 'code', ev)" aria-label="Pay item">
+                            <option t-foreach="W.preview.items" t-as="it" t-key="it.code" t-att-value="it.code" t-att-selected="it.code === wi.code" t-esc="it.name"/>
+                          </select>
+                        </td>
+                        <td class="num pbrw-was" t-esc="wasOf(wi)"/>
+                        <td><input type="number" step="any" class="pbrw-in num" t-att-value="wi.value" t-on-input="(ev) => this.onWhatif(wi, 'value', ev)" aria-label="New value"/></td>
+                        <td><input type="text" class="pbrw-in" t-att-value="wi.note" placeholder="Where the figure comes from" t-on-input="(ev) => this.onWhatif(wi, 'note', ev)" t-on-keydown="(ev) => this.onWhatifKey(wi, ev)" aria-label="Note"/></td>
+                        <td><button class="pbim-btn-sm ghost" t-on-click="() => this.removeWhatif(wi)" aria-label="Remove"><t t-out="icon('x', 13)"/></button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button class="pbim-btn ghost pbrw-add" t-att-disabled="!W.preview.items.length" t-on-click="addWhatif"><t t-out="icon('plus', 14)"/> Add a what-if value</button>
+                  <small t-if="W.whatifs.length" class="pbrw-muted pbrw-hint">Enter in a note adds the next row.</small>
+
+                  <h4 class="pbrw-wh">Why</h4>
+                  <textarea class="pbrw-in" rows="2" t-att-value="W.reason" t-on-input="onReason" placeholder="For example: the October pay rise was entered late"/>
+                </t>
+              </t>
+            </div>
+
+            <div class="pbrw-modal-foot">
+              <span class="pbrw-foot-note" t-if="W.step === 4 and W.preview">
+                <t t-if="changesIncluded + W.whatifs.length === 0">Nothing to change yet: the result will show every payslip as it is.</t>
+                <t t-else="" t-esc="usedSentence"/>
+              </span>
+              <button t-if="W.step > 1" class="pbim-btn ghost" t-on-click="prevStep">Back</button>
+              <button t-if="W.step &lt; 4" class="pbim-btn primary" t-att-disabled="!canNext" t-on-click="nextStep">Next <t t-out="icon('arrowRight', 14)"/></button>
+              <button t-else="" class="pbim-btn primary" t-att-disabled="W.busy or !W.preview or (W.preview.too_many_people and W.people === 'all')" t-on-click="saveAndWork"><t t-out="icon('calculator', 14)"/> Work it out</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+</templates>
