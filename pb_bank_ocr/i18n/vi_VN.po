@@ -1789,3 +1789,9 @@ msgstr "Để trống nghĩa là ngân hàng Việt Nam (danh bạ ban đầu)."
 #: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_registry__clearing_code
 msgid "The bank's public national code: Indonesia the 3-digit bank code, Singapore the 4-digit bank code, India the first four letters of every IFSC of this bank."
 msgstr "Mã quốc gia công khai của ngân hàng: Indonesia mã ngân hàng 3 chữ số, Singapore mã ngân hàng 4 chữ số, Ấn Độ bốn chữ cái đầu của mọi mã IFSC của ngân hàng này."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "New hire: %s"
+msgstr "Nhân viên mới: %s"

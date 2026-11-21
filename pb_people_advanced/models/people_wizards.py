@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
 from datetime import date
 
 from odoo import _, api, models
@@ -51,8 +52,132 @@ class PbOnboardWizard(models.AbstractModel):
             'departments': _opts(env['hr.department'].search([], limit=200)),
             'jobs': _opts(env['hr.job'].search([], limit=200)),
             'countries': _opts(env['res.country'].search([], limit=300)),
+            # FS-16: the banks the bank check knows (typing another is fine)
+            'banks': self._pb_bank_choices(),
+            'bank_check': self._pb_bank_door_ready(),
         })
         return d
+
+    # ------------------------------------------------------------------
+    # FS-16 — the bank details typed here go through the product's normal
+    # bank change path: ONE waiting change (`pb.bank.change.request`, the
+    # import/hold door of pb_bank_ocr) that a second person approves, which
+    # then writes the employee's bank account and the bank-file fields.
+    # Before FS-16 they were written to the two old free-text boxes
+    # (`account_number` / `bank_name`, pb_hr_payroll_formula) that nothing
+    # reads, inside a bare `except: pass`. Never written straight, never to
+    # the old boxes; a problem is said on the screen, never dropped.
+    # ------------------------------------------------------------------
+    #: the keys of the screen's bank section
+    BANK_KEYS = ('bank_name', 'account_number', 'account_holder')
+
+    @api.model
+    def _pb_bank_door_ready(self):
+        Req = self.env.get('pb.bank.change.request')
+        return Req is not None and hasattr(Req, '_pb_hold_new_hire')
+
+    @api.model
+    def _pb_bank_choices(self):
+        Registry = self.env.get('pb.bank.registry')
+        if Registry is None:
+            return []
+        out, seen = [], set()
+        for bank in Registry.sudo().search([('active', '=', True)], order='short_name, name'):
+            value = (bank.short_name or bank.name or '').strip()
+            if not value or value.lower() in seen:
+                continue
+            seen.add(value.lower())
+            full = (bank.name or '').strip()
+            out.append({'value': value,
+                        'label': full if full and full.lower() != value.lower() else '',
+                        'country': bank.country_id.code or 'VN'})
+        return out
+
+    @api.model
+    def _pb_bank_entered(self, vals):
+        """The bank section as typed: {'bank', 'number', 'holder'}, or None
+        when every box was left empty."""
+        vals = vals or {}
+        bank = ' '.join(str(vals.get('bank_name') or '').split())
+        number = str(vals.get('account_number') or '').strip()
+        holder = ' '.join(str(vals.get('account_holder') or '').split())
+        if not (bank or number or holder):
+            return None
+        return {'bank': bank, 'number': number, 'holder': holder}
+
+    @api.model
+    def _pb_bank_problem(self, bank):
+        """'' when the typed bank details can be sent; else what to fix, in
+        one sentence (the rule the bank check itself applies: 6 to 19
+        digits; spaces, dashes and dots are tidied away)."""
+        if not bank:
+            return ''
+        number = bank['number']
+        if not number:
+            return _("Type the account number too, or leave the bank details empty.")
+        if re.search(r'[^0-9 .\-]', number):
+            return _("The account number can only have digits (spaces and dashes are fine).")
+        digits = re.sub(r'\D', '', number)
+        if not 6 <= len(digits) <= 19:
+            return _("The account number must be 6 to 19 digits. This one has %s.", len(digits))
+        return ''
+
+    @api.model
+    def _pb_bank_outcome(self, state, message, reference=''):
+        return {'state': state, 'message': message, 'reference': reference or ''}
+
+    @api.model
+    def _pb_send_bank(self, emp, bank, proposer):
+        """Send the typed details for `emp` through the bank change path.
+        Returns the outcome the screen shows: state 'sent' (waiting for a
+        second person), 'check' (kept for HR to look at first, with the
+        reason) or 'not_sent' (nothing made, with what to fix)."""
+        problem = self._pb_bank_problem(bank)
+        if problem:
+            return self._pb_bank_outcome('not_sent', _(
+                "The bank details were not sent: %s Add them from the employee's "
+                "side panel (Pay & tax › Bank).", problem))
+        if not self._pb_bank_door_ready():
+            return self._pb_bank_outcome('not_sent', _(
+                "The bank details were not sent: bank changes are not set up on "
+                "this site. Ask your administrator."))
+        values = {
+            'x_account_number': re.sub(r'\D', '', bank['number']),
+            'x_bank_name': bank['bank'],
+            'x_account_name': bank['holder'] or emp.name or '',
+        }
+        try:
+            with self.env.cr.savepoint():
+                req = self.env['pb.bank.change.request']._pb_hold_new_hire(
+                    emp, values, proposer)
+        except Exception as exc:                # noqa: BLE001 — said on screen
+            _logger.warning('pb_people_advanced: the new hire %s bank change could '
+                            'not be made', emp.id, exc_info=True)
+            why = str(getattr(exc, 'name', None) or (exc.args[0] if exc.args else '') or '')
+            return self._pb_bank_outcome('not_sent', _(
+                "The bank details were not sent: %s Add them from the employee's "
+                "side panel (Pay & tax › Bank).", why or _("the bank check refused them.")))
+        if not req:
+            return self._pb_bank_outcome('not_sent', _(
+                "The bank details were not sent. Add them from the employee's side "
+                "panel (Pay & tax › Bank)."))
+        if req.state in ('hr_review', 'finance_review'):
+            return self._pb_bank_outcome('sent', _("Bank details sent for approval"),
+                                         req.name)
+        return self._pb_bank_outcome('check', _(
+            "Bank details kept for HR to look at first: %s Open Compliance › Bank.",
+            req.pb_decision_note or _("the bank check found a problem.")), req.name)
+
+    @api.model
+    def _pb_bank_note(self, emp, outcome):
+        """A line on the employee's record when the details did not go through
+        (the screen may be long closed when an approved request is carried
+        out)."""
+        if outcome and outcome.get('state') != 'sent' and emp:
+            try:
+                emp.sudo().message_post(body=outcome.get('message') or '')
+            except Exception:                   # noqa: BLE001 — a note never blocks
+                _logger.warning('pb_people_advanced: no note on employee %s', emp.id)
 
     @api.model
     def create_employee(self, vals):
@@ -61,27 +186,50 @@ class PbOnboardWizard(models.AbstractModel):
         evals = {'name': (vals.get('name') or '').strip()}
         if not evals['name']:
             return {'error': 'A name is required.'}
+        bank = self._pb_bank_entered(vals)
         if not self.env.context.get(NEWHIRE_WRITE) \
                 and 'pb.newhire.proposal' in self.env:
+            # A problem with the bank details is said NOW, while HR is on the
+            # screen; the person still goes ahead without them.
+            problem = self._pb_bank_problem(bank)
+            values = dict(vals)
+            bank_note = ''
+            if problem:
+                for key in self.BANK_KEYS:
+                    values.pop(key, None)
+                bank_note = _("The bank details were not sent: %s Add them from the "
+                              "employee's side panel (Pay & tax › Bank).", problem)
+                bank = None
             answer = self.env['pb.newhire.proposal'].propose(
                 'employee',
                 _("Add %s to the payroll", evals['name']),
-                payload={'values': vals},
+                payload={'values': values},
                 facts={'wage': {'value': float(vals.get('wage') or 0.0),
                                 'unit': self.env.company.currency_id.name
                                 or ''},
-                       'has_bank': {'value': bool(vals.get('account_number')),
-                                    'unit': ''},
+                       'has_bank': {'value': bool(bank), 'unit': ''},
                        'contract_type': {
                            'value': str(vals.get('structure_type_id') or ''),
                            'unit': ''}},
                 amount=float(vals.get('wage') or 0.0),
             ).answer()
             if not answer.get('applied'):
-                return dict(answer, employee_id=0, employee_name=evals['name'],
-                            contract_id=0, error=None)
-            return dict(answer.get('result') or {},
-                        reference=answer.get('reference'))
+                out = dict(answer, employee_id=0, employee_name=evals['name'],
+                           contract_id=0, error=None)
+                if bank_note:
+                    out['bank'] = self._pb_bank_outcome('not_sent', bank_note)
+                elif bank:
+                    out['bank'] = self._pb_bank_outcome('later', _(
+                        "The bank details go with this request. When it is approved, "
+                        "they are sent to a second person for approval."))
+                return out
+            out = dict(answer.get('result') or {},
+                       reference=answer.get('reference'))
+            if bank_note:
+                out['bank'] = self._pb_bank_outcome('not_sent', bank_note)
+                self._pb_bank_note(Emp.browse(int(out.get('employee_id') or 0)).exists(),
+                                   out['bank'])
+            return out
         for k_src, k_dst in [('job_id', 'job_id'), ('department_id', 'department_id'),
                              ('country_id', 'country_id')]:
             if vals.get(k_src):
@@ -103,14 +251,14 @@ class PbOnboardWizard(models.AbstractModel):
         except Exception as e:
             return {'error': str(getattr(e, 'name', None) or e) or 'Could not create employee.'}
 
-        # bank
-        try:
-            if vals.get('account_number') and 'account_number' in emp._fields:
-                emp.account_number = vals['account_number']
-            if vals.get('bank_name') and 'bank_name' in emp._fields:
-                emp.bank_name = vals['bank_name']
-        except Exception:
-            pass
+        # FS-16: bank details → the bank change path (a second person
+        # approves). Proposed by the person who typed them: here the caller;
+        # an approved new-hire request strips them and sends them itself as
+        # the person who asked (`pb.newhire.proposal._apply_employee`).
+        bank_outcome = None
+        if bank:
+            bank_outcome = self._pb_send_bank(emp, bank, self.env.user)
+            self._pb_bank_note(emp, bank_outcome)
 
         # first contract
         contract_id = False
@@ -129,8 +277,11 @@ class PbOnboardWizard(models.AbstractModel):
             contract_id = res.get('contract_id')
             c_err = res.get('error')
 
-        return {'employee_id': emp.id, 'employee_name': emp.name,
-                'contract_id': contract_id, 'error': c_err}
+        out = {'employee_id': emp.id, 'employee_name': emp.name,
+               'contract_id': contract_id, 'error': c_err}
+        if bank_outcome:
+            out['bank'] = bank_outcome
+        return out
 
 
 class PbContractWizard(models.AbstractModel):
@@ -187,6 +338,17 @@ class PbContractWizard(models.AbstractModel):
     # HR can change it on the Renew form; "Make it permanent" is unchanged.
     # The field belongs to pb_employee_vault: probed.
     # ------------------------------------------------------------------
+    @api.model
+    def _pb_has_approved_bank(self, emp):
+        """The approved bank account: the same two stores Payroll-ready reads
+        (`pb_employee_form_tidy` `pb_bank_on_record` — the employee's bank
+        account, or the Vietnamese bank file's account), read here directly
+        so a write in the same request is seen."""
+        person = emp.sudo()
+        return bool(('bank_account_ids' in person._fields and person.bank_account_ids)
+                    or ('vietnam_bank_account_number' in person._fields
+                        and (person.vietnam_bank_account_number or '').strip()))
+
     @api.model
     def _treat_field(self):
         return self.env['hr.contract']._fields.get('pb_payroll_contract_type')
@@ -348,8 +510,10 @@ class PbContractWizard(models.AbstractModel):
                 facts={'wage': {'value': float(vals.get('wage') or 0.0),
                                 'unit': self.env.company.currency_id.name
                                 or ''},
-                       'has_bank': {'value': bool(
-                           getattr(emp, 'account_number', False)), 'unit': ''},
+                       # FS-16: an APPROVED bank account on record (the
+                       # rule Payroll-ready reads), not the old box.
+                       'has_bank': {'value': self._pb_has_approved_bank(emp),
+                                    'unit': ''},
                        'contract_type': {
                            'value': str(vals.get('structure_type_id') or ''),
                            'unit': ''}},

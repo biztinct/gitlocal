@@ -55,4 +55,26 @@
     .pplw-foot { padding: 16px 26px; border-top: 1px solid var(--pbim-line); display: flex; align-items: center; gap: 10px; background: #FAFCFB; }
     .pplw-sp { flex: 1; }
     .pplw-busy { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 56px 0; color: var(--pbim-muted); }
+
+    // FS-16: the bank section of Add employee, and its result line
+    .pplw-bank { margin-top: 16px; border: 1px solid var(--pbim-line); border-radius: 14px; padding: 14px 16px 16px; background: #fff; }
+    .pplw-bank-h { display: flex; align-items: flex-start; gap: 12px; }
+    .pplw-bank-h h4 { margin: 2px 0 2px; display: flex; align-items: center; gap: 8px; }
+    .pplw-bank-ic { flex: 0 0 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+    .pplw-bank-sub { font-size: 12.5px; color: var(--pbim-muted); }
+    .pplw-opt { font-size: 10.5px; letter-spacing: .04em; text-transform: none; font-weight: 600; color: var(--pbim-muted); background: var(--pbim-bg); border-radius: 999px; padding: 1px 8px; }
+    .pplw-bank-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 2px; }
+    @media (max-width: 680px) { .pplw-bank-grid { grid-template-columns: 1fr; } }
+    .pplw-mono { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+    .pplw-in.is-bad { border-color: var(--pbim-amber); box-shadow: 0 0 0 3px var(--pbim-amber-soft); }
+    .pplw-hint { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: #8a5a00; }
+    .pplw-bankline { display: flex; align-items: flex-start; gap: 12px; text-align: left; margin: 4px auto 0; max-width: 520px; border-radius: 12px; padding: 12px 14px; border: 1px solid var(--pbim-line); background: #fff; }
+    .pplw-bankline .ic { flex: 0 0 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; }
+    .pplw-bankline .tx { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--pbim-text); }
+    .pplw-bankline .tx span { color: var(--pbim-muted); font-size: 12.5px; }
+    .pplw-bankline.is-sent .ic { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pplw-bankline.is-later .ic { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+    .pplw-bankline.is-not_sent, .pplw-bankline.is-check { border-color: var(--pbim-amber); background: var(--pbim-amber-soft); }
+    .pplw-bankline.is-not_sent .ic, .pplw-bankline.is-check .ic { background: #fff; color: #8a5a00; }
+    .pplw-ref { font-variant-numeric: tabular-nums; }
 }

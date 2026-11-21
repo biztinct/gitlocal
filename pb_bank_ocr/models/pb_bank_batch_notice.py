@@ -35,6 +35,8 @@ from markupsafe import Markup
 
 from odoo import _, api, fields, models
 
+from .pb_bank_import_hold import NEWHIRE_KEY_PREFIX
+
 _logger = logging.getLogger(__name__)
 
 BANK_MODEL = 'pb.bank.change.request'
@@ -53,6 +55,9 @@ def _batch_of(request):
     rec = request.env[BANK_MODEL].sudo().browse(request.res_id).exists()
     if not rec or rec.pb_origin != 'import' or not rec.pb_import_key:
         return None
+    if rec.pb_import_key.startswith(NEWHIRE_KEY_PREFIX):
+        return None                        # FS-16: one person, one notice
+
     return rec.pb_import_key, rec.pb_import_label or ''
 
 

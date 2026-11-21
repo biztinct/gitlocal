@@ -23,7 +23,10 @@ export class OnboardWizard extends Component {
                 department_id: "", job_id: "", job_title: "", parent_id: "", fill_job_id: "",
                 with_contract: true, struct_id: "", structure_type_id: "",
                 wage: "", date_start: "", date_end: "", resource_calendar_id: "",
-                activate: true, account_number: "", bank_name: "",
+                activate: true,
+                // FS-16: sent through the bank change path (a second person
+                // approves) once the person exists, never to the old boxes
+                bank_name: "", account_number: "", account_holder: "",
             },
         });
         // Opened from the org chart ("Add a team member › A new starter", "Fill
@@ -65,6 +68,26 @@ export class OnboardWizard extends Component {
     toggle(f) { this.state.form[f] = !this.state.form[f]; }
     get cur() { return (this.state.defaults && this.state.defaults.currency) || "₫"; }
 
+    // ---- FS-16: bank details -------------------------------------------
+    get banks() { return (this.state.defaults && this.state.defaults.banks) || []; }
+    get bankTyped() {
+        const f = this.state.form;
+        return Boolean((f.bank_name || "").trim() || (f.account_number || "").trim() || (f.account_holder || "").trim());
+    }
+    /** What to fix in the account number, or "" (the bank check's own rule). */
+    get bankHint() {
+        const f = this.state.form;
+        const raw = (f.account_number || "").trim();
+        if (!this.bankTyped) { return ""; }
+        if (!raw) { return _t("Type the account number too, or leave the bank details empty."); }
+        if (/[^0-9 .\-]/.test(raw)) { return _t("Only digits (spaces and dashes are fine)."); }
+        const n = raw.replace(/\D/g, "").length;
+        if (n < 6 || n > 19) { return _t("6 to 19 digits. This one has %(n)s.", { n }); }
+        return "";
+    }
+    get holderPlaceholder() { return (this.state.form.name || "").trim() || _t("Name on the account"); }
+    get bankResult() { return (this.state.result && this.state.result.bank) || null; }
+
     get canNext() {
         if (this.state.step === 1) return !!this.state.form.name.trim();
         return true;
@@ -83,6 +106,11 @@ export class OnboardWizard extends Component {
             }
             if (res.error && res.applied) {
                 this.notif.add(_t("Employee created; contract: %(error)s", { error: res.error }), { type: "warning" });
+            }
+            if (res.bank && res.bank.state === "sent") {
+                this.notif.add(_t("Bank details sent for approval"), { type: "success" });
+            } else if (res.bank && (res.bank.state === "not_sent" || res.bank.state === "check")) {
+                this.notif.add(res.bank.message, { type: "warning", sticky: true });
             }
             this.state.result = res;
         } catch (e) {

@@ -42,6 +42,9 @@ _logger = logging.getLogger(__name__)
 FILE_FIELDS = ('vietnam_bank_name', 'vietnam_bank_branch',
                'vietnam_bank_account_name', 'vietnam_bank_account_number')
 OPEN_STATES = ('draft', 'hr_review', 'finance_review')
+#: FS-16: the key a new hire's bank details travel under — one per person,
+#: so a new hire is a single bank change, never a "batch" (batch notice).
+NEWHIRE_KEY_PREFIX = 'pb.newhire,'
 
 #: id(cursor) → Hold, while an import runs on that cursor.
 _HOLDS = {}
@@ -150,6 +153,27 @@ class PbBankChangeRequestImport(models.Model):
             # reason, for HR to look at on the bank screen.
             req._sys_write({'pb_decision_note': exc.args[0] if exc.args else ''})
         return 'waiting'
+
+    # ------------------------------------------------- FS-16: the new hire
+    @api.model
+    def _pb_hold_new_hire(self, employee, vals, proposer):
+        """The bank details typed on People › Add employee, for the person
+        just created: the same door as an import (a waiting change on the
+        one-second-person route, never written straight), proposed by the
+        person who typed them. `vals` holds x_* values. Returns the change
+        (sudo) — waiting, or a draft with the reason when the route refused
+        it (the number is somebody else's) — or an empty recordset when
+        there was nothing to send."""
+        employee = employee.sudo()
+        key = '%s%s' % (NEWHIRE_KEY_PREFIX, employee.id)
+        hold = Hold(key, _("New hire: %s", employee.name or ''), proposer)
+        # made AS the proposer: the approval engine counts the record's
+        # creator as one of the people who prepared it, and that must be the
+        # person who typed the details — not whoever approved the hire.
+        Req = self.with_user(proposer.id) if proposer else self
+        Req._pb_hold_from_import(employee, vals, hold)
+        return self.sudo().search([('pb_import_key', '=', key)],
+                                  order='id desc', limit=1)
 
     @api.model
     def _pb_import_counts(self, key):

@@ -126,3 +126,157 @@ msgstr "Perlakuan penggajian (Vietnam)"
 #: code:addons/pb_people_advanced/models/people_wizards.py:0
 msgid "Permanent"
 msgstr "Tetap"
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Type the account number too, or leave the bank details empty."
+msgstr "Ketik juga nomor rekeningnya, atau kosongkan detail bank."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The account number can only have digits (spaces and dashes are fine)."
+msgstr "Nomor rekening hanya boleh berisi angka (spasi dan tanda hubung boleh)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The account number must be 6 to 19 digits. This one has %s."
+msgstr "Nomor rekening harus 6 sampai 19 digit. Nomor ini memiliki %s digit."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent: %s Add them from the employee's side panel (Pay & tax › Bank)."
+msgstr "Detail bank tidak dikirim: %s Tambahkan dari panel samping karyawan (Gaji & pajak › Bank)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent: bank changes are not set up on this site. Ask your administrator."
+msgstr "Detail bank tidak dikirim: perubahan bank belum diatur di situs ini. Tanyakan administrator Anda."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "the bank check refused them."
+msgstr "pemeriksaan bank menolaknya."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent. Add them from the employee's side panel (Pay & tax › Bank)."
+msgstr "Detail bank tidak dikirim. Tambahkan dari panel samping karyawan (Gaji & pajak › Bank)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Bank details sent for approval"
+msgstr "Detail bank dikirim untuk disetujui"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Bank details kept for HR to look at first: %s Open Compliance › Bank."
+msgstr "Detail bank disimpan agar HR memeriksanya dulu: %s Buka Kepatuhan › Bank."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "the bank check found a problem."
+msgstr "pemeriksaan bank menemukan masalah."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details go with this request. When it is approved, they are sent to a second person for approval."
+msgstr "Detail bank ikut dalam permintaan ini. Setelah disetujui, detail tersebut dikirim ke orang kedua untuk disetujui."
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Account holder"
+msgstr "Pemilik rekening"
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Account number"
+msgstr "Nomor rekening"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Only digits (spaces and dashes are fine)."
+msgstr "Hanya angka (spasi dan tanda hubung boleh)."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "6 to 19 digits. This one has %(n)s."
+msgstr "6 sampai 19 digit. Nomor ini memiliki %(n)s."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Name on the account"
+msgstr "Nama pada rekening"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Tax and insurance details can be completed later on the employee record."
+msgstr "Detail pajak dan asuransi dapat dilengkapi nanti di data karyawan."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Bank details"
+msgstr "Detail bank"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Optional"
+msgstr "Opsional"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "A second person approves them before anyone is paid into this account."
+msgstr "Orang kedua menyetujuinya sebelum ada pembayaran ke rekening ini."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Pick or type a bank"
+msgstr "Pilih atau ketik bank"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Bank changes are not set up on this site, so these details cannot be sent."
+msgstr "Perubahan bank belum diatur di situs ini, jadi detail ini tidak dapat dikirim."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Nothing is paid into this account until a second person approves it."
+msgstr "Tidak ada pembayaran ke rekening ini sampai orang kedua menyetujuinya."
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Bank"
+msgstr "Bank"

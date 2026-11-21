@@ -253,16 +253,6 @@ msgstr "Bắt đầu *"
 
 #. module: pb_people_advanced
 #. odoo-javascript
-#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
-msgid ""
-"Statutory details (bank, tax, insurance) can be completed later on the employee’s "
-"Advanced form."
-msgstr ""
-"Các chi tiết theo luật định (ngân hàng, thuế, bảo hiểm) có thể được điền sau trên biểu"
-" mẫu Nâng cao của nhân viên."
-
-#. module: pb_people_advanced
-#. odoo-javascript
 #: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
 #: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
 msgid "Structure & wage"
@@ -478,7 +468,9 @@ msgstr "Phê duyệt"
 
 #. module: pb_people_advanced
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
 msgid "Bank"
 msgstr "Ngân hàng"
 
@@ -650,3 +642,149 @@ msgstr "Cách tính lương (Việt Nam)"
 #: code:addons/pb_people_advanced/models/people_wizards.py:0
 msgid "Permanent"
 msgstr "Chính thức"
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Type the account number too, or leave the bank details empty."
+msgstr "Hãy nhập cả số tài khoản, hoặc để trống thông tin ngân hàng."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The account number can only have digits (spaces and dashes are fine)."
+msgstr "Số tài khoản chỉ được có chữ số (có thể có dấu cách và dấu gạch ngang)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The account number must be 6 to 19 digits. This one has %s."
+msgstr "Số tài khoản phải có từ 6 đến 19 chữ số. Số này có %s chữ số."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent: %s Add them from the employee's side panel (Pay & tax › Bank)."
+msgstr "Thông tin ngân hàng chưa được gửi: %s Hãy thêm từ bảng bên của nhân viên (Lương và thuế › Ngân hàng)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent: bank changes are not set up on this site. Ask your administrator."
+msgstr "Thông tin ngân hàng chưa được gửi: trang này chưa thiết lập việc thay đổi tài khoản ngân hàng. Hãy hỏi quản trị viên."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "the bank check refused them."
+msgstr "bước kiểm tra ngân hàng đã từ chối."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent. Add them from the employee's side panel (Pay & tax › Bank)."
+msgstr "Thông tin ngân hàng chưa được gửi. Hãy thêm từ bảng bên của nhân viên (Lương và thuế › Ngân hàng)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Bank details sent for approval"
+msgstr "Đã gửi thông tin ngân hàng để phê duyệt"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Bank details kept for HR to look at first: %s Open Compliance › Bank."
+msgstr "Thông tin ngân hàng được giữ lại để Nhân sự xem trước: %s Mở Tuân thủ › Ngân hàng."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "the bank check found a problem."
+msgstr "bước kiểm tra ngân hàng phát hiện có vấn đề."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details go with this request. When it is approved, they are sent to a second person for approval."
+msgstr "Thông tin ngân hàng đi kèm yêu cầu này. Khi yêu cầu được duyệt, thông tin sẽ được gửi cho người thứ hai phê duyệt."
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Account holder"
+msgstr "Chủ tài khoản"
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Account number"
+msgstr "Số tài khoản"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Only digits (spaces and dashes are fine)."
+msgstr "Chỉ chữ số (có thể có dấu cách và dấu gạch ngang)."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "6 to 19 digits. This one has %(n)s."
+msgstr "Từ 6 đến 19 chữ số. Số này có %(n)s."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Name on the account"
+msgstr "Tên trên tài khoản"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Tax and insurance details can be completed later on the employee record."
+msgstr "Thông tin thuế và bảo hiểm có thể bổ sung sau trên hồ sơ nhân viên."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Bank details"
+msgstr "Thông tin ngân hàng"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Optional"
+msgstr "Không bắt buộc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "A second person approves them before anyone is paid into this account."
+msgstr "Một người thứ hai phê duyệt trước khi có khoản tiền nào được trả vào tài khoản này."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Pick or type a bank"
+msgstr "Chọn hoặc nhập ngân hàng"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Bank changes are not set up on this site, so these details cannot be sent."
+msgstr "Trang này chưa thiết lập việc thay đổi tài khoản ngân hàng, nên không thể gửi các thông tin này."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Nothing is paid into this account until a second person approves it."
+msgstr "Chưa có khoản nào được trả vào tài khoản này cho đến khi người thứ hai phê duyệt."

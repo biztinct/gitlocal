@@ -367,3 +367,9 @@ msgstr "Kosong berarti bank Vietnam (direktori awal)."
 #: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_registry__clearing_code
 msgid "The bank's public national code: Indonesia the 3-digit bank code, Singapore the 4-digit bank code, India the first four letters of every IFSC of this bank."
 msgstr "Kode nasional publik bank: Indonesia kode bank 3 digit, Singapura kode bank 4 digit, India empat huruf pertama setiap IFSC bank ini."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "New hire: %s"
+msgstr "Karyawan baru: %s"

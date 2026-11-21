@@ -74,8 +74,8 @@ class PbNewHireProposal(models.Model):
         'name': 'Name', 'job_title': 'Job title',
         'work_email': 'Work email', 'work_phone': 'Work phone',
         'wage': 'Monthly pay', 'date_start': 'Starts',
-        'date_end': 'Ends', 'account_number': 'Bank account',
-        'bank_name': 'Bank',
+        'date_end': 'Ends', 'bank_name': 'Bank',
+        'account_holder': 'Account holder',
     }
     _PICKED = {'job_id': ('hr.job', 'Job'),
                'department_id': ('hr.department', 'Team'),
@@ -94,6 +94,12 @@ class PbNewHireProposal(models.Model):
         for key, label in self._PERSON_WORDS.items():
             if values.get(key) not in (None, '', False):
                 rows.append((_(label), '', values[key]))
+        # FS-16: the account number is shown by its last four digits only;
+        # the bank change that follows shows it in full to its approver.
+        digits = ''.join(ch for ch in str(values.get('account_number') or '')
+                         if ch.isdigit())
+        if digits:
+            rows.append((_('Account number'), '', '•••• ' + digits[-4:]))
         for key, (model, label) in self._PICKED.items():
             if values.get(key):
                 rows.append((_(label), '',
@@ -107,11 +113,22 @@ class PbNewHireProposal(models.Model):
     # --------------------------------------------------------- the applies
     def _apply_employee(self):
         payload = self.payload()
-        answer = self.env['pb.people.onboard.wizard'].with_context(
-            **{NEWHIRE_WRITE: True}).create_employee(payload.get('values')
-                                                     or {})
+        Wizard = self.env['pb.people.onboard.wizard']
+        values = dict(payload.get('values') or {})
+        # FS-16: the bank details are sent by THIS request, proposed by the
+        # person who asked for the hire (never by whoever approved it), so
+        # the second-person rule of bank changes counts the right person.
+        bank = Wizard._pb_bank_entered(values)
+        for key in Wizard.BANK_KEYS:
+            values.pop(key, None)
+        answer = Wizard.with_context(**{NEWHIRE_WRITE: True}).create_employee(values)
         if answer.get('error') and not answer.get('employee_id'):
             raise UserError(answer['error'])
+        if bank and answer.get('employee_id'):
+            emp = self.env['hr.employee'].browse(int(answer['employee_id']))
+            outcome = Wizard._pb_send_bank(emp, bank, self.user_id or self.env.user)
+            Wizard._pb_bank_note(emp, outcome)
+            answer = dict(answer, bank=outcome)
         return answer
 
     def _apply_contract(self):

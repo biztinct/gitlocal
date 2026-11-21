@@ -46,6 +46,15 @@
               <p t-if="state.result.reference" class="pbim-sub">Reference <t t-esc="state.result.reference"/></p>
               <div t-foreach="state.result.notes or []" t-as="nt" t-key="nt_index" class="pbim-sub" t-esc="nt"/>
             </div>
+            <!-- FS-16: what happened to the bank details, in one line -->
+            <div t-if="bankResult" t-attf-class="pplw-bankline is-{{ bankResult.state }}" role="status">
+              <span class="ic"><t t-if="bankResult.state === 'sent'" t-out="ic('shieldCheck',16)"/><t t-elif="bankResult.state === 'later'" t-out="ic('clock',16)"/><t t-else="" t-out="ic('triangleAlert',16)"/></span>
+              <div class="tx">
+                <b t-esc="bankResult.message"/>
+                <span t-if="bankResult.state === 'sent'">Nothing is paid into this account until a second person approves it.</span>
+                <span t-if="bankResult.reference" class="pplw-ref">Reference <t t-esc="bankResult.reference"/></span>
+              </div>
+            </div>
           </t>
 
           <!-- STEP 1: PERSON -->
@@ -67,8 +76,42 @@
                   <option value="">— Optional —</option>
                   <option t-foreach="state.defaults.countries" t-as="c" t-key="c.id" t-att-value="c.id" t-esc="c.name"/>
                 </select>
-                <div class="pplw-note">Statutory details (bank, tax, insurance) can be completed later on the employee’s Advanced form.</div>
+                <div class="pplw-note">Tax and insurance details can be completed later on the employee record.</div>
               </div>
+            </div>
+            <!-- FS-16: the bank section. Sent through the bank change path
+                 once the person exists: a second person approves it. -->
+            <div class="pplw-sec pplw-bank">
+              <div class="pplw-bank-h">
+                <span class="pplw-bank-ic"><t t-out="ic('landmark',16)"/></span>
+                <div>
+                  <h4>Bank details <span class="pplw-opt">Optional</span></h4>
+                  <div class="pplw-bank-sub">A second person approves them before anyone is paid into this account.</div>
+                </div>
+              </div>
+              <div class="pplw-bank-grid">
+                <div>
+                  <label class="pplw-label" for="pplw_bank_name">Bank</label>
+                  <input id="pplw_bank_name" class="pplw-in" list="pplw_banks" autocomplete="off" placeholder="Pick or type a bank"
+                         t-att-value="state.form.bank_name" t-on-input="(ev) => this.onField('bank_name', ev)"/>
+                  <datalist id="pplw_banks">
+                    <option t-foreach="banks" t-as="b" t-key="b_index" t-att-value="b.value" t-att-label="b.label or b.value"/>
+                  </datalist>
+                </div>
+                <div>
+                  <label class="pplw-label" for="pplw_acc_no">Account number</label>
+                  <input id="pplw_acc_no" class="pplw-in pplw-mono" inputmode="numeric" autocomplete="off" maxlength="40"
+                         t-att-class="{ 'is-bad': bankHint }" t-att-aria-invalid="bankHint ? 'true' : 'false'"
+                         t-att-value="state.form.account_number" t-on-input="(ev) => this.onField('account_number', ev)"/>
+                  <div t-if="bankHint" class="pplw-hint" role="status"><t t-out="ic('info',13)"/> <span t-esc="bankHint"/></div>
+                </div>
+                <div>
+                  <label class="pplw-label" for="pplw_acc_holder">Account holder</label>
+                  <input id="pplw_acc_holder" class="pplw-in" autocomplete="off" t-att-placeholder="holderPlaceholder"
+                         t-att-value="state.form.account_holder" t-on-input="(ev) => this.onField('account_holder', ev)"/>
+                </div>
+              </div>
+              <div t-if="!state.defaults.bank_check and bankTyped" class="pplw-hint"><t t-out="ic('info',13)"/> <span>Bank changes are not set up on this site, so these details cannot be sent.</span></div>
             </div>
           </t>
 
