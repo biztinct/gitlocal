@@ -78,16 +78,9 @@ PANEL_TABS = ('personal', 'job', 'pay')
 COMEBACK_BANK = ('account_number', 'bank_name')
 #: the platform's version-record boxes (Payroll tab); the contract holds them.
 COMEBACK_CONTRACT = ('contract_type_id', 'structure_type_id')
-#: computed, not stored (FIELD_AUDIT_FACTS §7): always 0 without a policy.
-COMEBACK_FIGURES = ('vn_employer_insurance_cost', 'vn_employee_insurance_cost',
-                    'vn_total_insurance_contribution', 'vn_personal_tax_rate',
-                    'vn_monthly_tax_allowance', 'vn_dependent_tax_allowance')
-#: inside the legacy Insurance (BH) / Tax & Dependents groups that carry
-#: `invisible="vn_uses_payroll_profile"` (FIELD_AUDIT_FACTS §3): HR viewing a
-#: Vietnam employee never sees that group, so "Show again" would draw nothing.
-COMEBACK_OLD_VN = ('vn_foreign_insurance_exempt', 'vn_si_number', 'vn_si_effective_date',
-                   'vn_hi_number', 'vn_hi_effective_date', 'vn_ui_number',
-                   'vn_ui_effective_date', 'vn_tax_table_id', 'vn_tax_effective_date')
+# FS-16: the 15 old Vietnam boxes that also stayed off (6 worked-out figures,
+# 9 inputs of a section never drawn for Vietnam staff) were deleted from
+# pb_hr_payroll_vietnam after a re-proof on the five sites (0 values, 0 readers).
 #: removed boxes that are not Vietnam's: "Show again" proposes all countries.
 PROPOSE_ALL = ('pb_position_reference', 'pb_emergency_relationship')
 
@@ -215,11 +208,6 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
                               'invite a second account that nothing uses.')),
             (COMEBACK_CONTRACT, _('The contract holds this now (contract type and pay structure). '
                                   'This box belongs to an older record and is not used.')),
-            (COMEBACK_FIGURES, _('A worked-out figure from an old insurance and tax set-up that '
-                                 'nobody uses. It is never typed and would always show 0.')),
-            (COMEBACK_OLD_VN, _('Its old section was replaced by the insurance and tax summary '
-                                'Vietnam staff see, so it would not be drawn. The insurance '
-                                'details the files read are on the side panel.')),
         ]
         Model = self.env[MODEL]
         tidy = self._pbfs_people_tidy_rules()
@@ -228,6 +216,19 @@ class PbFormStudioPeopleStandard(models.AbstractModel):
                 if name in Model._fields and tidy.get(name) == 'remove':
                     out[name] = reason
         return out
+
+    # ------------------------------------------------------ FS-16 (owner)
+    @api.model
+    def _pbfs_std_all(self, model):
+        """The Form builder lists only boxes that can come back: the ones that
+        must stay off (`_pbfs_std_comeback`) are not listed at all — no greyed
+        row, not counted in "Taken off the screens" (owner 2026-11-22: "causes
+        confusion"). The server still refuses them (`update_standard`)."""
+        out = super()._pbfs_std_all(model)
+        stay = self._pbfs_std_comeback(model) if model == MODEL else {}
+        if not stay:
+            return out
+        return {name: desc for name, desc in out.items() if name not in stay}
 
     @api.model
     def _pbfs_std_propose(self, model, name):

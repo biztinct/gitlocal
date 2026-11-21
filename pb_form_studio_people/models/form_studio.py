@@ -171,8 +171,13 @@ class PbFormStudio(models.AbstractModel):
     @api.model
     def _pbfs_people_standard_fields(self):
         Model = self.env[MODEL]
+        # FS-16: a box that must stay off the screens (`_pbfs_std_comeback`:
+        # the old Bank box, the record's Contract Type / Pay Category) is not
+        # offered anywhere in the Form builder either.
+        stay = self._pbfs_std_comeback(MODEL)
         return [n for n in STANDARD_FIELDS
-                if n in Model._fields and Model._fields[n].type in STANDARD_TTYPES]
+                if n in Model._fields and Model._fields[n].type in STANDARD_TTYPES
+                and n not in stay]
 
     # ------------------------------------------------------------ R14 hooks
     @api.model

@@ -238,17 +238,20 @@ class TestFs15ShownFor(TransactionCase):
             if name not in self.env[MODEL]._fields:
                 continue
             self.assertIn(name, comeback)
-            self.assertTrue(self.desc(name)['comeback'])
-            self.assertIsNone(self.desc(name)['propose'])
+            # FS-16: not listed in the Form builder at all; the rule itself still says why
+            self.assertNotIn(name, self.st().get_studio(HOST)['fields'])
+            desc = self.Studio._pbfs_std_desc(MODEL, name)
+            self.assertTrue(desc['comeback'])
+            self.assertIsNone(desc['propose'])
             for vals in ({'std_show': 'all'},
                          {'std_show': 'only', 'std_show_country_ids': [self.vn.id]}):
                 with self.assertRaises(UserError):
                     self.st().update_standard(MODEL, name, vals)
             self.assertFalse(self.shown_for(self.arch(), name, self.emp_vn))
-        # computed summaries too
+        # FS-16: the old Vietnam summaries and inputs that also stayed off are
+        # deleted from the product (test_fs16_builder_list)
         for name in ('vn_employer_insurance_cost', 'vn_personal_tax_rate'):
-            if name in self.env[MODEL]._fields:
-                self.assertIn(name, comeback)
+            self.assertNotIn(name, self.env[MODEL]._fields)
 
     # ------------------------------------------------------------------- 5
     def test_05_countries_in_use_match_the_people_filter(self):
