@@ -124,8 +124,8 @@ def pages():
         admin = env['res.users'].search([('share', '=', False), ('id', '!=', 1)]).filtered(
             lambda u: u.has_group('base.group_system'))[:1]
     # the backend page, and its style bundle
-    got = fetch(admin, ['/odoo'])
-    path, code, body = got[0]
+    got = fetch(admin, ['/odoo', '/bizapp'])   # /odoo answers 301 to /bizapp on this build
+    path, code, body = got[1] if got[0][1] in (301, 302, 303, 307, 308) else got[0]
     css = re.findall(rb'/web/assets/[^"\']*web\.assets_web[^"\']*\.css', body)
     line = '/odoo %s' % code
     if css:
@@ -160,10 +160,18 @@ def pages():
     paths = ['/my']
     if 'pb.ess.workforce' in env:
         paths.append('/my/work/leave')
+    save = os.environ.get('IBB_SAVE')   # a folder: keep the bodies to compare (copies only)
     for i, emp in enumerate(emps):
         res = fetch(emp.user_id, paths)
+        if save:
+            for pp, cc, bb in res:
+                with open(os.path.join(save, 'emp%s%s.html' % (i + 1, pp.replace('/', '_'))), 'wb') as fh:
+                    fh.write(bb)
         p('pages emp%s %s' % (i + 1, ' | '.join('%s %s %s' % (pp, cc, _h.md5(
-            re.sub(rb'[0-9a-f]{40}o[0-9]+|/web/assets/[^"\' ]+|data-server-now-ms="[0-9]+"', b'', bb)
+            # the session block differs between two reads of the SAME code (an internal
+            # login's /my carries it): left out, like the tokens and asset addresses
+            re.sub(rb'[0-9a-f]{40}o[0-9]+|/web/assets/[^"\' ]+|data-server-now-ms="[0-9]+"'
+                   rb'|odoo\.__session_info__ = [^\n]*', b'', bb)
         ).hexdigest()[:10]) for pp, cc, bb in res)))
     env.cr.rollback()
 
