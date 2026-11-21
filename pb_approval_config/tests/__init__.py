@@ -18,3 +18,5 @@ from . import test_p6_tenant_admin
 from . import test_p6_bank_rails
 # WDGAP QF1 — approve selected.
 from . import test_wdgap_qf1_bulk
+# INBOX-BULK-BANK — bank details approved several at once, after a check.
+from . import test_inbox_bulk_bank

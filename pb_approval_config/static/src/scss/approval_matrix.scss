@@ -489,7 +489,13 @@
             }
         }
         .pbam-mt, .pbam-ms { display: block; }
+        // INBOX-BULK-BANK — an answer this kind may not be given, or a
+        // reader who may not change it: drawn, never pressable
+        &.pbam-radio--off { cursor: not-allowed; }
+        &.pbam-radio--off:not(.is-on) { opacity: .5; }
     }
+    // the several-at-once card spans the grid: three answers read best wide
+    .pbam-sg-bulk { grid-column: 1 / -1; }
     .pbam-switch {
         display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
         font-size: 13px; font-weight: 600;

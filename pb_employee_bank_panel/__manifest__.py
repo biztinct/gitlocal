@@ -25,7 +25,7 @@ bank'").
 Bridge module: it reaches the side panel and Home from outside (inheritance
 and patches only) and writes nothing at install.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

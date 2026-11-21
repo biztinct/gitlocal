@@ -1,0 +1,464 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_approval_config
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-21 00:00+0000\n"
+"PO-Revision-Date: 2026-11-21 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "This kind is approved together with others only after the extra check. Press Approve selected again and confirm the check."
+msgstr "Jenis ini disetujui bersama yang lain hanya setelah pemeriksaan tambahan. Tekan Setujui yang dipilih lagi dan konfirmasi pemeriksaannya."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, together with %(n)s others, after the extra check."
+msgstr "Disetujui dengan Setujui yang dipilih, bersama %(n)s lainnya, setelah pemeriksaan tambahan."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, after the extra check."
+msgstr "Disetujui dengan Setujui yang dipilih, setelah pemeriksaan tambahan."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected, together with %(n)s others."
+msgstr "Disetujui dengan Setujui yang dipilih, bersama %(n)s lainnya."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Approved with Approve selected."
+msgstr "Disetujui dengan Setujui yang dipilih."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Choose the requests to approve."
+msgstr "Pilih permintaan yang akan disetujui."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Money leaves the company with this one, so it is approved on its own."
+msgstr "Uang keluar dari perusahaan dengan permintaan ini, jadi disetujui sendiri."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "This kind of request is approved one at a time."
+msgstr "Jenis permintaan ini disetujui satu per satu."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Money leaves the company with this kind, so each one is approved on its own."
+msgstr "Jenis ini mengeluarkan uang dari perusahaan, jadi setiap permintaan disetujui sendiri-sendiri."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Only your administrator can change this."
+msgstr "Hanya administrator Anda yang dapat mengubah ini."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Money leaves the company with \"%s\", so it cannot be approved several at once that way."
+msgstr "\"%s\" mengeluarkan uang dari perusahaan, jadi tidak dapat disetujui beberapa sekaligus dengan cara itu."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Choose one of the three answers."
+msgstr "Pilih salah satu dari tiga jawaban."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "One at a time"
+msgstr "Satu per satu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Several at once"
+msgstr "Beberapa sekaligus"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Several at once, with an extra confirmation"
+msgstr "Beberapa sekaligus, dengan konfirmasi tambahan"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s changed \"%(what)s\": %(old)s → %(new)s"
+msgstr "%(who)s mengubah \"%(what)s\": %(old)s → %(new)s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Select the first %s that I can approve"
+msgstr "Pilih %s pertama yang dapat saya setujui"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Select all %s that I can approve"
+msgstr "Pilih semua %s yang dapat saya setujui"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "The list could not be read. Try again in a moment."
+msgstr "Daftar tidak dapat dibaca. Coba lagi sebentar lagi."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 selected"
+msgstr "1 dipilih"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s selected"
+msgstr "%s dipilih"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%(done)s of %(total)s approved"
+msgstr "%(done)s dari %(total)s disetujui"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "· 1 could not be approved"
+msgstr "· 1 tidak dapat disetujui"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "· %s could not be approved"
+msgstr "· %s tidak dapat disetujui"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "None of them is in another person's name."
+msgstr "Tidak ada yang atas nama orang lain."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 of them is in another person's name."
+msgstr "1 di antaranya atas nama orang lain."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s of them are in another person's name."
+msgstr "%s di antaranya atas nama orang lain."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 of them also changes pay."
+msgstr "1 di antaranya juga mengubah gaji."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s of them also change pay."
+msgstr "%s di antaranya juga mengubah gaji."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 other request is approved the usual way."
+msgstr "1 permintaan lain disetujui seperti biasa."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s other requests are approved the usual way."
+msgstr "%s permintaan lain disetujui seperti biasa."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "They are approved %s at a time, and you can stop at any point."
+msgstr "Permintaan disetujui %s sekaligus, dan Anda dapat berhenti kapan saja."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve 1 bank details change?"
+msgstr "Setujui 1 perubahan rekening bank?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve %s bank details changes together?"
+msgstr "Setujui %s perubahan rekening bank sekaligus?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "I have checked these bank details"
+msgstr "Saya sudah memeriksa rekening bank ini"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "I have checked these requests"
+msgstr "Saya sudah memeriksa permintaan ini"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approving stopped after %(done)s of %(total)s: %(why)s The rest are still selected."
+msgstr "Persetujuan berhenti setelah %(done)s dari %(total)s: %(why)s Sisanya masih dipilih."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approving stopped after %(done)s of %(total)s because the connection dropped. Nothing else was changed; press Approve selected to carry on."
+msgstr "Persetujuan berhenti setelah %(done)s dari %(total)s karena koneksi terputus. Tidak ada yang lain berubah; tekan Setujui yang dipilih untuk melanjutkan."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Stopped after %(done)s of %(total)s were approved. Nothing else was changed; the rest are still selected."
+msgstr "Berhenti setelah %(done)s dari %(total)s disetujui. Tidak ada yang lain berubah; sisanya masih dipilih."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%(n)s %(kind)s"
+msgstr "%(n)s %(kind)s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "A request"
+msgstr "Sebuah permintaan"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "This one could not be approved."
+msgstr "Permintaan ini tidak dapat disetujui."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 approved."
+msgstr "1 disetujui."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s approved."
+msgstr "%s disetujui."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve 1 request?"
+msgstr "Setujui 1 permintaan?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve %s requests?"
+msgstr "Setujui %s permintaan?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve 1"
+msgstr "Setujui 1"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approve %s"
+msgstr "Setujui %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Tick to approve it with others"
+msgstr "Centang untuk menyetujuinya bersama yang lain"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Select all on this page that I can approve (%s)"
+msgstr "Pilih semua di halaman ini yang dapat saya setujui (%s)"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%(n)s of %(total)s selected"
+msgstr "%(n)s dari %(total)s dipilih"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "1 request could not be approved"
+msgstr "1 permintaan tidak dapat disetujui"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "%s requests could not be approved"
+msgstr "%s permintaan tidak dapat disetujui"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Stopping after this group…"
+msgstr "Berhenti setelah kelompok ini…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Stop"
+msgstr "Hentikan"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "An extra check before you approve"
+msgstr "Pemeriksaan tambahan sebelum Anda menyetujui"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Pay will be sent to these accounts."
+msgstr "Gaji akan dikirim ke rekening-rekening ini."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Each one is approved in your name, exactly as if you pressed Approve on it, and its history says it was approved together with the others."
+msgstr "Setiap permintaan disetujui atas nama Anda, persis seperti jika Anda menekan Setujui padanya, dan riwayatnya mencatat bahwa permintaan itu disetujui bersama yang lain."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Review the list"
+msgstr "Tinjau daftar"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Clear"
+msgstr "Hapus pilihan"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Approve selected"
+msgstr "Setujui yang dipilih"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Selected requests"
+msgstr "Permintaan yang dipilih"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Send back and turn down stay one at a time: each needs its own reason."
+msgstr "Mengembalikan dan menolak tetap satu per satu: masing-masing perlu alasannya sendiri."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Each request is opened and decided on its own."
+msgstr "Setiap permintaan dibuka dan diputuskan sendiri."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Approvers may tick several in the Approvals inbox and approve them together."
+msgstr "Penyetuju dapat mencentang beberapa di kotak Persetujuan dan menyetujuinya bersama."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Approvers may approve them together after a check that counts them and asks them to confirm."
+msgstr "Penyetuju dapat menyetujuinya bersama setelah pemeriksaan yang menghitungnya dan meminta konfirmasi."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Saved. It applies straight away."
+msgstr "Tersimpan. Langsung berlaku."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "That could not be saved. Try again in a moment."
+msgstr "Tidak dapat disimpan. Coba lagi sebentar lagi."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Can be approved several at once?"
+msgstr "Dapat disetujui beberapa sekaligus?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "These decide where pay is sent, so they are approved together only after the extra check."
+msgstr "Permintaan ini menentukan ke mana gaji dikirim, jadi hanya disetujui bersama setelah pemeriksaan tambahan."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "This applies straight away to every request of this kind, in every company. It is not part of the route, so it needs no publish."
+msgstr "Ini langsung berlaku untuk setiap permintaan jenis ini, di setiap perusahaan. Ini bukan bagian dari alur, jadi tidak perlu diterbitkan."
