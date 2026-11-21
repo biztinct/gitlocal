@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, useRef, useEffect } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
@@ -37,6 +37,31 @@ export class PbPeople extends Component {
             // drawer it opens in place, one person at a time.
             canContracts: false, drawerContractId: null,
         });
+        this.peopleRoot = useRef("peopleRoot");
+        useEffect(() => {
+            const root = this.peopleRoot.el;
+            const toolbar = root?.querySelector(".pbf-bar");
+            if (!toolbar) { return; }
+            let scrollport = root;
+            while (scrollport && !/auto|scroll/.test(getComputedStyle(scrollport).overflowY)) {
+                scrollport = scrollport.parentElement;
+            }
+            const measure = () => {
+                const values = {
+                    "--ppl-toolbar-height": Math.ceil(toolbar.getBoundingClientRect().height),
+                    "--ppl-scrollport-top": Math.max(0, Math.ceil(scrollport?.getBoundingClientRect().top || 0)),
+                };
+                for (const [name, value] of Object.entries(values)) {
+                    const pixels = `${value}px`;
+                    if (root.style.getPropertyValue(name) !== pixels) { root.style.setProperty(name, pixels); }
+                }
+            };
+            const observer = new ResizeObserver(measure);
+            observer.observe(toolbar);
+            if (scrollport && scrollport !== toolbar) { observer.observe(scrollport); }
+            measure();
+            return () => observer.disconnect();
+        }, () => [this.state.loaded]);
         // The shared filter panel (pb_filter_kit): it owns the filters, the
         // counts and the views; this screen only loads a page for kit.query.
         this.kit = useFilterKit({

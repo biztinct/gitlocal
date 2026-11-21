@@ -10,6 +10,14 @@
         position: sticky; top: 0; z-index: 5;
         padding: 8px 0; background: var(--pbim-bg, #f4f5fb);
     }
+    // The filter panel follows the toolbar's measured height, including the
+    // bulk row and any wrapping at narrower desktop sizes.
+    .pbf:not(.pbf--narrow) > .pbf-body > .pbf-panel {
+        top: calc(var(--ppl-toolbar-height, 54px) + 12px);
+        .pbf-panel-in {
+            max-height: calc(100vh - var(--ppl-scrollport-top, 46px) - var(--ppl-toolbar-height, 54px) - 24px);
+        }
+    }
     .ppl-select-toggle { flex-shrink: 0; white-space: nowrap; }
     .ppl-bulkbar { flex: 1 0 100%; min-width: 0; margin: 0; flex-wrap: wrap; }
     .ppl-bulk-count { flex: 0 0 auto; white-space: nowrap; }
