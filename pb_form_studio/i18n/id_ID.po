@@ -232,6 +232,7 @@ msgstr "Semua"
 #. module: pb_form_studio
 #. odoo-javascript
 #: code:addons/pb_form_studio/static/src/js/field_library.js:0 code:addons/pb_form_studio/static/src/xml/field_library.xml:0 code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__all
 msgid "All countries"
 msgstr "Semua negara"
 
@@ -2199,6 +2200,7 @@ msgstr "Cari kolom standar"
 #: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
 #: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
 #: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_hidden
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__none
 msgid "Hidden for everyone"
 msgstr "Disembunyikan untuk semua"
 
@@ -2667,3 +2669,343 @@ msgstr "Dihitung oleh layar"
 msgid "Field code: %s"
 msgstr "Kode field: %s"
 
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "Choose who sees this field: all countries, only some Countries of Work, or nobody."
+msgstr "Pilih siapa yang melihat kolom ini: semua negara, hanya beberapa Negara Kerja, atau tidak ada."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "%s It cannot be shown again."
+msgstr "%s Tidak bisa ditampilkan lagi."
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "built-in setting put back"
+msgstr "pengaturan bawaan dikembalikan"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown for all countries"
+msgstr "ditampilkan untuk semua negara"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "people with no Country of Work"
+msgstr "orang tanpa Negara Kerja"
+
+#. module: pb_form_studio
+#. odoo-python
+#: code:addons/pb_form_studio/models/form_standard.py:0
+msgid "shown only for %s"
+msgstr "hanya ditampilkan untuk %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "No Country of Work"
+msgstr "Tanpa Negara Kerja"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "No country matches"
+msgstr "Tidak ada negara yang cocok"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "Every Country of Work in use is already chosen"
+msgstr "Semua Negara Kerja yang dipakai sudah dipilih"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "1 person"
+msgstr "1 orang"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%s people"
+msgstr "%s orang"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "no Country of Work"
+msgstr "tanpa Negara Kerja"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%(a)s + %(b)s"
+msgstr "%(a)s + %(b)s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/country_picker.js:0
+msgid "%(a)s + %(b)s + %(n)s more"
+msgstr "%(a)s + %(b)s + %(n)s lainnya"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Countries of Work in use"
+msgstr "Negara Kerja yang dipakai"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Other countries"
+msgstr "Negara lain"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/country_picker.xml:0
+msgid "Type a country's name to find it."
+msgstr "Ketik nama negara untuk mencarinya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Taken off the screens"
+msgstr "Sudah dihapus dari layar"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Was on %s"
+msgstr "Dulu di %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Stays off"
+msgstr "Tetap tidak tampil"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Can be shown again"
+msgstr "Bisa ditampilkan lagi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Always shown now: %s"
+msgstr "Kini selalu ditampilkan: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Cannot be hidden. %s"
+msgstr "Tidak bisa disembunyikan. %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown for"
+msgstr "ditampilkan untuk"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "shown for: %s"
+msgstr "ditampilkan untuk: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "built-in setting put back: %s"
+msgstr "pengaturan bawaan dikembalikan: %s"
+
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "When shown again: Full details, %s tab, and the side panel."
+msgstr "Saat ditampilkan lagi: Detail lengkap, tab %s, dan panel samping."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "When shown again: Full details, %s tab, in its old place. Not on the side panel."
+msgstr "Saat ditampilkan lagi: Detail lengkap, tab %s, di tempat lamanya. Tidak di panel samping."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "%s You can still rename it."
+msgstr "%s Anda tetap bisa mengganti namanya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Always shown"
+msgstr "Selalu ditampilkan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/studio_overlay.js:0
+msgid "Always shown: %s"
+msgstr "Selalu ditampilkan: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Built-in setting"
+msgstr "Pengaturan bawaan"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Changed from: %s"
+msgstr "Diubah dari: %s"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Shown again"
+msgstr "Ditampilkan lagi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Taken off the screens, stays off"
+msgstr "Sudah dihapus dari layar, tetap tidak tampil"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/js/field_library.js:0
+msgid "Pick at least one Country of Work, or choose All countries."
+msgstr "Pilih minimal satu Negara Kerja, atau pilih Semua negara."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick a field to choose the countries it shows for, give it your own label or tick it for My Payobook. It stays where the product draws it."
+msgstr "Pilih kolom untuk memilih negara tempat kolom tampil, beri label sendiri, atau centang untuk My Payobook. Kolom tetap di tempat produk menampilkannya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Pick a field to choose the countries it shows for or give it your own label. It stays where the product draws it."
+msgstr "Pilih kolom untuk memilih negara tempat kolom tampil atau beri label sendiri. Kolom tetap di tempat produk menampilkannya."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "The product took these off the screens. Their values are kept. Most can be shown again."
+msgstr "Produk menghapus kolom ini dari layar. Nilainya tetap disimpan. Sebagian besar bisa ditampilkan lagi."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Show again"
+msgstr "Tampilkan lagi"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "Always shown: identity or pay depends on it"
+msgstr "Selalu ditampilkan: identitas atau gaji bergantung padanya"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+msgid "It was narrowed before it had to stay on screen, so every screen shows it as the product does. Choose Reset to built-in to clear the old setting."
+msgstr "Kolom ini dipersempit sebelum harus selalu tampil, jadi setiap layar menampilkannya seperti produk. Pilih Kembalikan ke bawaan untuk menghapus pengaturan lama."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Stays off the screens."
+msgstr "Tetap tidak tampil di layar."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show
+msgid "Shown for"
+msgstr "Ditampilkan untuk"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+#: model:ir.model.fields.selection,name:pb_form_studio.selection__pb_form_field_meta__std_show__only
+msgid "Only these Countries of Work"
+msgstr "Hanya Negara Kerja ini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Shown only for people whose Country of Work is one of these. Removing the last one hides it for everyone. Values are kept."
+msgstr "Hanya ditampilkan untuk orang yang Negara Kerjanya salah satu dari ini. Menghapus yang terakhir menyembunyikannya untuk semua. Nilai tetap disimpan."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Always shown here"
+msgstr "Selalu ditampilkan di sini"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Pick a country below."
+msgstr "Pilih negara di bawah."
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Built-in setting:"
+msgstr "Pengaturan bawaan:"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Now:"
+msgstr "Sekarang:"
+
+#. module: pb_form_studio
+#. odoo-javascript
+#: code:addons/pb_form_studio/static/src/xml/studio_overlay.xml:0
+#: code:addons/pb_form_studio/static/src/xml/field_library.xml:0
+msgid "Reset to built-in"
+msgstr "Kembalikan ke bawaan"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show_country_ids
+msgid "Shown for these Countries of Work"
+msgstr "Ditampilkan untuk Negara Kerja ini"
+
+#. module: pb_form_studio
+#: model:ir.model.fields,field_description:pb_form_studio.field_pb_form_field_meta__std_show_unset
+msgid "Also people with no Country of Work"
+msgstr "Juga orang tanpa Negara Kerja"

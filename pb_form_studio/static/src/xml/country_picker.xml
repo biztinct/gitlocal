@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- R31 (FS-15): one country picker for the whole Form builder. -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_form_studio.CountryPicker">
+    <div class="pbfb-cpick" t-att-class="{ open: state.open and !props.disabled, dis: props.disabled }">
+      <div class="pbfb-cpick-box">
+        <span class="lead" t-out="ic('search', 14)"/>
+        <input type="text" t-ref="input" class="pbfb-csearch" role="combobox" autocomplete="off"
+               aria-autocomplete="list" t-att-aria-expanded="state.open ? 'true' : 'false'"
+               t-att-aria-controls="uid" t-att-aria-activedescendant="activeId"
+               t-att-placeholder="ph" t-att-disabled="props.disabled" t-att-value="state.term"
+               t-on-focus="onFocus" t-on-blur="onBlur" t-on-input="onInput" t-on-keydown="onKeydown"/>
+        <span class="trail" t-out="ic(state.open ? 'chevronUp' : 'chevronDown', 14)"/>
+      </div>
+      <div t-if="state.open and !props.disabled" class="pbfb-cpick-menu" role="listbox" t-att-id="uid">
+        <t t-if="hasInUse and (useItems.length or noneItem)">
+          <div class="pbfb-cpick-h"><t t-out="ic('users', 12)"/> <span>Countries of Work in use</span></div>
+          <div t-foreach="useItems" t-as="it" t-key="it.key" class="pbfb-cpick-it" role="option"
+               t-att-id="optId(it)" t-att-aria-selected="isActive(it) ? 'true' : 'false'" t-att-class="itemClass(it)"
+               t-on-mousedown="onItemDown" t-on-click="() => this.pick(it)">
+            <span class="nm"><t t-esc="it.country.name"/><small t-if="noteOf(it.country)" t-esc="noteOf(it.country)"/></span>
+            <span class="n" t-esc="peopleText(it.n)"/>
+          </div>
+          <div t-if="noneItem" class="pbfb-cpick-it none" role="option" t-att-id="optId(noneItem)"
+               t-att-aria-selected="isActive(noneItem) ? 'true' : 'false'" t-att-class="itemClass(noneItem)"
+               t-on-mousedown="onItemDown" t-on-click="() => this.pick(noneItem)">
+            <span class="nm" t-esc="noneItem.label"/>
+            <span class="n" t-esc="peopleText(noneItem.n)"/>
+          </div>
+        </t>
+        <div class="pbfb-cpick-h"><t t-out="ic('globe', 12)"/> <span>Other countries</span></div>
+        <t t-if="otherItems.length">
+          <div t-foreach="otherItems" t-as="it" t-key="it.key" class="pbfb-cpick-it" role="option"
+               t-att-id="optId(it)" t-att-aria-selected="isActive(it) ? 'true' : 'false'" t-att-class="itemClass(it)"
+               t-on-mousedown="onItemDown" t-on-click="() => this.pick(it)">
+            <span class="nm"><t t-esc="it.country.name"/><small t-if="noteOf(it.country)" t-esc="noteOf(it.country)"/></span>
+            <span class="cd" t-esc="it.country.code"/>
+          </div>
+        </t>
+        <div t-elif="!state.term" class="pbfb-cpick-hint">Type a country's name to find it.</div>
+        <div t-if="empty and state.term" class="pbfb-cpick-hint" t-esc="emptyText"/>
+      </div>
+    </div>
+  </t>
+
+</templates>

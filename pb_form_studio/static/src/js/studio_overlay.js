@@ -22,11 +22,14 @@ import { _t } from "@web/core/l10n/translation";
 import { rpcBus } from "@web/core/network/rpc";
 import { fsIc, KIND_ICON } from "./fs_icons";
 import { FACADE, toneClass, CHANGE_ICON, isEmptyDisplay, fold, foldMatch, KIND_GROUP, isSlashKey, sameLabels } from "./fs_words";
+import { CountryPicker, SHOW_ALL, SHOW_NONE, showOnly, showSame, showUnion, showCovers, showApplies, showChipText, showLongText } from "./country_picker";
 
 const DRAFT_MS = 800;
 const LANG_NAMES = { en_US: "English", vi_VN: "Tiếng Việt", id_ID: "Bahasa Indonesia" };
-/** R23 — a standard field's screen rule travels in these keys. */
-const STD_KEYS = ["std_hidden", "std_country_ids", "std_labels"];
+/** R23 — a standard field's screen rule travels in these keys (R31: "Shown
+ * for" is std_show / std_show_country_ids / std_show_unset; the FS-7 pair is
+ * still read from an older draft). */
+const STD_KEYS = ["std_hidden", "std_country_ids", "std_labels", "std_show", "std_show_country_ids", "std_show_unset"];
 /** FS-10 — the one-column layout (phone, tablet): the same breakpoint as
  * the stylesheet's `@media (max-width: 1100px)`. There the field's settings
  * are a sheet at the bottom and the studio bar stays at the top. */
@@ -38,6 +41,7 @@ function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
 export class FormStudioOverlay extends Component {
     static template = "pb_form_studio.Overlay";
+    static components = { CountryPicker };
     static props = {
         hostKey: { type: String },
         recordId: { type: [Number, Boolean], optional: true },
@@ -60,7 +64,7 @@ export class FormStudioOverlay extends Component {
             over: null, overField: null, countryTerm: "", langsOpen: false, publishing: false,
             // R24 — the filters of the left column (client-side only)
             exTerm: "", exType: "all", stdTerm: "", stdChip: "all", stdCountry: 0,
-            // R23 — "Hidden in some countries" picked, no country chosen yet
+            // R31 — "Only these Countries of Work" picked, no country chosen yet
             someOpen: null,
             // FS-11 (R29) — fixed sections list their fields; the canvas search
             findTerm: "", findAt: 0, collapsed: {},
@@ -252,20 +256,26 @@ export class FormStudioOverlay extends Component {
         const out = [{ key: "all", label: _t("All") }, { key: "hidden", label: _t("Hidden") },
                      { key: "renamed", label: _t("Renamed") }];
         if (this.portalHost) { out.push({ key: "portal", label: _t("On My Payobook") }); }
+        // R31 — the boxes the product took off the screens
+        if (this.stdAll.some((f) => (f.stdbox || {}).removed)) { out.push({ key: "off", label: _t("Taken off the screens") }); }
         return out;
     }
     stdChipClass(c) { return { on: this.state.stdChip === c.key }; }
     setStdChip(key) { this.state.stdChip = key; }
-    stdIsHidden(f) { const s = f.stdbox; return Boolean(s && (s.hidden || (s.countries || []).length)); }
+    /** R31 — the administrator narrowed it (hidden for everyone, or shown
+     *  for fewer countries than the product shows it). */
+    stdIsHidden(f) {
+        const s = f.stdbox;
+        return Boolean(s && s.changed && s.show && s.base && !showCovers(s.show, s.base));
+    }
     stdIsRenamed(f) { return Boolean(f.stdbox && Object.keys(f.stdbox.labels || {}).length); }
+    /** R31 — taken off the screens by the product and not shown again. */
+    stdIsOff(f) { return Boolean(f.stdbox && f.stdbox.removed && f.stdbox.show && f.stdbox.show.mode === "none"); }
     /** Does the field show for people of this Country of Work? */
     stdApplies(f, countryId) {
         const s = f.stdbox;
         if (!s || !countryId) { return true; }
-        if (s.hidden && !s.lock) { return false; }
-        if (!s.lock && (s.countries || []).some((c) => c.id === countryId)) { return false; }
-        if (s.rule && s.rule.country_id && s.rule.country_id !== countryId) { return false; }
-        return true;
+        return showApplies(s.show, countryId);
     }
     get stdFields() {
         const chip = this.state.stdChip;
@@ -273,6 +283,7 @@ export class FormStudioOverlay extends Component {
         return this.stdAll.filter((f) => {
             if (chip === "hidden" && !this.stdIsHidden(f)) { return false; }
             if (chip === "renamed" && !this.stdIsRenamed(f)) { return false; }
+            if (chip === "off" && !(f.stdbox || {}).removed) { return false; }
             if (chip === "portal" && !(f.portal && f.portal.show)) { return false; }
             if (cid && !this.stdApplies(f, cid)) { return false; }
             return foldMatch(this.state.stdTerm, this.stdLabel(f), (f.stdbox || {}).builtin, f.label);
@@ -280,14 +291,23 @@ export class FormStudioOverlay extends Component {
     }
     get stdGroups() {
         const out = [];
+        const off = [];
         for (const f of this.stdFields) {
+            // R31: still off the screens → one group at the end
+            if (this.stdIsOff(f)) { off.push(f); continue; }
             const tab = (f.stdbox && f.stdbox.tab) || _t("Other fields");
             let g = out[out.length - 1];
             if (!g || g.tab !== tab) { g = { tab, items: [] }; out.push(g); }
             g.items.push(f);
         }
+        if (off.length) {
+            off.sort((a, b) => Number(Boolean(a.stdbox.comeback)) - Number(Boolean(b.stdbox.comeback))
+                || String(this.stdLabel(a)).localeCompare(String(this.stdLabel(b))));
+            out.push({ tab: _t("Taken off the screens"), items: off, off: true });
+        }
         return out;
     }
+    stdGroupKey(g) { return (g.off ? "off:" : "tab:") + g.tab; }
     get stdFiltered() {
         return Boolean(fold(this.state.stdTerm)) || this.state.stdChip !== "all" || Boolean(Number(this.state.stdCountry));
     }
@@ -316,13 +336,19 @@ export class FormStudioOverlay extends Component {
         const parts = [];
         // two fields with one label: the field code tells them apart
         if (same && same.has(fold(this.stdLabel(f)))) { parts.push(_t("Field code: %s", f.name)); }
-        if (s.ignored) { parts.push(_t("Locked now, shown again")); }
-        else if (s.hidden) { parts.push(_t("Hidden for everyone")); }
-        else if ((s.countries || []).length) { parts.push(_t("Hidden in %s", s.countries.map((c) => c.name).join(", "))); }
+        if (this.stdIsOff(f)) {
+            parts.push(_t("Was on %s", s.tab || _t("Other fields")));
+            if (s.comeback) { parts.push(_t("Stays off")); }
+        } else if (s.ignored) {
+            parts.push(_t("Always shown now: %s", showChipText(s.show)));
+        } else if (s.changed) {
+            parts.push(showChipText(s.show));
+        } else if (s.show && s.show.mode === "only") {
+            parts.push(showChipText(s.show));
+        }
         if (this.stdIsRenamed(f)) {
             parts.push(this.stdLabel(f) !== s.builtin ? _t("Built-in label: %s", s.builtin) : _t("Own label"));
         }
-        if (s.rule) { parts.push(_t("Only where Country of Work is %s", s.rule.country)); }
         const p = f.portal || {};
         if (p.show) {
             parts.push(!p.edit ? _t("On My Payobook")
@@ -331,14 +357,16 @@ export class FormStudioOverlay extends Component {
         return parts.join(" · ");
     }
     stdItemClass(f) {
-        const s = f.stdbox || {};
-        return { hid: this.stdIsHidden(f) && !s.ignored, sel: this.state.sel === f.name,
-                 on: Boolean(f.portal && f.portal.show), renamed: this.stdIsRenamed(f) };
+        return { hid: this.stdIsHidden(f) || this.stdIsOff(f), sel: this.state.sel === f.name,
+                 on: Boolean(f.portal && f.portal.show), renamed: this.stdIsRenamed(f),
+                 stays: this.stdIsOff(f) && Boolean(f.stdbox.comeback) };
     }
     stdIcon(f) {
         const s = f.stdbox || {};
-        if (this.stdIsHidden(f) && !s.ignored) { return this.ic("eyeOff", 15); }
-        if (s.lock) { return this.ic("lock", 15); }
+        if (this.stdIsOff(f)) { return this.ic(s.comeback ? "ban" : "archive", 15); }
+        if (this.stdIsHidden(f)) { return this.ic("eyeOff", 15); }
+        if (s.lock) { return this.ic("shieldCheck", 15); }
+        if (s.changed) { return this.ic("globe", 15); }
         if (f.portal && f.portal.show) { return this.ic("smartphone", 15); }
         if (this.stdIsRenamed(f)) { return this.ic("pencil", 15); }
         return this.ic("eye", 15);
@@ -346,57 +374,111 @@ export class FormStudioOverlay extends Component {
     // properties panel of a standard field
     isStd(f) { return Boolean(f && !f.custom && f.stdbox); }
     get allLangs() { return this.data.langs || ["en_US"]; }
+    // ---------------------------------- R31 (FS-15): "Shown for", one control
+    stdShow(f) { return ((f || {}).stdbox || {}).show || SHOW_ALL; }
+    stdBase(f) { return ((f || {}).stdbox || {}).base || SHOW_ALL; }
     stdMode(f) {
-        const s = f.stdbox || {};
-        if (s.hidden) { return "all"; }
-        if ((s.countries || []).length || this.state.someOpen === f.name) { return "some"; }
-        return "shown";
+        const show = this.stdShow(f);
+        if (this.state.someOpen === f.name && show.mode !== "only") { return "only"; }
+        return show.mode;
     }
     stdModeClass(f, mode) { return { on: this.stdMode(f) === mode }; }
+    /** Why a "Shown for" choice is not offered ('' = offered). */
+    stdModeBlock(f, mode) {
+        const s = f.stdbox || {};
+        if (s.comeback && mode !== "none") { return s.comeback; }
+        if (!s.lock) { return ""; }
+        if (mode === "none" || (mode === "only" && this.stdBase(f).mode === "all")) {
+            return _t("Cannot be hidden. %s", s.lock);
+        }
+        return "";
+    }
     setStdMode(f, mode) {
         const s = f.stdbox;
-        if (!s || (mode !== "shown" && s.lock)) { return; }
-        if (mode === "shown") {
-            this.state.someOpen = null;
-            if (s.hidden || (s.countries || []).length) {
-                this.editStd(f, { std_hidden: false, std_country_ids: [] }, _t("shown"));
-            }
-        } else if (mode === "all") {
-            this.state.someOpen = null;
-            if (!s.hidden) { this.editStd(f, { std_hidden: true, std_country_ids: [] }, _t("hidden for everyone")); }
+        if (!s || this.stdModeBlock(f, mode) || this.stdMode(f) === mode) { return; }
+        this.state.someOpen = null;
+        if (mode === "all") {
+            this.editStd(f, { std_show: "all" }, _t("shown for"));
+        } else if (mode === "none") {
+            this.editStd(f, { std_show: "none" }, _t("shown for"));
         } else {
-            this.state.someOpen = f.name;
-            if (s.hidden) { this.editStd(f, { std_hidden: false, std_country_ids: [] }, _t("hidden in some countries")); }
+            // "Only these": start from the countries it shows for today
+            const cur = this.stdShow(f);
+            const from = cur.mode === "only" ? cur : this.stdBase(f);
+            if (from.mode === "only") {
+                this.editStd(f, this.onlyVals(from.countries, from.unset), _t("shown for"));
+            } else {
+                this.state.someOpen = f.name;      // no country yet: pick one
+            }
         }
     }
-    stdCountryMatches(f) {
-        const t = fold(this.state.countryTerm);
-        if (!t) { return []; }
-        const chosen = new Set(((f.stdbox || {}).countries || []).map((c) => c.id));
-        const rank = (c) => (fold(c.name).startsWith(t) || fold(c.code) === t ? 0 : 1);
-        return (this.data.countries || []).filter((c) => !chosen.has(c.id)
-            && (fold(c.name).includes(t) || fold(c.code) === t))
-            .sort((a, b) => rank(a) - rank(b)).slice(0, 6);
+    onlyVals(countries, unset) {
+        const show = showOnly(countries, unset);
+        if (show.mode === "none") { return { std_show: "none" }; }
+        return { std_show: "only", std_show_country_ids: show.countries.map((c) => c.id), std_show_unset: show.unset };
     }
-    /** "Not used in <country>": the product already hides it there (rule 6). */
-    stdNotUsed(f, c) {
-        const r = (f.stdbox || {}).rule;
-        return Boolean(r && r.country_id && r.country_id !== c.id);
+    get inUse() { return this.data.countries_in_use || []; }
+    get noneCount() { return this.data.countries_none || 0; }
+    stdChosenIds(f) {
+        const show = this.stdShow(f);
+        return show.mode === "only" ? show.countries.map((c) => c.id) : [];
     }
-    stdMatchLabel(f, c) { return this.stdNotUsed(f, c) ? _t("%s (not used there)", c.name) : c.name; }
+    stdUnsetOn(f) { const show = this.stdShow(f); return show.mode === "only" && Boolean(show.unset); }
+    /** A built-in country of a locked field cannot be taken away. */
+    stdChipFixed(f, c) {
+        const s = f.stdbox || {};
+        return Boolean(s.lock) && this.stdBase(f).countries.some((x) => x.id === c.id);
+    }
+    stdUnsetFixed(f) {
+        const s = f.stdbox || {};
+        return Boolean(s.lock) && Boolean(this.stdBase(f).unset) && this.stdBase(f).mode === "only";
+    }
     addStdCountry(f, c) {
-        if ((f.stdbox || {}).lock) { return; }
-        const ids = [...((f.stdbox || {}).countries || []).map((x) => x.id), c.id];
-        this.state.countryTerm = "";
-        this.editStd(f, { std_hidden: false, std_country_ids: ids }, _t("hidden in some countries"));
+        const show = this.stdShow(f);
+        const cur = show.mode === "only" ? show : { countries: [], unset: false };
+        this.state.someOpen = null;
+        const vals = c === "none" ? this.onlyVals(cur.countries, true)
+            : this.onlyVals([...cur.countries, this.countryById(c.id) || c], cur.unset);
+        this.editStd(f, vals, _t("shown for"));
     }
     removeStdCountry(f, c) {
-        const ids = ((f.stdbox || {}).countries || []).map((x) => x.id).filter((id) => id !== c.id);
-        this.editStd(f, { std_hidden: false, std_country_ids: ids }, _t("hidden in some countries"));
+        if (this.stdChipFixed(f, c)) { return; }
+        const show = this.stdShow(f);
+        this.editStd(f, this.onlyVals(show.countries.filter((x) => x.id !== c.id), show.unset), _t("shown for"));
     }
-    ruleText(f) {
-        const r = (f.stdbox || {}).rule;
-        return r ? _t("Shown only where Country of Work is %s: not used in other countries. That rule comes with the product and cannot be changed here.", r.country) : "";
+    removeStdUnset(f) {
+        if (this.stdUnsetFixed(f)) { return; }
+        const show = this.stdShow(f);
+        this.editStd(f, this.onlyVals(show.countries, false), _t("shown for"));
+    }
+    resetStdShow(f) {
+        this.state.someOpen = null;
+        this.editStd(f, { std_show: "builtin" }, _t("shown for"));
+    }
+    /** Show again (a box the product took off the screens). */
+    showAgain(f) {
+        const s = f.stdbox || {};
+        if (s.comeback || !s.propose) { return; }
+        this.select(f);
+        const p = s.propose;
+        this.editStd(f, p.mode === "only" ? this.onlyVals(p.countries, p.unset) : { std_show: "all" }, _t("shown for"));
+    }
+    stdBaseText(f) {
+        const s = f.stdbox || {};
+        if (s.removed) { return _t("Taken off the screens"); }
+        return showLongText(this.stdBase(f));
+    }
+    stdShowText(f) { return showLongText(this.stdShow(f)); }
+    stdPlaceText(f) {
+        const s = f.stdbox || {};
+        if (!s.removed) { return ""; }
+        const tab = s.tab || _t("Other fields");
+        return s.panel ? _t("When shown again: Full details, %s tab, and the side panel.", tab)
+            : _t("When shown again: Full details, %s tab, in its old place. Not on the side panel.", tab);
+    }
+    stdLockNote(f) {
+        const s = f.stdbox || {};
+        return s.label_lock ? s.lock : _t("%s You can still rename it.", s.lock);
     }
     stdLabelValue(f, lang) { return ((f.stdbox || {}).labels || {})[lang] || ""; }
     stdBuiltin(f, lang) { return ((f.stdbox || {}).builtins || {})[lang] || (f.stdbox || {}).builtin || ""; }
@@ -415,7 +497,14 @@ export class FormStudioOverlay extends Component {
         this.state.updates[f.name] = { ...(this.state.updates[f.name] || {}), ...vals };
         const was = this.stdLabel(f);
         this.mergeIntoDesc(f, vals);
-        const key = String(what);
+        let key = String(what);
+        if ("std_show" in vals) {
+            // R31: one line per field for "Shown for", saying where it shows now
+            key = "show";
+            const s = f.stdbox || {};
+            what = s.changed ? _t("shown for: %s", showLongText(s.show))
+                : _t("built-in setting put back: %s", s.removed ? _t("Taken off the screens") : showLongText(s.base));
+        }
         this.state.changes = this.state.changes.filter((c) => !(c.ref === f.name && c.std === key));
         this.state.changes.push({ kind: "changed", what: _t("%(label)s: %(what)s", { label: was, what }), ref: f.name, std: key });
         this.scheduleDraft();
@@ -494,20 +583,23 @@ export class FormStudioOverlay extends Component {
         const out = [];
         const f = this.fixedField(it);
         const s = (f && f.stdbox) || {};
-        if (it.country) { out.push({ k: "cty", text: _t("Only %s", this.countryName(it.country)), icon: "globe" }); }
-        else if (s.rule && s.rule.country) { out.push({ k: "cty", text: _t("Only %s", s.rule.country), icon: "globe" }); }
+        // R31: the countries it shows for follow the administrator's
+        // "Shown for" ("Only Vietnam", "Vietnam + Indonesia", ...)
+        if (s.changed && s.show) {
+            const hid = s.show.mode === "none" || (s.base && !showCovers(s.show, s.base));
+            if (s.show.mode !== "all" || (s.base && s.base.mode !== "all")) {
+                out.push({ k: hid ? "hid" : "cty", text: showChipText(s.show), icon: s.show.mode === "none" ? "eyeOff" : "globe" });
+            }
+        } else if (it.country) { out.push({ k: "cty", text: _t("Only %s", this.countryName(it.country)), icon: "globe" }); }
+        else if (s.show && s.show.mode === "only") { out.push({ k: "cty", text: showChipText(s.show), icon: "globe" }); }
         if (!f) {
             out.push({ k: "auto", text: _t("Worked out by the screen"), icon: "sigma" });
             return out;
         }
-        if (s.hidden && !s.ignored) { out.push({ k: "hid", text: _t("Hidden"), icon: "eyeOff" }); }
-        else if ((s.countries || []).length && !s.ignored) {
-            out.push({ k: "hid", text: _t("Hidden for %s", s.countries.map((c) => c.name).join(", ")), icon: "eyeOff" });
-        }
         if (this.stdIsRenamed(f)) { out.push({ k: "ren", text: _t("Renamed"), icon: "pencil" }); }
         if (f.portal && f.portal.show) { out.push({ k: "portal", text: _t("On My Payobook"), icon: "smartphone" }); }
-        // the reason in full on hover and in the settings column
-        if (s.lock) { out.push({ k: "lock", text: _t("Locked"), title: _t("Locked: %s", s.lock), icon: "lock" }); }
+        // the reason in full on hover / tap and in the settings column
+        if (s.lock) { out.push({ k: "lock", text: _t("Always shown"), title: _t("Always shown: %s", s.lock), icon: "shieldCheck" }); }
         return out;
     }
     fixedChipClass(c) { return "pbfb-fx-chip " + c.k; }
@@ -515,7 +607,7 @@ export class FormStudioOverlay extends Component {
         const f = this.fixedField(it);
         const s = (f && f.stdbox) || {};
         return { auto: !f, sel: Boolean(f) && this.state.sel === f.name,
-                 hid: Boolean(f) && (s.hidden || (s.countries || []).length) && !s.ignored,
+                 hid: Boolean(f) && Boolean(s.changed) && this.stdIsHidden(f),
                  found: this.isFound(this.fixedLabel(it), it.label) };
     }
     onFixedClick(it) {
@@ -678,12 +770,32 @@ export class FormStudioOverlay extends Component {
     mergeIntoDesc(desc, vals) {
         if (desc.stdbox && STD_KEYS.some((k) => k in vals)) {
             const s = { ...desc.stdbox };
-            if ("std_hidden" in vals) { s.hidden = Boolean(vals.std_hidden); }
-            if ("std_country_ids" in vals) {
-                s.countries = (vals.std_country_ids || []).map((id) => this.countryById(id)).filter(Boolean);
+            const base = s.base || SHOW_ALL;
+            let show = null;
+            if ("std_show" in vals) {
+                // R31 — "Shown for"; the server re-checks every rule on Publish
+                const mode = vals.std_show || "builtin";
+                if (mode === "builtin") { show = base; }
+                else if (mode === "all") { show = SHOW_ALL; }
+                else if (mode === "none") { show = SHOW_NONE; }
+                else {
+                    show = showOnly((vals.std_show_country_ids || []).map((id) => this.countryById(id)).filter(Boolean),
+                                    Boolean(vals.std_show_unset));
+                }
+            } else if ("std_hidden" in vals || "std_country_ids" in vals) {
+                // an older draft (FS-7 words): hidden for everyone, or back
+                if (vals.std_hidden) { show = SHOW_NONE; }
+                else if (!(vals.std_country_ids || []).length) { show = base; }
             }
-            if (s.hidden) { s.countries = []; }
-            if (!s.hidden && !(s.countries || []).length) { s.ignored = false; }
+            if (show) {
+                const eff = s.lock ? showUnion(base, show) : show;
+                s.show = eff;
+                s.changed = !showSame(show, base);
+                s.ignored = Boolean(s.lock) && s.changed && !showSame(eff, show);
+                s.hidden = s.changed && eff.mode === "none";
+                s.off = Boolean(s.removed) && eff.mode === "none";
+                s.countries = [];
+            }
             if ("std_labels" in vals) { s.labels = { ...(vals.std_labels || {}) }; }
             desc.stdbox = s;
             // own label, else the label this list always used for the field
@@ -964,19 +1076,10 @@ export class FormStudioOverlay extends Component {
     allCountries(f) { return !(f.countries || []).length; }
     get countryOk() { return Boolean(this.data.country_ok); }
     setAllCountries(f) { if (!this.allCountries(f)) { this.edit(f, "country_ids", [], _t("countries")); } }
-    onCountryTerm(ev) { this.state.countryTerm = ev.target.value; }
-    countryMatches(f) {
-        const t = (this.state.countryTerm || "").toLowerCase().trim();
-        if (!t) { return []; }
-        const chosen = new Set((f.countries || []).map((c) => c.id));
-        const rank = (c) => (c.name.toLowerCase().startsWith(t) || (c.code || "").toLowerCase() === t ? 0 : 1);
-        return (this.data.countries || []).filter((c) => !chosen.has(c.id)
-            && (c.name.toLowerCase().includes(t) || (c.code || "").toLowerCase() === t))
-            .sort((a, b) => rank(a) - rank(b)).slice(0, 6);
-    }
+    ownChosenIds(f) { return (f.countries || []).map((c) => c.id); }
     addCountry(f, c) {
-        const ids = [...(f.countries || []).map((x) => x.id), c.id];
-        this.state.countryTerm = "";
+        if (!c || c === "none") { return; }
+        const ids = [...this.ownChosenIds(f), c.id];
         this.edit(f, "country_ids", ids, _t("countries"));
     }
     removeCountry(f, c) {

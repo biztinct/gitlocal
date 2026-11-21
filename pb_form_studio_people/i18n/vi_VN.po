@@ -900,3 +900,28 @@ msgstr "Thuế"
 #: code:addons/pb_form_studio_people/models/fixed_sections.py:0
 msgid "Unemployment insurance (UI)"
 msgstr "Bảo hiểm thất nghiệp (BHTN)"
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "The bank account people are paid to is the approved one under Bank details. This old box is no longer read, so showing it would invite a second account that nothing uses."
+msgstr "Tài khoản ngân hàng nhận lương là tài khoản đã duyệt trong Thông tin ngân hàng. Ô cũ này không còn được đọc, nên hiện nó sẽ khiến có thêm một tài khoản thứ hai không dùng đến."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "The contract holds this now (contract type and pay structure). This box belongs to an older record and is not used."
+msgstr "Hợp đồng giữ thông tin này (loại hợp đồng và cơ cấu lương). Ô này thuộc bản ghi cũ và không được dùng."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A worked-out figure from an old insurance and tax set-up that nobody uses. It is never typed and would always show 0."
+msgstr "Một con số tự tính từ thiết lập bảo hiểm và thuế cũ không ai dùng. Không ai nhập và nó luôn hiện 0."
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Its old section was replaced by the insurance and tax summary Vietnam staff see, so it would not be drawn. The insurance details the files read are on the side panel."
+msgstr "Phần cũ của nó đã được thay bằng bản tóm tắt bảo hiểm và thuế mà nhân viên Việt Nam thấy, nên nó sẽ không được vẽ. Thông tin bảo hiểm mà các tệp đọc nằm ở bảng bên."
+

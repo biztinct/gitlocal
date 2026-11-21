@@ -821,3 +821,28 @@ msgstr ""
 #: code:addons/pb_form_studio_people/models/fixed_sections.py:0
 msgid "Unemployment insurance (UI)"
 msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "The bank account people are paid to is the approved one under Bank details. This old box is no longer read, so showing it would invite a second account that nothing uses."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "The contract holds this now (contract type and pay structure). This box belongs to an older record and is not used."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "A worked-out figure from an old insurance and tax set-up that nobody uses. It is never typed and would always show 0."
+msgstr ""
+
+#. module: pb_form_studio_people
+#. odoo-python
+#: code:addons/pb_form_studio_people/models/standard_fields.py:0
+msgid "Its old section was replaced by the insurance and tax summary Vietnam staff see, so it would not be drawn. The insurance details the files read are on the side panel."
+msgstr ""
+
