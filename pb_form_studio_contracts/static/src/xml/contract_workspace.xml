@@ -6,20 +6,9 @@
       <attribute name="t-att-class">{ shown: state.shown, 'pb-workspace-expanded': state.expanded }</attribute>
       <attribute name="role">dialog</attribute><attribute name="aria-modal">true</attribute><attribute name="aria-label">Contract workspace</attribute>
     </xpath>
-    <xpath expr="//div[hasclass('pbc-tabs')]/button[1]" position="before">
-      <button type="button" class="pbc-tab" t-att-class="{ on: state.tab === 'record' }" t-on-click="() => this.setTab('record')">Details</button>
-    </xpath>
-    <xpath expr="//span[hasclass('pbc-tab-ink')]" position="attributes"><attribute name="t-if">false</attribute></xpath>
-    <xpath expr="//div[hasclass('pbc-body')]" position="inside">
-      <div class="pb-workspace-record" t-att-class="{ 'd-none': state.tab !== 'record' }">
-        <PremiumRecordForm resModel="'hr.contract'" resId="workspaceRecordId" onReady.bind="workspaceReady" onSaved.bind="load"/>
-      </div>
-    </xpath>
     <xpath expr="//div[hasclass('pbc-head-side')][div[hasclass('pbc-wage')]]/button[hasclass('pbc-x')]" position="before">
-      <button type="button" class="pbim-btn ghost" t-on-click="openFullForm" t-att-aria-expanded="state.expanded" t-esc="workspaceExpandLabel"/>
+      <button type="button" class="pbim-btn ghost" t-on-click="toggleWorkspace" t-att-aria-expanded="state.expanded" t-esc="workspaceExpandLabel"/>
     </xpath>
-    <xpath expr="//div[hasclass('pbc-foot-rest')]/button" position="replace"><button type="button" class="pbim-btn ghost" t-on-click="openFullForm" t-esc="workspaceExpandLabel"/></xpath>
-    <xpath expr="//div[hasclass('pbc-savebar')]/button[@t-on-click='openFullForm']" position="replace"><button type="button" class="pbc-link" t-on-click="openFullForm" t-esc="workspaceExpandLabel"/></xpath>
     <xpath expr="//FormStudioWand[@studio='fs3Studio']" position="replace"><button t-if="fs3Studio.state.canEdit" type="button" class="pbim-btn ghost" t-on-click="workspaceBuilder">Form builder</button></xpath>
     <xpath expr="//FormStudioOverlay" position="attributes"><attribute name="t-props">workspaceStudioProps</attribute></xpath>
   </t>

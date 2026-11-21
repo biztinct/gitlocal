@@ -1,6 +1,6 @@
 // The form owns field semantics; the panel owns only space and navigation.
 .pb-workspace.pev-drawer, .pb-workspace.pbc-drawer {
-    --pb-workspace-width: min(86vw, 1280px);
+    --pb-workspace-width: min(92vw, 820px);
     width: var(--pb-workspace-width) !important;
     max-width: 100vw !important;
     container-type: inline-size;
@@ -61,4 +61,27 @@
         .pev-body, .pbc-body { padding: 12px; }
         .pb-workspace-record { margin: -12px; }
     }
+}
+
+// Section forms use the native fields, without the native page's visual shell.
+.pb-section-form {
+    .pb-record-editbar { padding: 0 0 16px; border: 0; position: static; }
+    .pb-record-editbar > span { font-size: 17px; font-weight: 650; color: #172b38; }
+    .pb-record-editbar small { display: block; font-size: 12px; font-weight: 400; color: #687e8e; margin-top: 5px; }
+    .pb-record-editbar .btn { border-radius: 9px; padding: 7px 17px; }
+    .pb-record-editbar .btn-primary { background: #00877f; border-color: #00877f; }
+    .o_form_renderer { padding: 0 !important; background: transparent !important; }
+    .pb-job-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .pb-job-card { min-width: 0; border: 1px solid #e1e9ef; border-radius: 14px; padding: 20px; background: #fff; }
+    .pb-job-card h3 { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: #61768c; font-weight: 650; margin: 0 0 18px; }
+    .pb-job-field { min-width: 0; margin-bottom: 18px; }
+    .pb-job-field:last-child { margin-bottom: 0; }
+    .pb-job-field .o_form_label { display: block; color: #64748b; font-weight: 500; font-size: 12px; margin-bottom: 5px; }
+    .pb-job-field .o_field_widget { display: block; width: 100%; color: #172b38; font-size: 14px; min-height: 22px; }
+    .o_form_editable .pb-job-field .o_input { border: 1px solid #dce5eb; border-radius: 8px; padding: 8px 10px; background: #fbfcfe; }
+    .o_form_editable .pb-job-field .o_input:focus { border-color: #00877f; box-shadow: 0 0 0 2px #00877f16; }
+    .o_form_readonly .pb-job-field .o_field_empty::after { content: "—"; color: #93a1b0; }
+}
+@container (max-width: 680px) {
+    .pb-section-form .pb-job-grid { grid-template-columns: 1fr; }
 }

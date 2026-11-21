@@ -9,13 +9,32 @@ patch(Employee360Drawer.prototype, {
     setup() {
         super.setup(...arguments);
         this.state.expanded = false;
-        this.state.tab = this.props.embedded ? "documents" : "record";
+        this.state.tab = this.props.embedded ? "documents" : "profile";
         this.recordForm = null;
+        this.state.jobOpened = false;
+    },
+    groups(tab) {
+        const groups = super.groups(tab);
+        if (tab !== "job" || this.recordForm?.state.error) { return groups; }
+        const editable = new Set(["department_id", "job_id", "job_title", "parent_id", "work_location_id", "address_id"]);
+        return groups.map(group => {
+            const rows = group.rows.filter(row => !editable.has(row.key));
+            return { ...group, rows, filled: rows.filter(row => !row.empty).length };
+        }).filter(group => group.rows.length);
     },
     get workspaceRecordId() { return Number(this.props.empId); },
     get workspaceExpandLabel() { return this.state.expanded ? _t("Collapse") : _t("Expand"); },
     workspaceReady(form) { this.recordForm = form; },
-    openFull() { this.state.expanded = !this.state.expanded; },
+    toggleWorkspace() { this.state.expanded = !this.state.expanded; },
+    async openFull() {
+        if (this.recordForm && !(await this.recordForm.guardLeave())) { return; }
+        return super.openFull(...arguments);
+    },
+    async setTab(tab) {
+        if (tab !== this.state.tab && this.recordForm && !(await this.recordForm.guardLeave())) { return; }
+        if (tab === "job") { this.state.jobOpened = true; }
+        return this.pbfsGuard(() => super.setTab(tab));
+    },
     async close() {
         if (this.recordForm && !(await this.recordForm.guardLeave())) { return; }
         return super.close(...arguments);

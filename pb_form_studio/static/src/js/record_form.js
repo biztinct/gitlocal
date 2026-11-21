@@ -1,7 +1,8 @@
 /** @odoo-module **/
 // Keep the original employee/contract controller and server-processed arch.
 // Only the enclosing presentation changes; installed field widgets and hooks stay.
-import { Component, onError, onMounted, onWillUnmount, useState, useSubEnv } from "@odoo/owl";
+import { Component, onError, onMounted, onWillStart, onWillUnmount, useState, useSubEnv } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
@@ -85,6 +86,8 @@ export class PremiumRecordForm extends Component {
     static props = {
         resModel: String, resId: Number, onReady: Function,
         onSaved: { type: Function, optional: true },
+        section: { type: String, optional: true },
+        title: { type: String, optional: true },
     };
     setup() {
         this.state = useState({ generation: 0, error: false });
@@ -94,6 +97,9 @@ export class PremiumRecordForm extends Component {
                 ? _t("Your role cannot open all details on this record. The summary and available tools are still accessible.")
                 : _t("The complete form could not be loaded. You can retry or use the other tabs.");
         });
+        this.viewService = useService("view");
+        this.sectionView = null;
+        onWillStart(() => this.loadSection());
         this.controller = null;
         this.notebookPages = {};
         // A drawer may originate from any list or dashboard. Its form must
@@ -102,20 +108,34 @@ export class PremiumRecordForm extends Component {
         this.props.onReady(this);
         onWillUnmount(() => this.props.onReady(null));
     }
+    async loadSection() {
+        if (!this.props.section) { return; }
+        try {
+            const result = await this.viewService.loadViews({
+                resModel: this.props.resModel, views: [[false, "form"]], context: {},
+            }, { pb_workspace_section: this.props.section });
+            this.sectionView = { arch: result.views.form.arch, fields: result.fields,
+                relatedModels: result.relatedModels, viewId: result.views.form.id };
+        } catch (error) {
+            this.state.error = _t("This section could not be loaded. Retry or open Full details.");
+        }
+    }
     get viewProps() {
         return {
             type: "form", resModel: this.props.resModel, resId: this.props.resId,
-            preventCreate: true, loadActionMenus: true,
+            preventCreate: true, loadActionMenus: !this.props.section,
+            ...(this.sectionView || {}),
             state: { activeNotebookPages: { ...this.notebookPages } },
-            context: { pb_premium_record: true }, display: { controlPanel: true },
+            context: { pb_premium_record: true }, display: { controlPanel: !this.props.section },
             onSave: () => this.props.onSaved?.(),
         };
     }
     async guardLeave() { return this.controller ? this.controller.pbRecordGuard() : true; }
-    retry() { this.state.error = false; this.state.generation++; }
+    async retry() { this.state.error = false; await this.loadSection(); this.state.generation++; }
     async reloadDesign() {
         if (this.controller && await this.controller.model.root.isDirty()) { return false; }
         rpcBus.trigger("CLEAR-CACHES", "get_views");
+        await this.loadSection();
         this.state.generation++;
         return true;
     }

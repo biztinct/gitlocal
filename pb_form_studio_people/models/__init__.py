@@ -4,3 +4,4 @@ from . import form_studio
 from . import pb_people
 from . import standard_fields
 from . import fixed_sections
+from . import premium_section

@@ -6,20 +6,18 @@
       <attribute name="t-att-class">{ shown: state.shown, 'pb-workspace-expanded': state.expanded }</attribute>
       <attribute name="role">dialog</attribute><attribute name="aria-modal">true</attribute><attribute name="aria-label">Employee workspace</attribute>
     </xpath>
-    <xpath expr="//div[hasclass('pev-head-side')]/button[@t-on-click='openFull']" position="replace">
-      <button type="button" class="pev-full" t-on-click="openFull" t-att-aria-expanded="state.expanded"><t t-out="ic('external',14)"/> <t t-esc="workspaceExpandLabel"/></button>
+    <xpath expr="//div[hasclass('pev-head-side')]/button[@t-on-click='openFull']" position="before">
+      <button type="button" class="pev-full" t-on-click="toggleWorkspace" t-att-aria-expanded="state.expanded"><t t-out="ic('external',14)"/> <t t-esc="workspaceExpandLabel"/></button>
     </xpath>
-    <xpath expr="//div[hasclass('pev-tabs')]/button[1]" position="before">
-      <button type="button" class="pev-tab" t-att-class="{ on: state.tab === 'record' }" t-on-click="() => this.setTab('record')"><t t-out="ic('idCard',15)"/> Details</button>
+    <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'job'&quot;)]" position="replace">
+      <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'job'}" t-on-click="() => this.setTab('job')"><t t-out="ic('briefcase',15)"/> Job &amp; organisation</button>
     </xpath>
-    <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'personal'&quot;)]" position="attributes"><attribute name="t-if">false</attribute></xpath>
-    <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'job'&quot;)]" position="attributes"><attribute name="t-if">false</attribute></xpath>
-    <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'company'&quot;)]" position="attributes"><attribute name="t-if">false</attribute></xpath>
-    <xpath expr="//div[hasclass('pev-body')]" position="inside">
-      <div class="pb-workspace-record" t-att-class="{ 'd-none': state.tab !== 'record' }">
-        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" onReady.bind="workspaceReady" onSaved.bind="load"/>
+    <xpath expr="//t[@t-if=&quot;['personal', 'job', 'pay'].includes(state.tab)&quot;]" position="before">
+      <div t-if="state.jobOpened" class="pb-workspace-section" t-att-class="{ 'd-none': state.tab !== 'job' }">
+        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'job'" title.translate="Job &amp; organisation" onReady.bind="workspaceReady" onSaved.bind="load"/>
+        <div class="pev-more"><span>Other job details are shown below.</span><button class="pev-btn ghost" t-on-click="openFull">Full details</button></div>
       </div>
     </xpath>
-    <xpath expr="//div[hasclass('pev-more')]" position="attributes"><attribute name="t-if">false</attribute></xpath>
+    <xpath expr="//div[hasclass('pev-more')]" position="attributes"><attribute name="t-if">['profile', 'personal', 'pay'].includes(state.tab)</attribute></xpath>
   </t>
 </templates>
