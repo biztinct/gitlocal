@@ -492,8 +492,17 @@ class TestLayoutFill(TransactionCase):
             with self.assertRaises(LayoutError) as caught:
                 xlsx_fill.fill(raw, sheet, cell, True, _table(5), 'pack.xlsx')
             self.assertEqual(caught.exception.code, code)
-        # an empty sheet starts at A1
+        # the team's own heading row: the figures go right under it and
+        # their headings stay
         from openpyxl import Workbook
+        wb = Workbook()
+        wb.active['A1'] = 'Board pack'
+        wb.active['B3'] = 'Department'
+        wb.active['C3'] = 'Net pay'
+        self.assertEqual(xlsx_fill.describe(fx.wb_bytes(wb))['sheets'][0]
+                         ['suggested'], {'cell': 'B4', 'headers': False,
+                                         'why': 'headings'})
+        # an empty sheet starts at A1
         empty = fx.wb_bytes(Workbook())
         self.assertEqual(xlsx_fill.describe(empty)['sheets'][0]['suggested']
                          ['cell'], 'A1')

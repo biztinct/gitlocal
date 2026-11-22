@@ -36,7 +36,13 @@ class PbExplorerView(models.Model):
         kind = 'money' if payload.get('measure_kind', 'money') == 'money' \
             else 'number'
         blocks = ex['blocks']
-        with_currency = any(b.get('currency_name') for b in blocks)
+        # A `Currency` column only where the Explorer's own file has one block
+        # per currency ("each in its own money", or several monies). In the
+        # group money there is one currency: no extra column, so a team's
+        # headings line up with the figures.
+        mode = (payload.get('money') or {}).get('mode')
+        with_currency = (mode == 'own' and any(
+            b.get('currency_name') for b in blocks)) or len(blocks) > 1
         # The time buckets of every block, in the order they first appear.
         cats = []
         for block in blocks:

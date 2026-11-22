@@ -380,6 +380,8 @@ export class PbExcelLayoutDialog extends Component {
         const out = [];
         if (a && c >= a.c0 && c <= a.c1 && r >= a.r0 && r <= a.r1) {
             out.push(r === a.head ? "is-head" : "is-area");
+            // What the sheet holds there today is about to be replaced.
+            if (r !== a.head && this.sheet?.grid?.[r - 1]?.[c - 1]) { out.push("will-go"); }
             if (r === a.r0) { out.push("e-t"); }
             if (r === a.r1) { out.push("e-b"); }
             if (c === a.c0) { out.push("e-l"); }
@@ -410,7 +412,13 @@ export class PbExcelLayoutDialog extends Component {
         if (look.b) { css += "font-weight:700;"; }
         const a = this.area;
         const inside = a && c >= a.c0 && c <= a.c1 && r >= a.r0 && r <= a.r1;
-        if (look.bg && !inside) { css += `background:${look.bg};`; }
+        if (look.bg && !inside) {
+            css += `background:${look.bg};`;
+            // Their dark heading fill keeps its text readable here.
+            const n = parseInt(look.bg.slice(1), 16);
+            const lum = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+            if (lum < 0.5) { css += "color:#fff;"; }
+        }
         return css;
     }
 

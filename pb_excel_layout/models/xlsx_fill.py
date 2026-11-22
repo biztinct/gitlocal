@@ -495,6 +495,17 @@ def _suggest(grid, tables):
     filled = [i for i, row in enumerate(grid) if any(t for t in row)]
     if not filled:
         return {'cell': 'A1', 'headers': True, 'why': 'empty'}
+    # The team's own heading row: two or more words side by side with
+    # nothing (or numbers) under them. The figures go right under it and the
+    # team's headings stay.
+    for i, row in enumerate(grid):
+        words = [j for j, t in enumerate(row) if t and not _numberish(t)]
+        if len(words) < 2:
+            continue
+        below = grid[i + 1] if i + 1 < len(grid) else [''] * len(row)
+        if all(not t or _numberish(t) for t in below):
+            return {'cell': cell_name(words[0] + 1, i + 2), 'headers': False,
+                    'why': 'headings'}
     r = filled[0]
     while r < len(grid) and any(t for t in grid[r]):
         r += 1
@@ -502,6 +513,10 @@ def _suggest(grid, tables):
     cols = [j for row in block for j, t in enumerate(row) if t]
     col = (min(cols) + 1) if cols else 1
     return {'cell': cell_name(col, r + 1), 'headers': True, 'why': 'below'}
+
+
+def _numberish(text):
+    return bool(re.match(r'^[\s\-+(]*[\d.,]+[)%]?\s*$', text or ''))
 
 
 # ------------------------------------------------------------- sheet rows

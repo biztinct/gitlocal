@@ -293,6 +293,7 @@
         border: 1px solid var(--x-line); border-radius: 12px; overflow: hidden; background: #fff;
     }
     .pbxl-gridscroll { overflow: auto; max-height: 470px; }
+    @media (max-height: 860px) { .pbxl-gridscroll { max-height: 330px; } }
     .pbxl-grid {
         border-collapse: collapse; table-layout: fixed; font-size: 12px; width: max-content;
         min-width: 100%; outline: none;
@@ -321,6 +322,7 @@
             &.e-l { border-left: 2px solid var(--x-p); }
             &.e-r { border-right: 2px solid var(--x-p); }
             &.is-start { box-shadow: inset 0 0 0 2px var(--x-p); }
+            &.will-go span { opacity: .45; text-decoration: line-through; }
             &.is-area.is-merged, &.is-head.is-merged { background: #FDE2C4; }
         }
     }
@@ -419,7 +421,7 @@
     .pbxl-sendas .pbex-seg button .pbxl-ic { margin-right: 2px; }
     .pbxl-warnhint { color: #92400E; }
     .pbxl-sched-as {
-        display: inline-flex; align-items: center; gap: 6px; margin: 6px 0 2px;
+        display: inline-flex; align-items: center; gap: 6px; margin: 6px 0 2px 42px;
         padding: 3px 10px; border-radius: 999px; background: var(--pbim-soft, #EDEAF8);
         color: var(--pbim-primary-dark, #241F52); font-size: 12px; font-weight: 600;
         &.warn { background: #FEF3C7; color: #92400E; }
