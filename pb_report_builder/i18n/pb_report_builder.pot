@@ -1,0 +1,1949 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_report_builder
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 06:59+0000\n"
+"PO-Revision-Date: 2026-11-22 06:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid " and %(count)s more"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(count)s columns are hidden because you may not see them."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"%(count)s filters were left out because they use fields you may not see, so "
+"the result may be wider than the saved report."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s (your field)"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s currency"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s from %(low)s"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s from %(low)s to %(high)s"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"%(field)s is shown in the company's money, because you cannot see which pay "
+"scheme pays each person."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s now"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s up to %(high)s"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "%(name)s (copy)"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(subject)s fields"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "1 column is hidden because you may not see it."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"1 filter was left out because it uses a field you may not see, so the result"
+" may be wider than the saved report."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A copy is ready. It is yours to change."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A filter in this report cannot be used on that field."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A filter value in this report could not be read."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A report can be grouped by two fields at most. Remove one first."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A to Z"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A total in this report cannot be worked out."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "About the person"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "All reports"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Any time"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Applicants"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Applicants by open role and stage"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Applied on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Apply"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Approved requests grouped by department, with total days."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Asset code"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Assets"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Assets held by person"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Assets held now"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Attendance"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Average"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Bought on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Build a report"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Building reports is for HR and the people who can open Insights. Ask your "
+"administrator if you believe you should."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Category"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Check in"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Check out"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Claims sent and not yet decided, with totals per person."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Closed on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Column menu"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Company"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract pay"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract type"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contracts"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Contracts ending in the next 60 days"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Cost"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Count"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Country"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Country of Work"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Counts from other areas"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Counts only"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Course"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Courses people have not finished yet, soonest due first."
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Date of birth"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days attended"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days open"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Deadline"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Decided on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Delete"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Delete this report? People you shared it with will lose it too."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Department"
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_builder__display_name
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__subject
+msgid "Each row is"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Employee"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Employee type"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "End date"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "End of trial"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Enter"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Every asset in someone's hands, grouped by who holds it."
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__shared
+msgid "Everyone who can open reports"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Everyone who left this year, and why."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Everyone who started this quarter, with their manager."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Excel"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Expense claims"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Expense claims still open"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Expense claims waiting for approval"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Extra hours"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Field"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Filter"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Filter by this"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Find"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Find a field"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Finished on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "First day"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "From"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Gender"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Give the report a name first."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Give the report a name."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goal sheet"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goal year"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goals"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goals set"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Grand total"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by this"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by…"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Grouped"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Held by"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Hide"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Hire date"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Hours worked"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "How"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How far along"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How far it has got"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How many people"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "How many people work in each country, by contract type."
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_builder__id
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "ID number"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Insights"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Job position"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Job title"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Joiners this quarter"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Keep it"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Kind"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Kind of leave"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Largest first"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Last 12 months"
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Last day"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Last month"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__last_opened
+msgid "Last opened"
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__spec
+msgid "Layout"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Leavers this year"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Leaving date"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Load 50 more"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Load more in this group"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Location"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Looking…"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Make a copy"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Manager"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "My reports"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__name
+msgid "Name"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Name this report"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Nationality"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "New report"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Newest first"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 30 days"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 60 days"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 90 days"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No field matches that."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No rows match. Try a wider period or fewer filters."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No saved reports yet."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No total"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Not saved"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Not set"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Not visible to you"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Nothing found."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Oldest first"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per applicant"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per asset"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per check in"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per contract"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per course someone was put on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per expense claim"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per goal sheet"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "One row per person with counts from three areas, this month."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per person, with counts from other areas"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per role being hired for"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per time off request"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Only the first %(cap)s groups are included."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Only the first %(cap)s groups are shown. Add a filter to see the others."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"Only the person who saved this report can change it. Make a copy to change "
+"it your way."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Only you can see this report now."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Open role"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Open roles"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Opened on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Opening the report builder…"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Opens with real rows. Change anything, then save it as your own."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Paid on"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pay"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "People"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "People by country and contract type"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Period"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Pick dates"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid ""
+"Pick one. You can add facts about the person to any row that belongs to "
+"someone."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pick one…"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pick what each row is, then click the fields you want."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid ""
+"Pick what each row is, then click the fields you want. Save it, share it, "
+"take it to Excel."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Put on it"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Reason given"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Receipts"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Recruiter"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Reference"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Remove filter"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Remove group"
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model,name:pb_report_builder.model_pb_report_builder
+msgid "Report builder"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Report deleted."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Report saved."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Role"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Rows"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Save (⌘S)"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Save the report first."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Save your changes first."
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__user_id
+msgid "Saved by"
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model,name:pb_report_builder.model_pb_report_definition
+msgid "Saved report"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Sent on"
+msgstr ""
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Serial number"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Share"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Share with everyone who can open reports"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Shared"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Shared by"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Shared with everyone who can open reports."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Showing"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Smallest first"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Something went wrong just now."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Source"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Spreadsheets cannot be written on this server yet. Ask an administrator to "
+"install the spreadsheet library."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Stage"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Start date"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Start from an example"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Start from an example below, or press New report."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Status"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Still working here"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Sum"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Summary only"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Test score"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "That field has no list of choices."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid ""
+"The report builder could not be opened just now. Try again in a moment."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "The table fills with real rows as you click."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This group could not be opened."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This month"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This page of the report could not be read."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This quarter"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report asks for a field the report builder does not know."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report asks for something the report builder does not know."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "This report can no longer be opened here."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report could not be read."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report has %(total)s rows; the first %(cap)s are included."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report is about something this system does not have."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid ""
+"This report is about something you cannot open. Ask your administrator for "
+"access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"This report is no longer available. It may have been deleted, or it is no "
+"longer shared with you."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's filters could not be read."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's groups could not be read."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's order could not be read."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's period could not be read."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's totals could not be read."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This year"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Time off days taken"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Time off requests"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Time off taken by department this year"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Time off, attendance and assets per person"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "To"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "To be finished by"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Total"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Total %(group)s"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Training"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Training finished"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Training still to finish"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Type a word"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Type to find…"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Undo"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Undo (⌘Z)"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Value"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Wanted by"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Warranty ends"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "What is each row?"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "What it is"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Where every applicant stands, role by role."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Which date"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Who needs a renewal decision soon."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Why"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Why they left"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Work email"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Work mobile"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Working hours"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Yes"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"You already have %(cap)s saved reports. Delete one you no longer use first."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "You cannot open this kind of report."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see Applicants. Ask your administrator for Hiring access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see assets. Ask your administrator for Assets access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see attendance. Ask your administrator for attendance access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see contracts. Ask your administrator for contract access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see expense claims. Ask your administrator for Expenses access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see goals. Ask your administrator for Talent access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see open roles. Ask your administrator for Hiring access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see people. Ask your administrator for HR access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see time off requests. Ask your administrator for time off "
+"access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see training. Ask your administrator for Learning access."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "You may not see this record."
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Your own fields"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Z to A"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "add"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "and"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "average"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "between"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "by"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "columns"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "contains"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "count"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "find"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is empty"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is not"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is not empty"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is one of"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "of"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "row"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "rows"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "save"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "to"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "total"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "undo"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "⌘S"
+msgstr ""
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "⌘Z"
+msgstr ""

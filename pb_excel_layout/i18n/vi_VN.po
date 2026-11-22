@@ -1,0 +1,1091 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_excel_layout
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 06:14+0000\n"
+"PO-Revision-Date: 2026-11-22 06:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid " and "
+msgstr " và "
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "%(cols)s columns × %(rows)s rows from %(cell)s"
+msgstr "%(cols)s cột × %(rows)s hàng từ %(cell)s"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid ""
+"%s amounts could not be converted (no exchange rate on file) and are not in "
+"the table."
+msgstr ""
+"%s khoản tiền không quy đổi được (chưa có tỷ giá) và không có trong bảng."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "%s cells held more text than Excel allows; their text was shortened."
+msgstr "%s ô có nhiều chữ hơn Excel cho phép; chữ đã được rút ngắn."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "%s sheets"
+msgstr "%s trang tính"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "1 sheet"
+msgstr "1 trang tính"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "A chart sheet has no cells to fill."
+msgstr "Trang biểu đồ không có ô để điền."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"A formula that fills several cells (%(ref)s) reaches into the area where the"
+" figures go. Change it in Excel, or start the figures somewhere else."
+msgstr ""
+"Một công thức điền nhiều ô (%(ref)s) lấn vào vùng ghi số liệu. Hãy sửa nó "
+"trong Excel, hoặc bắt đầu số liệu ở chỗ khác."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Add another layout"
+msgstr "Thêm mẫu khác"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Board pack"
+msgstr "Bộ báo cáo"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Change where the figures go"
+msgstr "Đổi chỗ ghi số liệu"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Choose another file"
+msgstr "Chọn tệp khác"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Click a cell in the grid, use the arrow keys, or type a cell like B6."
+msgstr "Bấm vào một ô trong lưới, dùng phím mũi tên, hoặc gõ một ô như B6."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Click the cell where the figures start"
+msgstr "Bấm vào ô nơi số liệu bắt đầu"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__has_macros
+msgid "Contains macros"
+msgstr "Có macro"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Continues %s"
+msgstr "Kéo dài %s"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Delete this layout? Your file on your computer is not touched."
+msgstr "Xóa mẫu này? Tệp trên máy tính của bạn không bị ảnh hưởng."
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout_board__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_view__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Download in my layout"
+msgstr "Tải về theo mẫu của tôi"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Downloaded “%(name)s” with %(rows)s rows."
+msgstr "Đã tải về “%(name)s” với %(rows)s hàng."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Drop the new version of your Excel file here"
+msgstr "Thả phiên bản mới của tệp Excel vào đây"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Drop your Excel file here"
+msgstr "Thả tệp Excel của bạn vào đây"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Each person gets your file filled with their own figures. If it ever cannot "
+"be used, the standard Excel goes instead and the history says why."
+msgstr ""
+"Mỗi người nhận tệp của bạn với số liệu của chính họ. Nếu có lúc không dùng "
+"được, tệp Excel chuẩn sẽ được gửi thay và lịch sử ghi rõ lý do."
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__shared
+msgid "Everyone who can open the report"
+msgstr "Mọi người mở được báo cáo"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Everyone who can open this view can now use “%s”."
+msgstr "Mọi người mở được dạng xem này giờ đều dùng được “%s”."
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__file
+msgid "Excel file"
+msgstr "Tệp Excel"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_excel_layout
+msgid "Excel layout"
+msgstr "Mẫu Excel"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_excel_layout_board
+msgid "Excel layouts — set-up and download"
+msgstr "Mẫu Excel — thiết lập và tải về"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_schedule_log
+msgid "Explorer regular send, one line per person"
+msgstr "Gửi định kỳ từ Explorer, mỗi người một dòng"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_schedule
+msgid "Explorer view sent regularly"
+msgstr "Dạng xem Explorer gửi định kỳ"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__file_name
+msgid "File name"
+msgstr "Tên tệp"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Fill your own Excel file with these figures"
+msgstr "Điền số liệu này vào tệp Excel của chính bạn"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "From %s"
+msgstr "Từ %s"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Give the layout a name."
+msgstr "Hãy đặt tên cho mẫu."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Hidden in Excel"
+msgstr "Đang ẩn trong Excel"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout_board__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_view__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/explorer_patch.js:0
+msgid "In your layout “%s”"
+msgstr "Theo mẫu “%s” của bạn"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/explorer_patch.js:0
+msgid ""
+"In your layout “%s” — its sheet is missing, so the standard Excel is sent"
+msgstr "Theo mẫu “%s” của bạn — thiếu trang tính nên tệp Excel chuẩn được gửi"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Keep"
+msgstr "Giữ lại"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__last_used
+msgid "Last used"
+msgstr "Lần dùng gần nhất"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Layout name"
+msgstr "Tên mẫu"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Macros are never run. Everyone gets only the figures they are allowed to "
+"see."
+msgstr ""
+"Macro không bao giờ được chạy. Mỗi người chỉ nhận số liệu họ được phép xem."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Macros kept"
+msgstr "Giữ nguyên macro"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Make it only mine"
+msgstr "Chỉ của riêng tôi"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"Merged cells (%(ref)s) are in the way of the figures. Unmerge them in Excel,"
+" or start the figures somewhere else."
+msgstr ""
+"Các ô đã gộp (%(ref)s) nằm chắn chỗ ghi số liệu. Hãy bỏ gộp trong Excel, "
+"hoặc bắt đầu số liệu ở chỗ khác."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Merged cells (%s) are in the way of the figures. Unmerge them in Excel, or "
+"start the figures somewhere else."
+msgstr ""
+"Các ô đã gộp (%s) nằm chắn chỗ ghi số liệu. Hãy bỏ gộp trong Excel, hoặc bắt"
+" đầu số liệu ở chỗ khác."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "More"
+msgstr "Thêm"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "My Excel layout"
+msgstr "Mẫu Excel của tôi"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"No layout yet. Bring the board pack you already use — headings, formulas, "
+"charts and macros stay exactly as they are."
+msgstr ""
+"Chưa có mẫu nào. Hãy mang bộ báo cáo bạn vẫn dùng — tiêu đề, công thức, biểu"
+" đồ và macro được giữ nguyên."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "One cell held more text than Excel allows; its text was shortened."
+msgstr "Một ô có nhiều chữ hơn Excel cho phép; chữ đã được rút ngắn."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Only Excel files ending in .xlsx or .xlsm can be used."
+msgstr "Chỉ dùng được tệp Excel có đuôi .xlsx hoặc .xlsm."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only staff logins can use Excel layouts."
+msgstr "Chỉ tài khoản nhân sự văn phòng mới dùng được mẫu Excel."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Only the cells where the figures go change. Charts, pictures, pivot tables "
+"and macros stay exactly as they are."
+msgstr ""
+"Chỉ những ô ghi số liệu thay đổi. Biểu đồ, hình ảnh, bảng tổng hợp và macro "
+"được giữ nguyên."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only the first %s rows are in the file."
+msgstr "Chỉ %s hàng đầu tiên có trong tệp."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid ""
+"Only the largest %(shown)s rows are in the file; %(more)s more were left "
+"out."
+msgstr ""
+"Chỉ %(shown)s hàng lớn nhất có trong tệp; %(more)s hàng còn lại không có."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only the person who set up this layout can change it."
+msgstr "Chỉ người đã tạo mẫu này mới được thay đổi nó."
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer
+msgid "Payobook Analytics Explorer — read-only query facade"
+msgstr "Payobook Analytics Explorer — chỉ đọc"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"Point your formulas and charts at whole columns or an Excel table so they "
+"pick up new rows."
+msgstr ""
+"Hãy cho công thức và biểu đồ trỏ tới cả cột hoặc một bảng Excel để chúng "
+"nhận cả các hàng mới."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Reading your file…"
+msgstr "Đang đọc tệp của bạn…"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Rename"
+msgstr "Đổi tên"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Replace the Excel file"
+msgstr "Thay tệp Excel"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Replace the file"
+msgstr "Thay tệp"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__source_id
+msgid "Report"
+msgstr "Báo cáo"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__source_model
+msgid "Report kind"
+msgstr "Loại báo cáo"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__state
+msgid "Result"
+msgstr "Kết quả"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Save layout"
+msgstr "Lưu mẫu"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Save this view first"
+msgstr "Hãy lưu dạng xem này trước"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_view
+msgid "Saved Explorer view"
+msgstr "Dạng xem Explorer đã lưu"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__layout_id
+msgid "Send as"
+msgstr "Gửi dưới dạng"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields.selection,name:pb_excel_layout.selection__pb_explorer_schedule_log__state__layout_failed
+msgid "Sent as the standard Excel"
+msgstr "Đã gửi bằng tệp Excel chuẩn"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent as the standard Excel — the layout could not be used"
+msgstr "Đã gửi bằng tệp Excel chuẩn — không dùng được mẫu"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent as the standard Excel — the layout could not be used: %s"
+msgstr "Đã gửi bằng tệp Excel chuẩn — không dùng được mẫu: %s"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent to %(sent)s of %(total)s"
+msgstr "Đã gửi cho %(sent)s trên %(total)s"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__user_id
+msgid "Set up by"
+msgstr "Người thiết lập"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Share with everyone who can open this view"
+msgstr "Chia sẻ với mọi người mở được dạng xem này"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Shared"
+msgstr "Đã chia sẻ"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__sheet_name
+msgid "Sheet"
+msgstr "Trang tính"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__sheet_ok
+msgid "Sheet found in the file"
+msgstr "Có trang tính trong tệp"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Sheet “%(sheet)s” · from %(cell)s"
+msgstr "Trang tính “%(sheet)s” · từ %(cell)s"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Sheet “%(sheet)s” · from %(cell)s · with headings"
+msgstr "Trang tính “%(sheet)s” · từ %(cell)s · có tiêu đề"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Sheets"
+msgstr "Trang tính"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Someone"
+msgstr "Một người"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Something went wrong. Try again."
+msgstr "Đã có lỗi. Hãy thử lại."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Standard Excel"
+msgstr "Excel chuẩn"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__start_cell
+msgid "Start cell"
+msgstr "Ô bắt đầu"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Steps"
+msgstr "Các bước"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid ""
+"That Excel layout is no longer available. Choose another, or the standard "
+"Excel."
+msgstr "Mẫu Excel đó không còn nữa. Hãy chọn mẫu khác, hoặc tệp Excel chuẩn."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The Excel table “%s” has a different number of columns, so it was left as it"
+" is. Make it as wide as the report and it will grow with the rows."
+msgstr ""
+"Bảng Excel “%s” có số cột khác nên được giữ nguyên. Hãy làm bảng rộng bằng "
+"báo cáo thì bảng sẽ tự dài theo số hàng."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The Excel table “%s” now covers every row."
+msgstr "Bảng Excel “%s” giờ đã bao hết các hàng."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The figures do not fit below %(cell)s. Start higher up."
+msgstr "Số liệu không vừa bên dưới %(cell)s. Hãy bắt đầu cao hơn."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The figures do not fit to the right of %(cell)s. Start further left."
+msgstr "Số liệu không vừa ở bên phải %(cell)s. Hãy bắt đầu lùi sang trái."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "The figures start at"
+msgstr "Số liệu bắt đầu tại"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The filled file did not pass the final check, so it was not handed out."
+msgstr "Tệp đã điền không qua được bước kiểm tra cuối nên không được giao ra."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The headings of the Excel table “%(table)s” (%(ref)s) are inside the area "
+"where the figures go. Start the figures at the table's heading row, or move "
+"the table."
+msgstr ""
+"Tiêu đề của bảng Excel “%(table)s” (%(ref)s) nằm trong vùng ghi số liệu. Hãy"
+" bắt đầu số liệu tại hàng tiêu đề của bảng, hoặc dời bảng đi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The layout could not be used. Open it, check the sheet and the start cell, "
+"and try again."
+msgstr ""
+"Không dùng được mẫu này. Hãy mở ra, kiểm tra trang tính và ô bắt đầu, rồi "
+"thử lại."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The report behind this layout is no longer available."
+msgstr "Báo cáo của mẫu này không còn nữa."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"The sheet of this layout is missing from its file, so the standard Excel is "
+"sent until a sheet is picked again."
+msgstr ""
+"Tệp của mẫu này thiếu trang tính, nên tệp Excel chuẩn được gửi cho tới khi "
+"chọn lại trang tính."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"The sheet “%(sheet)s” and the start cell %(cell)s are kept when the new file"
+" still has that sheet."
+msgstr ""
+"Trang tính “%(sheet)s” và ô bắt đầu %(cell)s được giữ nguyên nếu tệp mới vẫn"
+" có trang tính đó."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The sheet “%(sheet)s” is not in this file. Pick the sheet that receives the "
+"figures."
+msgstr ""
+"Trang tính “%(sheet)s” không có trong tệp này. Hãy chọn trang tính nhận số "
+"liệu."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"The sheet “%s” is not in this file. Pick the sheet that receives the "
+"figures."
+msgstr ""
+"Trang tính “%s” không có trong tệp này. Hãy chọn trang tính nhận số liệu."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "They get their own figures in it, never yours."
+msgstr "Họ nhận số liệu của chính họ trong đó, không bao giờ là của bạn."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "This file cannot be used"
+msgstr "Không dùng được tệp này"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This file contains macros. %(product)s does not run or change them."
+msgstr "Tệp này có macro. %(product)s không chạy và không thay đổi chúng."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "This file contains macros. They are kept, never run."
+msgstr "Tệp này có macro. Chúng được giữ nguyên, không bao giờ được chạy."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file could not be opened as an Excel workbook. Save it from Excel as "
+".xlsx and upload it again."
+msgstr ""
+"Không mở được tệp này như một sổ làm việc Excel. Hãy lưu lại từ Excel thành "
+".xlsx rồi tải lên lại."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file could not be read. Open it in Excel, save it again and upload the "
+"new copy."
+msgstr ""
+"Không đọc được tệp này. Hãy mở bằng Excel, lưu lại và tải lên bản mới."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file does not hold an Excel workbook. Save it from Excel as .xlsx and "
+"upload it again."
+msgstr ""
+"Tệp này không chứa sổ làm việc Excel. Hãy lưu từ Excel thành .xlsx rồi tải "
+"lên lại."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file has unusual content and cannot be used. Save it again from Excel "
+"and upload the new copy."
+msgstr ""
+"Tệp này có nội dung bất thường nên không dùng được. Hãy lưu lại từ Excel và "
+"tải lên bản mới."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"This file is larger than 10 MB. Remove what is not needed (old sheets, large"
+" pictures) and upload it again."
+msgstr ""
+"Tệp này lớn hơn 10 MB. Hãy xóa những gì không cần (trang tính cũ, hình ảnh "
+"lớn) rồi tải lên lại."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is password-protected. Remove the password and upload it again."
+msgstr "Tệp này có mật khẩu. Hãy gỡ mật khẩu rồi tải lên lại."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is too large once it is opened (over 80 MB). Remove what is not "
+"needed and upload it again."
+msgstr ""
+"Tệp này quá lớn khi được mở ra (trên 80 MB). Hãy xóa những gì không cần rồi "
+"tải lên lại."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is too large once it is opened. Remove what is not needed and "
+"upload it again."
+msgstr ""
+"Tệp này quá lớn khi được mở ra. Hãy xóa những gì không cần rồi tải lên lại."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"This is an old-style Excel file (.xls). Open it in Excel, save it as .xlsx "
+"and upload it again."
+msgstr ""
+"Đây là tệp Excel kiểu cũ (.xls). Hãy mở bằng Excel, lưu thành .xlsx rồi tải "
+"lên lại."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This layout belongs to a different report."
+msgstr "Mẫu này thuộc về một báo cáo khác."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This layout is no longer available."
+msgstr "Mẫu này không còn nữa."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This report has no columns to write yet."
+msgstr "Báo cáo này chưa có cột nào để ghi."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"This view has no figures right now; only the headings would be written. Try "
+"it again after the next pay run."
+msgstr ""
+"Dạng xem này hiện chưa có số liệu; chỉ tiêu đề được ghi. Hãy thử lại sau kỳ "
+"chạy lương tới."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"To send your own Excel file filled with these figures, set it up first with "
+"“My Excel layout” at the top of the board."
+msgstr ""
+"Để gửi tệp Excel của chính bạn với số liệu này, hãy thiết lập trước bằng "
+"“Mẫu Excel của tôi” ở đầu bảng."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid "Total"
+msgstr "Tổng"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"Totals and charts in your file refresh when it is opened in Excel. Some "
+"other spreadsheet programs need “Recalculate” pressed."
+msgstr ""
+"Tổng và biểu đồ trong tệp của bạn tự cập nhật khi mở bằng Excel. Một số "
+"chương trình bảng tính khác cần bấm “Tính lại”."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Try it"
+msgstr "Thử ngay"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Try it and save"
+msgstr "Thử và lưu"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Upload it once. Every download brings it back with fresh figures, in your "
+"own headings, formulas and charts."
+msgstr ""
+"Tải lên một lần. Mỗi lần tải về, bạn nhận lại tệp với số liệu mới, giữ "
+"nguyên tiêu đề, công thức và biểu đồ của bạn."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Use another file"
+msgstr "Dùng tệp khác"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Use my Excel layout"
+msgstr "Dùng mẫu Excel của tôi"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Where the figures go"
+msgstr "Chỗ ghi số liệu"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__reason
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_headers
+msgid "Write the column headings"
+msgstr "Ghi tiêu đề cột"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "You already have %s Excel layouts. Delete one you no longer use first."
+msgstr "Bạn đã có %s mẫu Excel. Hãy xóa bớt một mẫu không còn dùng trước."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "You have 20 layouts. Delete one to add another."
+msgstr "Bạn đã có 20 mẫu. Hãy xóa một mẫu để thêm mẫu mới."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Your Excel table “%s” starts here. It will grow and shrink with the rows."
+msgstr ""
+"Bảng Excel “%s” của bạn bắt đầu ở đây. Bảng sẽ dài ra hoặc ngắn lại theo số "
+"hàng."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your file"
+msgstr "Tệp của bạn"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Your file is downloaded with %(rows)s rows from %(cell)s. Open it to check, "
+"then save the layout."
+msgstr ""
+"Tệp của bạn đã được tải về với %(rows)s hàng từ %(cell)s. Hãy mở ra kiểm "
+"tra, rồi lưu mẫu."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your own Excel file, filled with these figures"
+msgstr "Tệp Excel của chính bạn, điền sẵn số liệu này"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your own headings stay; the figures start right at the cell."
+msgstr "Tiêu đề của bạn được giữ; số liệu bắt đầu ngay tại ô đó."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "across to column %s"
+msgstr "sang tới cột %s"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "choose a file"
+msgstr "chọn tệp"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "down to row %s"
+msgstr "xuống tới hàng %s"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "on “%s”"
+msgstr "trên “%s”"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "or"
+msgstr "hoặc"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "— .xlsx or .xlsm, up to 10 MB"
+msgstr "— .xlsx hoặc .xlsm, tối đa 10 MB"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"“%(cell)s” is not a cell. Click a cell in the grid, or type one like B6."
+msgstr ""
+"“%(cell)s” không phải là một ô. Hãy bấm vào một ô trong lưới, hoặc gõ một ô "
+"như B6."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"“%(name)s” could not be used: %(why)s The standard Excel was downloaded "
+"instead."
+msgstr ""
+"Không dùng được “%(name)s”: %(why)s Đã tải về tệp Excel chuẩn thay thế."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"“%(sheet)s” is a chart sheet, not a sheet with cells. Pick a sheet with "
+"cells."
+msgstr ""
+"“%(sheet)s” là trang biểu đồ, không có ô. Hãy chọn một trang tính có ô."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is now only yours."
+msgstr "“%s” giờ chỉ của riêng bạn."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is saved."
+msgstr "Đã lưu “%s”."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is saved. Use “Download in my layout” any time."
+msgstr "Đã lưu “%s”. Dùng “Tải về theo mẫu của tôi” bất cứ lúc nào."

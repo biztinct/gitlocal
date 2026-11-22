@@ -552,6 +552,14 @@ class PbExplorer(models.AbstractModel):
         return value if value in registry else fallback
 
     @api.model
+    def _pbx_series_cap(self):
+        """The most rows one answer may carry: `_MAX_SERIES` for the chart
+        and its downloads. A read-only seam (DOCSTUDIO X-b): another module
+        may raise it for its own call (a filled Excel layout carries every
+        row); nothing here changes."""
+        return _MAX_SERIES
+
+    @api.model
     def _clean_spec(self, spec):
         """Normalise an untrusted client spec. Every value that reaches SQL is
         either a registry key or a bound parameter — never interpolated text."""
@@ -654,7 +662,7 @@ class PbExplorer(models.AbstractModel):
             'chart': chart, 'filters': filters,
             'date_from': self._as_date(spec.get('date_from')),
             'date_to': self._as_date(spec.get('date_to')),
-            'limit': min(max(1, limit), _MAX_SERIES),
+            'limit': min(max(1, limit), self._pbx_series_cap()),
             'advances': advances,
             'currency': currency,
             'target_currency': target,
