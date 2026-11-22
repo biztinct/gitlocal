@@ -7,7 +7,7 @@ template with no studio data is printed exactly as before (rail R1,
 """
 from odoo import api, fields, models
 
-from .doc_common import KIND_KEYS, KIND_SELECTION, MODULE_KIND, TYPE_KIND
+from .doc_common import KIND_KEYS, KIND_SELECTION, MAIN_LANG, MODULE_KIND, TYPE_KIND
 
 
 class PbLetterTemplate(models.Model):
@@ -46,6 +46,9 @@ class PbLetterTemplate(models.Model):
     pbds_changed_by = fields.Many2one('res.users', string='Changed by',
                                       copy=False)
     pbds_changed_on = fields.Datetime(string='Changed on', copy=False)
+    # F-b ruling 3: the language the main wording is written in (empty =
+    # English, as before). The text itself stays in the template's own body.
+    pbds_main_lang = fields.Char(string='Main wording language', copy=True)
     # The gallery group a document created in the studio was made for.
     pbds_kind_set = fields.Selection(KIND_SELECTION, string='Shown under', copy=True)
     pbds_kind = fields.Selection(KIND_SELECTION, compute='_compute_pbds_kind',
@@ -71,6 +74,30 @@ class PbLetterTemplate(models.Model):
             [('model', '=', 'pb.letter.template'), ('res_id', 'in', ids)],
             ['module', 'res_id'])
         return {r['res_id']: r['module'] for r in rows}
+
+    def _pbds_main_lang(self):
+        """The language the main wording is written in (F-b ruling 3)."""
+        self.ensure_one()
+        return self.pbds_main_lang or MAIN_LANG
+
+    def _pbds_wording_note(self):
+        """"Using DEMO B's wording for Indonesia" — said wherever a letter
+        shows the document it uses, when that document is a company or
+        country copy (F-b ruling 1)."""
+        self.ensure_one()
+        if not self.pbds_replaces_id:
+            return False
+        _ = self.env._
+        company = self.company_id.name
+        countries = ', '.join(self.pbds_country_ids.mapped('name'))
+        if company and countries:
+            return _("Using %(company)s's wording for %(countries)s",
+                     company=company, countries=countries)
+        if company:
+            return _("Using %s's wording", company)
+        if countries:
+            return _("Using the wording for %s", countries)
+        return False
 
     def _pbds_is_studio(self):
         """Does the studio decide how this template prints? (rail R1)"""

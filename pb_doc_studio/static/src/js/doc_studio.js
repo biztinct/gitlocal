@@ -431,7 +431,7 @@ export class DocStudio extends Component {
         this.state.draft = {
             name: doc.name, subject: doc.subject, body: doc.body,
             versions: clone(doc.versions) || {}, rules: clone(doc.rules) || {},
-            page: { ...doc.page }, sign: null,
+            page: { ...doc.page }, sign: null, main_lang: doc.main_lang,
         };
         this.state.lang = doc.main_lang;
         this.state.person = this.state.person && this.state.doc ? this.state.person : doc.person;
@@ -555,7 +555,12 @@ export class DocStudio extends Component {
         if (!d) { return false; }
         return this.isMain || Boolean(d.versions[this.state.lang]);
     }
-    get isMain() { return this.state.doc && this.state.lang === this.state.doc.main_lang; }
+    get isMain() { return Boolean(this.state.doc) && this.state.lang === this.mainLang; }
+    /** The language the main wording is written in (F-b ruling 3). */
+    get mainLang() {
+        const d = this.state.draft;
+        return (d && d.main_lang) || (this.state.doc && this.state.doc.main_lang) || "en_US";
+    }
     get editorHtml() {
         const d = this.state.draft;
         if (this.isMain) { return d.body || ""; }
@@ -603,22 +608,54 @@ export class DocStudio extends Component {
         const doc = this.state.doc;
         const d = this.state.draft;
         if (!doc || !d) { return []; }
-        return doc.langs.map((l) => ({
+        const rows = doc.langs.map((l) => ({
             ...l,
-            main: l.code === doc.main_lang,
-            has: l.code === doc.main_lang || Boolean(d.versions[l.code]),
+            short: this.shortLang(l.name),
+            main: l.code === this.mainLang,
+            has: l.code === this.mainLang || Boolean(d.versions[l.code]),
             translated: Boolean((doc.translated || {})[l.code]),
         }));
+        // The main wording first, the other languages after it.
+        return [...rows.filter((r) => r.main), ...rows.filter((r) => !r.main)];
+    }
+    /** "Vietnamese / Tiếng Việt" → "Tiếng Việt" (the name its readers use). */
+    shortLang(name) {
+        const parts = String(name || "").split(" / ");
+        return parts[parts.length - 1];
+    }
+    get mainTabLabel() {
+        const row = (this.state.doc ? this.state.doc.langs : []).find((l) => l.code === this.mainLang);
+        return _t("Main wording · %s", row ? this.shortLang(row.name) : this.mainLang);
+    }
+    /** The main wording changes language: the wording stays, only what it
+     *  is written in changes. A separate wording in that language is no
+     *  longer read, so it goes (said in words). */
+    setMainLang(ev) {
+        const code = ev.target.value;
+        const d = this.state.draft;
+        if (!d || !code || code === this.mainLang) { return; }
+        if (d.versions[code]) {
+            const row = this.state.doc.langs.find((l) => l.code === code);
+            this.notification.add(_t("The separate %s wording is no longer needed: people who read it now get the main wording. Nothing changes until you save.",
+                                     row ? this.shortLang(row.name) : code), { type: "info" });
+        }
+        d.versions[code] = null;
+        d.main_lang = code;
+        this.state.lang = code;
+        this.state.previewLang = code;
+        this.state.editorKey += 1;
+        this.api = null;
+        this.touched();
     }
     get mainLangName() {
         const doc = this.state.doc;
-        const row = doc && doc.langs.find((l) => l.code === doc.main_lang);
-        return row ? row.name : "English";
+        const row = doc && doc.langs.find((l) => l.code === this.mainLang);
+        return row ? this.shortLang(row.name) : "English";
     }
     get curLangName() {
         const doc = this.state.doc;
         const row = doc && doc.langs.find((l) => l.code === this.state.lang);
-        return row ? row.name : this.state.lang;
+        return row ? this.shortLang(row.name) : this.state.lang;
     }
     get curTranslated() { return Boolean(this.state.doc && (this.state.doc.translated || {})[this.state.lang]); }
     switchLang(code) {
@@ -626,7 +663,7 @@ export class DocStudio extends Component {
         this.state.lang = code;
         this.state.editorKey += 1;
         this.api = null;
-        if (this.state.draft.versions[code] || code === this.state.doc.main_lang) {
+        if (this.state.draft.versions[code] || code === this.mainLang) {
             this.state.previewLang = code;
             this.schedulePreview(0);
         }
@@ -793,7 +830,8 @@ export class DocStudio extends Component {
     payload() {
         const d = this.state.draft;
         if (!d) { return {}; }
-        const out = { name: d.name, subject: d.subject, body: d.body, versions: d.versions, rules: d.rules, page: d.page };
+        const out = { name: d.name, subject: d.subject, body: d.body, versions: d.versions, rules: d.rules, page: d.page,
+                      main_lang: d.main_lang };
         if (d.sign === false) { out.sign_image = false; }
         else if (d.sign && d.sign.data) { out.sign_image = { mime: d.sign.mime, data: d.sign.data }; }
         return out;
@@ -950,7 +988,7 @@ export class DocStudio extends Component {
                 catalogue: fresh.catalogue, missing: fresh.missing, sign_image: fresh.sign_image,
                 sign_image_url: fresh.sign_image_url ? `${fresh.sign_image_url}?t=${Date.now()}` : false,
                 versions: fresh.versions, changed_on: fresh.changed_on, changed_by: fresh.changed_by,
-                name: fresh.name, rules: fresh.rules, page_set: fresh.page_set,
+                name: fresh.name, rules: fresh.rules, page_set: fresh.page_set, main_lang: fresh.main_lang,
             });
             this.state.draft.sign = null;
             this.state.draft.rules = clone(fresh.rules) || {};
@@ -978,6 +1016,7 @@ export class DocStudio extends Component {
         Object.assign(this.state.draft, {
             name: d.name, subject: d.subject, body: d.body, versions: d.versions || {},
             rules: d.rules || {}, page: { ...this.state.draft.page, ...(d.page || {}) },
+            main_lang: d.main_lang || this.state.draft.main_lang,
         });
         this.state.editorKey += 1;
         this.api = null;

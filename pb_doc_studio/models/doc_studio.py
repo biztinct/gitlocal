@@ -267,6 +267,14 @@ class PbDocStudio(models.AbstractModel):
                 c = get_contract()
                 val = safe(lambda: c.contract_type_id.with_context(lang=lang).name) \
                     if c and 'contract_type_id' in c._fields else ''
+            elif key == 'monthly_pay' and self._pbds_is_own_record(emp):
+                # F-b ruling 2: a person may always get their OWN pay on
+                # their OWN document — read the way the salary certificate
+                # reads it, for that one person only.
+                val = self._pbds_own_pay(emp, company, lang)
+                if val is None:
+                    blocked.add(key)
+                    val = ''
             elif key == 'monthly_pay':
                 c = get_contract()
                 if c:
@@ -274,7 +282,7 @@ class PbDocStudio(models.AbstractModel):
                         # As the caller, and explicitly: a value already in
                         # the cache (read under sudo by the caller of the
                         # letter) is returned without any check otherwise.
-                        plain = c.with_env(c.env(su=False))
+                        plain = c.with_env(self.env(su=False))
                         plain.check_access('read')
                         plain._check_field_access(plain._fields['wage'], 'read')
                         wage = plain.wage
@@ -306,6 +314,55 @@ class PbDocStudio(models.AbstractModel):
                     emp, get_contract(), specs)
                 out.update({k: str(escape(v)) for k, v in own.items()})
         return out, blocked
+
+    # ============================================================ own pay
+    @api.model
+    def _pbds_is_own_record(self, employee):
+        """Is the letter's person the calling user's own employee record?
+        `env.uid` stays the real user under sudo, so a sudo caller (the
+        certificate flow) is still recognised and nobody else is."""
+        if not employee:
+            return False
+        emp = employee.sudo()
+        return bool(emp.user_id) and emp.user_id.id == self.env.uid
+
+    @api.model
+    def _pbds_running_contract(self, employee):
+        """The person's running contract — the salary certificate's own
+        rule (`pb.me.certificate._pb_running_contract`) when that module is
+        installed, the same rule here otherwise."""
+        if 'pb.me.certificate' in self.env:
+            return self.env['pb.me.certificate']._pb_running_contract(employee)
+        if 'hr.contract' not in self.env:
+            return None
+        today = fields.Date.context_today(self)
+        contracts = employee.sudo().contract_ids.filtered(
+            lambda c: c.state == 'open'
+            and (not c.date_start or c.date_start <= today)
+            and (not c.date_end or c.date_end >= today))
+        return contracts.sorted(lambda c: c.date_start or today, reverse=True)[:1]
+
+    @api.model
+    def _pbds_own_pay(self, employee, company, lang):
+        """The caller's OWN current monthly pay (F-b ruling 2), read the way
+        the salary certificate reads it (`pb_me_letters` `_pb_values`: the
+        running contract's wage under sudo). Refuses anybody else's record.
+        → formatted text, '' when there is no running contract, None when the
+        site's access rules still refuse it (Access Studio, ledger DS-3)."""
+        if not self._pbds_is_own_record(employee):
+            raise AccessError(self.env._("This is not your own record."))
+        contract = self._pbds_running_contract(employee.sudo())
+        if not contract:
+            return ''
+        try:
+            contract = contract.sudo()
+            wage = contract.wage
+            currency = contract.currency_id if 'currency_id' in contract._fields \
+                and contract.currency_id else (company or employee.company_id).currency_id
+        except AccessError:
+            return None
+        return format_amount(self.with_context(lang=lang).env, wage or 0.0, currency,
+                             lang_code=lang)
 
     # ============================================================ catalogue
     @api.model
@@ -666,7 +723,8 @@ class PbDocStudio(models.AbstractModel):
             text = ''
         text = BRACED_RE.sub('…', re.sub(r'\s+', ' ', text)).strip()
         versions = tmpl.sudo().pbds_version_ids
-        langs = [MAIN_LANG] + [v.lang for v in versions if v.lang != MAIN_LANG]
+        main_lang = tmpl._pbds_main_lang()
+        langs = [main_lang] + [v.lang for v in versions if v.lang != main_lang]
         missing = self._pbds_missing(tmpl, flat)
         type_label = dict(tmpl._fields['letter_type']._description_selection(self.env)).get(
             tmpl.letter_type, '')
@@ -793,9 +851,10 @@ class PbDocStudio(models.AbstractModel):
         # template, e.g. the certificates in Vietnamese) can start a version.
         translated = {}
         main_body = str(main.body_html or '')
+        main_lang = tmpl._pbds_main_lang()
         for lang in langs:
             code = lang['code']
-            if code == MAIN_LANG or code in versions:
+            if code in (MAIN_LANG, main_lang) or code in versions:
                 continue
             local = str(tmpl.with_context(lang=code).body_html or '')
             if local and local != main_body:
@@ -835,7 +894,7 @@ class PbDocStudio(models.AbstractModel):
             'conditions': self.condition_fields(),
             'page_styles': self.page_styles(),
             'langs': langs,
-            'main_lang': MAIN_LANG,
+            'main_lang': main_lang,
             'person': self._pbds_sample_person(tmpl),
             'revision': fields.Datetime.to_string(tmpl.write_date) if tmpl.write_date else '',
             'changed_by': tmpl.pbds_changed_by.name or False,
@@ -992,9 +1051,13 @@ class PbDocStudio(models.AbstractModel):
         body = self._pbds_clean_body(tmpl, payload.get('body', main.body_html or ''))
         versions_in = payload.get('versions') if isinstance(payload.get('versions'), dict) else {}
         active = self._pbds_active_langs()
+        # F-b ruling 3: the main wording says which language it is written in.
+        main_lang = payload.get('main_lang') or tmpl._pbds_main_lang()
+        if main_lang not in active:
+            main_lang = tmpl._pbds_main_lang()
         clean_versions = {}
         for lang, ver in versions_in.items():
-            if lang == MAIN_LANG or lang not in active:
+            if lang == main_lang or lang not in active:
                 continue
             if ver is None:
                 clean_versions[lang] = None
@@ -1004,6 +1067,9 @@ class PbDocStudio(models.AbstractModel):
                 'subject': str(ver.get('subject') or '')[:300],
                 'body': self._pbds_clean_body(tmpl, ver.get('body') or ''),
             }
+        # A separate wording in the main wording's own language is never read.
+        if any(v.lang == main_lang for v in tmpl.sudo().pbds_version_ids):
+            clean_versions[main_lang] = None
         all_bodies = [body] + [v['body'] for v in clean_versions.values() if v] + [
             str(v.body_html or '') for v in tmpl.sudo().pbds_version_ids
             if v.lang not in clean_versions]
@@ -1021,6 +1087,7 @@ class PbDocStudio(models.AbstractModel):
             'body_html': body,
             'pbds_rules': rules or False,
             'pbds_page': page,
+            'pbds_main_lang': main_lang if main_lang != MAIN_LANG else False,
             'pbds_edited': True,
             'pbds_changed_by': self.env.uid,
             'pbds_changed_on': fields.Datetime.now(),
@@ -1066,6 +1133,7 @@ class PbDocStudio(models.AbstractModel):
             'rules': tmpl.pbds_rules or {},
             'page': self._pbds_clean_page(tmpl.pbds_page),
             'page_set': bool(tmpl.pbds_page),
+            'main_lang': tmpl._pbds_main_lang(),
             'versions': {v.lang: {'subject': v.subject or '', 'body': str(v.body_html or '')}
                          for v in tmpl.sudo().pbds_version_ids},
             'sign_image': bool(tmpl.pbds_sign_image),
@@ -1137,6 +1205,7 @@ class PbDocStudio(models.AbstractModel):
             'pbds_country_ids': [(6, 0, countries.ids)],
             'pbds_rules': tmpl.pbds_rules or False,
             'pbds_page': tmpl.pbds_page or dict(DEFAULT_PAGE),
+            'pbds_main_lang': tmpl.pbds_main_lang or False,
             'pbds_sign_image': tmpl.sudo().pbds_sign_image or False,
             'pbds_kind_set': root.pbds_kind if root.pbds_kind != 'other' else root.pbds_kind_set,
             'pbds_edited': True,
@@ -1171,6 +1240,7 @@ class PbDocStudio(models.AbstractModel):
                          for v in tmpl.sudo().pbds_version_ids],
             'rules': tmpl.pbds_rules or False,
             'page': tmpl.pbds_page or False,
+            'main_lang': tmpl.pbds_main_lang or False,
             'sign_image': sign.decode() if isinstance(sign, bytes) else (sign or False),
             'changed_by': tmpl.pbds_changed_by.id or False,
             'changed_on': fields.Datetime.to_string(tmpl.pbds_changed_on) if tmpl.pbds_changed_on else False,
@@ -1179,7 +1249,7 @@ class PbDocStudio(models.AbstractModel):
         tmpl.sudo().pbds_version_ids.unlink()
         tmpl.sudo().write({
             'pbds_rules': False, 'pbds_page': False, 'pbds_sign_image': False,
-            'pbds_edited': False, 'pbds_undo': undo,
+            'pbds_main_lang': False, 'pbds_edited': False, 'pbds_undo': undo,
             'pbds_changed_by': self.env.uid, 'pbds_changed_on': fields.Datetime.now(),
         })
         return {'ok': True}
@@ -1198,6 +1268,7 @@ class PbDocStudio(models.AbstractModel):
         tmpl.sudo().write({
             'pbds_rules': undo.get('rules') or False,
             'pbds_page': undo.get('page') or False,
+            'pbds_main_lang': undo.get('main_lang') or False,
             'pbds_sign_image': undo.get('sign_image') or False,
             'pbds_edited': True, 'pbds_undo': False,
             'pbds_changed_by': undo.get('changed_by') or self.env.uid,
@@ -1269,15 +1340,30 @@ class PbDocStudio(models.AbstractModel):
     # ------------------------------------------------------------ preview
     @api.model
     def _pbds_draft_parts(self, tmpl, draft, lang):
-        """(body, heading, rules, page) of the UNSAVED draft in `lang`."""
+        """(body, heading, rules, page, lang it reads in) of the UNSAVED draft
+        for a reader of `lang` — the same order as a real letter
+        (`pb.hr.letter._pbds_source`)."""
         draft = draft if isinstance(draft, dict) else {}
         versions = draft.get('versions') if isinstance(draft.get('versions'), dict) else {}
-        ver = versions.get(lang) if lang != MAIN_LANG else None
+        main_lang = draft.get('main_lang') if draft.get('main_lang') in self._pbds_active_langs() \
+            else tmpl._pbds_main_lang()
         saved_main = str(tmpl.with_context(lang=MAIN_LANG).body_html or '')
         draft_main = draft.get('body') if draft.get('body') is not None else saved_main
-        if isinstance(ver, dict) and not is_html_empty(ver.get('body') or ''):
+        main_heading = draft.get('subject') if draft.get('subject') is not None else \
+            tmpl.with_context(lang=MAIN_LANG).subject or ''
+        ver = versions.get(lang) if lang != main_lang else None
+        if lang != main_lang and lang not in versions:
+            saved = tmpl.sudo().pbds_version_ids.filtered(lambda v: v.lang == lang)[:1]
+            if saved:
+                ver = {'body': str(saved.body_html or ''), 'subject': saved.subject or ''}
+        read_lang = lang
+        if lang == main_lang:
+            body, heading = draft_main, main_heading
+        elif isinstance(ver, dict) and not is_html_empty(ver.get('body') or ''):
             body, heading = ver.get('body') or '', ver.get('subject') or ''
-        elif lang != MAIN_LANG and draft_main == saved_main:
+        elif main_lang != MAIN_LANG:
+            body, heading, read_lang = draft_main, main_heading, main_lang
+        elif draft_main == saved_main:
             # No wording of its own: the letter reads the template in that
             # language — a translation shipped with the product, else the
             # main wording. Exactly what a real letter does (`_pbds_source`).
@@ -1287,16 +1373,14 @@ class PbDocStudio(models.AbstractModel):
                     local.subject == tmpl.with_context(lang=MAIN_LANG).subject:
                 heading = draft.get('subject')
         else:
-            body = draft_main
-            heading = draft.get('subject') if draft.get('subject') is not None else \
-                tmpl.with_context(lang=MAIN_LANG).subject or ''
+            body, heading = draft_main, main_heading
         body = str(body or '')
         if len(body.encode('utf-8')) > MAX_BODY:
             raise UserError(self.env._("This wording is too long to preview."))
         rules = draft.get('rules') if isinstance(draft.get('rules'), dict) else (tmpl.pbds_rules or {})
         page = self._pbds_clean_page(draft.get('page') if isinstance(draft.get('page'), dict)
                                      else tmpl.pbds_page)
-        return html_sanitize(body), heading, rules, page
+        return html_sanitize(body), heading, rules, page, read_lang
 
     @api.model
     def _pbds_draft_sign(self, tmpl, draft):
@@ -1336,7 +1420,8 @@ class PbDocStudio(models.AbstractModel):
         emp = self._pbds_person_for(employee_id)
         active = self._pbds_active_langs()
         lang = lang if lang in active else self.env['pb.hr.letter']._pbds_default_lang(tmpl, emp)
-        body, heading, rules, page = self._pbds_draft_parts(tmpl, draft, lang)
+        asked = lang
+        body, heading, rules, page, lang = self._pbds_draft_parts(tmpl, draft, lang)
         _groups, flat = self._pbds_catalogue(tmpl)
         letter = self._pbds_preview_letter(tmpl, emp)
         missing = []
@@ -1397,7 +1482,7 @@ class PbDocStudio(models.AbstractModel):
             seen.add(row['key'])
             unique_missing.append(row)
         return {'html': str(frame), 'hidden': hidden, 'missing': unique_missing,
-                'values': values, 'lang': lang}
+                'values': values, 'lang': asked, 'read_lang': lang}
 
     @api.model
     def sample_pdf(self, template_id, draft, employee_id, lang=None):
@@ -1408,7 +1493,7 @@ class PbDocStudio(models.AbstractModel):
         emp = self._pbds_person_for(employee_id)
         active = self._pbds_active_langs()
         lang = lang if lang in active else self.env['pb.hr.letter']._pbds_default_lang(tmpl, emp)
-        body, heading, rules, page = self._pbds_draft_parts(tmpl, draft, lang)
+        body, heading, rules, page, lang = self._pbds_draft_parts(tmpl, draft, lang)
         letter = self._pbds_preview_letter(tmpl, emp)
         try:
             html, _hidden = letter.with_context(pbds_rules_override=rules)._pbds_render(body, lang)

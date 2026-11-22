@@ -17,7 +17,7 @@ untouched letter renders byte for byte as before (rail R1). Silent install:
 no data written to existing letters, no job, no mail.
 See docs/handovers/docstudio/DOCSTUDIO_F_REPORT.md.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -32,6 +32,7 @@ See docs/handovers/docstudio/DOCSTUDIO_F_REPORT.md.
         'security/doc_studio_security.xml',
         'report/doc_report.xml',
         'views/doc_studio_actions.xml',
+        'views/letter_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

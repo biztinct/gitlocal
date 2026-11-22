@@ -210,8 +210,14 @@
               <button t-foreach="langTabs" t-as="l" t-key="l.code" type="button" role="tab" class="pbds-lang-tab"
                       t-att-aria-selected="state.lang === l.code ? 'true' : 'false'"
                       t-att-class="{ 'is-on': state.lang === l.code, 'is-has': l.has }" t-on-click="() => this.switchLang(l.code)">
-                <i/> <span t-esc="l.name"/> <small t-if="l.main">Main wording</small>
+                <i/> <span t-if="l.main" t-esc="mainTabLabel"/><span t-else="" t-esc="l.short"/>
               </button>
+              <label t-if="isMain" class="pbds-mainlang" title="The language the main wording is written in">
+                <span>Written in</span>
+                <select aria-label="The language the main wording is written in" t-on-change="setMainLang">
+                  <option t-foreach="state.doc.langs" t-as="ml" t-key="ml.code" t-att-value="ml.code" t-att-selected="ml.code === mainLang" t-esc="shortLang(ml.name)"/>
+                </select>
+              </label>
               <span class="pbds-spacer"/>
               <button t-if="!isMain and hasEditor" type="button" class="pbds-link danger" t-on-click="askRemoveVersion">
                 <t t-out="ic('trash', 13)"/> <span>Remove this language</span>

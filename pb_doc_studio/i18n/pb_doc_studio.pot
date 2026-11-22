@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 07:26+0000\n"
-"PO-Revision-Date: 2026-11-22 07:26+0000\n"
+"POT-Creation-Date: 2026-11-22 09:55+0000\n"
+"PO-Revision-Date: 2026-11-22 09:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1085,9 +1085,14 @@ msgid "M"
 msgstr ""
 
 #. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_main_lang
+msgid "Main wording language"
+msgstr ""
+
+#. module: pb_doc_studio
 #. odoo-javascript
-#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
-msgid "Main wording"
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Main wording · %s"
 msgstr ""
 
 #. module: pb_doc_studio
@@ -1842,6 +1847,12 @@ msgid "The file is not the kind of picture it says it is."
 msgstr ""
 
 #. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "The language the main wording is written in"
+msgstr ""
+
+#. module: pb_doc_studio
 #: model:ir.model.fields,help:pb_doc_studio.field_pb_hr_letter__lang
 msgid ""
 "The language this letter is written in: the person's own when the document "
@@ -1904,6 +1915,14 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
 msgid "The preview could not be drawn."
+msgstr ""
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"The separate %s wording is no longer needed: people who read it now get the "
+"main wording. Nothing changes until you save."
 msgstr ""
 
 #. module: pb_doc_studio
@@ -1973,6 +1992,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_doc_studio/models/doc_studio.py:0
 msgid "This document still has its built-in wording."
+msgstr ""
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This is not your own record."
 msgstr ""
 
 #. module: pb_doc_studio
@@ -2120,6 +2145,24 @@ msgid "Use a number in this rule."
 msgstr ""
 
 #. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using %(company)s's wording for %(countries)s"
+msgstr ""
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using %s's wording"
+msgstr ""
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using the wording for %s"
+msgstr ""
+
+#. module: pb_doc_studio
 #. odoo-javascript
 #: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
 msgid "Value"
@@ -2156,6 +2199,13 @@ msgid "When the letter is made"
 msgstr ""
 
 #. module: pb_doc_studio
+#: model:ir.model.fields,help:pb_doc_studio.field_pb_hr_letter__pbds_wording_note
+msgid ""
+"Which wording this letter uses when a company or country has its own copy of"
+" the document."
+msgstr ""
+
+#. module: pb_doc_studio
 #. odoo-javascript
 #: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
 msgid "While typing, press"
@@ -2179,6 +2229,12 @@ msgid "Wording"
 msgstr ""
 
 #. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__pbds_wording_note
+#: model_terms:ir.ui.view,arch_db:pb_doc_studio.view_hr_letter_list_pbds
+msgid "Wording used"
+msgstr ""
+
+#. module: pb_doc_studio
 #. odoo-python
 #: code:addons/pb_doc_studio/models/doc_common.py:0
 msgid "Work email"
@@ -2195,6 +2251,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
 msgid "Write the letter here. Press / to add a field."
+msgstr ""
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Written in"
 msgstr ""
 
 #. module: pb_doc_studio

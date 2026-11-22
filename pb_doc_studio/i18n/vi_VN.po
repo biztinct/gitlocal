@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 07:26+0000\n"
-"PO-Revision-Date: 2026-11-22 07:26+0000\n"
+"POT-Creation-Date: 2026-11-22 09:55+0000\n"
+"PO-Revision-Date: 2026-11-22 09:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: vi_VN\n"
@@ -1095,10 +1095,15 @@ msgid "M"
 msgstr "M"
 
 #. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_main_lang
+msgid "Main wording language"
+msgstr "Ngôn ngữ của nội dung chính"
+
+#. module: pb_doc_studio
 #. odoo-javascript
-#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
-msgid "Main wording"
-msgstr "Nội dung chính"
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Main wording · %s"
+msgstr "Nội dung chính · %s"
 
 #. module: pb_doc_studio
 #. odoo-javascript
@@ -1866,6 +1871,12 @@ msgid "The file is not the kind of picture it says it is."
 msgstr "Tệp không đúng loại ảnh như đã ghi."
 
 #. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "The language the main wording is written in"
+msgstr "Ngôn ngữ dùng để viết nội dung chính"
+
+#. module: pb_doc_studio
 #: model:ir.model.fields,help:pb_doc_studio.field_pb_hr_letter__lang
 msgid ""
 "The language this letter is written in: the person's own when the document "
@@ -1933,6 +1944,16 @@ msgstr "Ảnh phải từ 4 MB trở xuống."
 #: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
 msgid "The preview could not be drawn."
 msgstr "Không hiển thị được bản xem trước."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"The separate %s wording is no longer needed: people who read it now get the "
+"main wording. Nothing changes until you save."
+msgstr ""
+"Không cần nội dung %s riêng nữa: người đọc ngôn ngữ này giờ nhận nội dung "
+"chính. Chưa có gì thay đổi cho đến khi bạn lưu."
 
 #. module: pb_doc_studio
 #. odoo-javascript
@@ -2005,6 +2026,12 @@ msgstr "Tài liệu này không còn tồn tại."
 #: code:addons/pb_doc_studio/models/doc_studio.py:0
 msgid "This document still has its built-in wording."
 msgstr "Tài liệu này vẫn đang dùng nội dung có sẵn."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This is not your own record."
+msgstr "Đây không phải hồ sơ của chính bạn."
 
 #. module: pb_doc_studio
 #. odoo-javascript
@@ -2156,6 +2183,24 @@ msgid "Use a number in this rule."
 msgstr "Hãy dùng một con số trong điều kiện này."
 
 #. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using %(company)s's wording for %(countries)s"
+msgstr "Dùng nội dung của %(company)s cho %(countries)s"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using %s's wording"
+msgstr "Dùng nội dung của %s"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using the wording for %s"
+msgstr "Dùng nội dung dành cho %s"
+
+#. module: pb_doc_studio
 #. odoo-javascript
 #: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
 msgid "Value"
@@ -2192,6 +2237,15 @@ msgid "When the letter is made"
 msgstr "Khi lập thư"
 
 #. module: pb_doc_studio
+#: model:ir.model.fields,help:pb_doc_studio.field_pb_hr_letter__pbds_wording_note
+msgid ""
+"Which wording this letter uses when a company or country has its own copy of"
+" the document."
+msgstr ""
+"Nội dung mà thư này dùng khi một công ty hoặc quốc gia có bản sao riêng của "
+"tài liệu."
+
+#. module: pb_doc_studio
 #. odoo-javascript
 #: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
 msgid "While typing, press"
@@ -2215,6 +2269,12 @@ msgid "Wording"
 msgstr "Nội dung"
 
 #. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__pbds_wording_note
+#: model_terms:ir.ui.view,arch_db:pb_doc_studio.view_hr_letter_list_pbds
+msgid "Wording used"
+msgstr "Nội dung được dùng"
+
+#. module: pb_doc_studio
 #. odoo-python
 #: code:addons/pb_doc_studio/models/doc_common.py:0
 msgid "Work email"
@@ -2232,6 +2292,12 @@ msgstr "Nơi làm việc"
 #: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
 msgid "Write the letter here. Press / to add a field."
 msgstr "Viết thư tại đây. Nhấn / để thêm một trường."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Written in"
+msgstr "Viết bằng"
 
 #. module: pb_doc_studio
 #. odoo-javascript

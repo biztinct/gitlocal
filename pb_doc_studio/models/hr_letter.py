@@ -40,11 +40,81 @@ class PbHrLetter(models.Model):
         help='The language this letter is written in: the person\'s own when '
              'the document has a wording in it.')
 
+    pbds_wording_note = fields.Char(
+        string='Wording used', compute='_compute_pbds_wording_note',
+        help='Which wording this letter uses when a company or country has '
+             'its own copy of the document.')
+
+    @api.depends('template_id', 'template_id.pbds_replaces_id',
+                 'template_id.company_id', 'template_id.pbds_country_ids')
+    def _compute_pbds_wording_note(self):
+        for rec in self:
+            rec.pbds_wording_note = rec.template_id.sudo()._pbds_wording_note() \
+                if rec.template_id else False
+
     # ------------------------------------------------------------ create
     @api.model_create_multi
     def create(self, vals_list):
         self._pbds_prepare_vals(vals_list)
         return super().create(vals_list)
+
+    def write(self, vals):
+        """F-b ruling 1 (owner, 2026-11-22): a company's or country's own copy
+        ALWAYS wins — also when somebody picks the original by hand on a
+        draft letter. A draft whose document or person changes gets the
+        copy that fits the person; the original is only used for them when
+        the copy is switched off."""
+        if not ({'template_id', 'employee_id'} & set(vals)) \
+                or self.env.context.get('pbds_no_swap'):
+            return super().write(vals)
+        drafts = self.filtered(lambda r: r.state == 'draft')
+        rest = self - drafts
+        if rest:
+            super(PbHrLetter, rest).write(vals)
+        groups = {}
+        Template = self.env['pb.letter.template'].sudo().with_context(active_test=False)
+        Employee = self.env['hr.employee'].sudo()
+        for rec in drafts:
+            tmpl = Template.browse(vals['template_id']) if vals.get('template_id') \
+                else rec.template_id.sudo()
+            emp = Employee.browse(vals['employee_id']) if vals.get('employee_id') \
+                else rec.employee_id.sudo()
+            chosen = self._pbds_swap_template(tmpl, emp) if tmpl and emp else tmpl
+            key = chosen.id if chosen else vals.get('template_id')
+            groups[key] = groups.get(key, self.browse()) | rec
+        for tid, recs in groups.items():
+            new_vals = dict(vals)
+            if tid:
+                new_vals['template_id'] = tid
+            super(PbHrLetter, recs).write(new_vals)
+        return True
+
+    @api.onchange('template_id', 'employee_id')
+    def _onchange_pbds_wording(self):
+        """Show the copy on screen as soon as the document or the person is
+        picked, so what the form shows is what will print."""
+        for rec in self:
+            if rec.template_id and rec.employee_id:
+                chosen = self._pbds_swap_template(rec.template_id.sudo(),
+                                                  rec.employee_id.sudo())
+                if chosen and chosen.id != rec.template_id.id:
+                    rec.template_id = chosen.id
+
+    @api.model
+    def _pbds_swap_template(self, template, employee):
+        """The template a letter for `employee` uses when `template` is
+        asked for (one person; `_pbds_prepare_vals` does batches)."""
+        Template = self.env['pb.letter.template'].sudo().with_context(active_test=False)
+        template = Template.browse(template._origin.id or template.id)
+        employee = self.env['hr.employee'].sudo().browse(employee._origin.id or employee.id)
+        if not template or not employee:
+            return template
+        root = template.pbds_replaces_id or template
+        variants = Template.search([('pbds_replaces_id', '=', root.id), ('active', '=', True)])
+        if not variants and not template.pbds_replaces_id:
+            return template
+        country = self.env['pb.doc.studio']._pbds_country_of_work(employee).get(employee.id)
+        return self._pbds_pick_variant(template, employee, variants, country)
 
     @api.model
     def _pbds_prepare_vals(self, vals_list):
@@ -142,22 +212,36 @@ class PbHrLetter(models.Model):
         return True
 
     def _pbds_source(self, lang):
-        """(body, heading) of the template in `lang`: its version when there is
-        one, else the template read in that language (a translated wording
-        shipped with the product still reaches its readers)."""
+        """`(body, heading, lang it reads in)` of the template for a reader of
+        `lang` (F5 + F-b ruling 3):
+
+        1. the reader's language is the main wording's language → the main
+           wording, as written;
+        2. a wording of its own in that language → that version;
+        3. otherwise the main wording. When the main wording is English (the
+           default) it is read in the reader's language as before, so a
+           translation shipped with the product still reaches its readers;
+           when it is written in another language the whole letter — dates
+           included — is in that language."""
         self.ensure_one()
         tmpl = self.template_id
+        main_lang = tmpl._pbds_main_lang()
+        main = tmpl.with_context(lang=MAIN_LANG)
+        if lang == main_lang:
+            return str(main.body_html or ''), main.subject or '', main_lang
         version = tmpl.sudo().pbds_version_ids.filtered(lambda v: v.lang == lang)[:1]
         if version and not is_html_empty(version.body_html):
-            return str(version.body_html), version.subject or ''
+            return str(version.body_html), version.subject or '', lang
+        if main_lang != MAIN_LANG:
+            return str(main.body_html or ''), main.subject or '', main_lang
         local = tmpl.with_context(lang=lang)
-        return str(local.body_html or ''), local.subject or ''
+        return str(local.body_html or ''), local.subject or '', lang
 
     def _pbds_generate(self):
         self.ensure_one()
         tmpl = self.template_id
         lang = self.lang or self._pbds_default_lang(tmpl, self.employee_id)
-        body, heading = self._pbds_source(lang)
+        body, heading, lang = self._pbds_source(lang)
         if is_html_empty(body):
             raise UserError(_(
                 "'%s' has no letter body yet, so there is nothing to print.",

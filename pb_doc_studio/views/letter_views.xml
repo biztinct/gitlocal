@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F-b ruling 1: a letter that uses a company's or country's own copy
+         says so where the document is chosen. -->
+    <record id="view_hr_letter_form_pbds" model="ir.ui.view">
+        <field name="name">pb.hr.letter.form.doc.studio</field>
+        <field name="model">pb.hr.letter</field>
+        <field name="inherit_id" ref="pb_lifecycle.view_hr_letter_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='template_id']" position="after">
+                <div class="alert alert-info py-1 px-2 mb-2" role="status" colspan="2"
+                     invisible="not pbds_wording_note">
+                    <field name="pbds_wording_note" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_hr_letter_list_pbds" model="ir.ui.view">
+        <field name="name">pb.hr.letter.list.doc.studio</field>
+        <field name="model">pb.hr.letter</field>
+        <field name="inherit_id" ref="pb_lifecycle.view_hr_letter_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='template_id']" position="after">
+                <field name="pbds_wording_note" optional="show" string="Wording used"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
