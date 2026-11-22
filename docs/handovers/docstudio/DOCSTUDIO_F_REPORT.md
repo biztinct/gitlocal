@@ -128,3 +128,58 @@ Benchmark: Notion-quality editing, PandaDoc-quality field chips.
 - DS-13 | `hr.employee.barcode` must be alphanumeric (no hyphen): fixtures with `DEMO-001` fail in setUpClass.
 - DS-14 | Disk was at 316 MB free. 80 orphan filestore folders (their databases long dropped, untouched for 2+ days, 1.5 GB) were removed from `~/odoo19/data/filestore` (list in this phase's scratch folder). Folders of existing databases and anything touched in the last 2 days were left alone.
 - DS-15 | Process hygiene: a `pkill -f '…max-cron-threads=0 --log-level=info'` aimed at this phase's walk server may also have matched another builder's local server (port 8473, phase X's walk, was not listening afterwards) | stop local servers by PID + working folder only (this phase's `restart.sh`). Phase X may need to restart its local server.
+
+---
+
+## F-b — rulings of 2026-11-22 (owner 1 + 2, orchestrator 3)
+
+Branch `docstudio-f`, `origin/19.1` (0e4a814b0, phases R and X) merged in first. Module version
+**19.0.1.1.0** (upgrade, not install, where phase F is already installed). Owner questions 1–3 of §8
+are answered by these rulings.
+
+### What changed
+
+| Ruling | Built |
+|---|---|
+| 1. The company's/country's own copy ALWAYS wins | The swap ran at `pb.hr.letter.create`; it now also runs in `write` when a **draft** letter's document or person changes (a prepared/sent letter is never re-pointed), and in a form onchange so the picker shows the copy the moment the original is picked. New computed `pb.hr.letter.pbds_wording_note`: "Using DEMO B's wording" / "Using DEMO B's wording for Indonesia" / "Using the wording for Indonesia", shown under the document on the letter form (view `pb_doc_studio.view_hr_letter_form_pbds`, inherits `pb_lifecycle.view_hr_letter_form`) and as a "Wording used" column on the letters list. The original is only used for those people when the copy is switched off. |
+| 2. Own pay on own document | `pb.doc.studio._pbds_is_own_record(employee)` = the employee's `user_id` is `env.uid` (stays the real user under sudo, so the My Payobook certificate flow is recognised; portal users are linked the same way). `_pbds_own_pay(employee, company, lang)` refuses any other record (AccessError) and reads that one person's running contract the way `pb_me_letters` reads the salary certificate (`pb.me.certificate._pb_running_contract` + wage under sudo; same rule restated when that module is absent). If the site's access rules still refuse it (Access Studio, DS-3) the figure stays blocked. Everyone else keeps the rail as built; the rail now reads with the method's environment, not the record's (DS-16). `pb_me_letters` not edited. |
+| 3. Main wording in any language | New field `pb.letter.template.pbds_main_lang` (Char, empty = English as before; no backfill). The main tab reads "Main wording · Tiếng Việt" with a small "Written in" picker; the main language's own tab disappears (a separate wording in it is never read and is removed on save, said in words); English becomes an ordinary extra language when the main wording is not English. Reading order for a person of language L (`pb.hr.letter._pbds_source`, mirrored by the preview): L is the main language → main wording; a version in L → that version; otherwise the main wording — read in L when the main wording is English (shipped translations still reach readers, as before), in the main language when it is not (dates and the signature title follow). The preview says "No wording in this language yet: the letter prints the main wording, in Tiếng Việt." Gallery language codes follow the main language. Put back clears it; undo restores it; copies inherit it. |
+
+### Tests
+
+| # | Test | Result | Evidence |
+|---|---|---|---|
+| 19 | HR picks the original by hand for a company-B employee → the copy prints, notice shows | PASS | `test_19_…`: write on a draft (person + original) → copy, notice "Using DEMO Doc Studio B's wording"; re-picking the original keeps the copy; PDF wording is the copy's; onchange swaps in the form; company+country copy notice "…for Indonesia"; a prepared letter is not re-pointed. Browser: new letter, DEMO Siti (Indonesia) + "Experience letter" picked by hand → field became "Experience letter — Indonesia", blue notice "Using the wording for Indonesia". |
+| 20 | Copy switched off → the original prints | PASS | `test_20_…` |
+| 21 | Employee prepares own document with Monthly pay → figure prints | PASS | `test_21_…`: plain employee login (no HR, cannot read contracts) gets "25.000.000" on their own letter. |
+| 22 | Same employee cannot get a colleague's pay by any route | PASS | `test_22_…`: generate refused ("This letter shows pay…", no figure); preview and sample PDF refused (AccessError: the studio is closed to them); `_pbds_own_pay(colleague)` refused; the generic value is blocked and empty. |
+| 23 | HR without pay access, someone else's letter → plain refusal | PASS | `test_23_…`: exact message; preview chip "You may not see pay". |
+| 24 | Main wording in Vietnamese → Vietnamese long dates for a reader with no version; tab shows "Main wording · Tiếng Việt" | PASS | `test_24_…`: Indonesian and English readers get the Vietnamese wording with "tháng" dates and `lang = vi_VN`; an English version then wins for English readers; Vietnamese readers use the main wording; preview `lang/read_lang` = `id_ID/vi_VN`; put back clears, undo restores. Browser: tab row "Main wording · Tiếng Việt · English (US) · Bahasa Indonesia", preview date "22 tháng 11, 2026", hint line shown. |
+| Own suite | 35 tests (29 + 6) | PASS | 0 failed, 0 errors (final run after the browser re-walk was undone). |
+| R1 golden | Untouched templates byte-identical | PASS | Fresh copy of the template DB on the merged tree: 13 template rows + 9 shipped letters identical before/after install, identical to the phase-F golden too, and identical again after the browser re-walk was put back. |
+| Dependent suites | pb_lifecycle, pb_probation, pb_contract_lifecycle, pb_pay, pb_job_change, pb_me_letters, pb_hiring | PASS (= baseline) | 927 tests: the same 11 failures + 2 errors as the recorded baseline (§2, test 16); the third baseline error (`TestTheRequestPage…stranger`) passed again. None of these seven modules changed between the phase-F base and 0e4a814b0 (`git diff --stat` empty), so the recorded baseline stands. (The two extra failures in that run were tests 21/22 on the code as it was when the run started; fixed, see DS-16, and green since.) |
+| Browser re-walk | Changed parts, console clean | PASS | Main-language picker and tab label, preview hint, save, copy for Indonesia, letter form hand-pick + notice; no console errors or warnings. |
+| PO gate | vi_VN / id_ID | PASS | 393 entries each, all translated (new: notices, main-wording tab, picker, hint, own-record refusal). |
+
+### Contract C3 — final, for wave 2 (A1, A2, B)
+
+- **Page dict** `pbds_page` and `page_styles()` / `page_values(page, lang)` unchanged (§4).
+- **QWeb `pb_doc_studio.page_frame`**: required `page`, `company`, `body` (Markup); optional `subject`, `date_text`, `sign_image` (data URI), **`doc_lang`** (the page's language; `lang` still accepted but is not reliable in a QWeb call, DS-10), `mode` (`'pdf'` | `'screen'`), `company_card` (screen only).
+- **Report**: `pb_doc_studio.report_doc_letter` via the action record from `pb.doc.studio._pbds_report(page)` (`action_report_doc_{normal,narrow,wide}`); values from `report.pb_doc_studio.report_doc_letter` with `docids` (letters) or `data={'pbds_sample': [page dicts]}`; page dict keys `record, company, page, lang, subject, date_text, body, sign_image`.
+- **Template fields**: `pbds_rules`, `pbds_page`, `pbds_sign_image`, `pbds_version_ids` (`pb.doc.version`: `lang, subject, body_html`), `pbds_replaces_id` / `pbds_variant_ids` / `pbds_country_ids` (copies), **`pbds_main_lang`** (+ `_pbds_main_lang()`), `pbds_edited`, `pbds_original_json`, `pbds_kind` / `pbds_kind_set`; helpers `_pbds_is_studio()`, **`_pbds_wording_note()`**.
+- **Letter**: `lang`, **`pbds_wording_note`**; `_pbds_default_lang(template, employee)`, **`_pbds_source(lang)` → `(body, heading, read_lang)`**, `_pbds_render(body, lang, ghost, missing, wrap)`, `_pbds_values(lang, keys)`, `_pbds_pdf_page()`, `_pbds_pick_variant(...)`, **`_pbds_swap_template(template, employee)`** (one person; batches go through `create`).
+- **Facade** `pb.doc.studio` (all refuse callers without write on letter templates): `board, open (+ main_lang), save (+ main_lang), copy_for, reset, undo_reset, set_active, create_blank, preview (→ html, hidden, missing, values, lang, read_lang), sample_pdf, people, catalogue, condition_fields, upload_image, page_styles, page_values`. Internal: `_pbds_draft_parts(tmpl, draft, lang)` → `(body, heading, rules, page, read_lang)`, `_pbds_generic_values`, **`_pbds_is_own_record`**, **`_pbds_own_pay`**, `_pbds_running_contract`, `_pbds_type_fields` (hook), `_pbds_facts`, `_pbds_country_of_work`. Constants `NOT_HERE_YET = ('offer',)`, `CALLER_CHOOSES_LANG`.
+- A1 note: when offer letters / conduct letters move onto the engine, the copy swap and the own-pay exception apply to them automatically (both live in `pb.hr.letter` create/write and the value resolver).
+
+### Deploy notes (F-b)
+
+- Where phase F is not yet live: install `pb_doc_studio` as in §6 (it now carries F-b). Where it is: `-u pb_doc_studio` (new column `pbds_main_lang`, two inherited views on the letter form/list, translations). No data written; no cron; no mail. Asset purge + restart (JS/SCSS changed).
+
+### Files touched outside `pb_doc_studio`
+
+None (this report only). The merge of `origin/19.1` brought phases R and X unchanged.
+
+### Gotchas (ledger rows)
+
+- DS-16 | A value resolver that takes a record must read with ITS OWN env (`self.env(su=False)`), not the record's: a record passed in from an admin environment let a non-pay user's call read the wage. | `c.with_env(self.env(su=False))`; test 22 covers it.
+- DS-17 | Odoo prints money in the reader's language: a Vietnamese reader's letter shows `25.000.000`, not `25,000,000` — assert with `25[.,]000[.,]000`.

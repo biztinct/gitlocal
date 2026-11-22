@@ -385,6 +385,15 @@ export class DocStudio extends Component {
         const n = this.yoursCount;
         return n === 1 ? _t("1 with your wording") : _t("%s with your wording", n);
     }
+    /** The letter prints in another language than the one asked for (no
+     *  wording of its own in it: the main wording is used). */
+    get readLangHint() {
+        const pv = this.state.pv;
+        if (!pv || !pv.read_lang || pv.read_lang === this.state.previewLang) { return ""; }
+        const row = (this.state.doc ? this.state.doc.langs : []).find((l) => l.code === pv.read_lang);
+        return _t("No wording in this language yet: the letter prints the main wording, in %s.",
+                  row ? this.shortLang(row.name) : pv.read_lang);
+    }
     get docForText() {
         const doc = this.state.doc;
         return doc ? [doc.for_company, ...(doc.for_countries || [])].filter(Boolean).join(" · ") : "";

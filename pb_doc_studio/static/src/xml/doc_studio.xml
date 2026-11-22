@@ -309,7 +309,8 @@
                     <option t-foreach="state.doc.langs" t-as="l" t-key="l.code" t-att-value="l.code" t-att-selected="l.code === state.previewLang" t-esc="langLabel(l)"/>
                   </select>
                 </label>
-                <p class="pbds-pv-hint" t-if="state.previewLang === state.person.lang">This is the language their letter is made in.</p>
+                <p class="pbds-pv-hint" t-if="readLangHint" t-esc="readLangHint"/>
+                <p class="pbds-pv-hint" t-elif="state.previewLang === state.person.lang">This is the language their letter is made in.</p>
                 <div t-if="state.pv.hidden" class="pbds-pv-hidden">
                   <t t-out="ic('eyeOff', 14)"/> <span t-esc="hiddenText"/>
                   <button type="button" class="pbds-switch" role="switch" t-att-aria-checked="state.ghosts ? 'true' : 'false'" t-on-click="toggleGhosts">

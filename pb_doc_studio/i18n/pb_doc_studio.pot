@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 09:55+0000\n"
-"PO-Revision-Date: 2026-11-22 09:55+0000\n"
+"POT-Creation-Date: 2026-11-22 10:47+0000\n"
+"PO-Revision-Date: 2026-11-22 10:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1260,6 +1260,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_doc_studio/models/doc_common.py:0
 msgid "No signature block"
+msgstr ""
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"No wording in this language yet: the letter prints the main wording, in %s."
 msgstr ""
 
 #. module: pb_doc_studio
