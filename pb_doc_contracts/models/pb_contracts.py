@@ -7,6 +7,7 @@ and print its contract document. Values are read as the caller; pay follows
 the pay rail (`pb.doc.studio._pbdc_pay`): somebody who sees the panel's wage
 masked gets a plain refusal, never a figure.
 
+    contract_document_available(contract_id)                the button
     contract_document(contract_id, lang, template_id)       the preview
     contract_document_pdf(contract_id, lang, template_id)   the true PDF
     contract_document_save(contract_id, lang, template_id)  file a new version
@@ -52,14 +53,19 @@ class PbContracts(models.AbstractModel):
 
     # ------------------------------------------------------------ panel
     @api.model
-    def _cd_payload(self, contract):
-        res = super()._cd_payload(contract)
+    def contract_document_available(self, contract_id):
+        """May the caller print this contract's document? (the panel's
+        "Contract document" button). Asked beside the panel's own payload,
+        which stays exactly as `pb_contracts` builds it. Never raises."""
         try:
-            res['contract_document'] = {'available': bool(self._pbdc_roots(contract))}
-        except Exception:   # noqa: BLE001 — the panel must open whatever happens here
-            _logger.exception('Contract document: availability check failed for %s', contract.id)
-            res['contract_document'] = {'available': False}
-        return res
+            if not self._cd_may_read():
+                return False
+            contract = self._cd_contract(contract_id)
+            return bool(contract is not None and contract.employee_id
+                        and self._pbdc_roots(contract))
+        except Exception:   # noqa: BLE001 — a button, never a broken panel
+            _logger.exception('Contract document: availability check failed for %s', contract_id)
+            return False
 
     # ------------------------------------------------------------ helpers
     @api.model

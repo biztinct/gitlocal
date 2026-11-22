@@ -302,13 +302,22 @@ export class ContractDocSheet extends Component {
 patch(Contract360Drawer.prototype, {
     setup() {
         super.setup(...arguments);
-        this.pbdc = useState({ open: false });
+        this.pbdc = useState({ open: false, available: false });
         this._pbdcRemove = null;
         onWillUnmount(() => { if (this._pbdcRemove) { this._pbdcRemove(); } });
     },
+    /** The panel's own payload stays as it is: whether this contract has a
+     *  document to print is asked beside it, at the same time. */
+    async load() {
+        const probe = this.orm.call(MODEL, "contract_document_available",
+                                    [Number(this.props.contractId)])
+            .then((ok) => { this.pbdc.available = Boolean(ok); })
+            .catch(() => { this.pbdc.available = false; });
+        await super.load(...arguments);
+        await probe;
+    },
     get pbdcAvailable() {
-        const doc = this.d && this.d.contract_document;
-        return Boolean(doc && doc.available);
+        return Boolean(this.pbdc && this.pbdc.available && this.d && !this.d.error);
     },
     get pbdcInActs() { return Boolean(this.nextActions.length && this.canWrite); },
     pbdcIcon() { return ic("fileText", 14); },

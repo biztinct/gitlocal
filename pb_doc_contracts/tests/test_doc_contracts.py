@@ -341,24 +341,25 @@ class TestDocContracts(ContractDocCase):
     # ------------------------------------------------------------ 11
     def test_11_button_only_for_contract_readers(self):
         hr = self.user('demo_pbdc_hr2', ['hr.group_hr_user', 'hr_contract.group_hr_contract_manager'])
-        payload = self.Panel.with_user(hr).get_contract_360(self.c_sg.id)
-        self.assertTrue(payload['contract_document']['available'])
+        self.assertTrue(self.Panel.with_user(hr).contract_document_available(self.c_sg.id))
+        # the panel's own payload is left exactly as pb_contracts builds it
+        self.assertNotIn('contract_document', self.Panel.with_user(hr).get_contract_360(self.c_sg.id))
         nobody = self.user('demo_pbdc_nobody', ['base.group_user'])
         with self.assertRaises(UserError):
             self.Panel.with_user(nobody).get_contract_360(self.c_sg.id)
         with self.assertRaises(UserError):
             self.Panel.with_user(nobody).contract_document(self.c_sg.id)
+        self.assertFalse(self.Panel.with_user(nobody).contract_document_available(self.c_sg.id))
         # another company's reader: the contract is not theirs
         hr_b = self.user('demo_pbdc_hrb', ['hr.group_hr_user', 'hr_contract.group_hr_contract_manager'],
                          company=self.company_b)
-        gone = self.Panel.with_user(hr_b).get_contract_360(self.c_sg.id)
-        self.assertNotIn('contract_document', gone)
+        self.assertFalse(self.Panel.with_user(hr_b).contract_document_available(self.c_sg.id))
         self.assertFalse(self.Panel.with_user(hr_b).contract_document(self.c_sg.id)['ok'])
         self.assertFalse(self.Panel.with_user(hr_b).contract_document_pdf(self.c_sg.id)['ok'])
         self.assertFalse(self.Panel.with_user(hr_b).contract_document_save(self.c_sg.id)['ok'])
         # every contract document switched off: no button, a plain sentence
         self.generic.active = False
-        self.assertFalse(self.Panel.get_contract_360(self.c_sg.id)['contract_document']['available'])
+        self.assertFalse(self.Panel.contract_document_available(self.c_sg.id))
         off = self.Panel.contract_document(self.c_sg.id)
         self.assertFalse(off['ok'])
         self.assertIn('Settings, Documents', off['msg'])
