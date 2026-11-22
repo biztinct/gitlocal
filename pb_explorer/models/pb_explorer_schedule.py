@@ -441,6 +441,8 @@ class PbExplorerSchedule(models.Model):
             ''.join(c if c.isalnum() else '_' for c in view.name)[:40].strip('_')
             or 'view',
             self._pbx_today().isoformat())
+        filename, data, mimetype = self._pbx_attachment(
+            user, (filename, data, XLSX), explorer=explorer, spec=spec)
         vals = {
             'subject': subject,
             'email_to': formataddr((user.name or '', user.email)),
@@ -449,12 +451,22 @@ class PbExplorerSchedule(models.Model):
             'attachment_ids': [(0, 0, {
                 'name': filename,
                 'datas': base64.b64encode(data),
-                'mimetype': XLSX,
+                'mimetype': mimetype,
             })],
         }
         if sender:
             vals['email_from'] = sender
         return self.env['mail.mail'].sudo().create(vals)
+
+    def _pbx_attachment(self, user, standard, explorer=None, spec=None):
+        """The file attached to `user`'s email, as (filename, bytes,
+        mimetype). `standard` is the Explorer's own workbook, already built
+        as that person. An overridable seam (DOCSTUDIO X): another module may
+        hand back a different file, built through `explorer` (the facade as
+        the recipient: their companies and language) for `spec`, and must
+        fall back to `standard` when it cannot. Here nothing changes."""
+        self.ensure_one()
+        return standard
 
     @api.model
     def _pbx_headlines(self, env, payload):

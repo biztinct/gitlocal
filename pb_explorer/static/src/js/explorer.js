@@ -1614,6 +1614,17 @@ export class PbExplorer extends Component {
         }
     }
 
+    /** DOCSTUDIO X, contract C2 — "My Excel layout", when the module that
+     *  offers it is installed (registry `pb_excel_layout`, key `button`).
+     *  Nothing is drawn without it; no dependency either way. */
+    get excelLayoutButton() {
+        return registry.category("pb_excel_layout").get("button", null);
+    }
+
+    get excelLayoutWhy() {
+        return this.state.activeView ? "" : _t("Save this view first");
+    }
+
     // ========================================================== saved views
     /* WDGAP QF2 A. A saved view is a QUESTION: opening one runs it again for
      * whoever opens it, with their own companies and divisions, and a period
@@ -1962,7 +1973,7 @@ export class PbExplorer extends Component {
             const payload = await this.orm.call(MODEL, "schedule_save", [
                 d.view.id,
                 { cadence: f.cadence, weekday: f.weekday, monthday: f.monthday,
-                  recipient_ids: [...f.recipient_ids] },
+                  recipient_ids: [...f.recipient_ids], ...this.scheduleExtraVals(f) },
                 f.id || false]);
             this._replaceSchedule(payload);
             d.form = null;
@@ -1976,6 +1987,10 @@ export class PbExplorer extends Component {
             d.busy = false;
         }
     }
+
+    /** More fields another module adds to a schedule it saves (DOCSTUDIO X:
+     *  "Send as"). Nothing here. */
+    scheduleExtraVals(_form) { return {}; }
 
     async pauseSchedule(sc) {
         try {

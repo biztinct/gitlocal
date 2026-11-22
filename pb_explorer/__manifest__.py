@@ -33,7 +33,10 @@ Chart.js comes from the platform's own lazy ``web.chartjs_lib`` bundle, never a 
     # FORM STUDIO FS-8 (2.8.0): run-time breakdown hooks (`_pbx_extra_*`) so
     # another module can offer splits and filters with no upgrade; download
     # names and the workbook's filter line in screen words.
-    'version': '19.0.2.8.0',
+    # DOCSTUDIO X (2.9.0): two seams for "Fill my own Excel layout" — the
+    # registry button beside Download Excel (contract C2), the overridable
+    # `_pbx_attachment` around the scheduled-send file, `scheduleExtraVals`.
+    'version': '19.0.2.9.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
