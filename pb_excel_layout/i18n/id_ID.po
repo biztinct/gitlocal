@@ -1,0 +1,1102 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_excel_layout
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 05:06+0000\n"
+"PO-Revision-Date: 2026-11-22 05:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid " and "
+msgstr " dan "
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "%(cols)s columns × %(rows)s rows from %(cell)s"
+msgstr "%(cols)s kolom × %(rows)s baris dari %(cell)s"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid ""
+"%s amounts could not be converted (no exchange rate on file) and are not in "
+"the table."
+msgstr ""
+"%s jumlah tidak dapat dikonversi (tidak ada kurs) dan tidak ada di tabel."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "%s cells held more text than Excel allows; their text was shortened."
+msgstr ""
+"%s sel berisi teks lebih banyak dari yang diizinkan Excel; teksnya "
+"dipendekkan."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "%s sheets"
+msgstr "%s lembar"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "1 sheet"
+msgstr "1 lembar"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "A chart sheet has no cells to fill."
+msgstr "Lembar grafik tidak memiliki sel untuk diisi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"A formula that fills several cells (%(ref)s) reaches into the area where the"
+" figures go. Change it in Excel, or start the figures somewhere else."
+msgstr ""
+"Rumus yang mengisi beberapa sel (%(ref)s) masuk ke area tempat angka-"
+"angkanya. Ubah di Excel, atau mulai angkanya di tempat lain."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Add another layout"
+msgstr "Tambah tata letak lain"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Board pack"
+msgstr "Paket laporan"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Change where the figures go"
+msgstr "Ubah tempat angka-angkanya"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Choose another file"
+msgstr "Pilih berkas lain"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Click a cell in the grid, use the arrow keys, or type a cell like B6."
+msgstr "Klik sel di kisi, pakai tombol panah, atau ketik sel seperti B6."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Click the cell where the figures start"
+msgstr "Klik sel tempat angka-angkanya dimulai"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__has_macros
+msgid "Contains macros"
+msgstr "Berisi makro"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Continues %s"
+msgstr "Berlanjut %s"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Delete"
+msgstr "Hapus"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Delete this layout? Your file on your computer is not touched."
+msgstr "Hapus tata letak ini? Berkas di komputer Anda tidak tersentuh."
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout_board__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_view__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Download in my layout"
+msgstr "Unduh dengan tata letak saya"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Downloaded “%(name)s” with %(rows)s rows."
+msgstr "“%(name)s” terunduh dengan %(rows)s baris."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Drop the new version of your Excel file here"
+msgstr "Letakkan versi baru berkas Excel Anda di sini"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Drop your Excel file here"
+msgstr "Letakkan berkas Excel Anda di sini"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Each person gets your file filled with their own figures. If it ever cannot "
+"be used, the standard Excel goes instead and the history says why."
+msgstr ""
+"Setiap orang mendapat berkas Anda berisi angka mereka sendiri. Jika suatu "
+"saat tidak dapat dipakai, Excel standar dikirim sebagai gantinya dan riwayat"
+" menyebutkan alasannya."
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__shared
+msgid "Everyone who can open the report"
+msgstr "Semua yang dapat membuka laporan"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Everyone who can open this view can now use “%s”."
+msgstr "Semua yang dapat membuka tampilan ini kini dapat memakai “%s”."
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__file
+msgid "Excel file"
+msgstr "Berkas Excel"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_excel_layout
+msgid "Excel layout"
+msgstr "Tata letak Excel"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_excel_layout_board
+msgid "Excel layouts — set-up and download"
+msgstr "Tata letak Excel — penyiapan dan unduhan"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_schedule_log
+msgid "Explorer regular send, one line per person"
+msgstr "Kiriman rutin Explorer, satu baris per orang"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_schedule
+msgid "Explorer view sent regularly"
+msgstr "Tampilan Explorer yang dikirim rutin"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__file_name
+msgid "File name"
+msgstr "Nama berkas"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Fill your own Excel file with these figures"
+msgstr "Isi berkas Excel Anda sendiri dengan angka-angka ini"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "From %s"
+msgstr "Dari %s"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Give the layout a name."
+msgstr "Beri nama tata letaknya."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Hidden in Excel"
+msgstr "Tersembunyi di Excel"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout_board__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_view__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/explorer_patch.js:0
+msgid "In your layout “%s”"
+msgstr "Dengan tata letak Anda “%s”"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/explorer_patch.js:0
+msgid ""
+"In your layout “%s” — its sheet is missing, so the standard Excel is sent"
+msgstr ""
+"Dengan tata letak Anda “%s” — lembarnya hilang, jadi Excel standar yang "
+"dikirim"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Keep"
+msgstr "Simpan saja"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__last_used
+msgid "Last used"
+msgstr "Terakhir dipakai"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Layout name"
+msgstr "Nama tata letak"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Macros are never run. Everyone gets only the figures they are allowed to "
+"see."
+msgstr ""
+"Makro tidak pernah dijalankan. Setiap orang hanya mendapat angka yang boleh "
+"mereka lihat."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Macros kept"
+msgstr "Makro disimpan"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Make it only mine"
+msgstr "Jadikan hanya milik saya"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"Merged cells (%(ref)s) are in the way of the figures. Unmerge them in Excel,"
+" or start the figures somewhere else."
+msgstr ""
+"Sel gabungan (%(ref)s) menghalangi tempat angka-angkanya. Pisahkan di Excel,"
+" atau mulai angkanya di tempat lain."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Merged cells (%s) are in the way of the figures. Unmerge them in Excel, or "
+"start the figures somewhere else."
+msgstr ""
+"Sel gabungan (%s) menghalangi tempat angka-angkanya. Pisahkan di Excel, atau"
+" mulai angkanya di tempat lain."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "More"
+msgstr "Lainnya"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "My Excel layout"
+msgstr "Tata letak Excel saya"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"No layout yet. Bring the board pack you already use — headings, formulas, "
+"charts and macros stay exactly as they are."
+msgstr ""
+"Belum ada tata letak. Bawa paket laporan yang sudah Anda pakai — judul, "
+"rumus, grafik, dan makro tetap persis seperti adanya."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "One cell held more text than Excel allows; its text was shortened."
+msgstr ""
+"Satu sel berisi teks lebih banyak dari yang diizinkan Excel; teksnya "
+"dipendekkan."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Only Excel files ending in .xlsx or .xlsm can be used."
+msgstr "Hanya berkas Excel berakhiran .xlsx atau .xlsm yang dapat dipakai."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only staff logins can use Excel layouts."
+msgstr "Hanya login staf yang dapat memakai tata letak Excel."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Only the cells where the figures go change. Charts, pictures, pivot tables "
+"and macros stay exactly as they are."
+msgstr ""
+"Hanya sel tempat angka-angkanya yang berubah. Grafik, gambar, tabel pivot, "
+"dan makro tetap persis seperti adanya."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only the first %s rows are in the file."
+msgstr "Hanya %s baris pertama yang ada di berkas."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid ""
+"Only the largest %(shown)s rows are in the file; %(more)s more were left "
+"out."
+msgstr ""
+"Hanya %(shown)s baris terbesar yang ada di berkas; %(more)s lainnya tidak "
+"dimasukkan."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only the person who set up this layout can change it."
+msgstr "Hanya orang yang menyiapkan tata letak ini yang dapat mengubahnya."
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer
+msgid "Payobook Analytics Explorer — read-only query facade"
+msgstr "Payobook Analytics Explorer — hanya baca"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"Point your formulas and charts at whole columns or an Excel table so they "
+"pick up new rows."
+msgstr ""
+"Arahkan rumus dan grafik Anda ke seluruh kolom atau ke tabel Excel agar "
+"baris baru ikut terbaca."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Reading your file…"
+msgstr "Membaca berkas Anda…"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Rename"
+msgstr "Ganti nama"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Replace the Excel file"
+msgstr "Ganti berkas Excel"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Replace the file"
+msgstr "Ganti berkas"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__source_id
+msgid "Report"
+msgstr "Laporan"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__source_model
+msgid "Report kind"
+msgstr "Jenis laporan"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__state
+msgid "Result"
+msgstr "Hasil"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Save layout"
+msgstr "Simpan tata letak"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Save this view first"
+msgstr "Simpan tampilan ini dulu"
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_view
+msgid "Saved Explorer view"
+msgstr "Tampilan Explorer tersimpan"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__layout_id
+msgid "Send as"
+msgstr "Kirim sebagai"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields.selection,name:pb_excel_layout.selection__pb_explorer_schedule_log__state__layout_failed
+msgid "Sent as the standard Excel"
+msgstr "Dikirim sebagai Excel standar"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent as the standard Excel — the layout could not be used"
+msgstr "Dikirim sebagai Excel standar — tata letak tidak dapat dipakai"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent as the standard Excel — the layout could not be used: %s"
+msgstr "Dikirim sebagai Excel standar — tata letak tidak dapat dipakai: %s"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent to %(sent)s of %(total)s"
+msgstr "Terkirim ke %(sent)s dari %(total)s"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__user_id
+msgid "Set up by"
+msgstr "Disiapkan oleh"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Share with everyone who can open this view"
+msgstr "Bagikan ke semua yang dapat membuka tampilan ini"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Shared"
+msgstr "Dibagikan"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__sheet_name
+msgid "Sheet"
+msgstr "Lembar"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__sheet_ok
+msgid "Sheet found in the file"
+msgstr "Lembar ditemukan di berkas"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Sheet “%(sheet)s” · from %(cell)s"
+msgstr "Lembar “%(sheet)s” · dari %(cell)s"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Sheet “%(sheet)s” · from %(cell)s · with headings"
+msgstr "Lembar “%(sheet)s” · dari %(cell)s · dengan judul"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Sheets"
+msgstr "Lembar"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Someone"
+msgstr "Seseorang"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Something went wrong. Try again."
+msgstr "Terjadi kesalahan. Coba lagi."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Standard Excel"
+msgstr "Excel standar"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__start_cell
+msgid "Start cell"
+msgstr "Sel awal"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Steps"
+msgstr "Langkah"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid ""
+"That Excel layout is no longer available. Choose another, or the standard "
+"Excel."
+msgstr ""
+"Tata letak Excel itu sudah tidak tersedia. Pilih yang lain, atau Excel "
+"standar."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The Excel table “%s” has a different number of columns, so it was left as it"
+" is. Make it as wide as the report and it will grow with the rows."
+msgstr ""
+"Tabel Excel “%s” memiliki jumlah kolom berbeda, jadi dibiarkan apa adanya. "
+"Buat selebar laporan dan tabel akan bertambah mengikuti barisnya."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The Excel table “%s” now covers every row."
+msgstr "Tabel Excel “%s” kini mencakup semua baris."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The figures do not fit below %(cell)s. Start higher up."
+msgstr "Angka-angkanya tidak muat di bawah %(cell)s. Mulai lebih ke atas."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The figures do not fit to the right of %(cell)s. Start further left."
+msgstr ""
+"Angka-angkanya tidak muat di sebelah kanan %(cell)s. Mulai lebih ke kiri."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "The figures start at"
+msgstr "Angka-angkanya dimulai di"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The filled file did not pass the final check, so it was not handed out."
+msgstr ""
+"Berkas yang sudah diisi tidak lolos pemeriksaan akhir, jadi tidak diberikan."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The headings of the Excel table “%(table)s” (%(ref)s) are inside the area "
+"where the figures go. Start the figures at the table's heading row, or move "
+"the table."
+msgstr ""
+"Judul tabel Excel “%(table)s” (%(ref)s) berada di dalam area tempat angka-"
+"angkanya. Mulai angkanya di baris judul tabel, atau pindahkan tabelnya."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The layout could not be used. Open it, check the sheet and the start cell, "
+"and try again."
+msgstr ""
+"Tata letak tidak dapat dipakai. Buka, periksa lembar dan sel awalnya, lalu "
+"coba lagi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The report behind this layout is no longer available."
+msgstr "Laporan di balik tata letak ini sudah tidak tersedia."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"The sheet of this layout is missing from its file, so the standard Excel is "
+"sent until a sheet is picked again."
+msgstr ""
+"Lembar tata letak ini hilang dari berkasnya, jadi Excel standar dikirim "
+"sampai lembar dipilih lagi."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"The sheet “%(sheet)s” and the start cell %(cell)s are kept when the new file"
+" still has that sheet."
+msgstr ""
+"Lembar “%(sheet)s” dan sel awal %(cell)s tetap dipakai jika berkas baru "
+"masih memiliki lembar itu."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The sheet “%(sheet)s” is not in this file. Pick the sheet that receives the "
+"figures."
+msgstr ""
+"Lembar “%(sheet)s” tidak ada di berkas ini. Pilih lembar yang menerima "
+"angka-angkanya."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"The sheet “%s” is not in this file. Pick the sheet that receives the "
+"figures."
+msgstr ""
+"Lembar “%s” tidak ada di berkas ini. Pilih lembar yang menerima angka-"
+"angkanya."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "They get their own figures in it, never yours."
+msgstr ""
+"Mereka mendapat angka mereka sendiri di dalamnya, tidak pernah angka Anda."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "This file cannot be used"
+msgstr "Berkas ini tidak dapat dipakai"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This file contains macros. %(product)s does not run or change them."
+msgstr ""
+"Berkas ini berisi makro. %(product)s tidak menjalankan atau mengubahnya."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "This file contains macros. They are kept, never run."
+msgstr "Berkas ini berisi makro. Makro disimpan, tidak pernah dijalankan."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file could not be opened as an Excel workbook. Save it from Excel as "
+".xlsx and upload it again."
+msgstr ""
+"Berkas ini tidak dapat dibuka sebagai buku kerja Excel. Simpan dari Excel "
+"sebagai .xlsx lalu unggah lagi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file could not be read. Open it in Excel, save it again and upload the "
+"new copy."
+msgstr ""
+"Berkas ini tidak dapat dibaca. Buka di Excel, simpan lagi lalu unggah "
+"salinan barunya."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file does not hold an Excel workbook. Save it from Excel as .xlsx and "
+"upload it again."
+msgstr ""
+"Berkas ini tidak berisi buku kerja Excel. Simpan dari Excel sebagai .xlsx "
+"lalu unggah lagi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file has unusual content and cannot be used. Save it again from Excel "
+"and upload the new copy."
+msgstr ""
+"Berkas ini berisi konten yang tidak biasa sehingga tidak dapat dipakai. "
+"Simpan lagi dari Excel lalu unggah salinan barunya."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"This file is larger than 10 MB. Remove what is not needed (old sheets, large"
+" pictures) and upload it again."
+msgstr ""
+"Berkas ini lebih dari 10 MB. Hapus yang tidak diperlukan (lembar lama, "
+"gambar besar) lalu unggah lagi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is password-protected. Remove the password and upload it again."
+msgstr ""
+"Berkas ini dilindungi kata sandi. Hapus kata sandinya lalu unggah lagi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is too large once it is opened (over 80 MB). Remove what is not "
+"needed and upload it again."
+msgstr ""
+"Berkas ini terlalu besar setelah dibuka (lebih dari 80 MB). Hapus yang tidak"
+" diperlukan lalu unggah lagi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is too large once it is opened. Remove what is not needed and "
+"upload it again."
+msgstr ""
+"Berkas ini terlalu besar setelah dibuka. Hapus yang tidak diperlukan lalu "
+"unggah lagi."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"This is an old-style Excel file (.xls). Open it in Excel, save it as .xlsx "
+"and upload it again."
+msgstr ""
+"Ini berkas Excel format lama (.xls). Buka di Excel, simpan sebagai .xlsx "
+"lalu unggah lagi."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This layout belongs to a different report."
+msgstr "Tata letak ini milik laporan lain."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This layout is no longer available."
+msgstr "Tata letak ini sudah tidak tersedia."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This report has no columns to write yet."
+msgstr "Laporan ini belum memiliki kolom untuk ditulis."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"This view has no figures right now; only the headings would be written. Try "
+"it again after the next pay run."
+msgstr ""
+"Tampilan ini belum memiliki angka; hanya judul yang akan ditulis. Coba lagi "
+"setelah proses penggajian berikutnya."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"To send your own Excel file filled with these figures, set it up first with "
+"“My Excel layout” at the top of the board."
+msgstr ""
+"Untuk mengirim berkas Excel Anda sendiri berisi angka-angka ini, siapkan "
+"dulu lewat “Tata letak Excel saya” di bagian atas papan."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid "Total"
+msgstr "Total"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Try it"
+msgstr "Coba"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Try it and save"
+msgstr "Coba dan simpan"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Upload it once. Every download brings it back with fresh figures, in your "
+"own headings, formulas and charts."
+msgstr ""
+"Unggah sekali. Setiap unduhan mengembalikannya dengan angka terbaru, dengan "
+"judul, rumus, dan grafik Anda sendiri."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Use another file"
+msgstr "Pakai berkas lain"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Use my Excel layout"
+msgstr "Pakai tata letak Excel saya"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Where the figures go"
+msgstr "Tempat angka-angkanya"
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__reason
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_headers
+msgid "Write the column headings"
+msgstr "Tulis judul kolom"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "You already have %s Excel layouts. Delete one you no longer use first."
+msgstr ""
+"Anda sudah memiliki %s tata letak Excel. Hapus dulu satu yang tidak dipakai "
+"lagi."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "You have 20 layouts. Delete one to add another."
+msgstr "Anda memiliki 20 tata letak. Hapus satu untuk menambah yang lain."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Your Excel table “%s” starts here. It will grow and shrink with the rows."
+msgstr ""
+"Tabel Excel “%s” Anda dimulai di sini. Tabel akan memanjang dan memendek "
+"mengikuti barisnya."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your file"
+msgstr "Berkas Anda"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Your file is downloaded with %(rows)s rows from %(cell)s. Open it to check, "
+"then save the layout."
+msgstr ""
+"Berkas Anda terunduh dengan %(rows)s baris dari %(cell)s. Buka untuk "
+"memeriksa, lalu simpan tata letaknya."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your own Excel file, filled with these figures"
+msgstr "Berkas Excel Anda sendiri, terisi angka-angka ini"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your own headings stay; the figures start right at the cell."
+msgstr "Judul Anda sendiri tetap; angka-angkanya dimulai tepat di sel itu."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "across to column %s"
+msgstr "ke kanan sampai kolom %s"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "choose a file"
+msgstr "pilih berkas"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "down to row %s"
+msgstr "ke bawah sampai baris %s"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "on “%s”"
+msgstr "di “%s”"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "or"
+msgstr "atau"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "— .xlsx or .xlsm, up to 10 MB"
+msgstr "— .xlsx atau .xlsm, hingga 10 MB"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"“%(cell)s” is not a cell. Click a cell in the grid, or type one like B6."
+msgstr "“%(cell)s” bukan sel. Klik sel di kisi, atau ketik sel seperti B6."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"“%(name)s” could not be used: %(why)s The standard Excel was downloaded "
+"instead."
+msgstr ""
+"“%(name)s” tidak dapat dipakai: %(why)s Excel standar diunduh sebagai "
+"gantinya."
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"“%(sheet)s” is a chart sheet, not a sheet with cells. Pick a sheet with "
+"cells."
+msgstr ""
+"“%(sheet)s” adalah lembar grafik, bukan lembar bersel. Pilih lembar yang "
+"memiliki sel."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is now only yours."
+msgstr "“%s” kini hanya milik Anda."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is saved."
+msgstr "“%s” tersimpan."
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is saved. Use “Download in my layout” any time."
+msgstr "“%s” tersimpan. Pakai “Unduh dengan tata letak saya” kapan saja."

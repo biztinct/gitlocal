@@ -1,0 +1,431 @@
+// =====================================================================
+//  My Excel layout (DOCSTUDIO X) — the button, its list, the set-up dialog
+//  and the "Send as" choice in the Explorer drawer.
+//  Locked palette: ONE indigo (#5A4BB0), white surfaces, Lucide icons, flat
+//  colours only, no emoji. Own token aliases so the button looks right on any
+//  host screen (contract C2) and the dialog (rendered outside every board)
+//  needs nothing from its caller. No mixed-unit CSS comparison functions (S9C-2).
+// =====================================================================
+
+@mixin pbxl-tokens {
+    --x-p:       var(--pbim-primary, #5A4BB0);
+    --x-p-hover: var(--pbim-primary-hover, #4A3D96);
+    --x-p-deep:  var(--pbim-primary-dark, #241F52);
+    --x-p-light: var(--pbim-primary-light, #CBC2EE);
+    --x-soft:    var(--pbim-soft, #EDEAF8);
+    --x-soft-2:  #F7F6FC;
+    --x-ink:     var(--pbim-ink, #1B1733);
+    --x-muted:   var(--pbim-muted, #64748B);
+    --x-line:    var(--pbim-line, #E2E8F0);
+    --x-line-2:  var(--pbim-line-2, #F1F5F9);
+    --x-green:   #2E7D4F;
+    --x-green-s: #E3F2E9;
+    --x-amber:   #B45309;
+    --x-amber-s: #FEF3C7;
+    --x-rose:    #BE123C;
+    --x-rose-s:  #FCE7EF;
+    --x-slate-s: #EEF1F5;
+}
+
+@keyframes pbxl-pop-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes pbxl-pulse {
+    0%, 100% { opacity: .55; }
+    50%      { opacity: 1; }
+}
+@keyframes pbxl-spin { to { transform: rotate(360deg); } }
+@keyframes pbxl-land {
+    from { opacity: 0; transform: translateY(3px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.pbxl-ic { display: inline-block; vertical-align: middle; flex: none; }
+
+.pbxl-spin {
+    display: inline-block; width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid currentColor; border-right-color: transparent;
+    animation: pbxl-spin .7s linear infinite; vertical-align: -2px;
+}
+
+// ------------------------------------------------------------ shared bits
+@mixin pbxl-bits {
+    .pbxl-b {
+        display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        border-radius: 10px; padding: 9px 16px; font: inherit; font-size: 13px;
+        font-weight: 700; cursor: pointer; border: 1px solid transparent;
+        white-space: nowrap; transition: background .14s, border-color .14s, color .14s;
+        &.sm { padding: 6px 11px; font-size: 12.5px; border-radius: 9px; }
+        &.primary { background: var(--x-p); border-color: var(--x-p); color: #fff;
+            &:hover:not(:disabled) { background: var(--x-p-hover); border-color: var(--x-p-hover); } }
+        &.secondary { background: #fff; border-color: var(--x-p); color: var(--x-p);
+            &:hover:not(:disabled) { background: var(--x-soft); } }
+        &.ghost { background: #fff; border-color: var(--x-line); color: var(--x-ink);
+            &:hover:not(:disabled) { border-color: var(--x-p-light); background: var(--x-soft-2); } }
+        &.danger { background: var(--x-rose); border-color: var(--x-rose); color: #fff; }
+        &:disabled { opacity: .5; cursor: not-allowed; }
+        &:focus-visible { outline: 2px solid var(--x-p); outline-offset: 2px; }
+    }
+    .pbxl-chip {
+        display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+        border-radius: 999px; background: var(--x-soft); color: var(--x-p-deep);
+        font-size: 11.5px; font-weight: 600; text-transform: none; white-space: nowrap;
+        &.quiet { background: var(--x-slate-s); color: var(--x-muted); }
+    }
+    .pbxl-quiet { color: var(--x-muted); font-size: 12.5px; }
+    .pbxl-alert {
+        display: flex; gap: 9px; align-items: flex-start; padding: 10px 12px;
+        border-radius: 10px; font-size: 12.8px; line-height: 1.45;
+        animation: pbxl-land .18s ease-out;
+        .pbxl-ic { margin-top: 1px; }
+        &.ok    { background: var(--x-green-s); color: #1E5A38; }
+        &.warn  { background: var(--x-amber-s); color: #7C3E07; }
+        &.bad   { background: var(--x-rose-s);  color: #8A1033; }
+        &.quiet { background: var(--x-slate-s); color: #334155; }
+    }
+}
+
+// ================================================================ button
+.pbxl-anchor {
+    @include pbxl-tokens;
+    @include pbxl-bits;
+    position: relative;
+    display: inline-flex;
+    font-size: 13px;
+    color: var(--x-ink);
+
+    .pbxl-btn {
+        // Same size and weight as the host's own toolbar buttons (.pbex-btn).
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 14px; border-radius: 10px; border: 1px solid var(--x-line);
+        background: #fff; color: var(--x-ink); font: inherit; font-size: 13px;
+        font-weight: 600; cursor: pointer; white-space: nowrap; line-height: 1.2;
+        transition: border-color .16s, background .16s, color .16s, box-shadow .16s;
+        .pbxl-ic { color: var(--x-p); }
+        &:hover:not(:disabled), &.open {
+            border-color: var(--x-p-light); color: var(--x-p);
+            box-shadow: 0 2px 10px rgba(90, 75, 176, .12);
+        }
+        &.open { color: var(--x-p-deep); }
+        &:disabled { opacity: .55; cursor: not-allowed; }
+        &:focus-visible { outline: 2px solid var(--x-p); outline-offset: 2px; }
+    }
+    .pbxl-count {
+        min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+        background: var(--x-soft); color: var(--x-p); font-size: 11px;
+        display: inline-flex; align-items: center; justify-content: center;
+    }
+    // The reason a disabled button waits, said where the eye is.
+    .pbxl-why {
+        display: none; position: absolute; top: calc(100% + 6px); right: 0; z-index: 41;
+        padding: 6px 10px; border-radius: 8px; background: var(--x-ink); color: #fff;
+        font-size: 12px; font-weight: 600; white-space: nowrap; pointer-events: none;
+    }
+    &:hover .pbxl-why, &:focus-within .pbxl-why { display: block; animation: pbxl-pop-in .14s ease-out; }
+
+    .pbxl-pop {
+        position: absolute; top: calc(100% + 8px); right: 0; z-index: 40;
+        width: 420px; max-width: calc(100vw - 32px);
+        background: #fff; border: 1px solid var(--x-line); border-radius: 14px;
+        box-shadow: 0 18px 44px rgba(40, 50, 90, .16);
+        animation: pbxl-pop-in .16s ease-out; text-align: left; white-space: normal;
+    }
+    .pbxl-pop-head {
+        display: flex; gap: 12px; padding: 16px 16px 12px; border-bottom: 1px solid var(--x-line-2);
+        b { display: block; font-size: 14px; color: var(--x-ink); }
+        p { margin: 3px 0 0; color: var(--x-muted); font-size: 12.5px; line-height: 1.45; font-weight: 400; }
+    }
+    .pbxl-badge {
+        width: 34px; height: 34px; border-radius: 10px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--x-soft); color: var(--x-p);
+    }
+    .pbxl-pop-body { padding: 8px; max-height: 420px; overflow: auto; }
+    .pbxl-pop-foot { padding: 10px 14px 14px; border-top: 1px solid var(--x-line-2); }
+    .pbxl-skel {
+        height: 46px; margin: 6px; border-radius: 10px; background: var(--x-line-2);
+        animation: pbxl-pulse 1.2s ease-in-out infinite;
+        &.short { width: 60%; }
+    }
+    .pbxl-empty {
+        text-align: center; padding: 18px 18px 20px;
+        p { color: var(--x-muted); font-size: 12.8px; line-height: 1.5; margin: 12px auto 14px; max-width: 320px; }
+    }
+    .pbxl-empty-art {
+        display: inline-flex; align-items: center; gap: 10px; color: var(--x-muted);
+        .sheet {
+            width: 52px; height: 52px; border-radius: 14px; background: var(--x-line-2);
+            display: inline-flex; align-items: center; justify-content: center;
+            &.on { background: var(--x-soft); color: var(--x-p); }
+        }
+    }
+    .pbxl-item {
+        border-radius: 11px; padding: 8px; transition: background .14s;
+        &:hover { background: var(--x-soft-2); }
+        &.warn .ico { background: var(--x-amber-s); color: var(--x-amber); }
+    }
+    .pbxl-item-main {
+        display: flex; align-items: center; gap: 10px;
+        .ico {
+            width: 32px; height: 32px; border-radius: 9px; flex: none;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--x-soft); color: var(--x-p);
+        }
+        .txt {
+            flex: 1; min-width: 0;
+            b { display: block; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            small { display: block; color: var(--x-muted); font-size: 12px; margin-top: 1px; }
+            small.bad { color: var(--x-amber); font-weight: 600; }
+            .chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+            .chips:empty { display: none; }
+        }
+    }
+    .pbxl-more {
+        width: 30px; height: 30px; border-radius: 8px; border: 0; background: transparent;
+        color: var(--x-muted); cursor: pointer; flex: none;
+        &:hover { background: var(--x-line-2); color: var(--x-ink); }
+    }
+    .pbxl-menu {
+        margin: 6px 0 2px 42px; padding: 4px; border: 1px solid var(--x-line); border-radius: 10px;
+        background: #fff; animation: pbxl-pop-in .14s ease-out;
+        button {
+            display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 9px;
+            border: 0; background: transparent; border-radius: 7px; font: inherit; font-size: 12.8px;
+            color: var(--x-ink); cursor: pointer; text-align: left;
+            .pbxl-ic { color: var(--x-muted); }
+            &:hover { background: var(--x-soft-2); }
+            &.danger { color: var(--x-rose); .pbxl-ic { color: var(--x-rose); } }
+        }
+    }
+    .pbxl-confirm, .pbxl-rename {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        margin: 6px 0 2px 42px; font-size: 12.5px;
+        span { flex: 1 1 100%; color: var(--x-ink); }
+        input {
+            flex: 1; min-width: 0; height: 32px; padding: 0 10px; border-radius: 8px;
+            border: 1px solid var(--x-p-light); font: inherit; font-size: 13px;
+            &:focus { outline: 2px solid var(--x-soft); border-color: var(--x-p); }
+        }
+    }
+    .pbxl-rename { margin-left: 0; }
+}
+
+// ================================================================ dialog
+.pbxl-dialog {
+    @include pbxl-tokens;
+    @include pbxl-bits;
+    border-radius: 18px !important;
+    overflow: hidden;
+    color: var(--x-ink);
+
+    .modal-header { padding: 16px 24px; border-bottom: 1px solid var(--x-line-2); }
+    .modal-title { font-weight: 800; font-size: 17px; color: var(--x-ink); }
+    .modal-footer { padding: 12px 24px; border-top: 1px solid var(--x-line-2); background: #fff; }
+    .pbxl-dbody { padding: 18px 24px 20px; background: #fff; }
+
+    .pbxl-root { font-size: 13.5px; }
+
+    .pbxl-steps {
+        display: flex; gap: 8px; list-style: none; margin: 0 0 16px; padding: 0; flex-wrap: wrap;
+        li {
+            display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 5px;
+            border-radius: 999px; background: var(--x-line-2); color: var(--x-muted);
+            font-size: 12.5px; font-weight: 700; transition: background .2s, color .2s;
+            .n {
+                width: 22px; height: 22px; border-radius: 50%; background: #fff;
+                display: inline-flex; align-items: center; justify-content: center; font-size: 11.5px;
+            }
+            &.on { background: var(--x-soft); color: var(--x-p-deep); .n { background: var(--x-p); color: #fff; } }
+            &.done { background: var(--x-green-s); color: #1E5A38; .n { background: var(--x-green); color: #fff; } }
+        }
+    }
+
+    // --------------------------------------------------------- drop zone
+    .pbxl-drop {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 6px; min-height: 280px; padding: 40px 24px; text-align: center;
+        border: 2px dashed var(--x-p-light); border-radius: 18px; background: var(--x-soft-2);
+        cursor: pointer; transition: border-color .16s, background .16s, transform .16s;
+        b { font-size: 17px; color: var(--x-ink); }
+        p { margin: 0; color: var(--x-muted); }
+        u { color: var(--x-p); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .why { color: #8A1033; max-width: 520px; line-height: 1.5; margin: 2px 0 10px; }
+        &:hover, &:focus-visible { border-color: var(--x-p); background: var(--x-soft); outline: none; }
+        &.over { border-color: var(--x-p); background: var(--x-soft); transform: scale(1.01); }
+        &.bad { border-color: #F4A3BD; background: #FFF7FA; }
+        &.bad .pbxl-drop-ico { background: var(--x-rose-s); color: var(--x-rose); }
+    }
+    .pbxl-drop-ico {
+        width: 64px; height: 64px; border-radius: 20px; margin-bottom: 8px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #fff; color: var(--x-p); box-shadow: 0 8px 24px rgba(16, 12, 40, .08);
+    }
+    .pbxl-promise {
+        list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 6px;
+        li { display: flex; gap: 8px; align-items: center; color: var(--x-muted); font-size: 12.8px; }
+        .pbxl-ic { color: var(--x-green); }
+    }
+
+    // --------------------------------------------------------- the work
+    .pbxl-work {
+        display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 20px; align-items: start;
+    }
+    .pbxl-left { min-width: 0; display: grid; gap: 10px; }
+    .pbxl-right {
+        display: grid; gap: 14px; padding: 16px; border: 1px solid var(--x-line);
+        border-radius: 14px; background: #fff; position: sticky; top: 0;
+    }
+    .pbxl-filebar {
+        display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+        border: 1px solid var(--x-line); border-radius: 12px; background: #fff;
+        .ico {
+            width: 34px; height: 34px; border-radius: 9px; flex: none; background: #E3F2E9;
+            color: #1D6F42; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .txt { flex: 1; min-width: 0;
+            b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            small { color: var(--x-muted); font-size: 12px; } }
+    }
+
+    // ----------------------------------- the mini sheet (looks like Excel)
+    .pbxl-sheetwrap {
+        border: 1px solid var(--x-line); border-radius: 12px; overflow: hidden; background: #fff;
+    }
+    .pbxl-gridscroll { overflow: auto; max-height: 470px; }
+    .pbxl-grid {
+        border-collapse: collapse; table-layout: fixed; font-size: 12px; width: max-content;
+        min-width: 100%; outline: none;
+        &:focus-visible { box-shadow: inset 0 0 0 2px var(--x-p-light); }
+        th {
+            position: sticky; top: 0; z-index: 2; background: #F3F4F6; color: var(--x-muted);
+            font-weight: 600; font-size: 11px; text-align: center; height: 22px;
+            border: 1px solid #E5E7EB; padding: 0 4px; transition: background .18s, color .18s;
+            &.hot { background: var(--x-soft); color: var(--x-p-deep); }
+        }
+        thead th { min-width: 86px; }
+        thead th.corner { min-width: 36px; width: 36px; left: 0; z-index: 3; }
+        tbody th { position: sticky; left: 0; z-index: 1; width: 36px; min-width: 36px; }
+        td {
+            height: 24px; min-width: 86px; max-width: 150px; padding: 0 6px;
+            border: 1px solid #ECEEF2; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; cursor: cell; color: #1F2937;
+            transition: background-color .18s ease, box-shadow .18s ease;
+            span { display: block; overflow: hidden; text-overflow: ellipsis; }
+            &.is-hover { box-shadow: inset 0 0 0 2px var(--x-p-light); }
+            &.is-merged { background: var(--x-amber-s); }
+            &.is-area { background: rgba(90, 75, 176, .07); color: var(--x-p-deep); }
+            &.is-head { background: rgba(90, 75, 176, .17); color: var(--x-p-deep); font-weight: 700; }
+            &.e-t { border-top: 2px solid var(--x-p); }
+            &.e-b { border-bottom: 2px solid var(--x-p); }
+            &.e-l { border-left: 2px solid var(--x-p); }
+            &.e-r { border-right: 2px solid var(--x-p); }
+            &.is-start { box-shadow: inset 0 0 0 2px var(--x-p); }
+            &.is-area.is-merged, &.is-head.is-merged { background: #FDE2C4; }
+        }
+    }
+    .pbxl-outline {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 12px;
+        background: var(--x-soft-2); border-top: 1px solid var(--x-line-2); color: var(--x-p-deep);
+        font-size: 12.8px;
+        .pbxl-ic { color: var(--x-p); }
+        .more { color: var(--x-muted); }
+        b { animation: pbxl-land .2s ease-out; }
+    }
+    .pbxl-tabs {
+        display: flex; gap: 2px; padding: 0 8px; background: #F3F4F6; border-top: 1px solid #E5E7EB;
+        overflow-x: auto;
+        button {
+            display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px 8px;
+            border: 0; border-bottom: 2px solid transparent; background: transparent;
+            font: inherit; font-size: 12.5px; color: var(--x-muted); cursor: pointer; white-space: nowrap;
+            &:hover:not(:disabled) { color: var(--x-ink); background: #E9EBEF; }
+            &.on { background: #fff; color: #1D6F42; font-weight: 700; border-bottom-color: #1D6F42; }
+            &.dim { font-style: italic; }
+            &.off, &:disabled { opacity: .5; cursor: not-allowed; }
+        }
+    }
+    .pbxl-coach {
+        display: flex; gap: 8px; align-items: center; margin: 2px 0 0; color: var(--x-muted);
+        font-size: 12.8px; .pbxl-ic { color: var(--x-p); }
+    }
+
+    // --------------------------------------------------------- settings
+    .pbxl-field { display: grid; gap: 6px; margin: 0;
+        input[type=text] {
+            height: 36px; padding: 0 11px; border-radius: 9px; border: 1px solid var(--x-line);
+            font: inherit; font-size: 13.5px; background: #fff; color: var(--x-ink);
+            &:focus { outline: 2px solid var(--x-soft); border-color: var(--x-p); }
+        }
+    }
+    .pbxl-label { font-size: 11.5px; font-weight: 800; letter-spacing: .02em; color: var(--x-muted); text-transform: uppercase; }
+    .pbxl-hint { color: var(--x-muted); font-size: 12px; line-height: 1.45; }
+    .pbxl-cellbox {
+        display: flex; align-items: center; gap: 8px; padding: 0 10px; height: 40px;
+        border: 1px solid var(--x-p-light); border-radius: 10px; background: var(--x-soft-2);
+        .pbxl-ic { color: var(--x-p); }
+        input[type=text] {
+            width: 76px; height: 28px; border: 0; background: transparent; padding: 0;
+            font-size: 16px; font-weight: 800; color: var(--x-p-deep); letter-spacing: .03em;
+            &:focus { outline: none; }
+        }
+        &.bad { border-color: #F4A3BD; background: #FFF7FA; input[type=text] { color: var(--x-rose); } }
+    }
+    .pbxl-switch {
+        display: flex; align-items: center; gap: 10px; padding: 0; border: 0; background: none;
+        font: inherit; font-size: 13.5px; color: var(--x-ink); cursor: pointer; text-align: left;
+        .knob {
+            width: 36px; height: 20px; border-radius: 999px; background: #CBD5E1; position: relative;
+            flex: none; transition: background .16s;
+            &::after {
+                content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+                border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+                transition: transform .16s;
+            }
+        }
+        &[aria-checked=true] .knob { background: var(--x-p); &::after { transform: translateX(16px); } }
+        &:focus-visible { outline: 2px solid var(--x-p); outline-offset: 3px; border-radius: 6px; }
+    }
+    .pbxl-heads { display: flex; gap: 4px; flex-wrap: wrap; }
+    .pbxl-alert.tried { b { font-weight: 800; } }
+
+    .pbxl-reading {
+        display: grid; gap: 10px;
+    }
+    .pbxl-skelgrid {
+        display: grid; gap: 6px; padding: 12px; border: 1px solid var(--x-line); border-radius: 12px;
+    }
+    .pbxl-skelrow {
+        height: 20px; border-radius: 6px; background: var(--x-line-2);
+        animation: pbxl-pulse 1.2s ease-in-out infinite;
+        &:nth-child(3n) { width: 78%; }
+        &:nth-child(4n) { width: 90%; }
+    }
+
+    .pbxl-foot {
+        display: flex; align-items: center; gap: 8px; width: 100%;
+        .grow { flex: 1; }
+    }
+
+    @media (max-width: 960px) {
+        .pbxl-work { grid-template-columns: minmax(0, 1fr); }
+        .pbxl-right { position: static; }
+    }
+}
+
+// ================================================== Explorer drawer (X4)
+.pbex {
+    .pbxl-sendas .pbex-seg button .pbex-ic,
+    .pbxl-sendas .pbex-seg button .pbxl-ic { margin-right: 2px; }
+    .pbxl-warnhint { color: #92400E; }
+    .pbxl-sched-as {
+        display: inline-flex; align-items: center; gap: 6px; margin: 6px 0 2px;
+        padding: 3px 10px; border-radius: 999px; background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary-dark, #241F52); font-size: 12px; font-weight: 600;
+        &.warn { background: #FEF3C7; color: #92400E; }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbxl-anchor *, .pbxl-dialog * { animation: none !important; transition: none !important; }
+}

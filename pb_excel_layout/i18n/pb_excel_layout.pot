@@ -1,0 +1,1022 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_excel_layout
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 05:06+0000\n"
+"PO-Revision-Date: 2026-11-22 05:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid " and "
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "%(cols)s columns × %(rows)s rows from %(cell)s"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid ""
+"%s amounts could not be converted (no exchange rate on file) and are not in "
+"the table."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "%s cells held more text than Excel allows; their text was shortened."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "%s sheets"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "1 sheet"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "A chart sheet has no cells to fill."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"A formula that fills several cells (%(ref)s) reaches into the area where the"
+" figures go. Change it in Excel, or start the figures somewhere else."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Add another layout"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Board pack"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Change where the figures go"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Choose another file"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Click a cell in the grid, use the arrow keys, or type a cell like B6."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Click the cell where the figures start"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__has_macros
+msgid "Contains macros"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Continues %s"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid "Currency"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Delete"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Delete this layout? Your file on your computer is not touched."
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout_board__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__display_name
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_view__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Download in my layout"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Downloaded “%(name)s” with %(rows)s rows."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Drop the new version of your Excel file here"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Drop your Excel file here"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Each person gets your file filled with their own figures. If it ever cannot "
+"be used, the standard Excel goes instead and the history says why."
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__shared
+msgid "Everyone who can open the report"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Everyone who can open this view can now use “%s”."
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__file
+msgid "Excel file"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_excel_layout
+msgid "Excel layout"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_excel_layout_board
+msgid "Excel layouts — set-up and download"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_schedule_log
+msgid "Explorer regular send, one line per person"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_schedule
+msgid "Explorer view sent regularly"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__file_name
+msgid "File name"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Fill your own Excel file with these figures"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "From %s"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Give the layout a name."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Hidden in Excel"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout_board__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__id
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_view__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/explorer_patch.js:0
+msgid "In your layout “%s”"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/explorer_patch.js:0
+msgid ""
+"In your layout “%s” — its sheet is missing, so the standard Excel is sent"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Keep"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__last_used
+msgid "Last used"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Layout name"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Macros are never run. Everyone gets only the figures they are allowed to "
+"see."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Macros kept"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Make it only mine"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"Merged cells (%(ref)s) are in the way of the figures. Unmerge them in Excel,"
+" or start the figures somewhere else."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Merged cells (%s) are in the way of the figures. Unmerge them in Excel, or "
+"start the figures somewhere else."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "More"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "My Excel layout"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__name
+msgid "Name"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"No layout yet. Bring the board pack you already use — headings, formulas, "
+"charts and macros stay exactly as they are."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "One cell held more text than Excel allows; its text was shortened."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Only Excel files ending in .xlsx or .xlsm can be used."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only staff logins can use Excel layouts."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Only the cells where the figures go change. Charts, pictures, pivot tables "
+"and macros stay exactly as they are."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only the first %s rows are in the file."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid ""
+"Only the largest %(shown)s rows are in the file; %(more)s more were left "
+"out."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "Only the person who set up this layout can change it."
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer
+msgid "Payobook Analytics Explorer — read-only query facade"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"Point your formulas and charts at whole columns or an Excel table so they "
+"pick up new rows."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Reading your file…"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Rename"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Replace the Excel file"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Replace the file"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__source_id
+msgid "Report"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__source_model
+msgid "Report kind"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__state
+msgid "Result"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Save layout"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Save this view first"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model,name:pb_excel_layout.model_pb_explorer_view
+msgid "Saved Explorer view"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule__layout_id
+msgid "Send as"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields.selection,name:pb_excel_layout.selection__pb_explorer_schedule_log__state__layout_failed
+msgid "Sent as the standard Excel"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent as the standard Excel — the layout could not be used"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent as the standard Excel — the layout could not be used: %s"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Sent to %(sent)s of %(total)s"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__user_id
+msgid "Set up by"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Share with everyone who can open this view"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Shared"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__sheet_name
+msgid "Sheet"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__sheet_ok
+msgid "Sheet found in the file"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Sheet “%(sheet)s” · from %(cell)s"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Sheet “%(sheet)s” · from %(cell)s · with headings"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Sheets"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid "Someone"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "Something went wrong. Try again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Standard Excel"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__start_cell
+msgid "Start cell"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Steps"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_schedule.py:0
+msgid ""
+"That Excel layout is no longer available. Choose another, or the standard "
+"Excel."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The Excel table “%s” has a different number of columns, so it was left as it"
+" is. Make it as wide as the report and it will grow with the rows."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The Excel table “%s” now covers every row."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The figures do not fit below %(cell)s. Start higher up."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The figures do not fit to the right of %(cell)s. Start further left."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "The figures start at"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The filled file did not pass the final check, so it was not handed out."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The headings of the Excel table “%(table)s” (%(ref)s) are inside the area "
+"where the figures go. Start the figures at the table's heading row, or move "
+"the table."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The layout could not be used. Open it, check the sheet and the start cell, "
+"and try again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "The report behind this layout is no longer available."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"The sheet of this layout is missing from its file, so the standard Excel is "
+"sent until a sheet is picked again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"The sheet “%(sheet)s” and the start cell %(cell)s are kept when the new file"
+" still has that sheet."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"The sheet “%(sheet)s” is not in this file. Pick the sheet that receives the "
+"figures."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"The sheet “%s” is not in this file. Pick the sheet that receives the "
+"figures."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "They get their own figures in it, never yours."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "This file cannot be used"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This file contains macros. %(product)s does not run or change them."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "This file contains macros. They are kept, never run."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file could not be opened as an Excel workbook. Save it from Excel as "
+".xlsx and upload it again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file could not be read. Open it in Excel, save it again and upload the "
+"new copy."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file does not hold an Excel workbook. Save it from Excel as .xlsx and "
+"upload it again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file has unusual content and cannot be used. Save it again from Excel "
+"and upload the new copy."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"This file is larger than 10 MB. Remove what is not needed (old sheets, large"
+" pictures) and upload it again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is password-protected. Remove the password and upload it again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is too large once it is opened (over 80 MB). Remove what is not "
+"needed and upload it again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"This file is too large once it is opened. Remove what is not needed and "
+"upload it again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"This is an old-style Excel file (.xls). Open it in Excel, save it as .xlsx "
+"and upload it again."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This layout belongs to a different report."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This layout is no longer available."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid "This report has no columns to write yet."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"This view has no figures right now; only the headings would be written. Try "
+"it again after the next pay run."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"To send your own Excel file filled with these figures, set it up first with "
+"“My Excel layout” at the top of the board."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
+msgid "Total"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Try it"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Try it and save"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid ""
+"Upload it once. Every download brings it back with fresh figures, in your "
+"own headings, formulas and charts."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Use another file"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Use my Excel layout"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Where the figures go"
+msgstr ""
+
+#. module: pb_excel_layout
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_explorer_schedule_log__reason
+msgid "Why"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+#: model:ir.model.fields,field_description:pb_excel_layout.field_pb_excel_layout__write_headers
+msgid "Write the column headings"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/pb_excel_layout.py:0
+msgid "You already have %s Excel layouts. Delete one you no longer use first."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "You have 20 layouts. Delete one to add another."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Your Excel table “%s” starts here. It will grow and shrink with the rows."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your file"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"Your file is downloaded with %(rows)s rows from %(cell)s. Open it to check, "
+"then save the layout."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your own Excel file, filled with these figures"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "Your own headings stay; the figures start right at the cell."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "across to column %s"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "choose a file"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "down to row %s"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "on “%s”"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "or"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/xml/excel_layout.xml:0
+msgid "— .xlsx or .xlsm, up to 10 MB"
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"“%(cell)s” is not a cell. Click a cell in the grid, or type one like B6."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid ""
+"“%(name)s” could not be used: %(why)s The standard Excel was downloaded "
+"instead."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"“%(sheet)s” is a chart sheet, not a sheet with cells. Pick a sheet with "
+"cells."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is now only yours."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is saved."
+msgstr ""
+
+#. module: pb_excel_layout
+#. odoo-javascript
+#: code:addons/pb_excel_layout/static/src/js/excel_layout.js:0
+msgid "“%s” is saved. Use “Download in my layout” any time."
+msgstr ""
