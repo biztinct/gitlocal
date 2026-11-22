@@ -13,7 +13,7 @@
  * and template inheritance only. Server: `pb.contracts.contract_document*`
  * (this module). Lucide icons, locked indigo palette, no emoji.
  */
-import { Component, onMounted, onWillStart, onWillUnmount, useRef, useState,
+import { Component, onMounted, onWillUnmount, useRef, useState,
          useExternalListener } from "@odoo/owl";
 import { patch } from "@web/core/utils/patch";
 import { registry } from "@web/core/registry";
@@ -90,10 +90,12 @@ export class ContractDocSheet extends Component {
         });
         useExternalListener(window, "keydown", (ev) => this.onKey(ev), { capture: true });
         useExternalListener(window, "resize", () => this.measure());
-        onWillStart(() => this.load());
+        // The sheet slides in at once, on blank paper, and the contract is
+        // written onto it as soon as the server answers.
         onMounted(() => {
             requestAnimationFrame(() => { this.state.shown = true; });
             this.measure();
+            this.load();
         });
         onWillUnmount(() => clearTimeout(this._inkTimer));
     }

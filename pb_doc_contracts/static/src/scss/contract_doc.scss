@@ -53,6 +53,7 @@
     kbd {
         font: 600 10.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace; border-radius: 5px;
         padding: 2px 5px; border: 1px solid rgba(255, 255, 255, .45); opacity: .85; margin-left: 2px;
+        background: transparent; box-shadow: none;
     }
 
     .pbdc-scrim {
@@ -120,7 +121,7 @@
         &.is-note { border-style: dashed; .pbdc-card-h { color: var(--ink); } }
     }
     .pbdc-card-h { display: flex; align-items: center; gap: 8px; font-size: 13px; b { font-weight: 800; } }
-    .pbdc-fold { width: 100%; border: 0; background: transparent; cursor: pointer; padding: 8px; border-radius: 10px;
+    .pbdc-fold { width: 100%; border: 0; background: transparent; cursor: pointer; padding: 8px; border-radius: 10px; text-align: left;
         &:hover { background: var(--line2); } }
     .pbdc-chev { transition: transform .2s; &.is-open { transform: rotate(180deg); } }
     .pbdc-left { list-style: none; margin: 4px 8px 8px; padding: 0; display: flex; flex-direction: column; gap: 8px;
