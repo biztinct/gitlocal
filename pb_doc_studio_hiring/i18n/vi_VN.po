@@ -1,0 +1,467 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_doc_studio_hiring
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 11:41+0000\n"
+"PO-Revision-Date: 2026-11-22 11:41+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "%s lines"
+msgstr "%s dòng"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "1 line"
+msgstr "1 dòng"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "A field that no longer exists"
+msgstr "Một trường không còn tồn tại"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "A person"
+msgstr "Một người"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "An offer"
+msgstr "Một lời mời"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Candidate"
+msgstr "Ứng viên"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Candidate name"
+msgstr "Tên ứng viên"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Choose an offer to preview with."
+msgstr "Chọn một lời mời để xem trước."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Company name"
+msgstr "Tên công ty"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Dates"
+msgstr "Ngày tháng"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Dear ${candidate_name},"
+msgstr "Kính gửi ${candidate_name},"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_doc_studio__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_doc_studio
+msgid "Document studio"
+msgstr "Xưởng tài liệu"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid ""
+"Draft an offer in Hiring, then come back to see this letter with real "
+"figures."
+msgstr ""
+"Hãy soạn một lời mời trong Tuyển dụng, rồi quay lại để xem thư này với số "
+"liệu thật."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Employment type"
+msgstr "Loại hình làm việc"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Find an offer"
+msgstr "Tìm một lời mời"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__pbds_kind
+msgid "Group"
+msgstr "Nhóm"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio_hiring.selection__pb_letter_template__pbds_kind__hiring
+#: model:ir.model.fields.selection,name:pb_doc_studio_hiring.selection__pb_letter_template__pbds_kind_set__hiring
+msgid "Hiring"
+msgstr "Tuyển dụng"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "How often"
+msgstr "Chu kỳ"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_doc_studio__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job"
+msgstr "Công việc"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job title"
+msgstr "Chức danh"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Kind regards,"
+msgstr "Trân trọng,"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_letter_template
+msgid "Letter Template"
+msgstr "Mẫu thư"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang
+msgid "Letter language"
+msgstr "Ngôn ngữ của thư"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang_name
+msgid "Letter written in"
+msgstr "Thư được viết bằng"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Monthly total"
+msgstr "Tổng mỗi tháng"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "New offer letter"
+msgstr "Thư mời làm việc mới"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "No %s on this offer"
+msgstr "Lời mời này chưa có %s"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "No offer to preview with yet."
+msgstr "Chưa có lời mời nào để xem trước."
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "No offer you can see matches."
+msgstr "Không có lời mời nào bạn được xem phù hợp."
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_hiring_offer
+msgid "Offer"
+msgstr "Lời mời làm việc"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Offer %(who)s"
+msgstr "Lời mời cho %(who)s"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Offer letter"
+msgstr "Thư mời làm việc"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles at %(company)s in %(countries)s will use this copy."
+msgstr ""
+"Lời mời cho các vị trí tại %(company)s ở %(countries)s sẽ dùng bản sao này."
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles at %s will use this copy."
+msgstr "Lời mời cho các vị trí tại %s sẽ dùng bản sao này."
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles in %s will use this copy."
+msgstr "Lời mời cho các vị trí ở %s sẽ dùng bản sao này."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Pay item"
+msgstr "Khoản lương"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Pay lines table"
+msgstr "Bảng các khoản lương"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_hiring
+msgid "Payobook Hiring cockpit data"
+msgstr "Dữ liệu bảng Tuyển dụng của Payobook"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "Preview with"
+msgstr "Xem trước với"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid ""
+"Previewing an offer letter needs Hiring access. You can still change the "
+"wording; ask your administrator for access to check it with a real offer."
+msgstr ""
+"Xem trước thư mời cần quyền Tuyển dụng. Bạn vẫn có thể sửa nội dung; hãy nhờ"
+" quản trị viên cấp quyền để kiểm tra với một lời mời thật."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Printed when an offer is prepared in Hiring"
+msgstr "Được in khi soạn lời mời trong Tuyển dụng"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__pbds_kind_set
+msgid "Shown under"
+msgstr "Hiển thị trong"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "Signature and date"
+msgstr "Chữ ký và ngày"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Start date"
+msgstr "Ngày bắt đầu"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid ""
+"The PDF could not be made right now. Try again in a moment; the preview on "
+"screen is exactly what will print."
+msgstr ""
+"Chưa tạo được PDF lúc này. Hãy thử lại sau giây lát; bản xem trước trên màn "
+"hình chính là bản sẽ được in."
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "The candidate"
+msgstr "Ứng viên"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang
+msgid ""
+"The language the offer letter was written in the last time it was prepared."
+msgstr "Ngôn ngữ của thư mời trong lần soạn gần nhất."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid ""
+"There is nothing in this offer yet. Add what is being offered — the basic "
+"pay at least — before the letter is written."
+msgstr ""
+"Lời mời này chưa có gì. Hãy thêm những gì được đề nghị — ít nhất là lương cơ"
+" bản — trước khi soạn thư."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "This document"
+msgstr "Tài liệu này"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Today's date"
+msgstr "Ngày hôm nay"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Used by %s offers"
+msgstr "Dùng cho %s lời mời"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Used by 1 offer"
+msgstr "Dùng cho 1 lời mời"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid ""
+"We are pleased to offer you the role of ${job_title}, starting on "
+"${start_date}."
+msgstr ""
+"Chúng tôi vui mừng mời bạn đảm nhận vị trí ${job_title}, bắt đầu từ "
+"${start_date}."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Where they will be based"
+msgstr "Nơi làm việc"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_wording_note
+msgid ""
+"Which wording the letter uses when a company or country has its own copy of "
+"the offer letter."
+msgstr ""
+"Nội dung thư được dùng khi một công ty hoặc quốc gia có bản sao thư mời "
+"riêng."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Who they will report to"
+msgstr "Người quản lý trực tiếp"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_wording_note
+msgid "Wording used"
+msgstr "Nội dung đang dùng"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Yearly total"
+msgstr "Tổng mỗi năm"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "You cannot see any offer."
+msgstr "Bạn không xem được lời mời nào."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "You may not see this offer. Ask your administrator for Hiring access."
+msgstr ""
+"Bạn không được xem lời mời này. Hãy nhờ quản trị viên cấp quyền Tuyển dụng."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "“%s” has no wording in it yet, so there is nothing to print."
+msgstr "“%s” chưa có nội dung, nên không có gì để in."

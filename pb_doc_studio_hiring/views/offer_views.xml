@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The offer form says which wording really prints when a company or
+         country has its own copy of the offer letter (copies always win), and
+         the language the letter was written in. -->
+    <record id="view_pb_hiring_offer_form_pbds" model="ir.ui.view">
+        <field name="name">pb.hiring.offer.form.doc.studio</field>
+        <field name="model">pb.hiring.offer</field>
+        <field name="inherit_id" ref="pb_hiring.view_pb_hiring_offer_form"/>
+        <field name="arch" type="xml">
+            <field name="letter_template_id" position="after">
+                <field name="pbds_wording_note" readonly="1" invisible="not pbds_wording_note"
+                       decoration-info="pbds_wording_note"/>
+                <field name="pbds_lang_name" readonly="1" invisible="not pbds_lang_name"/>
+            </field>
+        </field>
+    </record>
+</odoo>
