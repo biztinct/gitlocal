@@ -9,4 +9,6 @@
     table.pbdc-sign { table-layout: fixed; margin-top: 30px; }
     table.pbdc-sign td { width: 50%; border: none; padding: 0 14px 0 0; }
     table.pbdc-sign p { margin: 0 0 .3em; }
+    // the signing line sits under the space left for the signature
+    table.pbdc-sign td > p:nth-child(3) { border-bottom: 1px solid #94a3b8; width: 75%; margin-bottom: .5em; }
 }
