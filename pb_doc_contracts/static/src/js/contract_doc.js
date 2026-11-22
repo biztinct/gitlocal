@@ -325,6 +325,13 @@ patch(Contract360Drawer.prototype, {
     pbdcIcon() { return ic("fileText", 14); },
     pbdcOpen() {
         if (this.pbdc.open) { return; }
+        // The document prints what the contract holds: typed but unsaved
+        // values would not be in it, so say so instead of printing old ones.
+        if (this.dirtyCount > 0) {
+            this.notif.add(_t("Save or discard your changes first: the contract document prints what is saved."),
+                           { type: "warning" });
+            return;
+        }
         this.state.edit = null;
         this.pbdc.open = true;
         this._pbdcRemove = this.overlay.add(ContractDocSheet, {
