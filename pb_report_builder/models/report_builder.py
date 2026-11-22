@@ -285,19 +285,45 @@ class PbReportBuilder(models.AbstractModel):
         if kind == 'link':
             col['comodel'] = field.comodel_name
         if kind == 'money':
+            # Where the money comes from, best first. Contract pay is in the
+            # money of the scheme that pays the person (the stored "Paid by",
+            # as the people and contract screens show it — pb_people
+            # `_pay_symbol`), else the company's money. A source this reader
+            # may not open is skipped and SAID (`currency_note`): never a
+            # superuser read to find it.
             prefix = path.rsplit('.', 1)[0] + '.' if '.' in path else ''
-            cur = extra.get('currency')
-            if cur:
+            wanted = extra.get('currency')
+            if isinstance(wanted, str):
+                wanted = (wanted,)
+            if not wanted and field.currency_field:
+                wanted = (field.currency_field,)
+            paths, sql, skipped = [], True, False
+            for cur in wanted or ():
                 cur = prefix + cur
-            elif field.currency_field:
-                cur = prefix + field.currency_field
-            cur_res = self._resolve(subject['model'], cur, check=False) if cur else None
-            if not cur_res or cur_res[0].type != 'many2one':
+                if not self._resolve(subject['model'], cur, check=False):
+                    continue            # not on this database
+                res = self._resolve(subject['model'], cur, check=check)
+                if not res or res[0].type != 'many2one':
+                    skipped = True
+                    continue
+                paths.append(cur)
+                sql = sql and res[2]
+            if not paths:
                 kind = col['kind'] = 'number'
             else:
-                col['currency'] = cur
-                col['currency_sql'] = cur_res[2]
+                col['currency'] = paths[-1]
+                col['currencies'] = paths
+                col['currency_sql'] = sql
+                col['currency_note'] = skipped
         return col
+
+    @api.model
+    def _currency_pick(self, values):
+        """The first currency set among the sources, best first."""
+        for value in values:
+            if value and value is not HIDDEN:
+                return value
+        return None
 
     @api.model
     def _subject_columns(self, subject, check=True):
@@ -349,6 +375,31 @@ class PbReportBuilder(models.AbstractModel):
                     'search': False, 'pay': False, 'count': count, 'currency': None,
                     'dated': bool(count.get('date')),
                 }
+        return self._distinct_labels(cols)
+
+    @api.model
+    def _distinct_labels(self, cols):
+        """No two columns of one subject read the same (R-b ruling 3). The
+        record's own field keeps its word; the person's current value of the
+        same thing becomes "… now" (Department now, Manager now); a field the
+        customer made that clashes says so."""
+        _ = self.env._
+        order = {'own': 0, 'counts': 1, 'person': 2, 'ownfields': 3}
+        seen = set()
+        for col in sorted(cols.values(), key=lambda c: order.get(c['section'], 9)):
+            label = col['label']
+            if label.lower() in seen:
+                if col['section'] == 'person':
+                    label = _("%(field)s now", field=col['label'])
+                elif col['section'] == 'ownfields':
+                    label = _("%(field)s (your field)", field=col['label'])
+                n = 2
+                base = label
+                while label.lower() in seen:
+                    label = '%s %d' % (base, n)
+                    n += 1
+                col['label'] = label
+            seen.add(label.lower())
         return cols
 
     @api.model
@@ -619,6 +670,11 @@ class PbReportBuilder(models.AbstractModel):
                            count=hidden_filters) if hidden_filters > 1 else
                          _("1 filter was left out because it uses a field you may not see, "
                            "so the result may be wider than the saved report."))
+        for key in columns:
+            if cols[key].get('currency_note'):
+                notes.append(_("%(field)s is shown in the company's money, because you cannot "
+                               "see which pay scheme pays each person.",
+                               field=cols[key]['label']))
         clean = {
             'subject': subject['key'], 'columns': columns, 'sort': sort, 'filters': filters,
             'period': period, 'group_by': group_by, 'totals': totals,
@@ -953,7 +1009,7 @@ class PbReportBuilder(models.AbstractModel):
                 continue
             paths.append(col['path'])
             if col['kind'] == 'money' and col.get('currency'):
-                paths.append(col['currency'])
+                paths.extend(col['currencies'])
         read = self._paths_values(records, paths) if paths and records else {}
         for key in keys:
             col = cols[key]
@@ -963,11 +1019,13 @@ class PbReportBuilder(models.AbstractModel):
                 continue
             values[key] = read.get(col['path'], {})
             if col['kind'] == 'money' and col.get('currency'):
-                cur_values = read.get(col['currency'], {})
-                ids = {v[0] for v in cur_values.values() if v and v is not HIDDEN}
+                sources = [read.get(p, {}) for p in col['currencies']]
+                picked = {rid: self._currency_pick([s.get(rid) for s in sources])
+                          for rid in records.ids}
+                ids = {v[0] for v in picked.values() if v}
                 found = {c.id: c for c in self.env['res.currency'].browse(list(ids))}
-                currencies[key] = {rid: (found.get(v[0]) if v and v is not HIDDEN else None)
-                                   for rid, v in cur_values.items()}
+                currencies[key] = {rid: (found.get(v[0]) if v else None)
+                                   for rid, v in picked.items()}
         return values, currencies
 
     # ============================================================ displays
@@ -1184,11 +1242,23 @@ class PbReportBuilder(models.AbstractModel):
         for k, how in clean['totals'].items():
             col = cols[k]
             if col['kind'] == 'money' and how in ('sum', 'avg'):
+                # grouped by every money source too; each row counts in the
+                # first source that is set (the person's scheme, else the
+                # company), then sums are merged per currency
+                m = len(col['currencies'])
+                acc = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+                for row in Model._read_group(domain, groupby + col['currencies'],
+                                             ['%s:sum' % col['path'], '__count']):
+                    gkey = row[:n]
+                    currency = self._currency_pick(row[n:n + m])
+                    bucket = acc[gkey][currency or self.env['res.currency']]
+                    bucket[0] += row[n + m] or 0
+                    bucket[1] += row[n + m + 1] or 0
                 per = defaultdict(list)
-                for row in Model._read_group(domain, groupby + [col['currency']],
-                                             ['%s:%s' % (col['path'], how)]):
-                    gkey, currency, v = row[:n], row[n], row[n + 1]
-                    per[gkey].append((currency, v or 0))
+                for gkey, by_cur in acc.items():
+                    for currency, (total, count) in by_cur.items():
+                        v = total if how == 'sum' else (total / count if count else 0)
+                        per[gkey].append((currency, v))
                 for gkey, items in per.items():
                     items.sort(key=lambda x: (x[0].name or '') if x[0] else '')
                     values[gkey][k] = [(c.name if c else '', v) for c, v in items]

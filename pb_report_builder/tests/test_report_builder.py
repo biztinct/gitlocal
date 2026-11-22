@@ -51,7 +51,8 @@ class TestReportBuilder(TransactionCase):
         base = ('base.group_user,hr.group_hr_user,hr_contract.group_hr_contract_manager,'
                 'hr_holidays.group_hr_holidays_user,hr_attendance.group_hr_attendance_officer')
         extra = ''
-        for xmlid in ('hr_recruitment.group_hr_recruitment_user', 'pb_assets.group_assets_manager'):
+        for xmlid in ('hr_recruitment.group_hr_recruitment_user', 'pb_assets.group_assets_manager',
+                      'pb_hr_payroll_formula.group_formula_user'):
             if env.ref(xmlid, raise_if_not_found=False):
                 extra += ',' + xmlid
         cls.admin_u = new_test_user(env, 'pbrb_admin', name='DEMO RB Admin',

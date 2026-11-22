@@ -104,7 +104,8 @@ class PbReportBuilderSubjects(models.AbstractModel):
                 ('trial_end', 'trial_date_end', _("End of trial"), dict()),
                 ('working_hours', 'resource_calendar_id', _("Working hours"), dict()),
                 ('pay', 'wage', _("Contract pay"),
-                 dict(pay=True, currency='company_id.currency_id')),
+                 dict(pay=True, currency=('employee_id.pb_paid_by_id.currency_id',
+                                          'company_id.currency_id'))),
             ],
             why=_("You cannot see contracts. Ask your administrator for contract access."))
 

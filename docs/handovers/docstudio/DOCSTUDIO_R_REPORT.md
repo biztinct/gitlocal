@@ -149,3 +149,34 @@ Benchmark: Airtable / Notion table building. Self-score **8 / 10**.
 * DS-R5 | Attendance and assets have record rules: an HR officer without the attendance manager / asset rights sees only their own team's (or no) rows — a report built "as the reader" is correctly smaller for them | tests give the reader the real rights; never compare against a superuser count.
 * DS-R6 | TransactionCase `assertRaises((A, B))` fails with "issubclass() arg 1 must be a class" (Odoo wraps assertRaises) | assert a common base (`UserError`).
 * DS-R7 | Creating employees on the local template takes ~1.2 s each (hooks of many modules): a 2,000-person seed took ~45 minutes | seed small, or seed once and keep the copy for the walk only.
+
+## R-b — follow-up on the rulings of 2026-11-22
+
+The three owner questions of §9 are answered by these rulings.
+
+| Ruling | Built |
+|---|---|
+| 1. HR officers get the Insights button (owner) | `pb_report_builder/hooks.py` `post_init_hook` ADDS the report builder's gate groups (`hr.group_hr_user`, `base.group_system`, the three payroll analytics tiers) to the rail item `pb_insights_hub.item_insights` with `(4, id)` only. It writes through Access Studio's internal lane (`_pb_access_internal=INTERNAL`) because the entry is `access_customized` on the templates, and Access Studio (`biz_access/models/pb_sidebar_item_ext.py` `write`) silently drops data-file writes to the groups of such an entry during an install (a data record was tried first and did nothing). Nothing else changes: the hub shell already opens on the first tab a person passes (`hub_shell.js` `_resolveAccess`), every payroll tab keeps its client gate (`ANALYTICS_GATE`) and its facade's `_require`. Access Studio stays truthful: the rail answer comes from the same `_state_for`, the tab answer from the same gate lists and `can_open` probe. |
+| 2. Contract pay in the money the person is paid in (orchestrator) | The pay column reads its currency from the person's stored "Paid by" scheme (`employee_id.pb_paid_by_id.currency_id`, the source of the people/contract screens and of `pb.contracts._cd_symbol`), else the company's money. Totals group by both sources and merge per currency (sum and average). A pay reader who may not open pay schemes (no Formula User right) gets the company's money and the note "Contract pay is shown in the company's money, because you cannot see which pay scheme pays each person." — never a superuser read. Limit: a person whose "Paid by" is marked stale is shown with the stored scheme (the panel re-works it with superuser rights first). |
+| 3. "… now" labels (orchestrator) | `_distinct_labels`: when a subject's own field and an "About the person" field share a label, the person's one becomes "Department now", "Job position now", "Manager now", "Company now", "Contract type now"…; a customer's own field that clashes reads "<label> (your field)". vi "… hiện tại", id "… saat ini". |
+
+**Edits outside `pb_report_builder`: none.** (No edit to `pb_insights_hub`, `pb_hub`, `pb_sidebar` or `biz_access`.)
+
+Tests (new file `tests/test_rb_followup.py`), fresh copy, real install path (the hook ran: "Insights side-menu entry opened to 4 more group(s)"):
+
+| # | Case | Result |
+|---|---|---|
+| 22 | HR officer without analytics/payroll groups: rail "on"; our tab's gate passes; `pb.insights.get_insights`, `pb.explorer.get_schema`, `pb.explorer.query`, `pb.workforce.insights._require`, `pb.module.insights.measures('payroll')` all refuse; Access screen (`pb.access.surface_access`) says pulse/explorer/reports no, report builder yes | PASS + browser walk as an HR officer: Insights on the rail, opens on "Build a report" as the ONLY tab, Explorer and Pulse calls refused on the server, contracts list shows "Department now", console clean |
+| 23 | Payroll analytics user: rail "on", lens order pulse, explorer, reports then ours (sequence ≥ 20), Explorer gate passes | PASS |
+| 24 | Staff with no HR role and a portal login: no Insights button | PASS |
+| 25 | Two contracts in one company paid by a VN and an IN scheme: each row in its own money, matching `pb.contracts._cd_symbol`; total "a · b", per-group the same; exporters get each person's currency; pay reader without Formula User gets the company-money note | PASS |
+| 26 | No two columns in one subject share a label (administrator and HR officer, every subject); Contracts reads Department / Department now / Job position now / Company now | PASS |
+
+Suites on the fresh copy: **pb_report_builder 31/31**; pb_insights 48, pb_insights_hub 40, pb_people_reports 24 with the same 3 baseline failures as before (`test_82_tiles_reconcile_with_the_records`, `test_the_lens_order_matches_the_mockup`, `test_the_feature_set_is_intact`). The existing test file now gives its administrator the Formula User right (pay schemes readable, case 8 expects no note).
+
+Deploy note (R-b): installing runs the hook once; it only adds groups to the Insights entry. Uninstalling the module does not take them away again (say so if the module is ever removed). Translations: 317 terms, vi + id complete.
+
+Background work and databases: the walk seed that was still running when the first report was written finished (2,008 people, 400 contracts, 304 time off requests, 12,000 attendance rows) and its database was dropped before R-b; the R-b databases (`docstudio_r_base`, rebuilt twice) are dropped too. No `docstudio_r_*` database, filestore or server process is left.
+
+Gotcha → ledger row:
+* DS-R8 | Access Studio keeps a side-menu entry whose access was changed on screen (`pb.sidebar.item.access_customized`): during an install or upgrade it drops data-file writes to `groups_id`/`role_ids`/`restricted`/`active` without a word. The Insights entry is customised on the templates | change such an entry from a hook with `_pb_access_internal=INTERNAL` (`biz_access/models/role_assignments.py`), adding only.
