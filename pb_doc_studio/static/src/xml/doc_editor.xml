@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- The page body. The contenteditable div has NO template children: its
+       content belongs to the editor (set in onMounted), never to OWL. -->
+  <t t-name="pb_doc_studio.DocEditor">
+    <div class="pbds-ed" t-ref="wrap" t-on-dragover="onDragOver" t-on-dragleave="onDragLeave" t-on-drop="onDrop">
+      <div class="pbds-ed-body pbds-page-body" t-ref="body" contenteditable="true" spellcheck="true"
+           role="textbox" aria-multiline="true" t-att-aria-label="props.hint"
+           t-att-data-placeholder="props.hint"
+           t-on-input="onInput" t-on-keydown="onKeydown" t-on-click="onClick" t-on-paste="onPaste" t-on-blur="onBlur"/>
+      <div class="pbds-pills" aria-live="polite">
+        <t t-foreach="pills.list" t-as="p" t-key="p.id + '_' + p_index">
+          <div class="pbds-bracket" t-attf-style="top: {{p.top}}px; height: {{p.height}}px;"/>
+          <button type="button" t-attf-class="pbds-pill {{ p.set ? '' : 'is-unset' }}" t-attf-style="top: {{p.top}}px;"
+                  t-att-title="p.sentence" t-on-mousedown.prevent="() => this.editRule(p.id)">
+            <t t-out="ic('branch', 12)"/>
+            <span t-esc="p.sentence"/>
+          </button>
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <t t-name="pb_doc_studio.DocToolbar">
+    <div class="pbds-tb" role="toolbar" aria-label="Formatting" t-att-class="{ 'is-off': props.disabled }">
+      <div class="pbds-tb-group">
+        <button type="button" class="pbds-tb-btn" t-att-disabled="!props.ui.canUndo" t-att-title="tips.undo" aria-label="Undo"
+                t-on-mousedown.prevent="() => this.call('undo')"><t t-out="ic('undo')"/></button>
+        <button type="button" class="pbds-tb-btn" t-att-disabled="!props.ui.canRedo" t-att-title="tips.redo" aria-label="Redo"
+                t-on-mousedown.prevent="() => this.call('redo')"><t t-out="ic('redo')"/></button>
+      </div>
+      <div class="pbds-tb-group">
+        <label class="pbds-tb-select" title="Paragraph style">
+          <t t-out="ic('pilcrow', 14)"/>
+          <select aria-label="Paragraph style" t-on-change="onBlock">
+            <option value="p" t-att-selected="props.ui.block === 'p'">Text</option>
+            <option value="h2" t-att-selected="props.ui.block === 'h2'">Heading</option>
+            <option value="h3" t-att-selected="props.ui.block === 'h3'">Small heading</option>
+          </select>
+        </label>
+      </div>
+      <div class="pbds-tb-group">
+        <button type="button" class="pbds-tb-btn" t-att-class="{ 'is-on': props.ui.bold }" t-att-title="tips.bold" aria-label="Bold"
+                t-on-mousedown.prevent="(ev) => this.cmd('bold', ev)"><t t-out="ic('bold')"/></button>
+        <button type="button" class="pbds-tb-btn" t-att-class="{ 'is-on': props.ui.italic }" t-att-title="tips.italic" aria-label="Italic"
+                t-on-mousedown.prevent="(ev) => this.cmd('italic', ev)"><t t-out="ic('italic')"/></button>
+        <button type="button" class="pbds-tb-btn" t-att-class="{ 'is-on': props.ui.underline }" t-att-title="tips.underline" aria-label="Underline"
+                t-on-mousedown.prevent="(ev) => this.cmd('underline', ev)"><t t-out="ic('underline')"/></button>
+      </div>
+      <div class="pbds-tb-group">
+        <button type="button" class="pbds-tb-btn" t-att-class="{ 'is-on': props.ui.ul }" title="Bullet list" aria-label="Bullet list"
+                t-on-mousedown.prevent="(ev) => this.cmd('insertUnorderedList', ev)"><t t-out="ic('list')"/></button>
+        <button type="button" class="pbds-tb-btn" t-att-class="{ 'is-on': props.ui.ol }" title="Numbered list" aria-label="Numbered list"
+                t-on-mousedown.prevent="(ev) => this.cmd('insertOrderedList', ev)"><t t-out="ic('listOrdered')"/></button>
+      </div>
+      <div class="pbds-tb-group">
+        <button type="button" class="pbds-tb-btn" t-att-class="alignClass('left')" title="Align left" aria-label="Align left"
+                t-on-mousedown.prevent="(ev) => this.cmd('justifyLeft', ev)"><t t-out="ic('alignLeft')"/></button>
+        <button type="button" class="pbds-tb-btn" t-att-class="alignClass('center')" title="Centre" aria-label="Centre"
+                t-on-mousedown.prevent="(ev) => this.cmd('justifyCenter', ev)"><t t-out="ic('alignCenter')"/></button>
+        <button type="button" class="pbds-tb-btn" t-att-class="alignClass('right')" title="Align right" aria-label="Align right"
+                t-on-mousedown.prevent="(ev) => this.cmd('justifyRight', ev)"><t t-out="ic('alignRight')"/></button>
+        <button type="button" class="pbds-tb-btn" t-att-class="alignClass('justify')" title="Justify" aria-label="Justify"
+                t-on-mousedown.prevent="(ev) => this.cmd('justifyFull', ev)"><t t-out="ic('alignJustify')"/></button>
+      </div>
+      <div class="pbds-tb-group">
+        <button type="button" class="pbds-tb-btn" title="Add a table" aria-label="Add a table"
+                t-on-mousedown.prevent="() => this.call('insertTable')"><t t-out="ic('table')"/></button>
+        <button type="button" class="pbds-tb-btn" title="Add a picture" aria-label="Add a picture"
+                t-on-mousedown.prevent="() => props.onImage and props.onImage()"><t t-out="ic('image')"/></button>
+      </div>
+      <div t-if="props.ui.inTable" class="pbds-tb-group pbds-tb-ctx">
+        <span class="pbds-tb-ctx-l">Table</span>
+        <button type="button" class="pbds-tb-mini" t-on-mousedown.prevent="(ev) => this.tbl('row', ev)">+ <span>Row</span></button>
+        <button type="button" class="pbds-tb-mini" t-on-mousedown.prevent="(ev) => this.tbl('col', ev)">+ <span>Column</span></button>
+        <button type="button" class="pbds-tb-mini" t-on-mousedown.prevent="(ev) => this.tbl('delrow', ev)">− <span>Row</span></button>
+        <button type="button" class="pbds-tb-mini" t-on-mousedown.prevent="(ev) => this.tbl('delcol', ev)">− <span>Column</span></button>
+        <button type="button" class="pbds-tb-mini danger" title="Remove the table" aria-label="Remove the table" t-on-mousedown.prevent="(ev) => this.tbl('deltable', ev)"><t t-out="ic('trash', 13)"/></button>
+      </div>
+      <div t-if="props.ui.image" class="pbds-tb-group pbds-tb-ctx">
+        <span class="pbds-tb-ctx-l">Picture</span>
+        <button type="button" class="pbds-tb-mini" t-on-mousedown.prevent="(ev) => this.size('s', ev)">S</button>
+        <button type="button" class="pbds-tb-mini" t-on-mousedown.prevent="(ev) => this.size('m', ev)">M</button>
+        <button type="button" class="pbds-tb-mini" t-on-mousedown.prevent="(ev) => this.size('l', ev)">L</button>
+        <button type="button" class="pbds-tb-mini" t-on-mousedown.prevent="(ev) => this.size('full', ev)"><span>Full width</span></button>
+      </div>
+      <span class="pbds-tb-spacer"/>
+      <div class="pbds-tb-group">
+        <button type="button" class="pbds-tb-act" title="Add a field where you are typing (/)" t-on-mousedown.prevent="pick">
+          <t t-out="ic('braces', 14)"/> <span>Field</span> <kbd>/</kbd>
+        </button>
+        <button type="button" class="pbds-tb-act is-when" t-att-class="{ 'is-on': props.ui.inRule }"
+                title="Show the selected paragraphs only for some people" t-on-mousedown.prevent="when">
+          <t t-out="ic('branch', 14)"/> <span>Show only when…</span>
+        </button>
+      </div>
+    </div>
+  </t>
+
+</templates>

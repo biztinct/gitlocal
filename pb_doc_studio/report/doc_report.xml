@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Three margins = three paper formats = three report actions sharing ONE
+         template (Odoo 19 needs an explicit ir.actions.report record, FACTS
+         gotcha 12; `_make_pdf` passes the action RECORD, so the shared
+         report_name never picks the wrong paper). Not bound to any Print
+         menu: letters are printed by the letter engine, as before. -->
+    <record id="paperformat_doc_normal" model="report.paperformat">
+        <field name="name">Document studio - normal margins</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">28</field>
+        <field name="margin_left">20</field>
+        <field name="margin_right">20</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">90</field>
+        <field name="css_margins" eval="False"/>
+    </record>
+    <record id="paperformat_doc_narrow" model="report.paperformat">
+        <field name="name">Document studio - narrow margins</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">32</field>
+        <field name="margin_bottom">22</field>
+        <field name="margin_left">12</field>
+        <field name="margin_right">12</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">28</field>
+        <field name="dpi">90</field>
+        <field name="css_margins" eval="False"/>
+    </record>
+    <record id="paperformat_doc_wide" model="report.paperformat">
+        <field name="name">Document studio - wide margins</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">46</field>
+        <field name="margin_bottom">32</field>
+        <field name="margin_left">30</field>
+        <field name="margin_right">30</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">40</field>
+        <field name="dpi">90</field>
+        <field name="css_margins" eval="False"/>
+    </record>
+
+    <record id="action_report_doc_normal" model="ir.actions.report">
+        <field name="name">Letter</field>
+        <field name="model">pb.hr.letter</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_doc_studio.report_doc_letter</field>
+        <field name="report_file">pb_doc_studio.report_doc_letter</field>
+        <field name="paperformat_id" ref="paperformat_doc_normal"/>
+    </record>
+    <record id="action_report_doc_narrow" model="ir.actions.report">
+        <field name="name">Letter (narrow margins)</field>
+        <field name="model">pb.hr.letter</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_doc_studio.report_doc_letter</field>
+        <field name="report_file">pb_doc_studio.report_doc_letter</field>
+        <field name="paperformat_id" ref="paperformat_doc_narrow"/>
+    </record>
+    <record id="action_report_doc_wide" model="ir.actions.report">
+        <field name="name">Letter (wide margins)</field>
+        <field name="model">pb.hr.letter</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_doc_studio.report_doc_letter</field>
+        <field name="report_file">pb_doc_studio.report_doc_letter</field>
+        <field name="paperformat_id" ref="paperformat_doc_wide"/>
+    </record>
+
+    <!-- CONTRACT C3 — the page of a document, reusable by any report.
+         Takes: page (dict, see pb.doc.studio.page_styles), company
+         (res.company), body (markup). Optional: subject, date_text,
+         sign_image (data URI), lang, mode ('pdf' default | 'screen'; the
+         screen draws a letterhead and the margins itself, the PDF gets them
+         from web.external_layout and the paper format), company_card
+         (screen only: {name, address, contact, logo}). -->
+    <template id="page_frame">
+        <t t-set="pv" t-value="env['pb.doc.studio'].page_values(page, doc_lang or lang)"/>
+        <t t-set="screen" t-value="mode == 'screen'"/>
+        <div t-attf-class="pbds-page {{ screen and 'pbds-screen' or 'pbds-pdf' }}"
+             t-att-style="pv['style'] + (screen and (' padding: ' + pv['screen_padding'] + ';') or '')">
+            <style t-out="pv['css']"/>
+            <div t-if="screen and pv['letterhead']" class="pbds-lh">
+                <t t-set="card" t-value="company_card or {}"/>
+                <span class="pbds-lh-logo"><img t-if="card.get('logo')" t-att-src="card.get('logo')" alt=""/></span>
+                <span class="pbds-lh-id">
+                    <span class="pbds-lh-name" t-esc="card.get('name') or (company and company.name) or ''"/>
+                    <span t-if="card.get('address')" class="pbds-lh-ad" t-esc="card.get('address')"/>
+                    <span t-if="card.get('contact')" class="pbds-lh-ct" t-esc="card.get('contact')"/>
+                </span>
+            </div>
+            <div t-if="date_text" class="pbds-date" t-esc="date_text"/>
+            <h3 t-if="subject" class="pbds-subject" t-esc="subject"/>
+            <div class="pbds-body" t-out="body"/>
+            <div t-if="pv['sign'] != 'off'" class="pbds-sign">
+                <img t-if="pv['sign'] == 'image' and sign_image" t-att-src="sign_image" class="pbds-sign-img" alt=""/>
+                <div t-else="" class="pbds-sign-space"/>
+                <div class="pbds-sign-line">
+                    <strong t-esc="pv['sign_name'] or (company and company.name) or ''"/>
+                    <div class="pbds-sign-title" t-esc="pv['sign_title']"/>
+                </div>
+            </div>
+            <div t-if="screen and pv['letterhead'] and company_card and company_card.get('contact')"
+                 class="pbds-lf" t-esc="company_card.get('contact')"/>
+        </div>
+    </template>
+
+    <!-- The letter: with the company letterhead (web.external_layout, the
+         same header and footer as every other document of the company) or on
+         plain paper. One letter per render (the server's PDF engine takes one
+         document at a time). -->
+    <template id="report_doc_letter">
+        <t t-if="letterhead">
+            <t t-call="web.html_container">
+                <t t-foreach="pages" t-as="p">
+                    <t t-set="company" t-value="p['company']"/>
+                    <t t-set="o" t-value="p['record'] or None"/>
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <t t-call="pb_doc_studio.page_frame">
+                                <t t-set="page" t-value="p['page']"/>
+                                <t t-set="body" t-value="p['body']"/>
+                                <t t-set="subject" t-value="p['subject']"/>
+                                <t t-set="date_text" t-value="p['date_text']"/>
+                                <t t-set="sign_image" t-value="p['sign_image']"/>
+                                <t t-set="doc_lang" t-value="p['lang']"/>
+                                <t t-set="mode" t-value="'pdf'"/>
+                            </t>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </t>
+        <t t-else="">
+            <t t-call="web.basic_layout">
+                <t t-foreach="pages" t-as="p">
+                    <t t-set="company" t-value="p['company']"/>
+                    <div class="page">
+                        <t t-call="pb_doc_studio.page_frame">
+                            <t t-set="page" t-value="p['page']"/>
+                            <t t-set="body" t-value="p['body']"/>
+                            <t t-set="subject" t-value="p['subject']"/>
+                            <t t-set="date_text" t-value="p['date_text']"/>
+                            <t t-set="sign_image" t-value="p['sign_image']"/>
+                            <t t-set="doc_lang" t-value="p['lang']"/>
+                            <t t-set="mode" t-value="'pdf'"/>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

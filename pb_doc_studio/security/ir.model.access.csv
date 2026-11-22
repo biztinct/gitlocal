@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_doc_version_user,document version user,model_pb_doc_version,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_doc_version_admin,document version admin,model_pb_doc_version,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_doc_version_system,document version system,model_pb_doc_version,base.group_system,1,1,1,1
