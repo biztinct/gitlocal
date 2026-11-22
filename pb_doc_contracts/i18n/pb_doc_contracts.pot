@@ -1,0 +1,593 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 11:53+0000\n"
+"PO-Revision-Date: 2026-11-22 11:53+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "%(doc)s · v%(n)s · %(date)s"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%(when)s · by %(who)s"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%s paragraphs are left out for this contract"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%s things are missing"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "1 paragraph is left out for this contract"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "1 thing is missing"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "A field that no longer exists"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Authorised signatory"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Change it"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Change it on the full contract form or the employee's record"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Change the wording"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Check again"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Close (Esc)"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Contract document"
+msgstr ""
+
+#. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_employee_document__pbdc_version
+msgid "Contract document version"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Contract length"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Contract reference"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Date of birth"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Date of birth (22/11/2026 style)"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Department on the contract"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Document"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Download PDF"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Download this version"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Draw the contract again"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Employer representative"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Employer representative's title"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__letter_type__employment_contract
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_generic
+msgid "Employment contract"
+msgstr ""
+
+#. module: pb_doc_contracts
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_id
+msgid "Employment contract — Indonesia"
+msgstr ""
+
+#. module: pb_doc_contracts
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_vn
+msgid "Employment contract — Vietnam"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__pbds_kind__employment
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__pbds_kind_set__employment
+msgid "Employment contracts"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "End date (22/11/2026 style)"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "End date, or \"no end date\""
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Every field has a value"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Filed in %(who)s's documents as version %(n)s."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid ""
+"Files the PDF in %s's documents as version %s. Earlier versions are kept."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Fixed term (has an end date)"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Go to this field in the contract panel"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid ""
+"Have it checked against your local labour law before use. This note is not "
+"printed."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Have it checked against your local labour law before you use it."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Home address"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Hours per week"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "ID number"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Job on the contract"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Language"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Nationality"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "New employment contract"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "No %s"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Not saved yet. Saving files it as version 1 in %s's documents."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Open the employee to fill it in"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Open-ended (no end date)"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "PDF ready. Nothing was filed or sent."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Paperwork"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Passport number"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Pay currency"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Pay is hidden from you"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Pay scheme"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Place of work"
+msgstr ""
+
+#. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_employee_document__pbdc_contract_id
+msgid "Printed for contract"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Save or discard your changes first."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Save to documents · v%s"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Saved versions"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid ""
+"See the finished contract, download it as a PDF or file it in their "
+"documents"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Start date (22/11/2026 style)"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Starting wording"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Starting wording."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The PDF could not be made right now."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"The PDF could not be made right now. Try again in a moment; the preview on "
+"screen is exactly what will print."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The contract cannot be shown"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be drawn just now. Try again in a moment."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be drawn."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be filed just now."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "The contract could not be filed: %s"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"The document kind for contracts is missing. Ask an administrator to add it "
+"back."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The finished contract"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The language this wording is written in"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"There is no employment contract wording switched on. Someone who looks after"
+" documents can add or switch one on in Settings, Documents."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "These print as nothing. Press one to fill it in."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract has no employee yet, so there is nobody to write the contract "
+"for."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract is not available to you. It may have been removed, or it "
+"belongs to a company you do not work in."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract shows pay, and you may not see this person's pay. Ask someone "
+"who may see pay to print it."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "This is not on the contract panel. Open the full form to fill it in."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Today's date (22/11/2026 style)"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Trial period end date"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Trial period end date (22/11/2026 style)"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Which contract document"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Working schedule"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Writing the contract…"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"You can download this contract. Filing it in the employee's documents needs "
+"the HR or payroll role."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "You may not read everything this contract shows."
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "You may not see pay"
+msgstr ""
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "no end date"
+msgstr ""

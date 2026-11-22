@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The page of a document (contract C3, pb_doc_studio.page_frame) learns
+         how a contract lays out its two-column clauses (local language left,
+         English right) and the two signature columns. Plain CSS the PDF
+         engine (an old WebKit) understands; it only touches tables carrying
+         these two classes, so every other document prints exactly as before. -->
+    <template id="page_frame_contract" inherit_id="pb_doc_studio.page_frame">
+        <xpath expr="//style" position="after">
+            <style>
+.pbds-page table.pbdc-bi { table-layout: fixed; margin: 0; }
+.pbds-page table.pbdc-bi tr { page-break-inside: avoid; }
+.pbds-page table.pbdc-bi td { width: 50%; border: none; border-top: 1px solid #e2e4ee; padding: 7px 12px 5px 0; }
+.pbds-page table.pbdc-bi td + td { padding: 7px 0 5px 12px; border-left: 1px solid #e2e4ee; color: #3f4a5c; }
+.pbds-page table.pbdc-bi p { margin: 0 0 0.45em; }
+.pbds-page table.pbdc-sign { table-layout: fixed; margin-top: 30px; page-break-inside: avoid; }
+.pbds-page table.pbdc-sign td { width: 50%; border: none; padding: 0 14px 0 0; }
+.pbds-page table.pbdc-sign p { margin: 0 0 0.3em; }
+            </style>
+        </xpath>
+    </template>
+</odoo>
