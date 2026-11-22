@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- Insights › Build a report (DOCSTUDIO R). One sentence per line: a text
+     node that spans lines is exported with its newlines and never matches
+     a one-line translation (ledger PRD-3). -->
+<t t-name="pb_report_builder.PbReportBuilder">
+  <div class="pbim pbrb" t-att-class="{'pbrb--embedded': props.embedded}">
+
+    <!-- loading -->
+    <div t-if="!state.loaded" class="pbrb-boot">
+      <span class="pbrb-spin" t-out="icon('loader', 18)"/>
+      <span>Opening the report builder…</span>
+    </div>
+
+    <!-- not for this person -->
+    <div t-elif="!state.allowed" class="pbrb-locked">
+      <span class="pbrb-locked__ic" t-out="icon('lock', 26)"/>
+      <h2>Build a report</h2>
+      <p t-esc="state.why"/>
+    </div>
+
+    <!-- ============================== HOME ============================== -->
+    <div t-elif="state.view === 'home'" class="pbrb-home">
+      <header class="pbrb-hero">
+        <div class="pbrb-hero__text">
+          <h1>Build a report</h1>
+          <p>Pick what each row is, then click the fields you want. Save it, share it, take it to Excel.</p>
+        </div>
+        <button class="pbim-btn pbrb-primary" t-on-click="newReport">
+          <span t-out="icon('plus', 16)"/>
+          <span>New report</span>
+        </button>
+      </header>
+      <p t-if="state.schema.note" class="pbrb-scope"><span t-out="icon('info', 14)"/><span t-esc="state.schema.note"/></p>
+
+      <section class="pbrb-sec">
+        <div class="pbrb-sec__head">
+          <h2>My reports</h2>
+          <span class="pbrb-count" t-esc="int(state.reports.length)"/>
+        </div>
+        <div t-if="state.homeBusy and !state.reports.length" class="pbrb-cards">
+          <div t-foreach="[1,2,3]" t-as="n" t-key="n" class="pbrb-card is-skel"><i/><i/><i/></div>
+        </div>
+        <div t-elif="!state.reports.length" class="pbrb-quiet">
+          <span t-out="icon('fileSpreadsheet', 20)"/>
+          <div>
+            <b>No saved reports yet.</b>
+            <span>Start from an example below, or press New report.</span>
+          </div>
+        </div>
+        <div t-else="" class="pbrb-cards">
+          <button t-foreach="state.reports" t-as="r" t-key="r.id" class="pbrb-card"
+                  t-att-class="{'is-locked': r.locked}" t-on-click="() => this.openReport(r)">
+            <span class="pbrb-card__ic" t-out="icon(r.locked ? 'lock' : r.icon, 18)"/>
+            <span class="pbrb-card__name" t-esc="r.name"/>
+            <span class="pbrb-card__meta">
+              <span class="pbrb-chip" t-esc="r.subject_label"/>
+              <span><t t-esc="int(r.columns)"/> <span>columns</span></span>
+              <span t-if="r.grouped" class="pbrb-chip is-soft">Grouped</span>
+            </span>
+            <span class="pbrb-card__foot">
+              <span t-if="r.shared and r.mine" class="pbrb-shared"><span t-out="icon('users', 12)"/><span>Shared</span></span>
+              <span t-if="!r.mine" class="pbrb-shared"><span t-out="icon('share2', 12)"/><span>Shared by</span> <t t-esc="r.owner"/></span>
+              <span t-if="r.last_opened" class="pbrb-when"><span>Last opened</span> <t t-esc="r.last_opened"/></span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="pbrb-sec" t-if="state.examples.length">
+        <div class="pbrb-sec__head">
+          <h2>Start from an example</h2>
+          <span class="pbrb-sub">Opens with real rows. Change anything, then save it as your own.</span>
+        </div>
+        <div class="pbrb-cards is-examples">
+          <button t-foreach="state.examples" t-as="ex" t-key="ex.key" class="pbrb-card is-example"
+                  t-on-click="() => this.startFromExample(ex)">
+            <span class="pbrb-card__ic is-soft" t-out="icon(ex.icon, 18)"/>
+            <span class="pbrb-card__name" t-esc="ex.name"/>
+            <span class="pbrb-card__blurb" t-esc="ex.blurb"/>
+            <span class="pbrb-card__meta"><span class="pbrb-chip" t-esc="ex.subject_label"/></span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============================= BUILDER ============================= -->
+    <div t-else="" class="pbrb-build">
+      <!-- top bar -->
+      <div class="pbrb-top">
+        <button class="pbrb-iconbtn" t-on-click="goHome" title="All reports" aria-label="All reports">
+          <span t-out="icon('chevronLeft', 18)"/>
+        </button>
+        <input t-ref="name" class="pbrb-name" t-att-value="state.name" t-on-input="onName"
+               placeholder="Name this report" maxlength="80" t-att-readonly="readOnly"/>
+        <span t-if="state.dirty and !readOnly" class="pbrb-dirty">Not saved</span>
+        <span t-if="readOnly" class="pbrb-chip is-soft"><span>Shared by</span> <t t-esc="state.report.owner"/></span>
+        <div class="pbrb-top__tools">
+          <button class="pbrb-iconbtn" t-on-click="undo" t-att-disabled="!canUndo" title="Undo (⌘Z)" aria-label="Undo">
+            <span t-out="icon('undo', 16)"/>
+          </button>
+          <button t-if="!readOnly" class="pbrb-toggle" t-att-class="{'is-on': state.shared}" t-on-click="toggleShare"
+                  title="Share with everyone who can open reports">
+            <span t-out="icon('users', 14)"/>
+            <span t-if="state.shared">Shared</span>
+            <span t-else="">Share</span>
+          </button>
+          <button t-if="state.report" class="pbrb-iconbtn" t-on-click="duplicate" title="Make a copy" aria-label="Make a copy">
+            <span t-out="icon('copy', 16)"/>
+          </button>
+          <button t-if="state.report and !readOnly" class="pbrb-iconbtn is-danger" t-on-click="() => this.state.confirmDelete = true" title="Delete" aria-label="Delete">
+            <span t-out="icon('trash', 16)"/>
+          </button>
+          <button class="pbim-btn ghost pbrb-btn" t-on-click="download"
+                  t-att-disabled="!state.spec or !state.spec.columns.length or state.downloading">
+            <span t-out="icon(state.downloading ? 'loader' : 'fileSpreadsheet', 15)"/>
+            <span>Excel</span>
+          </button>
+          <t t-if="layoutButton" t-component="layoutButton" t-props="layoutProps"/>
+          <button t-if="!readOnly" class="pbim-btn pbrb-primary" t-on-click="save"
+                  t-att-disabled="!state.spec or !state.spec.subject or state.saving" title="Save (⌘S)">
+            <span t-out="icon(state.saving ? 'loader' : 'save', 15)"/>
+            <span>Save</span>
+          </button>
+        </div>
+      </div>
+      <div t-if="state.confirmDelete" class="pbrb-confirm">
+        <span t-out="icon('triangleAlert', 16)"/>
+        <span>Delete this report? People you shared it with will lose it too.</span>
+        <button class="pbim-btn pbrb-danger" t-on-click="remove">Delete</button>
+        <button class="pbim-btn ghost" t-on-click="() => this.state.confirmDelete = false">Keep it</button>
+      </div>
+
+      <!-- choose what each row is -->
+      <div t-if="state.pickSubject or !state.spec" class="pbrb-pick">
+        <h2>What is each row?</h2>
+        <p class="pbrb-sub">Pick one. You can add facts about the person to any row that belongs to someone.</p>
+        <div class="pbrb-subjects">
+          <button t-foreach="subjects" t-as="s" t-key="s.key" class="pbrb-subject"
+                  t-att-class="{'is-locked': s.locked, 'is-on': state.spec and state.spec.subject === s.key}"
+                  t-att-title="s.locked ? s.why : ''" t-on-click="() => this.pickSubject(s)">
+            <span class="pbrb-subject__ic" t-out="icon(s.locked ? 'lock' : s.icon, 20)"/>
+            <span class="pbrb-subject__l" t-esc="s.label"/>
+            <span t-if="s.locked" class="pbrb-subject__why" t-esc="s.why"/>
+          </button>
+        </div>
+        <button t-if="state.spec" class="pbim-btn ghost" t-on-click="() => this.state.pickSubject = false">Cancel</button>
+      </div>
+
+      <div t-else="" class="pbrb-work">
+        <!-- ========== field list ========== -->
+        <aside class="pbrb-fields">
+          <button class="pbrb-rowis" t-on-click="() => this.state.pickSubject = true" t-att-disabled="readOnly">
+            <span class="pbrb-rowis__k">Each row is</span>
+            <span class="pbrb-rowis__v"><span t-out="icon(subject ? subject.icon : 'table', 15)"/><t t-esc="subject ? subject.label : ''"/></span>
+            <span t-if="!readOnly" class="pbrb-rowis__c" t-out="icon('chevronDown', 14)"/>
+          </button>
+          <label class="pbrb-search">
+            <span t-out="icon('search', 14)"/>
+            <input t-ref="search" t-model="state.search" t-on-keydown="onSearchKey" placeholder="Find a field"/>
+            <kbd>/</kbd>
+          </label>
+          <div class="pbrb-flist">
+            <div t-if="searchEmpty" class="pbrb-quiet is-small">
+              <span>No field matches that.</span>
+            </div>
+            <div t-foreach="sections" t-as="sec" t-key="sec.key" class="pbrb-fsec">
+              <div class="pbrb-fsec__h" t-esc="sec.label"/>
+              <button t-foreach="sec.fields" t-as="f" t-key="f.key" class="pbrb-field"
+                      t-att-class="{'is-on': isOn(f.key)}" t-on-click="() => this.toggleField(f)"
+                      t-att-disabled="readOnly">
+                <span class="pbrb-field__k" t-out="kindIcon(f.kind)"/>
+                <span class="pbrb-field__l" t-esc="f.label"/>
+                <span t-if="f.pay" class="pbrb-field__pay">Pay</span>
+                <span class="pbrb-field__s" t-out="icon(isOn(f.key) ? 'check' : 'plus', 14)"/>
+              </button>
+            </div>
+          </div>
+          <div class="pbrb-keys">
+            <span><kbd>/</kbd> find</span>
+            <span><kbd>Enter</kbd> add</span>
+            <span><kbd>⌘S</kbd> save</span>
+            <span><kbd>⌘Z</kbd> undo</span>
+          </div>
+        </aside>
+
+        <!-- ========== the table side ========== -->
+        <section class="pbrb-main">
+          <!-- filter bar -->
+          <div class="pbrb-bar">
+            <div class="pbrb-bar__row">
+              <span class="pbrb-bar__k" t-out="icon('filter', 14)"/>
+              <span t-foreach="filterChips" t-as="chip" t-key="chip.i" class="pbrb-fchip">
+                <button class="pbrb-fchip__t" t-on-click="() => this.openEditor(state.spec.filters[chip.i].key, chip.i)" t-att-disabled="readOnly" t-esc="chip.text"/>
+                <button t-if="!readOnly" class="pbrb-fchip__x" t-on-click="() => this.removeFilter(chip.i)" aria-label="Remove filter" t-out="icon('x', 12)"/>
+              </span>
+              <button t-if="!readOnly and filterable.length" class="pbrb-add" t-on-click="() => this.openEditor(null)">
+                <span t-out="icon('plus', 13)"/><span>Filter</span>
+              </button>
+              <span class="pbrb-bar__sep"/>
+              <span class="pbrb-bar__k" t-out="icon('calendar', 14)"/>
+              <select class="pbrb-select" t-on-change="onPreset" t-att-disabled="readOnly" aria-label="Period">
+                <option t-foreach="presets" t-as="p" t-key="p.key" t-att-value="p.key" t-att-selected="state.spec.period.preset === p.key" t-esc="p.label"/>
+              </select>
+              <t t-if="state.spec.period.preset === 'custom'">
+                <input type="date" class="pbrb-select" t-att-value="state.spec.period.from or ''" t-on-change="(ev) => this.onPeriodDate('from', ev)" t-att-disabled="readOnly" aria-label="From"/>
+                <span class="pbrb-sub">to</span>
+                <input type="date" class="pbrb-select" t-att-value="state.spec.period.to or ''" t-on-change="(ev) => this.onPeriodDate('to', ev)" t-att-disabled="readOnly" aria-label="To"/>
+              </t>
+              <t t-if="state.spec.period.preset !== 'any' and (dateChoices.length > 1 or subject.date_optional)">
+                <span class="pbrb-sub">by</span>
+                <select class="pbrb-select" t-on-change="onDateField" t-att-disabled="readOnly" aria-label="Which date">
+                  <option t-if="subject.date_optional" value="" t-att-selected="!state.spec.period.date">Counts only</option>
+                  <option t-foreach="dateChoices" t-as="d" t-key="d.key" t-att-value="d.key" t-att-selected="state.spec.period.date === d.key" t-esc="d.label"/>
+                </select>
+              </t>
+            </div>
+            <div class="pbrb-bar__row">
+              <span class="pbrb-bar__k" t-out="icon('layers', 14)"/>
+              <span t-foreach="state.spec.group_by" t-as="g" t-key="g" class="pbrb-fchip is-group">
+                <span class="pbrb-fchip__t"><span>Group by</span> <t t-esc="field(g) ? field(g).label : g"/></span>
+                <button t-if="!readOnly" class="pbrb-fchip__x" t-on-click="() => this.removeGroup(g)" aria-label="Remove group" t-out="icon('x', 12)"/>
+              </span>
+              <select t-if="!readOnly and state.spec.group_by.length &lt; 2 and groupable.length" class="pbrb-select is-add" t-on-change="addGroup" aria-label="Group by">
+                <option value="">Group by…</option>
+                <option t-foreach="groupable" t-as="f" t-key="f.key" t-att-value="f.key" t-esc="f.label"/>
+              </select>
+              <label t-if="state.spec.group_by.length" class="pbrb-switch" t-att-class="{'is-on': state.spec.summary}">
+                <input type="checkbox" t-att-checked="state.spec.summary" t-on-change="toggleSummary" t-att-disabled="readOnly"/>
+                <i/><span>Summary only</span>
+              </label>
+              <span class="pbrb-grow"/>
+              <span t-if="state.result" class="pbrb-total" t-att-class="{'is-busy': state.busy}">
+                <b t-esc="int(state.result.total)"/>
+                <span t-if="state.result.total === 1"> row</span>
+                <span t-else=""> rows</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- filter editor -->
+          <div t-if="state.editor" class="pbrb-editor">
+            <select class="pbrb-select" t-on-change="onEditorField" aria-label="Field">
+              <option t-foreach="filterable" t-as="f" t-key="f.key" t-att-value="f.key" t-att-selected="state.editor.key === f.key" t-esc="f.label"/>
+            </select>
+            <select class="pbrb-select" t-on-change="onEditorOp" aria-label="How">
+              <option t-foreach="opsFor(editorField.kind)" t-as="o" t-key="o.key" t-att-value="o.key" t-att-selected="state.editor.op === o.key" t-esc="o.label"/>
+            </select>
+            <t t-set="ek" t-value="editorField.kind"/>
+            <t t-set="eo" t-value="state.editor.op"/>
+            <t t-if="eo === 'empty' or eo === 'not_empty'"/>
+            <t t-elif="ek === 'bool'">
+              <span class="pbrb-seg">
+                <button t-att-class="{'is-on': state.editor.value === true}" t-on-click="() => this.setBool(true)">Yes</button>
+                <button t-att-class="{'is-on': state.editor.value === false}" t-on-click="() => this.setBool(false)">No</button>
+              </span>
+            </t>
+            <t t-elif="eo === 'between' and (ek === 'date' or ek === 'datetime')">
+              <input type="date" class="pbrb-select" t-att-value="state.editor.value.from or ''" t-on-change="(ev) => this.onEditorValue(ev, 'from')" aria-label="From"/>
+              <span class="pbrb-sub">and</span>
+              <input type="date" class="pbrb-select" t-att-value="state.editor.value.to or ''" t-on-change="(ev) => this.onEditorValue(ev, 'to')" aria-label="To"/>
+            </t>
+            <t t-elif="eo === 'between'">
+              <input type="number" class="pbrb-select is-num" t-att-value="state.editor.value.from ?? ''" t-on-input="(ev) => this.onEditorValue(ev, 'from')" placeholder="From" aria-label="From"/>
+              <span class="pbrb-sub">and</span>
+              <input type="number" class="pbrb-select is-num" t-att-value="state.editor.value.to ?? ''" t-on-input="(ev) => this.onEditorValue(ev, 'to')" placeholder="To" aria-label="To"/>
+            </t>
+            <t t-elif="ek === 'choice' and eo === 'in'">
+              <span class="pbrb-opts">
+                <label t-foreach="editorField.options" t-as="o" t-key="o[0]" class="pbrb-opt" t-att-class="{'is-on': choiceOn(o[0])}">
+                  <input type="checkbox" t-att-checked="choiceOn(o[0])" t-on-change="() => this.toggleChoice(o[0])"/>
+                  <span t-esc="o[1]"/>
+                </label>
+              </span>
+            </t>
+            <t t-elif="ek === 'choice'">
+              <select class="pbrb-select" t-on-change="(ev) => this.onEditorValue(ev)" aria-label="Value">
+                <option value="">Pick one…</option>
+                <option t-foreach="editorField.options" t-as="o" t-key="o[0]" t-att-value="o[0]" t-att-selected="state.editor.value === o[0]" t-esc="o[1]"/>
+              </select>
+            </t>
+            <t t-elif="ek === 'link' and eo !== 'contains'">
+              <span class="pbrb-picker">
+                <input class="pbrb-select" placeholder="Type to find…" t-att-value="state.editor.search" t-on-input="onChoiceSearch" aria-label="Find"/>
+                <span class="pbrb-opts">
+                  <span t-if="state.choiceBusy" class="pbrb-sub">Looking…</span>
+                  <span t-elif="!state.choices.length" class="pbrb-sub">Nothing found.</span>
+                  <t t-foreach="state.choices" t-as="c" t-key="c.id">
+                    <label t-if="eo === 'in'" class="pbrb-opt" t-att-class="{'is-on': choiceOn(c.id)}">
+                      <input type="checkbox" t-att-checked="choiceOn(c.id)" t-on-change="() => this.toggleChoice(c.id, c.label)"/>
+                      <span t-esc="c.label"/>
+                    </label>
+                    <button t-else="" class="pbrb-opt" t-att-class="{'is-on': state.editor.value === c.id}" t-on-click="() => this.pickOne(c)" t-esc="c.label"/>
+                  </t>
+                </span>
+              </span>
+            </t>
+            <t t-elif="ek === 'number' or ek === 'money'">
+              <input type="number" class="pbrb-select is-num" t-att-value="state.editor.value ?? ''" t-on-input="(ev) => this.onEditorValue(ev)" aria-label="Value"/>
+            </t>
+            <t t-elif="ek === 'date'">
+              <input type="date" class="pbrb-select" t-att-value="state.editor.value or ''" t-on-change="(ev) => this.onEditorValue(ev)" aria-label="Value"/>
+            </t>
+            <t t-else="">
+              <input class="pbrb-select" t-att-value="state.editor.value or ''" t-on-input="(ev) => this.onEditorValue(ev)" placeholder="Type a word" aria-label="Value"/>
+            </t>
+            <span class="pbrb-grow"/>
+            <button class="pbim-btn pbrb-primary" t-on-click="applyEditor" t-att-disabled="!editorReady">Apply</button>
+            <button class="pbim-btn ghost" t-on-click="closeEditor">Cancel</button>
+          </div>
+
+          <!-- notes -->
+          <div t-if="state.schema.note" class="pbrb-scope"><span t-out="icon('info', 14)"/><span t-esc="state.schema.note"/></div>
+          <div t-if="state.result and state.result.notes and state.result.notes.length" class="pbrb-note">
+            <span t-out="icon('eyeOff', 15)"/>
+            <span><t t-foreach="state.result.notes" t-as="n" t-key="n_index"><t t-esc="n"/> </t></span>
+          </div>
+          <div t-if="state.error" class="pbrb-error">
+            <span t-out="icon('triangleAlert', 15)"/>
+            <span t-esc="state.error"/>
+            <button class="pbim-btn ghost" t-on-click="() => this.run()">Try again</button>
+          </div>
+
+          <!-- the table -->
+          <div class="pbrb-tablewrap" t-att-class="{'is-busy': state.busy and state.result}">
+            <div t-if="!state.spec.columns.length" class="pbrb-empty">
+              <span class="pbrb-empty__ic" t-out="icon('columns', 30)"/>
+              <b>Pick what each row is, then click the fields you want.</b>
+              <span>The table fills with real rows as you click.</span>
+              <span t-if="!readOnly" class="pbrb-quick">
+                <button t-foreach="quickFields" t-as="f" t-key="f.key" class="pbrb-add" t-on-click="() => this.toggleField(f)">
+                  <span t-out="icon('plus', 13)"/><span t-esc="f.label"/>
+                </button>
+              </span>
+            </div>
+            <table t-else="" class="pbrb-table">
+              <thead>
+                <tr>
+                  <th t-foreach="columns" t-as="col" t-key="col.key"
+                      t-att-class="{'is-new': state.newKey === col.key, 'is-num': isNum(col.kind), 'is-dragover': state.dragOver === col.key and state.dragKey !== col.key, 'is-drag': state.dragKey === col.key}"
+                      t-att-draggable="readOnly ? 'false' : 'true'"
+                      t-on-dragstart="(ev) => this.onDragStart(col.key, ev)" t-on-dragover="(ev) => this.onDragOver(col.key, ev)"
+                      t-on-drop="(ev) => this.onDrop(col.key, ev)" t-on-dragend="onDragEnd">
+                    <span class="pbrb-th">
+                      <span t-if="!readOnly" class="pbrb-th__grip" t-out="icon('grip', 12)"/>
+                      <button class="pbrb-th__l" t-att-class="{'is-sortable': col.sortable}" t-on-click="() => this.clickSort(col)">
+                        <span t-esc="col.label"/>
+                        <span t-if="sortIcon(col)" class="pbrb-th__sort" t-out="icon(sortIcon(col), 12)"/>
+                        <span t-if="state.spec.totals[col.key]" class="pbrb-th__tot" t-esc="totalWord(state.spec.totals[col.key])"/>
+                      </button>
+                      <span t-if="!readOnly" class="pbrb-colmenu">
+                        <button class="pbrb-th__menu" t-on-click="(ev) => this.toggleMenu(col.key, ev)" aria-label="Column menu" t-out="icon('chevronDown', 13)"/>
+                        <div t-if="state.menu === col.key" class="pbrb-menu">
+                          <t t-if="col.sortable">
+                            <button t-on-click="() => this.sortBy(col.key, 'asc')"><span t-out="icon('arrowUp', 14)"/><span>Sort, smallest first</span></button>
+                            <button t-on-click="() => this.sortBy(col.key, 'desc')"><span t-out="icon('arrowDown', 14)"/><span>Sort, largest first</span></button>
+                          </t>
+                          <button t-if="col.filterable" t-on-click="() => this.openEditor(col.key)"><span t-out="icon('filter', 14)"/><span>Filter by this</span></button>
+                          <t t-if="col.totals and col.totals.length">
+                            <div class="pbrb-menu__h">Total</div>
+                            <button t-foreach="col.totals" t-as="how" t-key="how" t-att-class="{'is-on': state.spec.totals[col.key] === how}" t-on-click="() => this.setTotal(col.key, how)">
+                              <span t-out="icon(state.spec.totals[col.key] === how ? 'check' : 'sigma', 14)"/><span t-esc="totalWord(how)"/>
+                            </button>
+                            <button t-if="state.spec.totals[col.key]" t-on-click="() => this.setTotal(col.key, '')"><span t-out="icon('minus', 14)"/><span>No total</span></button>
+                          </t>
+                          <button t-if="col.groupable and !state.spec.group_by.includes(col.key)" t-on-click="() => this.groupByThis(col.key)"><span t-out="icon('layers', 14)"/><span>Group by this</span></button>
+                          <button t-on-click="() => this.hideColumn(col.key)"><span t-out="icon('eyeOff', 14)"/><span>Hide</span></button>
+                        </div>
+                      </span>
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+
+              <!-- skeleton while the first answer is on its way -->
+              <tbody t-if="state.busy and !state.result">
+                <tr t-foreach="[1,2,3,4,5,6,7,8]" t-as="n" t-key="n" class="pbrb-skel">
+                  <td t-foreach="state.spec.columns" t-as="k" t-key="k"><i/></td>
+                </tr>
+              </tbody>
+
+              <!-- grouped -->
+              <tbody t-elif="grouped">
+                <t t-foreach="state.result.groups" t-as="g" t-key="groupKey(g)">
+                  <t t-call="pb_report_builder.GroupRow"><t t-set="node" t-value="g"/><t t-set="depth" t-value="0"/></t>
+                  <t t-if="isOpen(g)">
+                    <t t-if="g.children and g.children.length">
+                      <t t-foreach="g.children" t-as="c" t-key="groupKey(c)">
+                        <t t-call="pb_report_builder.GroupRow"><t t-set="node" t-value="c"/><t t-set="depth" t-value="1"/></t>
+                        <t t-if="isOpen(c)" t-call="pb_report_builder.GroupBody"><t t-set="node" t-value="c"/></t>
+                      </t>
+                    </t>
+                    <t t-else="" t-call="pb_report_builder.GroupBody"><t t-set="node" t-value="g"/></t>
+                  </t>
+                </t>
+                <tr t-if="!state.result.groups.length" class="pbrb-none"><td t-att-colspan="columns.length"><span>No rows match. Try a wider period or fewer filters.</span></td></tr>
+              </tbody>
+
+              <!-- flat -->
+              <tbody t-else="">
+                <tr t-foreach="state.result.rows" t-as="row" t-key="state.result.ids[row_index]">
+                  <td t-foreach="cells(row)" t-as="cell" t-key="cell.key"
+                      t-att-class="{'is-num': isNum(cell.kind), 'is-new': state.newKey === cell.key, 'is-hidden': cell.text === '•••', 'is-wait': cell.wait}"
+                      t-att-title="cell.text === '•••' ? hiddenTitle : ''"><i t-if="cell.wait"/><t t-else="" t-esc="cell.text"/></td>
+                </tr>
+                <tr t-if="!state.result.rows.length" class="pbrb-none"><td t-att-colspan="columns.length"><span>No rows match. Try a wider period or fewer filters.</span></td></tr>
+              </tbody>
+
+              <tfoot t-if="hasTotals and state.result">
+                <tr>
+                  <td t-att-colspan="leadSpan" class="pbrb-tlabel"><span>Total</span><span t-if="leadTotal(state.result)" class="pbrb-tlabel__v" t-esc="leadTotal(state.result)"/></td>
+                  <td t-foreach="tailColumns" t-as="col" t-key="col.key" class="is-num" t-esc="state.result.totals[col.key] or ''"/>
+                </tr>
+              </tfoot>
+            </table>
+            <div t-if="state.result and !grouped and state.result.has_more" class="pbrb-more">
+              <span>Showing <t t-esc="int(state.result.rows.length)"/> of <t t-esc="int(state.result.total)"/></span>
+              <button class="pbim-btn ghost" t-on-click="loadMore" t-att-disabled="state.loadingMore">
+                <span t-out="icon(state.loadingMore ? 'loader' : 'chevronDown', 14)"/><span>Load 50 more</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</t>
+
+<t t-name="pb_report_builder.GroupRow">
+  <tr class="pbrb-grow-row" t-att-class="{'is-child': depth, 'is-open': isOpen(node), 'is-leafless': state.spec.summary and !(node.children and node.children.length)}" t-on-click="() => this.toggleGroup(node)">
+    <td t-att-colspan="leadSpan" class="pbrb-gcell">
+      <span class="pbrb-gcell__in" t-att-style="'padding-left:' + (depth * 22) + 'px'">
+        <span class="pbrb-caret" t-out="icon('chevronRight', 14)"/>
+        <span class="pbrb-gcell__l" t-esc="node.label"/>
+        <span class="pbrb-gcell__n" t-esc="int(node.count)"/>
+        <span t-if="leadTotal(node)" class="pbrb-tlabel__v" t-esc="leadTotal(node)"/>
+      </span>
+    </td>
+    <td t-foreach="tailColumns" t-as="col" t-key="col.key" class="is-num pbrb-sub-t" t-esc="node.totals[col.key] or ''"/>
+  </tr>
+</t>
+
+<t t-name="pb_report_builder.GroupBody">
+  <t t-set="gr" t-value="state.groupRows[groupKey(node)]"/>
+  <tr t-if="gr and gr.busy and !gr.rows.length" class="pbrb-skel"><td t-foreach="columns" t-as="col" t-key="col.key"><i/></td></tr>
+  <tr t-if="gr and gr.error" class="pbrb-none"><td t-att-colspan="columns.length" t-esc="gr.error"/></tr>
+  <t t-if="gr">
+    <tr t-foreach="gr.rows" t-as="row" t-key="row_index" class="pbrb-in-group">
+      <td t-foreach="cells(row)" t-as="cell" t-key="cell.key" t-att-class="{'is-num': isNum(cell.kind), 'is-hidden': cell.text === '•••', 'is-wait': cell.wait}" t-att-title="cell.text === '•••' ? hiddenTitle : ''"><i t-if="cell.wait"/><t t-else="" t-esc="cell.text"/></td>
+    </tr>
+    <tr t-if="gr.has_more" class="pbrb-in-group">
+      <td t-att-colspan="columns.length">
+        <button class="pbim-btn ghost pbrb-btn" t-on-click.stop="() => this.groupMore(node)" t-att-disabled="gr.busy"><span>Load more in this group</span></button>
+      </td>
+    </tr>
+  </t>
+</t>
+
+</templates>

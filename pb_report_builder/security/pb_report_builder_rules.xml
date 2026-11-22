@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- DOCSTUDIO R6. Saved reports: private to whoever saved them unless
+         they share them with everyone who can open reports (the report
+         builder gate itself is checked in code on every call). Group rules
+         OR together, so for READ only the first rule applies (own or
+         shared), for write/create/delete only the second (own). Settings
+         admins may tidy up anything. Cloned from
+         pb_explorer/security/pb_explorer_rules.xml. -->
+    <record id="rule_pb_report_definition_read" model="ir.rule">
+        <field name="name">Saved reports: read your own and the shared ones</field>
+        <field name="model_id" ref="model_pb_report_definition"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('shared', '=', True)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_pb_report_definition_own" model="ir.rule">
+        <field name="name">Saved reports: change only your own</field>
+        <field name="model_id" ref="model_pb_report_definition"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    <record id="rule_pb_report_definition_admin" model="ir.rule">
+        <field name="name">Saved reports: settings admins tidy any report</field>
+        <field name="model_id" ref="model_pb_report_definition"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>
