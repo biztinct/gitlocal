@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Settings › Documents (the card is registered in settings_card.js and
+         the ⌘K row in doc_palette.js; every facade method refuses anybody who
+         may not change letter wording). -->
+    <record id="action_pb_doc_studio" model="ir.actions.client">
+        <field name="name">Documents</field>
+        <field name="tag">pb_doc_studio</field>
+    </record>
+</odoo>
