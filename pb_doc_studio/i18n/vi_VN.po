@@ -1,0 +1,2441 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 06:18+0000\n"
+"PO-Revision-Date: 2026-11-22 06:18+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+msgid " and "
+msgstr " và "
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+msgid " or "
+msgstr " hoặc "
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s (their language)"
+msgstr "%s (ngôn ngữ của họ)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "%s days ago"
+msgstr "%s ngày trước"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s fields no longer exist"
+msgstr "%s trường không còn tồn tại"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "%s hours ago"
+msgstr "%s giờ trước"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "%s minutes ago"
+msgstr "%s phút trước"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s paragraphs are hidden for this person"
+msgstr "%s đoạn bị ẩn với người này"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s with your wording"
+msgstr "%s dùng nội dung của bạn"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "%s — filled in when the letter is made"
+msgstr "%s — được điền khi lập thư"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s “Show only when” rules"
+msgstr "%s điều kiện “Chỉ hiện khi”"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/hr_letter.py:0
+msgid "'%s' has no letter body yet, so there is nothing to print."
+msgstr "'%s' chưa có nội dung thư nên chưa có gì để in."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "1 field no longer exists"
+msgstr "1 trường không còn tồn tại"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "1 paragraph is hidden for this person"
+msgstr "1 đoạn bị ẩn với người này"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "1 with your wording"
+msgstr "1 dùng nội dung của bạn"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "1 “Show only when” rule"
+msgstr "1 điều kiện “Chỉ hiện khi”"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid ""
+"A \"Show only when\" rule is not complete. Open it, pick a field and a "
+"condition, then save again."
+msgstr ""
+"Một điều kiện \"Chỉ hiện khi\" chưa hoàn tất. Mở nó, chọn trường và điều "
+"kiện, rồi lưu lại."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "A \"Show only when\" rule needs a value to compare with."
+msgstr "Điều kiện \"Chỉ hiện khi\" cần một giá trị để so sánh."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "A \"Show only when\" rule needs at least one value to compare with."
+msgstr "Điều kiện \"Chỉ hiện khi\" cần ít nhất một giá trị để so sánh."
+
+#. module: pb_doc_studio
+#: model:ir.model.constraint,message:pb_doc_studio.constraint_pb_doc_version_lang_unique
+msgid "A document has one wording per language."
+msgstr "Mỗi tài liệu chỉ có một nội dung cho mỗi ngôn ngữ."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "A field that no longer exists"
+msgstr "Một trường không còn tồn tại"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Aa"
+msgstr "Aa"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "About the person"
+msgstr "Về người này"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Add a condition"
+msgstr "Thêm điều kiện"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add a field"
+msgstr "Thêm trường"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Add a field where you are typing (/)"
+msgstr "Thêm trường tại chỗ đang gõ (/)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add a field…"
+msgstr "Thêm trường…"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add a picture"
+msgstr "Thêm ảnh"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add a signature picture"
+msgstr "Thêm ảnh chữ ký"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Add a table"
+msgstr "Thêm bảng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add people first, then come back to see a real letter."
+msgstr "Hãy thêm nhân sự trước, rồi quay lại để xem một lá thư thật."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Align left"
+msgstr "Căn trái"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Align right"
+msgstr "Căn phải"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "All documents"
+msgstr "Tất cả tài liệu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "All of these are true"
+msgstr "Tất cả đều đúng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Any company"
+msgstr "Mọi công ty"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Any one of these is true"
+msgstr "Chỉ cần một điều đúng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Authorised signatory"
+msgstr "Người ký được ủy quyền"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Bold"
+msgstr "Đậm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_original_html
+msgid "Built-in wording"
+msgstr "Nội dung có sẵn"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_original_json
+msgid "Built-in wording, stored"
+msgstr "Nội dung có sẵn, đã lưu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Bullet list"
+msgstr "Danh sách dấu chấm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Centre"
+msgstr "Căn giữa"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Certificate number"
+msgstr "Số giấy xác nhận"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__certificates
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__certificates
+msgid "Certificates"
+msgstr "Giấy xác nhận"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Change"
+msgstr "Đổi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"Change the wording, add fields, show some paragraphs only to some people, "
+"and preview it with a real person before you save."
+msgstr ""
+"Sửa nội dung, thêm trường, chỉ hiện một số đoạn cho một số người, và xem "
+"trước với một người thật trước khi lưu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Changed %s"
+msgstr "Đã thay đổi %s"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_changed_by
+msgid "Changed by"
+msgstr "Người thay đổi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Changed by %(who)s, %(when)s"
+msgstr "%(who)s đã thay đổi, %(when)s"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_changed_on
+msgid "Changed on"
+msgstr "Ngày thay đổi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Choose a company, one or more countries of work, or both."
+msgstr "Chọn một công ty, một hoặc nhiều quốc gia làm việc, hoặc cả hai."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Choose a person to preview with."
+msgstr "Chọn một người để xem trước."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Choose…"
+msgstr "Chọn…"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Classic serif"
+msgstr "Có chân cổ điển"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Clean"
+msgstr "Gọn gàng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Clear the search"
+msgstr "Xóa tìm kiếm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Click to add at the cursor, or drag onto the page."
+msgstr "Nhấn để thêm tại con trỏ, hoặc kéo vào trang."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Column"
+msgstr "Cột"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Company address"
+msgstr "Địa chỉ công ty"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Company name"
+msgstr "Tên công ty"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Condition"
+msgstr "Điều kiện"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__contract
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__contract
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Contract end"
+msgstr "Ngày kết thúc hợp đồng"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Contract start"
+msgstr "Ngày bắt đầu hợp đồng"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Contract type"
+msgstr "Loại hợp đồng"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_variant_ids
+msgid "Copies"
+msgstr "Các bản sao"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Copy"
+msgstr "Bản sao"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Copy from %s"
+msgstr "Sao chép từ %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Copy made. Change it as you like: only the people it is for get it."
+msgstr ""
+"Đã tạo bản sao. Sửa tùy ý: chỉ những người được áp dụng mới nhận bản này."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_replaces_id
+msgid "Copy of"
+msgstr "Bản sao của"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_country_ids
+msgid "Countries of work"
+msgstr "Các quốc gia làm việc"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Country of work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Create"
+msgstr "Tạo"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Dates"
+msgstr "Ngày tháng"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Dear ${employee_name},"
+msgstr "Kính gửi ${employee_name},"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Discard them"
+msgstr "Bỏ chúng"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_studio__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio.field_report_pb_doc_studio_report_doc_letter__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Document name"
+msgstr "Tên tài liệu"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_pb_doc_studio
+msgid "Document studio"
+msgstr "Xưởng tài liệu"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_report_pb_doc_studio_report_doc_letter
+msgid "Document studio letter"
+msgstr "Thư của Xưởng tài liệu"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_pb_doc_version
+msgid "Document wording in one language"
+msgstr "Nội dung tài liệu bằng một ngôn ngữ"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_palette.js:0
+#: code:addons/pb_doc_studio/static/src/js/settings_card.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.actions.client,name:pb_doc_studio.action_pb_doc_studio
+msgid "Documents"
+msgstr "Tài liệu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Download a sample PDF"
+msgstr "Tải PDF mẫu"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_edited
+msgid "Edited in the Document studio"
+msgstr "Đã sửa trong Xưởng tài liệu"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Effective date"
+msgstr "Ngày hiệu lực"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_pb_hr_letter
+msgid "Employee Letter"
+msgstr "Thư nhân viên"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Employee code"
+msgstr "Mã nhân viên"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Employment type"
+msgstr "Loại hình làm việc"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Enter"
+msgstr "Enter"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Esc"
+msgstr "Esc"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Everyone"
+msgstr "Mọi người"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Extra wording given when the letter is made"
+msgstr "Nội dung thêm được đưa vào khi lập thư"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Field"
+msgstr "Trường"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+msgid "Field no longer exists"
+msgstr "Trường không còn tồn tại"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Fields"
+msgstr "Trường"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Find"
+msgstr "Tìm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Find a country"
+msgstr "Tìm quốc gia"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Find a document"
+msgstr "Tìm tài liệu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Find a field"
+msgstr "Tìm trường"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Find a value"
+msgstr "Tìm giá trị"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Font"
+msgstr "Phông chữ"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "For"
+msgstr "Cho"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "For example, Welcome letter"
+msgstr "Ví dụ: Thư chào mừng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Formatting"
+msgstr "Định dạng"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Friendly"
+msgstr "Thân thiện"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Full name"
+msgstr "Họ và tên"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Full width"
+msgstr "Toàn chiều rộng"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Gender"
+msgstr "Giới tính"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Give the document a name."
+msgstr "Hãy đặt tên cho tài liệu."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Grade"
+msgstr "Ngạch"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_kind
+msgid "Group"
+msgstr "Nhóm"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "HR contact"
+msgstr "Đầu mối nhân sự"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__subject
+msgid "Heading"
+msgstr "Tiêu đề"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Heading on the page"
+msgstr "Tiêu đề trên trang"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Heading on the page (optional)"
+msgstr "Tiêu đề trên trang (không bắt buộc)"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "How often you meet"
+msgstr "Tần suất gặp gỡ"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "How the conditions combine"
+msgstr "Cách kết hợp các điều kiện"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_studio__id
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__id
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__id
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__id
+#: model:ir.model.fields,field_description:pb_doc_studio.field_report_pb_doc_studio_report_doc_letter__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Increase in percent"
+msgstr "Mức tăng theo phần trăm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"It was removed from the record. The letter prints nothing in its place."
+msgstr "Trường này đã bị xóa khỏi hồ sơ. Thư sẽ để trống tại vị trí đó."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Italic"
+msgstr "Nghiêng"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Job"
+msgstr "Công việc"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__job
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__job
+msgid "Job changes"
+msgstr "Thay đổi công việc"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Job title"
+msgstr "Chức danh"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__joining
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__joining
+msgid "Joining"
+msgstr "Gia nhập"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Joining date"
+msgstr "Ngày vào làm"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Joining date (2026-11-22 style)"
+msgstr "Ngày vào làm (dạng 2026-11-22)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Justify"
+msgstr "Căn đều"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Keep editing"
+msgstr "Tiếp tục chỉnh sửa"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Keep my wording"
+msgstr "Giữ nội dung của tôi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Kind of document"
+msgstr "Loại tài liệu"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Kind regards,"
+msgstr "Trân trọng,"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "L"
+msgstr "L"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__lang
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__lang
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_version_ids
+msgid "Language versions"
+msgstr "Các phiên bản ngôn ngữ"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Languages"
+msgstr "Ngôn ngữ"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Last working day"
+msgstr "Ngày làm việc cuối cùng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Leave without saving"
+msgstr "Rời đi mà không lưu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Leave without saving?"
+msgstr "Rời đi mà không lưu?"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__leaving
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__leaving
+msgid "Leaving"
+msgstr "Nghỉ việc"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Legal name"
+msgstr "Tên pháp lý"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: model:ir.actions.report,name:pb_doc_studio.action_report_doc_normal
+msgid "Letter"
+msgstr "Thư"
+
+#. module: pb_doc_studio
+#: model:ir.actions.report,name:pb_doc_studio.action_report_doc_narrow
+msgid "Letter (narrow margins)"
+msgstr "Thư (lề hẹp)"
+
+#. module: pb_doc_studio
+#: model:ir.actions.report,name:pb_doc_studio.action_report_doc_wide
+msgid "Letter (wide margins)"
+msgstr "Thư (lề rộng)"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_pb_letter_template
+msgid "Letter Template"
+msgstr "Mẫu thư"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/hr_letter.py:0
+msgid "Letter prepared."
+msgstr "Đã lập thư."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_palette.js:0
+msgid "Letter wording and design"
+msgstr "Nội dung và thiết kế thư"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Letterhead"
+msgstr "Tiêu đề thư"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/settings_card.js:0
+msgid ""
+"Letters and certificates: their wording, fields, languages, page design and "
+"copies for a company or country."
+msgstr ""
+"Thư và giấy xác nhận: nội dung, trường, ngôn ngữ, thiết kế trang và bản sao "
+"cho từng công ty hoặc quốc gia."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"Letters appear here as soon as a part of Payobook that writes letters is "
+"switched on. You can also start one from a blank page."
+msgstr ""
+"Thư sẽ xuất hiện ở đây ngay khi một phần của Payobook có lập thư được bật. "
+"Bạn cũng có thể bắt đầu từ một trang trắng."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"Letters for people at %(company)s who work in %(countries)s will use this "
+"copy."
+msgstr ""
+"Thư cho những người ở %(company)s làm việc tại %(countries)s sẽ dùng bản sao"
+" này."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Letters for people at %s will use this copy."
+msgstr "Thư cho những người ở %s sẽ dùng bản sao này."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Letters for people who work in %s will use this copy."
+msgstr "Thư cho những người làm việc tại %s sẽ dùng bản sao này."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "M"
+msgstr "M"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Main wording"
+msgstr "Nội dung chính"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Make a copy for…"
+msgstr "Tạo bản sao cho…"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Make the copy"
+msgstr "Tạo bản sao"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Margins"
+msgstr "Lề trang"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Modern"
+msgstr "Hiện đại"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Monthly pay"
+msgstr "Lương tháng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "More"
+msgstr "Thêm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Name and title"
+msgstr "Tên và chức danh"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Narrow"
+msgstr "Hẹp"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Net amount payable"
+msgstr "Số tiền thực trả"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "New document"
+msgstr "Tài liệu mới"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "New end date"
+msgstr "Ngày kết thúc mới"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "New letter"
+msgstr "Thư mới"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "New pay"
+msgstr "Lương mới"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "New start date"
+msgstr "Ngày bắt đầu mới"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "New trial period end date"
+msgstr "Ngày kết thúc thử việc mới"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "No %s on this person"
+msgstr "Người này chưa có %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "No %s wording yet"
+msgstr "Chưa có nội dung %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "No changes yet"
+msgstr "Chưa có thay đổi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No document has that name or wording."
+msgstr "Không có tài liệu nào có tên hoặc nội dung đó."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No documents yet"
+msgstr "Chưa có tài liệu nào"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No field has that name."
+msgstr "Không có trường nào có tên đó."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No letterhead: the space is kept for your own printed paper."
+msgstr "Không có tiêu đề thư: khoảng trống được giữ cho giấy in sẵn của bạn."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No one to preview with yet."
+msgstr "Chưa có ai để xem trước."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "No signature block"
+msgstr "Không có phần chữ ký"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Nobody you can see has that name."
+msgstr "Không có ai bạn được xem có tên đó."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Normal"
+msgstr "Bình thường"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Not saved. Try again."
+msgstr "Chưa lưu được. Hãy thử lại."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Nothing is saved, filed or sent from here."
+msgstr "Không có gì được lưu, lưu hồ sơ hay gửi đi từ đây."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Nothing matches"
+msgstr "Không có kết quả phù hợp"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Nothing to choose from yet."
+msgstr "Chưa có gì để chọn."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Numbered list"
+msgstr "Danh sách đánh số"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Objectives"
+msgstr "Mục tiêu"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Only people who may change letter wording can use the Document studio."
+msgstr ""
+"Chỉ những người được phép thay đổi nội dung thư mới dùng được Xưởng tài "
+"liệu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+msgid "Only when %s"
+msgstr "Chỉ khi %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Open"
+msgstr "Mở"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Open the preview large"
+msgstr "Mở bản xem trước cỡ lớn"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Opening the document…"
+msgstr "Đang mở tài liệu…"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__other
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"PNG or JPEG, 2 MB at most. A clear signature on a white background prints "
+"best."
+msgstr ""
+"PNG hoặc JPEG, tối đa 2 MB. Chữ ký rõ nét trên nền trắng sẽ in đẹp nhất."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Page"
+msgstr "Trang"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Page %s"
+msgstr "Trang %s"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_page
+msgid "Page design"
+msgstr "Thiết kế trang"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Paragraph style"
+msgstr "Kiểu đoạn"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__pay
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__pay
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Pay band"
+msgstr "Khung lương"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Pay before"
+msgstr "Lương trước đây"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Pay line"
+msgstr "Dòng lương"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Pay scale"
+msgstr "Thang lương"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "People who read %(lang)s get the %(main)s wording until you write one."
+msgstr ""
+"Người đọc %(lang)s sẽ nhận nội dung %(main)s cho đến khi bạn viết một bản."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"People who read %(lang)s will get the %(main)s wording. Nothing changes "
+"until you save."
+msgstr ""
+"Người đọc %(lang)s sẽ nhận nội dung %(main)s. Chưa có gì thay đổi cho đến "
+"khi bạn lưu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Pick a letter to make it yours."
+msgstr "Chọn một lá thư để biến nó thành của bạn."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Picture"
+msgstr "Ảnh"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Plan end date"
+msgstr "Ngày kết thúc kế hoạch"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Plan start date"
+msgstr "Ngày bắt đầu kế hoạch"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Preview"
+msgstr "Xem trước"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Preview language"
+msgstr "Ngôn ngữ xem trước"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Preview of the letter"
+msgstr "Bản xem trước của thư"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Preview of the letter, large"
+msgstr "Bản xem trước cỡ lớn của thư"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Purpose"
+msgstr "Mục đích"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Put back the built-in wording"
+msgstr "Khôi phục nội dung có sẵn"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Put back the built-in wording?"
+msgstr "Khôi phục nội dung có sẵn?"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Put it back"
+msgstr "Khôi phục"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Redo"
+msgstr "Làm lại"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Remove"
+msgstr "Bỏ"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Remove the %s wording?"
+msgstr "Bỏ nội dung %s?"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Remove the table"
+msgstr "Xóa bảng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Remove this condition"
+msgstr "Bỏ điều kiện này"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Remove this language"
+msgstr "Bỏ ngôn ngữ này"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Replace the picture"
+msgstr "Thay ảnh"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Restore"
+msgstr "Khôi phục"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Row"
+msgstr "Hàng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "S"
+msgstr "S"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Salary"
+msgstr "Lương"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Sample PDF ready. Nothing was filed or sent."
+msgstr "PDF mẫu đã sẵn sàng. Không có gì được lưu hồ sơ hay gửi đi."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Save and leave"
+msgstr "Lưu và rời đi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Saved %s"
+msgstr "Đã lưu %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Saved. Letters made from now on use this wording."
+msgstr "Đã lưu. Các thư lập từ bây giờ sẽ dùng nội dung này."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Saving…"
+msgstr "Đang lưu…"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Settlement date"
+msgstr "Ngày quyết toán"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Show it for everyone"
+msgstr "Hiện cho mọi người"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Show it under"
+msgstr "Hiển thị trong nhóm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Show only when…"
+msgstr "Chỉ hiện khi…"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+msgid "Show only when… (choose the condition)"
+msgstr "Chỉ hiện khi… (chọn điều kiện)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Show the selected paragraphs only for some people"
+msgstr "Chỉ hiện các đoạn đã chọn cho một số người"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Show them faded"
+msgstr "Hiện mờ"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Show this part only when…"
+msgstr "Chỉ hiện phần này khi…"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_rules
+msgid "Show-only-when rules"
+msgstr "Điều kiện chỉ hiện khi"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_kind_set
+msgid "Shown under"
+msgstr "Hiển thị trong nhóm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Signature"
+msgstr "Chữ ký"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Signature block"
+msgstr "Phần chữ ký"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_sign_image
+msgid "Signature image"
+msgstr "Ảnh chữ ký"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Signed by"
+msgstr "Người ký"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Small heading"
+msgstr "Tiêu đề nhỏ"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"Some people get their own version of “%s”. Everyone else keeps the one they "
+"have now."
+msgstr ""
+"Một số người sẽ có phiên bản riêng của “%s”. Những người khác vẫn giữ bản "
+"hiện có."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Start from a blank page"
+msgstr "Bắt đầu từ trang trắng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"Start from a blank page. You can use it from journeys and checklists, and "
+"prepare it for anyone."
+msgstr ""
+"Bắt đầu từ trang trắng. Bạn có thể dùng nó trong các hành trình và danh sách"
+" việc, và lập cho bất kỳ ai."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Start from the translation"
+msgstr "Bắt đầu từ bản dịch"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Step"
+msgstr "Bậc"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Switch off"
+msgstr "Tắt"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Switch on"
+msgstr "Bật"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Switched off"
+msgstr "Đã tắt"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Table"
+msgstr "Bảng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Take it out of the wording"
+msgstr "Bỏ khỏi nội dung"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__template_id
+msgid "Template"
+msgstr "Mẫu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Text"
+msgstr "Văn bản"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Text size"
+msgstr "Cỡ chữ"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "That did not work. Try again."
+msgstr "Thao tác không thành công. Hãy thử lại."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"That field is not in this language’s wording. Check the other language tabs."
+msgstr ""
+"Trường đó không có trong nội dung của ngôn ngữ này. Hãy xem các thẻ ngôn ngữ"
+" khác."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The PDF could not be made right now."
+msgstr "Chưa tạo được PDF lúc này."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid ""
+"The PDF could not be made right now. Try again in a moment; the preview on "
+"screen is exactly what will print."
+msgstr ""
+"Chưa tạo được PDF lúc này. Hãy thử lại sau giây lát; bản xem trước trên màn "
+"hình chính là bản sẽ được in."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The built-in wording could not be put back."
+msgstr "Không khôi phục được nội dung có sẵn."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The copy could not be made."
+msgstr "Không tạo được bản sao."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The document could not be made."
+msgstr "Không tạo được tài liệu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The document could not be opened."
+msgstr "Không mở được tài liệu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "The documents could not be loaded."
+msgstr "Không tải được tài liệu."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "The file is not the kind of picture it says it is."
+msgstr "Tệp không đúng loại ảnh như đã ghi."
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,help:pb_doc_studio.field_pb_hr_letter__lang
+msgid ""
+"The language this letter is written in: the person's own when the document "
+"has a wording in it."
+msgstr ""
+"Ngôn ngữ của lá thư này: ngôn ngữ của chính người nhận nếu tài liệu có nội "
+"dung bằng ngôn ngữ đó."
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,help:pb_doc_studio.field_pb_letter_template__pbds_replaces_id
+msgid ""
+"The letter this one replaces for the companies and countries it is for."
+msgstr "Lá thư mà bản này thay thế cho các công ty và quốc gia áp dụng."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "The main wording is empty. Write the letter, then save."
+msgstr "Nội dung chính đang trống. Hãy viết thư rồi lưu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The page design (letterhead, margins, font, signature)"
+msgstr "Thiết kế trang (tiêu đề thư, lề, phông chữ, chữ ký)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid ""
+"The part is printed for the people this fits. Everyone else gets the letter "
+"without it."
+msgstr ""
+"Phần này chỉ được in cho những người phù hợp. Những người khác nhận thư "
+"không có phần này."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The picture could not be added."
+msgstr "Không thêm được ảnh."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The picture could not be read."
+msgstr "Không đọc được ảnh."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "The picture is empty."
+msgstr "Ảnh trống."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "The picture must be 4 MB or smaller."
+msgstr "Ảnh phải từ 4 MB trở xuống."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The preview could not be drawn."
+msgstr "Không hiển thị được bản xem trước."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The signature picture must be 2 MB or smaller."
+msgstr "Ảnh chữ ký phải từ 2 MB trở xuống."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"The wording and the look of every letter Payobook prepares: change it, add "
+"details from the person's record, decide who sees which paragraph, and check"
+" it with a real person before anything is printed."
+msgstr ""
+"Nội dung và giao diện của mọi lá thư Payobook lập: chỉnh sửa, thêm thông tin"
+" từ hồ sơ của người nhận, quyết định ai thấy đoạn nào, và kiểm tra với một "
+"người thật trước khi in."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The wording in %s"
+msgstr "Nội dung bằng %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/settings_card.js:0
+msgid "The wording, languages and look of every letter."
+msgstr "Nội dung, ngôn ngữ và giao diện của mọi lá thư."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Their title"
+msgstr "Chức danh"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "There is already a copy for these people. It is open now."
+msgstr "Đã có bản sao cho những người này. Bản đó đang được mở."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "There is nothing to undo."
+msgstr "Không có gì để hoàn tác."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "This document"
+msgstr "Tài liệu này"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This document no longer exists."
+msgstr "Tài liệu này không còn tồn tại."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This document still has its built-in wording."
+msgstr "Tài liệu này vẫn đang dùng nội dung có sẵn."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "This is the language their letter is made in."
+msgstr "Đây là ngôn ngữ dùng để lập thư cho họ."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"This letter already comes with a %(lang)s translation. Start from it to "
+"change it, or from the %(main)s wording."
+msgstr ""
+"Thư này đã có sẵn bản dịch %(lang)s. Bắt đầu từ bản dịch đó để chỉnh sửa, "
+"hoặc từ nội dung %(main)s."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid ""
+"This letter shows pay, and you may not see this person's pay. Pick someone "
+"else, or ask someone who may see pay."
+msgstr ""
+"Thư này có hiển thị lương, và bạn không được xem lương của người này. Hãy "
+"chọn người khác, hoặc nhờ người được xem lương."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/hr_letter.py:0
+msgid "This letter shows pay. Ask someone who may see pay to prepare it."
+msgstr "Thư này có hiển thị lương. Hãy nhờ người được xem lương lập thư."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This wording is too long to preview."
+msgstr "Nội dung quá dài để xem trước."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid ""
+"This wording is too long to save (more than 600 KB). Split it, or use "
+"smaller pictures."
+msgstr ""
+"Nội dung quá dài để lưu (hơn 600 KB). Hãy tách ra hoặc dùng ảnh nhỏ hơn."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Tiếng Việt · Indonesia"
+msgstr "Tiếng Việt · Indonesia"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Today's date"
+msgstr "Ngày hôm nay"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Today's date (2026-11-22 style)"
+msgstr "Ngày hôm nay (dạng 2026-11-22)"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Total deductions"
+msgstr "Tổng khấu trừ"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Total earnings"
+msgstr "Tổng thu nhập"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__trial
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__trial
+msgid "Trial period"
+msgstr "Thử việc"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Trial period end date"
+msgstr "Ngày kết thúc thử việc"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Underline"
+msgstr "Gạch dưới"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_undo
+msgid "Undo of the last reset"
+msgstr "Hoàn tác lần khôi phục gần nhất"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Unsaved changes"
+msgstr "Thay đổi chưa lưu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Updating"
+msgstr "Đang cập nhật"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Use a PNG or JPEG picture for the signature."
+msgstr "Hãy dùng ảnh PNG hoặc JPEG cho chữ ký."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Use a PNG, JPEG, WebP or GIF picture."
+msgstr "Hãy dùng ảnh PNG, JPEG, WebP hoặc GIF."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Use a number in this rule."
+msgstr "Hãy dùng một con số trong điều kiện này."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Value"
+msgstr "Giá trị"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Values, separated by commas"
+msgstr "Các giá trị, cách nhau bằng dấu phẩy"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "What changes"
+msgstr "Những thay đổi"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "What to improve"
+msgstr "Điểm cần cải thiện"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "What went well"
+msgstr "Điểm làm tốt"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "When the letter is made"
+msgstr "Khi lập thư"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "While typing, press"
+msgstr "Khi đang gõ, nhấn"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Wide"
+msgstr "Rộng"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "With a signature image"
+msgstr "Có ảnh chữ ký"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__body_html
+msgid "Wording"
+msgstr "Nội dung"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Work email"
+msgstr "Email công việc"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Work location"
+msgstr "Nơi làm việc"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Write the letter here. Press / to add a field."
+msgstr "Viết thư tại đây. Nhấn / để thêm một trường."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "You can undo this for a few seconds afterwards."
+msgstr "Bạn có thể hoàn tác trong vài giây sau đó."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "You do not work in that company."
+msgstr "Bạn không làm việc ở công ty đó."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "You have changes from %s that were not saved. Restore them?"
+msgstr "Bạn có thay đổi từ %s chưa được lưu. Khôi phục chúng?"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "You may not read everything this person's letter shows."
+msgstr "Bạn không được xem mọi thông tin mà thư của người này hiển thị."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "You may not see pay"
+msgstr "Bạn không được xem lương"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Your changes to this document are not saved yet."
+msgstr "Các thay đổi của bạn trên tài liệu này chưa được lưu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"Your company's logo, name and address at the top, as on your other "
+"documents. Switch it off to print on your own headed paper."
+msgstr ""
+"Logo, tên và địa chỉ công ty ở đầu trang, giống các tài liệu khác của bạn. "
+"Tắt đi để in trên giấy có tiêu đề in sẵn."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Your own fields"
+msgstr "Trường riêng của bạn"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Your unsaved changes are back. Save to keep them."
+msgstr "Các thay đổi chưa lưu đã trở lại. Hãy lưu để giữ lại."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Your wording"
+msgstr "Nội dung của bạn"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Your wording is back."
+msgstr "Nội dung của bạn đã trở lại."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+msgid "a field that no longer exists"
+msgstr "một trường không còn tồn tại"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "a minute ago"
+msgstr "một phút trước"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "an hour ago"
+msgstr "một giờ trước"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is"
+msgstr "là"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is after"
+msgstr "sau ngày"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is before"
+msgstr "trước ngày"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is empty"
+msgstr "đang trống"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is filled in"
+msgstr "đã được điền"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is less than"
+msgstr "nhỏ hơn"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is more than"
+msgstr "lớn hơn"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is not"
+msgstr "không phải là"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is one of"
+msgstr "là một trong"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "just now"
+msgstr "vừa xong"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "to add"
+msgstr "để thêm"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "to close"
+msgstr "để đóng"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "to move"
+msgstr "để di chuyển"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "to pick a field."
+msgstr "để chọn một trường."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "yesterday"
+msgstr "hôm qua"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "“%s” goes back to the wording it came with. You lose:"
+msgstr "“%s” sẽ trở về nội dung ban đầu. Bạn sẽ mất:"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "“%s” has its built-in wording again."
+msgstr "“%s” đã trở lại nội dung có sẵn."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "“%s” is switched off. Letters will no longer use it."
+msgstr "“%s” đã tắt. Thư sẽ không dùng mẫu này nữa."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "“%s” is switched on again."
+msgstr "“%s” đã được bật lại."

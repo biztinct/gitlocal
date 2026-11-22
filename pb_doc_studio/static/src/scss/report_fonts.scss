@@ -1,0 +1,21 @@
+// Document studio — the bold and italic faces of the fonts a letter may use.
+// `web/static/fonts/fonts.scss` declares only the regular face of Roboto,
+// Open Sans and Montserrat, so bold text would be drawn by faking it. These
+// files ship with the web client on every server; all carry Vietnamese.
+@mixin pbds-face($family, $file, $weight, $style) {
+    @font-face {
+        font-family: $family;
+        src: url('/web/static/fonts/google/#{$family}/#{$family}-#{$file}.ttf') format('truetype');
+        font-weight: $weight;
+        font-style: $style;
+    }
+}
+@include pbds-face('Roboto', 'Bold', 700, normal);
+@include pbds-face('Roboto', 'Italic', 400, italic);
+@include pbds-face('Roboto', 'BoldItalic', 700, italic);
+@include pbds-face('Open_Sans', 'Bold', 700, normal);
+@include pbds-face('Open_Sans', 'Italic', 400, italic);
+@include pbds-face('Open_Sans', 'BoldItalic', 700, italic);
+@include pbds-face('Montserrat', 'Bold', 700, normal);
+@include pbds-face('Montserrat', 'Italic', 400, italic);
+@include pbds-face('Montserrat', 'BoldItalic', 700, italic);
