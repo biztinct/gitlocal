@@ -1,0 +1,81 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 11:54+0000\n"
+"PO-Revision-Date: 2026-11-22 11:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_report_pdf_send
+#. odoo-javascript
+#: code:addons/pb_report_pdf_send/static/src/js/send_patch.js:0
+msgid "As a PDF in your look"
+msgstr "Sebagai PDF dengan tampilan Anda"
+
+#. module: pb_report_pdf_send
+#. odoo-python
+#: code:addons/pb_report_pdf_send/models/schedule.py:0
+msgid "Choose one: your Excel layout or the PDF."
+msgstr "Pilih satu: tata letak Excel Anda atau PDF."
+
+#. module: pb_report_pdf_send
+#: model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer__display_name model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer_schedule__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_report_pdf_send
+#. odoo-javascript
+#: code:addons/pb_report_pdf_send/static/src/xml/send.xml:0
+msgid "Each person gets a PDF of their own figures, printed in your look for this view. If it ever cannot be made, the standard Excel goes instead and the history says why."
+msgstr "Setiap orang menerima PDF berisi angka mereka sendiri, dicetak dengan tampilan Anda untuk tampilan ini. Jika suatu saat tidak dapat dibuat, Excel standar dikirim sebagai gantinya dan riwayat mencatat alasannya."
+
+#. module: pb_report_pdf_send
+#: model:ir.model,name:pb_report_pdf_send.model_pb_explorer_schedule
+msgid "Explorer view sent regularly"
+msgstr "Tampilan Explorer yang dikirim rutin"
+
+#. module: pb_report_pdf_send
+#: model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer__id model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer_schedule__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_report_pdf_send
+#. odoo-javascript
+#: code:addons/pb_report_pdf_send/static/src/xml/send.xml:0
+msgid "PDF in my look"
+msgstr "PDF dengan tampilan saya"
+
+#. module: pb_report_pdf_send
+#: model:ir.model,name:pb_report_pdf_send.model_pb_explorer
+msgid "Payobook Analytics Explorer — read-only query facade"
+msgstr "Payobook Analytics Explorer — hanya baca"
+
+#. module: pb_report_pdf_send
+#: model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer_schedule__pbrp_pdf
+msgid "Send as a PDF in my look"
+msgstr "Kirim sebagai PDF dengan tampilan saya"
+
+#. module: pb_report_pdf_send
+#. odoo-python
+#: code:addons/pb_report_pdf_send/models/schedule.py:0
+msgid "Sent as the standard Excel — the PDF could not be made"
+msgstr "Dikirim sebagai Excel standar — PDF tidak dapat dibuat"
+
+#. module: pb_report_pdf_send
+#. odoo-python
+#: code:addons/pb_report_pdf_send/models/schedule.py:0
+msgid "The full table is in the attached Excel file."
+msgstr "Tabel lengkap ada di file Excel terlampir."
+
+#. module: pb_report_pdf_send
+#. odoo-python
+#: code:addons/pb_report_pdf_send/models/schedule.py:0
+msgid "The full table is in the attached PDF."
+msgstr "Tabel lengkap ada di PDF terlampir."
