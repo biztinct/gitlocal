@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Rail R4: a language version is seen exactly where its document is —
+         the same company rule as `pb_lifecycle.rule_letter_template_company`
+         (company_id is the template's, stored). -->
+    <record id="rule_doc_version_company" model="ir.rule">
+        <field name="name">Document wording: company</field>
+        <field name="model_id" ref="model_pb_doc_version"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

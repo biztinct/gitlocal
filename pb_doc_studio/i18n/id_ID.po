@@ -1,0 +1,2531 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 10:47+0000\n"
+"PO-Revision-Date: 2026-11-22 10:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+msgid " and "
+msgstr " dan "
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+msgid " or "
+msgstr " atau "
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s (their language)"
+msgstr "%s (bahasa mereka)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "%s days ago"
+msgstr "%s hari yang lalu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s fields no longer exist"
+msgstr "%s kolom sudah tidak ada"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "%s hours ago"
+msgstr "%s jam yang lalu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "%s minutes ago"
+msgstr "%s menit yang lalu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s paragraphs are hidden for this person"
+msgstr "%s paragraf disembunyikan untuk orang ini"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s with your wording"
+msgstr "%s dengan isi Anda"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "%s — filled in when the letter is made"
+msgstr "%s — diisi saat surat dibuat"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "%s “Show only when” rules"
+msgstr "%s aturan “Tampilkan hanya jika”"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/hr_letter.py:0
+msgid "'%s' has no letter body yet, so there is nothing to print."
+msgstr "'%s' belum punya isi surat, jadi belum ada yang bisa dicetak."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "1 field no longer exists"
+msgstr "1 kolom sudah tidak ada"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "1 paragraph is hidden for this person"
+msgstr "1 paragraf disembunyikan untuk orang ini"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "1 with your wording"
+msgstr "1 dengan isi Anda"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "1 “Show only when” rule"
+msgstr "1 aturan “Tampilkan hanya jika”"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid ""
+"A \"Show only when\" rule is not complete. Open it, pick a field and a "
+"condition, then save again."
+msgstr ""
+"Aturan \"Tampilkan hanya jika\" belum lengkap. Buka, pilih kolom dan "
+"kondisinya, lalu simpan lagi."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "A \"Show only when\" rule needs a value to compare with."
+msgstr "Aturan \"Tampilkan hanya jika\" perlu nilai pembanding."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "A \"Show only when\" rule needs at least one value to compare with."
+msgstr "Aturan \"Tampilkan hanya jika\" perlu setidaknya satu nilai pembanding."
+
+#. module: pb_doc_studio
+#: model:ir.model.constraint,message:pb_doc_studio.constraint_pb_doc_version_lang_unique
+msgid "A document has one wording per language."
+msgstr "Satu dokumen punya satu isi per bahasa."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "A field that no longer exists"
+msgstr "Kolom yang sudah tidak ada"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Aa"
+msgstr "Aa"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "About the person"
+msgstr "Tentang orang ini"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Add a condition"
+msgstr "Tambah kondisi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add a field"
+msgstr "Tambah kolom"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Add a field where you are typing (/)"
+msgstr "Tambah kolom di tempat Anda mengetik (/)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add a field…"
+msgstr "Tambah kolom…"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add a picture"
+msgstr "Tambah gambar"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add a signature picture"
+msgstr "Tambah gambar tanda tangan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Add a table"
+msgstr "Tambah tabel"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Add people first, then come back to see a real letter."
+msgstr ""
+"Tambahkan orang terlebih dahulu, lalu kembali untuk melihat surat sungguhan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Align left"
+msgstr "Rata kiri"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Align right"
+msgstr "Rata kanan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "All"
+msgstr "Semua"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "All documents"
+msgstr "Semua dokumen"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "All of these are true"
+msgstr "Semua ini benar"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Any company"
+msgstr "Perusahaan mana pun"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Any one of these is true"
+msgstr "Salah satu benar"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Authorised signatory"
+msgstr "Penandatangan yang berwenang"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Bold"
+msgstr "Tebal"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_original_html
+msgid "Built-in wording"
+msgstr "Isi bawaan"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_original_json
+msgid "Built-in wording, stored"
+msgstr "Isi bawaan, tersimpan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Bullet list"
+msgstr "Daftar poin"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Centre"
+msgstr "Tengah"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Certificate number"
+msgstr "Nomor surat keterangan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__certificates
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__certificates
+msgid "Certificates"
+msgstr "Surat keterangan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Change"
+msgstr "Ganti"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"Change the wording, add fields, show some paragraphs only to some people, "
+"and preview it with a real person before you save."
+msgstr ""
+"Ubah isinya, tambahkan kolom, tampilkan paragraf tertentu hanya untuk orang "
+"tertentu, dan pratinjau dengan orang sungguhan sebelum menyimpan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Changed %s"
+msgstr "Diubah %s"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_changed_by
+msgid "Changed by"
+msgstr "Diubah oleh"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Changed by %(who)s, %(when)s"
+msgstr "Diubah oleh %(who)s, %(when)s"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_changed_on
+msgid "Changed on"
+msgstr "Diubah pada"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Choose a company, one or more countries of work, or both."
+msgstr "Pilih perusahaan, satu atau beberapa negara kerja, atau keduanya."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Choose a person to preview with."
+msgstr "Pilih seseorang untuk pratinjau."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Choose…"
+msgstr "Pilih…"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Classic serif"
+msgstr "Serif klasik"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Clean"
+msgstr "Bersih"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Clear the search"
+msgstr "Hapus pencarian"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"Click in the paragraph you want to show only for some people, then press "
+"“Show only when…”."
+msgstr ""
+"Klik paragraf yang ingin ditampilkan hanya untuk orang tertentu, lalu tekan "
+"“Tampilkan hanya jika…”."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Click to add at the cursor, or drag onto the page."
+msgstr "Klik untuk menambah di posisi kursor, atau seret ke halaman."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Column"
+msgstr "Kolom"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Company address"
+msgstr "Alamat perusahaan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Company name"
+msgstr "Nama perusahaan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Condition"
+msgstr "Kondisi"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__contract
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__contract
+msgid "Contract"
+msgstr "Kontrak"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Contract end"
+msgstr "Akhir kontrak"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Contract start"
+msgstr "Awal kontrak"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Contract type"
+msgstr "Jenis kontrak"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_variant_ids
+msgid "Copies"
+msgstr "Salinan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Copy"
+msgstr "Salinan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Copy from %s"
+msgstr "Salin dari %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Copy made. Change it as you like: only the people it is for get it."
+msgstr ""
+"Salinan dibuat. Ubah sesuka Anda: hanya orang yang dituju yang menerimanya."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_replaces_id
+msgid "Copy of"
+msgstr "Salinan dari"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_country_ids
+msgid "Countries of work"
+msgstr "Negara kerja"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Country of work"
+msgstr "Negara kerja"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Create"
+msgstr "Buat"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Dates"
+msgstr "Tanggal"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Dear ${employee_name},"
+msgstr "Yth. ${employee_name},"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Discard them"
+msgstr "Buang"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_studio__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio.field_report_pb_doc_studio_report_doc_letter__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Document name"
+msgstr "Nama dokumen"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_pb_doc_studio
+msgid "Document studio"
+msgstr "Studio dokumen"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_report_pb_doc_studio_report_doc_letter
+msgid "Document studio letter"
+msgstr "Surat studio dokumen"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_pb_doc_version
+msgid "Document wording in one language"
+msgstr "Isi dokumen dalam satu bahasa"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_palette.js:0
+#: code:addons/pb_doc_studio/static/src/js/settings_card.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.actions.client,name:pb_doc_studio.action_pb_doc_studio
+msgid "Documents"
+msgstr "Dokumen"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Download a sample PDF"
+msgstr "Unduh PDF contoh"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_edited
+msgid "Edited in the Document studio"
+msgstr "Diedit di Studio dokumen"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Effective date"
+msgstr "Tanggal berlaku"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_pb_hr_letter
+msgid "Employee Letter"
+msgstr "Surat Karyawan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Employee code"
+msgstr "Kode karyawan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Employment type"
+msgstr "Jenis kepegawaian"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Enter"
+msgstr "Enter"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Esc"
+msgstr "Esc"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Everyone"
+msgstr "Semua orang"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Extra wording given when the letter is made"
+msgstr "Isi tambahan yang diberikan saat surat dibuat"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Field"
+msgstr "Kolom"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+msgid "Field no longer exists"
+msgstr "Kolom sudah tidak ada"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Fields"
+msgstr "Kolom"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Find"
+msgstr "Cari"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Find a country"
+msgstr "Cari negara"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Find a document"
+msgstr "Cari dokumen"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Find a field"
+msgstr "Cari kolom"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Find a person"
+msgstr "Cari orang"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Find a value"
+msgstr "Cari nilai"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Font"
+msgstr "Huruf"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "For"
+msgstr "Untuk"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "For example, Welcome letter"
+msgstr "Misalnya, Surat sambutan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Formatting"
+msgstr "Format"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Friendly"
+msgstr "Ramah"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Full name"
+msgstr "Nama lengkap"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Full width"
+msgstr "Lebar penuh"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Gender"
+msgstr "Jenis kelamin"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Give the document a name."
+msgstr "Beri nama dokumen ini."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Grade"
+msgstr "Golongan"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_kind
+msgid "Group"
+msgstr "Grup"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "HR contact"
+msgstr "Kontak HR"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__subject
+msgid "Heading"
+msgstr "Judul"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Heading on the page"
+msgstr "Judul di halaman"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Heading on the page (optional)"
+msgstr "Judul di halaman (opsional)"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "How often you meet"
+msgstr "Seberapa sering bertemu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "How the conditions combine"
+msgstr "Cara menggabungkan kondisi"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_studio__id
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__id
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__id
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__id
+#: model:ir.model.fields,field_description:pb_doc_studio.field_report_pb_doc_studio_report_doc_letter__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Increase in percent"
+msgstr "Kenaikan dalam persen"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"It was removed from the record. The letter prints nothing in its place."
+msgstr ""
+"Kolom ini sudah dihapus dari data. Surat tidak mencetak apa pun di "
+"tempatnya."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Italic"
+msgstr "Miring"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Job"
+msgstr "Pekerjaan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__job
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__job
+msgid "Job changes"
+msgstr "Perubahan jabatan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Job position"
+msgstr "Posisi jabatan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Job title"
+msgstr "Jabatan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__joining
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__joining
+msgid "Joining"
+msgstr "Bergabung"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Joining date"
+msgstr "Tanggal bergabung"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Joining date (2026-11-22 style)"
+msgstr "Tanggal bergabung (gaya 2026-11-22)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Justify"
+msgstr "Rata kiri-kanan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Keep editing"
+msgstr "Lanjut mengedit"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Keep it"
+msgstr "Pertahankan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Keep my wording"
+msgstr "Pertahankan isi saya"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Kind of document"
+msgstr "Jenis dokumen"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Kind regards,"
+msgstr "Hormat kami,"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "L"
+msgstr "L"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__lang
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__lang
+msgid "Language"
+msgstr "Bahasa"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_version_ids
+msgid "Language versions"
+msgstr "Versi bahasa"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Languages"
+msgstr "Bahasa"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir Diperbarui oleh"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__write_date
+msgid "Last Updated on"
+msgstr "Terakhir Diperbarui pada"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Last working day"
+msgstr "Hari kerja terakhir"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Leave without saving"
+msgstr "Keluar tanpa menyimpan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Leave without saving?"
+msgstr "Keluar tanpa menyimpan?"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__leaving
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__leaving
+msgid "Leaving"
+msgstr "Keluar"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Legal name"
+msgstr "Nama resmi"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: model:ir.actions.report,name:pb_doc_studio.action_report_doc_normal
+msgid "Letter"
+msgstr "Surat"
+
+#. module: pb_doc_studio
+#: model:ir.actions.report,name:pb_doc_studio.action_report_doc_narrow
+msgid "Letter (narrow margins)"
+msgstr "Surat (margin sempit)"
+
+#. module: pb_doc_studio
+#: model:ir.actions.report,name:pb_doc_studio.action_report_doc_wide
+msgid "Letter (wide margins)"
+msgstr "Surat (margin lebar)"
+
+#. module: pb_doc_studio
+#: model:ir.model,name:pb_doc_studio.model_pb_letter_template
+msgid "Letter Template"
+msgstr "Templat Surat"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/hr_letter.py:0
+msgid "Letter prepared."
+msgstr "Surat telah disiapkan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_palette.js:0
+msgid "Letter wording and design"
+msgstr "Isi dan desain surat"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Letterhead"
+msgstr "Kop surat"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/settings_card.js:0
+msgid ""
+"Letters and certificates: their wording, fields, languages, page design and "
+"copies for a company or country."
+msgstr ""
+"Surat dan surat keterangan: isi, kolom, bahasa, desain halaman, dan salinan "
+"untuk perusahaan atau negara."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"Letters appear here as soon as a part of Payobook that writes letters is "
+"switched on. You can also start one from a blank page."
+msgstr ""
+"Surat muncul di sini begitu bagian Payobook yang membuat surat diaktifkan. "
+"Anda juga bisa memulai dari halaman kosong."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"Letters for people at %(company)s who work in %(countries)s will use this "
+"copy."
+msgstr ""
+"Surat untuk orang di %(company)s yang bekerja di %(countries)s akan memakai "
+"salinan ini."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Letters for people at %s will use this copy."
+msgstr "Surat untuk orang di %s akan memakai salinan ini."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Letters for people who work in %s will use this copy."
+msgstr "Surat untuk orang yang bekerja di %s akan memakai salinan ini."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "M"
+msgstr "M"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_main_lang
+msgid "Main wording language"
+msgstr "Bahasa isi utama"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Main wording · %s"
+msgstr "Isi utama · %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Make a copy for…"
+msgstr "Buat salinan untuk…"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Make the copy"
+msgstr "Buat salinan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Manager"
+msgstr "Atasan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Margins"
+msgstr "Margin"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Modern"
+msgstr "Modern"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Monthly pay"
+msgstr "Gaji bulanan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "More"
+msgstr "Lainnya"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Name and title"
+msgstr "Nama dan jabatan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Narrow"
+msgstr "Sempit"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Net amount payable"
+msgstr "Jumlah bersih yang dibayar"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "New document"
+msgstr "Dokumen baru"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "New end date"
+msgstr "Tanggal akhir baru"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "New letter"
+msgstr "Surat baru"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "New pay"
+msgstr "Gaji baru"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "New start date"
+msgstr "Tanggal mulai baru"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "New trial period end date"
+msgstr "Tanggal akhir masa percobaan baru"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "No %s on this person"
+msgstr "Orang ini belum punya %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "No %s wording yet"
+msgstr "Belum ada isi dalam %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "No changes yet"
+msgstr "Belum ada perubahan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No document has that name or wording."
+msgstr "Tidak ada dokumen dengan nama atau isi itu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No documents yet"
+msgstr "Belum ada dokumen"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No field has that name."
+msgstr "Tidak ada kolom dengan nama itu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No letterhead: the space is kept for your own printed paper."
+msgstr "Tanpa kop surat: ruangnya disisakan untuk kertas cetak Anda sendiri."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "No one to preview with yet."
+msgstr "Belum ada orang untuk pratinjau."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "No signature block"
+msgstr "Tanpa blok tanda tangan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"No wording in this language yet: the letter prints the main wording, in %s."
+msgstr "Belum ada isi dalam bahasa ini: surat mencetak isi utama, dalam %s."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Nobody you can see has that name."
+msgstr "Tidak ada orang yang bisa Anda lihat dengan nama itu."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Normal"
+msgstr "Normal"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Not saved. Try again."
+msgstr "Belum tersimpan. Coba lagi."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Nothing is saved, filed or sent from here."
+msgstr "Tidak ada yang disimpan, diarsipkan, atau dikirim dari sini."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Nothing matches"
+msgstr "Tidak ada yang cocok"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Nothing to choose from yet."
+msgstr "Belum ada yang bisa dipilih."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Numbered list"
+msgstr "Daftar bernomor"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Objectives"
+msgstr "Sasaran"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Only people who may change letter wording can use the Document studio."
+msgstr ""
+"Hanya orang yang boleh mengubah isi surat yang dapat memakai Studio dokumen."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+msgid "Only when %s"
+msgstr "Hanya jika %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Open"
+msgstr "Buka"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Open the preview large"
+msgstr "Buka pratinjau besar"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Opening the document…"
+msgstr "Membuka dokumen…"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__other
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__other
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"PNG or JPEG, 2 MB at most. A clear signature on a white background prints "
+"best."
+msgstr ""
+"PNG atau JPEG, maksimal 2 MB. Tanda tangan yang jelas dengan latar putih "
+"tercetak paling baik."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Page"
+msgstr "Halaman"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Page %s"
+msgstr "Halaman %s"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_page
+msgid "Page design"
+msgstr "Desain halaman"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Paragraph style"
+msgstr "Gaya paragraf"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__pay
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__pay
+msgid "Pay"
+msgstr "Gaji"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Pay band"
+msgstr "Rentang gaji"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Pay before"
+msgstr "Gaji sebelumnya"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Pay line"
+msgstr "Baris gaji"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Pay scale"
+msgstr "Skala gaji"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "People who read %(lang)s get the %(main)s wording until you write one."
+msgstr ""
+"Orang yang membaca %(lang)s menerima isi %(main)s sampai Anda menulisnya."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"People who read %(lang)s will get the %(main)s wording. Nothing changes "
+"until you save."
+msgstr ""
+"Orang yang membaca %(lang)s akan menerima isi %(main)s. Tidak ada yang "
+"berubah sampai Anda menyimpan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Pick a letter to make it yours."
+msgstr "Pilih surat untuk dijadikan milik Anda."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Picture"
+msgstr "Gambar"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Plan end date"
+msgstr "Tanggal akhir rencana"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Plan start date"
+msgstr "Tanggal mulai rencana"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Preview"
+msgstr "Pratinjau"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Preview language"
+msgstr "Bahasa pratinjau"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Preview of the letter"
+msgstr "Pratinjau surat"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Preview of the letter, large"
+msgstr "Pratinjau surat, ukuran besar"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Purpose"
+msgstr "Tujuan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Put back the built-in wording"
+msgstr "Kembalikan isi bawaan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Put back the built-in wording?"
+msgstr "Kembalikan isi bawaan?"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Put it back"
+msgstr "Kembalikan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Reason"
+msgstr "Alasan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Redo"
+msgstr "Ulangi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Remove the %s wording?"
+msgstr "Hapus isi dalam %s?"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Remove the table"
+msgstr "Hapus tabel"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Remove this condition"
+msgstr "Hapus kondisi ini"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Remove this language"
+msgstr "Hapus bahasa ini"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Replace the picture"
+msgstr "Ganti gambar"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Restore"
+msgstr "Pulihkan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Row"
+msgstr "Baris"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "S"
+msgstr "S"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Salary"
+msgstr "Gaji"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Sample PDF ready. Nothing was filed or sent."
+msgstr "PDF contoh siap. Tidak ada yang diarsipkan atau dikirim."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Save and leave"
+msgstr "Simpan dan keluar"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Saved %s"
+msgstr "Disimpan %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Saved. Letters made from now on use this wording."
+msgstr "Tersimpan. Surat yang dibuat mulai sekarang memakai isi ini."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Saving…"
+msgstr "Menyimpan…"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Settlement date"
+msgstr "Tanggal penyelesaian"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Show it for everyone"
+msgstr "Tampilkan untuk semua orang"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Show it under"
+msgstr "Tampilkan di bawah"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Show only when…"
+msgstr "Tampilkan hanya jika…"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+msgid "Show only when… (choose the condition)"
+msgstr "Tampilkan hanya jika… (pilih kondisinya)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Show the selected paragraphs only for some people"
+msgstr "Tampilkan paragraf terpilih hanya untuk orang tertentu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Show them faded"
+msgstr "Tampilkan samar"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Show this part only when…"
+msgstr "Tampilkan bagian ini hanya jika…"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_rules
+msgid "Show-only-when rules"
+msgstr "Aturan tampilkan-hanya-jika"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_kind_set
+msgid "Shown under"
+msgstr "Ditampilkan di bawah"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Signature"
+msgstr "Tanda tangan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Signature block"
+msgstr "Blok tanda tangan"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_sign_image
+msgid "Signature image"
+msgstr "Gambar tanda tangan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Signed by"
+msgstr "Ditandatangani oleh"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Small heading"
+msgstr "Judul kecil"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"Some people get their own version of “%s”. Everyone else keeps the one they "
+"have now."
+msgstr ""
+"Beberapa orang mendapat versi sendiri dari “%s”. Orang lain tetap memakai "
+"yang sekarang."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Start from a blank page"
+msgstr "Mulai dari halaman kosong"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"Start from a blank page. You can use it from journeys and checklists, and "
+"prepare it for anyone."
+msgstr ""
+"Mulai dari halaman kosong. Anda bisa memakainya di perjalanan dan daftar "
+"periksa, dan menyiapkannya untuk siapa saja."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Start from the translation"
+msgstr "Mulai dari terjemahan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Step"
+msgstr "Tingkat"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Switch off"
+msgstr "Nonaktifkan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Switch on"
+msgstr "Aktifkan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Switched off"
+msgstr "Nonaktif"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Table"
+msgstr "Tabel"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Take it out of the wording"
+msgstr "Keluarkan dari isi"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__template_id
+msgid "Template"
+msgstr "Templat"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Text"
+msgstr "Teks"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Text size"
+msgstr "Ukuran teks"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "That did not work. Try again."
+msgstr "Tidak berhasil. Coba lagi."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"That field is not in this language’s wording. Check the other language tabs."
+msgstr "Kolom itu tidak ada di isi bahasa ini. Periksa tab bahasa lainnya."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The PDF could not be made right now."
+msgstr "PDF belum dapat dibuat saat ini."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid ""
+"The PDF could not be made right now. Try again in a moment; the preview on "
+"screen is exactly what will print."
+msgstr ""
+"PDF belum dapat dibuat saat ini. Coba lagi sebentar lagi; pratinjau di layar"
+" sama persis dengan yang akan dicetak."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The built-in wording could not be put back."
+msgstr "Isi bawaan tidak dapat dikembalikan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The copy could not be made."
+msgstr "Salinan tidak dapat dibuat."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The document could not be made."
+msgstr "Dokumen tidak dapat dibuat."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The document could not be opened."
+msgstr "Dokumen tidak dapat dibuka."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "The documents could not be loaded."
+msgstr "Dokumen tidak dapat dimuat."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "The file is not the kind of picture it says it is."
+msgstr "Berkas ini bukan jenis gambar seperti yang disebutkan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "The language the main wording is written in"
+msgstr "Bahasa yang dipakai untuk isi utama"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,help:pb_doc_studio.field_pb_hr_letter__lang
+msgid ""
+"The language this letter is written in: the person's own when the document "
+"has a wording in it."
+msgstr ""
+"Bahasa surat ini: bahasa orangnya sendiri jika dokumen punya isi dalam "
+"bahasa itu."
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,help:pb_doc_studio.field_pb_letter_template__pbds_replaces_id
+msgid ""
+"The letter this one replaces for the companies and countries it is for."
+msgstr ""
+"Surat yang digantikan oleh surat ini untuk perusahaan dan negara tujuannya."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "The main wording is empty. Write the letter, then save."
+msgstr "Isi utama masih kosong. Tulis suratnya, lalu simpan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The page design (letterhead, margins, font, signature)"
+msgstr "Desain halaman (kop surat, margin, huruf, tanda tangan)"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid ""
+"The part is printed for the people this fits. Everyone else gets the letter "
+"without it."
+msgstr ""
+"Bagian ini dicetak untuk orang yang cocok. Orang lain menerima surat tanpa "
+"bagian ini."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The picture could not be added."
+msgstr "Gambar tidak dapat ditambahkan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The picture could not be read."
+msgstr "Gambar tidak dapat dibaca."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "The picture is empty."
+msgstr "Gambar kosong."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "The picture must be 4 MB or smaller."
+msgstr "Gambar harus 4 MB atau lebih kecil."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The preview could not be drawn."
+msgstr "Pratinjau tidak dapat ditampilkan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"The separate %s wording is no longer needed: people who read it now get the "
+"main wording. Nothing changes until you save."
+msgstr ""
+"Isi %s yang terpisah tidak diperlukan lagi: pembaca bahasa itu kini menerima"
+" isi utama. Tidak ada yang berubah sampai Anda menyimpan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The signature picture must be 2 MB or smaller."
+msgstr "Gambar tanda tangan harus 2 MB atau lebih kecil."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"The wording and the look of every letter Payobook prepares: change it, add "
+"details from the person's record, decide who sees which paragraph, and check"
+" it with a real person before anything is printed."
+msgstr ""
+"Isi dan tampilan setiap surat yang disiapkan Payobook: ubah, tambahkan "
+"detail dari data orangnya, tentukan siapa melihat paragraf mana, dan periksa"
+" dengan orang sungguhan sebelum dicetak."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "The wording in %s"
+msgstr "Isi dalam %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/settings_card.js:0
+msgid "The wording, languages and look of every letter."
+msgstr "Isi, bahasa, dan tampilan setiap surat."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Their title"
+msgstr "Jabatan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "There is already a copy for these people. It is open now."
+msgstr ""
+"Sudah ada salinan untuk orang-orang ini. Salinan itu sekarang terbuka."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "There is nothing to undo."
+msgstr "Tidak ada yang bisa dibatalkan."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "This document"
+msgstr "Dokumen ini"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This document no longer exists."
+msgstr "Dokumen ini sudah tidak ada."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This document still has its built-in wording."
+msgstr "Dokumen ini masih memakai isi bawaan."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This is not your own record."
+msgstr "Ini bukan data Anda sendiri."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "This is the language their letter is made in."
+msgstr "Ini bahasa yang dipakai untuk surat mereka."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid ""
+"This letter already comes with a %(lang)s translation. Start from it to "
+"change it, or from the %(main)s wording."
+msgstr ""
+"Surat ini sudah punya terjemahan %(lang)s. Mulai dari terjemahan itu untuk "
+"mengubahnya, atau dari isi %(main)s."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid ""
+"This letter shows pay, and you may not see this person's pay. Pick someone "
+"else, or ask someone who may see pay."
+msgstr ""
+"Surat ini menampilkan gaji, dan Anda tidak boleh melihat gaji orang ini. "
+"Pilih orang lain, atau minta bantuan orang yang boleh melihat gaji."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/hr_letter.py:0
+msgid "This letter shows pay. Ask someone who may see pay to prepare it."
+msgstr ""
+"Surat ini menampilkan gaji. Minta orang yang boleh melihat gaji untuk "
+"menyiapkannya."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "This wording is too long to preview."
+msgstr "Isi ini terlalu panjang untuk dipratinjau."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid ""
+"This wording is too long to save (more than 600 KB). Split it, or use "
+"smaller pictures."
+msgstr ""
+"Isi ini terlalu panjang untuk disimpan (lebih dari 600 KB). Pisahkan, atau "
+"gunakan gambar yang lebih kecil."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Tiếng Việt · Indonesia"
+msgstr "Tiếng Việt · Indonesia"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Today's date"
+msgstr "Tanggal hari ini"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Today's date (2026-11-22 style)"
+msgstr "Tanggal hari ini (gaya 2026-11-22)"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Total deductions"
+msgstr "Total potongan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Total earnings"
+msgstr "Total penghasilan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind__trial
+#: model:ir.model.fields.selection,name:pb_doc_studio.selection__pb_letter_template__pbds_kind_set__trial
+msgid "Trial period"
+msgstr "Masa percobaan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Trial period end date"
+msgstr "Tanggal akhir masa percobaan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Underline"
+msgstr "Garis bawah"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_editor.js:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_editor.xml:0
+msgid "Undo"
+msgstr "Batalkan"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_letter_template__pbds_undo
+msgid "Undo of the last reset"
+msgstr "Pembatalan pengembalian terakhir"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Unsaved changes"
+msgstr "Perubahan belum disimpan"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Updating"
+msgstr "Memperbarui"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Use a PNG or JPEG picture for the signature."
+msgstr "Gunakan gambar PNG atau JPEG untuk tanda tangan."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Use a PNG, JPEG, WebP or GIF picture."
+msgstr "Gunakan gambar PNG, JPEG, WebP, atau GIF."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Use a number in this rule."
+msgstr "Gunakan angka dalam aturan ini."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using %(company)s's wording for %(countries)s"
+msgstr "Memakai isi %(company)s untuk %(countries)s"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using %s's wording"
+msgstr "Memakai isi %s"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/letter_template.py:0
+msgid "Using the wording for %s"
+msgstr "Memakai isi untuk %s"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Value"
+msgstr "Nilai"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Values, separated by commas"
+msgstr "Nilai, dipisahkan koma"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "What changes"
+msgstr "Yang berubah"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "What to improve"
+msgstr "Hal yang perlu diperbaiki"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "What went well"
+msgstr "Hal yang berjalan baik"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "When the letter is made"
+msgstr "Saat surat dibuat"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,help:pb_doc_studio.field_pb_hr_letter__pbds_wording_note
+msgid ""
+"Which wording this letter uses when a company or country has its own copy of"
+" the document."
+msgstr ""
+"Isi yang dipakai surat ini jika sebuah perusahaan atau negara punya salinan "
+"dokumen sendiri."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "While typing, press"
+msgstr "Saat mengetik, tekan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Wide"
+msgstr "Lebar"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "With a signature image"
+msgstr "Dengan gambar tanda tangan"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_doc_version__body_html
+msgid "Wording"
+msgstr "Isi"
+
+#. module: pb_doc_studio
+#: model:ir.model.fields,field_description:pb_doc_studio.field_pb_hr_letter__pbds_wording_note
+#: model_terms:ir.ui.view,arch_db:pb_doc_studio.view_hr_letter_list_pbds
+msgid "Wording used"
+msgstr "Isi yang dipakai"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "Work email"
+msgstr "Email kerja"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "Work location"
+msgstr "Lokasi kerja"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Write the letter here. Press / to add a field."
+msgstr "Tulis surat di sini. Tekan / untuk menambah kolom."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Written in"
+msgstr "Ditulis dalam"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "You can undo this for a few seconds afterwards."
+msgstr "Anda bisa membatalkannya selama beberapa detik setelahnya."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "You do not work in that company."
+msgstr "Anda tidak bekerja di perusahaan itu."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "You have changes from %s that were not saved. Restore them?"
+msgstr "Ada perubahan dari %s yang belum disimpan. Pulihkan?"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "You may not read everything this person's letter shows."
+msgstr "Anda tidak boleh membaca semua yang ditampilkan surat orang ini."
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+msgid "You may not see pay"
+msgstr "Anda tidak boleh melihat gaji"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Your changes to this document are not saved yet."
+msgstr "Perubahan Anda pada dokumen ini belum disimpan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid ""
+"Your company's logo, name and address at the top, as on your other "
+"documents. Switch it off to print on your own headed paper."
+msgstr ""
+"Logo, nama, dan alamat perusahaan di bagian atas, seperti dokumen Anda "
+"lainnya. Nonaktifkan untuk mencetak di kertas kop Anda sendiri."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+#: code:addons/pb_doc_studio/static/src/xml/rule_builder.xml:0
+msgid "Your own fields"
+msgstr "Kolom milik Anda"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Your unsaved changes are back. Save to keep them."
+msgstr ""
+"Perubahan yang belum disimpan sudah kembali. Simpan untuk menyimpannya."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "Your wording"
+msgstr "Isi Anda"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "Your wording is back."
+msgstr "Isi Anda sudah kembali."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_studio.py:0
+#: code:addons/pb_doc_studio/static/src/js/rule_builder.js:0
+msgid "a field that no longer exists"
+msgstr "kolom yang sudah tidak ada"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "a minute ago"
+msgstr "semenit yang lalu"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "an hour ago"
+msgstr "sejam yang lalu"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is"
+msgstr "adalah"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is after"
+msgstr "setelah"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is before"
+msgstr "sebelum"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is empty"
+msgstr "kosong"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is filled in"
+msgstr "sudah diisi"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is less than"
+msgstr "kurang dari"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is more than"
+msgstr "lebih dari"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is not"
+msgstr "bukan"
+
+#. module: pb_doc_studio
+#. odoo-python
+#: code:addons/pb_doc_studio/models/doc_common.py:0
+msgid "is one of"
+msgstr "salah satu dari"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "just now"
+msgstr "baru saja"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "to add"
+msgstr "untuk menambah"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "to close"
+msgstr "untuk menutup"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "to move"
+msgstr "untuk berpindah"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/xml/doc_studio.xml:0
+msgid "to pick a field."
+msgstr "untuk memilih kolom."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_words.js:0
+msgid "yesterday"
+msgstr "kemarin"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "“%s” goes back to the wording it came with. You lose:"
+msgstr "“%s” kembali ke isi bawaannya. Anda kehilangan:"
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "“%s” has its built-in wording again."
+msgstr "“%s” kembali memakai isi bawaan."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "“%s” is switched off. Letters will no longer use it."
+msgstr "“%s” dinonaktifkan. Surat tidak akan memakainya lagi."
+
+#. module: pb_doc_studio
+#. odoo-javascript
+#: code:addons/pb_doc_studio/static/src/js/doc_studio.js:0
+msgid "“%s” is switched on again."
+msgstr "“%s” sudah diaktifkan lagi."
