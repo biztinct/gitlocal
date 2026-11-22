@@ -50,6 +50,11 @@
                sourceModel="'pb.explorer.view'"
                sourceId="state.activeView ? state.activeView.id : 0"
                disabledReason="excelLayoutWhy"/>
+            <!-- DOCSTUDIO B: "PDF" of the saved view, when installed. -->
+            <t t-if="reportPdfButton" t-component="reportPdfButton"
+               sourceModel="'pb.explorer.view'"
+               sourceId="state.activeView ? state.activeView.id : 0"
+               disabledReason="excelLayoutWhy"/>
             <button t-if="state.activeView and state.activeView.mine"
                     class="pbex-btn ghost pbex-sendbtn" t-on-click="() => this.openSchedule()"
                     title="Send regularly…">
