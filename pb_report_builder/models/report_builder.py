@@ -861,41 +861,10 @@ class PbReportBuilder(models.AbstractModel):
 
     @api.model
     def _path_values(self, records, path):
-        """{record id: python value | HIDDEN} for a registry path, read hop
-        by hop as the reader. many2one → (id, name); others → the value. A
+        """{record id: python value | HIDDEN} for one registry path, read hop
+        by hop as the reader. many2one -> (id, name); others -> the value. A
         record the reader may not open reads as HIDDEN all the way down."""
-        Model = records.with_context(active_test=False).browse()
-        return self._path_values_from(Model, {rid: rid for rid in records.ids},
-                                      path.split('.'))
-
-    @api.model
-    def _path_values_from(self, Model, current, hops):
-        """The values of `hops` from `Model`, for a {row id: record id} map."""
-        for i, name in enumerate(hops):
-            data = self._read_safe(Model, list(set(current.values()) - {False, None}), [name])
-            last = i == len(hops) - 1
-            nxt = {}
-            for rid, cid in current.items():
-                if cid in (False, None):
-                    nxt[rid] = None if last else False
-                    continue
-                row = data.get(cid)
-                if row is None:
-                    nxt[rid] = HIDDEN
-                    continue
-                value = row[name]
-                nxt[rid] = value if last else (value[0] if value else False)
-            if last:
-                return nxt
-            hidden = {rid for rid, v in nxt.items() if v is HIDDEN}
-            Model = self.env[Model._fields[name].comodel_name].with_context(active_test=False)
-            current = {rid: (None if v is HIDDEN else v) for rid, v in nxt.items()}
-            if hidden:
-                rest = self._path_values_from(Model, current, hops[i + 1:])
-                for rid in hidden:
-                    rest[rid] = HIDDEN
-                return rest
-        return {}
+        return self._paths_values(records, [path]).get(path, {})
 
     @api.model
     def _count_values(self, count, emp_ids, period):
@@ -924,27 +893,81 @@ class PbReportBuilder(models.AbstractModel):
         return self._range_domain(count['date'], field.type if field else 'date', start, end)
 
     @api.model
-    def _currency_map(self, records, col):
-        """{record id: res.currency} for a money column."""
-        values = self._path_values(records, col['currency'])
-        ids = {v[0] for v in values.values() if v and v is not HIDDEN}
-        currencies = {c.id: c for c in self.env['res.currency'].browse(list(ids))}
-        return {rid: (currencies.get(v[0]) if v and v is not HIDDEN else None)
-                for rid, v in values.items()}
+    def _paths_values(self, records, paths):
+        """{path: {record id: value | HIDDEN}} for several registry paths at
+        once: ONE `read` per model per step (all the fields a step needs
+        together), as the reader. Same answers as `_path_values` per path,
+        a fraction of the reads (each read pays the access checks once)."""
+        paths = list(dict.fromkeys(paths))
+        base = records.with_context(active_test=False).browse()
+        # state per path: (model, {row id: record id or None/False/HIDDEN})
+        state = {p: (base, {rid: rid for rid in records.ids}) for p in paths}
+        out = {}
+        depth = 0
+        while state:
+            wanted = defaultdict(lambda: [set(), set()])   # model name -> [ids, fields]
+            for p, (Model, current) in state.items():
+                name = p.split('.')[depth]
+                bucket = wanted[Model._name]
+                bucket[0].update(v for v in current.values() if v and v is not HIDDEN)
+                bucket[1].add(name)
+            data = {}
+            for model_name, (ids, fnames) in wanted.items():
+                Model = self.env[model_name].with_context(active_test=False)
+                data[model_name] = self._read_safe(Model, list(ids), sorted(fnames))
+            nxt_state = {}
+            for p, (Model, current) in state.items():
+                hops = p.split('.')
+                name = hops[depth]
+                last = depth == len(hops) - 1
+                rows = data[Model._name]
+                nxt = {}
+                for rid, cid in current.items():
+                    if cid is HIDDEN:
+                        nxt[rid] = HIDDEN
+                    elif not cid:
+                        nxt[rid] = None if last else False
+                    elif cid not in rows:
+                        nxt[rid] = HIDDEN
+                    else:
+                        value = rows[cid][name]
+                        nxt[rid] = value if last else (value[0] if value else False)
+                if last:
+                    out[p] = nxt
+                else:
+                    Comodel = self.env[Model._fields[name].comodel_name].with_context(
+                        active_test=False)
+                    nxt_state[p] = (Comodel, nxt)
+            state = nxt_state
+            depth += 1
+        return out
 
     @api.model
     def _values(self, records, keys, cols, period):
         """{key: {record id: python value | HIDDEN}} plus {key: currency map}."""
         values, currencies = {}, {}
+        paths = []
+        for key in keys:
+            col = cols[key]
+            if col['kind'] == 'count':
+                continue
+            paths.append(col['path'])
+            if col['kind'] == 'money' and col.get('currency'):
+                paths.append(col['currency'])
+        read = self._paths_values(records, paths) if paths and records else {}
         for key in keys:
             col = cols[key]
             if col['kind'] == 'count':
                 counted = self._count_values(col['count'], records.ids, period)
                 values[key] = {rid: counted.get(rid, 0) for rid in records.ids}
                 continue
-            values[key] = self._path_values(records, col['path'])
+            values[key] = read.get(col['path'], {})
             if col['kind'] == 'money' and col.get('currency'):
-                currencies[key] = self._currency_map(records, col)
+                cur_values = read.get(col['currency'], {})
+                ids = {v[0] for v in cur_values.values() if v and v is not HIDDEN}
+                found = {c.id: c for c in self.env['res.currency'].browse(list(ids))}
+                currencies[key] = {rid: (found.get(v[0]) if v and v is not HIDDEN else None)
+                                   for rid, v in cur_values.items()}
         return values, currencies
 
     # ============================================================ displays
