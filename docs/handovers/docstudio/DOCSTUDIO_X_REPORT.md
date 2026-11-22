@@ -148,3 +148,36 @@ Facade `pb.excel.layout.board`: `inspect, peek, try_it, save, list_for, detail, 
 - DS-9 | Chrome MCP `upload_file` refuses files outside its workspace roots (the session scratch folder is outside) | dispatch a `drop` DragEvent with a `File` built from the bytes (exercises the real drop path).
 - DS-10 | With `-u <one module>`, post-install tests of other tagged modules did not run (`--test-tags /a,/b` ran only `/b`) | put every module whose suite you need in `-u`.
 - DS-11 | A template sentence with `<t t-esc>` inside is split into fragments for translators | build such sentences in JS with `_t("… %s …")`; JS `_t` terms of any module reach other modules' screens through the global translation fallback (the Explorer's "Save this view first" is translated from this module's `.po`).
+
+## X-b — owner rulings of 2026-11-22 (every row, fixed Currency column, recalculate note)
+
+**What changed**
+1. **Every row in a filled layout.** `_pbxl_table` on `pb.explorer.view` now asks the Explorer for every row of the view, up to the Explorer's existing export cap (20,000); when the cap is hit the table's note says "Only the largest 20,000 rows are in the file; N more were left out." The on-screen chart, *Download Excel* and the CSV still give the largest 24 + their own note, unchanged. Scheduled sends in a layout get every row too, still built as each recipient. (Answers owner question 3.)
+2. **A Currency column on every money report**, always second, in both "group currency" and "each in its own money" — the columns never move. Counts (headcount, FTE…) have none. The set-up screen's outline ("N columns × M rows from B6") counts it, because it is read from the same table. (Answers owner question 1; replaces the X deviation "Currency only in own-money mode".)
+3. **One quiet line on the set-up screen**, under the coaching line: "Totals and charts in your file refresh when it is opened in Excel. Some other spreadsheet programs need “Recalculate” pressed." — vi + id. (Answers owner question 2.)
+
+**Exact edit inside `pb_explorer`** (one read-only seam, no write, version kept at the branch's unreleased 19.0.2.9.0):
+| File | Lines | Edit |
+|---|---|---|
+| `pb_explorer/models/pb_explorer.py` | 554-560 | new `@api.model _pbx_series_cap(self)` returning `_MAX_SERIES` |
+| `pb_explorer/models/pb_explorer.py` | 665 | in `_clean_spec`: `'limit': min(max(1, limit), self._pbx_series_cap())` (was `_MAX_SERIES`) |
+
+`pb_excel_layout` overrides `_pbx_series_cap` on `pb.explorer` to return `_EXPORT_CAP` only when the context carries `pbxl_every_row` (set by `_pbxl_table_for`, which also sets the spec's `limit` to that cap). Nothing else ever sets the key, so every other caller gets 24 exactly as before.
+
+**Tests (local copy rebuilt the same way: `upd_p6_t_tpl` + the 53 stale modules)**
+
+| Suite | Result |
+|---|---|
+| `pb_explorer` (101) | 0 failed, 0 errors — equal to baseline; `test_08_facade_never_writes` passes |
+| `pb_excel_layout` (29) | 0 failed, 0 errors |
+
+| # | Case | Result |
+|---|---|---|
+| 19 | A view split by department with 32 departments: the layout table has all 32 rows, no note; `query` still 24 series + 8 truncated, `export_xlsx` and `export_csv` still 24 rows + 8 truncated, the plain series cap still 24; *Download in my layout* file has 32 rows; a scheduled send in the layout attaches 32 rows (as the recipient); with the cap patched to 10 → 10 rows + "Only the largest 10 rows are in the file; 22 more were left out." | PASS (test_t19_every_row_in_my_layout) |
+| 20 | Net pay in "group currency" and in "each in its own money": identical column lists, `Currency` second, every row names its money; a headcount view has no Currency column; the set-up answer's column count = the table's | PASS (test_t20_currency_column_never_moves) |
+| 21 | The recalculate line in English, Vietnamese and Indonesian (exact text from the shipped `.po`), and the dialog renders it | PASS (test_t21_recalculate_note_in_three_languages) |
+| 18 | `.pot` re-exported, vi + id 157/157, parse gate | PASS |
+
+**Browser re-walk** (1440 px, seeded copy, console clean except one error caused by the walker's own bad test URL): saved view → My Excel layout → drop the board pack → default start now B6 with headings off (the team's own heading row was found), outline "4 columns × 8 rows from B6" counting the Currency column, the recalculate line under the coaching line, dark heading fill readable. The 32-row case was proven in test 19 (the seeded walk data has 8 departments).
+
+**Note for the deploy agent:** a filled layout of a view split by a large dimension (thousands of people) now reads all rows — still one query, capped at 20,000.
