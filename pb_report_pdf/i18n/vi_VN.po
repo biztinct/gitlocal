@@ -1,0 +1,792 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 11:49+0000\n"
+"PO-Revision-Date: 2026-11-22 11:49+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "%(count)s rows"
+msgstr "%(count)s dòng"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "%(period)s, by %(date)s"
+msgstr "%(period)s, theo %(date)s"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s đến %(end)s"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "%s (fit)"
+msgstr "%s (vừa trang)"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "%s of %s rows"
+msgstr "%s trên %s dòng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "%s rows"
+msgstr "%s dòng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "%s wide"
+msgstr "rộng %s"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid ". Saving keeps your own copy."
+msgstr ". Khi lưu, bạn giữ bản riêng của mình."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "1 page"
+msgstr "1 trang"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "1 row"
+msgstr "1 dòng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "A line under the title"
+msgstr "Một dòng dưới tiêu đề"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "A second line"
+msgstr "Dòng thứ hai"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Aa"
+msgstr "Aa"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "About %s pages"
+msgstr "Khoảng %s trang"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Auto · %s"
+msgstr "Tự động · %s"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Back to the standard look"
+msgstr "Trở về kiểu chuẩn"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Back to the standard look."
+msgstr "Đã trở về kiểu trình bày chuẩn."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Close without saving"
+msgstr "Đóng không lưu"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Closing note"
+msgstr "Ghi chú cuối"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Columns"
+msgstr "Cột"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__is_default
+msgid "Company default"
+msgstr "Mặc định của công ty"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Company letterhead"
+msgstr "Tiêu đề thư của công ty"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Company look"
+msgstr "Kiểu trình bày của công ty"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Deep ink"
+msgstr "Mực đậm"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Design the PDF"
+msgstr "Thiết kế bản PDF"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Design the PDF of this report"
+msgstr "Thiết kế bản PDF của báo cáo này"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_ir_actions_report__display_name model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf__display_name model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__display_name model:ir.model.fields,field_description:pb_report_pdf.field_report_pb_report_pdf_report_table__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Download PDF"
+msgstr "Tải PDF"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Download the PDF (Ctrl+Enter)"
+msgstr "Tải bản PDF (Ctrl+Enter)"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Drag a column edge on the page to change its width."
+msgstr "Kéo mép cột trên trang để đổi độ rộng."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Drag the edge between two column headings to make a column wider. Download PDF gives the true file."
+msgstr "Kéo mép giữa hai tiêu đề cột để làm cột rộng hơn. Tải PDF để có tệp thật."
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__shared
+msgid "Everyone who opens this report"
+msgstr "Mọi người mở báo cáo này"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Everyone who opens this report prints with it"
+msgstr "Mọi người mở báo cáo này đều in theo kiểu này"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "First page of the PDF"
+msgstr "Trang đầu của bản PDF"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Fit"
+msgstr "Vừa trang"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Fit turns the page sideways when more than %s columns print."
+msgstr "Vừa trang sẽ xoay ngang trang khi in hơn %s cột."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Font"
+msgstr "Phông chữ"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Footer"
+msgstr "Chân trang"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "For example: Prepared for the board. Figures before tax."
+msgstr "Ví dụ: Chuẩn bị cho ban giám đốc. Số liệu trước thuế."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Forget it"
+msgstr "Bỏ đi"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Forget your look for this report?"
+msgstr "Bỏ kiểu của bạn cho báo cáo này?"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Grand total"
+msgstr "Tổng cộng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Grand total row"
+msgstr "Dòng tổng cộng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Group headings and subtotals, as on screen"
+msgstr "Tiêu đề nhóm và tổng phụ, như trên màn hình"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Heading"
+msgstr "Tiêu đề"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Heading row colour"
+msgstr "Màu hàng tiêu đề"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_ir_actions_report__id model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf__id model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__id model:ir.model.fields,field_description:pb_report_pdf.field_report_pb_report_pdf_report_table__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Indigo"
+msgstr "Chàm"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Left empty, it says the period and the filters of the report."
+msgstr "Để trống thì dòng này ghi kỳ và các bộ lọc của báo cáo."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Let the widths fit the text again"
+msgstr "Cho độ rộng tự vừa với chữ lại"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__look
+msgid "Look"
+msgstr "Kiểu trình bày"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Look saved and shared with everyone who opens this report."
+msgstr "Đã lưu kiểu trình bày và chia sẻ với mọi người mở báo cáo này."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Look saved. Only you print with it now."
+msgstr "Đã lưu kiểu trình bày. Giờ chỉ bạn in theo kiểu này."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Look saved. This report prints like this from now on."
+msgstr "Đã lưu kiểu trình bày. Từ nay báo cáo này sẽ được in như thế này."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Making your PDF…"
+msgstr "Đang tạo bản PDF…"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "New reports now start with this paper, page and table style."
+msgstr "Các báo cáo mới giờ sẽ bắt đầu với khổ giấy, trang và kiểu bảng này."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "New reports start with the standard look again."
+msgstr "Các báo cáo mới lại bắt đầu với kiểu trình bày chuẩn."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Not printed"
+msgstr "Không in"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/models/look.py:0
+msgid "Only administrators can change the company's default look."
+msgstr "Chỉ quản trị viên mới có thể thay đổi kiểu trình bày mặc định của công ty."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/models/look.py:0
+msgid "Only administrators can set the company's default look."
+msgstr "Chỉ quản trị viên mới có thể đặt kiểu trình bày mặc định của công ty."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Only the first %(cap)s of %(total)s rows are printed. Add a filter to print fewer rows."
+msgstr "Chỉ in %(cap)s dòng đầu trong %(total)s dòng. Hãy thêm bộ lọc để in ít dòng hơn."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "Only the largest rows are included; %(more)s more were left out."
+msgstr "Chỉ gồm các dòng lớn nhất; %(more)s dòng khác bị bỏ ra."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Only the person who saved this report can share its look."
+msgstr "Chỉ người đã lưu báo cáo này mới có thể chia sẻ kiểu trình bày của nó."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_report_pdf
+#: model:ir.model,name:pb_report_pdf.model_pb_report_pdf_look
+msgid "PDF look of a report"
+msgstr "Kiểu trình bày PDF của báo cáo"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Page"
+msgstr "Trang"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Page %(page)s of %(total)s"
+msgstr "Trang %(page)s / %(total)s"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Page numbers"
+msgstr "Số trang"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Paper"
+msgstr "Giấy"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Paper size"
+msgstr "Khổ giấy"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Pick at least one column to print."
+msgstr "Hãy chọn ít nhất một cột để in."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Plain"
+msgstr "Trơn"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Printed on %(when)s by %(who)s"
+msgstr "In lúc %(when)s bởi %(who)s"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Printed on (date) by (your name)"
+msgstr "In lúc (ngày) bởi (tên bạn)"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0 model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__source_id
+msgid "Report"
+msgstr "Báo cáo"
+
+#. module: pb_report_pdf
+#: model:ir.model,name:pb_report_pdf.model_ir_actions_report
+msgid "Report Action"
+msgstr "Thao tác báo cáo"
+
+#. module: pb_report_pdf
+#: model:ir.model,name:pb_report_pdf.model_report_pb_report_pdf_report_table
+msgid "Report PDF"
+msgstr "PDF báo cáo"
+
+#. module: pb_report_pdf
+#: model:ir.actions.report,name:pb_report_pdf.action_report_pdf_a3
+msgid "Report PDF (A3)"
+msgstr "PDF báo cáo (A3)"
+
+#. module: pb_report_pdf
+#: model:ir.actions.report,name:pb_report_pdf.action_report_pdf_a4
+msgid "Report PDF (A4)"
+msgstr "PDF báo cáo (A4)"
+
+#. module: pb_report_pdf
+#: model:ir.model,name:pb_report_pdf.model_pb_report_pdf
+msgid "Report PDF designer"
+msgstr "Thiết kế PDF báo cáo"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__source_model
+msgid "Report kind"
+msgstr "Loại báo cáo"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Save and close"
+msgstr "Lưu và đóng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Save look"
+msgstr "Lưu kiểu"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Save the report first."
+msgstr "Hãy lưu báo cáo trước."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Save this look (Ctrl+S)"
+msgstr "Lưu kiểu này (Ctrl+S)"
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__user_id
+msgid "Saved by"
+msgstr "Người lưu"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Second line"
+msgstr "Dòng thứ hai"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Shared by %s"
+msgstr "Được chia sẻ bởi %s"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Sideways"
+msgstr "Nằm ngang"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Slate"
+msgstr "Xám đá"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Soft indigo"
+msgstr "Chàm nhạt"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Something went wrong. Try again."
+msgstr "Đã có lỗi. Hãy thử lại."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Standard look"
+msgstr "Kiểu trình bày chuẩn"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Stop using a company look"
+msgstr "Ngừng dùng kiểu của công ty"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Striped rows"
+msgstr "Dòng kẻ sọc"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Table"
+msgstr "Bảng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Text size"
+msgstr "Cỡ chữ"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "The PDF could not be made right now. Try again in a moment; the page on screen is exactly what will print."
+msgstr "Hiện chưa tạo được bản PDF. Hãy thử lại sau giây lát; trang trên màn hình chính là những gì sẽ được in."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "This look"
+msgstr "Kiểu này"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "This report cannot be printed right now"
+msgstr "Hiện không thể in báo cáo này"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "This report cannot be printed right now."
+msgstr "Hiện không thể in báo cáo này."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "This report has no rows to print."
+msgstr "Báo cáo này không có dòng nào để in."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "This report has no totals. Add a total to a column on screen to print one here."
+msgstr "Báo cáo này chưa có tổng. Hãy thêm tổng cho một cột trên màn hình để in ở đây."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "This report is no longer available. It may have been deleted, or it is no longer shared with you."
+msgstr "Báo cáo này không còn nữa. Có thể nó đã bị xoá hoặc không còn được chia sẻ với bạn."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "This screen cannot be printed as a PDF."
+msgstr "Không thể in màn hình này thành PDF."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "Total"
+msgstr "Tổng"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Total %(group)s"
+msgstr "Tổng %(group)s"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Unsaved changes"
+msgstr "Thay đổi chưa lưu"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Upright"
+msgstr "Đứng"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Use this look for every new report"
+msgstr "Dùng kiểu này cho mọi báo cáo mới"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Which way up"
+msgstr "Hướng giấy"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "With the letterhead, the page numbers are the ones in your company's own footer."
+msgstr "Khi có tiêu đề thư, số trang là số trong chân trang của công ty bạn."
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "You already keep %(cap)s PDF looks. Put one you no longer use back to the standard look first."
+msgstr "Bạn đã có %(cap)s kiểu trình bày PDF. Hãy đưa một kiểu không còn dùng về kiểu chuẩn trước."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "You changed the look. Keep it for the next time you print this report?"
+msgstr "Bạn đã thay đổi kiểu trình bày. Giữ lại cho lần in báo cáo này sau?"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Your PDF is downloaded: %(rows)s, made in %(sec)s seconds."
+msgstr "Đã tải bản PDF của bạn: %(rows)s, tạo trong %(sec)s giây."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Your look"
+msgstr "Kiểu của bạn"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Your look · shared"
+msgstr "Kiểu của bạn · đã chia sẻ"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "the report's owner"
+msgstr "người sở hữu báo cáo"

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- ===================================================== the button
+       Same size as the Excel buttons beside it. Loop variables are short,
+       non-operator names (C18.71). -->
+  <t t-name="pb_report_pdf.Button">
+    <span class="pbrp-anchor">
+      <button type="button" class="pbrp-btn" t-att-disabled="disabled" t-att-title="btnTitle"
+              aria-haspopup="dialog" t-on-click="() => this.open()">
+        <t t-out="icon('fileText', 15)"/>
+        <span class="lbl">PDF</span>
+      </button>
+      <span t-if="disabled and reason" class="pbrp-why" role="note" t-esc="reason"/>
+    </span>
+  </t>
+
+  <!-- ===================================================== the designer -->
+  <t t-name="pb_report_pdf.Designer">
+    <Dialog size="'fs'" header="false" footer="false" title.translate="Design the PDF" contentClass="'pbrp-dialog'" bodyClass="'pbrp-dbody'" withBodyPadding="false">
+      <div class="pbrp-root" t-att-class="{ dragging: state.dragging }">
+
+        <!-- top bar -->
+        <header class="pbrp-top">
+          <span class="pbrp-top-badge"><t t-out="icon('fileText', 18)"/></span>
+          <div class="pbrp-top-id">
+            <span class="pbrp-top-kicker">Design the PDF</span>
+            <b class="pbrp-top-name" t-esc="state.data ? state.data.name : ''"/>
+          </div>
+          <span t-if="state.data" class="pbrp-origin" t-att-class="{ dirty: dirty }">
+            <span class="dot"/><span t-esc="originWord"/>
+          </span>
+          <div class="pbrp-top-acts">
+            <button type="button" class="pbrp-b ghost" t-att-disabled="!state.data or state.saving" t-on-click="() => this.save()" title="Save this look (Ctrl+S)">
+              <t t-if="state.saving"><span class="pbrp-spin"/></t><t t-else=""><t t-out="icon('save', 15)"/></t>
+              <span>Save look</span>
+            </button>
+            <button type="button" class="pbrp-b primary" t-att-disabled="!state.data or state.downloading or noColumns" t-on-click="() => this.download()" title="Download the PDF (Ctrl+Enter)">
+              <t t-if="state.downloading"><span class="pbrp-spin light"/></t><t t-else=""><t t-out="icon('download', 15)"/></t>
+              <span t-if="state.downloading">Making your PDF…</span>
+              <span t-else="">Download PDF</span>
+            </button>
+            <button type="button" class="pbrp-x" t-on-click="() => this.askClose()" aria-label="Close" title="Close">
+              <t t-out="icon('x', 18)"/>
+            </button>
+          </div>
+        </header>
+        <div t-if="state.confirmClose" class="pbrp-confirm">
+          <t t-out="icon('info', 15)"/>
+          <span>You changed the look. Keep it for the next time you print this report?</span>
+          <button type="button" class="pbrp-b primary sm" t-on-click="() => this.saveAndClose()">Save and close</button>
+          <button type="button" class="pbrp-b ghost sm" t-on-click="() => this.props.close()">Close without saving</button>
+        </div>
+        <div t-if="state.done" class="pbrp-done" role="status">
+          <t t-out="icon('check', 15)"/><span t-esc="state.done"/>
+        </div>
+
+        <!-- loading -->
+        <div t-if="state.loading" class="pbrp-main">
+          <aside class="pbrp-side">
+            <div class="pbrp-skel"/><div class="pbrp-skel short"/><div class="pbrp-skel"/><div class="pbrp-skel short"/>
+          </aside>
+          <section class="pbrp-stage"><div class="pbrp-paper-skel"><div class="pbrp-skel"/><div class="pbrp-skel short"/><div class="pbrp-skel"/></div></section>
+        </div>
+
+        <!-- cannot open -->
+        <div t-elif="state.error" class="pbrp-fail">
+          <span class="pbrp-fail-ic"><t t-out="icon('alert', 26)"/></span>
+          <b>This report cannot be printed right now</b>
+          <p t-esc="state.error"/>
+          <div class="pbrp-fail-acts">
+            <button type="button" class="pbrp-b primary" t-on-click="() => this.load()"><t t-out="icon('rotateCcw', 14)"/> Try again</button>
+            <button type="button" class="pbrp-b ghost" t-on-click="() => this.props.close()">Close</button>
+          </div>
+        </div>
+
+        <div t-else="" class="pbrp-main">
+          <!-- ================================================= options -->
+          <aside class="pbrp-side">
+
+            <section class="pbrp-sec">
+              <h4><t t-out="icon('pageTurn', 15)"/> Paper</h4>
+              <div class="pbrp-seg" role="radiogroup" aria-label="Paper size">
+                <button t-foreach="state.data.options.papers" t-as="pp" t-key="pp.key" type="button" role="radio"
+                        t-att-aria-checked="state.look.paper === pp.key ? 'true' : 'false'"
+                        t-att-class="{ on: state.look.paper === pp.key }" t-on-click="() => this.set('paper', pp.key)" t-esc="pp.label"/>
+              </div>
+              <div class="pbrp-seg" role="radiogroup" aria-label="Which way up">
+                <button t-foreach="state.data.options.turns" t-as="tn" t-key="tn.key" type="button" role="radio"
+                        t-att-aria-checked="state.look.turn === tn.key ? 'true' : 'false'"
+                        t-att-class="{ on: state.look.turn === tn.key }" t-on-click="() => this.set('turn', tn.key)" t-esc="tn.label"/>
+              </div>
+              <p t-if="state.look.turn === 'fit'" class="pbrp-hint" t-esc="fitHint"/>
+            </section>
+
+            <section class="pbrp-sec">
+              <h4><t t-out="icon('building', 15)"/> Page</h4>
+              <label class="pbrp-switch">
+                <input type="checkbox" t-att-checked="state.look.letterhead" t-on-change="() => this.toggle('letterhead')"/>
+                <span class="trk"/><span>Company letterhead</span>
+              </label>
+              <span class="pbrp-label">Font</span>
+              <div class="pbrp-fonts" role="radiogroup" aria-label="Font">
+                <button t-foreach="state.data.options.fonts" t-as="fo" t-key="fo.key" type="button" role="radio"
+                        t-att-aria-checked="state.look.font === fo.key ? 'true' : 'false'"
+                        t-att-class="{ on: state.look.font === fo.key }" t-on-click="() => this.set('font', fo.key)">
+                  <span class="aa" t-att-style="fontStyle(fo)">Aa</span>
+                  <span class="nm" t-esc="fo.label"/>
+                </button>
+              </div>
+              <span class="pbrp-label">Text size</span>
+              <div class="pbrp-seg" role="radiogroup" aria-label="Text size">
+                <button t-foreach="state.data.options.sizes" t-as="sz" t-key="sz" type="button" role="radio"
+                        t-att-aria-checked="state.look.size === sz ? 'true' : 'false'"
+                        t-att-class="{ on: state.look.size === sz }" t-on-click="() => this.set('size', sz)" t-esc="sz"/>
+              </div>
+            </section>
+
+            <section class="pbrp-sec">
+              <h4><t t-out="icon('heading', 15)"/> Heading</h4>
+              <span class="pbrp-label">Title</span>
+              <input class="pbrp-in" type="text" maxlength="160" t-ref="title" t-att-value="state.look.title"
+                     t-att-placeholder="titlePlaceholder" t-on-input="(ev) => this.onText('title', ev)" aria-label="Title"/>
+              <label class="pbrp-switch">
+                <input type="checkbox" t-att-checked="state.look.sub_on" t-on-change="() => this.toggle('sub_on')"/>
+                <span class="trk"/><span>A second line</span>
+              </label>
+              <input t-if="state.look.sub_on" class="pbrp-in" type="text" maxlength="320" t-att-value="state.look.sub"
+                     t-att-placeholder="subPlaceholder" t-on-input="(ev) => this.onText('sub', ev)" aria-label="Second line"/>
+              <p t-if="state.look.sub_on and !state.look.sub and state.data.sub_default" class="pbrp-hint">Left empty, it says the period and the filters of the report.</p>
+            </section>
+
+            <section class="pbrp-sec">
+              <h4><t t-out="icon('palette', 15)"/> Table</h4>
+              <span class="pbrp-label">Heading row colour</span>
+              <div class="pbrp-swatches" role="radiogroup" aria-label="Heading row colour">
+                <button t-foreach="state.data.options.colors" t-as="cl" t-key="cl.key" type="button" role="radio"
+                        t-att-title="cl.label" t-att-aria-label="cl.label"
+                        t-att-aria-checked="state.look.color === cl.key ? 'true' : 'false'"
+                        t-att-class="{ on: state.look.color === cl.key }" t-att-style="swatchStyle(cl)"
+                        t-on-click="() => this.set('color', cl.key)">
+                  <t t-if="state.look.color === cl.key"><t t-out="icon('check', 13)"/></t>
+                </button>
+              </div>
+              <label class="pbrp-switch">
+                <input type="checkbox" t-att-checked="state.look.stripes" t-on-change="() => this.toggle('stripes')"/>
+                <span class="trk"/><span>Striped rows</span>
+              </label>
+              <label t-if="state.data.has_groups" class="pbrp-switch">
+                <input type="checkbox" t-att-checked="state.look.groups" t-on-change="() => this.toggle('groups')"/>
+                <span class="trk"/><span>Group headings and subtotals, as on screen</span>
+              </label>
+              <label t-if="state.data.has_totals" class="pbrp-switch">
+                <input type="checkbox" t-att-checked="state.look.total" t-on-change="() => this.toggle('total')"/>
+                <span class="trk"/><span>Grand total row</span>
+              </label>
+              <p t-if="!state.data.has_totals" class="pbrp-hint">This report has no totals. Add a total to a column on screen to print one here.</p>
+            </section>
+
+            <section class="pbrp-sec">
+              <h4>
+                <t t-out="icon('columns', 15)"/> Columns
+                <span class="pbrp-count"><t t-esc="printedCount"/>/<t t-esc="columnCount"/></span>
+              </h4>
+              <div t-if="noColumns" class="pbrp-warn"><t t-out="icon('alert', 14)"/><span>Pick at least one column to print.</span></div>
+              <ul class="pbrp-cols">
+                <li t-foreach="state.data.columns" t-as="col" t-key="col.key" t-att-class="{ off: col.hide }">
+                  <label>
+                    <input type="checkbox" t-att-checked="!col.hide" t-on-change="() => this.toggleColumn(col)"/>
+                    <span class="nm" t-esc="col.label"/>
+                  </label>
+                  <span class="wd" t-esc="widthWord(col)"/>
+                </li>
+              </ul>
+              <p class="pbrp-hint"><t t-out="icon('moveH', 13)"/> Drag a column edge on the page to change its width.</p>
+              <button t-if="anyOwnWidth" type="button" class="pbrp-link" t-on-click="() => this.autoWidths()">Let the widths fit the text again</button>
+            </section>
+
+            <section class="pbrp-sec">
+              <h4><t t-out="icon('panelBottom', 15)"/> Footer</h4>
+              <label class="pbrp-switch">
+                <input type="checkbox" t-att-checked="state.look.printed" t-on-change="() => this.toggle('printed')"/>
+                <span class="trk"/><span>Printed on (date) by (your name)</span>
+              </label>
+              <label class="pbrp-switch">
+                <input type="checkbox" t-att-checked="state.look.pages" t-on-change="() => this.toggle('pages')"/>
+                <span class="trk"/><span>Page numbers</span>
+              </label>
+              <p t-if="state.look.letterhead and state.look.pages" class="pbrp-hint">With the letterhead, the page numbers are the ones in your company's own footer.</p>
+              <span class="pbrp-label">Closing note</span>
+              <textarea class="pbrp-in pbrp-note" rows="3" maxlength="600" t-att-value="state.look.note"
+                        placeholder="For example: Prepared for the board. Figures before tax."
+                        t-on-input="(ev) => this.onText('note', ev)" aria-label="Closing note"/>
+            </section>
+
+            <section class="pbrp-sec pbrp-sec-look">
+              <h4><t t-out="icon('star', 15)"/> This look</h4>
+              <label t-if="state.data.can_share" class="pbrp-switch">
+                <input type="checkbox" t-att-checked="state.data.my_shared" t-att-disabled="state.saving" t-on-change="() => this.toggleShare()"/>
+                <span class="trk"/><span>Everyone who opens this report prints with it</span>
+              </label>
+              <p t-elif="state.data.origin === 'shared'" class="pbrp-hint"><t t-out="icon('users', 13)"/> <span t-esc="originWord"/>. Saving keeps your own copy.</p>
+              <t t-if="state.data.is_admin">
+                <button type="button" class="pbrp-link" t-on-click="() => this.makeDefault()"><t t-out="icon('star', 13)"/> Use this look for every new report</button>
+                <button t-if="state.data.has_default" type="button" class="pbrp-link quiet" t-on-click="() => this.clearDefault()">Stop using a company look</button>
+              </t>
+              <t t-if="state.data.origin === 'mine'">
+                <button t-if="!state.confirmReset" type="button" class="pbrp-link quiet" t-on-click="() => this.state.confirmReset = true">
+                  <t t-out="icon('rotateCcw', 13)"/> Back to the standard look
+                </button>
+                <div t-else="" class="pbrp-inline-confirm">
+                  <span>Forget your look for this report?</span>
+                  <button type="button" class="pbrp-b danger sm" t-on-click="() => this.reset()">Forget it</button>
+                  <button type="button" class="pbrp-b ghost sm" t-on-click="() => this.state.confirmReset = false">Keep it</button>
+                </div>
+              </t>
+            </section>
+          </aside>
+
+          <!-- ================================================= the page -->
+          <section class="pbrp-stage" t-ref="stage">
+            <div class="pbrp-stage-bar">
+              <span class="pbrp-chip"><t t-out="icon('file', 13)"/><span t-esc="pageWord"/></span>
+              <span class="pbrp-chip"><t t-out="icon('rows', 13)"/><span t-esc="rowWord"/></span>
+              <span class="pbrp-chip"><t t-out="icon('pageTurn', 13)"/><span t-esc="state.look.paper"/> · <span t-esc="turnWord"/></span>
+              <span t-if="state.pv and state.pv.capped" class="pbrp-chip amber"><t t-out="icon('alert', 13)"/><span t-esc="state.pv.cap_note"/></span>
+              <span t-if="state.pv and state.pv.note" class="pbrp-chip quiet" t-att-title="state.pv.note"><t t-out="icon('info', 13)"/><span t-esc="state.pv.note"/></span>
+              <span class="pbrp-busy" t-att-class="{ on: state.pvBusy }"/>
+            </div>
+            <div t-if="state.pvError" class="pbrp-warn pbrp-pv-warn"><t t-out="icon('alert', 14)"/><span t-esc="state.pvError"/></div>
+            <div class="pbrp-paper-wrap">
+              <div class="pbrp-paper" t-att-style="sheetBoxStyle">
+                <iframe t-ref="frameA" class="pbrp-frame" t-att-class="{ front: state.front === 'a' }" title="First page of the PDF"
+                        sandbox="allow-same-origin" t-att-srcdoc="state.frames.a" t-att-style="frameStyle"
+                        t-on-load="(ev) => this.onFrameLoad('a', ev)"/>
+                <iframe t-ref="frameB" class="pbrp-frame" t-att-class="{ front: state.front === 'b' }" title="First page of the PDF"
+                        sandbox="allow-same-origin" t-att-srcdoc="state.frames.b" t-att-style="frameStyle"
+                        t-on-load="(ev) => this.onFrameLoad('b', ev)"/>
+              </div>
+            </div>
+            <p t-if="state.hint and printedCount > 1" class="pbrp-coach"><t t-out="icon('moveH', 13)"/> Drag the edge between two column headings to make a column wider. Download PDF gives the true file.</p>
+          </section>
+        </div>
+      </div>
+    </Dialog>
+  </t>
+</templates>
