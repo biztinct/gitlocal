@@ -385,6 +385,10 @@ export class DocStudio extends Component {
         const n = this.yoursCount;
         return n === 1 ? _t("1 with your wording") : _t("%s with your wording", n);
     }
+    get docForText() {
+        const doc = this.state.doc;
+        return doc ? [doc.for_company, ...(doc.for_countries || [])].filter(Boolean).join(" · ") : "";
+    }
     langLabel(l) {
         const p = this.state.person;
         return p && l.code === p.lang ? _t("%s (their language)", l.name) : l.name;
@@ -655,6 +659,10 @@ export class DocStudio extends Component {
 
     // ---------------------------------------------------------------- rules
     onRule(id, isNew) {
+        if (!id) {
+            this.notification.add(_t("Click in the paragraph you want to show only for some people, then press “Show only when…”."), { type: "info" });
+            return;
+        }
         const rule = (this.state.draft.rules || {})[id];
         this.state.ruleEdit = { id, isNew: isNew && !rule, rule: rule ? clone(rule) : null };
     }

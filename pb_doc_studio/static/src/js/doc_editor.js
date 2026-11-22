@@ -466,14 +466,45 @@ export class DocEditor extends Component {
         return `r${n}`;
     }
 
-    topBlocks(range) {
+    /** The paragraph-level element holding `node` (a list or a table counts
+     *  as one block; a plain wrapper div does not). */
+    blockOf(node) {
         const el = this.body.el;
+        let cur = node && node.nodeType === 3 ? node.parentElement : node;
+        let found = null;
+        while (cur && cur !== el) {
+            if (cur.matches && cur.matches(".pbds-when")) { return cur; }
+            if (cur.matches && cur.matches("p, h1, h2, h3, h4, ul, ol, table, blockquote")) { found = cur; }
+            cur = cur.parentElement;
+        }
+        return found;
+    }
+
+    /** The blocks the selection covers: siblings from the start block to the
+     *  end block, at the level where they share a parent. */
+    topBlocks(range) {
+        let start = this.blockOf(range.startContainer);
+        let end = this.blockOf(range.endContainer) || start;
+        if (!start) { return []; }
+        while (start.parentElement !== end.parentElement) {
+            if (start.parentElement && start.parentElement.contains(end)) {
+                end = end.parentElement;
+                while (end.parentElement !== start.parentElement) { end = end.parentElement; }
+            } else if (end.parentElement && end.parentElement.contains(start)) {
+                start = start.parentElement;
+                while (start.parentElement !== end.parentElement) { start = start.parentElement; }
+            } else {
+                start = start.parentElement;
+                end = end.parentElement;
+                if (!start || !end || start === this.body.el) { return []; }
+            }
+        }
         const out = [];
-        for (const child of [...el.childNodes]) {
-            if (child.nodeType === 3 && !child.nodeValue.trim()) { continue; }
-            let hit = false;
-            try { hit = range.intersectsNode(child); } catch { hit = false; }
-            if (hit) { out.push(child); }
+        let cur = start;
+        while (cur) {
+            if (!(cur.nodeType === 3 && !cur.nodeValue.trim())) { out.push(cur); }
+            if (cur === end) { break; }
+            cur = cur.nextSibling;
         }
         return out;
     }
@@ -489,10 +520,16 @@ export class DocEditor extends Component {
             return;
         }
         let blocks = this.topBlocks(range);
-        if (!blocks.length) {
+        if (!blocks.length && host && host !== this.body.el && this.body.el.contains(host)) {
+            // Loose text straight in the page: take the line it sits on.
             let block = host;
-            while (block && block.parentElement !== this.body.el) { block = block.parentElement; }
-            if (block) { blocks = [block]; }
+            while (block.parentElement && block.parentElement !== this.body.el) { block = block.parentElement; }
+            blocks = [block];
+        }
+        if (!blocks.length) {
+            // No paragraph under the cursor: say so rather than guess.
+            if (this.props.onRule) { this.props.onRule(null, false); }
+            return;
         }
         if (blocks.length === 1 && blocks[0].nodeType === 1 && blocks[0].classList.contains("pbds-when")) {
             const id = [...blocks[0].classList].find((c) => c.startsWith("pbds-r-"));

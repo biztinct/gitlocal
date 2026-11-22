@@ -136,7 +136,7 @@
               <span t-else="" class="pbds-tag grey">Built-in wording</span>
               <span t-if="state.doc.type_label" class="pbds-muted" t-esc="state.doc.type_label"/>
               <span t-if="state.doc.for_company or state.doc.for_countries.length" class="pbds-tag indigo-l">
-                <t t-out="ic('users', 11)"/> <span>For</span> <span t-esc="[state.doc.for_company].concat(state.doc.for_countries).filter(Boolean).join(' · ')"/>
+                <t t-out="ic('users', 11)"/> <span>For</span> <span t-esc="docForText"/>
               </span>
               <span t-if="!state.doc.active" class="pbds-tag grey"><t t-out="ic('power', 11)"/> <span>Switched off</span></span>
             </div>

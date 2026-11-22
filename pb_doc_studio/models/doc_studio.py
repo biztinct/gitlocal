@@ -758,7 +758,11 @@ class PbDocStudio(models.AbstractModel):
         if tmpl.company_id:
             domain = [('company_id', '=', tmpl.company_id.id)]
         try:
-            emp = Emp.search(domain + [('job_id', '!=', False)], limit=1) \
+            # Somebody with a contract and a job shows the most real values.
+            emp = Emp.browse()
+            if 'contract_id' in Emp._fields:
+                emp = Emp.search(domain + [('job_id', '!=', False), ('contract_id', '!=', False)], limit=1)
+            emp = emp or Emp.search(domain + [('job_id', '!=', False)], limit=1) \
                 or Emp.search(domain, limit=1) or Emp.search([], limit=1)
         except AccessError:
             return False
@@ -1379,7 +1383,9 @@ class PbDocStudio(models.AbstractModel):
             'date_text': self._pbds_long_date(when, lang),
             'sign_image': self._pbds_draft_sign(tmpl, draft) if page['sign'] == 'image' else False,
             'mode': 'screen',
-            'lang': lang,
+            # `lang` is not a safe name in a QWeb call (the engine sets its
+            # own): the page's language travels as `doc_lang`.
+            'doc_lang': lang,
             'company_card': self._pbds_company_card(company),
             'env': self.env,
         })
@@ -1442,6 +1448,7 @@ class PbDocStudio(models.AbstractModel):
 PAGE_CSS = """
 .pbds-page { color: #1f2430; word-wrap: break-word; }
 .pbds-page p { margin: 0 0 0.75em; }
+.pbds-page h1, .pbds-page h2, .pbds-page h3, .pbds-page h4, .pbds-page th, .pbds-page td { font-family: inherit; }
 .pbds-page h1 { font-size: 1.6em; margin: 0.4em 0 0.5em; font-weight: 700; }
 .pbds-page h2 { font-size: 1.3em; margin: 0.4em 0 0.5em; font-weight: 700; }
 .pbds-page h3 { font-size: 1.12em; margin: 0.4em 0 0.4em; font-weight: 700; }

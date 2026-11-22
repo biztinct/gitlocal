@@ -53,7 +53,7 @@
               </div>
               <select t-elif="k === 'choice'" class="pbds-in" aria-label="Value" t-on-change="(ev) => this.setValue(line, ev)">
                 <option value="" t-att-selected="!line.value">Choose…</option>
-                <option t-foreach="options(line)" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="String(o.value) === String(line.value)" t-esc="o.label"/>
+                <option t-foreach="options(line)" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="isValue(line, o)" t-esc="o.label"/>
               </select>
               <input t-elif="k === 'date'" type="date" class="pbds-in" aria-label="Value" t-att-value="line.value or ''" t-on-change="(ev) => this.setValue(line, ev)"/>
               <input t-elif="k === 'number'" type="number" class="pbds-in" aria-label="Value" t-att-value="line.value or ''" t-on-input="(ev) => this.setValue(line, ev)"/>

@@ -316,6 +316,9 @@ $ds-ease: cubic-bezier(.2, .7, .2, 1);
 .pbds-centre { display: flex; flex-direction: column; min-height: 0; min-width: 0; background: $ds-desk; }
 .pbds-langs {
     display: flex; align-items: center; gap: 4px; padding: 8px 16px 0; background: $ds-desk; flex: none;
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: thin;
+    > * { white-space: nowrap; flex: none; }
+    .pbds-spacer { flex: 1 1 auto; }
 }
 .pbds-lang-tab {
     display: inline-flex; align-items: center; gap: 7px; border: 1px solid transparent; border-bottom: 0;
@@ -402,12 +405,15 @@ $ds-ease: cubic-bezier(.2, .7, .2, 1);
 }
 .pbds-ed-body {
     min-height: 260px; outline: none; caret-color: $ds-primary; word-wrap: break-word;
-    &:empty::before { content: attr(data-placeholder); color: #b3b9c6; }
+    position: relative;
+    &:empty::before, &:has(> p:only-child > br:only-child)::before {
+        content: attr(data-placeholder); color: #b3b9c6; position: absolute; left: 0; top: 0; pointer-events: none;
+    }
     &:focus { outline: none; }
     img.pbds-img-sel { outline: 2px solid $ds-primary; outline-offset: 2px; }
     td:focus-within, th:focus-within { box-shadow: inset 0 0 0 2px rgba(90, 75, 176, .35); }
     .pbds-when {
-        position: relative; margin: 4px 0 4px -14px; padding: 4px 4px 4px 12px; border-radius: 0 8px 8px 0;
+        position: relative; margin: 4px 0 4px -14px; padding: 30px 4px 4px 12px; border-radius: 0 8px 8px 0;
         background: rgba(90, 75, 176, .045);
         transition: background .2s;
         &:hover { background: rgba(90, 75, 176, .08); }
@@ -431,7 +437,7 @@ $ds-ease: cubic-bezier(.2, .7, .2, 1);
     transition: top .15s, height .15s;
 }
 .pbds-pill {
-    position: absolute; right: -8px; transform: translate(0, -60%); pointer-events: auto; max-width: 62%;
+    position: absolute; left: -4px; margin-top: 5px; pointer-events: auto; max-width: 92%;
     display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px; border-radius: 999px;
     background: #fff; border: 1px solid $ds-light; color: $ds-primary; font: 600 11.5px/1 Inter, system-ui, sans-serif;
     box-shadow: 0 3px 10px rgba(90, 75, 176, .14); cursor: pointer; transition: top .15s, background .15s;
@@ -504,7 +510,7 @@ $ds-ease: cubic-bezier(.2, .7, .2, 1);
 .pbds-pv-lang {
     display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 4px; font-size: 12.5px;
     .pbds-pv-lang-l { display: inline-flex; align-items: center; gap: 5px; color: $ds-muted; }
-    select { border: 1px solid $ds-line; border-radius: 8px; height: 30px; padding: 0 8px; font-size: 12.5px; background: #fff; max-width: 220px; }
+    select { border: 1px solid $ds-line; border-radius: 8px; height: 30px; padding: 0 8px; font-size: 12.5px; background: #fff; flex: 1 1 auto; min-width: 0; max-width: 250px; }
 }
 .pbds-pv-hint { margin: 0 0 8px; font-size: 11.5px; color: $ds-muted; text-align: right; }
 .pbds-pv-hidden {
@@ -667,7 +673,7 @@ $ds-ease: cubic-bezier(.2, .7, .2, 1);
     padding: 5px 12px; font-size: 12.5px; font-weight: 600; box-shadow: 0 3px 10px rgba(90, 75, 176, .12);
 }
 .pbds-large {
-    width: min(900px, 100%); height: calc(100vh - 40px); background: #fff; border-radius: 16px; box-shadow: $ds-sh-lg; display: flex; flex-direction: column;
+    width: 900px; max-width: 100%; height: calc(100vh - 40px); background: #fff; border-radius: 16px; box-shadow: $ds-sh-lg; display: flex; flex-direction: column;
     animation: pbds-pop .22s $ds-ease; overflow: hidden;
     header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid $ds-line; }
 }

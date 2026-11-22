@@ -82,7 +82,7 @@
          from web.external_layout and the paper format), company_card
          (screen only: {name, address, contact, logo}). -->
     <template id="page_frame">
-        <t t-set="pv" t-value="env['pb.doc.studio'].page_values(page, lang)"/>
+        <t t-set="pv" t-value="env['pb.doc.studio'].page_values(page, doc_lang or lang)"/>
         <t t-set="screen" t-value="mode == 'screen'"/>
         <div t-attf-class="pbds-page {{ screen and 'pbds-screen' or 'pbds-pdf' }}"
              t-att-style="pv['style'] + (screen and (' padding: ' + pv['screen_padding'] + ';') or '')">
@@ -130,7 +130,7 @@
                                 <t t-set="subject" t-value="p['subject']"/>
                                 <t t-set="date_text" t-value="p['date_text']"/>
                                 <t t-set="sign_image" t-value="p['sign_image']"/>
-                                <t t-set="lang" t-value="p['lang']"/>
+                                <t t-set="doc_lang" t-value="p['lang']"/>
                                 <t t-set="mode" t-value="'pdf'"/>
                             </t>
                         </div>
@@ -149,7 +149,7 @@
                             <t t-set="subject" t-value="p['subject']"/>
                             <t t-set="date_text" t-value="p['date_text']"/>
                             <t t-set="sign_image" t-value="p['sign_image']"/>
-                            <t t-set="lang" t-value="p['lang']"/>
+                            <t t-set="doc_lang" t-value="p['lang']"/>
                             <t t-set="mode" t-value="'pdf'"/>
                         </t>
                     </div>

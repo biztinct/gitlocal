@@ -126,6 +126,7 @@ export class RuleBuilder extends Component {
         line.value = v;
     }
     textList(line) { return Array.isArray(line.value) ? line.value.join(", ") : (line.value || ""); }
+    isValue(line, opt) { return String(opt.value) === String(line.value); }
     isPicked(line, opt) { return Array.isArray(line.value) && line.value.includes(String(opt.value)); }
     togglePick(line, opt) {
         const v = String(opt.value);
