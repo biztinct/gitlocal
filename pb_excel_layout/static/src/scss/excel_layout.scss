@@ -350,6 +350,7 @@
     .pbxl-coach {
         display: flex; gap: 8px; align-items: center; margin: 2px 0 0; color: var(--x-muted);
         font-size: 12.8px; .pbxl-ic { color: var(--x-p); }
+        &.quiet { margin-top: -4px; font-size: 12.3px; .pbxl-ic { color: var(--x-muted); } }
     }
 
     // --------------------------------------------------------- settings

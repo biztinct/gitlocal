@@ -117,3 +117,10 @@ def macro_words(env):
 def coach_words(env):
     return env._("Point your formulas and charts at whole columns or an "
                  "Excel table so they pick up new rows.")
+
+
+def recalc_words(env):
+    """Owner ruling X-b: one quiet line on the set-up screen."""
+    return env._("Totals and charts in your file refresh when it is opened in "
+                 "Excel. Some other spreadsheet programs need “Recalculate” "
+                 "pressed.")

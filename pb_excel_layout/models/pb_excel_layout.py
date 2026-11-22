@@ -33,7 +33,7 @@ from odoo.exceptions import AccessError, UserError
 
 from . import xlsx_fill
 from .words import (coach_words, error_words, macro_words, note_words,
-                    product_label)
+                    product_label, recalc_words)
 from .xlsx_fill import LayoutError
 
 _logger = logging.getLogger(__name__)
@@ -267,6 +267,7 @@ class PbExcelLayoutBoard(models.AbstractModel):
             'size': len(raw),
             'macro_note': macro_words(self.env) if desc['has_macros'] else '',
             'coach': coach_words(self.env),
+            'recalc': recalc_words(self.env),
         })
         return desc
 

@@ -455,8 +455,117 @@ class TestExcelLayout(TestWdgapQf2):
                 for text in re.findall(r'_\(\s*"((?:[^"\\]|\\.)*)"', body):
                     self.assertNotIn('Odoo', text, rel)
 
+    # ------------------------------------------------------- X-b T19
+    def test_t19_every_row_in_my_layout(self):
+        """Owner ruling X-b: a filled layout carries EVERY row of the view
+        (cap 20,000, said when hit); the chart and the standard Excel / CSV
+        keep the largest 24 exactly as before; a scheduled send in a layout
+        gets every row too, as the recipient."""
+        may = self._mk_run('XB May', '2026-05-01', '2026-05-31')
+        for i in range(30):
+            dept = self.env['hr.department'].create({
+                'name': 'XB Dept %02d' % i, 'company_id': self.company.id})
+            person = self._mk_employee('XB Person %02d' % i, dept)
+            self._mk_slip(may, person, basic=1000.0 + i, net=800.0 + i,
+                          emp_cost=100.0)
+        self.builder.build_runs([may.id])
+        spec = {'measure': 'net', 'dimension': 'department_id',
+                'grain': 'none'}
+        view = self._view(name='Every department', spec=spec)
+        owner_view = view.with_user(self.owner).with_context(
+            allowed_company_ids=[self.company.id])
+        table = owner_view._pbxl_table()
+        self.assertEqual(len(table['rows']), 32)        # 30 + April's two
+        self.assertFalse(table['truncated'])
+        self.assertFalse(table['note'])
+        # the chart and the standard downloads: unchanged, largest 24
+        explorer = self._as(self.owner)
+        answer = explorer.query(spec)
+        self.assertEqual(len(answer['series']), 24)
+        self.assertEqual(answer['truncated'], 8)
+        xl = explorer.export_xlsx(spec, view.id)
+        self.assertEqual((xl['rows'], xl['truncated']), (24, 8))
+        csv = explorer.export_csv(spec)
+        self.assertEqual((csv['rows'], csv['truncated']), (24, 8))
+        self.assertEqual(explorer._pbx_series_cap(), 24)
+        # Download in my layout: every row
+        layout = self._layout(view, headers=True)
+        got = self._board(self.owner).download(layout.id)
+        self.assertEqual(got['rows'], 32)
+        rows = _rows(base64.b64decode(got['file_b64']))
+        self.assertEqual(len([r for r in rows[6:] if r[1]]), 32)
+        # a scheduled send in the layout: every row, as the recipient
+        self._mail_on()
+        sched = self._schedule(view, [self.owner])
+        sched.layout_id = layout.id
+        sched._send_one('now')
+        att = sched.log_ids.mail_id.attachment_ids
+        rows = _rows(base64.b64decode(att.datas))
+        self.assertEqual(len([r for r in rows[6:] if r[1]]), 32)
+        # the cap is said, never silent
+        with patch('odoo.addons.pb_excel_layout.models.pb_explorer_view.'
+                   '_EXPORT_CAP', 10):
+            table = owner_view._pbxl_table()
+        self.assertEqual(len(table['rows']), 10)
+        self.assertTrue(table['truncated'])
+        self.assertIn('Only the largest 10 rows are in the file; 22 more',
+                      table['note'])
+
+    # ------------------------------------------------------- X-b T20
+    def test_t20_currency_column_never_moves(self):
+        labels = {}
+        for mode in ('group', 'own'):
+            view = self._view(name='Money %s' % mode, spec={
+                'measure': 'net', 'dimension': 'department_id',
+                'grain': 'none', 'currency': mode})
+            table = view.with_user(self.owner).with_context(
+                allowed_company_ids=[self.company.id])._pbxl_table()
+            labels[mode] = [c['label'] for c in table['columns']]
+            self.assertEqual(labels[mode][:2], ['Department', 'Currency'])
+            self.assertEqual(table['columns'][1]['type'], 'text')
+            self.assertTrue(table['rows'])
+            self.assertTrue(all(row[1] for row in table['rows']),
+                            'every row names its money')
+        self.assertEqual(labels['group'], labels['own'])
+        # a count is not money: no Currency column
+        view = self._view(name='People', spec={
+            'measure': 'headcount', 'dimension': 'department_id',
+            'grain': 'none'})
+        table = view.with_user(self.owner).with_context(
+            allowed_company_ids=[self.company.id])._pbxl_table()
+        self.assertNotIn('Currency', [c['label'] for c in table['columns']])
+        # the set-up screen's outline counts it: N columns from the table
+        answer = self._board(self.owner).inspect(
+            _b64(_pack()), 'pack.xlsx', 'pb.explorer.view', view.id)
+        self.assertEqual(answer['table']['cols'], len(table['columns']))
+
+    # ------------------------------------------------------- X-b T21
+    def test_t21_recalculate_note_in_three_languages(self):
+        board = self.env['pb.excel.layout.board']
+        raw = _pack()
+        expected = {
+            'en_US': 'Totals and charts in your file refresh when it is '
+                     'opened in Excel. Some other spreadsheet programs need '
+                     '“Recalculate” pressed.',
+            'vi_VN': 'Tổng và biểu đồ trong tệp của bạn tự cập nhật khi mở '
+                     'bằng Excel. Một số chương trình bảng tính khác cần bấm '
+                     '“Tính lại”.',
+            'id_ID': 'Total dan grafik di berkas Anda diperbarui saat dibuka '
+                     'di Excel. Beberapa program lembar kerja lain perlu '
+                     'menekan “Hitung ulang”.',
+        }
+        for lang, text in expected.items():
+            if lang != 'en_US' and not self.env['res.lang']._lang_get(lang):
+                self.env['res.lang']._activate_lang(lang)
+            answer = board.with_context(lang=lang)._pbxl_file_answer(
+                raw, 'pack.xlsx')
+            self.assertEqual(answer['recalc'], text, lang)
+        xml = open(os.path.join(HERE, 'static', 'src', 'xml',
+                                'excel_layout.xml'), encoding='utf-8').read()
+        self.assertIn('state.file.recalc', xml)
+
     # ------------------------------------------------------------ R6
-    def test_t19_silent_install(self):
+    def test_r6_silent_install(self):
         self.assertFalse(self.env['ir.cron'].sudo().search(
             [('cron_name', 'ilike', 'excel layout')]))
         self.assertFalse(self.env['ir.model.data'].sudo().search(

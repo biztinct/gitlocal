@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 05:06+0000\n"
-"PO-Revision-Date: 2026-11-22 05:06+0000\n"
+"POT-Creation-Date: 2026-11-22 06:14+0000\n"
+"PO-Revision-Date: 2026-11-22 06:14+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: vi_VN\n"
@@ -896,6 +896,16 @@ msgstr ""
 #: code:addons/pb_excel_layout/models/pb_explorer_view.py:0
 msgid "Total"
 msgstr "Tổng"
+
+#. module: pb_excel_layout
+#. odoo-python
+#: code:addons/pb_excel_layout/models/words.py:0
+msgid ""
+"Totals and charts in your file refresh when it is opened in Excel. Some "
+"other spreadsheet programs need “Recalculate” pressed."
+msgstr ""
+"Tổng và biểu đồ trong tệp của bạn tự cập nhật khi mở bằng Excel. Một số "
+"chương trình bảng tính khác cần bấm “Tính lại”."
 
 #. module: pb_excel_layout
 #. odoo-javascript

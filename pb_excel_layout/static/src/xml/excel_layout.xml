@@ -248,6 +248,7 @@
                 </nav>
               </div>
               <p class="pbxl-coach"><t t-out="xic('sparkles', 14)"/> <span t-esc="state.file ? state.file.coach : ''"/></p>
+              <p t-if="state.file and state.file.recalc" class="pbxl-coach quiet"><t t-out="xic('refresh', 14)"/> <span t-esc="state.file.recalc"/></p>
             </div>
 
             <aside class="pbxl-right">
