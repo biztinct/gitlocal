@@ -220,7 +220,7 @@ class TestReportBuilder(TransactionCase):
             hosts = Studio._pbfs_hosts()
             host = next((k for k, h in hosts.items() if h['model'] == 'hr.employee'), None)
             if host:
-                with patch.object(type(Studio), '_pbfs_busy', lambda self: ''):
+                with patch.object(type(Studio), '_pbfs_check_busy', lambda self: None):
                     own = Studio.with_user(self.admin_u).create_field(host, {
                         'type': 'text', 'label': 'DEMO RB Badge', 'vis': 'all', 'list_ok': True})['name']
                 for i, emp in enumerate(self.emps):
@@ -453,7 +453,7 @@ class TestReportBuilder(TransactionCase):
             ws, rows = _xlsx_rows(out)
             heads = [c.value for c in rows[0] if c.value]
             labels = [c['label'] for c in screen['columns']]
-            self.assertEqual(heads[:len(labels)], [h for h in heads if h in labels][:len(labels)])
+            self.assertEqual([h for h in heads if not h.endswith(' currency')], labels)
             self.assertEqual(out['rows'], screen['total'])
             text = ' '.join(str(c.value) for r in rows for c in r if c.value is not None)
             if builder is not admin:

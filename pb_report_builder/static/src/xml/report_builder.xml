@@ -143,6 +143,7 @@
             <span class="pbrb-subject__ic" t-out="icon(s.locked ? 'lock' : s.icon, 20)"/>
             <span class="pbrb-subject__l" t-esc="s.label"/>
             <span t-if="s.locked" class="pbrb-subject__why" t-esc="s.why"/>
+            <span t-else="" class="pbrb-subject__why" t-esc="s.hint"/>
           </button>
         </div>
         <button t-if="state.spec" class="pbim-btn ghost" t-on-click="() => this.state.pickSubject = false">Cancel</button>
@@ -353,8 +354,8 @@
                         <button class="pbrb-th__menu" t-on-click="(ev) => this.toggleMenu(col.key, ev)" aria-label="Column menu" t-out="icon('chevronDown', 13)"/>
                         <div t-if="state.menu === col.key" class="pbrb-menu">
                           <t t-if="col.sortable">
-                            <button t-on-click="() => this.sortBy(col.key, 'asc')"><span t-out="icon('arrowUp', 14)"/><span>Sort, smallest first</span></button>
-                            <button t-on-click="() => this.sortBy(col.key, 'desc')"><span t-out="icon('arrowDown', 14)"/><span>Sort, largest first</span></button>
+                            <button t-on-click="() => this.sortBy(col.key, 'asc')"><span t-out="icon('arrowUp', 14)"/><span t-esc="sortWords(col)[0]"/></button>
+                            <button t-on-click="() => this.sortBy(col.key, 'desc')"><span t-out="icon('arrowDown', 14)"/><span t-esc="sortWords(col)[1]"/></button>
                           </t>
                           <button t-if="col.filterable" t-on-click="() => this.openEditor(col.key)"><span t-out="icon('filter', 14)"/><span>Filter by this</span></button>
                           <t t-if="col.totals and col.totals.length">
@@ -401,7 +402,7 @@
               <tbody t-else="">
                 <tr t-foreach="state.result.rows" t-as="row" t-key="state.result.ids[row_index]">
                   <td t-foreach="cells(row)" t-as="cell" t-key="cell.key"
-                      t-att-class="{'is-num': isNum(cell.kind), 'is-new': state.newKey === cell.key, 'is-hidden': cell.text === '•••', 'is-wait': cell.wait}"
+                      t-att-class="{'is-num': isNum(cell.kind), 'is-new': state.newKey === cell.key, 'is-hidden': cell.text === '•••', 'is-wait': cell.wait, 'is-zero': isNum(cell.kind) and cell.text === '0'}"
                       t-att-title="cell.text === '•••' ? hiddenTitle : ''"><i t-if="cell.wait"/><t t-else="" t-esc="cell.text"/></td>
                 </tr>
                 <tr t-if="!state.result.rows.length" class="pbrb-none"><td t-att-colspan="columns.length"><span>No rows match. Try a wider period or fewer filters.</span></td></tr>
@@ -431,7 +432,7 @@
   <tr class="pbrb-grow-row" t-att-class="{'is-child': depth, 'is-open': isOpen(node), 'is-leafless': state.spec.summary and !(node.children and node.children.length)}" t-on-click="() => this.toggleGroup(node)">
     <td t-att-colspan="leadSpan" class="pbrb-gcell">
       <span class="pbrb-gcell__in" t-att-style="'padding-left:' + (depth * 22) + 'px'">
-        <span class="pbrb-caret" t-out="icon('chevronRight', 14)"/>
+        <span class="pbrb-caret" t-out="icon('chevron', 14)"/>
         <span class="pbrb-gcell__l" t-esc="node.label"/>
         <span class="pbrb-gcell__n" t-esc="int(node.count)"/>
         <span t-if="leadTotal(node)" class="pbrb-tlabel__v" t-esc="leadTotal(node)"/>
@@ -447,7 +448,7 @@
   <tr t-if="gr and gr.error" class="pbrb-none"><td t-att-colspan="columns.length" t-esc="gr.error"/></tr>
   <t t-if="gr">
     <tr t-foreach="gr.rows" t-as="row" t-key="row_index" class="pbrb-in-group">
-      <td t-foreach="cells(row)" t-as="cell" t-key="cell.key" t-att-class="{'is-num': isNum(cell.kind), 'is-hidden': cell.text === '•••', 'is-wait': cell.wait}" t-att-title="cell.text === '•••' ? hiddenTitle : ''"><i t-if="cell.wait"/><t t-else="" t-esc="cell.text"/></td>
+      <td t-foreach="cells(row)" t-as="cell" t-key="cell.key" t-att-class="{'is-num': isNum(cell.kind), 'is-hidden': cell.text === '•••', 'is-wait': cell.wait, 'is-zero': isNum(cell.kind) and cell.text === '0'}" t-att-title="cell.text === '•••' ? hiddenTitle : ''"><i t-if="cell.wait"/><t t-else="" t-esc="cell.text"/></td>
     </tr>
     <tr t-if="gr.has_more" class="pbrb-in-group">
       <td t-att-colspan="columns.length">

@@ -450,6 +450,7 @@ class PbReportBuilder(models.AbstractModel):
         subjects = []
         for subject, ok, why in self._subjects_for_reader():
             entry = {'key': subject['key'], 'label': subject['label'],
+                     'hint': subject.get('hint') or '',
                      'icon': subject.get('icon') or 'table', 'locked': not ok, 'why': why}
             if ok:
                 cols = self._subject_columns(subject)
@@ -462,7 +463,7 @@ class PbReportBuilder(models.AbstractModel):
                         sections.append({'key': sec, 'label': words[sec], 'fields': items})
                 entry.update({
                     'sections': sections,
-                    'dates': [{'key': k, 'label': lab} for k, path, lab in subject['dates']
+                    'dates': [{'key': k, 'label': lab} for k, path, lab, _x in subject['dates']
                               if self._resolve(subject['model'], path)],
                     'date_optional': bool(subject.get('date_optional')),
                     'person': bool(subject.get('employee_path') is not None),
@@ -689,7 +690,7 @@ class PbReportBuilder(models.AbstractModel):
     def _clean_period(self, subject, period, strict=True):
         _ = self.env._
         bad = SpecError(_("This report's period could not be read."))
-        dates = [k for k, path, lab in subject['dates'] if self._resolve(subject['model'], path)]
+        dates = [k for k, path, lab, _x in subject['dates'] if self._resolve(subject['model'], path)]
         default_date = '' if subject.get('date_optional') else (dates[0] if dates else '')
         if not period:
             return {'preset': 'any', 'from': None, 'to': None, 'date': default_date}
@@ -704,7 +705,7 @@ class PbReportBuilder(models.AbstractModel):
         if date_key in (None, ''):
             date_key = default_date
         if date_key and date_key not in dates:
-            if strict and date_key not in [k for k, p, lab in subject['dates']]:
+            if strict and date_key not in [d[0] for d in subject['dates']]:
                 raise bad
             date_key = default_date
         start = end = None
@@ -828,7 +829,7 @@ class PbReportBuilder(models.AbstractModel):
             domain += self._filter_domain(cols[flt['key']], flt['op'], flt['value'])
         period = clean['period']
         if period['date'] and period['preset'] != 'any':
-            path = dict((k, p) for k, p, lab in subject['dates'])[period['date']]
+            path = dict((d[0], d[1]) for d in subject['dates'])[period['date']]
             res = self._resolve(subject['model'], path, check=False)
             start, end = self._period_range(period)
             domain += self._range_domain(path, res[0].type, start, end)

@@ -227,6 +227,7 @@ export class PbReportBuilder extends Component {
         }
         this.pushUndo();
         this.state.spec = this.emptySpec(s.key);
+        if (!this.state.report) { this.state.name = ""; }
         this.state.pickSubject = false;
         this.state.result = null;
         this.state.search = "";
@@ -404,6 +405,11 @@ export class PbReportBuilder extends Component {
             delete spec.totals[key];
             if (spec.sort && spec.sort.key === key) { spec.sort = null; }
         });
+    }
+    sortWords(col) {
+        if (col.kind === "date" || col.kind === "datetime") { return [_t("Oldest first"), _t("Newest first")]; }
+        if (this.isNum(col.kind)) { return [_t("Smallest first"), _t("Largest first")]; }
+        return [_t("A to Z"), _t("Z to A")];
     }
     totalWord(how) {
         return { sum: _t("Sum"), avg: _t("Average"), count: _t("Count") }[how] || how;

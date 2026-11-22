@@ -1,0 +1,1930 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_report_builder
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 05:34+0000\n"
+"PO-Revision-Date: 2026-11-22 05:34+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"MIME-Version: 1.0\n"
+"Language: vi_VN\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid " and %(count)s more"
+msgstr " và %(count)s mục khác"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(count)s columns are hidden because you may not see them."
+msgstr "%(count)s cột bị ẩn vì bạn không được xem."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"%(count)s filters were left out because they use fields you may not see, so "
+"the result may be wider than the saved report."
+msgstr "%(count)s bộ lọc bị bỏ qua vì dùng trường bạn không được xem, nên kết quả có thể rộng hơn báo cáo đã lưu."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s currency"
+msgstr "Tiền tệ của %(field)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s from %(low)s"
+msgstr "%(field)s từ %(low)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s from %(low)s to %(high)s"
+msgstr "%(field)s từ %(low)s đến %(high)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s up to %(high)s"
+msgstr "%(field)s đến %(high)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "%(name)s (copy)"
+msgstr "%(name)s (bản sao)"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(subject)s fields"
+msgstr "Trường của %(subject)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "1 column is hidden because you may not see it."
+msgstr "1 cột bị ẩn vì bạn không được xem."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"1 filter was left out because it uses a field you may not see, so the result"
+" may be wider than the saved report."
+msgstr "1 bộ lọc bị bỏ qua vì dùng trường bạn không được xem, nên kết quả có thể rộng hơn báo cáo đã lưu."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A copy is ready. It is yours to change."
+msgstr "Đã có bản sao. Bạn có thể sửa tùy ý."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A filter in this report cannot be used on that field."
+msgstr "Một bộ lọc trong báo cáo này không dùng được cho trường đó."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A filter value in this report could not be read."
+msgstr "Không đọc được một giá trị lọc trong báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A report can be grouped by two fields at most. Remove one first."
+msgstr "Báo cáo chỉ nhóm được theo tối đa hai trường. Hãy bỏ một trường trước."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A to Z"
+msgstr "A đến Z"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A total in this report cannot be worked out."
+msgstr "Không tính được một tổng trong báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "About the person"
+msgstr "Về người này"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "All reports"
+msgstr "Tất cả báo cáo"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Any time"
+msgstr "Mọi lúc"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Applicants"
+msgstr "Ứng viên"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Applicants by open role and stage"
+msgstr "Ứng viên theo vị trí tuyển và giai đoạn"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Applied on"
+msgstr "Ngày ứng tuyển"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Apply"
+msgstr "Áp dụng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Approved requests grouped by department, with total days."
+msgstr "Các đơn đã duyệt, nhóm theo phòng ban, kèm tổng số ngày."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Asset code"
+msgstr "Mã tài sản"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Assets"
+msgstr "Tài sản"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Assets held by person"
+msgstr "Tài sản theo người giữ"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Assets held now"
+msgstr "Tài sản đang giữ"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Average"
+msgstr "Trung bình"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Bought on"
+msgstr "Ngày mua"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Build a report"
+msgstr "Tạo báo cáo"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Building reports is for HR and the people who can open Insights. Ask your "
+"administrator if you believe you should."
+msgstr "Tạo báo cáo dành cho bộ phận nhân sự và những người mở được mục Phân tích. Hãy hỏi quản trị viên nếu bạn nghĩ mình cần quyền này."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Category"
+msgstr "Nhóm"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Check in"
+msgstr "Giờ vào"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Check out"
+msgstr "Giờ ra"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Claims sent and not yet decided, with totals per person."
+msgstr "Các yêu cầu đã gửi nhưng chưa được duyệt, kèm tổng theo từng người."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Closed on"
+msgstr "Ngày đóng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Column menu"
+msgstr "Tùy chọn cột"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract pay"
+msgstr "Lương hợp đồng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract type"
+msgstr "Loại hợp đồng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Contracts ending in the next 60 days"
+msgstr "Hợp đồng hết hạn trong 60 ngày tới"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Cost"
+msgstr "Giá mua"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Count"
+msgstr "Đếm"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Country of Work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Counts from other areas"
+msgstr "Số liệu từ các mục khác"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Counts only"
+msgstr "Chỉ cho số liệu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Course"
+msgstr "Khóa học"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Courses people have not finished yet, soonest due first."
+msgstr "Các khóa học chưa hoàn thành, hạn gần nhất lên trước."
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Date of birth"
+msgstr "Ngày sinh"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days"
+msgstr "Số ngày"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days attended"
+msgstr "Số ngày đi làm"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days open"
+msgstr "Số ngày mở"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Deadline"
+msgstr "Hạn chót"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Decided on"
+msgstr "Ngày quyết định"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Delete this report? People you shared it with will lose it too."
+msgstr "Xóa báo cáo này? Những người được chia sẻ cũng sẽ mất báo cáo."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_builder__display_name
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__subject
+msgid "Each row is"
+msgstr "Mỗi dòng là"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Employee type"
+msgstr "Loại nhân viên"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "End date"
+msgstr "Ngày kết thúc"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "End of trial"
+msgstr "Hết thử việc"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Enter"
+msgstr "Enter"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Every asset in someone's hands, grouped by who holds it."
+msgstr "Mọi tài sản đang được giao, nhóm theo người giữ."
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__shared
+msgid "Everyone who can open reports"
+msgstr "Mọi người mở được báo cáo"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Everyone who left this year, and why."
+msgstr "Những người nghỉ việc năm nay và lý do."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Everyone who started this quarter, with their manager."
+msgstr "Những người bắt đầu làm trong quý này, kèm quản lý."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Expense claims"
+msgstr "Yêu cầu hoàn ứng chi phí"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Expense claims still open"
+msgstr "Yêu cầu chi phí chưa xong"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Expense claims waiting for approval"
+msgstr "Yêu cầu chi phí đang chờ duyệt"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Extra hours"
+msgstr "Giờ làm thêm"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Field"
+msgstr "Trường"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Filter"
+msgstr "Lọc"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Filter by this"
+msgstr "Lọc theo trường này"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Find"
+msgstr "Tìm"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Find a field"
+msgstr "Tìm trường"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Finished on"
+msgstr "Ngày hoàn thành"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "First day"
+msgstr "Ngày đầu"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Gender"
+msgstr "Giới tính"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Give the report a name first."
+msgstr "Hãy đặt tên cho báo cáo trước."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Give the report a name."
+msgstr "Hãy đặt tên cho báo cáo."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goal sheet"
+msgstr "Bảng mục tiêu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goal year"
+msgstr "Năm mục tiêu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goals"
+msgstr "Mục tiêu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goals set"
+msgstr "Số mục tiêu đã đặt"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Grand total"
+msgstr "Tổng cộng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by"
+msgstr "Nhóm theo"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by this"
+msgstr "Nhóm theo trường này"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by…"
+msgstr "Nhóm theo…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Grouped"
+msgstr "Đã nhóm"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Held by"
+msgstr "Người giữ"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Hide"
+msgstr "Ẩn"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Hire date"
+msgstr "Ngày tuyển"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Hours worked"
+msgstr "Số giờ làm"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "How"
+msgstr "Cách lọc"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How far along"
+msgstr "Tiến độ"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How far it has got"
+msgstr "Tiến độ"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How many people"
+msgstr "Số người"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "How many people work in each country, by contract type."
+msgstr "Số người làm việc ở mỗi quốc gia, theo loại hợp đồng."
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_builder__id
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "ID number"
+msgstr "Số giấy tờ tùy thân"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Job title"
+msgstr "Chức danh"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Joiners this quarter"
+msgstr "Người mới vào trong quý"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Kind of leave"
+msgstr "Loại nghỉ phép"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Largest first"
+msgstr "Lớn nhất trước"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Last 12 months"
+msgstr "12 tháng qua"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Last day"
+msgstr "Ngày cuối"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Last month"
+msgstr "Tháng trước"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__last_opened
+msgid "Last opened"
+msgstr "Mở lần cuối"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__spec
+msgid "Layout"
+msgstr "Bố cục"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Leavers this year"
+msgstr "Người nghỉ việc năm nay"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Leaving date"
+msgstr "Ngày nghỉ việc"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Load 50 more"
+msgstr "Tải thêm 50"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Load more in this group"
+msgstr "Tải thêm trong nhóm này"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Location"
+msgstr "Địa điểm"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Looking…"
+msgstr "Đang tìm…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Make a copy"
+msgstr "Tạo bản sao"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "My reports"
+msgstr "Báo cáo của tôi"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Name this report"
+msgstr "Đặt tên báo cáo"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Nationality"
+msgstr "Quốc tịch"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "New report"
+msgstr "Báo cáo mới"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Newest first"
+msgstr "Mới nhất trước"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 30 days"
+msgstr "30 ngày tới"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 60 days"
+msgstr "60 ngày tới"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 90 days"
+msgstr "90 ngày tới"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No field matches that."
+msgstr "Không có trường nào khớp."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No rows match. Try a wider period or fewer filters."
+msgstr "Không có dòng nào khớp. Hãy chọn khoảng thời gian rộng hơn hoặc bớt bộ lọc."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No saved reports yet."
+msgstr "Chưa có báo cáo nào được lưu."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No total"
+msgstr "Không tính tổng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Not saved"
+msgstr "Chưa lưu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Not set"
+msgstr "Chưa có"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Not visible to you"
+msgstr "Bạn không được xem"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Nothing found."
+msgstr "Không tìm thấy."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Oldest first"
+msgstr "Cũ nhất trước"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per applicant"
+msgstr "Mỗi ứng viên một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per asset"
+msgstr "Mỗi tài sản một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per check in"
+msgstr "Mỗi lần chấm công vào một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per contract"
+msgstr "Mỗi hợp đồng một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per course someone was put on"
+msgstr "Mỗi khóa học được giao một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per expense claim"
+msgstr "Mỗi yêu cầu chi phí một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per goal sheet"
+msgstr "Mỗi bảng mục tiêu một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "One row per person with counts from three areas, this month."
+msgstr "Mỗi người một dòng, kèm số liệu từ ba mục, trong tháng này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per person, with counts from other areas"
+msgstr "Mỗi người một dòng, kèm số liệu từ các mục khác"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per role being hired for"
+msgstr "Mỗi vị trí đang tuyển một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per time off request"
+msgstr "Mỗi đơn xin nghỉ một dòng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Only the first %(cap)s groups are included."
+msgstr "Chỉ gồm %(cap)s nhóm đầu tiên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Only the first %(cap)s groups are shown. Add a filter to see the others."
+msgstr "Chỉ hiện %(cap)s nhóm đầu tiên. Thêm bộ lọc để xem các nhóm khác."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"Only the person who saved this report can change it. Make a copy to change "
+"it your way."
+msgstr "Chỉ người đã lưu báo cáo này mới sửa được. Hãy tạo bản sao để sửa theo ý bạn."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Only you can see this report now."
+msgstr "Giờ chỉ bạn xem được báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Open role"
+msgstr "Vị trí tuyển"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Open roles"
+msgstr "Vị trí đang tuyển"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Opened on"
+msgstr "Ngày mở"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Opening the report builder…"
+msgstr "Đang mở trình tạo báo cáo…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Opens with real rows. Change anything, then save it as your own."
+msgstr "Mở ra với dữ liệu thật. Sửa tùy ý, rồi lưu thành báo cáo của bạn."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Paid on"
+msgstr "Ngày trả"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "People by country and contract type"
+msgstr "Nhân sự theo quốc gia và loại hợp đồng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Period"
+msgstr "Khoảng thời gian"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Pick dates"
+msgstr "Chọn ngày"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid ""
+"Pick one. You can add facts about the person to any row that belongs to "
+"someone."
+msgstr "Chọn một. Bạn có thể thêm thông tin về người đó vào bất kỳ dòng nào thuộc về một người."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pick one…"
+msgstr "Chọn một…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pick what each row is, then click the fields you want."
+msgstr "Chọn mỗi dòng là gì, rồi bấm vào các trường bạn cần."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid ""
+"Pick what each row is, then click the fields you want. Save it, share it, "
+"take it to Excel."
+msgstr "Chọn mỗi dòng là gì, rồi bấm vào các trường bạn cần. Lưu lại, chia sẻ, xuất ra Excel."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Put on it"
+msgstr "Ngày giao"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Reason given"
+msgstr "Lý do"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Receipts"
+msgstr "Số hóa đơn"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Recruiter"
+msgstr "Người tuyển dụng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Reference"
+msgstr "Mã số"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Remove filter"
+msgstr "Bỏ bộ lọc"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Remove group"
+msgstr "Bỏ nhóm"
+
+#. module: pb_report_builder
+#: model:ir.model,name:pb_report_builder.model_pb_report_builder
+msgid "Report builder"
+msgstr "Trình tạo báo cáo"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Report deleted."
+msgstr "Đã xóa báo cáo."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Report saved."
+msgstr "Đã lưu báo cáo."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Role"
+msgstr "Vị trí"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Rows"
+msgstr "Số dòng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Save (⌘S)"
+msgstr "Lưu (⌘S)"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Save the report first."
+msgstr "Hãy lưu báo cáo trước."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Save your changes first."
+msgstr "Hãy lưu thay đổi trước."
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__user_id
+msgid "Saved by"
+msgstr "Người lưu"
+
+#. module: pb_report_builder
+#: model:ir.model,name:pb_report_builder.model_pb_report_definition
+msgid "Saved report"
+msgstr "Báo cáo đã lưu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Sent on"
+msgstr "Ngày gửi"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Serial number"
+msgstr "Số sê-ri"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Share"
+msgstr "Chia sẻ"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Share with everyone who can open reports"
+msgstr "Chia sẻ với mọi người mở được báo cáo"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Shared"
+msgstr "Đã chia sẻ"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Shared by"
+msgstr "Được chia sẻ bởi"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Shared with everyone who can open reports."
+msgstr "Đã chia sẻ với mọi người mở được báo cáo."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Smallest first"
+msgstr "Nhỏ nhất trước"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Something went wrong just now."
+msgstr "Vừa có lỗi xảy ra."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Spreadsheets cannot be written on this server yet. Ask an administrator to "
+"install the spreadsheet library."
+msgstr "Máy chủ này chưa tạo được bảng tính. Hãy nhờ quản trị viên cài thư viện bảng tính."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Stage"
+msgstr "Giai đoạn"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Start date"
+msgstr "Ngày bắt đầu"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Start from an example"
+msgstr "Bắt đầu từ một mẫu"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Start from an example below, or press New report."
+msgstr "Bắt đầu từ một mẫu bên dưới, hoặc bấm Báo cáo mới."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Still working here"
+msgstr "Còn làm việc"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Sum"
+msgstr "Tổng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Summary only"
+msgstr "Chỉ xem tóm tắt"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Test score"
+msgstr "Điểm kiểm tra"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "That field has no list of choices."
+msgstr "Trường đó không có danh sách lựa chọn."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid ""
+"The report builder could not be opened just now. Try again in a moment."
+msgstr "Chưa mở được trình tạo báo cáo. Vui lòng thử lại sau giây lát."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "The table fills with real rows as you click."
+msgstr "Bảng sẽ hiện dữ liệu thật ngay khi bạn bấm."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This group could not be opened."
+msgstr "Không mở được nhóm này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This page of the report could not be read."
+msgstr "Không đọc được trang này của báo cáo."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This quarter"
+msgstr "Quý này"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report asks for a field the report builder does not know."
+msgstr "Báo cáo này yêu cầu một trường mà trình tạo báo cáo không biết."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report asks for something the report builder does not know."
+msgstr "Báo cáo này yêu cầu điều mà trình tạo báo cáo không biết."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "This report can no longer be opened here."
+msgstr "Không còn mở được báo cáo này ở đây."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report could not be read."
+msgstr "Không đọc được báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report has %(total)s rows; the first %(cap)s are included."
+msgstr "Báo cáo này có %(total)s dòng; chỉ gồm %(cap)s dòng đầu."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report is about something this system does not have."
+msgstr "Báo cáo này nói về dữ liệu mà hệ thống không có."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid ""
+"This report is about something you cannot open. Ask your administrator for "
+"access."
+msgstr "Báo cáo này nói về dữ liệu bạn không mở được. Hãy xin quyền từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"This report is no longer available. It may have been deleted, or it is no "
+"longer shared with you."
+msgstr "Báo cáo này không còn nữa. Có thể đã bị xóa hoặc không còn được chia sẻ với bạn."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's filters could not be read."
+msgstr "Không đọc được bộ lọc của báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's groups could not be read."
+msgstr "Không đọc được cách nhóm của báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's order could not be read."
+msgstr "Không đọc được thứ tự sắp xếp của báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's period could not be read."
+msgstr "Không đọc được khoảng thời gian của báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's totals could not be read."
+msgstr "Không đọc được các tổng của báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This year"
+msgstr "Năm nay"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Time off days taken"
+msgstr "Số ngày nghỉ đã dùng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Time off requests"
+msgstr "Đơn xin nghỉ"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Time off taken by department this year"
+msgstr "Ngày nghỉ theo phòng ban trong năm nay"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Time off, attendance and assets per person"
+msgstr "Nghỉ phép, chấm công và tài sản theo từng người"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "To"
+msgstr "Đến"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "To be finished by"
+msgstr "Hạn hoàn thành"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Total"
+msgstr "Tổng"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Total %(group)s"
+msgstr "Tổng %(group)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Training"
+msgstr "Đào tạo"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Training finished"
+msgstr "Khóa đào tạo đã xong"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Training still to finish"
+msgstr "Đào tạo chưa hoàn thành"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Type a word"
+msgstr "Gõ một từ"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Type to find…"
+msgstr "Gõ để tìm…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Undo (⌘Z)"
+msgstr "Hoàn tác (⌘Z)"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Value"
+msgstr "Giá trị"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Wanted by"
+msgstr "Cần trước ngày"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Warranty ends"
+msgstr "Hết bảo hành"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "What is each row?"
+msgstr "Mỗi dòng là gì?"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "What it is"
+msgstr "Tên tài sản"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Where every applicant stands, role by role."
+msgstr "Tình trạng của từng ứng viên, theo từng vị trí."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Which date"
+msgstr "Theo ngày nào"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Who needs a renewal decision soon."
+msgstr "Những ai sắp cần quyết định gia hạn."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Why they left"
+msgstr "Lý do nghỉ việc"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Work email"
+msgstr "Email công việc"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Work mobile"
+msgstr "Di động công việc"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Working hours"
+msgstr "Giờ làm việc"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"You already have %(cap)s saved reports. Delete one you no longer use first."
+msgstr "Bạn đã có %(cap)s báo cáo đã lưu. Hãy xóa một báo cáo không dùng nữa trước."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "You cannot open this kind of report."
+msgstr "Bạn không mở được loại báo cáo này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see Applicants. Ask your administrator for Hiring access."
+msgstr "Bạn không xem được Ứng viên. Hãy xin quyền Tuyển dụng từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see assets. Ask your administrator for Assets access."
+msgstr "Bạn không xem được tài sản. Hãy xin quyền Tài sản từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see attendance. Ask your administrator for attendance access."
+msgstr "Bạn không xem được chấm công. Hãy xin quyền chấm công từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see contracts. Ask your administrator for contract access."
+msgstr "Bạn không xem được hợp đồng. Hãy xin quyền hợp đồng từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see expense claims. Ask your administrator for Expenses access."
+msgstr "Bạn không xem được yêu cầu chi phí. Hãy xin quyền Chi phí từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see goals. Ask your administrator for Talent access."
+msgstr "Bạn không xem được mục tiêu. Hãy xin quyền Nhân tài từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see open roles. Ask your administrator for Hiring access."
+msgstr "Bạn không xem được vị trí đang tuyển. Hãy xin quyền Tuyển dụng từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see people. Ask your administrator for HR access."
+msgstr "Bạn không xem được nhân sự. Hãy xin quyền Nhân sự từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see time off requests. Ask your administrator for time off "
+"access."
+msgstr "Bạn không xem được đơn xin nghỉ. Hãy xin quyền nghỉ phép từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see training. Ask your administrator for Learning access."
+msgstr "Bạn không xem được đào tạo. Hãy xin quyền Học tập từ quản trị viên."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "You may not see this record."
+msgstr "Bạn không được xem bản ghi này."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Your own fields"
+msgstr "Trường riêng của bạn"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Z to A"
+msgstr "Z đến A"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "add"
+msgstr "thêm"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "and"
+msgstr "và"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "average"
+msgstr "trung bình"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "between"
+msgstr "trong khoảng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "by"
+msgstr "theo"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "columns"
+msgstr "cột"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "contains"
+msgstr "có chứa"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "count"
+msgstr "đếm"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "find"
+msgstr "tìm"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is"
+msgstr "là"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is empty"
+msgstr "để trống"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is not"
+msgstr "không phải"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is not empty"
+msgstr "không để trống"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is one of"
+msgstr "là một trong"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "row"
+msgstr "dòng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "rows"
+msgstr "dòng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "save"
+msgstr "lưu"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "to"
+msgstr "đến"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "total"
+msgstr "tổng"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "undo"
+msgstr "hoàn tác"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "⌘S"
+msgstr "⌘S"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "⌘Z"
+msgstr "⌘Z"
