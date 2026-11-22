@@ -182,11 +182,8 @@
                 <input type="checkbox" t-att-checked="state.look.printed" t-on-change="() => this.toggle('printed')"/>
                 <span class="trk"/><span>Printed on (date) by (your name)</span>
               </label>
-              <label class="pbrp-switch">
-                <input type="checkbox" t-att-checked="state.look.pages" t-on-change="() => this.toggle('pages')"/>
-                <span class="trk"/><span>Page numbers</span>
-              </label>
-              <p t-if="state.look.letterhead and state.look.pages" class="pbrp-hint">With the letterhead, the page numbers are the ones in your company's own footer.</p>
+              <p t-if="state.look.letterhead" class="pbrp-hint"><t t-out="icon('info', 13)"/> Page numbers come from your company's own letter footer.</p>
+              <p t-else="" class="pbrp-hint"><t t-out="icon('info', 13)"/> Every page ends with “Page 1 of 3”.</p>
               <span class="pbrp-label">Closing note</span>
               <textarea class="pbrp-in pbrp-note" rows="3" maxlength="600" t-att-value="state.look.note"
                         placeholder="For example: Prepared for the board. Figures before tax."

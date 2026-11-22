@@ -390,7 +390,10 @@ class PbReportPdfLayout(models.AbstractModel):
             'css': self._pbrp_css(look),
             'empty': '' if rows else _("This report has no rows to print."),
             'printed': self._pbrp_printed() if look['printed'] else '',
-            'pages_on': bool(look['pages']),
+            # Page numbers always print, exactly once: the company's own footer
+            # carries them with the letterhead, our footer without it
+            # (orchestrator ruling 2026-11-22). `look['pages']` is kept, unused.
+            'pages_on': True,
             'sideways': sideways,
             'paper': look['paper'],
             'paper_mm': (paper_w, paper_h),

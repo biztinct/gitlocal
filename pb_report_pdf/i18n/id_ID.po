@@ -474,12 +474,6 @@ msgstr "Halaman %(page)s dari %(total)s"
 #. module: pb_report_pdf
 #. odoo-javascript
 #: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
-msgid "Page numbers"
-msgstr "Nomor halaman"
-
-#. module: pb_report_pdf
-#. odoo-javascript
-#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
 msgid "Paper"
 msgstr "Kertas"
 
@@ -744,12 +738,6 @@ msgid "Which way up"
 msgstr "Arah kertas"
 
 #. module: pb_report_pdf
-#. odoo-javascript
-#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
-msgid "With the letterhead, the page numbers are the ones in your company's own footer."
-msgstr "Dengan kop surat, nomor halaman mengikuti kaki halaman perusahaan Anda."
-
-#. module: pb_report_pdf
 #. odoo-python
 #: code:addons/pb_report_pdf/models/layout.py:0
 msgid "Yes"
@@ -790,3 +778,15 @@ msgstr "Tampilan Anda · dibagikan"
 #: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
 msgid "the report's owner"
 msgstr "pemilik laporan"
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Page numbers come from your company's own letter footer."
+msgstr "Nomor halaman berasal dari kaki surat perusahaan Anda."
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Every page ends with “Page 1 of 3”."
+msgstr "Setiap halaman diakhiri dengan “Halaman 1 dari 3”."

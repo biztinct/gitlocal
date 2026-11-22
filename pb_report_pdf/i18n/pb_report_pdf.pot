@@ -72,8 +72,7 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_report_pdf/models/layout.py:0
-#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+#: code:addons/pb_report_pdf/models/layout.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
 msgid "1 row"
 msgstr ""
 
@@ -200,10 +199,7 @@ msgid "Design the PDF of this report"
 msgstr ""
 
 #. module: pb_report_pdf
-#: model:ir.model.fields,field_description:pb_report_pdf.field_ir_actions_report__display_name
-#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf__display_name
-#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__display_name
-#: model:ir.model.fields,field_description:pb_report_pdf.field_report_pb_report_pdf_report_table__display_name
+#: model:ir.model.fields,field_description:pb_report_pdf.field_ir_actions_report__display_name model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf__display_name model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__display_name model:ir.model.fields,field_description:pb_report_pdf.field_report_pb_report_pdf_report_table__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -228,9 +224,7 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-javascript
 #: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
-msgid ""
-"Drag the edge between two column headings to make a column wider. Download "
-"PDF gives the true file."
+msgid "Drag the edge between two column headings to make a column wider. Download PDF gives the true file."
 msgstr ""
 
 #. module: pb_report_pdf
@@ -323,10 +317,7 @@ msgid "Heading row colour"
 msgstr ""
 
 #. module: pb_report_pdf
-#: model:ir.model.fields,field_description:pb_report_pdf.field_ir_actions_report__id
-#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf__id
-#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__id
-#: model:ir.model.fields,field_description:pb_report_pdf.field_report_pb_report_pdf_report_table__id
+#: model:ir.model.fields,field_description:pb_report_pdf.field_ir_actions_report__id model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf__id model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__id model:ir.model.fields,field_description:pb_report_pdf.field_report_pb_report_pdf_report_table__id
 msgid "ID"
 msgstr ""
 
@@ -431,24 +422,20 @@ msgstr ""
 
 #. module: pb_report_pdf
 #. odoo-python
-#: code:addons/pb_report_pdf/models/facade.py:0
-#: code:addons/pb_report_pdf/models/look.py:0
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/models/look.py:0
 msgid "Only administrators can change the company's default look."
 msgstr ""
 
 #. module: pb_report_pdf
 #. odoo-python
-#: code:addons/pb_report_pdf/models/facade.py:0
-#: code:addons/pb_report_pdf/models/look.py:0
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/models/look.py:0
 msgid "Only administrators can set the company's default look."
 msgstr ""
 
 #. module: pb_report_pdf
 #. odoo-python
 #: code:addons/pb_report_pdf/models/layout.py:0
-msgid ""
-"Only the first %(cap)s of %(total)s rows are printed. Add a filter to print "
-"fewer rows."
+msgid "Only the first %(cap)s of %(total)s rows are printed. Add a filter to print fewer rows."
 msgstr ""
 
 #. module: pb_report_pdf
@@ -489,12 +476,6 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-javascript
 #: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
-msgid "Page numbers"
-msgstr ""
-
-#. module: pb_report_pdf
-#. odoo-javascript
-#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
 msgid "Paper"
 msgstr ""
 
@@ -507,8 +488,7 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_report_pdf/models/facade.py:0
-#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
 msgid "Pick at least one column to print."
 msgstr ""
 
@@ -532,8 +512,7 @@ msgstr ""
 
 #. module: pb_report_pdf
 #. odoo-python
-#: code:addons/pb_report_pdf/models/sources.py:0
-#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__source_id
+#: code:addons/pb_report_pdf/models/sources.py:0 model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__source_id
 msgid "Report"
 msgstr ""
 
@@ -611,8 +590,7 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_report_pdf/models/facade.py:0
-#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
 msgid "Sideways"
 msgstr ""
 
@@ -667,9 +645,7 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-python
 #: code:addons/pb_report_pdf/models/facade.py:0
-msgid ""
-"The PDF could not be made right now. Try again in a moment; the page on "
-"screen is exactly what will print."
+msgid "The PDF could not be made right now. Try again in a moment; the page on screen is exactly what will print."
 msgstr ""
 
 #. module: pb_report_pdf
@@ -699,17 +675,13 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-javascript
 #: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
-msgid ""
-"This report has no totals. Add a total to a column on screen to print one "
-"here."
+msgid "This report has no totals. Add a total to a column on screen to print one here."
 msgstr ""
 
 #. module: pb_report_pdf
 #. odoo-python
 #: code:addons/pb_report_pdf/models/sources.py:0
-msgid ""
-"This report is no longer available. It may have been deleted, or it is no "
-"longer shared with you."
+msgid "This report is no longer available. It may have been deleted, or it is no longer shared with you."
 msgstr ""
 
 #. module: pb_report_pdf
@@ -751,8 +723,7 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_report_pdf/models/facade.py:0
-#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
 msgid "Upright"
 msgstr ""
 
@@ -769,14 +740,6 @@ msgid "Which way up"
 msgstr ""
 
 #. module: pb_report_pdf
-#. odoo-javascript
-#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
-msgid ""
-"With the letterhead, the page numbers are the ones in your company's own "
-"footer."
-msgstr ""
-
-#. module: pb_report_pdf
 #. odoo-python
 #: code:addons/pb_report_pdf/models/layout.py:0
 msgid "Yes"
@@ -785,9 +748,7 @@ msgstr ""
 #. module: pb_report_pdf
 #. odoo-python
 #: code:addons/pb_report_pdf/models/facade.py:0
-msgid ""
-"You already keep %(cap)s PDF looks. Put one you no longer use back to the "
-"standard look first."
+msgid "You already keep %(cap)s PDF looks. Put one you no longer use back to the standard look first."
 msgstr ""
 
 #. module: pb_report_pdf
@@ -818,4 +779,16 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
 msgid "the report's owner"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Page numbers come from your company's own letter footer."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Every page ends with “Page 1 of 3”."
 msgstr ""

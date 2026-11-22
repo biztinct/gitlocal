@@ -276,13 +276,25 @@ class TestReportPdf(TransactionCase):
         self.assertIn('data-report-margin-top="16"', off)
         self.assertIn('pbrp-footer', off)
         self.assertIn('Printed on', off)
-        self.assertIn('class="topage"', off)
+        # page numbers: always there, exactly once — ours without the
+        # letterhead, the company's own footer with it (ruling 2026-11-22)
+        self.assertEqual(off.count('class="topage"'), 1)
+        self.assertEqual(on.count('class="topage"'), 1)
+        _r, off_nopages = self._download(self.admin_u, report,
+                                         dict(look, letterhead=False, pages=False))
+        self.assertEqual(off_nopages.decode('utf-8').count('class="topage"'), 1,
+                         'an old look that switched them off still prints them')
+        footer_extra = self.env['ir.qweb']._render('pb_report_pdf.footer_extra', {
+            'doc': {'printed': 'Printed on x by y', 'cap_note': ''}})
+        self.assertNotIn('topage', str(footer_extra))
         if self.real:
             for flag in (True, False):
                 _r, data = self._download(self.admin_u, report, dict(look, letterhead=flag),
                                           real=True)
                 pages = _pages(data)
                 self.assertIn('DEMO PDF Letterhead', pages[0])
+                for page in pages:
+                    self.assertEqual(len(re.findall(r'Page \d', page)), 1, page[-200:])
 
     # ------------------------------------------------------------ 7 + 8
     def test_07_column_width_saved_and_applied_08_hidden_column_absent(self):
@@ -382,25 +394,38 @@ class TestReportPdf(TransactionCase):
 
     # ------------------------------------------------------------ 12
     def test_12_vietnamese_letters_and_dates(self):
+        """A column that really holds dates (contract start), a Vietnamese
+        reader: the date is written in the Vietnamese date format (not the
+        English one), the letters survive the PDF, the footer is in
+        Vietnamese."""
         self.env['res.lang']._activate_lang('vi_VN')
         self.admin_u.lang = 'vi_VN'
-        report = self._people_report(columns=['name', 'start_date'], name='DEMO PDF Hoà')
         start = date(2026, 3, 9)
-        self.env['hr.contract'].create({'name': 'DEMO PDF C Hoa', 'employee_id': self.hoa.id,
-                                        'date_start': start, 'wage': 1}).state = 'open'
+        contract = self.env['hr.contract'].create({
+            'name': 'DEMO PDF C Hoa', 'employee_id': self.hoa.id, 'date_start': start,
+            'wage': 1})
+        contract.state = 'open'
+        spec = {'subject': 'contracts', 'columns': ['employee', 'date_start'],
+                'filters': [{'key': 'employee', 'op': 'in', 'value': [self.hoa.id]}]}
+        card = self._builder(self.admin_u).save_report('DEMO PDF Hoà', spec)
+        report = self.env[MODEL].browse(card['id'])
         P = self._pdf(self.admin_u, lang='vi_VN', real=self.real)
         info = P._pbrp_table(report)
+        self.assertIn(start, [r[1] for r in info['rows']], 'the column holds the date')
         look = P.open(MODEL, report.id)['look']
-        look['title'] = 'Báo cáo nhân sự Hoà'
+        look.update({'title': 'Báo cáo nhân sự Hoà', 'letterhead': False})
         res = P.download(MODEL, report.id, look)
         self.assertTrue(res['ok'], res.get('msg'))
         text = _flat(' '.join(_pages(base64.b64decode(res['data']))))
         self.assertIn('Lê Thị Hoà', text)
         self.assertIn('Báo cáo nhân sự Hoà', text)
-        first = [r for r in info['rows'] if 'Hoà' in str(r[0])]
-        if first and first[0][1]:
-            vi_env = self.env(context=dict(self.env.context, lang='vi_VN'))
-            self.assertIn(format_date(vi_env, first[0][1]), text)
+        vi_date = format_date(self.env(context=dict(self.env.context, lang='vi_VN')), start)
+        en_date = format_date(self.env(context=dict(self.env.context, lang='en_US')), start)
+        self.assertNotEqual(vi_date, en_date)
+        self.assertIn(vi_date, text)
+        self.assertNotIn(en_date, text)
+        self.assertIn('In lúc', text, 'the footer is in Vietnamese')
+        self.assertIn('Trang', text)
 
     # ------------------------------------------------------------ 13
     def test_13_hostile_text_is_inert_and_long_words_wrap(self):
