@@ -35,6 +35,18 @@ patch(DocStudio.prototype, {
         const p = this.state.person;
         return (this.isOfferDoc && p && p.name) || _t("The candidate");
     },
+    /** The studio keeps the preview person from one document to the next;
+     *  between a letter and an offer letter the kind changes, so the
+     *  document's own sample (a person or an offer) is used instead. */
+    applyDoc(doc) {
+        const p = this.state.person;
+        const want = doc && doc.preview_kind === "offer" ? "offer" : "person";
+        const have = p && p.kind === "offer" ? "offer" : "person";
+        if (p && want !== have) {
+            this.state.person = null;
+        }
+        return super.applyDoc(doc);
+    },
     offerRowText(p) {
         return [p.ref, p.job || p.company, p.state].filter((v) => v).join(" · ");
     },

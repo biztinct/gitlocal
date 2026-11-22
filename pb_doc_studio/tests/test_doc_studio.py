@@ -496,7 +496,8 @@ class TestDocStudio(DocStudioCase):
         board = self.Studio.board()
         kinds = {c['kind'] for c in board['cards']}
         self.assertTrue(kinds <= {k['key'] for k in board['kinds']})
-        self.assertFalse([c for c in board['cards'] if c['type_label'] == 'Offer letter'])
+        # Offer letters: out of the gallery, or (phase A1 bridge) only under "Hiring".
+        self.assertFalse([c for c in board['cards'] if c['type_label'] == 'Offer letter' and c['kind'] != 'hiring'])
         made = self.Studio.create_blank('joining', 'DEMO Welcome')
         opened = self.Studio.open(made['id'])
         self.assertEqual(opened['kind'], 'joining')
