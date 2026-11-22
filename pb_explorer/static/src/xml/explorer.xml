@@ -43,6 +43,13 @@
                     t-att-disabled="state.busy || !state.data" title="Download Excel">
               <t t-out="icx('fileSpreadsheet', 15)"/><span class="lbl">Download Excel</span>
             </button>
+            <!-- DOCSTUDIO X (contract C2): "My Excel layout", when installed.
+                 A layout belongs to a saved view, so until one is open the
+                 button is there but says why it waits. -->
+            <t t-if="excelLayoutButton" t-component="excelLayoutButton"
+               sourceModel="'pb.explorer.view'"
+               sourceId="state.activeView ? state.activeView.id : 0"
+               disabledReason="excelLayoutWhy"/>
             <button t-if="state.activeView and state.activeView.mine"
                     class="pbex-btn ghost pbex-sendbtn" t-on-click="() => this.openSchedule()"
                     title="Send regularly…">
