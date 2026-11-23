@@ -22,8 +22,7 @@ from odoo import api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 from .layout import (HEADER_SPACING, HEADER_SPACING_LETTERHEAD, MARGIN_TOP,
-                     MARGIN_TOP_LETTERHEAD, FIT_COLUMNS, ROW_CAP, SYSTEM_STACK,
-                     SYSTEM_STACKS)
+                     MARGIN_TOP_LETTERHEAD, FIT_COLUMNS, PDF_FONTS, ROW_CAP)
 from .look import COLORS, DEFAULT_KEYS, PAPERS, clean_look
 
 try:  # the tenant's own name for the product (WHITELABEL)
@@ -34,8 +33,6 @@ except Exception:  # pragma: no cover — biz_debrand absent on this build
 
 _logger = logging.getLogger(__name__)
 
-PLAIN_FONT_CSS = (".pbds-page.pbds-pdf, .pbds-page.pbds-pdf .pbrp, .pbds-page.pbds-pdf .pbrp th, "
-                  ".pbds-page.pbds-pdf .pbrp td { font-family: %s !important; }\n")
 CACHE_TTL = 90
 CACHE_SIZE = 6
 LOOK_CAP = 500
@@ -97,8 +94,10 @@ class PbReportPdfFacade(models.AbstractModel):
             'turns': [{'key': 'fit', 'label': _("Fit")},
                       {'key': 'upright', 'label': _("Upright")},
                       {'key': 'sideways', 'label': _("Sideways")}],
-            'fonts': [{'key': o['value'], 'label': o['label'], 'css': o['css']}
-                      for o in styles['font']['options']],
+            # the C3 fonts that print differently (see layout.PDF_FONTS)
+            'fonts': [{'key': o['value'], 'label': o['label'],
+                       'css': self._pbrp_font_stack(o['value'])}
+                      for o in styles['font']['options'] if o['value'] in PDF_FONTS],
             'sizes': [o['value'] for o in styles['size']['options']],
             'colors': [{'key': k, 'bg': bg, 'fg': fg, 'label': color_words.get(k, k)}
                        for k, bg, fg in COLORS],
@@ -156,7 +155,6 @@ class PbReportPdfFacade(models.AbstractModel):
             'visible': doc['visible'],
             'widths': {c['key']: c['w'] for c in doc['columns']},
             'empty': doc['empty'],
-            'plain_font': doc['plain_font'],
         }
 
     # ============================================================ RPC
@@ -324,14 +322,6 @@ class PbReportPdfFacade(models.AbstractModel):
         company = (company or self.env.company).sudo()
         doc = self._pbrp_doc(info, look)
         page = self._pbrp_page(look)
-        if doc['plain_font']:
-            stack = SYSTEM_STACKS.get(look['font'], SYSTEM_STACK)
-            doc = dict(doc, css=Markup(PLAIN_FONT_CSS % stack) + doc['css'])
-        else:
-            faces = self._pbrp_font_css(look['font'])
-            if faces:
-                stack = self.env['pb.doc.studio'].page_values(page)['font_css']
-                doc = dict(doc, css=Markup(faces % stack) + doc['css'])
         body = self.env['ir.qweb']._render('pb_report_pdf.table_body', {'doc': doc})
         report = self._pbrp_report(look['paper'])
         letterhead = bool(look['letterhead'])

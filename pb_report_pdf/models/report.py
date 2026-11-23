@@ -42,22 +42,36 @@ class IrActionsReport(models.Model):
 
     def _prepare_html(self, html, report_model=False):
         res = super()._prepare_html(html, report_model=report_model)
-        extra = self.env.context.get('pbrp_footer')
-        if not extra or not res or self.report_name != REPORT_NAME:
+        if not res or self.report_name != REPORT_NAME:
             return res
         bodies, res_ids, header, footer, args = res
+        extra = self.env.context.get('pbrp_footer')
         try:
-            root = lxml.html.fromstring(str(footer))
+            header = self._pbrp_server_fonts(header)
+            footer = self._pbrp_server_fonts(footer, extra)
+        except Exception:                                    # noqa: BLE001
+            _logger.warning('pb_report_pdf: the page header/footer were left as they were',
+                            exc_info=True)
+        return bodies, res_ids, header, footer, args
+
+    def _pbrp_server_fonts(self, page, extra=None):
+        """The company's header/footer page with server-installed fonts
+        (a web font there loses the text of the first pages, ledger DS-B8)
+        and, for the footer, the "Printed on … by …" line added."""
+        if not page:
+            return page
+        root = lxml.html.fromstring(str(page))
+        head = root.find('head')
+        if head is not None:
+            style = lxml.html.fragment_fromstring(
+                "<style>body, body * { font-family: 'DejaVu Sans', Arial, Helvetica, "
+                "sans-serif !important; }</style>")
+            head.append(style)
+        if extra:
             holder = root.get_element_by_id('minimal_layout_report_footers', None)
             target = holder[0] if holder is not None and len(holder) else holder
             if target is not None:
                 for node in lxml.html.fragments_fromstring(str(extra)):
-                    if isinstance(node, str):
-                        continue
-                    target.append(node)
-                footer = Markup(lxml.html.tostring(root, encoding='unicode',
-                                                   doctype='<!DOCTYPE html>'))
-        except Exception:                                    # noqa: BLE001
-            _logger.warning('pb_report_pdf: the printed-on line could not join the '
-                            'company footer', exc_info=True)
-        return bodies, res_ids, header, footer, args
+                    if not isinstance(node, str):
+                        target.append(node)
+        return Markup(lxml.html.tostring(root, encoding='unicode', doctype='<!DOCTYPE html>'))

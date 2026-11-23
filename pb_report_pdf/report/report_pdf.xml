@@ -98,7 +98,7 @@
          letterhead is on (see models/report.py). Inline styles: the footer
          is its own small page with only the report styles. -->
     <template id="footer_extra">
-        <div class="pbrp-foot-extra" style="font-family: Roboto, 'DejaVu Sans', Arial, sans-serif; font-size: 8.5px; color: #64748b; text-align: center; margin-top: 1mm;">
+        <div class="pbrp-foot-extra" style="font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif; font-size: 8.5px; color: #64748b; text-align: center; margin-top: 1mm;">
             <span t-if="doc['printed']" t-esc="doc['printed']"/>
             <span t-if="doc['printed'] and doc['cap_note']"> · </span>
             <span t-if="doc['cap_note']" style="color: #92400e;" t-esc="doc['cap_note']"/>
@@ -133,7 +133,7 @@
                         </div>
                     </div>
                     <div class="footer pbrp-footer">
-                        <table t-if="rp['printed'] or rp['pages_on'] or rp['cap_note']" style="width: 100%; border-collapse: collapse; font-family: Roboto, 'DejaVu Sans', Arial, sans-serif; font-size: 8.5px; color: #64748b; border-top: 1px solid #e2e4ee;">
+                        <table t-if="rp['printed'] or rp['pages_on'] or rp['cap_note']" style="width: 100%; border-collapse: collapse; font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif; font-size: 8.5px; color: #64748b; border-top: 1px solid #e2e4ee;">
                             <tr>
                                 <td style="padding-top: 1.5mm; text-align: left; vertical-align: top;">
                                     <span t-if="rp['printed']" t-esc="rp['printed']"/>

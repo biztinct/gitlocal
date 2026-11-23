@@ -10,7 +10,6 @@ currencies), the heading, the footer words and an estimate of the pages.
 The same document draws the on-screen first page and the true PDF, so the
 preview is what prints.
 """
-import base64
 import logging
 import math
 from collections import Counter, OrderedDict
@@ -19,35 +18,20 @@ from datetime import date, datetime
 from markupsafe import Markup
 
 from odoo import api, fields, models
-from odoo.tools.misc import file_path, format_date, format_datetime, formatLang
+from odoo.tools.misc import format_date, format_datetime, formatLang
 
 from .look import COLORS
 
 _logger = logging.getLogger(__name__)
 
 ROW_CAP = 5000
-#: The page fonts (C3 keys) carried INSIDE the PDF: the PDF engine fetches
-#: web fonts from the server while it draws and, on a busy server, starts
-#: drawing before they arrive — the text then comes out blank or bold
-#: (ledger DS-B8). Regular + bold of the chosen font, from the files the web
-#: client ships; a font whose files are missing falls back to the C3 stack.
-FONT_FILES = {
-    'clean': ('web/static/fonts/google/Roboto/Roboto-Regular.ttf',
-              'web/static/fonts/google/Roboto/Roboto-Bold.ttf'),
-    'friendly': ('web/static/fonts/google/Open_Sans/Open_Sans-Regular.ttf',
-                 'web/static/fonts/google/Open_Sans/Open_Sans-Bold.ttf'),
-    'modern': ('web/static/fonts/google/Montserrat/Montserrat-Regular.ttf',
-               'web/static/fonts/google/Montserrat/Montserrat-Bold.ttf'),
-    'classic': ('pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSerif.ttf',
-                'pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSerif-Bold.ttf'),
-}
-_FONT_CSS = {}
-#: Past this many printed cells the PDF engine (wkhtmltopdf 0.12.6) stops
-#: drawing the text of the FIRST pages in any web font — downloaded or
-#: carried inside — while later pages print (measured: 3,500 cells fine,
-#: 4,000 blank first pages; ledger DS-B8). Long reports therefore print in a
-#: font installed on the server (DejaVu, Vietnamese included), said on screen.
-FONT_CELLS = 2000
+#: Report PDFs print in fonts INSTALLED on the server (DejaVu carries every
+#: Vietnamese letter), never in web fonts: wkhtmltopdf 0.12.6 drops the text
+#: of the first pages of a long document in any web font, and draws every
+#: weight of a carried-in font with one face (ledger DS-B8). So the page
+#: offers the two C3 fonts that differ on paper: "Clean" (sans) and
+#: "Classic serif"; the other C3 keys print as Clean.
+PDF_FONTS = ('clean', 'classic')
 SYSTEM_STACKS = {
     'classic': "'DejaVu Serif', Georgia, 'Times New Roman', serif",
 }
@@ -269,33 +253,15 @@ class PbReportPdfLayout(models.AbstractModel):
         bg, fg = self._pbrp_color(look['color'])
         size = look['size']
         return Markup(TABLE_CSS % {
+            'font': self._pbrp_font_stack(look['font']),
             'bg': bg, 'fg': fg,
             'title': round(size * 1.75, 1), 'sub': round(size * 1.05, 1),
             'small': round(size * 0.9, 1),
         })
 
     @api.model
-    def _pbrp_font_css(self, font):
-        """@font-face rules with the font files inside (PDF only), cached
-        per worker. '' when the files are not on this server."""
-        if font in _FONT_CSS:
-            return _FONT_CSS[font]
-        css = ''
-        try:
-            faces = []
-            for path, weight in zip(FONT_FILES[font], (400, 700)):
-                with open(file_path(path), 'rb') as fh:
-                    data = base64.b64encode(fh.read()).decode('ascii')
-                faces.append("@font-face { font-family: 'pbrp-face'; font-weight: %d; "
-                             "font-style: normal; src: url(data:font/ttf;base64,%s) "
-                             "format('truetype'); }" % (weight, data))
-            css = '\n'.join(faces) + ("\n.pbds-page.pbds-pdf, .pbds-page.pbds-pdf .pbrp, "
-                                      ".pbds-page.pbds-pdf .pbrp th, .pbds-page.pbds-pdf .pbrp td "
-                                      "{ font-family: 'pbrp-face', %s !important; }\n")
-        except (KeyError, OSError, ValueError):
-            _logger.info('pb_report_pdf: font %s not carried in the PDF', font)
-        _FONT_CSS[font] = css
-        return css
+    def _pbrp_font_stack(self, font):
+        return SYSTEM_STACKS.get(font, SYSTEM_STACK)
 
     @api.model
     def _pbrp_printed(self):
@@ -455,7 +421,6 @@ class PbReportPdfLayout(models.AbstractModel):
             'total_rows': total_rows,
             'capped': capped,
             'visible': len(visible),
-            'plain_font': len(rows) * max(len(visible), 1) > FONT_CELLS,
         }
         pages, first_page = self._pbrp_estimate(doc, look)
         doc['pages'] = pages
@@ -517,6 +482,7 @@ class PbReportPdfLayout(models.AbstractModel):
 #: Plain CSS the PDF engine (an old WebKit) understands. `table-layout:
 #: fixed` + the column widths make long words wrap inside their cell.
 TABLE_CSS = """
+.pbds-page, .pbds-page .pbrp, .pbds-page .pbrp th, .pbds-page .pbrp td, .pbds-page .pbrp h1 { font-family: %(font)s !important; }
 .pbrp { color: #1f2430; }
 .pbrp-head { margin: 0 0 3mm; }
 .pbrp .pbrp-title { font-size: %(title)spx; font-weight: 700; margin: 0 0 1mm; color: #1b1733; line-height: 1.25; }

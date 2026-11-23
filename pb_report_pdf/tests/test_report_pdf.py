@@ -240,10 +240,9 @@ class TestReportPdf(TransactionCase):
         self.assertIn('Row 04999', html)
         self.assertNotIn('Row 05000', html)
         self.assertIn('Only the first 5,000 of 6,000 rows are printed', html)
-        # a long report prints in a server font (DS-B8), said on screen
-        self.assertTrue(pv['plain_font'])
+        # fonts installed on the server, never a web font (DS-B8)
         self.assertIn("font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif !important", html)
-        self.assertNotIn('pbrp-face', html)
+        self.assertNotIn('@font-face', html)
 
     # ------------------------------------------------------------ 5
     def test_05_fit_turns_the_page_sideways_past_the_column_limit(self):
@@ -276,9 +275,12 @@ class TestReportPdf(TransactionCase):
         on, off = on.decode('utf-8'), off.decode('utf-8')
         self.assertIn('data-report-margin-top="40"', on)
         self.assertIn('o_report_layout', on, "the company's own letterhead")
-        # a short report carries its chosen font inside the file (DS-B8)
-        self.assertIn("font-family: 'pbrp-face'", on)
-        self.assertIn('data:font/ttf;base64,', on)
+        # server fonts only (DS-B8): sans for Clean, serif for Classic
+        self.assertIn("font-family: 'DejaVu Sans'", on)
+        _r, serif = self._download(self.admin_u, report, dict(look, font='classic'))
+        self.assertIn("font-family: 'DejaVu Serif'", serif.decode('utf-8'))
+        self.assertEqual([f['key'] for f in P.open(MODEL, report.id)['options']['fonts']],
+                         ['clean', 'classic'])
         self.assertNotIn('o_report_layout', off)
         self.assertIn('data-report-margin-top="16"', off)
         self.assertIn('pbrp-footer', off)

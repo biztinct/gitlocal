@@ -108,7 +108,6 @@
                   <span class="nm" t-esc="fo.label"/>
                 </button>
               </div>
-              <p t-if="state.pv and state.pv.plain_font" class="pbrp-hint"><t t-out="icon('info', 13)"/> This report is long, so the PDF prints it in a standard font that draws every page reliably.</p>
               <span class="pbrp-label">Text size</span>
               <div class="pbrp-seg" role="radiogroup" aria-label="Text size">
                 <button t-foreach="state.data.options.sizes" t-as="sz" t-key="sz" type="button" role="radio"
