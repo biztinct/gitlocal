@@ -146,12 +146,12 @@ class TestReportPdf(TransactionCase):
     # ------------------------------------------------------------ 1
     def test_01_install_is_silent(self):
         """No look, no job, no mail template, no Print menu entry."""
-        self.assertFalse(self.env['pb.report.pdf.look'].search_count([]))
+        # the install itself ships no look (a used database may hold people's own)
         module = self.env['ir.module.module'].search([('name', '=', 'pb_report_pdf')])
         data = self.env['ir.model.data'].search([('module', '=', 'pb_report_pdf')])
         models_made = set(data.mapped('model'))
-        self.assertFalse(models_made & {'ir.cron', 'mail.template', 'ir.ui.menu'},
-                         models_made)
+        self.assertFalse(models_made & {'ir.cron', 'mail.template', 'ir.ui.menu',
+                                        'pb.report.pdf.look'}, models_made)
         for xmlid in ('action_report_pdf_a4', 'action_report_pdf_a3'):
             action = self.env.ref('pb_report_pdf.%s' % xmlid)
             self.assertFalse(action.binding_model_id, 'never on a Print menu')
