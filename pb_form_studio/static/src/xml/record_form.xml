@@ -21,5 +21,11 @@
         </div>
       </div>
     </xpath>
+    <xpath expr="//div[hasclass('o_form_view_container')]" position="before">
+      <div t-if="isPremiumRecord and ['settings', 'agreement'].includes(env.pbRecordWorkspace.props.section) and workflowProgress and (workflowProgress.available or workflowProgress.canDesign)" class="pb-record-tools">
+        <button t-if="workflowProgress.available" type="button" class="btn btn-outline-primary" t-on-click="() => this.pbRecordWorkflow(false)">View workflow</button>
+        <button t-if="workflowProgress.canDesign" type="button" class="btn btn-outline-primary" t-on-click="() => this.pbRecordWorkflow(true)">Set up workflow</button>
+      </div>
+    </xpath>
   </t>
 </templates>

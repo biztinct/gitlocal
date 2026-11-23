@@ -4,7 +4,8 @@ Project the already postprocessed full form: installed view rules, field ACLs,
 translations, Form builder labels and modifiers remain authoritative. Full
 Details is not modified or cached under the section's key.
 """
-from odoo import api, models
+from odoo import api, fields, models, _
+from odoo.exceptions import AccessError
 from lxml import etree
 from odoo.addons.pb_form_studio.models.native_section import project_section_form
 
@@ -38,6 +39,7 @@ SECTIONS = {
         ('India tax & insurance', ('pb_in_pan_number', 'pb_in_tax_regime', 'pb_in_uan_number', 'pb_in_esi_number')),
         ('Singapore tax', ('pb_sg_tax_residency', 'pb_sg_shg_fund')),
         ('Vietnam insurance policy', ('vn_insurance_policy_id', 'vn_work_region', 'vn_exempt_oa_od')),
+        ('Current payroll settings', ('vn_payroll_insurance_summary', 'vn_payroll_tax_summary')),
         ('Vietnam insurance contributions', ('vn_si_enrolled', 'vn_si_enrollment_status', 'vn_si_salary_base', 'vn_hi_enrolled', 'vn_hi_salary_base', 'vn_ui_enrolled', 'vn_ui_salary_base')),
         ('Vietnam tax', ('vn_tax_regime', 'vn_residency_status', 'pb_vn_dependants_check')),
         ('Payroll facts', ('pb_vn_is_local', 'pb_vn_tax_resident', 'pb_vn_tax_commitment', 'pb_vn_in_insurance', 'pb_vn_union_member')),
@@ -50,7 +52,10 @@ SECTIONS = {
     ),
 }
 SECTION_BLOCKS = {
-    'job': (('Organisation chart', "//field[@name='child_ids'][not(ancestor::field)]"),),
+    'job': (
+        ('Presence', "//field[@name='hr_icon_display'][@widget='hr_presence_status_private']"),
+        ('Organisation chart', "//field[@name='child_ids'][not(ancestor::field)]"),
+    ),
     'resume': (
         ('Experience', "//div[@id='o_employee_left']"),
         ('Skills', "//div[@id='o_work_information_right']"),
@@ -59,8 +64,17 @@ SECTION_BLOCKS = {
         ('Résumé file', "//group[@name='pb_resume_file']"),
     ),
     'pay': (
+        ('Bank accounts', "//div[field[@name='bank_account_ids'][@widget='many2many_tags_salary_bank']]"),
+        ('Account holder notice', "//div[contains(concat(' ', normalize-space(@class), ' '), ' pbon-form-note ')]"),
         ('Tax dependants', "//page[@name='vietnam_tax']//group[.//field[@name='vn_dependent_ids']][not(group)]"),
         ('Tax requests', "//field[@name='pb_tax_request_ids'][not(ancestor::field)]"),
+    ),
+    'settings': (
+        ('Employment records', "//header/field[@name='version_id']"),
+        ('Record actions', '//header/button'),
+        ('History & reports', "//div[@name='button_box']"),
+        ('Attendance badge', "//div[button[@name='generate_random_barcode']]"),
+        ('Employment templates', "//div[contains(@class, 'o_horizontal_separator')][button]"),
     ),
 
 }
@@ -78,11 +92,45 @@ class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
     @api.model
+    def _pb_work_address_domain(self):
+        """Company offices and explicitly configured workplaces, not people.
+
+        Keep the same domain in both native and premium fields. No sudo:
+        company and contact record rules remain authoritative.
+        """
+        roots = self.env.companies.partner_id.ids
+        locations = self.env['hr.work.location'].search([
+            ('company_id', 'in', self.env.companies.ids),
+        ]).address_id.ids
+        return ['|', ('id', 'in', list(set(roots + locations))),
+                '&', ('id', 'child_of', roots),
+                '|', ('is_company', '=', True), ('type', 'in', ['other', 'delivery'])]
+
+    def action_pb_manage_hr_users(self):
+        self.ensure_one()
+        self.check_access('read')
+        if not self.env.user.has_group('base.group_system'):
+            raise AccessError(_('Only an administrator can manage user accounts.'))
+        self.env['res.users'].check_access('write')
+        return {'type': 'ir.actions.act_window', 'name': _('Manage HR partner users'),
+                'res_model': 'res.users', 'view_mode': 'list,form',
+                'views': [(False, 'list'), (False, 'form')],
+                'domain': ['|', ('share', '=', False), ('id', '=', self.hrbp_user_id.id if 'hrbp_user_id' in self._fields else False)],
+                'target': 'current'}
+
+    @api.model
     def get_view(self, view_id=None, view_type='form', **options):
         result = super().get_view(view_id, view_type, **options)
         section = options.get('pb_workspace_section')
         if view_type == 'form' and section in SECTIONS:
             result = dict(result)
+            if section == 'settings':
+                source = etree.fromstring(result['arch'])
+                if not source.xpath(".//field[@name='display_name'][not(ancestor::field)]"):
+                    etree.SubElement(source, 'field', {'name': 'display_name', 'invisible': '1'})
+                result['models'] = dict(result['models'])
+                result['models'][self._name] = set(result['models'][self._name]) | {'display_name'}
+                result['arch'] = etree.tostring(source, encoding='unicode')
             result['arch'] = project_section_form(result['arch'],
                 [(self.env._(title), names) for title, names in SECTIONS[section]],
                 {name: field.get('domain', '') for name, field in
@@ -95,5 +143,20 @@ class HrEmployee(models.Model):
                 arch = etree.fromstring(result['arch'])
                 for field in arch.xpath(".//section//field[@name='child_ids'][@widget='hr_org_chart']"):
                     field.set('widget', 'pb_premium_org_chart')
+                if self.env.user.has_group('base.group_system'):
+                    for field in arch.xpath(".//section//field[@name='hrbp_user_id']"):
+                        etree.SubElement(field.getparent(), 'button', {
+                            'type': 'object', 'name': 'action_pb_manage_hr_users',
+                            'string': self.env._('Manage users'),
+                            'class': 'btn btn-link p-0 mt-2',
+                        })
                 result['arch'] = etree.tostring(arch, encoding='unicode')
         return result
+
+
+class HrEmploymentVersion(models.Model):
+    _inherit = 'hr.version'
+
+    # The employee delegates this field to its employment version. Extend the
+    # owning field rather than introducing a second employee-address column.
+    address_id = fields.Many2one(domain=lambda self: self.env['hr.employee']._pb_work_address_domain())

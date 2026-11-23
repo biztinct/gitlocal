@@ -2,10 +2,22 @@ from lxml import etree
 from odoo.tests import tagged
 from odoo.exceptions import AccessError, ValidationError
 from odoo.addons.pb_contracts.tests.test_cd4_approval import TestCd4ContractApproval
+from odoo.addons.pb_contracts.models.pb_contract_360 import _TERMS
 
 
 @tagged('post_install', '-at_install', 'premium_workspace')
 class TestPremiumContract(TestCd4ContractApproval):
+    def test_all_native_contract_fields_have_a_premium_home(self):
+        model = self.env['hr.contract'].with_user(self.hr)
+        source = etree.fromstring(model.get_view(view_type='form')['arch'])
+        agreement = etree.fromstring(model.get_view(view_type='form', pb_workspace_section='agreement')['arch'])
+        covered = set(agreement.xpath('.//section//field[not(ancestor::field)]/@name'))
+        covered.update(row[1] for row in _TERMS)
+        covered.update(('advantages_ids', 'state'))  # Components and status/actions.
+        visible = {n.get('name') for n in source.xpath('.//field[not(ancestor::field)]')
+                   if not any(a.get('invisible') in ('1', 'True', 'true') for a in [n, *n.iterancestors()])}
+        self.assertFalse({n for n in visible - covered if not n.startswith('x_pbfs_')})
+
     def test_native_save_holds_pay_until_the_existing_route_approves(self):
         contract = self.contract.with_user(self.hr).with_company(self.company).with_context(pb_premium_record=True)
         before = self.contract.wage

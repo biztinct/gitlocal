@@ -9,17 +9,7 @@
     <xpath expr="//div[hasclass('pev-head-side')]/button[@t-on-click='openFull']" position="before">
       <button type="button" class="pev-full" t-on-click="toggleWorkspace" t-att-aria-expanded="state.expanded"><t t-out="ic('external',14)"/> <t t-esc="workspaceExpandLabel"/></button>
     </xpath>
-    <xpath expr="//div[hasclass('pev-head-side')]/button[@t-on-click='openFull']" position="replace">
-      <Dropdown>
-        <button type="button" class="pev-full" aria-label="More employee actions">More</button>
-        <t t-set-slot="content">
-          <DropdownItem onSelected.bind="openFull">
-            <span class="d-block">Advanced record</span>
-            <small class="d-block text-muted">History, reports and administrative tools</small>
-          </DropdownItem>
-        </t>
-      </Dropdown>
-    </xpath>
+    <xpath expr="//div[hasclass('pev-head-side')]/button[@t-on-click='openFull']" position="replace"/>
     <xpath expr="//div[hasclass('pev-head-id')]" position="before">
       <button t-if="workspaceBackLabel" type="button" class="pb-workspace-back" t-on-click="workspaceBack"><span aria-hidden="true">&#8592;</span> <t t-esc="workspaceBackLabel"/></button>
     </xpath>
@@ -28,28 +18,34 @@
     </xpath>
     <xpath expr="//t[@t-if=&quot;['personal', 'job', 'pay'].includes(state.tab)&quot;]" position="before">
       <div t-if="state.tab === 'job'" class="pb-workspace-section">
-        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'job'" title.translate="Job &amp; organisation" onReady.bind="workspaceJobReady" t-key="'job'" onSaved.bind="load"/>
+        <PremiumRecordForm recordContext="workspaceRecordContext" onVersionChanged.bind="workspaceVersionChanged" resModel="'hr.employee'" resId="workspaceRecordId" section="'job'" title.translate="Job &amp; organisation" onReady.bind="workspaceJobReady" t-key="'job'" onSaved.bind="load"/>
       </div>
       <div t-if="state.tab === 'personal'" class="pb-workspace-section">
-        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'personal'" title.translate="Personal details" onReady.bind="workspacePersonalReady" t-key="'personal'" onSaved.bind="load"/>
+        <PremiumRecordForm recordContext="workspaceRecordContext" onVersionChanged.bind="workspaceVersionChanged" resModel="'hr.employee'" resId="workspaceRecordId" section="'personal'" title.translate="Personal details" onReady.bind="workspacePersonalReady" t-key="'personal'" onSaved.bind="load"/>
       </div>
     </xpath>
     <xpath expr="//div[hasclass('pev-tabs')]/button[contains(@t-on-click, &quot;'timeline'&quot;)]" position="before">
       <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'resume'}" t-on-click="() => this.setTab('resume')"><t t-out="ic('award',15)"/> Résumé</button>
       <button type="button" class="pev-tab" t-att-class="{on: state.tab === 'settings'}" t-on-click="() => this.setTab('settings')"><t t-out="ic('settings',15)"/> Settings</button>
     </xpath>
+    <xpath expr="//div[hasclass('pev-body')]" position="before">
+      <div t-if="state.versionId" class="pb-version-notice">
+        <span>Employment record: <strong t-esc="state.versionLabel"/>. Editable sections use this record; profile summaries show current information.</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary" t-on-click="workspaceCurrentVersion">Return to current</button>
+      </div>
+    </xpath>
     <xpath expr="//div[hasclass('pev-body')]" position="inside">
       <div t-if="state.tab === 'pay'" class="pb-workspace-section">
-        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'pay'" title.translate="Pay &amp; tax details" onReady.bind="workspacePayReady" t-key="'pay'" onSaved.bind="load"/>
+        <PremiumRecordForm recordContext="workspaceRecordContext" onVersionChanged.bind="workspaceVersionChanged" resModel="'hr.employee'" resId="workspaceRecordId" section="'pay'" title.translate="Pay &amp; tax details" onReady.bind="workspacePayReady" t-key="'pay'" onSaved.bind="load"/>
       </div>
       <div t-if="state.tab === 'resume'" class="pb-workspace-section">
-        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'resume'" title.translate="Experience &amp; skills" onReady.bind="workspaceResumeReady" t-key="'resume'" onSaved.bind="load"/>
+        <PremiumRecordForm recordContext="workspaceRecordContext" onVersionChanged.bind="workspaceVersionChanged" resModel="'hr.employee'" resId="workspaceRecordId" section="'resume'" title.translate="Experience &amp; skills" onReady.bind="workspaceResumeReady" t-key="'resume'" onSaved.bind="load"/>
       </div>
       <div t-if="state.tab === 'settings'" class="pb-workspace-section">
-        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'settings'" title.translate="Employee settings" onReady.bind="workspaceSettingsReady" t-key="'settings'" onSaved.bind="load"/>
+        <PremiumRecordForm recordContext="workspaceRecordContext" onVersionChanged.bind="workspaceVersionChanged" resModel="'hr.employee'" resId="workspaceRecordId" section="'settings'" title.translate="Employee settings" onReady.bind="workspaceSettingsReady" t-key="'settings'" onSaved.bind="load"/>
       </div>
       <div t-if="state.tab === 'documents'" class="pb-workspace-section">
-        <PremiumRecordForm resModel="'hr.employee'" resId="workspaceRecordId" section="'documents'" title.translate="Additional document files" onReady.bind="workspaceDocumentsReady" t-key="'documents'" onSaved.bind="load"/>
+        <PremiumRecordForm recordContext="workspaceRecordContext" onVersionChanged.bind="workspaceVersionChanged" resModel="'hr.employee'" resId="workspaceRecordId" section="'documents'" title.translate="Additional document files" onReady.bind="workspaceDocumentsReady" t-key="'documents'" onSaved.bind="load"/>
       </div>
     </xpath>
     <xpath expr="//div[hasclass('pev-more')][@t-if]" position="replace"/>

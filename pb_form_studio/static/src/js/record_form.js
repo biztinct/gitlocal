@@ -1,7 +1,7 @@
 /** @odoo-module **/
 // Keep the original employee/contract controller and server-processed arch.
 // Only the enclosing presentation changes; installed field widgets and hooks stay.
-import { Component, onError, onMounted, onWillStart, onWillUnmount, useState, useSubEnv } from "@odoo/owl";
+import { Component, onError, onMounted, onWillStart, onWillUnmount, onWillUpdateProps, useEffect, useState, useSubEnv } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
@@ -26,6 +26,13 @@ patch(FormController.prototype, {
         };
         onMounted(() => { this.env.pbRecordWorkspace.controller = this; });
         onWillUnmount(() => { this.env.pbRecordWorkspace.controller = null; });
+        useEffect(() => {
+            const version = this.model.root.data.version_id;
+            if (this.pbObservedVersion !== undefined && version?.id !== this.pbObservedVersion) {
+                this.env.pbRecordWorkspace.props.onVersionChanged?.(version);
+            }
+            this.pbObservedVersion = version?.id;
+        }, () => [this.model.root.data.version_id?.id]);
     },
     get modelParams() {
         const params = super.modelParams;
@@ -55,6 +62,24 @@ patch(FormController.prototype, {
     async pbRecordCancel() {
         await this.model.root.discard();
         await this.model.root.switchMode("readonly");
+    },
+    async beforeExecuteActionButton(params) {
+        if (this.isPremiumRecord) {
+            if (!(await this.pbRecordGuard())) { return false; }
+            this.pbActionOrigin = this.actionService.currentController;
+        }
+        return super.beforeExecuteActionButton(params);
+    },
+    async afterExecuteActionButton(params) {
+        await super.afterExecuteActionButton(params);
+        if (this.isPremiumRecord && this.pbActionOrigin !== this.actionService.currentController) {
+            this.env.pbWorkspaceNavigate?.();
+        }
+    },
+    async pbRecordWorkflow(setup) {
+        if (!(await this.pbRecordGuard())) { return; }
+        await (setup ? this.setupRecordWorkflow() : this.openWorkflowProgress());
+        this.env.pbWorkspaceNavigate?.();
     },
     beforeVisibilityChange() {
         if (!this.isPremiumRecord) { return super.beforeVisibilityChange(...arguments); }
@@ -88,6 +113,8 @@ export class PremiumRecordForm extends Component {
         onSaved: { type: Function, optional: true },
         section: { type: String, optional: true },
         title: { type: String, optional: true },
+        recordContext: { type: Object, optional: true },
+        onVersionChanged: { type: Function, optional: true },
     };
     setup() {
         this.state = useState({ generation: 0, error: false });
@@ -100,6 +127,11 @@ export class PremiumRecordForm extends Component {
         this.viewService = useService("view");
         this.sectionView = null;
         onWillStart(() => this.loadSection());
+        onWillUpdateProps((next) => {
+            if (JSON.stringify(next.recordContext || {}) !== JSON.stringify(this.props.recordContext || {})) {
+                this.state.generation++;
+            }
+        });
         onMounted(() => this.props.onReady(this));
         this.controller = null;
         this.notebookPages = {};
@@ -113,11 +145,11 @@ export class PremiumRecordForm extends Component {
         try {
             const result = await this.viewService.loadViews({
                 resModel: this.props.resModel, views: [[false, "form"]], context: {},
-            }, { pb_workspace_section: this.props.section, pb_workspace_revision: 3 });
+            }, { pb_workspace_section: this.props.section, pb_workspace_revision: 4 });
             this.sectionView = { arch: result.views.form.arch, fields: result.fields,
                 relatedModels: result.relatedModels, viewId: result.views.form.id };
         } catch (error) {
-            this.state.error = _t("This section could not be loaded. Retry or open Full details.");
+            this.state.error = _t("This section could not be loaded. Please retry.");
         }
     }
     get projectedFields() {
@@ -133,7 +165,7 @@ export class PremiumRecordForm extends Component {
             preventCreate: true, loadActionMenus: !this.props.section,
             ...(this.sectionView || {}),
             state: { activeNotebookPages: { ...this.notebookPages } },
-            context: { pb_premium_record: true }, display: { controlPanel: !this.props.section },
+            context: { ...this.props.recordContext, pb_premium_record: true }, display: { controlPanel: !this.props.section },
             onSave: () => this.props.onSaved?.(),
         };
     }

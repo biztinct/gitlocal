@@ -126,4 +126,4 @@ class TestPremiumJobSection(TransactionCase):
             if field.type in ('one2many', 'many2many'):
                 self.assertTrue(model.env[field.comodel_name].has_access('read'), name)
         self.assertTrue(root.xpath(".//section//field[@name='payroll_country']"))
-        self.assertFalse(root.xpath(".//field[@name='bank_account_ids']"))
+        self.assertTrue(root.xpath(".//section//field[@name='bank_account_ids']"))

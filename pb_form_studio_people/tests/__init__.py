@@ -7,3 +7,4 @@ from . import test_fs11_fixed
 from . import test_fs15_showfor
 from . import test_premium_section
 from . import test_fs16_builder_list
+from . import test_workspace_completion

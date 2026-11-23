@@ -76,35 +76,46 @@ def project_section_form(arch, groups, domains=None, blocks=(), excluded=()):
         if not card.xpath('.//field'):
             grid.remove(card)
     for title, selector in blocks:
+        card = None
+        visibility = []
         for node in source.xpath(selector):
             block_names = {n.get('name') for n in _root_fields(node)}
             if node.tag == 'field':
                 block_names.add(node.get('name'))
             if block_names & excluded:
                 continue
-            card = etree.SubElement(grid, 'section', {'class': 'pb-job-card pb-native-block'})
-            etree.SubElement(card, 'h3').text = title
+            if card is None:
+                card = etree.SubElement(grid, 'section', {'class': 'pb-job-card pb-native-block'})
+                etree.SubElement(card, 'h3').text = title
             holder = card
             for ancestor in reversed(list(node.iterancestors())):
                 attrs = {k: ancestor.get(k) for k in ('invisible', 'groups') if ancestor.get(k)}
                 if attrs:
                     holder = etree.SubElement(holder, 'div', attrs)
             block = deepcopy(node)
-            if block.tag in ('page', 'group'):
+            if block.get('name') == 'button_box':
+                # The native compiler otherwise relocates these to a control
+                # panel which the premium section deliberately does not draw.
+                block.attrib.pop('name')
+                block.set('class', 'pb-record-report-links')
+            if block.tag in ('page', 'group', 'header'):
                 block.tag = 'div'
                 for attr in ('string', 'name', 'col', 'colspan'):
                     block.attrib.pop(attr, None)
             holder.append(block)
             hidden_rules = [a.get('invisible') for a in [node, *node.iterancestors()] if a.get('invisible')]
-            if hidden_rules:
-                card.set('invisible', ' or '.join('(' + v + ')' for v in hidden_rules))
+            visibility.append(' or '.join('(' + v + ')' for v in hidden_rules) or 'False')
             selected.update(n.get('name') for n in _root_fields(card))
+        if card is not None and visibility and 'False' not in visibility:
+            card.set('invisible', ' and '.join('(' + v + ')' for v in visibility))
     # Widgets and preserved action blocks have dependencies too (including
     # file-name fields, hidden siblings and context expressions).
     for node in root.iter():
         dependencies.update(_references([v for k, v in node.attrib.items()
             if k in ('invisible', 'readonly', 'required', 'domain', 'context', 'options')], available))
         if node.tag == 'field' and not any(a.tag == 'field' for a in node.iterancestors()):
+            if node.get('widget') == 'versions_timeline':
+                dependencies.update({'display_name', 'contract_type_id', 'contract_date_start', 'contract_date_end'})
             dependencies.update(_references([domains.get(node.get('name'), '')], available))
             dependencies.update(node.get(attr) for attr in ('filename', 'currency_field') if node.get(attr) in available)
     # Include only dependency fields, not unrelated payroll/private x2many

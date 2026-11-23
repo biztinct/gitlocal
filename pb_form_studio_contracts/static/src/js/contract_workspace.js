@@ -3,16 +3,16 @@ import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { PremiumRecordForm } from "@pb_form_studio/js/record_form";
 import { Contract360Drawer } from "@pb_contracts/js/contract_360";
-import { Dropdown } from "@web/core/dropdown/dropdown";
-import { DropdownItem } from "@web/core/dropdown/dropdown_item";
+import { useSubEnv } from "@odoo/owl";
 
-Contract360Drawer.components = { ...Contract360Drawer.components, PremiumRecordForm, Dropdown, DropdownItem };
+Contract360Drawer.components = { ...Contract360Drawer.components, PremiumRecordForm };
 
 patch(Contract360Drawer.prototype, {
     setup() {
         super.setup(...arguments);
         this.state.expanded = false;
         this.recordForm = null;
+        useSubEnv({ pbWorkspaceNavigate: () => this.reallyClose() });
     },
     get workspaceRecordId() { return Number(this.props.contractId); },
     get workspaceExpandLabel() { return this.state.expanded ? _t("Collapse") : _t("Expand"); },

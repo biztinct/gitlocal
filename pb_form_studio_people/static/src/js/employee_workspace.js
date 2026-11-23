@@ -4,11 +4,23 @@ import { _t } from "@web/core/l10n/translation";
 import { Employee360Drawer } from "@pb_employee_vault/js/employee_360";
 import { PremiumRecordForm } from "@pb_form_studio/js/record_form";
 import { useSubEnv } from "@odoo/owl";
-import { Dropdown } from "@web/core/dropdown/dropdown";
-import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { registry } from "@web/core/registry";
+import { VersionsTimeline } from "@hr/components/versions_timeline/versions_timeline";
 
-Employee360Drawer.components = { ...Employee360Drawer.components, PremiumRecordForm, Dropdown, DropdownItem };
+patch(VersionsTimeline.prototype, {
+    async selectItem(item) {
+        const form = this.env.pbRecordWorkspace;
+        if (form && !(await form.guardLeave())) { return; }
+        return super.selectItem(item);
+    },
+    async createVersion(date) {
+        const form = this.env.pbRecordWorkspace;
+        if (form && !(await form.guardLeave())) { return; }
+        return super.createVersion(date);
+    },
+});
+
+Employee360Drawer.components = { ...Employee360Drawer.components, PremiumRecordForm };
 Employee360Drawer.props = { ...Employee360Drawer.props,
     workspaceStartTab: { type: String, optional: true },
     workspaceExpanded: { type: Boolean, optional: true },
@@ -21,7 +33,12 @@ patch(Employee360Drawer.prototype, {
         this.state.tab = this.props.embedded ? "documents" : (this.props.workspaceStartTab || "profile");
         this.recordForms = {};
         this.state.sectionFields = {};
-        useSubEnv({ pbEmployeeWorkspace: this });
+        this.state.versionId = false;
+        this.state.versionLabel = '';
+        useSubEnv({ pbEmployeeWorkspace: this, pbWorkspaceNavigate: () => {
+            this.state.shown = false;
+            this.props.onClose?.();
+        } });
     },
     groups(tab) {
         const groups = super.groups(tab);
@@ -34,6 +51,16 @@ patch(Employee360Drawer.prototype, {
         }).filter(group => group.rows.length);
     },
     get workspaceRecordId() { return Number(this.props.empId); },
+    get workspaceRecordContext() { return this.state.versionId ? { version_id: this.state.versionId } : {}; },
+    workspaceVersionChanged(version) {
+        this.state.versionId = version?.id || false;
+        this.state.versionLabel = version?.display_name || '';
+    },
+    async workspaceCurrentVersion() {
+        if (this.recordForm && !(await this.recordForm.guardLeave())) { return; }
+        this.workspaceVersionChanged(null);
+        await this.load();
+    },
     get workspaceExpandLabel() { return this.state.expanded ? _t("Collapse") : _t("Expand"); },
     get recordForm() { return this.recordForms[this.state.tab] || null; },
     workspaceJobReady(form) { this.workspaceReady("job", form); },

@@ -30,7 +30,8 @@ class ContractWorkspace(models.Model):
             result = dict(result)
             result['arch'] = project_section_form(result['arch'],
                 [(self.env._(title), names) for title, names in AGREEMENT_GROUPS],
-                {name: field.get('domain', '') for name, field in self.fields_get(attributes=['domain']).items()})
+                {name: field.get('domain', '') for name, field in self.fields_get(attributes=['domain']).items()},
+                [(self.env._('Component change records'), "//div[@name='button_box']")])
         return result
 
     def _workspace_components(self, commands):
