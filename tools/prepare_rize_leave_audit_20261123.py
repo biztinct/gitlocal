@@ -47,8 +47,9 @@ native={'B':('e','payroll_country'),'D':('e','employee_id'),'E':('e','barcode'),
         'F':('e','name'),'I':('e','sex'),'J':('e','country_id'),'P':('e','marital'),
         'V':('e','payroll_country'),'W':('e','work_location_id'),
         'X':('e','date_of_joining'),'AE':('e','parent_id'),'AF':('manager','work_email'),
-        'AK':('e','active'),'AN':('e','vietnam_citizen_id'),
-        'BD':('e','vietnam_temporary_address'),'BE':('e','emergency_phone'),'BF':('e','emergency_contact'),
+        'AK':('e','active'),'AN':('e','identification_id'),'Q':('e','vietnam_dependents_count'),
+        'AA':('e','pb_probation_state'),
+        'BD':('e','private_street'),'BE':('e','emergency_phone'),'BF':('e','emergency_contact'),
         'BG':('e','pb_emergency_relationship'),'BH':('c','currency_id'),'BI':('c','pb_salary_basis'),
         'AB':('c','pb_signed_date'),'AC':('c','date_end')}
 for col,r in spec.items():
@@ -95,7 +96,14 @@ for i,row in enumerate(v[2:],3):
             if col=='P':value={'Married':'married','Single':'single','Divorced':'divorced'}.get(value,value)
             if col=='CV':
                 labels=dict(orm['hr.employee.fields'].get('certificate',{}).get('selection',[]));current=labels.get(current,current)
+                if value=='University' and current=='Bachelor':value='Bachelor'
             status='matches' if eq(value,current) else 'different' if current not in (None,False,'') else 'missing_native'
+            if col in ('Y','Z') and status!='matches' and any(eq(value,old.get(field)) for old in cs):
+                status='matches_contract_history'
+            fallback={'BD':'vietnam_temporary_address','BE':'vietnam_emergency_contact_phone',
+                      'BF':'vietnam_emergency_contact_name','BG':'vietnam_emergency_contact_relationship'}
+            if col in fallback and status!='matches' and eq(value,e.get(fallback[col])):
+                status='legacy_profile_only';target+='; saved in '+fallback[col]
         elif col in ('CP','CQ','CR','CS'):
             partner=e.get('work_contact_id');accounts=[x for x in bank if partner and x['partner_id']==partner[0]]
             field={'CP':'bank_name','CQ':'acc_number','CR':'acc_holder_name','CS':'bank_bic'}[col]
@@ -111,6 +119,10 @@ for i,row in enumerate(v[2:],3):
             status='retained_reference' if eq(value,current) else 'reference_differs' if current not in (None,False,'') else 'missing_reference'
         if status in ('missing_native','different') and r and eq(value,legacy.get(r['code'])):
             status='legacy_only';target+=' (matches saved contract reference)'
+        if str(original).strip().lower() in ('n/a','na','none','indefinite') and current in (False,None,''):
+            status='matches_blank_or_unlimited'
+        if col=='CY' and e['pb_leave_policy_id'] and value==10:status='matches_policy'
+        if col=='BQ' and code=='RIZ235':status='superseded_by_client_confirmation'
         audit.append({'code':code,'name':row[5],'active':e['active'],'cell':col+str(i),
             'column':col,'field':headers[j-1],'source':original,'saved':current,'target':target,'status':status})
 
