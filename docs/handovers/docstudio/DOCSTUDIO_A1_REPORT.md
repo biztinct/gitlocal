@@ -80,7 +80,30 @@ Suites: `pb_doc_studio_hiring` (11 tests + 3 gates), `pb_doc_studio_me` (5 tests
 
 ### 2.1 Existing suites vs baseline
 
-__SUITES__
+Full run on `docstudio_a1_t` with both bridges (`-u pb_hiring,pb_me_letters,pb_doc_studio,
+pb_doc_studio_hiring,pb_doc_studio_me`, tags = the five modules): 600 test cases (stats: pb_hiring
+690 incl. sub-tests, pb_me_letters 16, pb_doc_studio 43, pb_doc_studio_hiring 19, pb_doc_studio_me
+14) → 9 failed + 4 errors. Every one accounted for:
+
+| Test | With A1 | Baseline (`docstudio_a1_base`, no bridges) | Verdict |
+|---|---|---|---|
+| pb_hiring `TestClientReview.test_hiring_only_cannot_read_access_directory` | FAIL | FAIL | baseline |
+| pb_hiring `TestRecruitInterviewsP5.test_07b_without_google_nothing_changes` | FAIL | FAIL | baseline |
+| pb_hiring `TestRecruitJoining.test_11_the_numbers_filters_funnel_ageing_leadership_and_exports` | FAIL | FAIL | baseline |
+| pb_hiring `TestTheCover.test_t7_who_is_asked_to_agree_it_is_said_out_loud` | FAIL | FAIL | baseline |
+| pb_hiring `TestRecruitPrivacy.test_02_the_manager_sees_the_card_and_a_sentence_until_shared` | FAIL | FAIL | baseline |
+| pb_hiring `TestRecruitPrivacy.test_02b_unsharing_regenerates_the_file_tokens` | ERROR | ERROR | baseline |
+| pb_hiring `TestRecruitPrivacy.test_08_the_resume_bank` | ERROR | ERROR | baseline |
+| pb_hiring `TestRecruitPrivacyFiles.test_02_tokenised_cv_link` | FAIL | FAIL | baseline |
+| pb_hiring `TestRegistersP9.test_08_the_hub_names_the_two_registers_between_overview_and_interviews` | FAIL | FAIL | baseline |
+| pb_hiring `TestRecruitStages.test_13_set_up_has_six_cards_and_none_is_a_dead_end` | FAIL | FAIL | baseline |
+| pb_hiring `TestRecruitApplyPage.test_05_the_page_follows_the_form_and_speaks_vietnamese` | ERROR (HTTP read timeout, two suites running at once) | PASS | PASS on a quiet re-run with A1 (DS-A1-3) |
+| pb_doc_studio_me `TestCertStudioPortal.test_a1_12_portal_flow` | ERROR (same HTTP timeout) | n/a | PASS on the quiet re-run |
+| pb_doc_studio `TestDocStudio.test_board_open_and_new` | FAIL | n/a (F's assertion that offers are never listed) | fixed by the line-499 edit (§4); PASS on the re-run |
+
+Quiet re-run on `docstudio_a1_t` (`/pb_doc_studio,/pb_doc_studio_hiring,/pb_doc_studio_me` +
+the apply-page test): **59 tests, 0 failed, 0 errors**. pb_me_letters: 16/16 in the full run.
+**Failure set with A1 = the baseline failure set (10 pb_hiring tests, none in code A1 touches).**
 
 ### 2.2 Browser walk (Chrome, host `a1.localhost:8571`, throwaway login on the walk copy)
 
