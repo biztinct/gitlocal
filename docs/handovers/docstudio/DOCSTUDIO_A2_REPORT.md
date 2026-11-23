@@ -127,7 +127,7 @@ None (this report and `docs/handovers/docstudio/evidence_a2/` only).
 - E-signature (owner: out of scope).
 - A contract made from the Letters list uses the person's current contract, not a chosen one.
 - Version names stay in the saver's language.
-- The narrow-space quirk in the PDF (cosmetic).
+- (Fixed in the follow-up below: the narrow-space quirk.)
 
 ## 9. New gotcha rows (for the ledger)
 
@@ -137,8 +137,44 @@ None (this report and `docs/handovers/docstudio/evidence_a2/` only).
 - DS-A2-4 | Local real PDFs come out unstyled because a template database's `web.base.url` points at the live host | set `report.url` to the local server in the throwaway database only.
 - DS-A2-5 | The company report layout draws borders on every PDF table | use `!important` in page-frame CSS for tables with their own look.
 - DS-A2-6 | Heavily loaded Mac (load ~200): asset bundles take 20–60 s, browser screenshots time out | wait in a bounded loop for a known element.
+- DS-A2-7 | The PDF engine fetches the Roboto web font (page font "Clean") over http; when it arrives late, bold labels are laid out with one font and drawn with another, so words overlap after "The employer:" (seen in the Vietnamese and English columns, varies run to run). This affects EVERY studio document printed in "Clean", not only contracts | contracts now ship in "Classic serif" (DejaVu Serif, a system font: prints the same every time). Phase F owner should look at the other documents (out of A2's lane).
+
+## Follow-up after the owner's rulings (2026-11-24)
+
+Rulings: (1) view-only people download but do not file — kept as built; (2) shipped wording goes live
+with a notice "Sample wording. Have your own lawyer check it before you use it."
+
+Built (commit `bbc1bb8a3`):
+- New flag `pbdc_sample` on letter templates: set on the three shipped contracts (data) and on copies
+  made from them ("Make a copy for…"); cleared by the customer's first save in the designer; set again
+  when a shipped contract is put back. (The studio's `pbds_edited` could not be used alone: "Make a
+  copy for…" sets it although the copy still carries the sample words.)
+- Notice shown as an amber line across the top of the contract panel's sheet (with "Not printed" and,
+  for people allowed, "Make it yours" → designer) and as the banner above the page in the designer
+  (replaces the earlier "Starting wording" note and side card). Lucide alert icon, locked palette.
+- Never printed: the notice is not part of the wording; test 16 checks the preview page, the PDF and
+  the filed document.
+- Narrow space after bold labels: root cause found (DS-A2-7, late web font), fixed for contracts by
+  shipping them in the "Classic serif" system font; checked on two real PDF renders (spacing correct,
+  Vietnamese letters correct). Locally the Mac substitutes Georgia for DejaVu Serif; the server has DejaVu.
+- vi_VN / id_ID: 95 entries each, PO gate passes.
+
+Tests: `pb_doc_contracts` 23/23 (new test 16: notice shown before edit for all three shipped
+documents, absent from the page, PDF and filed document, kept by a copy, gone after the customer's
+save and only for that document, back after "put back"); `pb_doc_studio` 43/43.
 
 ## Where I stopped
 
-Finished. Local database `docstudio_a2_t` and its filestore dropped. The sparse worktree
-`/Users/adity/Documents/GitHub/gitlocal-worktrees/docstudio-a2` is left for the merge agent.
+PAUSED on the coordinator's request (owner offline), after the follow-up was committed and pushed.
+
+- Done: the owner-ruling follow-up above, tests green, report updated.
+- Not done: the quick browser look at the new notice (sheet and designer) — the server was restarted
+  with fresh assets but the walk had not started; the old report sections still mention the earlier
+  "Starting wording" wording in places (§1 item 3–4, §6, §7 q1) — to be tidied with the walk.
+- Next step: `bash scratchpad/a2/serve.sh` (assets already purged), sign in as `walk.pay`
+  (`/web/session/authenticate` on `http://a2.localhost:8492`), Contracts → DEMO Nguyễn Thị Lan →
+  Contract document: check the amber "Sample wording" line, then Change the wording → designer banner;
+  console clean; screenshot to `evidence_a2/`; then drop the database.
+- Local state: database **`docstudio_a2_t`** (seeded DEMO contracts, walk logins, `report.url` set to the
+  local server) and its filestore `~/odoo19/data/filestore/docstudio_a2_t` — still present, drop when
+  done. Walk server stopped. Worktree `/Users/adity/Documents/GitHub/gitlocal-worktrees/docstudio-a2`.
