@@ -12,6 +12,11 @@ def visible_fields(root):
 
 @tagged('post_install', '-at_install', 'premium_completion')
 class TestWorkspaceCompletion(TransactionCase):
+    def test_multi_company_employee_field_is_available(self):
+        self.env.user.group_ids |= self.env.ref('base.group_multi_company')
+        root = etree.fromstring(self.env['hr.employee'].get_view(view_type='form', pb_workspace_section='job')['arch'])
+        self.assertIn('company_id', visible_fields(root))
+
     def test_settings_widget_dependencies_are_sent_to_the_browser(self):
         result = self.env['hr.employee'].get_views([(False, 'form')], {'pb_workspace_section': 'settings'})
         root = etree.fromstring(result['views']['form']['arch'])

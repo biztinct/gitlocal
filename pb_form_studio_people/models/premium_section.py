@@ -13,10 +13,11 @@ from odoo.addons.pb_form_studio.models.native_section import project_section_for
 # never recreated. Approved bank details keep their existing dedicated workflow.
 SECTIONS = {
     'job': (
-        ('Role & organisation', ('department_id', 'job_id', 'job_title', 'employee_type', 'pb_job_level', 'division', 'pb_grade', 'pb_performance_rating')),
+        ('Role & organisation', ('company_id', 'department_id', 'job_id', 'job_title', 'employee_type', 'pb_job_level', 'division', 'pb_grade', 'pb_performance_rating')),
         ('Reporting & workplace', ('parent_id', 'coach_id', 'hrbp_user_id', 'buddy_id', 'work_location_id', 'address_id')),
         ('Work contacts', ('work_email', 'work_phone', 'mobile_phone', 'employee_id', 'barcode', 'pb_clock_code')),
         ('Hours & leave', ('resource_calendar_id', 'tz', 'pb_work_timezone_note', 'pb_leave_policy_id', 'pb_policy_full_time_confirmed', 'pb_policy_eligibility_review_ref', 'ruleset_id')),
+        ('Attendance policy', ('pb_attendance_policy_id', 'pb_attendance_category')),
         ('Usual work location', ('monday_location_id', 'tuesday_location_id', 'wednesday_location_id', 'thursday_location_id', 'friday_location_id', 'saturday_location_id', 'sunday_location_id')),
         ('Key dates', ('date_of_joining', 'first_contract_date', 'contract_id', 'contract_date_start', 'contract_date_end', 'pb_probation_state', 'trial_date_end')),
         ('Approvers', ('hr_responsible_id', 'expense_manager_id', 'leave_manager_id', 'attendance_manager_id')),

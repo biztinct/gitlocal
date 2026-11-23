@@ -11,7 +11,7 @@ from odoo.addons.pb_contracts.models.contract_approval import MONEY_TERMS
 
 
 AGREEMENT_GROUPS = (
-    ('Agreement', ('name', 'employee_id', 'contract_type_id', 'structure_type_id', 'kanban_state')),
+    ('Agreement', ('name', 'employee_id', 'company_id', 'contract_type_id', 'structure_type_id', 'kanban_state')),
     ('Signed terms', ('pb_trial_date_start', 'pb_signed_date', 'pb_salary_basis', 'pb_payroll_contract_type', 'pb_payroll_nationality_status')),
     ('How pay is worked out', ('pb_vn_hours_per_day', 'pb_vn_pay_grade', 'pb_vn_annual_days', 'pb_vn_variable_bonus')),
     ('Worked out from dates', ('pb_vn_contract_months', 'pb_vn_service_days')),
