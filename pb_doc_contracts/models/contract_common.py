@@ -48,8 +48,13 @@ SHIPPED_RULES = {
 #: The page every shipped contract starts with: the letterhead, normal
 #: margins, and NO signature block of the page — both parties sign in the
 #: wording itself (a two-column table, editable like any other words).
+#: Font "classic" (DejaVu Serif, a system font on the PDF server): the
+#: web font of "clean" (Roboto) is fetched by the PDF engine and, when it
+#: arrives late, bold labels are laid out with one font and drawn with
+#: another (overlapping words after "The employer:"). A system font prints
+#: the same every time, with every Vietnamese letter.
 SHIPPED_PAGE = {
-    'letterhead': True, 'margins': 'normal', 'font': 'clean', 'size': 11,
+    'letterhead': True, 'margins': 'normal', 'font': 'classic', 'size': 11,
     'sign': 'off', 'sign_name': '', 'sign_title': '',
 }
 

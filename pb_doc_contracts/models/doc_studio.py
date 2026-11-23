@@ -320,10 +320,29 @@ class PbDocStudio(models.AbstractModel):
                                     for rid, r in rules.items()}
         if not tmpl.pbds_page:
             res['page'] = self._pbds_clean_page(tmpl._pbdc_page())
-        # The designer shows a note above the page (never printed) while
-        # the wording is still the one Payobook ships.
-        root = tmpl.pbds_replaces_id or tmpl
-        res['pbdc_note'] = bool(root._pbdc_xmlid() in SHIPPED and not tmpl.pbds_edited)
+        # The designer shows the sample-wording notice above the page (never
+        # printed) until the customer saves their own wording.
+        res['pbdc_note'] = bool(tmpl.pbdc_sample)
+        return res
+
+    @api.model
+    def save(self, template_id, payload):
+        """The customer's first save makes the wording theirs: the sample
+        notice goes away."""
+        res = super().save(template_id, payload)
+        tmpl = self.env['pb.letter.template'].with_context(active_test=False).browse(int(template_id))
+        if tmpl.pbdc_sample:
+            tmpl.sudo().pbdc_sample = False
+        return res
+
+    @api.model
+    def reset(self, template_id):
+        """Putting a shipped contract back brings back the sample wording,
+        and with it the notice."""
+        res = super().reset(template_id)
+        tmpl = self.env['pb.letter.template'].with_context(active_test=False).browse(int(template_id))
+        if tmpl._pbdc_xmlid() in SHIPPED:
+            tmpl.sudo().pbdc_sample = True
         return res
 
     @api.model
@@ -343,6 +362,9 @@ class PbDocStudio(models.AbstractModel):
         main_lang = src._pbds_main_lang()
         if not src.pbds_main_lang and main_lang != MAIN_LANG:
             vals['pbds_main_lang'] = main_lang
+        # A copy of sample wording is still sample wording.
+        if src.pbdc_sample:
+            vals['pbdc_sample'] = True
         if vals:
             new.sudo().write(vals)
         return res

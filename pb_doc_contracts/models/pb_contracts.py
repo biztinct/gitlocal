@@ -36,7 +36,7 @@ from odoo.addons.pb_doc_studio.models.doc_render import UnknownRule, rule_holds
 from odoo.addons.pb_doc_studio.models.hr_letter import PayHidden
 
 from .contract_common import (
-    CONTRACT_TYPE, JUMP, RULE_JUMP, SHIPPED, VAULT_CATEGORY,
+    CONTRACT_TYPE, JUMP, RULE_JUMP, VAULT_CATEGORY,
 )
 
 _logger = logging.getLogger(__name__)
@@ -286,12 +286,6 @@ class PbContracts(models.AbstractModel):
     def _pbdc_may_design(self):
         return self.env['pb.letter.template'].has_access('write')
 
-    @api.model
-    def _pbdc_starting_wording(self, root, tmpl):
-        """Is the wording still the one Payobook ships (never edited)?"""
-        return bool(root._pbdc_xmlid() in SHIPPED and not tmpl.pbds_edited
-                    and (tmpl == root or tmpl._pbdc_xmlid()))
-
     # ------------------------------------------------------------ preview
     @api.model
     def contract_document(self, contract_id, lang=None, template_id=None):
@@ -343,7 +337,8 @@ class PbContracts(models.AbstractModel):
                 "You can download this contract. Filing it in the employee's documents "
                 "needs the HR or payroll role."),
             'can_design': self._pbdc_may_design(),
-            'starting_wording': self._pbdc_starting_wording(root, tmpl),
+            # Owner ruling 2026-11-24: shown on screen, never printed.
+            'sample_wording': bool(tmpl.pbdc_sample),
             'versions': self._pbdc_versions(contract),
             'next_version': self._pbdc_next_version(contract),
         }

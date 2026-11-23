@@ -5,9 +5,10 @@
          Short, neutral and structural on purpose: parties, position, term,
          trial period, working time, pay, leave, confidentiality, ending the
          contract, signatures. NO statutory claims (no notice periods, no
-         severance amounts, no article numbers): the designer shows a note
-         above every shipped contract asking the customer to have it checked
-         against their local labour law (never printed).
+         severance amounts, no article numbers). Owner ruling 2026-11-24: it
+         goes live with the on-screen notice "Sample wording. Have your own
+         lawyer check it before you use it." (designer + contract panel,
+         never printed) while `pbdc_sample` is set.
 
          One generic original (English, every country of work) and two
          COPIES of it for a country of work: Vietnam (Vietnamese | English)
@@ -24,6 +25,7 @@
         <field name="letter_type">employment_contract</field>
         <field name="company_id" eval="False"/>
         <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="pbdc_sample" eval="True"/>
         <field name="subject">Employment contract</field>
         <field name="body_html" type="html">
 <div>
@@ -63,6 +65,7 @@
         <field name="letter_type">employment_contract</field>
         <field name="company_id" eval="False"/>
         <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="pbdc_sample" eval="True"/>
         <field name="pbds_replaces_id" ref="contract_template_generic"/>
         <field name="pbds_country_ids" eval="[(6, 0, [ref('base.vn')])]"/>
         <field name="subject">HỢP ĐỒNG LAO ĐỘNG / EMPLOYMENT CONTRACT</field>
@@ -130,6 +133,7 @@
         <field name="letter_type">employment_contract</field>
         <field name="company_id" eval="False"/>
         <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="pbdc_sample" eval="True"/>
         <field name="pbds_replaces_id" ref="contract_template_generic"/>
         <field name="pbds_country_ids" eval="[(6, 0, [ref('base.id')])]"/>
         <field name="subject">PERJANJIAN KERJA / EMPLOYMENT CONTRACT</field>

@@ -305,7 +305,7 @@ class TestDocContracts(ContractDocCase):
                                            'name': payload['name'], 'subject': payload['subject']})
         res = self.doc(self.c_vn)
         self.assertIn('DEMO Giờ làm việc mới', res['html'])
-        self.assertFalse(res['starting_wording'])
+        self.assertFalse(res['sample_wording'])
         # the saved copy keeps its rules: open-ended paragraph still chosen right
         self.assertNotIn('không xác định thời hạn', _text(res['html']))
         self.assertFalse(self.Studio.open(self.vn_copy.id)['pbdc_note'])
@@ -436,3 +436,55 @@ class TestDocContracts(ContractDocCase):
         self.assertIn('DEMO English DEMO-VN-1', _text(english['html']))
         self.assertEqual(english['read_lang'], 'en_US')
         en.unlink()
+
+    # ------------------------------------------------------------ 16
+    def test_16_sample_wording_notice(self):
+        """Owner ruling 2026-11-24: shipped wording shows "Sample wording.
+        Have your own lawyer check it before you use it." in the designer
+        and on the contract panel's preview until the customer saves their
+        own wording; it never reaches the PDF or the filed document."""
+        notice = 'Have your own lawyer check it'
+        for tmpl, contract in ((self.generic, self.c_sg), (self.vn_copy, self.c_vn),
+                               (self.id_copy, self.c_id)):
+            with self.subTest(tmpl=tmpl.name):
+                self.assertTrue(tmpl.pbdc_sample)
+                self.assertTrue(self.Studio.open(tmpl.id)['pbdc_note'])
+                res = self.doc(contract)
+                self.assertEqual(res['document']['used_id'], tmpl.id)
+                self.assertTrue(res['sample_wording'])
+                # on screen it is the sheet's own notice, never in the page
+                self.assertNotIn(notice, res['html'])
+                self.assertNotIn('Sample wording', res['html'])
+        # never in the PDF, never in the filed document
+        pdf = self.Panel.contract_document_pdf(self.c_vn.id)
+        out = base64.b64decode(pdf['data']).decode('utf-8', 'ignore')
+        self.assertNotIn(notice, out)
+        self.assertNotIn('Sample wording', out)
+        saved = self.Panel.contract_document_save(self.c_vn.id)
+        doc = self.env['pb.employee.document'].browse(saved['document_id'])
+        filed = base64.b64decode(doc.attachment_id.datas).decode('utf-8', 'ignore')
+        self.assertNotIn(notice, filed)
+        # a copy made from sample wording is still sample wording
+        copy = self.env['pb.letter.template'].browse(
+            self.Studio.copy_for(self.vn_copy.id, self.company.id, [self.vietnam.id])['id'])
+        self.assertTrue(copy.pbdc_sample)
+        self.assertTrue(self.doc(self.c_vn)['sample_wording'])
+        # the customer's first save makes it theirs: the notice goes away
+        payload = self.Studio.open(copy.id)
+        self.Studio.save(copy.id, {'body': payload['body'], 'rules': payload['rules'],
+                                   'page': payload['page'], 'main_lang': payload['main_lang'],
+                                   'name': payload['name'], 'subject': payload['subject']})
+        self.assertFalse(copy.pbdc_sample)
+        self.assertFalse(self.Studio.open(copy.id)['pbdc_note'])
+        self.assertFalse(self.doc(self.c_vn)['sample_wording'])
+        # ... and only for that document
+        self.assertTrue(self.doc(self.c_sg)['sample_wording'])
+        # putting a shipped contract back brings the sample (and the notice) back
+        payload = self.Studio.open(self.generic.id)
+        self.Studio.save(self.generic.id, {'body': payload['body'] + '<p>DEMO own clause</p>',
+                                           'rules': payload['rules'], 'page': payload['page'],
+                                           'name': payload['name'], 'subject': payload['subject']})
+        self.assertFalse(self.doc(self.c_sg)['sample_wording'])
+        self.Studio.reset(self.generic.id)
+        self.assertTrue(self.generic.pbdc_sample)
+        self.assertTrue(self.doc(self.c_sg)['sample_wording'])

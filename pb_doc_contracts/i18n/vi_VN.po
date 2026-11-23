@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 12:50+0000\n"
-"PO-Revision-Date: 2026-11-22 12:50+0000\n"
+"POT-Creation-Date: 2026-11-23 22:15+0000\n"
+"PO-Revision-Date: 2026-11-23 22:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: vi_VN\n"
@@ -250,18 +250,8 @@ msgstr "Đến trường này trong bảng hợp đồng"
 #. module: pb_doc_contracts
 #. odoo-javascript
 #: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
-msgid ""
-"Have it checked against your local labour law before use. This note is not "
-"printed."
-msgstr ""
-"Hãy đối chiếu với luật lao động tại nơi bạn trước khi sử dụng. Ghi chú này "
-"không được in ra."
-
-#. module: pb_doc_contracts
-#. odoo-javascript
-#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
-msgid "Have it checked against your local labour law before you use it."
-msgstr "Hãy đối chiếu với luật lao động tại nơi bạn trước khi sử dụng."
+msgid "Have your own lawyer check it before you use it."
+msgstr "Hãy nhờ luật sư của bạn kiểm tra trước khi sử dụng."
 
 #. module: pb_doc_contracts
 #. odoo-python
@@ -294,6 +284,12 @@ msgid "Language"
 msgstr "Ngôn ngữ"
 
 #. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Make it yours"
+msgstr "Sửa thành nội dung của bạn"
+
+#. module: pb_doc_contracts
 #. odoo-python
 #: code:addons/pb_doc_contracts/models/contract_common.py:0
 msgid "Nationality"
@@ -310,6 +306,12 @@ msgstr "Hợp đồng lao động mới"
 #: code:addons/pb_doc_contracts/models/pb_contracts.py:0
 msgid "No %s"
 msgstr "Chưa có %s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Not printed"
+msgstr "Không in ra"
 
 #. module: pb_doc_contracts
 #. odoo-javascript
@@ -377,6 +379,17 @@ msgid "Printed for contract"
 msgstr "In cho hợp đồng"
 
 #. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_letter_template__pbdc_sample
+msgid "Sample wording"
+msgstr "Nội dung mẫu"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Sample wording."
+msgstr "Nội dung mẫu."
+
+#. module: pb_doc_contracts
 #. odoo-javascript
 #: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
 msgid "Save or discard your changes first."
@@ -417,18 +430,6 @@ msgstr "Xem hợp đồng hoàn chỉnh, tải về dạng PDF hoặc lưu vào 
 #: code:addons/pb_doc_contracts/models/contract_common.py:0
 msgid "Start date (22/11/2026 style)"
 msgstr "Ngày bắt đầu (dạng 22/11/2026)"
-
-#. module: pb_doc_contracts
-#. odoo-javascript
-#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
-msgid "Starting wording"
-msgstr "Nội dung mẫu ban đầu"
-
-#. module: pb_doc_contracts
-#. odoo-javascript
-#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
-msgid "Starting wording."
-msgstr "Nội dung mẫu ban đầu."
 
 #. module: pb_doc_contracts
 #. odoo-javascript

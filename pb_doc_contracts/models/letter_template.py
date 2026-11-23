@@ -32,6 +32,15 @@ class PbLetterTemplate(models.Model):
         ondelete={CONTRACT_KIND: 'set null'})
     pbds_kind = fields.Selection(
         selection_add=[(CONTRACT_KIND, 'Employment contracts')])
+    # Owner ruling 2026-11-24: shipped contract wording goes live with a
+    # notice "Sample wording. Have your own lawyer check it before you use
+    # it." wherever it is shown on screen (never printed). True on the
+    # shipped contracts (data) and on copies made from them; the first
+    # time the customer saves their own wording it goes away for good.
+    pbdc_sample = fields.Boolean(
+        string='Sample wording', copy=False,
+        help='Payobook\'s sample contract wording that the customer has not yet '
+             'made their own.')
 
     @api.depends('letter_type', 'pbds_kind_set', 'pbds_replaces_id')
     def _compute_pbds_kind(self):

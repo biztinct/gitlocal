@@ -36,7 +36,8 @@
     <xpath expr="//div[hasclass('pbds-dz')]" position="before">
       <div t-if="state.doc and state.doc.pbdc_note" class="pbds-banner pbdc-note" role="note">
         <t t-out="ic('alert', 16)"/>
-        <span><b>Starting wording.</b> Have it checked against your local labour law before use. This note is not printed.</span>
+        <span><b>Sample wording.</b> Have your own lawyer check it before you use it.</span>
+        <span class="pbdc-note-np">Not printed</span>
       </div>
     </xpath>
   </t>
@@ -78,6 +79,18 @@
           </span>
           <button type="button" class="pbdc-x" title="Close (Esc)" aria-label="Close" t-on-click="close"><t t-out="ic('x', 18)"/></button>
         </header>
+
+        <!-- Owner ruling 2026-11-24: shipped wording goes live with a notice,
+             on screen only (it is not part of the wording, so it never
+             reaches the PDF or the filed document). -->
+        <div t-if="d.sample_wording" class="pbdc-sample" role="note">
+          <span class="pbdc-sample-ic" t-out="ic('triangleAlert', 16)"/>
+          <span class="pbdc-sample-tx"><b>Sample wording.</b> Have your own lawyer check it before you use it.</span>
+          <span class="pbdc-sample-np">Not printed</span>
+          <button t-if="d.can_design" type="button" class="pbdc-link" t-on-click="design">
+            <t t-out="ic('pencil', 13)"/> <span>Make it yours</span>
+          </button>
+        </div>
 
         <div t-if="state.error and !state.d" class="pbdc-error">
           <span class="pbdc-error-ic" t-out="ic('fileText', 30)"/>
@@ -139,14 +152,6 @@
                 </ul>
               </div>
 
-              <div t-if="d.starting_wording" class="pbdc-card is-note">
-                <div class="pbdc-card-h"><t t-out="ic('info', 15)"/> <b>Starting wording</b></div>
-                <p>Have it checked against your local labour law before you use it.</p>
-                <button t-if="d.can_design" type="button" class="pbdc-link" t-on-click="design">
-                  <t t-out="ic('pencil', 13)"/> <span>Change the wording</span>
-                </button>
-              </div>
-
               <div class="pbdc-acts">
                 <button type="button" class="pbdc-b primary" t-att-disabled="state.pdfBusy or state.loading or blocked"
                         t-att-title="blocked ? d.pay_msg : ''" t-on-click="download">
@@ -161,7 +166,7 @@
                   <span t-esc="saveLabel"/> <kbd t-esc="mod + 'S'"/>
                 </button>
                 <p t-if="!blocked and !d.can_file and d.file_msg" class="pbdc-why" t-esc="d.file_msg"/>
-                <button t-if="d.can_design and !d.starting_wording" type="button" class="pbdc-b ghost" t-on-click="design">
+                <button t-if="d.can_design" type="button" class="pbdc-b ghost" t-on-click="design">
                   <t t-out="ic('pencil', 15)"/> <span>Change the wording</span>
                 </button>
               </div>

@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 12:50+0000\n"
-"PO-Revision-Date: 2026-11-22 12:50+0000\n"
+"POT-Creation-Date: 2026-11-23 22:15+0000\n"
+"PO-Revision-Date: 2026-11-23 22:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: id_ID\n"
@@ -250,20 +250,9 @@ msgstr "Buka kolom ini di panel kontrak"
 #. module: pb_doc_contracts
 #. odoo-javascript
 #: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
-msgid ""
-"Have it checked against your local labour law before use. This note is not "
-"printed."
+msgid "Have your own lawyer check it before you use it."
 msgstr ""
-"Periksakan terhadap hukum ketenagakerjaan setempat sebelum digunakan. "
-"Catatan ini tidak dicetak."
-
-#. module: pb_doc_contracts
-#. odoo-javascript
-#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
-msgid "Have it checked against your local labour law before you use it."
-msgstr ""
-"Periksakan terhadap hukum ketenagakerjaan setempat sebelum Anda "
-"menggunakannya."
+"Minta pengacara Anda sendiri memeriksanya sebelum Anda menggunakannya."
 
 #. module: pb_doc_contracts
 #. odoo-python
@@ -296,6 +285,12 @@ msgid "Language"
 msgstr "Bahasa"
 
 #. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Make it yours"
+msgstr "Jadikan milik Anda"
+
+#. module: pb_doc_contracts
 #. odoo-python
 #: code:addons/pb_doc_contracts/models/contract_common.py:0
 msgid "Nationality"
@@ -312,6 +307,12 @@ msgstr "Kontrak kerja baru"
 #: code:addons/pb_doc_contracts/models/pb_contracts.py:0
 msgid "No %s"
 msgstr "Belum ada %s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Not printed"
+msgstr "Tidak dicetak"
 
 #. module: pb_doc_contracts
 #. odoo-javascript
@@ -380,6 +381,17 @@ msgid "Printed for contract"
 msgstr "Dicetak untuk kontrak"
 
 #. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_letter_template__pbdc_sample
+msgid "Sample wording"
+msgstr "Isi contoh"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Sample wording."
+msgstr "Isi contoh."
+
+#. module: pb_doc_contracts
 #. odoo-javascript
 #: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
 msgid "Save or discard your changes first."
@@ -422,18 +434,6 @@ msgstr ""
 #: code:addons/pb_doc_contracts/models/contract_common.py:0
 msgid "Start date (22/11/2026 style)"
 msgstr "Tanggal mulai (format 22/11/2026)"
-
-#. module: pb_doc_contracts
-#. odoo-javascript
-#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
-msgid "Starting wording"
-msgstr "Isi awal"
-
-#. module: pb_doc_contracts
-#. odoo-javascript
-#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
-msgid "Starting wording."
-msgstr "Isi awal."
 
 #. module: pb_doc_contracts
 #. odoo-javascript
