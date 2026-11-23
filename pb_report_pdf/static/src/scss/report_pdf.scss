@@ -39,7 +39,9 @@ $pbrp-green: #0F766E;
 .pbrp-dialog { background: #F7F7FB; }
 .pbrp-dbody { padding: 0 !important; overflow: hidden; }
 .pbrp-root {
-    display: flex; flex-direction: column; height: 100%; min-height: 0;
+    // the dialog body grows with its content: the designer takes the
+    // window's height itself so both panes scroll on their own
+    display: flex; flex-direction: column; height: calc(100vh - 56px); min-height: 0;
     color: $pbrp-ink; font-size: 13px;
     &.dragging { user-select: none; }
 }

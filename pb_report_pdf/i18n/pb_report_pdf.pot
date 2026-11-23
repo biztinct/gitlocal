@@ -792,3 +792,9 @@ msgstr ""
 #: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
 msgid "Every page ends with “Page 1 of 3”."
 msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "This report is long, so the PDF prints it in a standard font that draws every page reliably."
+msgstr ""

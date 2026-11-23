@@ -239,8 +239,12 @@ export class PbReportPdfDesigner extends Component {
         const el = this.stageRef.el;
         if (!el) { return; }
         const { w, h } = this.paperPx;
+        // the room left for the sheet: the stage's width, and the window
+        // height below the chips bar (the stage itself may scroll)
+        const bar = el.querySelector(".pbrp-stage-bar");
+        const top = bar ? bar.getBoundingClientRect().bottom : el.getBoundingClientRect().top;
         const availW = Math.max(el.clientWidth - 48, 200);
-        const availH = Math.max(el.clientHeight - 40, 200);
+        const availH = Math.max(window.innerHeight - top - 84, 200);
         this.state.scale = Math.max(0.2, Math.min(availW / w, availH / h, 1.4));
     }
 

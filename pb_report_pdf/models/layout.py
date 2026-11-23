@@ -10,6 +10,8 @@ currencies), the heading, the footer words and an estimate of the pages.
 The same document draws the on-screen first page and the true PDF, so the
 preview is what prints.
 """
+import base64
+import logging
 import math
 from collections import Counter, OrderedDict
 from datetime import date, datetime
@@ -17,11 +19,39 @@ from datetime import date, datetime
 from markupsafe import Markup
 
 from odoo import api, fields, models
-from odoo.tools.misc import format_date, format_datetime, formatLang
+from odoo.tools.misc import file_path, format_date, format_datetime, formatLang
 
 from .look import COLORS
 
+_logger = logging.getLogger(__name__)
+
 ROW_CAP = 5000
+#: The page fonts (C3 keys) carried INSIDE the PDF: the PDF engine fetches
+#: web fonts from the server while it draws and, on a busy server, starts
+#: drawing before they arrive — the text then comes out blank or bold
+#: (ledger DS-B8). Regular + bold of the chosen font, from the files the web
+#: client ships; a font whose files are missing falls back to the C3 stack.
+FONT_FILES = {
+    'clean': ('web/static/fonts/google/Roboto/Roboto-Regular.ttf',
+              'web/static/fonts/google/Roboto/Roboto-Bold.ttf'),
+    'friendly': ('web/static/fonts/google/Open_Sans/Open_Sans-Regular.ttf',
+                 'web/static/fonts/google/Open_Sans/Open_Sans-Bold.ttf'),
+    'modern': ('web/static/fonts/google/Montserrat/Montserrat-Regular.ttf',
+               'web/static/fonts/google/Montserrat/Montserrat-Bold.ttf'),
+    'classic': ('pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSerif.ttf',
+                'pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSerif-Bold.ttf'),
+}
+_FONT_CSS = {}
+#: Past this many printed cells the PDF engine (wkhtmltopdf 0.12.6) stops
+#: drawing the text of the FIRST pages in any web font — downloaded or
+#: carried inside — while later pages print (measured: 3,500 cells fine,
+#: 4,000 blank first pages; ledger DS-B8). Long reports therefore print in a
+#: font installed on the server (DejaVu, Vietnamese included), said on screen.
+FONT_CELLS = 2000
+SYSTEM_STACKS = {
+    'classic': "'DejaVu Serif', Georgia, 'Times New Roman', serif",
+}
+SYSTEM_STACK = "'DejaVu Sans', Arial, Helvetica, sans-serif"
 #: "Fit" turns the page sideways past this many printed columns.
 FIT_COLUMNS = {'A4': 7, 'A3': 11}
 PAPER_MM = {'A4': (210, 297), 'A3': (297, 420)}
@@ -245,6 +275,29 @@ class PbReportPdfLayout(models.AbstractModel):
         })
 
     @api.model
+    def _pbrp_font_css(self, font):
+        """@font-face rules with the font files inside (PDF only), cached
+        per worker. '' when the files are not on this server."""
+        if font in _FONT_CSS:
+            return _FONT_CSS[font]
+        css = ''
+        try:
+            faces = []
+            for path, weight in zip(FONT_FILES[font], (400, 700)):
+                with open(file_path(path), 'rb') as fh:
+                    data = base64.b64encode(fh.read()).decode('ascii')
+                faces.append("@font-face { font-family: 'pbrp-face'; font-weight: %d; "
+                             "font-style: normal; src: url(data:font/ttf;base64,%s) "
+                             "format('truetype'); }" % (weight, data))
+            css = '\n'.join(faces) + ("\n.pbds-page.pbds-pdf, .pbds-page.pbds-pdf .pbrp, "
+                                      ".pbds-page.pbds-pdf .pbrp th, .pbds-page.pbds-pdf .pbrp td "
+                                      "{ font-family: 'pbrp-face', %s !important; }\n")
+        except (KeyError, OSError, ValueError):
+            _logger.info('pb_report_pdf: font %s not carried in the PDF', font)
+        _FONT_CSS[font] = css
+        return css
+
+    @api.model
     def _pbrp_printed(self):
         user = self.env.user
         when = format_datetime(self.env, fields.Datetime.now(), tz=user.tz or 'UTC',
@@ -402,6 +455,7 @@ class PbReportPdfLayout(models.AbstractModel):
             'total_rows': total_rows,
             'capped': capped,
             'visible': len(visible),
+            'plain_font': len(rows) * max(len(visible), 1) > FONT_CELLS,
         }
         pages, first_page = self._pbrp_estimate(doc, look)
         doc['pages'] = pages
