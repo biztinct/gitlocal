@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Workforce setup (WFSETUP P1). Design of record:
+     docs/design/workforce-setup-prototype.html. Translatable text is plain text
+     nodes, one sentence per line; sentences with values come from _t() getters. -->
+<templates xml:space="preserve">
+
+<!-- ============================================================ the studio -->
+<t t-name="pb_workforce_setup.SetupStudio">
+  <div class="pbim pbws" t-ref="root">
+    <header class="pbws-top">
+      <HubBackChip back="back" tone="'light'"/>
+      <div class="pbws-crumb">
+        <b>Workforce setup</b>
+        <span t-if="data" class="pbws-crumb-co" t-esc="data.company.name"/>
+      </div>
+      <span class="pbws-sp"/>
+      <div class="pbws-prog" t-if="data">
+        <span><b class="pbws-num" t-esc="progressLine"/> steps done</span>
+        <div class="pbws-bar" role="progressbar" aria-valuemin="0" t-att-aria-valuemax="steps.length" t-att-aria-valuenow="doneCount">
+          <i t-att-style="progressStyle"/>
+        </div>
+      </div>
+    </header>
+
+    <!-- loading skeleton -->
+    <div t-if="state.loading" class="pbws-work" aria-busy="true">
+      <div class="pbws-steps">
+        <div class="pbws-skel pbws-skel-h"/>
+        <div t-foreach="skeletonRows" t-as="r" t-key="r" class="pbws-skel-step"><span class="pbws-skel pbws-skel-dot"/><span class="pbws-skel pbws-skel-line"/></div>
+      </div>
+      <div class="pbws-stage">
+        <div class="pbws-skel pbws-skel-eyebrow"/>
+        <div class="pbws-skel pbws-skel-title"/>
+        <div class="pbws-skel pbws-skel-text"/>
+        <div class="pbws-card pbws-skel-card">
+          <div t-foreach="[1, 2, 3]" t-as="r" t-key="r" class="pbws-skel-row"><span class="pbws-skel pbws-skel-badge"/><span class="pbws-skel pbws-skel-bar"/></div>
+        </div>
+      </div>
+      <div class="pbws-card pbws-pv"><div class="pbws-pv-b"><div class="pbws-skel pbws-skel-line"/><div class="pbws-skel pbws-skel-week"/></div></div>
+    </div>
+
+    <!-- load error -->
+    <div t-elif="!data" class="pbws-work pbws-work--error">
+      <div class="pbws-card pbws-fail" role="alert">
+        <span class="pbws-fail-ic" t-out="icon('triangleAlert', 22)"/>
+        <h2>The setup could not be loaded.</h2>
+        <p t-esc="state.error"/>
+        <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="retry"><t t-out="icon('refresh', 16)"/>Try again</button>
+      </div>
+    </div>
+
+    <div t-else="" class="pbws-work">
+      <nav class="pbws-steps" aria-label="Setup steps">
+        <h3>Set up in this order</h3>
+        <button t-foreach="steps" t-as="step" t-key="step.key" type="button"
+                t-att-class="stepClass(step)" t-att-aria-current="step.key === state.step ? 'step' : false"
+                t-on-click="() => this.go(step.key)">
+          <span class="pbws-dot">
+            <t t-if="status(step.key).state === 'done'" t-out="icon('check', 14)"/>
+            <t t-else="" t-esc="step.n"/>
+          </span>
+          <span class="pbws-step-t"><b t-esc="step.title"/><small t-esc="status(step.key).text"/></span>
+        </button>
+      </nav>
+
+      <main class="pbws-stage">
+        <StepShifts t-if="state.step === 'shifts'" studio="api" data="data"/>
+        <StepWeeks t-elif="state.step === 'weeks'" studio="api" data="data"/>
+        <StepSoon t-else="" studio="api" data="data" stepKey="state.step"/>
+        <div class="pbws-nav">
+          <button t-if="prevStep" type="button" class="pbws-btn pbws-btn--ghost" t-on-click="() => this.go(prevStep.key)">
+            <t t-out="icon('back', 16)"/><t t-esc="prevStep.title"/>
+          </button>
+          <span t-else=""/>
+          <button t-if="nextStep" type="button" class="pbws-btn pbws-btn--pri" t-on-click="() => this.go(nextStep.key)">
+            <t t-esc="current.next"/><t t-out="icon('arrowRight', 16)"/>
+          </button>
+        </div>
+      </main>
+
+      <aside class="pbws-card pbws-pv" aria-label="See it on a real person">
+        <PreviewPanel studio="api" person="data.person" step="state.step"/>
+      </aside>
+    </div>
+  </div>
+</t>
+
+<t t-name="pb_workforce_setup.ReadOnly">
+  <p class="pbws-ro"><t t-out="icon('eye', 14)"/>You can look, but only an attendance manager can change this.</p>
+</t>
+
+<!-- ============================================================ step 1 -->
+<t t-name="pb_workforce_setup.StepShifts">
+  <div class="pbws-q">
+    <div class="pbws-q-t">
+      <div class="pbws-eyebrow">Step 1 of 7</div>
+      <h1>What shifts do you run?</h1>
+      <p>Set each shift once. You will reuse it everywhere, so a change here updates every week and person that uses it.</p>
+      <t t-if="!canEdit" t-call="pb_workforce_setup.ReadOnly"/>
+    </div>
+  </div>
+
+  <div t-if="!rows.length" class="pbws-card pbws-empty-card">
+    <span class="pbws-empty-ic" t-out="icon('clock', 22)"/>
+    <h2>No shifts yet</h2>
+    <t t-if="canEdit">
+      <p>Start with one of these, then adjust the times.</p>
+      <div class="pbws-starters-c">
+        <button t-foreach="starters" t-as="st" t-key="st.key" type="button"
+                t-att-class="'pbws-btn pbws-btn--sm' + (st.blank ? ' pbws-btn--out' : '')"
+                t-on-click="() => this.addStarter(st)" t-esc="st.label"/>
+      </div>
+    </t>
+    <p t-else="">An attendance manager adds the shifts.</p>
+  </div>
+
+  <div t-else="" class="pbws-card pbws-shifts">
+    <div class="pbws-axis-wrap" aria-hidden="true">
+      <div class="pbws-axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span></div>
+    </div>
+    <t t-foreach="rows" t-as="row" t-key="row.id">
+      <div t-att-class="'pbws-shift ' + toneClass(row) + (isOpen(row) ? ' is-open' : '')" t-att-data-shift="row.id">
+        <div class="pbws-nm">
+          <span class="pbws-badge" t-out="isNight(row) ? icon('moon', 18) : icon('sun', 18)"/>
+          <div class="pbws-nm-t">
+            <b t-att-title="view(row).name" t-esc="view(row).name or '…'"/>
+            <small class="pbws-num" t-esc="range(view(row).start, view(row).end)"/>
+          </div>
+          <span t-if="row.shared" class="pbws-chip pbws-chip--sm" title="Shared with every company. Copy it to change it.">Shared</span>
+        </div>
+        <div class="pbws-track" role="img" t-att-aria-label="range(view(row).start, view(row).end)">
+          <s style="left:25%"/><s style="left:50%"/><s style="left:75%"/>
+          <i t-foreach="bar(row).segments" t-as="seg" t-key="seg.key" t-att-style="'left:' + seg.left + ';width:' + seg.width"/>
+          <u t-if="bar(row).gap" t-att-style="'left:' + bar(row).gap.left + ';width:' + bar(row).gap.width"/>
+        </div>
+        <div class="pbws-shift-r">
+          <div class="pbws-sum pbws-num">
+            <b t-esc="paid(row)"/> paid<br/>
+            <t t-esc="breakText(row)"/><t t-if="nextDay(row)"> · ends next day</t>
+          </div>
+          <t t-if="canEdit">
+            <button t-if="row.shared" type="button" class="pbws-btn pbws-btn--sm" t-on-click="() => this.copy(row)">
+              <t t-out="icon('copy', 16)"/>Copy to change
+            </button>
+            <button t-elif="!isOpen(row)" type="button" class="pbws-btn pbws-btn--sm" t-on-click="() => this.toggle(row)">
+              <t t-out="icon('pencil', 16)"/>Edit
+            </button>
+            <button t-elif="isDirty(row)" type="button" class="pbws-btn pbws-btn--sm pbws-btn--pri"
+                    t-att-disabled="state.saving === row.id" t-on-click="() => this.save(row)">
+              <t t-out="icon('check', 16)"/>Save
+            </button>
+            <button t-else="" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-on-click="() => this.toggle(row)">Done</button>
+          </t>
+        </div>
+
+        <div t-if="isOpen(row) and canEdit" class="pbws-edit">
+          <label class="pbws-f pbws-f--name">Name
+            <input t-ref="shiftName" type="text" maxlength="80" t-att-value="view(row).name"
+                   t-on-input="(ev) => this.onInput(row, 'name', ev)" t-on-keydown="(ev) => this.onKey(row, ev)"/>
+          </label>
+          <label class="pbws-f">Starts
+            <input type="time" t-att-value="view(row).start"
+                   t-on-input="(ev) => this.onInput(row, 'start', ev)" t-on-keydown="(ev) => this.onKey(row, ev)"/>
+          </label>
+          <label class="pbws-f">Ends
+            <input type="time" t-att-value="view(row).end"
+                   t-on-input="(ev) => this.onInput(row, 'end', ev)" t-on-keydown="(ev) => this.onKey(row, ev)"/>
+          </label>
+          <label class="pbws-f">Unpaid break (minutes)
+            <input type="number" min="0" max="600" step="15" class="pbws-f-brk" t-att-value="view(row).break_minutes"
+                   t-on-input="(ev) => this.onInput(row, 'break_minutes', ev)" t-on-keydown="(ev) => this.onKey(row, ev)"/>
+          </label>
+          <div class="pbws-f">Colour
+            <div class="pbws-swatches" role="radiogroup" aria-label="Colour">
+              <button t-foreach="colors" t-as="c" t-key="c.name" type="button" role="radio"
+                      t-att-class="'pbws-c-' + c.name + (view(row).color === c.name ? ' is-on' : '')"
+                      t-att-aria-checked="view(row).color === c.name ? 'true' : 'false'"
+                      t-att-aria-label="colorLabel(c.name)" t-att-title="colorLabel(c.name)"
+                      t-on-click="() => this.pickColor(row, c.name)"/>
+            </div>
+          </div>
+          <span class="pbws-sp"/>
+          <span t-if="row.id !== 'new'" class="pbws-chip" t-esc="usedText(row)"/>
+          <button t-if="isDirty(row)" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.cancel(row)">Cancel</button>
+          <t t-if="row.id !== 'new'">
+            <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.copy(row)">
+              <t t-out="icon('copy', 16)"/>Copy
+            </button>
+            <t t-if="state.confirm === row.id">
+              <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--danger-solid" t-on-click="() => this.remove(row)">
+                <t t-out="icon('trash', 16)"/>Yes, remove
+              </button>
+              <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.state.confirm = null">Keep it</button>
+            </t>
+            <button t-else="" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost pbws-btn--danger" t-on-click="() => this.askRemove(row)">
+              <t t-out="icon('trash', 16)"/>Remove
+            </button>
+          </t>
+          <div t-if="state.errors[row.id]" class="pbws-err" role="alert">
+            <t t-out="icon('triangleAlert', 16)"/>
+            <span t-esc="state.errors[row.id]"/>
+            <button t-if="row.used_weeks" type="button" class="pbws-link" t-on-click="goWeeks">Go to working weeks</button>
+          </div>
+        </div>
+        <div t-elif="state.errors[row.id]" class="pbws-err pbws-err--row" role="alert">
+          <t t-out="icon('triangleAlert', 16)"/><span t-esc="state.errors[row.id]"/>
+        </div>
+      </div>
+    </t>
+    <div t-if="canEdit" class="pbws-starters">
+      <t t-out="icon('plus', 16)"/> Add a shift:
+      <button t-foreach="starters" t-as="st" t-key="st.key" type="button"
+              t-att-class="'pbws-btn pbws-btn--sm' + (st.blank ? ' pbws-btn--out' : '')"
+              t-on-click="() => this.addStarter(st)" t-esc="st.label"/>
+    </div>
+  </div>
+
+  <div t-if="rows.length" class="pbws-hint">
+    <t t-out="icon('info', 18)"/>
+    <span>The pale gap in each bar is the unpaid break. A shift that ends before it starts is treated as an overnight shift without you ticking anything.</span>
+  </div>
+</t>
+
+<!-- ============================================================ step 2 -->
+<t t-name="pb_workforce_setup.StepWeeks">
+  <div class="pbws-q">
+    <div class="pbws-q-t">
+      <div class="pbws-eyebrow">Step 2 of 7</div>
+      <h1>What does a normal week look like?</h1>
+      <p>Pick a shift below, then click or drag across the days. Add a second week when a team rotates between days and nights.</p>
+      <t t-if="!canEdit" t-call="pb_workforce_setup.ReadOnly"/>
+    </div>
+    <button t-if="canEdit and shifts.length and weeks.length" type="button" class="pbws-btn pbws-btn--out"
+            t-att-disabled="state.creating" t-on-click="newWeek">
+      <t t-out="icon('plus', 16)"/>New working week
+    </button>
+  </div>
+
+  <div t-if="!shifts.length" class="pbws-card pbws-empty-card">
+    <span class="pbws-empty-ic" t-out="icon('clock', 22)"/>
+    <h2>Add a shift first</h2>
+    <p>A working week is made of shifts. Add one in step 1, then come back here to paint the week.</p>
+    <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="goShifts"><t t-out="icon('back', 16)"/>Go to shifts</button>
+  </div>
+
+  <t t-else="">
+    <div t-if="canEdit" class="pbws-card pbws-pad">
+      <div class="pbws-brushes" role="radiogroup" aria-label="Paint with">
+        <span class="pbws-brushes-l">Paint with</span>
+        <button t-foreach="shifts" t-as="s" t-key="s.id" type="button" role="radio"
+                t-att-class="'pbws-brush pbws-c-' + s.color + (brushOn(s.id) ? ' is-on' : '')"
+                t-att-aria-checked="brushOn(s.id) ? 'true' : 'false'" t-att-title="s.name"
+                t-on-click="() => this.setBrush(s.id)">
+          <span class="pbws-sw"/><span class="pbws-brush-n" t-esc="s.name"/> <span class="pbws-num pbws-brush-t" t-esc="s.start"/>
+        </button>
+        <button type="button" role="radio" t-att-class="'pbws-brush' + (brushOn(false) ? ' is-on' : '')"
+                t-att-aria-checked="brushOn(false) ? 'true' : 'false'" t-on-click="() => this.setBrush(false)">Day off</button>
+      </div>
+    </div>
+
+    <div t-if="!weeks.length" class="pbws-card pbws-empty-card">
+      <span class="pbws-empty-ic" t-out="icon('repeat', 22)"/>
+      <h2>No working week yet</h2>
+      <t t-if="canEdit">
+        <p>Build the week most people work. You can add rotations later.</p>
+        <button type="button" class="pbws-btn pbws-btn--pri" t-att-disabled="state.creating" t-on-click="newWeek">
+          <t t-out="icon('plus', 16)"/>New working week
+        </button>
+      </t>
+      <p t-else="">An attendance manager builds the working weeks.</p>
+    </div>
+
+    <t t-foreach="weeks" t-as="row" t-key="row.id">
+      <div t-att-class="'pbws-card pbws-pat' + (row.editable ? '' : ' is-locked')" t-att-data-week="row.id">
+        <div class="pbws-pat-h">
+          <input t-if="canEdit and row.editable" type="text" class="pbws-pat-name" maxlength="80" aria-label="Name of this working week"
+                 t-att-value="nameOf(row)" t-on-input="(ev) => this.onNameInput(row, ev)"
+                 t-on-keydown="(ev) => this.onNameKey(row, ev)" t-on-blur="() => this.onNameCommit(row)"/>
+          <h3 t-else="" class="pbws-pat-title" t-att-title="row.name" t-esc="row.name"/>
+          <span t-att-class="'pbws-chip' + (row.people ? ' pbws-chip--p' : '')"><t t-out="icon('users', 14)"/><t t-esc="peopleText(row)"/></span>
+          <span t-if="row.editable" class="pbws-chip pbws-num" t-esc="hoursText(row)"/>
+          <span t-else="" class="pbws-chip pbws-num" t-esc="cycleText(row)"/>
+          <span t-if="state.marks[row.id] === 'saving'" class="pbws-mark" aria-live="polite"><span class="pbws-mark-dot"/>Saving…</span>
+          <span t-elif="state.marks[row.id] === 'saved'" class="pbws-mark is-saved" aria-live="polite"><t t-out="icon('check', 14)"/>Saved</span>
+          <span class="pbws-sp"/>
+          <t t-if="canEdit">
+            <t t-if="state.confirm === row.id">
+              <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--danger-solid" t-on-click="() => this.remove(row)">
+                <t t-out="icon('trash', 16)"/>Yes, remove
+              </button>
+              <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.state.confirm = null">Keep it</button>
+            </t>
+            <button t-else="" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost pbws-btn--danger" title="Remove this working week"
+                    aria-label="Remove this working week" t-on-click="() => this.askRemove(row)">
+              <t t-out="icon('trash', 16)"/>
+            </button>
+          </t>
+        </div>
+
+        <t t-if="grid(row).length">
+          <div class="pbws-wk pbws-wk--head" aria-hidden="true">
+            <span/>
+            <span t-foreach="days" t-as="d" t-key="d_index" class="pbws-dh" t-esc="d"/>
+          </div>
+          <div t-foreach="grid(row)" t-as="week" t-key="week_index" class="pbws-wk">
+            <span class="pbws-lab" t-esc="weekLabel(row, week_index)"/>
+            <t t-foreach="week" t-as="sid" t-key="sid_index">
+              <t t-set="s" t-value="cell(sid)"/>
+              <button type="button" t-att-class="'pbws-cell' + (s ? ' has pbws-c-' + s.color : '')"
+                      t-att-data-w="week_index" t-att-data-d="sid_index"
+                      t-att-aria-label="cellLabel(row, week_index, sid_index)"
+                      t-att-tabindex="canEdit and row.editable ? '0' : '-1'"
+                      t-att-aria-disabled="canEdit and row.editable ? 'false' : 'true'"
+                      t-on-pointerdown="(ev) => this.onPointerDown(row, week_index, sid_index, ev)"
+                      t-on-pointerenter="() => this.onPointerEnter(row, week_index, sid_index)"
+                      t-on-keydown="(ev) => this.onCellKey(row, week_index, sid_index, ev)">
+                <t t-if="s"><b t-esc="s.name"/><small class="pbws-num" t-esc="range(s.start, s.end)"/><i class="pbws-num pbws-cell-t" t-esc="s.start"/></t>
+                <t t-else="">Day off</t>
+              </button>
+            </t>
+          </div>
+        </t>
+        <div t-else="" class="pbws-cycle">
+          <span t-foreach="row.days" t-as="sid" t-key="sid_index" t-att-class="'pbws-cycle-d' + (cell(sid) ? ' has pbws-c-' + cell(sid).color : '')">
+            <b t-esc="sid_index + 1"/>
+            <t t-if="cell(sid)" t-esc="cell(sid).name"/><t t-else="">Off</t>
+          </span>
+        </div>
+
+        <div t-if="row.editable and canEdit" class="pbws-pat-tools">
+          <button type="button" class="pbws-btn pbws-btn--sm" t-att-disabled="grid(row).length >= maxWeeks" t-on-click="() => this.addWeek(row)">
+            <t t-out="icon('plus', 16)"/>Add a rotation week
+          </button>
+          <button t-if="grid(row).length > 1" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.removeLastWeek(row)">Remove last week</button>
+          <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.fill(row, 5)">Fill Mon to Fri</button>
+          <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.fill(row, 6)">Fill Mon to Sat</button>
+        </div>
+        <div t-if="!row.editable" class="pbws-locked">
+          <t t-out="icon('info', 16)"/>
+          <span><t t-esc="row.reason"/> It can still be changed in the rotation editor.</span>
+          <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-on-click="openRotationEditor">Open the rotation editor<t t-out="icon('arrowRight', 16)"/></button>
+        </div>
+        <div t-if="state.errors[row.id]" class="pbws-err" role="alert">
+          <t t-out="icon('triangleAlert', 16)"/><span t-esc="state.errors[row.id]"/>
+        </div>
+      </div>
+    </t>
+
+    <div t-if="canEdit and weeks.length" class="pbws-hint">
+      <t t-out="icon('info', 18)"/>
+      <span>Drag across the days to paint several at once. Arrow keys move between days, and Enter or Space paints the one you are on. Changes save by themselves.</span>
+    </div>
+  </t>
+</t>
+
+<!-- ============================================================ steps 3-7 -->
+<t t-name="pb_workforce_setup.StepSoon">
+  <div class="pbws-q">
+    <div class="pbws-q-t">
+      <div class="pbws-eyebrow" t-esc="stepLine"/>
+      <h1 t-esc="copy.question"/>
+      <p t-esc="copy.lead"/>
+    </div>
+  </div>
+  <div class="pbws-card pbws-soon">
+    <span class="pbws-soon-ic" t-out="icon(meta.icon, 22)"/>
+    <div class="pbws-soon-t">
+      <h2>This step arrives next</h2>
+      <p t-esc="copy.next"/>
+      <p t-if="props.stepKey === 'people' and status.text" t-att-class="'pbws-soon-st is-' + status.state">
+        <t t-if="status.state === 'done'" t-out="icon('check', 14)"/><t t-else="" t-out="icon('triangleAlert', 14)"/>
+        <t t-esc="status.text"/>
+      </p>
+    </div>
+  </div>
+</t>
+
+<!-- ============================================================ right panel -->
+<t t-name="pb_workforce_setup.PreviewPanel">
+  <div class="pbws-pv-in" t-ref="root">
+    <div class="pbws-pv-h">
+      <span class="pbws-pv-eyebrow"><t t-out="icon('eye', 14)"/>See it on a real person</span>
+      <div class="pbws-pick">
+        <button type="button" class="pbws-pick-btn" t-att-aria-expanded="state.picking ? 'true' : 'false'" aria-haspopup="listbox"
+                t-att-disabled="!person" t-on-click="open">
+          <span class="pbws-pick-n" t-if="person"><b t-esc="person.name"/><t t-if="person.department"> · <t t-esc="person.department"/></t></span>
+          <span class="pbws-pick-n" t-else="">Nobody yet</span>
+          <t t-out="icon('chevronDown', 16)"/>
+        </button>
+        <div t-if="state.picking" class="pbws-pick-pop">
+          <label class="pbws-srch"><t t-out="icon('search', 16)"/>
+            <input t-ref="query" type="text" placeholder="Search a name or team" aria-label="Search a name or team"
+                   t-att-value="state.query" t-on-input="onQuery" t-on-keydown="onKey"/>
+          </label>
+          <ul class="pbws-pick-list" role="listbox">
+            <li t-foreach="state.results" t-as="r" t-key="r.id" role="option"
+                t-att-aria-selected="r_index === state.active ? 'true' : 'false'"
+                t-att-class="r_index === state.active ? 'is-active' : ''"
+                t-on-mousedown.prevent="() => this.choose(r)" t-on-mouseenter="() => this.state.active = r_index">
+              <span class="pbws-pick-r"><b t-esc="r.name"/><small t-esc="r.department"/></span>
+              <span t-if="!r.has_week" class="pbws-chip pbws-chip--warn pbws-chip--sm">No week</span>
+            </li>
+            <li t-if="!state.results.length and !state.loading" class="pbws-pick-none">Nobody matches. Try another name.</li>
+            <li t-if="state.error" class="pbws-pick-none" t-esc="state.error"/>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="pbws-pv-b">
+      <div t-if="!person" class="pbws-pv-empty">Nobody works for this company yet. People appear here once they are added.</div>
+      <t t-elif="hasWeek">
+        <div>
+          <div class="pbws-pv-cap" t-esc="caption"/>
+          <div class="pbws-pvweek">
+            <div t-foreach="person.days" t-as="day" t-key="day.date"
+                 t-att-class="(day.shift_id ? 'has pbws-c-' + day.color : '') + (day.today ? ' is-today' : '')"
+                 t-att-title="dayTitle(day)">
+              <t t-esc="day.label"/>
+              <span t-if="day.shift_id" class="pbws-num" t-esc="day.start"/>
+              <span t-else="">Off</span>
+            </div>
+          </div>
+          <ul class="pbws-pv-days">
+            <t t-foreach="person.days" t-as="day" t-key="day.date">
+              <li t-if="day.shift_id">
+                <span t-att-class="'pbws-sw pbws-c-' + day.color"/>
+                <b t-esc="day.label"/>
+                <span class="pbws-pv-dn" t-esc="day.name"/>
+                <span class="pbws-num pbws-pv-dt" t-esc="range(day.start, day.end)"/>
+              </li>
+            </t>
+          </ul>
+        </div>
+        <p class="pbws-pv-note">Pay example appears here once the late and overtime rules are set up.</p>
+      </t>
+      <t t-else="">
+        <div class="pbws-pv-empty">
+          <b t-esc="noWeekLine"/><br/>
+          Give them one in step 3 and their week and pay example appear here.
+        </div>
+        <button t-if="props.step !== 'people'" type="button" class="pbws-btn pbws-btn--out" t-on-click="goPeople">Go to who works what<t t-out="icon('arrowRight', 16)"/></button>
+      </t>
+    </div>
+  </div>
+</t>
+
+</templates>
