@@ -22,6 +22,7 @@ import { _t } from "@web/core/l10n/translation";
 import { ic as kitIc } from "@pb_import_kit/js/import_icons";
 import { KIND_ICON } from "@pb_doc_studio/js/doc_icons";
 import { Contract360Drawer } from "@pb_contracts/js/contract_360";
+import { DocStudio } from "@pb_doc_studio/js/doc_studio";
 
 const MODEL = "pb.contracts";
 const A4_W = 794;
@@ -401,3 +402,16 @@ patch(Contract360Drawer.prototype, {
     },
 });
 
+// =========================================================================
+//  The designer: the sample-wording notice goes the moment the customer
+//  saves their own wording (the server clears the flag in the same save).
+// =========================================================================
+patch(DocStudio.prototype, {
+    async save() {
+        const ok = await super.save(...arguments);
+        if (ok && this.state.doc && this.state.doc.pbdc_note) {
+            this.state.doc.pbdc_note = false;
+        }
+        return ok;
+    },
+});

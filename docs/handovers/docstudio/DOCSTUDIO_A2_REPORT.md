@@ -30,8 +30,8 @@ page (no letter signature block) from the moment the module is installed.
 |---|---|
 | 1 Kind | `selection_add` `employment_contract` on `pb.letter.template.letter_type` only (never on `pb.hr.letter`). Gallery group **"Employment contracts"** (key `employment`; `selection_add` on `pbds_kind` / `pbds_kind_set`; placed right after the studio's "Contract" group by a `board()` override; briefcase icon). Vault category `pb_employee_vault.cat_labor_contract`. "New document" in that group makes an employment contract with the contract page. |
 | 2 Fields | 22 "This document" fields (`models/contract_common.py`).<br>- Contract: reference, end date or "no end date", trial period end, working schedule, hours per week, job / department on the contract, place of work, pay currency, pay scheme.<br>- Short dates in 22/11/2026 style (start, end, trial end, today, date of birth), so the two-language contracts carry one date that reads in both columns.<br>- Employer representative and title: from the page design's signatory, else the company and "Authorised signatory".<br>- Employee: ID number, passport number, home address, date of birth, nationality.<br><br>The studio's own fields (start, end, contract type, monthly pay, the customer's own fields) follow the contract the document is made for, through context `pbdc_contract_id` and an override of `_pbds_contract`. The designer shows real values for all of them.<br><br>New "Show only when" conditions: **Contract length** (fixed term / open-ended) and **Trial period end date**. |
-| 3 Wording | `data/contract_templates.xml` (noupdate, company-less):<br>- an **English original**, used for every country of work;<br>- two **copies for a country of work**: Vietnam (Vietnamese \| English) and Indonesia (Indonesian \| English). They put the two languages side by side, clause by clause, in two-column tables.<br><br>Clauses: parties, position, term (fixed / open-ended by rule), trial period (only with a trial end date), working time, pay, leave, confidentiality, ending the contract, other terms, signatures of both parties.<br><br>The wording is neutral and structural: no notice periods, no severance amounts, no article numbers.<br><br>A designer-only note sits above every shipped contract until it is edited: "**Starting wording.** Have it checked against your local labour law before use. This note is not printed."<br><br>The contract page CSS reaches the PDF and the preview by QWeb inheritance of `page_frame`, and the designer's paper by SCSS. |
-| 4 Hero | **"The finished contract, in one press."** A "Contract document" button in the panel's action area: inside "Next step" for people who may change the contract, in its own "Paperwork" row for people who may only read it. Built with an OWL `patch` and template inheritance.<br><br>The sheet slides in at once on blank A4 paper, then the contract for THIS contract is written onto it and the person's values ink in. It holds:<br>- a language switch, only for languages the wording exists in;<br>- a document switch, when there is more than one document;<br>- amber chips for missing values. Each jumps to the field in the panel and opens its editor, or opens the employee panel for employee fields;<br>- a folded list of left-out paragraphs, each with its reason;<br>- a starting-wording card;<br>- **Download PDF** (⌘P) and **Save to documents · vN** (⌘S);<br>- **Change the wording**, which opens the designer, for people allowed only;<br>- the saved versions.<br><br>Esc closes the sheet. If the panel has unsaved typed changes, it asks to save or discard them first. |
+| 3 Wording | `data/contract_templates.xml` (noupdate, company-less):<br>- an **English original**, used for every country of work;<br>- two **copies for a country of work**: Vietnam (Vietnamese \| English) and Indonesia (Indonesian \| English). They put the two languages side by side, clause by clause, in two-column tables.<br><br>Clauses: parties, position, term (fixed / open-ended by rule), trial period (only with a trial end date), working time, pay, leave, confidentiality, ending the contract, other terms, signatures of both parties.<br><br>The wording is neutral and structural: no notice periods, no severance amounts, no article numbers.<br><br>Shipped wording goes live with the on-screen notice "**Sample wording.** Have your own lawyer check it before you use it." (owner ruling 2026-11-24; see the follow-up section) — in the designer and on the contract panel, never printed.<br><br>The contract page CSS reaches the PDF and the preview by QWeb inheritance of `page_frame`, and the designer's paper by SCSS. |
+| 4 Hero | **"The finished contract, in one press."** A "Contract document" button in the panel's action area: inside "Next step" for people who may change the contract, in its own "Paperwork" row for people who may only read it. Built with an OWL `patch` and template inheritance.<br><br>The sheet slides in at once on blank A4 paper, then the contract for THIS contract is written onto it and the person's values ink in. It holds:<br>- a language switch, only for languages the wording exists in;<br>- a document switch, when there is more than one document;<br>- amber chips for missing values. Each jumps to the field in the panel and opens its editor, or opens the employee panel for employee fields;<br>- a folded list of left-out paragraphs, each with its reason;<br>- the amber "Sample wording" line across the top while the wording is still the shipped sample (with "Make it yours");<br>- **Download PDF** (⌘P) and **Save to documents · vN** (⌘S);<br>- **Change the wording**, which opens the designer, for people allowed only;<br>- the saved versions.<br><br>Esc closes the sheet. If the panel has unsaved typed changes, it asks to save or discard them first. |
 | 5 Saving | Each save adds a new document to the employee's documents (`pbdc_contract_id` + `pbdc_version` added by `_inherit`), named like "Employment contract · v2 · 22 Nov 2026". Earlier versions are kept. The version number is taken under a row lock. |
 | 6 Server | Four methods added to `pb.contracts`: `contract_document_available`, `contract_document`, `contract_document_pdf`, `contract_document_save`.<br><br>Access is the panel's own gate, read as the caller.<br><br>Pay:<br>- the panel's own mask applies, and the wage must also be readable as the caller;<br>- someone who is masked gets a plain refusal, and the PDF and save are refused;<br>- on their own contract a person sees their own pay.<br><br>The studio pipeline is reused (copy rule, language order, rules / fields / escaping, page frame / report). Nothing is stored for a preview or a download. |
 
@@ -113,13 +113,13 @@ None (this report and `docs/handovers/docstudio/evidence_a2/` only).
 | Palette / quiet board | 9/10 | Locked indigo, amber only for missing, rose only for pay refusal, Lucide, no gradients. |
 | Overall | 8.6/10 | |
 
-## 7. Owner questions (plain words)
+## 7. Owner questions — answered
 
-1. **Should a lawyer check the shipped contract wording before customers use it?** It makes no legal
-   claims, and every customer sees "Starting wording — have it checked against your local labour law"
-   until they edit it. Enough, or lawyer-reviewed Vietnamese and Indonesian versions before go-live?
-2. **Who may file the contract in the employee's documents?** Today HR and payroll roles. Someone who
-   may only view the contract can download the PDF but not file it. Keep that?
+Both questions were answered by the owner on 2026-11-24 (no open questions):
+
+1. Shipped wording goes live with a clear "Sample wording. Have your own lawyer check it before you
+   use it." notice on screen (built, see the follow-up section).
+2. People who may only view a contract download it but cannot file it (kept as built).
 
 ## 8. Left for later
 
@@ -163,18 +163,56 @@ Tests: `pb_doc_contracts` 23/23 (new test 16: notice shown before edit for all t
 documents, absent from the page, PDF and filed document, kept by a copy, gone after the customer's
 save and only for that document, back after "put back"); `pb_doc_studio` 43/43.
 
+## Resumed walk of the notice (2026-11-24)
+
+Local server, fresh assets, three never-saved shipped contracts (`pbdc_sample` true):
+- Contract panel, English, Tan (generic original): amber line "Sample wording. Have your own lawyer
+  check it before you use it." · NOT PRINTED · Make it yours, above both columns; not inside the
+  paper (`evidence_a2/w13_…`). The paper itself now prints in the serif font.
+- "Make it yours" → designer on "Employment contract": same notice above the page, built-in
+  "Show only when" pills present (`w14_…`). Typed a sentence, ⌘S → "Your wording".
+- **Found and fixed:** the designer kept showing the notice after that first save until the page was
+  reopened (the designer only copies some fields back from a save). An OWL patch of the designer's
+  `save` now hides it at once (`pb_doc_contracts/static/src/js/contract_doc.js`, commit below);
+  checked on the Indonesian copy: notice gone the moment it was saved.
+- Back on the panel: Tan's document (own wording now) shows NO notice and prints the typed sentence;
+  Lan's Vietnam copy (still sample) shows it, also for the HR user whose pay is masked (`w15_…`).
+- Vietnamese: the four new strings are served in Vietnamese by the web client
+  (`/web/webclient/translations`: "Nội dung mẫu." / "Hãy nhờ luật sư của bạn kiểm tra trước khi sử
+  dụng." / "Không in ra" / "Sửa thành nội dung của bạn"). The on-screen Vietnamese view could not be
+  captured this time: Chrome's own page translation switched the Vietnamese screens back to English
+  in the shared browser (the earlier walk on 2026-11-22 showed the panel in Vietnamese).
+- Console: no errors or warnings in any flow.
+- PDF: the notice is not part of the wording, so it cannot print; test 16 checks the preview page,
+  the PDF output and the filed document. A real PDF re-render was not possible today: the local
+  PDF engine (an unpacked package in a shared scratch folder) had been removed by a clean-up, and
+  fetching it again is a download that needs the owner's approval. The real-PDF checks of the
+  earlier rounds stand (two columns, Vietnamese letters, serif font with correct spacing).
+
+## Finding for the deploy agent — the web font can arrive late in the PDF engine
+
+What: a studio document printed with the page font "Clean" (Roboto, a web font) can come out with
+bold labels drawn over the next words ("The employer:My Company", also in Vietnamese cells), and on a
+second run with everything bold. The same document, same data, printed twice gave two different
+results.
+
+Why (as far as seen): the PDF engine (wkhtmltopdf 0.12.6) fetches the report stylesheet and the Roboto
+files over http from `report.url` / `web.base.url`; when the font arrives after layout, text is laid
+out with one font and painted with another.
+
+How to reproduce: a page that uses the "Clean" font, printed through the studio report
+(`pb_doc_studio.report_doc_letter`) on a server that is slow to answer (a fresh asset bundle, a
+loaded machine), twice in a row; compare the bold label + following word. Locally: DEMO-VN-001,
+`contract_document_pdf`, right after a restart with purged assets.
+
+Effect: every studio document in "Clean" (letters too, not only contracts). Contracts are not affected
+any more: they ship in "Classic serif" (DejaVu Serif, a system font on the server) and printed
+identically twice. Suggested check after deploy: print one letter in "Clean" twice on payobook.com
+and compare; if it shows, the phase-F owner should either embed the fonts locally for the PDF engine
+or default the page font to a system font.
+
 ## Where I stopped
 
-PAUSED on the coordinator's request (owner offline), after the follow-up was committed and pushed.
-
-- Done: the owner-ruling follow-up above, tests green, report updated.
-- Not done: the quick browser look at the new notice (sheet and designer) — the server was restarted
-  with fresh assets but the walk had not started; the old report sections still mention the earlier
-  "Starting wording" wording in places (§1 item 3–4, §6, §7 q1) — to be tidied with the walk.
-- Next step: `bash scratchpad/a2/serve.sh` (assets already purged), sign in as `walk.pay`
-  (`/web/session/authenticate` on `http://a2.localhost:8492`), Contracts → DEMO Nguyễn Thị Lan →
-  Contract document: check the amber "Sample wording" line, then Change the wording → designer banner;
-  console clean; screenshot to `evidence_a2/`; then drop the database.
-- Local state: database **`docstudio_a2_t`** (seeded DEMO contracts, walk logins, `report.url` set to the
-  local server) and its filestore `~/odoo19/data/filestore/docstudio_a2_t` — still present, drop when
-  done. Walk server stopped. Worktree `/Users/adity/Documents/GitHub/gitlocal-worktrees/docstudio-a2`.
+Finished. All follow-up work is committed and pushed; the local database `docstudio_a2_t` and its
+filestore are dropped. The sparse worktree `/Users/adity/Documents/GitHub/gitlocal-worktrees/docstudio-a2`
+is left for the merge agent.
