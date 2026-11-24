@@ -66,7 +66,7 @@ quiet() {
   [ ! -s $EV/activity-before-stop.txt ]
 }
 notes_ok || { log "deploy notes: $(cat $EV/notes-check.txt) - refused, nothing changed"; result REFUSED-NOTES; exit 0; }
-bash /tmp/s2_hashtree.sh $ADD $MODS > $EV/live-trees-now.txt
+bash /tmp/p7_hashtree.sh $ADD $MODS > $EV/live-trees-now.txt
 diff -q $EV/live-trees-now.txt $EV/live-trees-before.txt >/dev/null || { log "live trees moved since prep - refused"; result REFUSED-MOVED; exit 0; }
 [ "$(cat $EV/rehearsal-rize.result 2>/dev/null)" = OK ] || { log "no passed rize rehearsal on record - refused"; result REFUSED-REHEARSAL; exit 0; }
 if ! quiet; then

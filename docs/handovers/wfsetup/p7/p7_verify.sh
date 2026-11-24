@@ -11,7 +11,7 @@ MODS=$(cat /tmp/p7_mods.txt)
 pq() { sudo -u postgres psql -X -At -d "$@"; }
 {
 echo "== trees"
-bash /tmp/s2_hashtree.sh $ADD $MODS > $EV/live-trees-verify.txt
+bash /tmp/p7_hashtree.sh $ADD $MODS > $EV/live-trees-verify.txt
 diff $EV/live-trees-verify.txt /tmp/p7_commit_trees.txt && echo "all $(wc -l < $EV/live-trees-verify.txt) trees = commit $(cat /tmp/p7_commit.txt)"
 echo "== versions (manifest vs latest_version)"
 for m in pb_workforce_setup pb_attendance_policy pb_workforce_workspace pb_hr_workforce; do

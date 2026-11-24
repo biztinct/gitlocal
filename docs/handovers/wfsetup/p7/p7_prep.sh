@@ -17,7 +17,7 @@ log() { echo "$(date -u +%T) $*" | tee -a $EV/steps.log; }
 pq() { sudo -u postgres psql -X -At -d "$@"; }
 rm -f $EV/prep.result
 log "evidence $EV backups $BK commit $(cat /tmp/p7_commit.txt); $(echo $MODS | wc -w) custom modules in the closure"
-bash /tmp/s2_hashtree.sh $ADD $MODS > $EV/live-trees-before.txt
+bash /tmp/p7_hashtree.sh $ADD $MODS > $EV/live-trees-before.txt
 if diff $EV/live-trees-before.txt /tmp/p7_commit_trees.txt > $EV/trees-diff.txt; then
   log "live trees = commit: yes (all $(wc -l < $EV/live-trees-before.txt))"
 else
