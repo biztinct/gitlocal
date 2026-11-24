@@ -14,7 +14,7 @@
 import { Component, onWillUnmount, useEffect, useExternalListener, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
-import { MODEL, icon, dayNames, hrs, deepClone, errorText, timeRange } from "./setup_util";
+import { MODEL, icon, dayNames, hrs, deepClone, errorText, timeRange, fmtNum } from "./setup_util";
 
 const AUTOSAVE_MS = 600;
 
@@ -103,7 +103,7 @@ export class StepWeeks extends Component {
         return this.grid(row).length > 1 ? _t("Week %s", w + 1) : _t("Every week");
     }
     peopleText(row) {
-        return row.people === 1 ? _t("1 person") : _t("%s people", row.people);
+        return row.people === 1 ? _t("1 person") : _t("%s people", fmtNum(row.people));
     }
     hoursText(row) {
         const g = this.grid(row);

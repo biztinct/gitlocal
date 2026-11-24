@@ -19,7 +19,7 @@ import { Component, onWillStart, onWillUnmount, useExternalListener, useRef, use
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { deserializeDate, serializeDate } from "@web/core/l10n/dates";
-import { MODEL, icon, dayNames, hrs, errorText, timeRange, rich } from "./setup_util";
+import { MODEL, icon, dayNames, hrs, errorText, timeRange, rich, fmtNum } from "./setup_util";
 import { SetupDrawer } from "./setup_drawer";
 
 const CHUNK = 200;
@@ -122,6 +122,7 @@ export class StepPeople extends Component {
     get teams() { return this.people ? this.people.teams : []; }
     get weeks() { return this.props.data.weeks; }
     get shifts() { return this.props.data.shifts; }
+    nf(n) { return fmtNum(n); }
     get missing() { return this.people ? this.people.without_week : 0; }
     get total() { return this.people ? this.people.total : 0; }
     /** People with neither a clock number nor a badge number (the row's
@@ -171,14 +172,14 @@ export class StepPeople extends Component {
             return "";
         }
         return this.missing
-            ? _t("%(n)s of %(total)s still need a working week", { n: this.missing, total: this.total })
+            ? _t("%(n)s of %(total)s still need a working week", { n: fmtNum(this.missing), total: fmtNum(this.total) })
             : _t("Everyone has a working week");
     }
     teamLine(team) {
         if (team.with_week === team.total) {
-            return team.total === 1 ? _t("The 1 person has a working week") : _t("All %s have a working week", team.total);
+            return team.total === 1 ? _t("The 1 person has a working week") : _t("All %s have a working week", fmtNum(team.total));
         }
-        return _t("%(n)s of %(total)s have a working week", { n: team.with_week, total: team.total });
+        return _t("%(n)s of %(total)s have a working week", { n: fmtNum(team.with_week), total: fmtNum(team.total) });
     }
     teamWidth(team) {
         return `width:${team.total ? (team.with_week / team.total) * 100 : 0}%`;
@@ -187,18 +188,18 @@ export class StepPeople extends Component {
     get selCount() { void this.state.tick; return this.sel.size; }
     get selLine() {
         const n = this.selCount;
-        return n === 1 ? _t("1 person ticked") : _t("%s people ticked", n);
+        return n === 1 ? _t("1 person ticked") : _t("%s people ticked", fmtNum(n));
     }
-    get selAllLine() { return _t("%s ticked.", this.selCount); }
-    get selAllButton() { return _t("Tick all %s in this list", this.list.length); }
+    get selAllLine() { return _t("%s ticked.", fmtNum(this.selCount)); }
+    get selAllButton() { return _t("Tick all %s in this list", fmtNum(this.list.length)); }
     get showSelAll() {
         const n = this.selCount;
         return this.canEdit && n >= 8 && !this.allTicked && this.list.length > n;
     }
     get cappedLine() {
-        return _t("Showing the first %s people. Search to find anyone else.", (this.people?.cap || 5000).toLocaleString());
+        return _t("Showing the first %s people. Search to find anyone else.", fmtNum(this.people?.cap || 5000));
     }
-    get moreLine() { return _t("%s more below. Keep scrolling.", this.more); }
+    get moreLine() { return _t("%s more below. Keep scrolling.", fmtNum(this.more)); }
     groupLabel(row) {
         return row.group === "manager" ? _t("Manager") : row.group === "worker" ? _t("Worker") : _t("Not set");
     }
@@ -555,20 +556,20 @@ export class StepPeople extends Component {
         const d = this.dr;
         const n = this.applyCount;
         if (d?.type === "oneoff") {
-            return n === 1 ? _t("Add 1 shift") : _t("Add %s shifts", n);
+            return n === 1 ? _t("Add 1 shift") : _t("Add %s shifts", fmtNum(n));
         }
-        return _t("Apply to %s", n);
+        return _t("Apply to %s", fmtNum(n));
     }
     get drawerTitle() {
         const d = this.dr;
         const n = this.sel.size;
         if (d.type === "assign") {
-            return n === 1 ? _t("Give 1 person a working week") : _t("Give %s people a working week", n);
+            return n === 1 ? _t("Give 1 person a working week") : _t("Give %s people a working week", fmtNum(n));
         }
         if (d.type === "oneoff") {
-            return n === 1 ? _t("One-off shift for 1 person") : _t("One-off shift for %s people", n);
+            return n === 1 ? _t("One-off shift for 1 person") : _t("One-off shift for %s people", fmtNum(n));
         }
-        return n === 1 ? _t("Late rule for 1 person") : _t("Late rule for %s people", n);
+        return n === 1 ? _t("Late rule for 1 person") : _t("Late rule for %s people", fmtNum(n));
     }
     get drawerSub() {
         const d = this.dr;
@@ -607,7 +608,7 @@ export class StepPeople extends Component {
     weekButton(i) { return _t("Week %s", i + 1); }
     get differentLine() {
         const n = this.pv?.keep_theirs || 0;
-        return n === 1 ? _t("1 already has a different week") : _t("%s already have a different week", n);
+        return n === 1 ? _t("1 already has a different week") : _t("%s already have a different week", fmtNum(n));
     }
     get assignLines() {
         const p = this.pv;
@@ -648,23 +649,23 @@ export class StepPeople extends Component {
             return [];
         }
         const out = [];
-        out.push(rich(p.will_add === 1 ? _t("1 one-off shift will be added.") : _t("%(n)s one-off shifts will be added."), { n: p.will_add }));
-        const days = p.days === 1 ? _t("1 day") : _t("%s days", p.days);
-        const people = p.people === 1 ? _t("1 person") : _t("%s people", p.people);
+        out.push(rich(p.will_add === 1 ? _t("1 one-off shift will be added.") : _t("%(n)s one-off shifts will be added."), { n: fmtNum(p.will_add) }));
+        const days = p.days === 1 ? _t("1 day") : _t("%s days", fmtNum(p.days));
+        const people = p.people === 1 ? _t("1 person") : _t("%s people", fmtNum(p.people));
         out.push(rich(this.skippedTotal ? _t("That is %(days)s × %(people)s, less the days below.")
             : _t("That is %(days)s × %(people)s."), { days, people }));
         if (p.replace_drafts) {
             out.push(rich(p.replace_drafts === 1 ? _t("1 replaces a shift that was planned but not published yet.")
-                : _t("%(n)s replace shifts that were planned but not published yet."), { n: p.replace_drafts }));
+                : _t("%(n)s replace shifts that were planned but not published yet."), { n: fmtNum(p.replace_drafts) }));
         }
         return out;
     }
     get skippedTotal() { return (this.pv?.skipped_list || []).reduce((a, s) => a + s.count, 0); }
     get skippedLine() {
         const n = this.skippedTotal;
-        return n === 1 ? _t("1 day is left out:") : _t("%s days are left out:", n);
+        return n === 1 ? _t("1 day is left out:") : _t("%s days are left out:", fmtNum(n));
     }
-    skipText(s) { return _t("%(why)s (%(n)s)", { why: s.label, n: s.count }); }
+    skipText(s) { return _t("%(why)s (%(n)s)", { why: s.label, n: fmtNum(s.count) }); }
 
     // late drawer
     get groups() {

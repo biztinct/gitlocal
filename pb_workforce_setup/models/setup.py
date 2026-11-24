@@ -25,7 +25,7 @@ from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
-from odoo.tools.misc import format_date
+from odoo.tools.misc import format_date, formatLang
 
 # ONE colour table (handover §2). The stored value is the Schedule's palette
 # index (`pb_schedule.scss` `$pbsc-accent`); the screen speaks in names. The JS
@@ -78,6 +78,21 @@ class WorkforceSetup(models.AbstractModel):
     @api.model
     def _today(self):
         return fields.Date.context_today(self)
+
+    @api.model
+    def _num(self, n):
+        """A count in the user's language: 2,402 / 2.402 (P5c)."""
+        return formatLang(self.env, int(n or 0), digits=0)
+
+    @api.model
+    def _dec(self, value, digits=2):
+        """Hours and the like in the user's language, no trailing zeros:
+        0.5 / 0,5 (P5c)."""
+        text = formatLang(self.env, float(value or 0), digits=digits)
+        sep = self.env['res.lang']._get_data(code=self.env.lang or 'en_US').decimal_point or '.'
+        if sep in text:
+            text = text.rstrip('0').rstrip(sep)
+        return text
 
     @api.model
     def _monday(self, day=None):
@@ -184,13 +199,13 @@ class WorkforceSetup(models.AbstractModel):
         steps = []
         if usable:
             steps.append({'key': 'shifts', 'state': 'done',
-                          'text': _("1 shift ready") if usable == 1 else _("%s shifts ready", usable)})
+                          'text': _("1 shift ready") if usable == 1 else _("%s shifts ready", self._num(usable))})
         else:
             steps.append({'key': 'shifts', 'state': 'warn', 'text': _("Add your first shift")})
         if n_weeks:
             steps.append({'key': 'weeks', 'state': 'done',
                           'text': _("1 working week ready") if n_weeks == 1
-                          else _("%s working weeks ready", n_weeks)})
+                          else _("%s working weeks ready", self._num(n_weeks))})
         else:
             steps.append({'key': 'weeks', 'state': 'warn', 'text': _("Build a working week")})
         if not total:
@@ -198,11 +213,11 @@ class WorkforceSetup(models.AbstractModel):
         elif missing:
             steps.append({'key': 'people', 'state': 'warn', 'missing': missing, 'total': total,
                           'text': _("1 person has no working week") if missing == 1
-                          else _("%s people have no working week", missing)})
+                          else _("%s people have no working week", self._num(missing))})
         else:
             steps.append({'key': 'people', 'state': 'done', 'missing': 0, 'total': total,
                           'text': _("The 1 person has a working week") if total == 1
-                          else _("All %s people have a working week", total)})
+                          else _("All %s people have a working week", self._num(total))})
         # steps 4-7 are filled in by rules.py and golive.py
         for key in STEP_KEYS[3:]:
             steps.append({'key': key, 'state': 'todo', 'text': ''})
@@ -545,7 +560,7 @@ class WorkforceSetup(models.AbstractModel):
         if people:
             n = len(people)
             raise UserError(_("1 person works this week. Move them to another week first.") if n == 1
-                            else _("%s people work this week. Move them to another week first.", n))
+                            else _("%s people work this week. Move them to another week first.", self._num(n)))
         self.env['pb.shift.patterns'].archive_pattern(pattern.id)
         return {'archived': True}
 

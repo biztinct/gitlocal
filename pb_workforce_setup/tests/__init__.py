@@ -5,3 +5,4 @@ from . import test_people
 from . import test_rules
 from . import test_golive
 from . import test_p5a
+from . import test_p5c

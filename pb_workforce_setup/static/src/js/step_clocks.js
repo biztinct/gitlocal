@@ -12,7 +12,7 @@ import { Component, onMounted, onWillStart, onWillUnmount, useEffect, useRef, us
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { deserializeDateTime } from "@web/core/l10n/dates";
-import { MODEL, icon, errorText } from "./setup_util";
+import { MODEL, icon, errorText, fmtNum } from "./setup_util";
 
 export class StepClocks extends Component {
     static template = "pb_workforce_setup.StepClocks";
@@ -89,7 +89,7 @@ export class StepClocks extends Component {
             const n = c.later;
             this.props.studio.setBar("clocks", {
                 label: !n ? _t("Clocks are fine. Confirm")
-                    : n === 1 ? _t("Continue, finish 1 clock later") : _t("Continue, finish %s clocks later", n),
+                    : n === 1 ? _t("Continue, finish 1 clock later") : _t("Continue, finish %s clocks later", fmtNum(n)),
                 icon: n ? "arrowRight" : "check",
                 busy: this.state.confirming,
                 run: () => this.confirm(),
@@ -146,11 +146,11 @@ export class StepClocks extends Component {
     }
     heardLine(row) { return _t("Last heard from %s", this.ago(row.last_heard)); }
     todayLine(row) {
-        return row.today === 1 ? _t("1 clock-in received today") : _t("%s clock-ins received today", row.today.toLocaleString());
+        return row.today === 1 ? _t("1 clock-in received today") : _t("%s clock-ins received today", fmtNum(row.today));
     }
     pendingLine(row) {
         return row.pending === 1 ? _t("1 record is waiting on the PC to be sent.")
-            : _t("%s records are waiting on the PC to be sent.", row.pending.toLocaleString());
+            : _t("%s records are waiting on the PC to be sent.", fmtNum(row.pending));
     }
     inviteLine(row) {
         return _t("A setup link was made. It works until %s.", this.day(row.invite_until));
@@ -165,7 +165,7 @@ export class StepClocks extends Component {
 
     get noNumberLine() {
         const n = this.clk.no_number;
-        return n === 1 ? _t("1 person has no clock number") : _t("%s people have no clock number", n.toLocaleString());
+        return n === 1 ? _t("1 person has no clock number") : _t("%s people have no clock number", fmtNum(n));
     }
     option(key) {
         return {

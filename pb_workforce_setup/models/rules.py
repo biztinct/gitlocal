@@ -663,7 +663,7 @@ class WorkforceSetupRules(models.AbstractModel):
         remark = self.remark_days()
         n = people
         summary = (_("Rules confirmed for 1 person.") if n == 1
-                   else _("Rules confirmed for %s people.", '{:,}'.format(n)))
+                   else _("Rules confirmed for %s people.", self._num(n)))
         return {'problems': [], 'people': people, 'rows_updated': rows, 'rows_skipped': skipped,
                 'retired': retired, 'remark': remark, 'summary': summary}
 

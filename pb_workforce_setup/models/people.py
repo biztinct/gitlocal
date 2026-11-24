@@ -93,7 +93,7 @@ class WorkforceSetupPeople(models.AbstractModel):
         if not gone:
             return []
         return [_("1 of the people you ticked is no longer here and is left out.") if gone == 1
-                else _("%s of the people you ticked are no longer here and are left out.", gone)]
+                else _("%s of the people you ticked are no longer here and are left out.", self._num(gone))]
 
     @api.model
     def _initials(self, name):
@@ -397,7 +397,7 @@ class WorkforceSetupPeople(models.AbstractModel):
                                   'date_from': day, 'date_to': False} for emp in plan['moved']])
         n = len(plan['moved'])
         summary = (_("1 person now works “%s”.", week.name) if n == 1
-                   else _("%(n)s people now work “%(week)s”.", n=n, week=week.name))
+                   else _("%(n)s people now work “%(week)s”.", n=self._num(n), week=week.name))
         undo = self.env['pb.workforce.setup.undo'].create({
             'kind': 'assign', 'summary': summary,
             'payload': {
@@ -478,7 +478,7 @@ class WorkforceSetupPeople(models.AbstractModel):
         days = [first + timedelta(days=i) for i in range((last - first).days + 1)
                 if (first + timedelta(days=i)).weekday() in wanted]
         if len(days) * len(emps) > ONEOFF_MAX_ROWS:
-            raise UserError(_("That is more than %s shifts at once. Tick fewer people or pick fewer days.", '5,000'))
+            raise UserError(_("That is more than %s shifts at once. Tick fewer people or pick fewer days.", self._num(5000)))
 
         Grid = self.env['hr.shift.planning.grid']
         Shift = self.env['hr.shift.planning']                 # as the caller
@@ -618,9 +618,9 @@ class WorkforceSetupPeople(models.AbstractModel):
         if n == 1:
             summary = _("1 one-off shift added.")
         elif people == 1:
-            summary = _("%s one-off shifts added for 1 person.", n)
+            summary = _("%s one-off shifts added for 1 person.", self._num(n))
         else:
-            summary = _("%(n)s one-off shifts added for %(p)s people.", n=n, p=people)
+            summary = _("%(n)s one-off shifts added for %(p)s people.", n=self._num(n), p=self._num(people))
         undo_id = False
         if created or removed:
             undo_id = self.env['pb.workforce.setup.undo'].create({
@@ -695,7 +695,7 @@ class WorkforceSetupPeople(models.AbstractModel):
                 hi = int(band.maximum)
                 span = _("%(a)s to %(b)s min", a=lo, b=hi - 1) if hi - 1 > lo else _("%s min", lo)
             off = (_("nothing off") if not band.hours
-                   else _("%s h off", ('%g' % band.hours)))
+                   else _("%s h off", self._dec(band.hours)))
             out[band.category].append('%s: %s' % (span, off))
         return out
 
@@ -744,8 +744,8 @@ class WorkforceSetupPeople(models.AbstractModel):
             row['new_cat'] = emp.pb_attendance_category or False
             row['new_pol'] = emp.pb_attendance_policy_id.id or False
         summary = (_("1 person set to the %s late rule.", label) if n == 1
-                   else _("%(n)s people set to the %(rule)s late rule.", n=n, rule=label)) if n \
-            else _("The late rules are now linked for %s people.", len(plan['fill']))
+                   else _("%(n)s people set to the %(rule)s late rule.", n=self._num(n), rule=label)) if n \
+            else _("The late rules are now linked for %s people.", self._num(len(plan['fill'])))
         undo = self.env['pb.workforce.setup.undo'].create({
             'kind': 'late', 'summary': summary, 'payload': {'rows': rows}})
         return {'changed': n, 'unchanged': len(plan['emps']) - n, 'policy_set': len(plan['fill']),

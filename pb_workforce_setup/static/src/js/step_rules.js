@@ -21,7 +21,7 @@
 import { Component, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
-import { MODEL, icon, errorText, deepClone, toMin, spanOf } from "./setup_util";
+import { MODEL, icon, errorText, deepClone, toMin, spanOf, fmtNum, dec } from "./setup_util";
 
 const AUTOSAVE_MS = 600;
 
@@ -69,6 +69,9 @@ export class StepRules extends Component {
     get canManage() { return !!this.props.data.can_edit; }
     get lines() { return this.r.late[this.state.group] || []; }
     isLast(i) { return i === this.lines.length - 1; }
+    nf(n) { return fmtNum(n); }
+    /** A read-only rate or hours value in the user's decimal mark (P5c). */
+    df(v) { return dec(v, 2); }
     get groupCounts() {
         const p = this.r.people || {};
         return { worker: p.worker || 0, manager: p.manager || 0 };
@@ -79,9 +82,9 @@ export class StepRules extends Component {
     get groupHint() {
         const n = this.groupCounts[this.state.group];
         if (this.state.group === "manager") {
-            return n === 1 ? _t("1 person has the Manager late rule.") : _t("%s people have the Manager late rule.", n.toLocaleString());
+            return n === 1 ? _t("1 person has the Manager late rule.") : _t("%s people have the Manager late rule.", fmtNum(n));
         }
-        return n === 1 ? _t("1 person has the Worker late rule.") : _t("%s people have the Worker late rule.", n.toLocaleString());
+        return n === 1 ? _t("1 person has the Worker late rule.") : _t("%s people have the Worker late rule.", fmtNum(n));
     }
     get noLines() { return !this.lines.length; }
     get noLinesText() {
@@ -103,14 +106,14 @@ export class StepRules extends Component {
             return _t("These rules will apply to everyone in %s.", company);
         }
         return _t("These rules apply to everyone in %(company)s: %(n)s people, %(w)s with the Worker late rule and %(m)s with the Manager one.", {
-            company, n: p.total.toLocaleString(), w: (p.worker || 0).toLocaleString(), m: (p.manager || 0).toLocaleString(),
+            company, n: fmtNum(p.total), w: fmtNum(p.worker || 0), m: fmtNum(p.manager || 0),
         });
     }
     get inUseLine() {
         const p = this.r.people || {};
         return p.with_rules === 1
             ? _t("1 person is paid by them. To change them, make a new version: these stay in use until you confirm it.")
-            : _t("%s people are paid by them. To change them, make a new version: these stay in use until you confirm it.", (p.with_rules || 0).toLocaleString());
+            : _t("%s people are paid by them. To change them, make a new version: these stay in use until you confirm it.", fmtNum(p.with_rules || 0));
     }
 
     // ------------------------------------------------------------ checks while typing

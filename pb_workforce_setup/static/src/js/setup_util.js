@@ -9,6 +9,7 @@
  */
 import { markup } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
+import { formatFloat } from "@web/core/utils/numbers";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const ICON_CACHE = new Map();
@@ -64,10 +65,24 @@ export function timeRange(start, end) {
     return _t("%(start)s to %(end)s", { start, end });
 }
 
-/** 480 -> "8 h", 450 -> "7.5 h". */
+/**
+ * A count in the user's language (P5c): 2,402 in English, 2.402 in
+ * Vietnamese and Indonesian — the web client's own formatter, which reads the
+ * user's language settings (never the browser's).
+ */
+export function fmtNum(n) {
+    return formatFloat(Number(n) || 0, { digits: [false, 0] });
+}
+
+/** A decimal in the user's language, no trailing zeros: 7.5 / 7,5; 8. */
+export function dec(value, digits = 2) {
+    return formatFloat(Number(value) || 0, { digits: [false, digits], trailingZeros: false });
+}
+
+/** 480 -> "8 h", 450 -> "7.5 h" (7,5 h in Vietnamese). */
 export function hrs(minutes) {
     const v = Math.round((minutes || 0) / 6) / 10;
-    return _t("%s h", String(Number.isInteger(v) ? v : v.toFixed(1)));
+    return _t("%s h", dec(v, 1));
 }
 
 /**
@@ -133,8 +148,8 @@ export function rich(template, bold = {}, plain = {}) {
     return RICH.get(html);
 }
 
-/** 7.25 -> "7.25 h", 8 -> "8 h", 0.5 -> "0.5 h" (hours, up to 2 decimals). */
+/** 7.25 -> "7.25 h", 8 -> "8 h", 0.5 -> "0.5 h" (hours, up to 2 decimals, the user's decimal mark). */
 export function hoursText(value) {
     const v = Math.round((Number(value) || 0) * 100) / 100;
-    return _t("%s h", String(v)).replace(" ", "\u00a0");   // "1.5 h" never splits over two lines
+    return _t("%s h", dec(v, 2)).replace(" ", "\u00a0");   // "1.5 h" never splits over two lines
 }

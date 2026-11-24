@@ -277,11 +277,11 @@ class WorkforceSetupHolidays(models.AbstractModel):
         if n == 1:
             return _("1 planned shift is now paid as public holiday.")
         if n:
-            return _("%s planned shifts are now paid as public holiday.", '{:,}'.format(n))
+            return _("%s planned shifts are now paid as public holiday.", self._num(n))
         if back == 1:
             return _("1 planned shift is back to its usual pay.")
         if back:
-            return _("%s planned shifts are back to their usual pay.", '{:,}'.format(back))
+            return _("%s planned shifts are back to their usual pay.", self._num(back))
         return ''
 
     @api.model

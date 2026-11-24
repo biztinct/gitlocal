@@ -50,14 +50,14 @@ class WorkforceSetupDays(models.AbstractModel):
         if not rows:
             summary = _("There are no shifts from today on to check.")
         elif not total:
-            summary = _("Checked %s shifts. All of them were already right.", '{:,}'.format(len(rows)))
+            summary = _("Checked %s shifts. All of them were already right.", self._num(len(rows)))
         else:
             parts = []
             if changed['holiday']:
-                parts.append(_("%s now public holiday", changed['holiday']))
+                parts.append(_("%s now public holiday", self._num(changed['holiday'])))
             if changed['rest_day']:
-                parts.append(_("%s now rest day", changed['rest_day']))
+                parts.append(_("%s now rest day", self._num(changed['rest_day'])))
             if changed['normal']:
-                parts.append(_("%s now normal day", changed['normal']))
-            summary = _("Checked %(n)s shifts: %(parts)s.", n='{:,}'.format(len(rows)), parts=', '.join(parts))
+                parts.append(_("%s now normal day", self._num(changed['normal'])))
+            summary = _("Checked %(n)s shifts: %(parts)s.", n=self._num(len(rows)), parts=', '.join(parts))
         return {'checked': len(rows), 'changed': changed, 'summary': summary}

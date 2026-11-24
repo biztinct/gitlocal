@@ -20,7 +20,7 @@
 import { Component, onMounted, onWillUnmount, onWillUpdateProps, useExternalListener, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
-import { MODEL, icon, errorText, timeRange, deepClone, rich, hoursText } from "./setup_util";
+import { MODEL, icon, errorText, timeRange, deepClone, rich, hoursText, dec } from "./setup_util";
 
 const THROTTLE_MS = 120;
 
@@ -236,7 +236,7 @@ export class PreviewPanel extends Component {
     get res() { return this.state.result; }
     get ok() { return !!(this.res && !this.res.error); }
     get isNormal() { return this.ok && this.res.day_kind === "normal"; }
-    pct(v) { return `${v} %`; }
+    pct(v) { return `${dec(v, 2)} %`; }
     get sentence() {
         const r = this.res;
         const out = [];

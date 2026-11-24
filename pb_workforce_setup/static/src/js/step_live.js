@@ -5,7 +5,8 @@
  * The checklist (every amber line has a Fix button that lands on its step),
  * the first full week of the roster for a few real people, and the publish
  * card. Publish asks once, inline, with the real numbers; then the roster is
- * made and published ONE WEEK PER CALL so each week visibly ticks over, and a
+ * made a few days per call (P5c: about 1,000 shifts a call, so the bar
+ * moves within seconds even at 700 people) and published ONE WEEK PER CALL so each week visibly ticks over, and a
  * failed week stops with the sentence and "Carry on" (earlier weeks stay
  * published; carrying on publishes only what is left). The finish is the
  * green "Workforce is live." card.
@@ -13,7 +14,21 @@
 import { Component, onWillStart, useEffect, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
-import { MODEL, icon, errorText } from "./setup_util";
+import { MODEL, icon, errorText, fmtNum } from "./setup_util";
+
+const { DateTime } = luxon;
+
+/** ISO days from `from` to `to`, both included. */
+function daysBetween(from, to) {
+    const out = [];
+    let d = DateTime.fromISO(from);
+    const end = DateTime.fromISO(to);
+    while (d.isValid && d <= end) {
+        out.push(d.toISODate());
+        d = d.plus({ days: 1 });
+    }
+    return out;
+}
 
 export class StepLive extends Component {
     static template = "pb_workforce_setup.StepLive";
@@ -85,6 +100,8 @@ export class StepLive extends Component {
                     })),
                     sentence: resume.failed_text || _t("Publishing stopped before every week was done."),
                     published: resume.published,
+                    perWeek: !!resume.per_week,
+                    madeTo: resume.made_to || "",
                 };
                 this.state.phase = "stopped";
             }
@@ -155,7 +172,7 @@ export class StepLive extends Component {
     get publishLabel() {
         const p = this.plan;
         if (this.chk?.missing && p?.people) {
-            return _t("Publish for the %s who are ready", p.people.toLocaleString());
+            return _t("Publish for the %s who are ready", fmtNum(p.people));
         }
         const n = this.state.weeks;
         return n === 1 ? _t("Publish 1 week") : _t("Publish %s weeks", n);
@@ -163,7 +180,7 @@ export class StepLive extends Component {
     get workingLine() {
         const n = this.chk?.headcount || 0;
         return n === 1 ? _t("Working out the roster for 1 person…")
-            : _t("Working out the roster for %s people…", n.toLocaleString());
+            : _t("Working out the roster for %s people…", fmtNum(n));
     }
     get busy() { return ["starting", "running", "finishing"].includes(this.state.phase); }
     get showRun() { return !!this.state.run && !this.state.finish && !(this.state.phase === "stopped" && this.state.resumeHidden); }
@@ -204,13 +221,13 @@ export class StepLive extends Component {
         }
         return _t("Everything is ready. People see their shifts in My Payobook straight away.");
     }
-    get bigNumber() { return this.planning ? "…" : (this.plan?.shifts || 0).toLocaleString(); }
+    get bigNumber() { return this.planning ? "…" : fmtNum(this.plan?.shifts || 0); }
     get bigLine() {
         if (this.planning) {
             return _t("shifts");
         }
         const p = this.plan?.people || 0;
-        return p === 1 ? _t("shifts for 1 person") : _t("shifts for %s people", p.toLocaleString());
+        return p === 1 ? _t("shifts for 1 person") : _t("shifts for %s people", fmtNum(p));
     }
     get planNote() {
         const p = this.plan;
@@ -219,13 +236,13 @@ export class StepLive extends Component {
         }
         const parts = [];
         if (p.already_planned) {
-            parts.push(_t("%s already planned", p.already_planned.toLocaleString()));
+            parts.push(_t("%s already planned", fmtNum(p.already_planned)));
         }
         if (p.new_shifts) {
-            parts.push(_t("%s new from the working weeks", p.new_shifts.toLocaleString()));
+            parts.push(_t("%s new from the working weeks", fmtNum(p.new_shifts)));
         }
         if (p.already_published) {
-            parts.push(_t("%s published before", p.already_published.toLocaleString()));
+            parts.push(_t("%s published before", fmtNum(p.already_published)));
         }
         return parts.join(" · ");
     }
@@ -235,14 +252,14 @@ export class StepLive extends Component {
             return "";
         }
         return n === 1 ? _t("1 day is left out: someone is on leave, on a public holiday or already has a shift then.")
-            : _t("%s days are left out: someone is on leave, on a public holiday or already has a shift then.", n.toLocaleString());
+            : _t("%s days are left out: someone is on leave, on a public holiday or already has a shift then.", fmtNum(n));
     }
     get askLine() {
         const p = this.plan || {};
         return _t("%(weeks)s · %(people)s people · %(shifts)s shifts.", {
             weeks: this.weeksLabel,
-            people: (p.people || 0).toLocaleString(),
-            shifts: (p.shifts || 0).toLocaleString(),
+            people: fmtNum(p.people || 0),
+            shifts: fmtNum(p.shifts || 0),
         });
     }
     get sample() {
@@ -251,7 +268,7 @@ export class StepLive extends Component {
     }
     get sampleLine() {
         const s = this.sample;
-        return _t("showing %(n)s of %(total)s people", { n: s.rows.length, total: s.people.toLocaleString() });
+        return _t("showing %(n)s of %(total)s people", { n: s.rows.length, total: fmtNum(s.people) });
     }
     cellClass(d) { return d.start ? `pbws-rc pbws-c-${d.color}` : "pbws-rc is-off"; }
     cellTitle(d) { return d.start ? d.name : _t("Off"); }
@@ -268,9 +285,20 @@ export class StepLive extends Component {
 
     // progress
     get doneWeeks() { return (this.state.run?.weeks || []).filter((w) => w.status === "done").length; }
+    /**
+     * Week-by-week runs move the bar for every day made as well: a day made
+     * counts 1, a week published counts 2 (publishing a week takes about two
+     * days' making).
+     */
     get progressStyle() {
-        const n = this.state.run?.weeks.length || 1;
-        return `width:${(this.doneWeeks / n) * 100}%`;
+        const run = this.state.run;
+        const n = run?.weeks.length || 1;
+        if (!run?.perWeek) {
+            return `width:${(this.doneWeeks / n) * 100}%`;
+        }
+        const all = daysBetween(run.weeks[0].from, run.weeks[n - 1].to);
+        const made = run.madeTo ? all.filter((d) => d <= run.madeTo).length : 0;
+        return `width:${((made + 2 * this.doneWeeks) / (all.length + 2 * n)) * 100}%`;
     }
     get progressLine() {
         const run = this.state.run;
@@ -287,7 +315,7 @@ export class StepLive extends Component {
     }
     weekCount(w) {
         if (w.status === "done" && w.count !== null && w.count !== undefined) {
-            return w.count === 1 ? _t("1 shift") : _t("%s shifts", w.count.toLocaleString());
+            return w.count === 1 ? _t("1 shift") : _t("%s shifts", fmtNum(w.count));
         }
         if (w.status === "busy") {
             return _t("Publishing…");
@@ -309,16 +337,16 @@ export class StepLive extends Component {
         const parts = [];
         if (f.portal) {
             parts.push(f.portal === 1 ? _t("1 person sees their shifts in My Payobook straight away.")
-                : _t("%s people see their shifts in My Payobook straight away.", f.portal.toLocaleString()));
+                : _t("%s people see their shifts in My Payobook straight away.", fmtNum(f.portal)));
         }
         if (f.mail_enabled && f.emailed) {
-            parts.push(f.emailed === 1 ? _t("1 shift email was sent.") : _t("%s shift emails were sent.", f.emailed.toLocaleString()));
+            parts.push(f.emailed === 1 ? _t("1 shift email was sent.") : _t("%s shift emails were sent.", fmtNum(f.emailed)));
         } else if (!f.mail_enabled) {
             parts.push(_t("No emails were sent: email is switched off here."));
         }
         if (f.no_channel) {
             parts.push(f.no_channel === 1 ? _t("1 person has no login and no work email, so tell them in person.")
-                : _t("%s people have no login and no work email, so tell them in person.", f.no_channel.toLocaleString()));
+                : _t("%s people have no login and no work email, so tell them in person.", fmtNum(f.no_channel)));
         }
         return parts.join(" ");
     }
@@ -392,6 +420,8 @@ export class StepLive extends Component {
             id: start.run_id,
             weeks: start.weeks.map((w) => ({ ...w, status: "wait", count: null })),
             sentence: "",
+            perWeek: !!start.per_week,
+            madeTo: "",
         };
         await this.runWeeks();
     }
@@ -415,11 +445,32 @@ export class StepLive extends Component {
                 continue;
             }
             w.status = "busy";
-            let res;
-            try {
-                res = await this.orm.call(MODEL, "go_live_week", [run.id, i]);
-            } catch (e) {
-                res = { ok: false, sentence: errorText(e) };
+            let res = { ok: true };
+            if (run.perWeek) {
+                // make the week a few days at a time: about 1,000 shifts a call
+                // (one day at 700 people, the whole week at 120), so each call
+                // takes a few seconds and the bar moves at once
+                const step = Math.max(1, Math.min(7, Math.round(1000 / Math.max(1, this.chk?.headcount || 1))));
+                const todo = daysBetween(w.from, w.to).filter((d) => !run.madeTo || d > run.madeTo);
+                const stops = todo.filter((d, k) => (k + 1) % step === 0 || k === todo.length - 1);
+                for (const day of stops) {
+                    try {
+                        res = await this.orm.call(MODEL, "go_live_make", [run.id, i, day]);
+                    } catch (e) {
+                        res = { ok: false, sentence: errorText(e) };
+                    }
+                    if (!res.ok) {
+                        break;
+                    }
+                    run.madeTo = res.made_to || day;
+                }
+            }
+            if (res.ok) {
+                try {
+                    res = await this.orm.call(MODEL, "go_live_week", [run.id, i]);
+                } catch (e) {
+                    res = { ok: false, sentence: errorText(e) };
+                }
             }
             if (!res.ok) {
                 w.status = "fail";

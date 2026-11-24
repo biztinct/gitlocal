@@ -466,11 +466,11 @@
           </label>
           <button type="button" t-att-class="'pbws-brush' + (state.onlyMissing ? ' is-on' : '')"
                   t-att-aria-pressed="state.onlyMissing ? 'true' : 'false'" t-on-click="toggleMissing">
-            No working week yet <span class="pbws-num pbws-brush-c" t-esc="missing"/>
+            No working week yet <span class="pbws-num pbws-brush-c" t-esc="nf(missing)"/>
           </button>
           <button t-if="noNumber or state.onlyNoNumber" type="button" t-att-class="'pbws-brush' + (state.onlyNoNumber ? ' is-on' : '')"
                   t-att-aria-pressed="state.onlyNoNumber ? 'true' : 'false'" t-on-click="toggleNoNumber">
-            No clock number <span class="pbws-num pbws-brush-c" t-esc="noNumber"/>
+            No clock number <span class="pbws-num pbws-brush-c" t-esc="nf(noNumber)"/>
           </button>
           <t t-if="teamRow">
             <button t-if="canEdit" type="button" class="pbws-btn pbws-btn--sm" t-on-click="tickTeam"><t t-out="icon('check', 16)"/><t t-esc="tickTeamLabel"/></button>
@@ -724,7 +724,7 @@
               <button t-foreach="['worker', 'manager']" t-as="g" t-key="g" type="button" role="radio"
                       t-att-aria-checked="state.group === g ? 'true' : 'false'" t-att-class="state.group === g ? 'is-on' : ''"
                       t-on-click="() => this.setGroup(g)">
-                <t t-esc="groupLabel(g)"/> <span class="pbws-seg-n pbws-num" t-esc="groupCounts[g]"/>
+                <t t-esc="groupLabel(g)"/> <span class="pbws-seg-n pbws-num" t-esc="nf(groupCounts[g])"/>
               </button>
             </div>
           </div>
@@ -753,7 +753,7 @@
             </t>
             <span class="pbws-nw"><input t-if="canEdit" type="number" min="0" max="24" step="0.25" data-part="hours"
                    t-att-class="'pbws-inl pbws-num' + (bad(line_index, 'hours') ? ' is-bad' : '')"
-                   t-att-value="line.hours" t-att-aria-label="lineLabel(line_index, 'hours')" t-on-input="(ev) => this.onHours(line_index, ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.hours"/> hours.</span>
+                   t-att-value="line.hours" t-att-aria-label="lineLabel(line_index, 'hours')" t-on-input="(ev) => this.onHours(line_index, ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="df(line.hours)"/> hours.</span>
             <button t-if="canEdit" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost pbws-btn--danger pbws-sent-x"
                     t-att-aria-label="removeLabel(line_index)" t-att-title="removeLabel(line_index)" t-on-click="() => this.removeLine(line_index)">
               <t t-out="icon('trash', 14)"/>
@@ -804,11 +804,11 @@
           <!-- each clause moves as one piece: a number never parts from its words or its percent sign -->
           <div class="pbws-sent">
             <span class="pbws-nw">Overtime pays <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('normal') or typing('rate-normal') ? ' is-bad' : '')"
-                   t-att-value="r.rates.normal" aria-label="Overtime rate, percent" t-on-input="(ev) => this.onRate('normal', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.normal"/> %.</span>
+                   t-att-value="r.rates.normal" aria-label="Overtime rate, percent" t-on-input="(ev) => this.onRate('normal', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="df(r.rates.normal)"/> %.</span>
             <span class="pbws-nw">Work on a rest day pays <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('rest_day') or typing('rate-rest_day') ? ' is-bad' : '')"
-                   t-att-value="r.rates.rest_day" aria-label="Rest day rate, percent" t-on-input="(ev) => this.onRate('rest_day', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.rest_day"/> %,</span>
+                   t-att-value="r.rates.rest_day" aria-label="Rest day rate, percent" t-on-input="(ev) => this.onRate('rest_day', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="df(r.rates.rest_day)"/> %,</span>
             <span class="pbws-nw">and on a public holiday <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('holiday') or typing('rate-holiday') ? ' is-bad' : '')"
-                   t-att-value="r.rates.holiday" aria-label="Public holiday rate, percent" t-on-input="(ev) => this.onRate('holiday', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.holiday"/> %.</span>
+                   t-att-value="r.rates.holiday" aria-label="Public holiday rate, percent" t-on-input="(ev) => this.onRate('holiday', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="df(r.rates.holiday)"/> %.</span>
           </div>
           <p t-if="r.rates_pending" class="pbws-rule-sub pbws-rule-wait"><t t-out="icon('info', 14)"/>The new rates are used once you confirm these rules. Until then the rates in use stay as they are.</p>
           <p class="pbws-fixed"><t t-out="icon('shieldCheck', 16)"/><span t-esc="r.approval"/></p>
@@ -834,7 +834,7 @@
             <b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.night.to"/>
             earn
             <span class="pbws-nw"><input t-if="canEdit" type="number" min="0" max="500" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('night') or typing('rate-night') ? ' is-bad' : '')"
-                   t-att-value="r.rates.night" aria-label="Night work extra, percent" t-on-input="(ev) => this.onRate('night', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.night"/> % extra.</span>
+                   t-att-value="r.rates.night" aria-label="Night work extra, percent" t-on-input="(ev) => this.onRate('night', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="df(r.rates.night)"/> % extra.</span>
           </div>
           <p t-if="nightProblem" class="pbws-err" role="alert"><t t-out="icon('triangleAlert', 14)"/><span t-esc="nightProblem"/></p>
         </div>
@@ -849,11 +849,11 @@
             Count a clock-in up to
             <input t-if="canEdit" type="number" min="0" max="6" step="0.5" t-att-class="'pbws-inl pbws-num' + (clockProblem('before') or typing('clock-before') ? ' is-bad' : '')"
                    t-att-value="r.clock.before" aria-label="Hours before the shift" t-on-input="(ev) => this.onClock('before', ev)"/>
-            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.clock.before"/>
+            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="df(r.clock.before)"/>
             hours before the shift and a clock-out up to
             <input t-if="canEdit" type="number" min="0" max="6" step="0.5" t-att-class="'pbws-inl pbws-num' + (clockProblem('after') or typing('clock-after') ? ' is-bad' : '')"
                    t-att-value="r.clock.after" aria-label="Hours after the shift" t-on-input="(ev) => this.onClock('after', ev)"/>
-            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.clock.after"/>
+            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="df(r.clock.after)"/>
             hours after it. The first in and the last out are used.
           </div>
         </div>

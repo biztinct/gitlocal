@@ -31,6 +31,43 @@ it is. The last day is the Sunday of week N.
 Tracking is off for the publish writes (as the engine does for mass rows,
 facts K19): the roster's `state` is tracked, and 16,000 chatter lines on
 go-live day help nobody.
+
+THE ENGINE RUNS ONE DAY / WEEK AT A TIME (P5c). Until P5c `go_live_start` ran
+the engine over the whole window before the first week could tick (28.7 s in
+P4, 35.5 s on the P5c machine, for 700 people x 4 weeks). Now `go_live_start`
+only checks, re-marks the existing rows and opens the run. The screen makes
+the drafts a few days per call (`go_live_make` up to a day; about 1,000 shifts
+a call: one day at 700 people, ~2.5 s, the whole week at 120 people) and publishes each week with `go_live_week`, which first
+makes whatever is left of its week (`_make_until`; `run.made_to` keeps the
+days in order, so the old week-only protocol still works). Why the result is
+the same roster as one pass over the window — the argument holds at every
+day boundary, so for any split into consecutive day ranges:
+  * what the engine wants, keeps, removes, and refuses for leave / holidays /
+    the young-worker rule / the overtime ceiling (overtime REQUESTS, not
+    roster rows) is decided per person and day. The only thing that links
+    two days is the overlap test, and it only looks one day either side;
+  * a person on ONE working week is planned day after day, so a day is only
+    ever compared with the day before as planned in this pass — in a later
+    call that day is an earlier call's row, already made. And with the rows on the next
+    day as they are in the database, MINUS the drafts the engine is about to
+    remove there: those go first (`Eng.plan` of that one day, its `remove`),
+    exactly as one pass removes everything before it judges anything;
+  * a person on TWO working weeks on the same day is planned pattern after
+    pattern, so a later pattern's Sunday is judged against an earlier
+    pattern's next Monday. That order cannot be kept range by range, so then
+    (`_live_split_ok` False) the engine runs over the whole window at the
+    start, as before.
+The holiday / rest-day re-mark does not depend on roster rows
+(`hr.shift.planning._pb_day_kinds`), so re-marking the existing rows at the
+start and letting new rows mark themselves on create (roster.py) gives the
+same day types as re-marking after the engine. Test: `test_p5c.py`.
+One knowing difference: a working-week shift the engine refills on a day
+already decided by hand is deleted again in the same call. One pass deleted
+it only after the WHOLE window was planned, so for the rest of that pass it
+could still block the next day's shift (a ghost); range by range, a refill on
+a range's last day is gone before the next range is planned. Only a working week
+whose shift on that day runs past midnight into the next day's shift can
+meet this; the week-by-week answer is the right one.
 """
 
 import logging
@@ -73,6 +110,10 @@ class WorkforceSetupRun(models.TransientModel):
     capped = fields.Boolean()
     finished = fields.Boolean()
     made = fields.Json()
+    # P5c: the working-week engine runs inside each week's call (only that
+    # week's days) instead of once over the whole window at the start
+    per_week = fields.Boolean()
+    made_to = fields.Date()          # the engine has made every day up to here
 
 
 class WorkforceSetupGoLive(models.AbstractModel):
@@ -151,7 +192,7 @@ class WorkforceSetupGoLive(models.AbstractModel):
         elif missing:
             add('people', _("Who works what"), False,
                 _("1 person has no working week yet and is left out.") if missing == 1 else
-                _("%(n)s of %(total)s people have no working week yet and are left out.", n=missing, total=total),
+                _("%(n)s of %(total)s people have no working week yet and are left out.", n=self._num(missing), total=self._num(total)),
                 False)
         else:
             add('people', _("Who works what"), True, people['text'], True)
@@ -462,7 +503,7 @@ class WorkforceSetupGoLive(models.AbstractModel):
         missing = people.get('missing', 0)
         out['can_publish'] = not blocked and numbers['shifts'] > 0
         if missing and numbers['people']:
-            out['publish_label'] = _("Publish for the %s who are ready", '{:,}'.format(numbers['people']))
+            out['publish_label'] = _("Publish for the %s who are ready", self._num(numbers['people']))
         else:
             out['publish_label'] = _("Publish 1 week") if n == 1 else _("Publish %s weeks", n)
         return out
@@ -478,39 +519,88 @@ class WorkforceSetupGoLive(models.AbstractModel):
         return run
 
     @api.model
+    def _live_split_ok(self, patterns, first, last):
+        """Can the engine run one week at a time with exactly the result of
+        one pass over [first, last]? Yes unless somebody is on two of these
+        working weeks on the same day inside the window (module docstring)."""
+        members = self.env['pb.shift.pattern.member'].sudo().search([
+            ('pattern_id', 'in', patterns.ids),
+            '|', ('date_from', '=', False), ('date_from', '<=', last),
+            '|', ('date_to', '=', False), ('date_to', '>=', first)])
+        spans = {}
+        for m in members:
+            if not m.employee_id.active:
+                continue
+            spans.setdefault(m.employee_id.id, []).append(
+                (m.pattern_id.id, max(first, m.date_from or first), min(last, m.date_to or last)))
+        for rows in spans.values():
+            for k, (pat_a, lo_a, hi_a) in enumerate(rows):
+                for pat_b, lo_b, hi_b in rows[k + 1:]:
+                    if pat_a != pat_b and max(lo_a, lo_b) <= min(hi_a, hi_b):
+                        return False
+        return True
+
+    @api.model
+    def _live_make(self, patterns, first, last, next_day=None):
+        """The working-week engine over [first, last] (`Eng.apply`), then the
+        shifts it just refilled on a day already decided by hand go again (see
+        `_live_plan`). With `next_day` (the first day of the next week of a
+        week-by-week publish), the drafts the engine will take away on that
+        day go FIRST, as one pass over the whole window would have removed
+        them before judging this week's last day. Returns the counts."""
+        Eng = self.env['pb.shift.pattern.engine']
+        Shift = self._roster()
+        hand = self._hand_days(first, last)
+        newest = Shift.sudo().search([], order='id desc', limit=1).id or 0
+        removed_ahead = 0
+        # only the working weeks' own drafts can be taken away: no such draft
+        # on that day, nothing to remove and no second plan to work out
+        if next_day and Shift.search_count([
+                ('pb_pattern_id', 'in', patterns.ids), ('date', '=', next_day), ('state', '=', 'draft')], limit=1):
+            ahead = Eng.plan(patterns, next_day, next_day)['remove']
+            if ahead:
+                removed_ahead = len(ahead)
+                ahead.unlink()
+        report = Eng.apply(patterns, first, last)
+        # what the engine just made on a day already decided by hand goes
+        # again; only rows made by THIS call
+        extra = Shift.search(self._company_domain() + [
+            ('id', '>', newest), ('date', '>=', first), ('date', '<=', last),
+            ('state', '=', 'draft'), ('pb_pattern_id', '!=', False)]).filtered(
+                lambda r: (r.employee_id.id, r.date) in hand)
+        if extra:
+            extra.unlink()
+        return {'created': report.get('created', 0) - len(extra),
+                'removed': report.get('removed', 0) + removed_ahead,
+                'skipped': report.get('skipped_total', 0) + len(extra)}
+
+    @api.model
     def go_live_start(self, weeks=4):
-        """Make the roster for the window (the engine, once), mark holiday and
-        rest-day shifts, and open a run the screen publishes week by week."""
+        """Check, re-mark holiday and rest-day shifts already on the roster,
+        and open a run the screen publishes week by week. The working-week
+        engine runs inside each week's call (P5c); only when somebody is on
+        two working weeks at once does it run here over the whole window."""
         self._gate_edit()
         n = self._live_n(weeks)
         blocked = self._live_blocked()
         if blocked:
             raise UserError(blocked[0])
         today, monday, last = self._live_window(n)
-        Eng = self.env['pb.shift.pattern.engine']
         patterns = self._live_patterns()
-        made = {'created': 0, 'removed': 0, 'skipped': 0}
         if patterns:
-            Shift = self._roster()
-            hand = self._hand_days(today, last)
-            newest = Shift.sudo().search([], order='id desc', limit=1).id or 0
-            report = Eng.apply(patterns, today, last)
-            # what the engine just made on a day already decided by hand goes
-            # again (see `_live_plan`); only rows made by THIS call
-            extra = Shift.search(self._company_domain() + [
-                ('id', '>', newest), ('date', '>=', today), ('date', '<=', last),
-                ('state', '=', 'draft'), ('pb_pattern_id', '!=', False)]).filtered(
-                    lambda r: (r.employee_id.id, r.date) in hand)
-            if extra:
-                extra.unlink()
-            made = {'created': report.get('created', 0) - len(extra), 'removed': report.get('removed', 0),
-                    'skipped': report.get('skipped_total', 0) + len(extra)}
+            self.env['pb.shift.pattern.engine']._require_maker()      # as `Eng.apply` here did before P5c
+        per_week = bool(patterns) and self._live_split_ok(patterns, today, last)
+        made = {'created': 0, 'removed': 0, 'skipped': 0}
+        if patterns and not per_week:
+            made = self._live_make(patterns, today, last)
         remark = self.remark_days(today)
         slices = self._live_slices(monday, n, today)
         run = self.env['pb.workforce.setup.run'].create({
             'first': today, 'last': last, 'weeks': slices, 'done': [], 'people_ids': [], 'made': made,
+            'per_week': per_week, 'made_to': today - timedelta(days=1),
         })
-        return {'run_id': run.id, 'weeks': slices, 'made': made, 'remark': remark.get('summary') or ''}
+        return {'run_id': run.id, 'weeks': slices, 'made': made, 'remark': remark.get('summary') or '',
+                'per_week': per_week}
 
     @api.model
     def _publish_chunk(self, rows):
@@ -519,10 +609,75 @@ class WorkforceSetupGoLive(models.AbstractModel):
         rows.action_publish()
 
     @api.model
+    def _week_failed(self, run, i, wk, error):
+        self.env.invalidate_all()
+        if isinstance(error, (UserError, AccessError)) and error.args:
+            why = str(error.args[0])
+        else:
+            _logger.exception('WFSETUP go-live: week %s of run %s failed', i + 1, run.id)
+            why = _("Something went wrong on the server.")
+        sentence = _("Week %(n)s (%(label)s) was not published: %(why)s The weeks before it are published. Press Carry on to try this week again.",
+                     n=i + 1, label=wk.get('label', ''), why=why.rstrip('.') + '.')
+        run.write({'failed_index': i, 'failed_text': sentence[:500]})
+        return {'ok': False, 'index': i, 'sentence': sentence, 'total': run.published}
+
+    @api.model
+    def _make_until(self, run, until):
+        """Week-by-week runs: make every day after `run.made_to` up to `until`
+        (never past the run). Days are made in order, so each day is judged
+        against the day before as already made (module docstring). Nothing to
+        do for a one-pass run or a day already made; a "Carry on" after a
+        failed publish does not run the engine again, as before P5c."""
+        until = min(fields.Date.to_date(until), run.last)
+        done_to = run.made_to or (run.first - timedelta(days=1))
+        if not run.per_week or until <= done_to:
+            return False
+        # never earlier than today: the engine drops untouched drafts on past
+        # days, and a publish may run past midnight
+        first = max(done_to + timedelta(days=1), self._today())
+        next_day = until + timedelta(days=1) if until < run.last else None
+        made = {'created': 0, 'removed': 0, 'skipped': 0}
+        patterns = self._live_patterns()
+        if patterns and first <= until:
+            with self.env.cr.savepoint():
+                made = self._live_make(patterns, first, until, next_day)
+                self.env.flush_all()
+        total = dict(run.made or {})
+        for key, value in made.items():
+            total[key] = int(total.get(key) or 0) + value
+        run.write({'made': total, 'made_to': until})
+        return True
+
+    @api.model
+    def go_live_make(self, run_id, index, day=None):
+        """Week-by-week runs: make the drafts of week `index` up to `day` (the
+        whole week without one). The screen calls it day by day so the
+        progress moves within seconds on a big company; `go_live_week` makes
+        whatever is left of its week itself. A failure is reported like a
+        failed week and rolled back whole."""
+        self._gate_edit()
+        run = self._own_run(run_id)
+        slices = run.weeks or []
+        i = self._int(index, -1)
+        if not 0 <= i < len(slices):
+            raise UserError(_("There is no such week in this publish."))
+        wk = slices[i]
+        until = fields.Date.to_date(day) if day else fields.Date.to_date(wk['to'])
+        if not until or until > fields.Date.to_date(wk['to']):
+            until = fields.Date.to_date(wk['to'])
+        try:
+            made = self._make_until(run, until)
+        except Exception as error:                      # noqa: BLE001 — reported, rolled back by its savepoint
+            return self._week_failed(run, i, wk, error)
+        return {'ok': True, 'index': i, 'made': bool(made),
+                'made_to': fields.Date.to_string(run.made_to) if run.made_to else False}
+
+    @api.model
     def go_live_week(self, run_id, index):
-        """Publish week `index` of the run: this company's DRAFT rows in that
-        week, in chunks, in one savepoint. A failure rolls this week back,
-        keeps earlier weeks and says where it stopped."""
+        """Make (P5c) and publish week `index` of the run: this company's
+        DRAFT rows in that week, in chunks, in one savepoint. A failure rolls
+        this week's publish back, keeps earlier weeks and says where it
+        stopped; the drafts made for the week stay drafts, as before P5c."""
         self._gate_edit()
         run = self._own_run(run_id)
         slices = run.weeks or []
@@ -533,6 +688,10 @@ class WorkforceSetupGoLive(models.AbstractModel):
         if i in done:
             return {'ok': True, 'index': i, 'published': 0, 'total': run.published, 'already': True}
         wk = slices[i]
+        try:
+            self._make_until(run, wk['to'])
+        except Exception as error:                      # noqa: BLE001 — reported, rolled back by its savepoint
+            return self._week_failed(run, i, wk, error)
         Shift = self._roster().with_context(tracking_disable=True, mail_notrack=True, mail_create_nolog=True)
         rows = Shift.search(self._window_domain(wk['from'], wk['to'], 'draft'), order='date, employee_id, id')
         try:
@@ -541,16 +700,7 @@ class WorkforceSetupGoLive(models.AbstractModel):
                     self._publish_chunk(rows[k:k + CHUNK])
                 self.env.flush_all()
         except Exception as error:                      # noqa: BLE001 — reported, never half-applied
-            self.env.invalidate_all()
-            if isinstance(error, (UserError, AccessError)) and error.args:
-                why = str(error.args[0])
-            else:
-                _logger.exception('WFSETUP go-live: week %s of run %s failed', i + 1, run.id)
-                why = _("Something went wrong on the server.")
-            sentence = _("Week %(n)s (%(label)s) was not published: %(why)s The weeks before it are published. Press Carry on to try this week again.",
-                         n=i + 1, label=wk.get('label', ''), why=why.rstrip('.') + '.')
-            run.write({'failed_index': i, 'failed_text': sentence[:500]})
-            return {'ok': False, 'index': i, 'sentence': sentence, 'total': run.published}
+            return self._week_failed(run, i, wk, error)
         notify = {}
         if rows and hasattr(rows, '_ess_notify_published'):
             notify = rows.sudo()._ess_notify_published() or {}
@@ -592,10 +742,10 @@ class WorkforceSetupGoLive(models.AbstractModel):
         n, p = run.published, len(emps)
         if n and before:
             summary = _("%(n)s more shifts published for %(p)s people. The roster now runs to %(to)s.",
-                        n='{:,}'.format(n), p='{:,}'.format(p), to=self._date_label(vals['pb_wfs_live_to']))
+                        n=self._num(n), p=self._num(p), to=self._date_label(vals['pb_wfs_live_to']))
         elif n:
             summary = _("%(n)s shifts are on the roster for %(p)s people, from %(from)s to %(to)s.",
-                        n='{:,}'.format(n), p='{:,}'.format(p),
+                        n=self._num(n), p=self._num(p),
                         **{'from': self._date_label(run.first), 'to': self._date_label(run.last)})
         else:
             summary = _("Everything up to %s was already published. Nothing new to publish.", self._date_label(run.last))
@@ -628,7 +778,8 @@ class WorkforceSetupGoLive(models.AbstractModel):
             return False
         return {'run_id': run.id, 'weeks': run.weeks or [], 'done': run.done or [],
                 'failed_index': run.failed_index, 'failed_text': run.failed_text or '',
-                'published': run.published}
+                'published': run.published, 'per_week': run.per_week,
+                'made_to': fields.Date.to_string(run.made_to) if run.made_to else False}
 
     # ============================================================ statuses (§2.4)
     @api.model

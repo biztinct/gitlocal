@@ -240,7 +240,7 @@ class WorkforceSetupClocks(models.AbstractModel):
         if later == 1:
             summary = _("Clocks confirmed. 1 clock is left to finish later.")
         elif later:
-            summary = _("Clocks confirmed. %s clocks are left to finish later.", later)
+            summary = _("Clocks confirmed. %s clocks are left to finish later.", self._num(later))
         else:
             summary = _("Clocks confirmed.")
         return {'summary': summary, 'later': later}
