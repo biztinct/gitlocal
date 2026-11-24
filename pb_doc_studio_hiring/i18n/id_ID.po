@@ -1,0 +1,564 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_doc_studio_hiring
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 22:26+0000\n"
+"PO-Revision-Date: 2026-11-23 22:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "%s lines"
+msgstr "%s baris"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "1 line"
+msgstr "1 baris"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "A field that no longer exists"
+msgstr "Kolom yang sudah tidak ada"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "A person"
+msgstr "Seseorang"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "An offer"
+msgstr "Sebuah penawaran"
+
+#. module: pb_doc_studio_hiring
+#: model_terms:ir.ui.view,arch_db:pb_doc_studio_hiring.view_pb_hiring_offer_form_pbds
+msgid "Automatic"
+msgstr "Otomatis"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Candidate"
+msgstr "Kandidat"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Candidate name"
+msgstr "Nama kandidat"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Choose an offer to preview with."
+msgstr "Pilih penawaran untuk pratinjau."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Company name"
+msgstr "Nama perusahaan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Dates"
+msgstr "Tanggal"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Dear ${candidate_name},"
+msgstr "Yth. ${candidate_name},"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_doc_studio__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_doc_studio
+msgid "Document studio"
+msgstr "Studio dokumen"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid ""
+"Draft an offer in Hiring, then come back to see this letter with real "
+"figures."
+msgstr ""
+"Buat draf penawaran di Rekrutmen, lalu kembali untuk melihat surat ini "
+"dengan angka sebenarnya."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Employment type"
+msgstr "Jenis kepegawaian"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Every month"
+msgstr "Setiap bulan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Find a person"
+msgstr "Cari orang"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Find an offer"
+msgstr "Cari penawaran"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__pbds_kind
+msgid "Group"
+msgstr "Kelompok"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio_hiring.selection__pb_letter_template__pbds_kind__hiring
+#: model:ir.model.fields.selection,name:pb_doc_studio_hiring.selection__pb_letter_template__pbds_kind_set__hiring
+msgid "Hiring"
+msgstr "Rekrutmen"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "How often"
+msgstr "Frekuensi"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_doc_studio__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job"
+msgstr "Pekerjaan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job position"
+msgstr "Posisi jabatan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job title"
+msgstr "Jabatan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Kind regards,"
+msgstr "Hormat kami,"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_board.xml:0
+msgid "Language of the letter"
+msgstr "Bahasa surat"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_board.js:0
+msgid "Language: %(lang)s, automatic (%(why)s)"
+msgstr "Bahasa: %(lang)s, otomatis (%(why)s)"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_board.js:0
+msgid "Language: automatic"
+msgstr "Bahasa: otomatis"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_letter_lang
+msgid ""
+"Leave empty to write the letter in the language the candidate applied in, or"
+" in the company's language when that is not known. Choose a language to "
+"write it in that language instead; press \"Write the letter\" again "
+"afterwards."
+msgstr ""
+"Kosongkan agar surat ditulis dalam bahasa yang dipakai kandidat saat "
+"melamar, atau bahasa perusahaan bila belum diketahui. Pilih bahasa untuk "
+"menulisnya dalam bahasa itu; lalu tekan \"Write the letter\" lagi (tombol di"
+" halaman ini)."
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_letter_template
+msgid "Letter Template"
+msgstr "Templat surat"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_letter_lang
+msgid "Letter language"
+msgstr "Bahasa surat"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang_name
+msgid "Letter written in"
+msgstr "Surat ditulis dalam"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Monthly total"
+msgstr "Total per bulan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "New offer letter"
+msgstr "Surat penawaran baru"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "No %s on this offer"
+msgstr "Penawaran ini belum punya %s"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "No offer to preview with yet."
+msgstr "Belum ada penawaran untuk pratinjau."
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "No offer you can see matches."
+msgstr "Tidak ada penawaran yang bisa Anda lihat yang cocok."
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_hiring_offer
+msgid "Offer"
+msgstr "Penawaran"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Offer %(who)s"
+msgstr "Penawaran untuk %(who)s"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Offer letter"
+msgstr "Surat penawaran"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles at %(company)s in %(countries)s will use this copy."
+msgstr ""
+"Penawaran untuk posisi di %(company)s di %(countries)s akan memakai salinan "
+"ini."
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles at %s will use this copy."
+msgstr "Penawaran untuk posisi di %s akan memakai salinan ini."
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles in %s will use this copy."
+msgstr "Penawaran untuk posisi di %s akan memakai salinan ini."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Once a year"
+msgstr "Setahun sekali"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "One-off"
+msgstr "Sekali saja"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Pay"
+msgstr "Gaji"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Pay item"
+msgstr "Komponen gaji"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Pay lines table"
+msgstr "Tabel rincian gaji"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_hiring
+msgid "Payobook Hiring cockpit data"
+msgstr "Data kokpit Rekrutmen Payobook"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "Preview with"
+msgstr "Pratinjau dengan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid ""
+"Previewing an offer letter needs Hiring access. You can still change the "
+"wording; ask your administrator for access to check it with a real offer."
+msgstr ""
+"Pratinjau surat penawaran memerlukan akses Rekrutmen. Anda tetap bisa "
+"mengubah kata-katanya; minta akses kepada administrator untuk memeriksanya "
+"dengan penawaran sungguhan."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Printed when an offer is prepared in Hiring"
+msgstr "Dicetak saat penawaran disiapkan di Rekrutmen"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__pbds_kind_set
+msgid "Shown under"
+msgstr "Ditampilkan di"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "Signature and date"
+msgstr "Tanda tangan dan tanggal"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Start date"
+msgstr "Tanggal mulai"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "That language is not switched on here."
+msgstr "Bahasa itu belum diaktifkan di sini."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid ""
+"The PDF could not be made right now. Try again in a moment; the preview on "
+"screen is exactly what will print."
+msgstr ""
+"PDF belum dapat dibuat saat ini. Coba lagi sebentar lagi; pratinjau di layar"
+" sama persis dengan yang akan dicetak."
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "The candidate"
+msgstr "Kandidat"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang
+msgid ""
+"The language the offer letter was written in the last time it was prepared."
+msgstr "Bahasa surat penawaran saat terakhir kali disiapkan."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid ""
+"The letter has already gone to the candidate, so its language can no longer "
+"change."
+msgstr ""
+"Surat sudah dikirim ke kandidat, jadi bahasanya tidak bisa diubah lagi."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "The letter will be written in %s, chosen automatically."
+msgstr "Surat akan ditulis dalam %s, dipilih otomatis."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "The letter will be written in %s."
+msgstr "Surat akan ditulis dalam %s."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid ""
+"There is nothing in this offer yet. Add what is being offered — the basic "
+"pay at least — before the letter is written."
+msgstr ""
+"Penawaran ini masih kosong. Tambahkan apa yang ditawarkan — paling tidak "
+"gaji pokok — sebelum surat ditulis."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "This document"
+msgstr "Dokumen ini"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Today's date"
+msgstr "Tanggal hari ini"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Used by %s offers"
+msgstr "Dipakai %s penawaran"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Used by 1 offer"
+msgstr "Dipakai 1 penawaran"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid ""
+"We are pleased to offer you the role of ${job_title}, starting on "
+"${start_date}."
+msgstr ""
+"Dengan senang hati kami menawarkan posisi ${job_title} kepada Anda, mulai "
+"${start_date}."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Where they will be based"
+msgstr "Lokasi kerja"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_wording_note
+msgid ""
+"Which wording the letter uses when a company or country has its own copy of "
+"the offer letter."
+msgstr ""
+"Kata-kata yang dipakai surat ketika perusahaan atau negara punya salinan "
+"surat penawaran sendiri."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Who they will report to"
+msgstr "Atasan langsung"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_wording_note
+msgid "Wording used"
+msgstr "Kata-kata yang dipakai"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Yearly total"
+msgstr "Total per tahun"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "You cannot see any offer."
+msgstr "Anda tidak dapat melihat penawaran apa pun."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "You may not see this offer. Ask your administrator for Hiring access."
+msgstr ""
+"Anda tidak boleh melihat penawaran ini. Minta akses Rekrutmen kepada "
+"administrator Anda."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "the company's language"
+msgstr "bahasa perusahaan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "the language they applied in"
+msgstr "bahasa yang mereka pakai saat melamar"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "“%s” has no wording in it yet, so there is nothing to print."
+msgstr "“%s” belum berisi kata-kata, jadi tidak ada yang bisa dicetak."

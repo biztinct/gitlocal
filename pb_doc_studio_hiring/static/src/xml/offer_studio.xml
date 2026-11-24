@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Offer letters in the Document studio (phase A1). Extensions of the
+       studio's own templates only. Sentences stay on one line each (a
+       template text spread over lines is not matched by its translation). -->
+
+  <t t-inherit="pb_doc_studio.Gallery" t-inherit-mode="extension">
+    <!-- What this document prints for, and how many offers use it. -->
+    <xpath expr="//dl[hasclass('pbds-meta')]" position="after">
+      <p t-if="c.kind === 'hiring' and c.prints_for" class="pbdx-prints">
+        <t t-out="ic('briefcase', 12)"/> <span t-esc="c.prints_for"/><t t-if="c.uses_text"> <span class="pbdx-uses" t-esc="c.uses_text"/></t>
+      </p>
+    </xpath>
+  </t>
+
+  <t t-inherit="pb_doc_studio.Designer" t-inherit-mode="extension">
+    <!-- "Preview with": a person for a letter, an offer for an offer letter. -->
+    <xpath expr="//div[hasclass('pbds-person')]" position="before">
+      <div class="pbdx-with">
+        <span>Preview with</span>
+        <b><t t-out="ic(isOfferDoc ? 'briefcase' : 'user', 12)"/> <span t-esc="previewWithText"/></b>
+      </div>
+    </xpath>
+    <xpath expr="//input[@t-ref='peopleInput']" position="attributes">
+      <attribute name="placeholder"/>
+      <attribute name="aria-label"/>
+      <attribute name="t-att-placeholder">findPreviewText</attribute>
+      <attribute name="t-att-aria-label">findPreviewText</attribute>
+    </xpath>
+    <xpath expr="//button[hasclass('pbds-people-row')]//span[hasclass('pbds-person-t')]/span" position="attributes">
+      <attribute name="t-if">p.kind !== 'offer'</attribute>
+    </xpath>
+    <xpath expr="//button[hasclass('pbds-people-row')]//span[hasclass('pbds-person-t')]/span" position="after">
+      <span t-if="p.kind === 'offer'" t-esc="offerRowText(p)"/>
+    </xpath>
+    <xpath expr="//div[hasclass('pbds-people-list')]/p" position="attributes">
+      <attribute name="t-if">!state.people.length and !state.peopleBusy and !isOfferDoc</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbds-people-list')]/p" position="after">
+      <p t-if="!state.people.length and !state.peopleBusy and isOfferDoc" class="pbds-muted pbds-pad">No offer you can see matches.</p>
+    </xpath>
+    <!-- Nobody to preview with: for an offer letter, say why in its words. -->
+    <xpath expr="//t[@t-if='!state.person']/div[hasclass('pbds-state')]" position="attributes">
+      <attribute name="t-if">!isOfferDoc</attribute>
+    </xpath>
+    <xpath expr="//t[@t-if='!state.person']/div[hasclass('pbds-state')]" position="after">
+      <div t-if="isOfferDoc" class="pbds-state pbdx-nooffer">
+        <span class="pbds-state-ic" t-out="ic('briefcase', 20)"/>
+        <div t-if="state.doc.offer_access"><b>No offer to preview with yet.</b> <span>Draft an offer in Hiring, then come back to see this letter with real figures.</span></div>
+        <div t-else=""><b>You cannot see any offer.</b> <span>Previewing an offer letter needs Hiring access. You can still change the wording; ask your administrator for access to check it with a real offer.</span></div>
+      </div>
+    </xpath>
+    <!-- The candidate signs under the company on an offer letter. -->
+    <xpath expr="//div[hasclass('pbds-paper')]/div[hasclass('pbds-sign')]" position="after">
+      <div t-if="isOfferDoc" class="pbds-sign pbdh-accept">
+        <div class="pbds-sign-space"/>
+        <div class="pbds-sign-line"><strong t-esc="candidateSignName"/><div class="pbds-sign-title">Signature and date</div></div>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

@@ -1,0 +1,17 @@
+// =====================================================================
+//  Certificates in the Document studio (phase A1). Same quiet line as the
+//  offer letters bridge (each bridge carries it: either can be installed
+//  alone).
+// =====================================================================
+$dm-primary: #5A4BB0;
+$dm-soft: #EDEAF8;
+$dm-muted: #64748B;
+
+.pbdx-prints {
+    display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin: 2px 0 0;
+    font-size: 12px; color: $dm-muted; line-height: 1.4;
+    svg { color: $dm-primary; flex: none; }
+    .pbdx-uses {
+        color: $dm-primary; background: $dm-soft; border-radius: 999px; padding: 0 7px; font-weight: 600; font-size: 11px;
+    }
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Hiring board, offer panel: the letter's language beside "Which letter".
+       Shown while the letter can still change (not once it went out). -->
+  <t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
+    <xpath expr="//select[hasclass('pbhr-tpl')]" position="after">
+      <select t-if="state.canRecruit and offer.letter_lang_open and offer.letter_langs" class="pbhr-in pbhr-tpl pbdh-lang"
+              aria-label="Language of the letter" title="Language of the letter" t-on-change="(ev) =&gt; this.setLetterLang(ev)">
+        <option value="" t-att-selected="!offer.letter_lang" t-esc="letterLangAutoText(offer)"/>
+        <t t-foreach="offer.letter_langs" t-as="lg" t-key="lg.code">
+          <option t-att-value="lg.code" t-att-selected="lg.code === offer.letter_lang" t-esc="lg.name"/>
+        </t>
+      </select>
+    </xpath>
+  </t>
+
+</templates>
