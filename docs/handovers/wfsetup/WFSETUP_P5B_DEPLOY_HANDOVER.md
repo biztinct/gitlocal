@@ -40,6 +40,11 @@ From `WFSETUP_P5A_REPORT.md` module table. Expected shape (verify against the ta
 | `pb_attendance_policy` (unchanged code) | already installed | installed as a dependency | not installed |
 | `pb_hr_workforce` (rate fix, version bump) | upgrade | upgrade | upgrade |
 | `pb_workforce_workspace` (takeover/trim, version bump) | upgrade | upgrade | upgrade |
+Versions after P5c (the "P5c" section of `WFSETUP_P5A_REPORT.md` is the final table): `pb_workforce_setup` 19.0.1.4.1,
+`pb_workforce_workspace` 19.0.1.1.1 (new `i18n/` folder — check vi/id tab names load on a vi login in the rehearsal),
+`pb_hr_workforce` 19.0.4.25.0. Branch tip to merge: `wfsetup` at or after `ac84d2b9e`. Read ledger gotchas WS39–WS42.
+The publish now runs start → `go_live_make` slices (about 1,000 shifts per call) → week → finish; in the rehearsal record
+time to first progress and total publish time at 678 people (local reference: first progress 2.7 s, total 68–77 s).
 Code for every changed module lands on disk for all five databases at once (one addons dir), so the two upgraded modules
 MUST be upgraded on all five in the same window; only the install of the new module is limited to sudima + payobook.
 
