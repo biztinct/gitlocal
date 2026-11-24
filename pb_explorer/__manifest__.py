@@ -36,7 +36,8 @@ Chart.js comes from the platform's own lazy ``web.chartjs_lib`` bundle, never a 
     # DOCSTUDIO X (2.9.0): two seams for "Fill my own Excel layout" — the
     # registry button beside Download Excel (contract C2), the overridable
     # `_pbx_attachment` around the scheduled-send file, `scheduleExtraVals`.
-    'version': '19.0.2.9.0',
+    # DOCSTUDIO B (2.10.0): the "PDF" registry button beside them.
+    'version': '19.0.2.10.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -1,0 +1,88 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_report_pdf_send
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 11:54+0000\n"
+"PO-Revision-Date: 2026-11-22 11:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_report_pdf_send
+#. odoo-javascript
+#: code:addons/pb_report_pdf_send/static/src/js/send_patch.js:0
+msgid "As a PDF in your look"
+msgstr ""
+
+#. module: pb_report_pdf_send
+#. odoo-python
+#: code:addons/pb_report_pdf_send/models/schedule.py:0
+msgid "Choose one: your Excel layout or the PDF."
+msgstr ""
+
+#. module: pb_report_pdf_send
+#: model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer__display_name
+#: model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer_schedule__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_report_pdf_send
+#. odoo-javascript
+#: code:addons/pb_report_pdf_send/static/src/xml/send.xml:0
+msgid ""
+"Each person gets a PDF of their own figures, printed in your look for this "
+"view. If it ever cannot be made, the standard Excel goes instead and the "
+"history says why."
+msgstr ""
+
+#. module: pb_report_pdf_send
+#: model:ir.model,name:pb_report_pdf_send.model_pb_explorer_schedule
+msgid "Explorer view sent regularly"
+msgstr ""
+
+#. module: pb_report_pdf_send
+#: model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer__id
+#: model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer_schedule__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_report_pdf_send
+#. odoo-javascript
+#: code:addons/pb_report_pdf_send/static/src/xml/send.xml:0
+msgid "PDF in my look"
+msgstr ""
+
+#. module: pb_report_pdf_send
+#: model:ir.model,name:pb_report_pdf_send.model_pb_explorer
+msgid "Payobook Analytics Explorer — read-only query facade"
+msgstr ""
+
+#. module: pb_report_pdf_send
+#: model:ir.model.fields,field_description:pb_report_pdf_send.field_pb_explorer_schedule__pbrp_pdf
+msgid "Send as a PDF in my look"
+msgstr ""
+
+#. module: pb_report_pdf_send
+#. odoo-python
+#: code:addons/pb_report_pdf_send/models/schedule.py:0
+msgid "Sent as the standard Excel — the PDF could not be made"
+msgstr ""
+
+#. module: pb_report_pdf_send
+#. odoo-python
+#: code:addons/pb_report_pdf_send/models/schedule.py:0
+msgid "The full table is in the attached Excel file."
+msgstr ""
+
+#. module: pb_report_pdf_send
+#. odoo-python
+#: code:addons/pb_report_pdf_send/models/schedule.py:0
+msgid "The full table is in the attached PDF."
+msgstr ""

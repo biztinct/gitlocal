@@ -118,6 +118,7 @@
             <span>Excel</span>
           </button>
           <t t-if="layoutButton" t-component="layoutButton" t-props="layoutProps"/>
+          <t t-if="pdfButton" t-component="pdfButton" t-props="layoutProps"/>
           <button t-if="!readOnly" class="pbim-btn pbrb-primary" t-on-click="save"
                   t-att-disabled="!state.spec or !state.spec.subject or state.saving" title="Save (⌘S)">
             <span t-out="icon(state.saving ? 'loader' : 'save', 15)"/>

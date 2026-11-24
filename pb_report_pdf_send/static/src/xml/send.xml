@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+  <!-- DOCSTUDIO B4 — "PDF in my look" beside the Excel choices of the
+       Send regularly drawer (pb_excel_layout's "Send as" row), by template
+       inheritance: no line of the drawer itself changes. -->
+  <t t-inherit="pb_explorer.PbExplorer" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbxl-sendas')]/div[hasclass('pbex-seg')]/button[1]" position="attributes">
+      <attribute name="t-att-aria-checked">!state.sched.form.layout_id and !state.sched.form.pbrp_pdf ? 'true' : 'false'</attribute>
+      <attribute name="t-att-class">{ on: !state.sched.form.layout_id and !state.sched.form.pbrp_pdf }</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbxl-sendas')]/div[hasclass('pbex-seg')]" position="inside">
+      <button role="radio" class="pbrp-sendpdf"
+              t-att-aria-checked="state.sched.form.pbrp_pdf ? 'true' : 'false'"
+              t-att-class="{ on: state.sched.form.pbrp_pdf }"
+              t-on-click="() => this.setSendPdf()">
+        <t t-out="pdfIcon()"/> PDF in my look
+      </button>
+    </xpath>
+    <xpath expr="//div[hasclass('pbxl-sendas')]/span[hasclass('pbex-hint')][1]" position="attributes">
+      <attribute name="t-if">!sendAsLayouts.length and !state.sched.form.pbrp_pdf</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbxl-sendas')]" position="inside">
+      <span t-if="state.sched.form.pbrp_pdf" class="pbex-hint">Each person gets a PDF of their own figures, printed in your look for this view. If it ever cannot be made, the standard Excel goes instead and the history says why.</span>
+    </xpath>
+    <xpath expr="//div[hasclass('pbxl-sched-as')]" position="after">
+      <div t-if="sc.pbrp_pdf" class="pbxl-sched-as">
+        <t t-out="pdfIcon()"/>
+        <span t-esc="sendPdfLine()"/>
+      </div>
+    </xpath>
+  </t>
+</templates>

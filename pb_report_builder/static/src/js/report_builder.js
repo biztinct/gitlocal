@@ -70,6 +70,8 @@ export class PbReportBuilder extends Component {
         this.undoStack = [];
         this.seq = 0;
         this.layoutButton = registry.category("pb_excel_layout").get("button", null);
+        // DOCSTUDIO B: "PDF" (registry `pb_report_pdf`, same props), when installed.
+        this.pdfButton = registry.category("pb_report_pdf").get("button", null);
         this._newTimer = null;
         this._choiceTimer = null;
         useExternalListener(window, "keydown", (ev) => this.onKey(ev));
