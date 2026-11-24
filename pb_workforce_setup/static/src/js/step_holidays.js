@@ -33,7 +33,13 @@ export class StepHolidays extends Component {
         this.action = useService("action");
         this.icon = icon;
         this.root = useRef("root");
-        this.weekLetters = [_t("M"), _t("T"), _t("W"), _t("T"), _t("F"), _t("S"), _t("S")];
+        // the user's own weekday names, Monday first (P5a: one letter per
+        // msgid could not tell Tuesday from Thursday in Vietnamese or
+        // Indonesian). The narrow form when it tells every day apart (T2 … CN),
+        // else the short one (Sen, Sel, Rab …); 2024-01-01 is a Monday.
+        const days = [0, 1, 2, 3, 4, 5, 6].map((i) => DateTime.fromISO("2024-01-01").plus({ days: i }));
+        const narrow = days.map((d) => d.toFormat("ccccc"));
+        this.weekLetters = new Set(narrow).size === 7 ? narrow : days.map((d) => d.toFormat("ccc").replace(/\.$/, ""));
         this.state = useState({
             loading: true,
             error: "",
@@ -125,6 +131,7 @@ export class StepHolidays extends Component {
 
     // ------------------------------------------------------------ reading
     get hol() { return this.state.hol; }
+    get daysOffTitle() { return _t("Days off in %s", this.hol.year); }
     get canEdit() { return !!this.hol?.can_edit; }
     get readOnly() { return !this.props.data.can_edit; }
 

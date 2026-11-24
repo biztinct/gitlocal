@@ -21,8 +21,9 @@ TZ = 'Asia/Ho_Chi_Minh'
 _logger = logging.getLogger(__name__)
 
 
-@tagged('post_install', '-at_install', 'wfsetup')
-class TestGoLive(TransactionCase):
+class GoLiveFixture:
+    """The go-live company, its people, working weeks and rules — shared with
+    the P5a tests (`test_p5a.py`)."""
 
     @classmethod
     def setUpClass(cls):
@@ -134,6 +135,10 @@ class TestGoLive(TransactionCase):
     def window(self, weeks=4):
         today = self.today()
         return today, self.monday + timedelta(days=7 * weeks - 1)
+
+
+@tagged('post_install', '-at_install', 'wfsetup')
+class TestGoLive(GoLiveFixture, TransactionCase):
 
     # ============================================================ 1
     def test_01_holidays_shape_and_working_days(self):

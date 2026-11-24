@@ -151,7 +151,26 @@ class WorkforceSetup(models.AbstractModel):
             'shifts': shifts,
             'weeks': weeks,
             'person': self.person_week(employee_id),
+            # the top bar's "..." menu: administrators only (the company
+            # switch refuses anyone else), how the Workforce menu is arranged
+            'menu': {
+                'can_switch': self.env.user.has_group('base.group_system'),
+                'grouped': bool(company.pb_workforce_workspace_enabled),
+            },
         }
+
+    @api.model
+    def set_workforce_menu(self, grouped):
+        """The top bar's "..." menu: how the Workforce menu is arranged for
+        this company — the same company switch the old setup screen wrote
+        (`pb_workforce_workspace_enabled`, which itself refuses anyone but an
+        administrator). Through the facade rather than a client write on
+        `res.company`, which reloads the whole web client."""
+        self._gate_read()
+        if not self.env.user.has_group('base.group_system'):
+            raise AccessError(_("Only an administrator can change how the Workforce menu is arranged."))
+        self.env.company.write({'pb_workforce_workspace_enabled': bool(grouped)})
+        return bool(self.env.company.pb_workforce_workspace_enabled)
 
     @api.model
     def _steps(self, shifts, weeks):
@@ -184,8 +203,9 @@ class WorkforceSetup(models.AbstractModel):
             steps.append({'key': 'people', 'state': 'done', 'missing': 0, 'total': total,
                           'text': _("The 1 person has a working week") if total == 1
                           else _("All %s people have a working week", total)})
+        # steps 4-7 are filled in by rules.py and golive.py
         for key in STEP_KEYS[3:]:
-            steps.append({'key': key, 'state': 'todo', 'text': _("Coming next")})
+            steps.append({'key': key, 'state': 'todo', 'text': ''})
         return steps
 
     # ============================================================ shifts

@@ -144,7 +144,7 @@ export class StepClocks extends Component {
         const d = this.dt(value);
         return d ? d.toFormat("ccc d LLL") : "";
     }
-    heardLine(row) { return this.ago(row.last_heard); }
+    heardLine(row) { return _t("Last heard from %s", this.ago(row.last_heard)); }
     todayLine(row) {
         return row.today === 1 ? _t("1 clock-in received today") : _t("%s clock-ins received today", row.today.toLocaleString());
     }

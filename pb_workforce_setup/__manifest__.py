@@ -35,10 +35,18 @@ validations and ACLs; no new calculation. One stored field
 (`pb_day_kind_manual` on roster rows) and one transient model,
 `pb.workforce.setup.undo`, which records each bulk change for its Undo.
 
-Nothing is created on install. The existing workspace screens are untouched;
-the takeover of the Settings card is a later phase.
+P5a takes over the old doors (`static/src/js/takeover.js`): the Settings
+card, the old action tag `pb_workforce_setup`, the Workforce `setup` lens and
+the Settings / overview / Schedule / overtime links that named a setup section
+all open this studio; Settings › "Attendance calculation" is removed (its
+doors are studio steps) and `pb_workforce_workspace` lists only daily work in
+its grouped menu while this module is installed. Vietnamese and Indonesian
+wording in `i18n/`. Step 7's plan is worked out once per visit for twelve
+weeks and summed on screen (`live_plan`).
+
+Nothing is created on install.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -70,6 +78,7 @@ the takeover of the Settings card is a later phase.
             'pb_workforce_setup/static/src/js/step_live.js',
             'pb_workforce_setup/static/src/js/preview_panel.js',
             'pb_workforce_setup/static/src/js/setup_studio.js',
+            'pb_workforce_setup/static/src/js/takeover.js',
             'pb_workforce_setup/static/src/xml/setup_studio.xml',
         ],
     },

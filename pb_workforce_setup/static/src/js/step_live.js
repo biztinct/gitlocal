@@ -10,12 +10,10 @@
  * published; carrying on publishes only what is left). The finish is the
  * green "Workforce is live." card.
  */
-import { Component, onWillStart, onWillUnmount, useEffect, useRef, useState } from "@odoo/owl";
+import { Component, onWillStart, useEffect, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { MODEL, icon, errorText } from "./setup_util";
-
-const CHECK_MS = 250;
 
 export class StepLive extends Component {
     static template = "pb_workforce_setup.StepLive";
@@ -30,6 +28,7 @@ export class StepLive extends Component {
             loading: true,
             error: "",
             chk: null,
+            full: null,                // the 12-week plan, split per week (P5a)
             weeks: 4,
             checking: false,
             asking: false,             // the inline "are you sure" panel
@@ -49,17 +48,24 @@ export class StepLive extends Component {
             }
         }, () => [this.state.finish]);
         onWillStart(() => this.load(true));
-        onWillUnmount(() => clearTimeout(this.checkTimer));
     }
 
     // ------------------------------------------------------------ data
+    /**
+     * The checklist first (fast), then the working-week plan. The plan is the
+     * engine's pass over every person and day (~12 s for 700 people), so it is
+     * asked ONCE per visit for the whole 12-week window the screen offers and
+     * kept on the studio with the server's fingerprint of everything it reads
+     * (P5a). Changing the week count sums the first N weeks — no server call.
+     * The kept plan is used again while the fingerprint is the same; any
+     * change to people, working weeks, shifts, holidays, time off or the
+     * roster gives a new fingerprint and a fresh plan.
+     */
     async load(first = false) {
         const seq = (this.seq = (this.seq || 0) + 1);
         this.state.error = "";
         this.state.checking = true;
         try {
-            // the checklist first (fast), then the plan (the engine's pass over
-            // every person and day can take several seconds on a big company)
             const [quick, resume] = await Promise.all([
                 this.orm.call(MODEL, "live_check", [this.state.weeks, false]),
                 first ? this.orm.call(MODEL, "go_live_resume", []) : Promise.resolve(null),
@@ -67,18 +73,8 @@ export class StepLive extends Component {
             if (seq !== this.seq) {
                 return;
             }
-            if (!this.state.chk || !quick.can_edit) {
-                this.state.chk = quick;
-            } else {
-                Object.assign(this.state.chk, { steps: quick.steps, live: quick.live, blocked: quick.blocked,
-                                               window: quick.window, slices: quick.slices, weeks: quick.weeks });
-            }
+            this.state.chk = quick;
             this.state.loading = false;
-            const chk = quick.can_edit ? await this.orm.call(MODEL, "live_check", [this.state.weeks, true]) : quick;
-            if (seq !== this.seq) {
-                return;
-            }
-            this.state.chk = chk;
             if (first && resume && !this.state.run) {
                 this.state.run = {
                     id: resume.run_id,
@@ -92,6 +88,17 @@ export class StepLive extends Component {
                 };
                 this.state.phase = "stopped";
             }
+            if (quick.can_edit) {
+                const kept = this.props.studio.livePlan;
+                if (kept && kept.key === quick.plan_key) {
+                    this.state.full = kept;
+                } else {
+                    // NOT awaited: the step shows at once with the checklist and
+                    // the calm "working out the roster" skeleton meanwhile
+                    this.state.full = null;
+                    this.loadPlan(seq);
+                }
+            }
         } catch (e) {
             if (seq === this.seq) {
                 this.state.error = errorText(e);
@@ -103,6 +110,20 @@ export class StepLive extends Component {
             }
         }
     }
+    async loadPlan(seq) {
+        try {
+            const full = await this.orm.call(MODEL, "live_plan", []);
+            this.props.studio.livePlan = full;
+            if (seq === this.seq) {
+                this.state.full = full;
+            }
+        } catch (e) {
+            if (seq === this.seq) {
+                this.state.error = errorText(e);
+                this.props.studio.toast(errorText(e), { kind: "error" });
+            }
+        }
+    }
     retry() {
         this.state.loading = true;
         this.load(true);
@@ -111,7 +132,39 @@ export class StepLive extends Component {
     // ------------------------------------------------------------ reading
     get chk() { return this.state.chk; }
     get canEdit() { return !!this.chk?.can_edit; }
-    get plan() { return this.chk?.plan || null; }
+    /** The plan for the first N weeks: the sum of the kept per-week plan. */
+    get plan() {
+        const full = this.state.full;
+        if (!full || !this.canEdit) {
+            return null;
+        }
+        const out = { people: 0, new_shifts: 0, already_planned: 0, shifts: 0, already_published: 0,
+                      removed: 0, skipped_total: 0, skipped: {} };
+        for (const w of full.weeks.slice(0, this.state.weeks)) {
+            for (const k of ["people", "new_shifts", "already_planned", "shifts", "already_published", "removed", "skipped_total"]) {
+                out[k] += w[k] || 0;
+            }
+            for (const [code, n] of Object.entries(w.skipped || {})) {
+                out.skipped[code] = (out.skipped[code] || 0) + n;
+            }
+        }
+        return out;
+    }
+    get slices() { return (this.chk?.all_slices || []).slice(0, this.state.weeks); }
+    get canPublish() { return !!this.plan && !this.chk.blocked && this.plan.shifts > 0; }
+    get publishLabel() {
+        const p = this.plan;
+        if (this.chk?.missing && p?.people) {
+            return _t("Publish for the %s who are ready", p.people.toLocaleString());
+        }
+        const n = this.state.weeks;
+        return n === 1 ? _t("Publish 1 week") : _t("Publish %s weeks", n);
+    }
+    get workingLine() {
+        const n = this.chk?.headcount || 0;
+        return n === 1 ? _t("Working out the roster for 1 person…")
+            : _t("Working out the roster for %s people…", n.toLocaleString());
+    }
     get busy() { return ["starting", "running", "finishing"].includes(this.state.phase); }
     get showRun() { return !!this.state.run && !this.state.finish && !(this.state.phase === "stopped" && this.state.resumeHidden); }
 
@@ -129,13 +182,16 @@ export class StepLive extends Component {
         return n === 1 ? _t("Publish 1 week of roster") : _t("Publish %s weeks of roster", n);
     }
     get windowLine() {
-        const w = this.chk.window;
-        return _t("From %(from)s to %(to)s.", { from: w.from_label, to: w.to_label });
+        const sl = this.slices;
+        if (!sl.length) {
+            return "";
+        }
+        return _t("From %(from)s to %(to)s.", { from: sl[0].from_label, to: sl[sl.length - 1].to_label });
     }
-    get planning() { return this.state.checking && !this.plan; }
+    get planning() { return this.canEdit && !this.plan; }
     get launchLine() {
         if (this.planning) {
-            return _t("Working out the roster for these weeks…");
+            return this.workingLine;
         }
         const b = this.blockers.length;
         if (b) {
@@ -189,7 +245,10 @@ export class StepLive extends Component {
             shifts: (p.shifts || 0).toLocaleString(),
         });
     }
-    get sample() { return this.chk?.sample || null; }
+    get sample() {
+        const s = this.state.full?.samples;
+        return s ? (this.state.weeks === 1 ? s.one : s.more) : null;
+    }
     get sampleLine() {
         const s = this.sample;
         return _t("showing %(n)s of %(total)s people", { n: s.rows.length, total: s.people.toLocaleString() });
@@ -273,9 +332,6 @@ export class StepLive extends Component {
         }
         this.state.weeks = n;
         this.state.asking = false;
-        clearTimeout(this.checkTimer);
-        this.state.checking = true;
-        this.checkTimer = setTimeout(() => this.load(), CHECK_MS);
     }
     fewer() { this.setWeeks(this.state.weeks - 1); }
     more() { this.setWeeks(this.state.weeks + 1); }
@@ -300,7 +356,7 @@ export class StepLive extends Component {
 
     // ------------------------------------------------------------ publishing
     ask() {
-        if (!this.chk?.can_publish || this.busy || this.state.checking) {
+        if (!this.canPublish || this.busy || this.state.checking) {
             return;
         }
         this.state.asking = true;
@@ -321,7 +377,7 @@ export class StepLive extends Component {
         this.state.finish = null;
         this.state.phase = "starting";
         this.state.resumeHidden = false;
-        this.state.run = { id: null, weeks: this.chk.slices.map((w) => ({ ...w, status: "wait", count: null })), sentence: "" };
+        this.state.run = { id: null, weeks: this.slices.map((w) => ({ ...w, status: "wait", count: null })), sentence: "" };
         let start;
         try {
             start = await this.orm.call(MODEL, "go_live_start", [this.state.weeks]);

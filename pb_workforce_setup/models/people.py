@@ -108,7 +108,8 @@ class WorkforceSetupPeople(models.AbstractModel):
     def _admin_employee_ids(self):
         """The administrator / system account's employee rows: never the
         default person of the right panel (owner note on P2)."""
-        users = self.env['res.users']
+        # P5a: every administrator (Settings rights), not only the default one
+        users = self.env.ref('base.group_system').sudo().all_user_ids
         for xmlid in ('base.user_admin', 'base.user_root'):
             user = self.env.ref(xmlid, raise_if_not_found=False)
             if user:
@@ -120,8 +121,9 @@ class WorkforceSetupPeople(models.AbstractModel):
 
     @api.model
     def _default_person(self):
-        """First employee by name who has a working week today and is not the
-        administrator; else the first non-administrator; else anyone."""
+        """First employee by name who has a working week today and is not an
+        administrator; else the first non-administrator; else nobody (P5a:
+        never an administrator's or the system's own record)."""
         Employee = self.env['hr.employee'].sudo()
         admins = list(self._admin_employee_ids())
         base = [('active', '=', True)] + self._company_domain()
@@ -135,11 +137,14 @@ class WorkforceSetupPeople(models.AbstractModel):
             emp = emp or Employee.search(base + ids, order='name, id', limit=1)
             if emp:
                 return emp
-        return (Employee.search(base + [('id', 'not in', admins)], order='name, id', limit=1)
-                or Employee.search(base, order='name, id', limit=1))
+        return Employee.search(base + [('id', 'not in', admins)], order='name, id', limit=1)
 
     @api.model
     def person_week(self, employee_id=False):
+        if employee_id and not self.env['hr.employee'].sudo().search_count(
+                [('id', '=', self._int(employee_id)), ('active', '=', True)] + self._company_domain()):
+            # the person shown was archived or moved company meanwhile
+            employee_id = False
         if not employee_id:
             self._gate_read()
             emp = self._default_person()

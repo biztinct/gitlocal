@@ -456,9 +456,11 @@ export class StepPeople extends Component {
         this.schedulePreview();
     }
     closeDrawer() {
+        // focus goes back to the button that opened this drawer (P5a §2.5)
+        const opener = { assign: ".pbws-bulk-pri", oneoff: ".pbws-bulk-oneoff", late: ".pbws-bulk-late" }[this.state.drawer?.type] || ".pbws-bulk-pri";
         this.state.drawer = null;
         clearTimeout(this.previewTimer);
-        requestAnimationFrame(() => this.bulk.el?.querySelector(".pbws-bulk-pri")?.focus());
+        requestAnimationFrame(() => this.bulk.el?.querySelector(opener)?.focus());
     }
     setChoice(key, value) {
         const d = this.state.drawer;

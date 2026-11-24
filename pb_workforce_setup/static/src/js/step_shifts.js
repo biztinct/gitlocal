@@ -93,6 +93,7 @@ export class StepShifts extends Component {
         const v = this.view(row);
         return hrs(Math.max(0, spanOf(v.start, v.end) - (Number(v.break_minutes) || 0)));
     }
+    paidLine(row) { return _t("%s paid", this.paid(row)); }
     breakText(row) {
         const b = Number(this.view(row).break_minutes) || 0;
         return b ? _t("%s min break", b) : _t("no break");

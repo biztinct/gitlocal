@@ -13,7 +13,7 @@
  * Children keep their unsaved work locally and register a leave guard that
  * saves it before the step changes.
  */
-import { Component, onWillStart, onWillUnmount, useExternalListener, useRef, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUnmount, useEffect, useExternalListener, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -29,7 +29,14 @@ import { StepClocks } from "./step_clocks";
 import { StepLive } from "./step_live";
 import { PreviewPanel } from "./preview_panel";
 
-const ACTION_XMLID = "pb_workforce_setup.action_setup_studio";
+export const ACTION_XMLID = "pb_workforce_setup.action_setup_studio";
+const STEP_KEYS = ["shifts", "weeks", "people", "rules", "holidays", "clocks", "live"];
+// The old "Set up Workforce" screen's sections, for a door that still names
+// one (the old action tag and the Settings redirects open this studio, P5a).
+export const SECTION_STEP = {
+    shifts: "shifts", patterns: "weeks", people: "people", policies: "rules", rates: "rules",
+    ceilings: "rules", calendars: "holidays", holidays: "holidays", connectors: "clocks", rosters: "live",
+};
 const TOAST_MS = 8000;
 
 function stepList() {
@@ -56,11 +63,16 @@ export class SetupStudio extends Component {
         this.steps = stepList();
         this.back = hubBack(this.props);
         this.guards = new Set();
+        // the step asked for by the URL or by the door that opened us; none
+        // = the first step that is not done yet, known once loaded (P5a)
+        this.askedStep = this.initialStep();
         this.state = useState({
             loading: true,
             error: "",
             data: null,
-            step: this.initialStep(),
+            step: this.askedStep || "shifts",
+            menuOpen: false,
+            menuBusy: false,
             personId: false,
             moving: false,
             // step 4: the screen's values, unsaved edits included (the pay
@@ -76,6 +88,9 @@ export class SetupStudio extends Component {
         });
         // step 3 opens on a quick filter when another step sends people there
         this.peopleFilter = null;
+        // step 7's 12-week plan, kept for the whole visit (P5a): moving between
+        // steps does not work it out again unless something it reads changed
+        this.livePlan = null;
         this.rulesBusy = false;
         this.confirmFn = null;
         const studio = this;
@@ -122,6 +137,8 @@ export class SetupStudio extends Component {
                 this.confirmFn = fn;
                 return () => { if (this.confirmFn === fn) { this.confirmFn = null; } };
             },
+            get livePlan() { return studio.livePlan; },
+            set livePlan(plan) { studio.livePlan = plan; },
             get motion() {
                 return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
             },
@@ -129,8 +146,23 @@ export class SetupStudio extends Component {
         // Record the step in the action's state now, not only on a change:
         // the action service writes the URL from that state once mounted, and
         // without it a reload on `?step=weeks` loses the parameter (WS4).
-        this.props.updateActionState?.({ step: this.state.step });
+        if (this.askedStep) {
+            this.props.updateActionState?.({ step: this.state.step });
+        }
         onWillStart(() => this.load());
+        // the "..." menu: focus on the chosen arrangement once it is drawn;
+        // it closes on Escape (focus back on its button) and on any click outside
+        useEffect(() => {
+            if (this.state.menuOpen) {
+                this.root.el?.querySelector(".pbws-menu-pop [aria-checked='true']")?.focus();
+            }
+        }, () => [this.state.menuOpen]);
+        useExternalListener(window, "keydown", (ev) => this.onMenuKey(ev), { capture: true });
+        useExternalListener(window, "pointerdown", (ev) => {
+            if (this.state.menuOpen && !ev.target.closest?.(".pbws-menu")) {
+                this.state.menuOpen = false;
+            }
+        }, { capture: true });
         onWillUnmount(() => {
             clearTimeout(this.toastTimer);
             cancelAnimationFrame(this.toastFrame);
@@ -142,7 +174,7 @@ export class SetupStudio extends Component {
 
     // ------------------------------------------------------------ the URL
     initialStep() {
-        const keys = stepList().map((s) => s.key);
+        const keys = STEP_KEYS;
         const ctx = this.props.action?.context || {};
         const cur = router.current || {};
         const mine = [this.props.action?.id, this.props.action?.xml_id, this.props.action?.path, ACTION_XMLID]
@@ -150,10 +182,19 @@ export class SetupStudio extends Component {
         if (cur.step && keys.includes(cur.step) && mine.includes(String(cur.action))) {
             return cur.step;
         }
-        if (ctx.pb_setup_step && keys.includes(ctx.pb_setup_step)) {
-            return ctx.pb_setup_step;
+        for (const asked of [ctx.pb_wfs_step, ctx.pb_setup_step, SECTION_STEP[ctx.pb_workspace_section]]) {
+            if (asked && keys.includes(asked)) {
+                return asked;
+            }
         }
-        return "shifts";
+        return null;
+    }
+
+    /** No step asked for: open on the first step that is not done yet, or on
+     *  "Check and go live" when every step is (P5a §2.5). */
+    landingStep(data) {
+        const open = (data.steps || []).find((s) => s.state !== "done");
+        return open ? open.key : "live";
     }
 
     // ------------------------------------------------------------ data
@@ -164,6 +205,10 @@ export class SetupStudio extends Component {
         try {
             const data = await this.orm.call(MODEL, "load", [this.state.personId || false]);
             if (seq === this.seq) {
+                if (!this.askedStep && !this.state.data) {
+                    this.state.step = this.landingStep(data);
+                    this.props.updateActionState?.({ step: this.state.step });
+                }
                 this.state.data = data;
                 this.state.personId = data.person ? data.person.id : false;
                 this.state.rules = data.rules ? deepClone(data.rules) : null;
@@ -330,6 +375,44 @@ export class SetupStudio extends Component {
         this.state.toast = null;
     }
 
+    // ------------------------------------------------------------ the "..." menu
+    /** Administrators only: how the Workforce menu is arranged for this
+     *  company (the switch that lived on the old setup screen; it must stay
+     *  doable on screen). The same company write as before. */
+    get menu() { return this.data?.menu || null; }
+    toggleMenu() {
+        this.state.menuOpen = !this.state.menuOpen;
+    }
+    onMenuKey(ev) {
+        if (ev.key === "Escape" && this.state.menuOpen) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.state.menuOpen = false;
+            this.root.el?.querySelector(".pbws-menu-btn")?.focus();
+        }
+    }
+    async setGrouped(grouped) {
+        const m = this.menu;
+        if (!m || this.state.menuBusy) {
+            return;
+        }
+        if (m.grouped === grouped) {
+            this.state.menuOpen = false;
+            return;
+        }
+        this.state.menuBusy = true;
+        try {
+            m.grouped = await this.orm.call(MODEL, "set_workforce_menu", [grouped]);
+            this.state.menuOpen = false;
+            this.toast(grouped ? _t("The Workforce menu now shows grouped tabs.") : _t("The Workforce menu is back to the classic menu."));
+            this.root.el?.querySelector(".pbws-menu-btn")?.focus();
+        } catch (e) {
+            this.toast(errorText(e), { kind: "error" });
+        } finally {
+            this.state.menuBusy = false;
+        }
+    }
+
     // ------------------------------------------------------------ step 4 confirm
     /** On step 4, while the rules can still be changed, the bar's one solid
      *  button confirms them instead of moving on (design of record). */
@@ -367,7 +450,7 @@ export class SetupStudio extends Component {
         return (this.data?.steps || []).filter((s) => s.state === "done").length;
     }
     get progressLine() {
-        return _t("%(done)s of %(total)s", { done: this.doneCount, total: this.steps.length });
+        return _t("%(done)s of %(total)s steps done", { done: this.doneCount, total: this.steps.length });
     }
     get progressStyle() {
         return `width:${(this.doneCount / this.steps.length) * 100}%`;

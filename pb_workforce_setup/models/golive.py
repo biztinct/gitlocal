@@ -106,6 +106,7 @@ class WorkforceSetupGoLive(models.AbstractModel):
             frm = max(start, today)
             to = start + timedelta(days=6)
             out.append({'from': fields.Date.to_string(frm), 'to': fields.Date.to_string(to),
+                        'from_label': self._date_label(frm), 'to_label': self._date_label(to),
                         'label': _("%(from)s to %(to)s", **{'from': self._date_label(frm), 'to': self._date_label(to)})})
         return out
 
@@ -211,17 +212,33 @@ class WorkforceSetupGoLive(models.AbstractModel):
         two shifts overlap in time (facts C), so a night one-off on a day-shift
         day would be "refilled". Those creates are left out here and removed
         again right after the engine runs in `go_live_start`."""
+        numbers, creates, remaining = self._live_plan_detail(first, last)
+        numbers.pop('removed_rows')
+        numbers.pop('skipped_rows')
+        return numbers, creates, remaining
+
+    @api.model
+    def _live_plan_detail(self, first, last):
+        """`_live_plan` plus the rows behind two of its numbers (the drafts
+        the engine would take away, and the days left out with their reason),
+        so `live_plan` can split them per week."""
         Eng = self.env['pb.shift.pattern.engine']
         Eng._require_maker()
         patterns = self._live_patterns()
         plan = Eng.plan(patterns, first, last) if patterns else None
         creates = plan['creates'] if plan else []
         hand = self._hand_days(first, last) if creates else set()
-        kept = [c for c in creates if (c['employee_id'], fields.Date.to_date(c['date'])) not in hand]
-        by_hand = len(creates) - len(kept)
+        kept, by_hand_rows = [], []
+        for c in creates:
+            if (c['employee_id'], fields.Date.to_date(c['date'])) in hand:
+                by_hand_rows.append({'date': fields.Date.to_string(c['date']), 'code': 'by_hand'})
+            else:
+                kept.append(c)
+        by_hand = len(by_hand_rows)
         creates = kept
-        remove_ids = set(plan['remove'].ids) if plan else set()
         Shift = self._roster()
+        removed_rows = plan['remove'] if plan else Shift.browse()
+        remove_ids = set(removed_rows.ids)
         drafts = Shift.search(self._window_domain(first, last, 'draft'))
         remaining = drafts.filtered(lambda r: r.id not in remove_ids)
         people = {c['employee_id'] for c in creates} | set(remaining.mapped('employee_id').ids)
@@ -234,6 +251,8 @@ class WorkforceSetupGoLive(models.AbstractModel):
             'removed': len(remove_ids),
             'skipped': dict(plan['counts'], **({'by_hand': by_hand} if by_hand else {})) if plan else {},
             'skipped_total': (len(plan['skipped']) + by_hand) if plan else 0,
+            'removed_rows': removed_rows,
+            'skipped_rows': ((plan['skipped'] if plan else []) + by_hand_rows),
         }
         return numbers, creates, remaining
 
@@ -289,6 +308,102 @@ class WorkforceSetupGoLive(models.AbstractModel):
             'people': len(emp_ids),
         }
 
+    # ============================================================ the plan, once (P5a)
+    @api.model
+    def _live_plan_key(self):
+        """A cheap fingerprint of everything the plan reads: today, and for
+        each table the plan depends on (roster rows, working weeks, their
+        days and people, shifts, days off, time off, people) the row count,
+        the newest change and the highest id, this company only. The screen
+        keeps the 12-week plan while the key stays the same."""
+        cid = self.env.company.id
+        parts = [fields.Date.to_string(self._today()), str(cid)]
+        sources = (
+            ('hr.shift.planning', [('company_id', '=', cid)]),
+            ('pb.shift.pattern', [('company_id', '=', cid), ('active', 'in', (True, False))]),
+            ('pb.shift.pattern.member', [('pattern_id.company_id', '=', cid)]),
+            ('pb.shift.pattern.slot', [('pattern_id.company_id', '=', cid)]),
+            ('pb.shift.pattern.team', [('pattern_id.company_id', '=', cid)]),
+            ('hr.shift.template', ['|', ('company_id', '=', False), ('company_id', '=', cid),
+                                   ('active', 'in', (True, False))]),
+            ('resource.calendar.leaves', [('company_id', '=', cid)]),
+            ('hr.leave', [('employee_company_id', '=', cid)]),
+            ('hr.employee', [('company_id', '=', cid), ('active', 'in', (True, False))]),
+        )
+        for model, domain in sources:
+            if model not in self.env:
+                continue
+            Model = self.env[model].sudo().with_context(active_test=False)
+            if 'employee_company_id' in domain[0] and 'employee_company_id' not in Model._fields:
+                domain = [('employee_id.company_id', '=', cid)]
+            [(count, newest, top)] = Model._read_group(domain, [], ['__count', 'write_date:max', 'id:max'])
+            parts.append('%s:%s:%s' % (count, newest or '', top or 0))
+        return '|'.join(parts)
+
+    @api.model
+    def live_plan(self):
+        """Step 7: the working-week plan for the WHOLE window the screen
+        offers (12 weeks), worked out once and split per week, so changing
+        the week count on screen is a sum of the first N weeks — no second
+        pass over every person and day (P4 report: 12 s for 700 people).
+
+        Per week: new shifts, drafts already there, published before, drafts
+        the engine would take away, days left out (by reason), and the people
+        whose FIRST planned shift falls in that week (so the sum of the first
+        N weeks is the number of different people). Two sample weeks: this
+        week (used for a 1-week window) and next week (longer windows), the
+        same choice `_live_sample` makes. Writes nothing."""
+        self._gate_edit()
+        key = self._live_plan_key()
+        today, monday, last = self._live_window(MAX_LIVE_WEEKS)
+        numbers, creates, remaining = self._live_plan_detail(today, last)
+        weeks = [{'people': 0, 'new_shifts': 0, 'already_planned': 0, 'shifts': 0,
+                  'already_published': 0, 'removed': 0, 'skipped': {}, 'skipped_total': 0}
+                 for _i in range(MAX_LIVE_WEEKS)]
+
+        def week_of(day):
+            i = (fields.Date.to_date(day) - monday).days // 7
+            return i if 0 <= i < MAX_LIVE_WEEKS else None
+
+        first_seen = {}
+        for c in creates:
+            i = week_of(c['date'])
+            if i is None:
+                continue
+            weeks[i]['new_shifts'] += 1
+            weeks[i]['shifts'] += 1
+            first_seen[c['employee_id']] = min(first_seen.get(c['employee_id'], i), i)
+        for r in remaining:
+            i = week_of(r.date)
+            if i is None:
+                continue
+            weeks[i]['already_planned'] += 1
+            weeks[i]['shifts'] += 1
+            first_seen[r.employee_id.id] = min(first_seen.get(r.employee_id.id, i), i)
+        for i in first_seen.values():
+            weeks[i]['people'] += 1
+        for r in numbers['removed_rows']:
+            i = week_of(r.date)
+            if i is not None:
+                weeks[i]['removed'] += 1
+        for row in numbers['skipped_rows']:
+            i = week_of(row['date'])
+            if i is not None:
+                bucket = weeks[i]['skipped']
+                bucket[row['code']] = bucket.get(row['code'], 0) + 1
+                weeks[i]['skipped_total'] += 1
+        published = self._roster()._read_group(
+            self._window_domain(today, last, 'published'), ['date:day'], ['__count'])
+        for day, count in published:
+            i = week_of(day)
+            if i is not None:
+                weeks[i]['already_published'] += count
+        this_week = self._live_sample(creates, remaining, today, monday, monday + timedelta(days=6))
+        later = this_week if today == monday else self._live_sample(
+            creates, remaining, today, monday, monday + timedelta(days=13))
+        return {'key': key, 'weeks': weeks, 'max_weeks': MAX_LIVE_WEEKS,
+                'samples': {'one': this_week, 'more': later}}
+
     @api.model
     def _live_state(self):
         company = self.env.company.sudo()
@@ -331,6 +446,13 @@ class WorkforceSetupGoLive(models.AbstractModel):
             'sample': False,
             'can_publish': False,
             'publish_label': '',
+            # P5a: everything the screen needs to change the week count
+            # without asking again — the twelve weeks it offers, the people
+            # count for the "working out" line, and the plan's fingerprint
+            'all_slices': self._live_slices(monday, MAX_LIVE_WEEKS, today),
+            'headcount': people.get('total', 0),
+            'missing': people.get('missing', 0),
+            'plan_key': self._live_plan_key() if self._can_edit() else False,
         }
         if not self._can_edit() or not with_plan:
             return out

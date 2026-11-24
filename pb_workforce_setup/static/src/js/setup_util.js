@@ -67,7 +67,7 @@ export function timeRange(start, end) {
 /** 480 -> "8 h", 450 -> "7.5 h". */
 export function hrs(minutes) {
     const v = Math.round((minutes || 0) / 6) / 10;
-    return `${Number.isInteger(v) ? v : v.toFixed(1)} h`;
+    return _t("%s h", String(Number.isInteger(v) ? v : v.toFixed(1)));
 }
 
 /**

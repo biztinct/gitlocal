@@ -69,8 +69,46 @@ class WorkforceSetupHolidays(models.AbstractModel):
             except (KeyError, ValueError, TypeError):
                 continue
             if day and day.year == year and (r.get('name') or '').strip():
-                out.append({'date': day.isoformat(), 'name': r['name'].strip()})
+                out.append({'date': day.isoformat(), 'name': self._suggestion_name(r['name'].strip())})
         return sorted(out, key=lambda r: r['date'])
+
+    @api.model
+    def _suggestion_name(self, name):
+        """A suggested holiday's name in the user's language (P5a): the names
+        of our own list and of the `pb_timeoff` reference rows for the
+        countries we suggest. An unknown name is shown as it is."""
+        names = {
+            'New Year': _("New Year"),
+            'Tet holiday': _("Tet holiday"),
+            'Tet (Lunar New Year)': _("Tet (Lunar New Year)"),
+            'Hung Kings Day': _("Hung Kings Day"),
+            'Reunification Day': _("Reunification Day"),
+            'Labour Day': _("Labour Day"),
+            'National Day': _("National Day"),
+            '2026 New Year': _("2026 New Year"),
+            'New Year’s Holiday': _("New Year’s Holiday"),
+            'Lunar New Year (Tet) Holidays': _("Lunar New Year (Tet) Holidays"),
+            'Hung Kings Commemoration Day': _("Hung Kings Commemoration Day"),
+            'Reunification Day – International Labor Day': _("Reunification Day – International Labor Day"),
+            'International Labor Day': _("International Labor Day"),
+            'Independence day': _("Independence day"),
+            'Vietnam Cultural Day': _("Vietnam Cultural Day"),
+            'Chinese New Year 2576 Kongzili': _("Chinese New Year 2576 Kongzili"),
+            'Isra Mi‘raj of the Prophet Muhammad SAW.': _("Isra Mi‘raj of the Prophet Muhammad SAW."),
+            'Hari Suci Nyepi': _("Hari Suci Nyepi"),
+            'Eid al-Fitr 1447 Hijri': _("Eid al-Fitr 1447 Hijri"),
+            'Good Friday': _("Good Friday"),
+            'Ascension Day of Jesus Christ': _("Ascension Day of Jesus Christ"),
+            'Eid al-Adha 1446 Hijri': _("Eid al-Adha 1446 Hijri"),
+            'Pancasila Day': _("Pancasila Day"),
+            'Islamic New Year 1 Muharram 1447 Hijri': _("Islamic New Year 1 Muharram 1447 Hijri"),
+            'Independence Day of Indonesia': _("Independence Day of Indonesia"),
+            'Mawlid of Prophet Muhammad SAW.': _("Mawlid of Prophet Muhammad SAW."),
+            'Christmas Day': _("Christmas Day"),
+            'Christmas': _("Christmas"),
+            'Christmas Boxing Day': _("Christmas Boxing Day"),
+        }
+        return names.get(name, name)
 
     @api.model
     def _suggestion_note(self, code):

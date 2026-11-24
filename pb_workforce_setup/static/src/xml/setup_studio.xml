@@ -15,9 +15,23 @@
       </div>
       <span class="pbws-sp"/>
       <div class="pbws-prog" t-if="data">
-        <span><b class="pbws-num" t-esc="progressLine"/> steps done</span>
+        <b class="pbws-num" t-esc="progressLine"/>
         <div class="pbws-bar" role="progressbar" aria-valuemin="0" t-att-aria-valuemax="steps.length" t-att-aria-valuenow="doneCount">
           <i t-att-style="progressStyle"/>
+        </div>
+      </div>
+      <div t-if="menu and menu.can_switch" class="pbws-menu">
+        <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost pbws-menu-btn" aria-haspopup="true" t-att-aria-expanded="state.menuOpen ? 'true' : 'false'"
+                aria-label="More options" title="More options" t-on-click="toggleMenu"><t t-out="icon('ellipsis', 16)"/></button>
+        <div t-if="state.menuOpen" class="pbws-card pbws-menu-pop" role="menu" aria-label="Workforce menu">
+          <b>Workforce menu</b>
+          <button type="button" role="menuitemradio" t-att-aria-checked="menu.grouped ? 'true' : 'false'" t-att-disabled="state.menuBusy" t-on-click="() => this.setGrouped(true)">
+            <span class="pbws-menu-dot"><t t-if="menu.grouped" t-out="icon('check', 14)"/></span>Grouped tabs
+          </button>
+          <button type="button" role="menuitemradio" t-att-aria-checked="menu.grouped ? 'false' : 'true'" t-att-disabled="state.menuBusy" t-on-click="() => this.setGrouped(false)">
+            <span class="pbws-menu-dot"><t t-if="!menu.grouped" t-out="icon('check', 14)"/></span>Classic menu
+          </button>
+          <small>This changes only how the Workforce menu is arranged.</small>
         </div>
       </div>
     </header>
@@ -109,6 +123,11 @@
   </div>
 </t>
 
+<!-- the Workforce "setup" lens reached by a link: hands over to the studio (P5a) -->
+<t t-name="pb_workforce_setup.SetupDoor">
+  <div class="pbim pbws pbws-door" role="status"><span class="pbws-spin pbws-spin--p" aria-hidden="true"/>Opening Workforce setup…</div>
+</t>
+
 <t t-name="pb_workforce_setup.ReadOnly">
   <p class="pbws-ro"><t t-out="icon('eye', 14)"/>You can look, but only an attendance manager can change this.</p>
 </t>
@@ -159,7 +178,7 @@
         </div>
         <div class="pbws-shift-r">
           <div class="pbws-sum pbws-num">
-            <b t-esc="paid(row)"/> paid<br/>
+            <b t-esc="paidLine(row)"/><br/>
             <t t-esc="breakText(row)"/><t t-if="nextDay(row)"> · ends next day</t>
           </div>
           <t t-if="canEdit">
@@ -523,8 +542,8 @@
                 t-att-title="noWeeksTitle" t-on-click="openAssign">
           <t t-out="icon('repeat', 16)"/>Give a working week
         </button>
-        <button type="button" class="pbws-btn pbws-btn--bulk" t-att-disabled="!shifts.length" t-on-click="openOneoff"><t t-out="icon('calendar', 16)"/>One-off shift</button>
-        <button type="button" class="pbws-btn pbws-btn--bulk" t-on-click="openLate"><t t-out="icon('sliders', 16)"/>Late rule</button>
+        <button type="button" class="pbws-btn pbws-btn--bulk pbws-bulk-oneoff" t-att-disabled="!shifts.length" t-on-click="openOneoff"><t t-out="icon('calendar', 16)"/>One-off shift</button>
+        <button type="button" class="pbws-btn pbws-btn--bulk pbws-bulk-late" t-on-click="openLate"><t t-out="icon('sliders', 16)"/>Late rule</button>
         <button type="button" class="pbws-btn pbws-btn--bulk pbws-bulk-x" aria-label="Clear ticks" title="Clear ticks (Esc)" t-on-click="clearTicks"><t t-out="icon('x', 16)"/></button>
       </div>
     </t>
@@ -850,6 +869,9 @@
       <span>Shifts on a public holiday or on a person's day off are marked for the holiday or rest-day rate by themselves. A shift someone changed by hand keeps its choice.</span>
       <button t-if="canManage" type="button" class="pbws-link" t-att-disabled="state.busy" t-on-click="remark"><t t-out="icon('refresh', 14)"/>Re-check holiday and rest-day shifts</button>
     </div>
+    <p t-if="canManage and r.state !== 'advanced'" class="pbws-foot-link">
+      <button type="button" class="pbws-link" t-on-click="openAdvanced"><t t-out="icon('sliders', 14)"/>Advanced rules screen</button>
+    </p>
   </div>
 </t>
 
@@ -964,7 +986,7 @@
 
       <div class="pbws-card pbws-pad">
         <div class="pbws-hols-h">
-          <h3>Days off in <t t-esc="hol.year"/></h3>
+          <h3 t-esc="daysOffTitle"/>
           <span class="pbws-faint pbws-num" t-esc="offLine"/>
           <span t-if="hol.confirmed" class="pbws-chip pbws-chip--ok"><t t-out="icon('check', 14)"/><t t-esc="confirmedLine"/></span>
         </div>
@@ -1040,7 +1062,7 @@
           <h3 t-att-title="row.name" t-esc="row.name"/>
           <small t-if="row.where" class="pbws-dev-w"><t t-out="icon('mapPin', 13)"/><t t-esc="row.where"/></small>
           <t t-if="row.state === 'ok'">
-            <small>Last heard from <b t-esc="heardLine(row)"/></small>
+            <small t-esc="heardLine(row)"/>
             <small class="pbws-num" t-esc="todayLine(row)"/>
           </t>
           <small t-elif="row.state === 'quiet'" t-esc="quietLine(row)"/>
@@ -1147,8 +1169,21 @@
         </div>
       </div>
 
-      <!-- the first full week -->
-      <div t-if="sample and sample.rows.length" class="pbws-card pbws-pad pbws-rostcard">
+      <!-- the first full week: a calm skeleton while the plan is worked out -->
+      <div t-if="planning" class="pbws-card pbws-pad pbws-rostcard pbws-planning" aria-busy="true">
+        <h3 class="pbws-h3"><span class="pbws-spin pbws-spin--p" aria-hidden="true"/><span t-esc="workingLine"/></h3>
+        <div class="pbws-rost-wrap">
+          <div class="pbws-rost">
+            <span/>
+            <span t-foreach="[1, 2, 3, 4, 5, 6, 7]" t-as="k" t-key="k" class="pbws-rh"><span class="pbws-skel pbws-skel-line"/></span>
+            <t t-foreach="[1, 2, 3, 4]" t-as="r" t-key="r">
+              <span class="pbws-rn"><span class="pbws-skel pbws-skel-line"/></span>
+              <span t-foreach="[1, 2, 3, 4, 5, 6, 7]" t-as="k" t-key="k" class="pbws-rc is-skel"><span class="pbws-skel"/></span>
+            </t>
+          </div>
+        </div>
+      </div>
+      <div t-elif="sample and sample.rows.length" class="pbws-card pbws-pad pbws-rostcard">
         <h3 class="pbws-h3">First full week of the roster <span class="pbws-faint pbws-num" t-esc="sampleLine"/></h3>
         <div class="pbws-rost-wrap">
           <div class="pbws-rost">
@@ -1206,7 +1241,11 @@
           <p t-if="planNote" class="pbws-launch-n pbws-num" t-esc="planNote"/>
           <p t-if="skippedLine" class="pbws-launch-n" t-esc="skippedLine"/>
         </div>
-        <div t-att-class="'pbws-launch-n2' + (state.checking ? ' is-busy' : '')">
+        <div t-if="planning" class="pbws-launch-n2 is-busy" aria-hidden="true">
+          <span class="pbws-skel pbws-skel-big"/>
+          <span class="pbws-skel pbws-skel-line"/>
+        </div>
+        <div t-else="" class="pbws-launch-n2">
           <div class="pbws-big pbws-num" t-esc="bigNumber"/>
           <small t-esc="bigLine"/>
         </div>
@@ -1218,8 +1257,8 @@
             <button type="button" class="pbws-btn pbws-btn--ghost" t-on-click="notYet">Not yet</button>
           </div>
         </div>
-        <button t-else="" type="button" class="pbws-btn pbws-btn--pri pbws-btn--lg" t-att-disabled="!chk.can_publish or state.checking" t-on-click="ask">
-          <t t-out="icon('send', 16)"/><t t-esc="chk.publish_label"/>
+        <button t-else="" type="button" class="pbws-btn pbws-btn--pri pbws-btn--lg" t-att-disabled="!canPublish or state.checking" t-on-click="ask">
+          <t t-out="icon('send', 16)"/><t t-esc="publishLabel"/>
         </button>
       </div>
     </t>

@@ -76,6 +76,25 @@
     .pbws-crumb-co::before { content: "·"; margin-right: 8px; color: var(--pbws-faint); }
     .pbws-prog { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--pbws-muted); }
     .pbws-prog b { color: var(--pbws-ink); }
+    // the administrators' "..." menu (P5a): how the Workforce menu is arranged
+    .pbws-menu { position: relative; }
+    .pbws-menu-btn { padding: 5px 8px; }
+    .pbws-menu-pop {
+        position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 260px; padding: 10px;
+        display: flex; flex-direction: column; gap: 2px; box-shadow: var(--pbws-shadow); animation: pbws-open .15s ease-out;
+    }
+    .pbws-menu-pop > b { font-size: 12px; font-weight: 700; color: var(--pbws-muted); text-transform: none; padding: 4px 8px 6px; }
+    .pbws-menu-pop > button {
+        display: flex; gap: 8px; align-items: center; border: 0; background: transparent; border-radius: 8px;
+        padding: 8px; font-size: 13.5px; color: var(--pbws-ink); text-align: left;
+    }
+    .pbws-menu-pop > button:hover, .pbws-menu-pop > button:focus-visible { background: var(--pbws-p-soft); outline: none; }
+    .pbws-menu-pop > button[aria-checked="true"] { font-weight: 600; color: var(--pbws-p-dark); }
+    .pbws-menu-dot { width: 16px; height: 16px; display: grid; place-items: center; color: var(--pbws-p); flex: none; }
+    .pbws-menu-pop > small { color: var(--pbws-muted); font-size: 12px; padding: 6px 8px 2px; border-top: 1px solid var(--pbws-line2); margin-top: 4px; }
+    &.pbws-door { min-height: 0; display: flex; gap: 10px; align-items: center; justify-content: center; padding: 48px 16px; color: var(--pbws-muted); }
+    .pbws-foot-link { margin: 0; display: flex; justify-content: flex-end; }
+    .pbws-foot-link .pbws-link { display: inline-flex; gap: 6px; align-items: center; color: var(--pbws-muted); font-size: 13px; }
     .pbws-bar { width: 120px; height: 6px; border-radius: 9px; background: var(--pbws-line2); overflow: hidden; }
     .pbws-bar i { display: block; height: 100%; background: var(--pbws-ok); border-radius: 9px; transition: width .4s; }
 
@@ -173,21 +192,12 @@
     }
     .pbws-empty-card h2, .pbws-fail h2 { font-size: 19px; font-weight: 700; }
     .pbws-empty-card p, .pbws-fail p { color: var(--pbws-muted); max-width: 46ch; }
-    .pbws-empty-ic, .pbws-fail-ic, .pbws-soon-ic {
+    .pbws-empty-ic, .pbws-fail-ic {
         width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
         background: var(--pbws-p-soft); color: var(--pbws-p);
     }
     .pbws-fail-ic { background: var(--pbws-warn-soft); color: var(--pbws-warn); }
     .pbws-starters-c { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
-    .pbws-soon { padding: 22px 22px; display: flex; gap: 16px; align-items: flex-start; }
-    .pbws-soon-ic { flex: none; }
-    .pbws-soon-t { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-    .pbws-soon h2 { font-size: 17px; font-weight: 700; }
-    .pbws-soon p { color: var(--pbws-muted); max-width: 60ch; }
-    .pbws-soon-st { display: inline-flex !important; gap: 6px; align-items: center; align-self: flex-start; font-weight: 600; font-size: 13px; border-radius: 99px; padding: 3px 11px; margin-top: 4px; }
-    .pbws-soon-st.is-warn { color: var(--pbws-warn) !important; background: var(--pbws-warn-soft); }
-    .pbws-soon-st.is-done { color: var(--pbws-ok) !important; background: var(--pbws-ok-soft); }
-    .pbws-soon-st.is-todo { color: var(--pbws-muted); background: var(--pbws-line2); }
 
     // ------------------------------------------------ step 1: shifts
     // One column template for the axis and every row, so 06:00 sits at the
@@ -535,6 +545,9 @@
     .pbws-sline-s .pbws-inl { margin-right: 0; }
     // words + their number never part (no lonely "300 %." on its own line)
     .pbws-nw { white-space: nowrap; display: inline-block; }
+    // the template's line breaks between clauses are dropped when it is
+    // compiled, so the clauses keep their own word space ("150 %. Work on…")
+    .pbws-sent > .pbws-nw + .pbws-nw { margin-left: .3em; }
     .pbws-sline-dot { color: var(--pbws-faint); }
     .pbws-sline .pbws-err { flex-basis: 100%; }
     .pbws-fixed {
@@ -651,6 +664,8 @@
     .pbws-opt-off { color: var(--pbws-faint) !important; font-weight: 600; }
     .pbws-clocks .pbws-opt > svg:last-child { color: var(--pbws-faint); flex: none; }
     .pbws-clocks .pbws-opt:disabled { cursor: default; opacity: 1; }
+    // the "no machine at a site?" titles wrap rather than cut off (longer in vi / id)
+    .pbws-clocks .pbws-opt-t b { white-space: normal; }
     .pbws-clocks .pbws-opt:disabled:hover { border-color: var(--pbws-line); }
 
     // ------------------------------------------------ step 7: check and go live (P4)
@@ -673,6 +688,13 @@
     .pbws-rn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; align-self: center; }
     .pbws-rc { border-radius: 6px; padding: 5px 2px; text-align: center; background: color-mix(in srgb, var(--c) 14%, white); color: var(--c); font-weight: 700; }
     .pbws-rc.is-off { background: #F6F7FB; color: var(--pbws-faint); font-weight: 500; }
+    // the plan is being worked out (P5a): the sample week and the big number
+    // as quiet shapes, with the one sentence that says what is happening
+    .pbws-planning .pbws-h3 { align-items: center; color: var(--pbws-p-dark); font-weight: 600; }
+    .pbws-rc.is-skel { background: transparent; padding: 0; }
+    .pbws-rc.is-skel .pbws-skel { height: 24px; border-radius: 6px; }
+    .pbws-rn .pbws-skel-line, .pbws-rh .pbws-skel-line { height: 10px; margin: 4px 0; }
+    .pbws-skel-big { width: 110px; height: 38px; margin: 0 auto 8px; }
     .pbws-launch { padding: 20px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; background: var(--pbws-p-soft); border-color: var(--pbws-p-light); }
     .pbws-launch-t { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 6px; }
     .pbws-launch h2 { font-size: 20px; font-weight: 800; }
@@ -780,12 +802,7 @@
     .pbws-pvweek > div.has { background: color-mix(in srgb, var(--c) 14%, white); color: var(--c); font-weight: 700; }
     .pbws-pvweek > div.is-today { box-shadow: inset 0 0 0 1.5px var(--pbws-p-light); }
     .pbws-pvweek > div span { display: block; color: var(--pbws-muted); font-weight: 500; }
-    .pbws-pv-days { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; }
-    .pbws-pv-days li { display: flex; gap: 8px; align-items: center; min-width: 0; }
-    .pbws-pv-days b { width: 34px; font-weight: 600; flex: none; }
-    .pbws-pv-dn { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pbws-muted); }
-    .pbws-pv-dt { color: var(--pbws-ink); }
-    .pbws-pv-note, .pbws-pv-empty { color: var(--pbws-muted); font-size: 13px; background: #F8F9FC; border-radius: 10px; padding: 12px; }
+    .pbws-pv-empty { color: var(--pbws-muted); font-size: 13px; background: #F8F9FC; border-radius: 10px; padding: 12px; }
     .pbws-pv-empty b { color: var(--pbws-ink); }
     .pbws-pv-b > .pbws-btn { align-self: flex-start; }
     // the pay example (P3): day choice, two sliders, the dark result box
@@ -866,8 +883,12 @@
     }
     // Phone widths (the Payobook sidebar keeps 60px): name, then summary, then bar.
     @media (max-width: 600px) {
-        .pbws-months { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
-        .pbws-md { font-size: 10.5px; border-radius: 5px; }
+        // one month per row so a day is a thumb-sized button (>= 36 px at a
+        // 400 px phone; P4 report: two months a row gave 17 px days)
+        .pbws-months { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+        .pbws-mg { gap: 3px; }
+        .pbws-mg > span { font-size: 11px; }
+        .pbws-md { font-size: 14px; border-radius: 8px; min-height: 36px; }
         .pbws-launch { flex-direction: column; align-items: stretch; }
         .pbws-launch .pbws-btn--lg { justify-content: center; }
         .pbws-check { padding: 11px 12px; gap: 10px; }
