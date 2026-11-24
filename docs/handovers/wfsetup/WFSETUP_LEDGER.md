@@ -18,7 +18,7 @@ action; every record opens the generic premium record form; no visual of a shift
 |---|---|---|
 | P0 | Facts doc | done 2026-11-24 |
 | P1 | New screen shell (7-step rail, status facade, live-preview panel) + step 1 Shifts + step 2 Working weeks | built + tested locally 2026-11-24 (`fd11e1e6a`, report WFSETUP_P1_REPORT.md) |
-| P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | |
+| P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | launched 2026-11-24 |
 | P3 | Step 4 Late and overtime rules + real live preview calculation | |
 | P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | |
 | P5 | Take over the Settings card, vi/id translations, lessons/tours touched, deploy + browser walk, closeout | |
