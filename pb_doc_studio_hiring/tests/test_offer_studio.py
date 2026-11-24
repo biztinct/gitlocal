@@ -283,10 +283,11 @@ class TestOfferStudio(OfferStudioCase):
             self.assertTrue(card['prints_for'])
             self.assertEqual(card['missing'], 0)
         self.assertEqual(board['cards'][0]['kind'], 'hiring', 'the Hiring group comes first')
+        before = cards[self.generic.id]['uses']           # other offers of the database
         self.offer_for(self.generic)
         cards = {c['id']: c for c in self.Studio.board()['cards']}
-        self.assertEqual(cards[self.generic.id]['uses'], 1)
-        self.assertEqual(cards[self.generic.id]['uses_text'], 'Used by 1 offer')
+        self.assertEqual(cards[self.generic.id]['uses'], before + 1)
+        self.assertIn(str(before + 1) if before else '1 offer', cards[self.generic.id]['uses_text'])
         doc = self.Studio.open(self.generic.id)
         keys = [f['key'] for g in doc['catalogue'] for f in g['fields']]
         self.assertEqual(keys, ['candidate_name', 'job_title', 'department', 'location', 'manager', 'company',

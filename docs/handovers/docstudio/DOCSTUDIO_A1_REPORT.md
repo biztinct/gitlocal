@@ -107,6 +107,14 @@ Quiet re-run on `docstudio_a1_t` (`/pb_doc_studio,/pb_doc_studio_hiring,/pb_doc_
 the apply-page test): **59 tests, 0 failed, 0 errors**. pb_me_letters: 16/16 in the full run.
 **Failure set with A1 = the baseline failure set (10 pb_hiring tests, none in code A1 touches).**
 
+**Re-run after the owner-rulings follow-up (19.0.1.1.0)**, fresh `docstudio_a1_t` (same recipe),
+nothing else running: 603 test cases → 9 failed + 2 errors = **exactly the 10 baseline pb_hiring
+tests above** (the two HTTP timeouts of the first run did not recur) **+ `test_a1_13`**, which
+counted the two DEMO offers the browser-walk seed had committed to that database ("Used by 3
+offers"); the test now counts relative to the offers already there, and the re-run of
+`/pb_doc_studio,/pb_doc_studio_hiring,/pb_doc_studio_me` is **61 tests, 0 failed, 0 errors**
+(A1-01…A1-19 incl. the new A1-18, A1-18b, A1-19). pb_me_letters 16/16.
+
 ### 2.2 Browser walk (Chrome, host `a1.localhost:8571`, throwaway login on the walk copy)
 
 1440 wide, English: Settings › Documents — "Hiring 2" chip and group first, both offer cards with
