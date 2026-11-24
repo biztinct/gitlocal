@@ -20,7 +20,7 @@ action; every record opens the generic premium record form; no visual of a shift
 | P1 | New screen shell (7-step rail, status facade, live-preview panel) + step 1 Shifts + step 2 Working weeks | built + tested locally 2026-11-24 (`fd11e1e6a`, report WFSETUP_P1_REPORT.md) |
 | P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | built + tested locally 2026-11-24 (report WFSETUP_P2_REPORT.md) |
 | P3 | Step 4 Late and overtime rules + real live preview calculation + automatic holiday/rest-day marking | built + tested locally 2026-11-25 (report WFSETUP_P3_REPORT.md) |
-| P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | launched 2026-11-25 |
+| P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | built + tested locally 2026-11-25 (report WFSETUP_P4_REPORT.md) |
 | P5 | Take over the Settings card, vi/id translations, lessons/tours touched, deploy + browser walk, closeout | |
 
 ## Standing rules every handover repeats
@@ -64,6 +64,15 @@ action; every record opens the generic premium record form; no visual of a shift
 - **WS21** `engine.calculate` does not apply the clock window; `_policy_calculate` drops punches outside `start − capture_before … end + capture_after` first. A hypothetical example must apply the window itself or it pays punches the real job ignores.
 - **WS22** Web client `_t()` / sprintf has no `%%` escape: write "150 %" with a template string, not `_t("%s %%")`.
 - **WS23** Active rule sets are immutable, but a shift's times are not: changing a shift in step 1 while rules are in use can leave an ACTIVE per-shift line that no longer fits (the calculation then refuses that shift). `rules()` flags it per line; the fix is Change the rules → Confirm. Draft lines are re-synced automatically.
+
+- **WS24** Never set the studio's reactive state (e.g. the bar button) from a step's `onWillStart` path: the studio re-renders before the step is mounted, OWL makes a NEW step whose `willStart` loads again — an endless RPC loop (seen: `holidays()` every 30 ms). Set parent state from `onMounted` on (`this.mounted` guard).
+- **WS25** `pb.holidays.add / add_many / remove` gate on `env.user` groups (`pb.timeoff._require_officer`); `sudo()` keeps `env.user`, so an attendance manager is refused even with sudo. Behind our own gate call `_create_row` (and `_forget_demo` + unlink for removal) with sudo. `add` stores kind `public` (field default).
+- **WS26** The pattern engine skips a wanted day only when an existing shift OVERLAPS it in time: a night one-off on a day-shift day gets the day shift added back ("refilled"). Go-live filters those creates out of the plan and deletes the ones `apply` just made on hand-decided days.
+- **WS27** `pb.shift.patterns.preview / make_drafts` snap the start to Monday; the engine then REMOVES this week's untouched drafts on past days (past days are never wanted). Call `engine.plan / apply(patterns, today, last)` to leave the past alone.
+- **WS28** `hr.shift.planning.state` is tracked: publishing thousands of rows without `tracking_disable` writes one chatter line per row. Publish with `tracking_disable=True, mail_notrack=True`.
+- **WS29** A container `keydown` handler that `preventDefault`s Enter (a calendar grid) also swallows Enter on buttons inside it (an inline question strip). Act only when `ev.target` is a day cell.
+- **WS30** The attendance settings screen (`hr_attendance.action_hr_attendance_settings`, `res.config.settings`) needs administrator rights — never a door for an attendance manager.
+- **WS31** The stock public-holiday create is heavy: 10 suggested days = 449 queries / 4.6 s. Show busy state; never loop `add_day_off` per day from the client. Chrome MCP `wait_for` returns the WHOLE accessibility snapshot (12 calendars = 500 nodes) — poll with `evaluate_script` instead.
 
 ## Owner rulings (2026-11-24, on cards)
 - R1 Codex has FINISHED with the Workforce screens — build freely, replace its setup screen. (Still read /opt/deploy-notes.md before deploying.)
