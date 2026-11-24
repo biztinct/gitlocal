@@ -44,7 +44,7 @@ GROUPS = ('worker', 'manager')
 # (calculated fields are refused on create by pb_attendance_policy)
 DRAFT_FIELDS = ('employee_id', 'shift_template_id', 'date', 'start_datetime', 'end_datetime',
                 'state', 'company_id', 'note', 'pb_pattern_id', 'pb_pattern_sig', 'pb_policy_id',
-                'pb_day_kind', 'pb_category', 'pb_inferred', 'pb_evidence')
+                'pb_day_kind', 'pb_day_kind_manual', 'pb_category', 'pb_inferred', 'pb_evidence')
 
 
 class WorkforceSetupPeople(models.AbstractModel):
@@ -127,8 +127,12 @@ class WorkforceSetupPeople(models.AbstractModel):
         base = [('active', '=', True)] + self._company_domain()
         covering = self._covering(self._today())
         if covering:
-            emp = Employee.search(base + [('id', 'in', covering.mapped('employee_id').ids),
-                                          ('id', 'not in', admins)], order='name, id', limit=1)
+            ids = [('id', 'in', covering.mapped('employee_id').ids), ('id', 'not in', admins)]
+            # P3: someone with a late rule first, so the pay example works out
+            # of the box instead of opening on "has no late rule yet"
+            emp = (Employee.search(base + ids + [('pb_attendance_category', '!=', False)], order='name, id', limit=1)
+                   if 'pb_attendance_category' in Employee._fields else Employee)
+            emp = emp or Employee.search(base + ids, order='name, id', limit=1)
             if emp:
                 return emp
         return (Employee.search(base + [('id', 'not in', admins)], order='name, id', limit=1)
@@ -656,13 +660,18 @@ class WorkforceSetupPeople(models.AbstractModel):
     # ============================================================ late rule
     @api.model
     def _single_policy(self):
-        """The company's one non-retired late-rule set, or nothing when there
-        is none or more than one (then nobody is pointed at one here)."""
+        """The company's one ACTIVE late-rule set; with none active, its one
+        draft when that is the only non-retired set. Nothing when it is
+        ambiguous (then nobody is pointed at one here). P3: a new version
+        being edited beside the active one no longer hides the active one."""
         if 'pb.attendance.policy' not in self.env:
             return self.env['res.company'].browse()
-        policies = self.env['pb.attendance.policy'].sudo().search(
-            [('company_id', '=', self.env.company.id), ('state', '!=', 'retired')])
-        return policies if len(policies) == 1 else policies.browse()
+        active, drafts = self._rule_sets()            # models/rules.py
+        if len(active) == 1:
+            return active
+        if not active and len(drafts) == 1:
+            return drafts
+        return self.env['pb.attendance.policy'].sudo().browse()
 
     @api.model
     def _band_lines(self, policy):

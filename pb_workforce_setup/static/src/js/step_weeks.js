@@ -25,7 +25,6 @@ export class StepWeeks extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.notification = useService("notification");
         this.icon = icon;
         this.range = timeRange;
         this.days = dayNames();
@@ -315,7 +314,7 @@ export class StepWeeks extends Component {
             this.props.studio.putWeek(saved);
             this.props.studio.refresh();
         } catch (err) {
-            this.notification.add(errorText(err), { type: "danger" });
+            this.props.studio.toast(errorText(err), { kind: "error" });
         } finally {
             this.state.creating = false;
         }
@@ -341,7 +340,7 @@ export class StepWeeks extends Component {
             delete this.state.edits[row.id];
             delete this.state.marks[row.id];
             this.props.studio.dropWeek(row.id);
-            this.notification.add(_t("“%s” is removed.", this.nameOf(row)), { type: "success" });
+            this.props.studio.toast(_t("“%s” is removed.", this.nameOf(row)));
             this.props.studio.refresh();
         } catch (err) {
             this.state.errors[row.id] = errorText(err);

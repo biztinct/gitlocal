@@ -22,7 +22,6 @@ export class StepShifts extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.notification = useService("notification");
         this.state = useState({
             open: null,          // row id, or "new"
             drafts: {},          // id -> {name, start, end, break_minutes, color}
@@ -276,11 +275,10 @@ export class StepShifts extends Component {
             delete this.state.errors[row.id];
             this.state.open = null;
             this.props.studio.dropShift(row.id);
-            this.notification.add(
+            this.props.studio.toast(
                 res.archived
                     ? _t("“%s” is hidden from your shifts. Past roster days keep it.", row.name)
-                    : _t("“%s” is removed.", row.name),
-                { type: "success" }
+                    : _t("“%s” is removed.", row.name)
             );
             this.props.studio.refresh();
         } catch (e) {

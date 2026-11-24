@@ -1,7 +1,8 @@
 /** @odoo-module **/
 /**
  * Steps 3-7 in P1: the step's question as the heading and one calm card that
- * says what arrives here next. No fake controls. (Step 3 is live since P2.)
+ * says what arrives here next. No fake controls. (Steps 3 and 4 are live
+ * since P2 and P3.)
  */
 import { Component } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
@@ -23,11 +24,6 @@ export class StepSoon extends Component {
     }
     get copy() {
         const copy = {
-            rules: {
-                question: _t("What happens when someone is late or stays on?"),
-                lead: _t("Each rule is a sentence. Change the highlighted numbers and watch the example on the right change with you."),
-                next: _t("Here each late and overtime rule becomes a sentence you can change, and the panel on the right shows what it means for a real person."),
-            },
             holidays: {
                 question: _t("Which days is the company closed?"),
                 lead: _t("Public holidays and company days off, on one calendar."),

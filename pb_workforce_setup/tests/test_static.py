@@ -62,9 +62,12 @@ class TestSetupStatic(TransactionCase):
         name = re.search(r"'name': '([^']+)'", man).group(1)
         summary = re.search(r"'summary': ([^\n]+\n[^\n]+)", man).group(1)
         self.assertNotRegex(name + summary, bad)
-        py = _src(HERE, 'models', 'setup.py')
-        for msg in re.findall(r'_\(\s*"([^"]+)"', py):
-            self.assertNotRegex(msg, bad, msg)
+        for name in sorted(os.listdir(os.path.join(HERE, 'models'))):
+            if not name.endswith('.py'):
+                continue
+            py = _src(HERE, 'models', name)
+            for msg in re.findall(r'_\(\s*"([^"]+)"', py):
+                self.assertNotRegex(msg, bad, '%s: %s' % (name, msg))
 
     def test_s2_every_icon_exists(self):
         registry = _src(ADDONS, 'pb_import_kit', 'static', 'src', 'js', 'import_icons.js')

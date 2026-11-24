@@ -13,20 +13,22 @@
  * Children keep their unsaved work locally and register a leave guard that
  * saves it before the step changes.
  */
-import { Component, onWillStart, useRef, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { router } from "@web/core/browser/router";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
-import { MODEL, icon, errorText } from "./setup_util";
+import { MODEL, icon, errorText, deepClone } from "./setup_util";
 import { StepShifts } from "./step_shifts";
 import { StepWeeks } from "./step_weeks";
 import { StepPeople } from "./step_people";
+import { StepRules } from "./step_rules";
 import { StepSoon } from "./step_soon";
 import { PreviewPanel } from "./preview_panel";
 
 const ACTION_XMLID = "pb_workforce_setup.action_setup_studio";
+const TOAST_MS = 8000;
 
 function stepList() {
     return [
@@ -42,12 +44,11 @@ function stepList() {
 
 export class SetupStudio extends Component {
     static template = "pb_workforce_setup.SetupStudio";
-    static components = { HubBackChip, StepShifts, StepWeeks, StepPeople, StepSoon, PreviewPanel };
+    static components = { HubBackChip, StepShifts, StepWeeks, StepPeople, StepRules, StepSoon, PreviewPanel };
     static props = { "*": true };
 
     setup() {
         this.orm = useService("orm");
-        this.notification = useService("notification");
         this.icon = icon;
         this.root = useRef("root");
         this.steps = stepList();
@@ -60,7 +61,17 @@ export class SetupStudio extends Component {
             step: this.initialStep(),
             personId: false,
             moving: false,
+            // step 4: the screen's values, unsaved edits included (the pay
+            // example on the right works them out as you type)
+            rules: null,
+            rulesRev: 0,
+            rulesInvalid: false,
+            confirming: false,
+            toast: null,
         });
+        this.rulesBusy = false;
+        this.confirmFn = null;
+        const studio = this;
         // The studio API the children call. A plain object, so a child never
         // needs the root component itself.
         this.api = {
@@ -73,6 +84,21 @@ export class SetupStudio extends Component {
             dropWeek: (id) => this.drop("weeks", id),
             setPerson: (id) => this.setPerson(id),
             stepMeta: (key) => this.steps.find((s) => s.key === key),
+            toast: (msg, opts) => this.toast(msg, opts),
+            get rules() { return studio.state.rules; },
+            get rulesInvalid() { return studio.state.rulesInvalid; },
+            rulesEdited: () => { this.state.rulesRev++; },
+            setRules: (payload) => {
+                this.state.rules = payload ? deepClone(payload) : null;
+                this.state.rulesRev++;
+            },
+            setRulesBusy: (busy) => { this.rulesBusy = !!busy; },
+            setRulesInvalid: (bad) => { this.state.rulesInvalid = !!bad; },
+            setConfirming: (on) => { this.state.confirming = !!on; },
+            onConfirm: (fn) => {
+                this.confirmFn = fn;
+                return () => { if (this.confirmFn === fn) { this.confirmFn = null; } };
+            },
             get motion() {
                 return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
             },
@@ -82,6 +108,7 @@ export class SetupStudio extends Component {
         // without it a reload on `?step=weeks` loses the parameter (WS4).
         this.props.updateActionState?.({ step: this.state.step });
         onWillStart(() => this.load());
+        onWillUnmount(() => clearTimeout(this.toastTimer));
     }
 
     // ------------------------------------------------------------ the URL
@@ -110,6 +137,8 @@ export class SetupStudio extends Component {
             if (seq === this.seq) {
                 this.state.data = data;
                 this.state.personId = data.person ? data.person.id : false;
+                this.state.rules = data.rules ? deepClone(data.rules) : null;
+                this.state.rulesRev++;
             }
         } catch (e) {
             if (seq === this.seq) {
@@ -129,10 +158,15 @@ export class SetupStudio extends Component {
             const data = await this.orm.call(MODEL, "load", [this.state.personId || false]);
             if (seq === this.seq && this.state.data) {
                 Object.assign(this.state.data, data);
+                // never over the top of rule edits that are still being saved
+                if (data.rules && !this.rulesBusy) {
+                    this.state.rules = deepClone(data.rules);
+                    this.state.rulesRev++;
+                }
             }
         } catch (e) {
             if (seq === this.seq) {
-                this.notification.add(errorText(e), { type: "danger" });
+                this.toast(errorText(e), { kind: "error" });
             }
         }
     }
@@ -175,7 +209,7 @@ export class SetupStudio extends Component {
             }
         } catch (e) {
             if (seq === this.personSeq) {
-                this.notification.add(errorText(e), { type: "danger" });
+                this.toast(errorText(e), { kind: "error" });
             }
         }
     }
@@ -203,6 +237,73 @@ export class SetupStudio extends Component {
         } finally {
             this.state.moving = false;
         }
+    }
+
+    // ------------------------------------------------------------ the toast
+    /**
+     * The studio's own toast (design of record `.toast`): a dark pill at the
+     * bottom centre of the working area, just above where step 3's bulk bar
+     * sits, ~8 s, with Undo when the change can be undone. One at a time; a
+     * new one replaces the last. Used by every step instead of the web
+     * client's top-right notifications.
+     */
+    toast(msg, opts = {}) {
+        clearTimeout(this.toastTimer);
+        const id = (this.toastSeq = (this.toastSeq || 0) + 1);
+        this.state.toast = {
+            id,
+            msg: String(msg || ""),
+            kind: opts.kind || "ok",
+            undo: opts.undo || null,
+            left: this.stageCentre(),
+        };
+        this.toastTimer = setTimeout(() => {
+            if (this.state.toast && this.state.toast.id === id) {
+                this.state.toast = null;
+            }
+        }, opts.ms || TOAST_MS);
+    }
+    stageCentre() {
+        const el = this.root.el?.querySelector(".pbws-stage");
+        if (!el) {
+            return null;
+        }
+        const r = el.getBoundingClientRect();
+        return Math.round(r.left + r.width / 2);
+    }
+    get toastStyle() {
+        const t = this.state.toast;
+        return t && t.left ? `left:${t.left}px` : "";
+    }
+    get toastIcon() {
+        const kind = this.state.toast?.kind;
+        return kind === "error" ? "triangleAlert" : kind === "info" ? "info" : "checkCircle";
+    }
+    onToastUndo() {
+        const t = this.state.toast;
+        clearTimeout(this.toastTimer);
+        this.state.toast = null;
+        t?.undo?.();
+    }
+    closeToast() {
+        clearTimeout(this.toastTimer);
+        this.state.toast = null;
+    }
+
+    // ------------------------------------------------------------ step 4 confirm
+    /** On step 4, while the rules can still be changed, the bar's one solid
+     *  button confirms them instead of moving on (design of record). */
+    get confirmShown() {
+        return this.state.step === "rules" && !!this.state.rules?.can_edit;
+    }
+    get confirmLabel() {
+        return this.state.rules?.state === "revision" ? _t("Confirm the new version") : _t("These rules are right. Confirm");
+    }
+    async confirmRules() {
+        if (this.state.confirming || !this.confirmFn) {
+            return;
+        }
+        await this.confirmFn();
     }
 
     get data() { return this.state.data; }

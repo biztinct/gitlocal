@@ -15,16 +15,15 @@
  * server (`*_preview`, debounced 250 ms) BEFORE anything is applied; Apply
  * then shows a toast with Undo.
  */
-import { Component, markup, onWillStart, onWillUnmount, useExternalListener, useRef, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUnmount, useExternalListener, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { deserializeDate, serializeDate } from "@web/core/l10n/dates";
-import { MODEL, icon, dayNames, hrs, errorText, timeRange } from "./setup_util";
+import { MODEL, icon, dayNames, hrs, errorText, timeRange, rich } from "./setup_util";
 import { SetupDrawer } from "./setup_drawer";
 
 const CHUNK = 200;
 const PREVIEW_MS = 250;
-const TOAST_MS = 8000;
 
 /** Lower case, no accents, đ -> d: "Nguyễn" matches "nguyen". */
 function fold(text) {
@@ -35,25 +34,6 @@ function fold(text) {
         .toLowerCase();
 }
 
-function esc(text) {
-    return String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
-
-const RICH = new Map();
-/** A translated sentence with some values in bold; values are escaped. The
- *  markup object is cached by its text so `t-out` keeps the same DOM. */
-function rich(template, values) {
-    const vals = {};
-    for (const [k, v] of Object.entries(values)) {
-        vals[k] = `<b>${esc(v)}</b>`;
-    }
-    const html = esc(template).replace(/%\((\w+)\)s/g, (m, k) => (k in vals ? vals[k] : m));
-    if (!RICH.has(html)) {
-        RICH.set(html, markup(html));
-    }
-    return RICH.get(html);
-}
-
 export class StepPeople extends Component {
     static template = "pb_workforce_setup.StepPeople";
     static components = { SetupDrawer };
@@ -61,7 +41,6 @@ export class StepPeople extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.notification = useService("notification");
         this.icon = icon;
         this.days = dayNames();
         this.range = timeRange;
@@ -219,6 +198,9 @@ export class StepPeople extends Component {
     weekLabel(row) {
         return row.week_no ? _t("%(week)s · week %(n)s", { week: row.week_name, n: row.week_no }) : row.week_name;
     }
+    /** The rotation week as its own chip: it never disappears into an
+     *  ellipsis when the column is narrow (P2 report, weakest point). */
+    weekNoLabel(row) { return _t("week %s", row.week_no); }
     alsoLabel(row) { return _t("%s working weeks", row.also_on.length + 1); }
     alsoTitle(row) { return _t("Also on: %s", row.also_on.join(", ")); }
     oneoffLabel(row) { return _t("+%s one-off", row.oneoff); }
@@ -707,7 +689,7 @@ export class StepPeople extends Component {
             res = await this.orm.call(MODEL, method, args);
         } catch (e) {
             this.state.applying = false;
-            this.notification.add(errorText(e), { type: "danger" });
+            this.props.studio.toast(errorText(e), { kind: "error" });
             this.schedulePreview();
             return;
         }
@@ -719,24 +701,22 @@ export class StepPeople extends Component {
         // the bulk bar is gone with the ticks: focus goes back to the list
         requestAnimationFrame(() => (this.wrap.el?.querySelector('tr[tabindex="0"]') || this.search.el)?.focus({ preventScroll: true }));
     }
+    /** The studio's own toast, just above where the bulk bar sits, with
+     *  Undo for ~8 s (the bar is gone by then: the ticks were cleared). */
     toast(res) {
         if (!res.undo_id) {
-            this.notification.add(res.summary, { type: "info" });
+            this.props.studio.toast(res.summary, { kind: "info" });
             return;
         }
-        const close = this.notification.add(res.summary, {
-            type: "success",
-            autocloseDelay: TOAST_MS,
-            buttons: [{ name: _t("Undo"), primary: true, onClick: () => { close(); this.undo(res.undo_id); } }],
-        });
+        this.props.studio.toast(res.summary, { undo: () => this.undo(res.undo_id) });
     }
     async undo(id) {
         try {
             const res = await this.orm.call(MODEL, "undo", [id]);
             await Promise.all([this.load(), this.props.studio.refresh()]);
-            this.notification.add(res.summary, { type: "info" });
+            this.props.studio.toast(res.summary, { kind: "info" });
         } catch (e) {
-            this.notification.add(errorText(e), { type: "warning" });
+            this.props.studio.toast(errorText(e), { kind: "error" });
         }
     }
 

@@ -3,3 +3,6 @@ from . import setup
 from . import undo
 from . import people
 from . import roster
+from . import rules
+from . import days
+from . import employee

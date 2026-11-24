@@ -7,6 +7,7 @@
  * shows comes from ONE cache here. Unknown names silently render a tick (K7):
  * the static test checks every `ic(...)` / `icon(...)` spelling.
  */
+import { markup } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
@@ -100,4 +101,40 @@ export function errorText(error) {
 
 export function deepClone(value) {
     return JSON.parse(JSON.stringify(value));
+}
+
+export function esc(text) {
+    return String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+const RICH = new Map();
+/**
+ * A translated sentence with its `%(key)s` values filled in: values in `bold`
+ * are wrapped in <b>, values in `plain` are not; everything is escaped. The
+ * markup object is cached by its text, so `t-out` keeps the same DOM while
+ * the sentence does not change (facts K6). The cache is bounded: the live
+ * example makes a new sentence for every slider position.
+ */
+export function rich(template, bold = {}, plain = {}) {
+    const vals = {};
+    for (const [k, v] of Object.entries(plain)) {
+        vals[k] = esc(v);
+    }
+    for (const [k, v] of Object.entries(bold)) {
+        vals[k] = `<b>${esc(v)}</b>`;
+    }
+    const html = esc(template).replace(/%\((\w+)\)s/g, (m, k) => (k in vals ? vals[k] : m));
+    if (!RICH.has(html)) {
+        if (RICH.size > 600) {
+            RICH.clear();
+        }
+        RICH.set(html, markup(html));
+    }
+    return RICH.get(html);
+}
+
+/** 7.25 -> "7.25 h", 8 -> "8 h", 0.5 -> "0.5 h" (hours, up to 2 decimals). */
+export function hoursText(value) {
+    const v = Math.round((Number(value) || 0) * 100) / 100;
+    return _t("%s h", String(v)).replace(" ", "\u00a0");   // "1.5 h" never splits over two lines
 }
