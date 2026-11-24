@@ -151,3 +151,28 @@ class OvertimeConfig(models.Model):
 
     def name_get(self):
         return [(r.id, f'{r.name} ({r.rate_display})') for r in self]
+
+    @api.model
+    def _pb_pick(self, overtime_type, country=False, company=False):
+        """The ONE rate row that applies: the most specific active row wins —
+        company + country > company > country > global; ties by sequence, id.
+
+        Two explicit tiers in Python, NOT `order='country_id desc, company_id
+        desc'`: Postgres sorts NULLs FIRST on DESC, so that single ordered
+        search returned a GLOBAL row ahead of the company's own country row
+        (same trap as `pb.ot.ceiling._for_company`; WFSETUP P3 pin test)."""
+        country_id = country.id if country else False
+        company_id = company.id if company else False
+        domain = [('overtime_type', '=', overtime_type),
+                  '|', ('country_id', '=', False), ('country_id', '=', country_id),
+                  '|', ('company_id', '=', False), ('company_id', '=', company_id)]
+        rows = self.search(domain)
+        if not rows:
+            return rows
+
+        def rank(row):
+            score = (2 if company_id and row.company_id.id == company_id else 0) \
+                + (1 if country_id and row.country_id.id == country_id else 0)
+            return (-score, row.sequence, row.id)
+
+        return min(rows, key=rank)

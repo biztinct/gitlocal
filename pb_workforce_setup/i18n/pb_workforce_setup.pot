@@ -1,0 +1,4807 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_workforce_setup
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-24 15:29+0000\n"
+"PO-Revision-Date: 2026-11-24 15:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "% extra."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(a)s to %(b)s min"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "%(country)s public holidays for %(year)s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "%(day)s: %(shift)s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "%(done)s of %(total)s steps done"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%(done)s of %(total)s weeks published"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "%(from)s to %(to)s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%(h)s counts as overtime at %(rate)s, once a manager approves it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%(h)s of it is night work, with %(pct)s extra."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s already have it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s already work this week, so nothing changes for them."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "%(n)s days off in %(year)s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s keep the week they already have."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"%(n)s more shifts published for %(p)s people. The roster now runs to %(to)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s of %(total)s have a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "%(n)s of %(total)s people have no working week yet and are left out."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s of %(total)s still need a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(n)s one-off shifts added for %(p)s people."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s one-off shifts will be added."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s people are also linked to your late rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s people change to the %(rule)s late rule."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s people move to %(week)s from %(date)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(n)s people now work “%(week)s”."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(n)s people set to the %(rule)s late rule."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s replace shifts that were planned but not published yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"%(n)s shifts are on the roster for %(p)s people, from %(from)s to %(to)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "%(n)s working days in %(year)s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid ""
+"%(name)s clocks in at %(in)s and out at %(out)s on %(day)s (%(shift)s)."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%(name)s on %(day)s is already on the calendar. Nothing was added."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(name)s, %(day)s: %(why)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%(shift)s, %(start)s to %(end)s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "%(start)s to %(end)s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(week)s ends on %(date)s for %(n)s of them."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(week)s ends on %(date)s for 1 of them."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(week)s · week %(n)s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%(weeks)s · %(people)s people · %(shifts)s shifts."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(why)s (%(n)s)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%g"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s (copy)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "%s a week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s already have a different week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s already planned"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "%s attendance rules"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "%s clock-ins received today"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "%s clocks still need setting up. You can go live without them."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks waiting for IT"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s days"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s days are left out:"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid ""
+"%s days are left out: someone is on leave, on a public holiday or already "
+"has a shift then."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s days off put back."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s days off removed."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "%s h"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%s h off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "%s has no late rule yet. Pick Worker or Manager for them in step 3."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s has no working week yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "%s has no working week yet. Give them one in step 3."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is a day off again."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is a working day again."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is already a day off."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is now a company day off."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is now a public holiday."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min after the shift ends"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min before the shift ends"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "%s min break"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min early (not counted)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min late"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%s min or more"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s more below. Keep scrolling."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s new from the working weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "%s now normal day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "%s now public holiday"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "%s now rest day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%s of the people you ticked are no longer here and are left out."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%s one-off shifts added for 1 person."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "%s paid"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "%s people"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"%s people are paid by them. To change them, make a new version: these stay "
+"in use until you confirm it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "%s people have no clock number"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s people have no login and no work email, so tell them in person."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s people have no working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%s people have the Manager late rule."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%s people have the Worker late rule."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s people see their shifts in My Payobook straight away."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s people ticked"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s people work this week. Move them to another week first."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s planned shifts are back to their usual pay."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s planned shifts are now paid as public holiday."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s public holidays added."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s published before"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "%s records are waiting on the PC to be sent."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s shift emails were sent."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s shifts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s shifts ready"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s things above still need you before you can publish."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s ticked."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s to finish later"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s working weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s working weeks ready"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "%s: day off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%s: when overtime starts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%s: when the unpaid break starts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "+%s one-off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 already has a different week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "1 clock still needs setting up. You can go live without it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock waiting for IT"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "1 clock-in received today"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 day is left out:"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid ""
+"1 day is left out: someone is on leave, on a public holiday or already has a"
+" shift then."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "1 day off in %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "1 of the people you ticked is no longer here and is left out."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "1 one-off shift added."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 one-off shift will be added."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "1 person"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person already has it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person already works this week, so nothing changes for them."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person changes to the %(rule)s late rule."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "1 person has no clock number"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 person has no login and no work email, so tell them in person."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "1 person has no working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "1 person has no working week yet and is left out."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "1 person has the Manager late rule."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "1 person has the Worker late rule."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person is also linked to your late rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"1 person is paid by them. To change them, make a new version: these stay in "
+"use until you confirm it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person keeps the week they already have."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person moves to %(week)s from %(date)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "1 person now works “%s”."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 person sees their shifts in My Payobook straight away."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "1 person set to the %s late rule."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person ticked"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "1 person works this week. Move them to another week first."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "1 planned shift is back to its usual pay."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "1 planned shift is now paid as public holiday."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "1 public holiday added."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "1 record is waiting on the PC to be sent."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 replaces a shift that was planned but not published yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 shift email was sent."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "1 shift ready"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 thing above still needs you before you can publish."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 to finish later"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "1 working week ready"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "2026 New Year"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"A clock-in %(n)s min before the shift is outside the %(h)s hours the clock "
+"is read for, so it would not count. Change “Reading the clock” or move the "
+"slider."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"A clock-out %(n)s min after the shift is outside the %(h)s hours the clock "
+"is read for, so it would not count. Change “Reading the clock” or move the "
+"slider."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "A late line is not confirmed yet. Press Confirm these rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "A late line starts at 1 minute or more."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "A new version is not confirmed yet. The rules in use stay as they are."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "A setup link was made. It works until %s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "A shift in this working week is not available in this company."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "A shift needs a start and an end that differ."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "A spreadsheet export from any clock, on the Time screen."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid ""
+"A team in this working week starts in a later week. Move that team first in "
+"the rotation editor."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"A working week is made of shifts. Add one in step 1, then come back here to "
+"paint the week."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "A working week repeats over 1 to %s weeks."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Add %s shifts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Add 1 shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a clock"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a line"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a rotation week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a shift first"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Add a shift first (step 1)."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a shift in step 1 first."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a shift:"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Add people under People first. They appear here straight away, ready to be "
+"given a working week."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add the clock"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Add the clocks people use at work, or let them clock in another way below."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add them all"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Add your first shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Advanced rules screen"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Afternoon"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Afternoon 14:00 to 22:00"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "All %s have a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "All %s people have a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "All connected"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "All of them are already on the calendar."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Also on: %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Amber"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "An attendance manager adds the shifts."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "An attendance manager builds the working weeks."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "An attendance manager publishes more weeks."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "An overtime rate is a percentage from 100 to 1000."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"Another clock at that place reads the time differently. Use another name for"
+" the place."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Apply to %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Arriving late"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Ascension Day of Jesus Christ"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Attendance access is required."
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_pb_attendance_policy
+msgid "Attendance calculation policy"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Between"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Blue"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Build a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Build a working week first"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Build a working week first (step 2)."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Build the week most people work. You can add rotations later."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__capped
+msgid "Capped"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Carry on"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Change"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Change the people you ticked"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Change the rules"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Changes not confirmed yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Check and confirm"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Check and go live"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "Checked %(n)s shifts: %(parts)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "Checked %s shifts. All of them were already right."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Chinese New Year 2576 Kongzili"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Choose 1 to %s weeks."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Choose the company's normal working calendar first."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Christmas"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Christmas Boxing Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Christmas Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Classic menu"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clear"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clear ticks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clear ticks (Esc)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clock details"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Clock read by a PC"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Clock that calls in by itself"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"Clock-ins and clock-outs are counted up to 6 hours before or after a shift."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clock-ins now turn into paid hours using your rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Clocks are confirmed. A clock that is still being set up can be finished any"
+" time."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Clocks are fine. Confirm"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clocks confirmed."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clocks confirmed. %s clocks are left to finish later."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clocks confirmed. 1 clock is left to finish later."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clocks in"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clocks out"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Close (Esc)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Collective leave"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Colour"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Coming in %(n)s early is not paid: the day starts at %(start)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__company_id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Company day off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Confirm the late and overtime rules first (step 4)."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Confirm the new version"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Confirmed"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Confirmed without a clock"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Continue, finish %s clocks later"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Continue, finish 1 clock later"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Copy"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Copy setup link for IT"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Copy the selected link for your IT person. It works for 5 days."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Copy to change"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Count a clock-in up to"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__create_uid
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__create_date
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Day off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_shift_planning__pb_day_kind_manual
+msgid "Day type set by hand"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Days off are kept on that calendar. Until there is one, the year below is "
+"for looking only."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Days off in %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Days off this year. Arrow keys move, Enter adds or removes a company day "
+"off."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Decides which lateness lines from step 4 apply to them."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Discard changes"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_shift_planning__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_attendance_policy__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__done
+msgid "Done"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Drag across the days to paint several at once. Arrow keys move between days,"
+" and Enter or Space paints the one you are on. Changes save by themselves."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Each late line must end at or after the minute it starts."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Each rule is a sentence. Change the highlighted numbers and watch the "
+"example on the right change with you."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Each shift has its own time when overtime starts. Work after it is overtime."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Each week has seven days."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Edit"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Eid al-Adha 1446 Hijri"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Eid al-Fitr 1447 Hijri"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__emailed
+msgid "Emailed"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_hr_employee
+msgid "Employee"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ends"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Every late line needs to be confirmed. Press Confirm again."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "Every week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Everyone has a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid ""
+"Everything is ready. People see their shifts in My Payobook straight away."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Everything up to %s was already published. Nothing new to publish."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Factory 3"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__failed_index
+msgid "Failed Index"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__failed_text
+msgid "Failed Text"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Fill Mon to Fri"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Fill Mon to Sat"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Finish typing the number in the box marked in red."
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__finished
+msgid "Finished"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Finishing…"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__first
+msgid "First"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "First full week of the roster"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Fix the line marked in red first, or it cannot be saved."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Fix this"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid ""
+"For cover, a rush order or a training day. Their normal working week stays "
+"as it is."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Fri"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "From"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "From %(from)s to %(to)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Gate A fingerprint reader"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Give %s people a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Give 1 person a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Give a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Give people a working week first (step 3)."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Give the clock a name, like the place it hangs."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Give the shift a name."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Give the working week a name."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Give them one in step 3 and their week and pay example appear here."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Go to %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Go to late and overtime rules"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Go to shifts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Go to who works what"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Go to working weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Good Friday"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Green"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Grouped tabs"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Hari Suci Nyepi"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Holidays"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_holidays_year
+msgid "Holidays confirmed up to year"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Holidays for %(year)s confirmed: %(n)s days off."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Holidays for %(year)s confirmed: 1 day off."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Holidays for %s are confirmed."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Hours after the shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Hours before the shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Hours between"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Hours taken off are a number from 0 to 24, in quarter hours."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Hours taken off are a number from 0 to 24."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "How do people clock in?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "How many weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Hung Kings Commemoration Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Hung Kings Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_shift_planning__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_attendance_policy__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "In the week of %(date)s they work week %(k)s of the rotation."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Independence Day of Indonesia"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Independence day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Indigo"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "International Labor Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Islamic New Year 1 Muharram 1447 Hijri"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Isra Mi‘raj of the Prophet Muhammad SAW."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "It can still be changed in the rotation editor."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Its lateness lines are set in step 4."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Keep editing"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Keep it"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Keep the old one"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Keep theirs"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__kind
+msgid "Kind"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Labour Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__last
+msgid "Last"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__write_uid
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__write_date
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Last heard from %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Last step"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Late and overtime rules"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.model.fields.selection,name:pb_workforce_setup.selection__pb_workforce_setup_undo__kind__late
+msgid "Late rule"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Late rule for %s people"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Late rule for 1 person"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Line %s: from how many minutes late"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Line %s: hours taken off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Line %s: up to how many minutes late"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Lunar New Year (Tet) Holidays"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made
+msgid "Made"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__mail_enabled
+msgid "Mail Enabled"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Make a new link"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Making the roster and marking holiday and rest-day shifts…"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Manager"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Managers"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Managers have no late lines yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Mawlid of Prophet Muhammad SAW."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Mon"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "More options"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "More than one set of rules"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"More than one set of rules is in use. Check them on the advanced rules "
+"screen."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Morning"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Morning 06:00 to 14:00"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Move the sliders, or change a shift or rule. The answer is worked out with "
+"your real rules as you go."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Name"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Name of this working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "National Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Needs attention"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "New Year"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "New Year’s Holiday"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "New shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "New working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Next year's holidays are not set yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: build the working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: check and go live"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: choose who works what"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: holidays"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: late and overtime rules"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: time clocks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Night"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Night 22:00 to 06:00"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Night work"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Night work ends"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Night work extra"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Night work extra is a percentage from 0 to 500."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Night work extra, percent"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Night work must start and end at different times."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Night work starts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Night work, %s extra"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No clock number"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No clock yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No days off yet this year."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "No emails were sent: email is switched off here."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "No late line covers %s minutes late. Add a line in the late rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No machine at a site?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "No people yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"No shift is used in a working week yet. Build a working week in step 2."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "No shift yet. Add the shifts you run."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No shifts yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "No team"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "No unpaid break"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No working week yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "No working week yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Nobody has a working week yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Nobody matches. Clear the search or the filter."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Nobody matches. Try another name."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Nobody moves to %(week)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Nobody works for this company yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Nobody works for this company yet. People appear here once they are added."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Nobody yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Normal day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Not confirmed yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"Not confirmed yet. Shifts are only paid by your rules once they are "
+"confirmed."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Not in a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Not now"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Not set"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Not used yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Not yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Nothing changed."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Nothing is put on the roster yet: that happens when you go live in step 7. "
+"You can undo this straight after."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Nothing reaches the roster or payroll until you press Publish. Fix anything "
+"in amber first."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid ""
+"Nothing received since %s. Ask your IT person to check that the PC beside "
+"the clock is on."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Nothing received yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Nothing received yet. Your IT person installs a small program on the PC "
+"beside the clock."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "Nothing to check."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Nothing to put back."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Off for this company"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid ""
+"On a public holiday every paid hour counts at %(rate)s, once a manager "
+"approves it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid ""
+"On a rest day every paid hour counts at %(rate)s, once a manager approves "
+"it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "On for this company"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "On these days"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "On time."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "One choice, applied to everyone you ticked."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "One week fewer"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "One week more"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.model.fields.selection,name:pb_workforce_setup.selection__pb_workforce_setup_undo__kind__oneoff
+msgid "One-off shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "One-off shift for %s people"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "One-off shift for 1 person"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Only an administrator can change how the Workforce menu is arranged."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Only an attendance manager can change the workforce setup."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Open the advanced rules screen"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Open the roster"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Open the rotation editor"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Open working calendars"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Opening Workforce setup…"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Overtime"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Overtime always needs a manager's approval before it is paid."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Overtime at %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Overtime must start after the shift starts and no later than it ends."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Overtime pays"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Overtime rate, percent"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Overtime starts at %(at)s, so none today."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Paid at %s (public holiday)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Paid at %s (rest day)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Paid normal hours"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Paint with"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Pancasila Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Pay extra for night work"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__payload
+msgid "Payload"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__people_ids
+msgid "People"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"People are given a working week here. There is none yet for this company."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"People see their shifts in My Payobook straight away. Published shifts "
+"cannot be un-published in one go."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "People tap in and out from My Payobook on their phone."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Person"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Phone clock-in"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick %s days or fewer at a time. Split a longer stretch into two."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick Worker or Manager."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick a date."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Pick a day on the calendar."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Pick a shift below, then click or drag across the days. Add a second week "
+"when a team rotates between days and nights."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick at least one day of the week."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Pick one of the colours shown."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick one of the weeks of this rotation."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick today or a later date. Past weeks stay as they were."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Public holiday"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Public holiday overtime"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Public holiday rate, percent"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Public holidays and company days off, on one calendar. Click any day to add "
+"or remove a company day off."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish %s weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish %s weeks of roster"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish 1 week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish 1 week of roster"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish for the %s who are ready"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Publish more weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Publish more weeks below so people keep seeing their shifts."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Publish more weeks below whenever you are ready."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Publish now"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__published
+msgid "Published"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publishing stopped before every week was done."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publishing…"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Quiet since %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_attendance_policy__pb_pending_rates
+msgid "Rates waiting for confirmation"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Re-check holiday and rest-day shifts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Reading the clock"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ready to go live?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Remove"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Remove %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Remove %s for everyone?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Remove last week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Remove line %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Remove this working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "Repeats every %s days"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "Repeats every %s weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Replace it"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Rest day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Rest day rate, percent"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Rest-day overtime"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Reunification Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Reunification Day – International Labor Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Rose"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_live_on
+msgid "Roster first published from setup"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_live_to
+msgid "Roster published up to"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Roster published up to %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Roster published up to %s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Rules confirmed"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Rules confirmed for %s people."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Rules confirmed for 1 person."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Sat"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Saved"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Saving…"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Search a name or team"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Search a name, number or team"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Search people"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"See each clock and whether it is sending data. If one is not, send your IT "
+"person a ready-made setup link."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "See it on a real person"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Sending data"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Set each shift once. You will reuse it everywhere, so a change here updates "
+"every week and person that uses it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/takeover.js:0
+msgid "Set up Workforce"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Set up in this order"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_hr_shift_planning__pb_day_kind_manual
+msgid ""
+"Set when someone chose normal day, rest day or public holiday for this shift"
+" themselves. Such a shift is never re-marked automatically."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Setup link copied. It works for 5 days."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Setup link for IT"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Setup steps"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Shared"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Shared with every company. Copy it to change it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_hr_shift_planning
+msgid "Shift Planning"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Shifts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Shifts on a public holiday or on a person's day off are marked for the "
+"holiday or rest-day rate by themselves. A shift someone changed by hand "
+"keeps its choice."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/takeover.js:0
+msgid ""
+"Shifts, working weeks, who works what, late and overtime rules, holidays and"
+" time clocks — seven steps, in order."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/takeover.js:0
+msgid ""
+"Shifts, working weeks, who works what, late and overtime rules, holidays and"
+" time clocks."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Show everyone"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Show them"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Showing the first %s people. Search to find anyone else."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid ""
+"Some of these days move from year to year or are announced by the "
+"government. Check the government notice before you confirm."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Someone changed these people after you. Nothing was undone."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Something went wrong on the server."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Start from blank"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Start with one of these, then adjust the times."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Starting from"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Starts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 1 of 7"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 2 of 7"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 3 of 7"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 4 of 7"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 5 of 7"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 6 of 7"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 7 of 7"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Stopped here"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__summary
+msgid "Summary"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Sun"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Supervisor enters hours"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Switched off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switched off. Records already received are kept."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Taken off for lateness"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Teal"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Team %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Team and site"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Teams"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Tet (Lunar New Year)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid ""
+"Tet and Hung Kings follow the lunar calendar, and the extra National Day "
+"holiday is announced each year. Check the government notice before you "
+"confirm."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Tet holiday"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "That day is not on this company's calendar."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "That is %(days)s × %(people)s, less the days below."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "That is %(days)s × %(people)s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "That is %(late)s, so %(off)s comes off (%(rule)s rule)."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "That is %(late)s; nothing comes off (%(rule)s rule)."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid ""
+"That is more than %s shifts at once. Tick fewer people or pick fewer days."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "The 1 person has a working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"The PC cannot read the clock's records. Ask your IT person to check that the"
+" clock program's data is where the setup said."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"The PC could not reach Payobook. Ask your IT person to check its internet "
+"connection."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "The PC is no longer paired. Copy a new setup link for your IT person."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"The PC reported a problem. Open the clock details to see what your IT person"
+" should check."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "The Workforce menu is back to the classic menu."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "The Workforce menu now shows grouped tabs."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "The break cannot be less than zero."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "The break is a number of minutes."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "The break is longer than the shift."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The check could not be loaded."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The clock-out must come after the clock-in. Move the sliders apart."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The clocks could not be loaded."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The current rules stay in use until you confirm."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "The holidays are right. Confirm"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The holidays could not be loaded."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "The last day cannot be before the first day."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "The last day is before the first day."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The last late line for managers must be “or more”."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The last late line for workers must be “or more”."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The last late line must be “or more”."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"The late lines for managers must follow on from each other with no gap."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The late lines for workers must follow on from each other with no gap."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The late lines must follow on from each other with no gap."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "The late rules are now linked for %s people."
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_res_company__pb_wfs_holidays_year
+msgid ""
+"The latest year whose public holidays and company days off were confirmed in"
+" Workforce setup."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"The new rates are used once you confirm these rules. Until then the rates in"
+" use stay as they are."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "The new version is gone. The rules in use stay as they were."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"The overtime and break times of “%s” no longer fit the shift. Pick new ones."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"The pale gap in each bar is the unpaid break. A shift that ends before it "
+"starts is treated as an overnight shift without you ticking anything."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The people could not be loaded."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "The people you ticked are no longer here. Refresh the list."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "The roster ran out on %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "The roster ran out on %s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "The roster runs out on %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "The roster runs out on %s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The setup could not be loaded."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"The unpaid break must start after the shift starts and end before it ends."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Their clock-ins cannot be matched to them."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Their normal working week stays as it is. You can undo this straight after."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "There are no shifts from today on to check."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "There is no list of public holidays for this country and year."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "There is no new version to discard."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "There is no such week in this publish."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"These rules apply to everyone in %(company)s: %(n)s people, %(w)s with the "
+"Worker late rule and %(m)s with the Manager one."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These rules are already in use."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "These rules are in use."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These rules are in use. Press Change the rules to make a new version."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "These rules are right. Confirm"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "These rules cannot be confirmed yet"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These rules could not be confirmed. Check the lines above."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These rules could not be saved. Check the highlighted numbers."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "These rules will apply to everyone in %s."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These times no longer fit the shift. Pick new ones."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"They are shown here read-only. Open the advanced rules screen to change "
+"them."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "They begin on"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "They leave before the shift starts, so nothing is paid."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "This change can no longer be undone."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "This changes only how the Workforce menu is arranged."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "This clock is no longer there."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "This company uses more than one set of rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"This company uses more than one set of rules. Open the advanced rules "
+"screen."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "This example cannot be worked out."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "This example cannot be worked out. Check the rules above."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"This machine is asking to connect. Let it in on the Time clocks screen."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "This person is no longer here. Pick someone else."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"This publish is no longer there. Press Publish again: shifts already "
+"published are skipped."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "This replaces the link you sent before. Make a new one?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This rotation does not follow whole weeks."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid ""
+"This rotation does not follow whole weeks. Change it in the rotation editor."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This shift is no longer there."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid ""
+"This shift is shared by every company, so it cannot be changed here. Copy it"
+" to make your own."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This shift is used in %s working weeks. Take it out of them first."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This shift is used in 1 working week. Take it out of it first."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid ""
+"This working week already has 8 different start points. Pick another start "
+"week."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid ""
+"This working week has no first day. Open it in step 2 and save it again."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This working week is no longer there."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Thu"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Tick %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Tick all %s in this list"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Tick all of %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Tick at least one person."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Tick everyone in this list"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Tick people, or pick a whole team, then give them all a working week in one "
+"go. Hold Shift to tick a range."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Time clocks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_clocks_ok
+msgid "Time clocks confirmed"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "To"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Tue"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Typed in on the weekly sheet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Undo"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Undone. The one-off shifts are gone and the planned ones are back."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Undone. Their late rules are back as they were."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Undone. Their working weeks are back as they were."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Unpaid break (minutes)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Unpaid break starts at"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Upload a file"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Use a time like 08:30."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Used in %s working weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Used in 1 working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__user_id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__user_id
+msgid "User"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Vietnam Cultural Day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Waiting for IT"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Wed"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"Week %(n)s (%(label)s) was not published: %(why)s The weeks before it are "
+"published. Press Carry on to try this week again."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "Week %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Week %s is not published yet. Press Carry on."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Weekly rest day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__weeks
+msgid "Weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What does a normal week look like?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What happens when someone is late or stays on?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What is it called?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What shifts do you run?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What will happen"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Where is it?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Which days is the company closed?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Which kind of day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Which shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Which week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Who works what"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Who works which week?"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Whose late lines"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Work on a rest day pays"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Worked after break"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Worker"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Workers"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Workers have no late lines yet."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Workforce is live."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Workforce menu"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/takeover.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.actions.client,name:pb_workforce_setup.action_setup_studio
+#: model:ir.model,name:pb_workforce_setup.model_pb_workforce_setup
+msgid "Workforce setup"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_pb_workforce_setup_run
+msgid "Workforce setup: one roster publish"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_pb_workforce_setup_undo
+msgid "Workforce setup: undo of one bulk change"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Working out the roster for %s people…"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Working out the roster for 1 person…"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.model.fields.selection,name:pb_workforce_setup.selection__pb_workforce_setup_undo__kind__assign
+msgid "Working week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Working weeks"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Year"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Yes, discard"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Yes, remove"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Yes, remove it"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "You are editing a new version."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "You can look, but only an attendance manager can change this."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "You can publish now. The amber lines above can be finished later."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "You can undo this straight after."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "already has clock-ins"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "already published"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "and"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "and on a public holiday"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "company day off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "could not be added"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "earn"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "hours after it. The first in and the last out are used."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "hours before the shift and a clock-out up to"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "hours."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "in the past"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "minutes late or more, take off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "minutes late, take off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "night work is not allowed for this person"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "no break"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "nothing off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "on approved leave"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "on time"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "overlaps another shift"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "overtime starts at"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "public holiday"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "rest day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "shifts"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "shifts for %s people"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "shifts for 1 person"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "showing %(n)s of %(total)s people"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "starts %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "under %s min"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "week %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "when the shift ends"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "· ends next day"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "“%s” has no overtime time yet. Set it in step 4."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "“%s” is added. Copy its setup link for your IT person."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "“%s” is hidden from your shifts. Past roster days keep it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "“%s” is removed."
+msgstr ""

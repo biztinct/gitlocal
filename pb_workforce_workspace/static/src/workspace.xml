@@ -4,10 +4,10 @@
   <xpath expr="//nav[hasclass('pbms-rail')]" position="attributes"><attribute name="t-if">!workspace.enabled</attribute></xpath>
   <xpath expr="//div[hasclass('pbms-low')]" position="before">
    <nav t-if="workspace.enabled" class="pbww-nav" aria-label="Workforce workspace">
-    <div class="pbww-tabs"><button t-foreach="workspaceGroups" t-as="g" t-key="g.label" t-att-class="{'is-active':workspaceGroup.label === g.label and state.lens !== 'setup'}" t-att-aria-current="workspaceGroup.label === g.label and state.lens !== 'setup' ? 'page' : false" t-on-click="() => this.workspaceNavigate(g.keys[0])" t-esc="g.label"/>
-     <button t-if="!state.allowed or state.allowed.setup" class="pbww-setup-link" t-att-class="{'is-active':state.lens === 'setup'}" t-on-click="() => this.workspaceNavigate('setup')">Guided setup</button>
+    <div class="pbww-tabs"><button t-foreach="workspaceGroups" t-as="g" t-key="g.label" t-att-class="{'is-active':workspaceGroup and workspaceGroup.label === g.label and state.lens !== 'setup'}" t-att-aria-current="workspaceGroup and workspaceGroup.label === g.label and state.lens !== 'setup' ? 'page' : false" t-on-click="() => this.workspaceNavigate(g.keys[0])" t-esc="g.title"/>
+     <button t-if="!state.allowed or state.allowed.setup" class="pbww-setup-link" t-att-class="{'is-active':state.lens === 'setup'}" t-on-click="() => this.workspaceNavigate('setup')" t-esc="setupLabel"/>
     </div>
-    <div class="pbww-subnav" t-if="state.lens !== 'setup'"><button t-foreach="workspaceSubnav" t-as="l" t-key="l.key" t-att-class="{'is-active':state.lens === l.key}" t-att-aria-current="state.lens === l.key ? 'page' : false" t-on-click="() => this.workspaceNavigate(l.key)" t-esc="l.label"/></div>
+    <div class="pbww-subnav" t-if="state.lens !== 'setup' and workspaceSubnav.length"><button t-foreach="workspaceSubnav" t-as="l" t-key="l.key" t-att-class="{'is-active':state.lens === l.key}" t-att-aria-current="state.lens === l.key ? 'page' : false" t-on-click="() => this.workspaceNavigate(l.key)" t-esc="l.label"/></div>
    </nav>
   </xpath>
  </t>
@@ -23,25 +23,25 @@
     <t t-else="">
      <HubBackChip t-if="settingsBack" back="settingsBack"/>
      <header class="pbww-head">
-      <div><span class="pbww-eyebrow" t-esc="state.preferences?.company || 'Workforce'"/><h1 t-esc="mode === 'overview' ? 'Every workplace. One view.' : heading"/><p t-esc="mode === 'overview' ? 'Review coverage by workplace, then move into the roster or employee assignments.' : description"/></div>
+      <div><span class="pbww-eyebrow" t-esc="eyebrow"/><h1 t-esc="heading"/><p t-esc="description"/></div>
       <button class="pbim-btn ghost" t-att-disabled="state.loading" t-on-click="load" aria-label="Refresh workspace"><t t-out="icon('refresh')"/> Refresh</button>
      </header>
      <div t-if="state.loading" class="pbww-loading" role="status"><span class="pbim-spin"/> Reading your workspace…</div>
      <t t-if="state.data and !state.loading">
       <t t-if="isOverview">
        <div t-if="mode === 'setup' and state.preferences?.can_configure" class="pbww-adoption">
-        <div><b>Unified Workforce workspace</b><p t-esc="state.preferences.enabled ? 'Enabled for this company. Attendance and payroll rules are managed separately.' : 'Use grouped navigation for this company. Existing rules and employee schedules stay as they are.'"/></div>
-        <button class="pbim-btn" t-att-class="state.preferences.enabled ? 'ghost' : 'primary'" t-att-disabled="state.busy" t-on-click="toggle" t-esc="state.preferences.enabled ? 'Use previous navigation' : 'Enable unified workspace'"/>
+        <div><b>Unified Workforce workspace</b><p t-esc="adoptionText"/></div>
+        <button class="pbim-btn" t-att-class="state.preferences.enabled ? 'ghost' : 'primary'" t-att-disabled="state.busy" t-on-click="toggle" t-esc="adoptionButton"/>
        </div>
        <div class="pbww-stats">
-        <article><span>Active calculation policies</span><strong t-esc="state.data.active_policies === null ? 'Not installed' : state.data.active_policies"/><small>Activation is a separate review</small></article>
-        <article><span>All draft roster rows</span><strong t-esc="state.data.draft_rosters ?? 'Unavailable'"/><button t-on-click="() => this.go('rosters',null,true)">Review before publishing →</button></article>
-        <article><span>Sources with a report</span><strong t-esc="state.data.contacted_connectors ?? 'Unavailable'"/><button t-on-click="() => this.go('connectors')">Check latest contact →</button></article>
+        <article><span>Active calculation policies</span><strong t-esc="stat(state.data.active_policies, 'module')"/><small>Activation is a separate review</small></article>
+        <article><span>All draft roster rows</span><strong t-esc="stat(state.data.draft_rosters)"/><button t-on-click="() => this.go('rosters',null,true)">Review before publishing →</button></article>
+        <article><span>Sources with a report</span><strong t-esc="stat(state.data.contacted_connectors)"/><button t-on-click="() => this.go('connectors')">Check latest contact →</button></article>
        </div>
        <section t-if="mode === 'overview'" class="pbww-section">
-        <div class="pbww-section-head"><div><h2>Factories &amp; workplaces</h2><p>Roster counts for <t t-esc="state.data.week_start"/> to <t t-esc="state.data.week_end"/>. Grouped by each employee’s assigned workplace.</p></div><button class="pbim-btn ghost" t-on-click="() => this.go('setup')">Review setup</button></div>
+        <div class="pbww-section-head"><div><h2>Factories &amp; workplaces</h2><p t-esc="weekLine"/></div><button class="pbim-btn ghost" t-on-click="() => this.go('setup')">Review setup</button></div>
         <div class="pbww-cards"><article t-foreach="state.data.locations" t-as="loc" t-key="loc.id" class="pbww-location">
-         <span class="pbww-card-icon" t-out="icon('mapPin',22)"/><h3 t-esc="loc.name"/><div class="pbww-location-stats"><span><b t-esc="loc.people"/> people</span><span><b t-esc="loc.draft"/> draft shifts</span><span><b t-esc="loc.other"/> other roster rows</span></div>
+         <span class="pbww-card-icon" t-out="icon('mapPin',22)"/><h3 t-esc="loc.name"/><div class="pbww-location-stats"><span t-out="peopleCount(loc.people)"/><span t-out="draftCount(loc.draft)"/><span t-out="otherCount(loc.other)"/></div>
          <footer><button class="pbim-btn primary" t-on-click="() => this.location(loc,'rosters')">Review roster</button><button class="pbim-btn ghost" t-on-click="() => this.location(loc,'people')">People</button></footer>
         </article></div>
         <p t-if="!state.data.locations.length" class="pbww-note">No workplaces are visible for your role. Assign workplaces on employee records to build this overview.</p>
@@ -52,25 +52,25 @@
          <button t-if="available.has(step.key) or ['patterns','time'].includes(step.key)" class="pbim-btn primary" t-on-click="() => this.go(step.key)">Review <t t-out="icon('arrowRight',16)"/></button>
         </article>
        </section>
-       <section class="pbww-section"><h2>Setup library</h2><p>These are the same records used by daily operations and Settings.</p><div class="pbww-shortcuts"><button t-foreach="state.data.catalogs" t-as="cat" t-key="cat.key" t-on-click="() => this.go(cat.key)"><span t-esc="cat.label"/><b t-esc="cat.count"/><span>→</span></button></div></section>
+       <section class="pbww-section"><h2>Setup library</h2><p>These are the same records used by daily operations and Settings.</p><div class="pbww-shortcuts"><button t-foreach="state.data.catalogs" t-as="cat" t-key="cat.key" t-on-click="() => this.go(cat.key)"><span t-esc="cat.label"/><b t-esc="stat(cat.count)"/><span>→</span></button></div></section>
       </t>
       <t t-else="">
        <div class="pbww-tools"><input type="search" placeholder="Search by name…" aria-label="Search records" t-att-value="state.search" t-on-change="search"/>
-        <span t-esc="state.data.total + ' records'"/>
+        <span t-esc="recordsLine"/>
         <button t-if="state.data.can_create" class="pbim-btn primary" t-on-click="create">+ New</button>
         <button t-if="mode === 'people'" class="pbim-btn ghost" t-on-click="() => this.go('patterns')">Assign recurring patterns</button>
        </div>
-       <div t-if="state.location !== null" class="pbww-scope"><span>Workplace: <b t-esc="state.locationName || 'Not assigned'"/></span><button t-on-click="clearLocation">Clear workplace filter ×</button></div>
+       <div t-if="state.location !== null" class="pbww-scope"><span>Workplace: <b t-esc="workplaceName"/></span><button t-on-click="clearLocation">Clear workplace filter ×</button></div>
        <p class="pbww-note" t-if="mode === 'rosters'">Showing the selected week. <t t-if="state.drafts">Only drafts are shown.</t> Use the roster board to publish reviewed shifts.</p>
        <p class="pbww-note" t-if="mode === 'policies'">An unconfirmed lateness band needs review. A draft policy is not proof that attendance is ready for payroll.</p>
        <p class="pbww-note" t-if="mode === 'connectors'">Open a connector for Guided setup / invite IT, connection health and Received records. Contact timestamps below are UTC.</p>
        <div class="pbww-cards" t-att-class="{'pbww-cards--wide': ['people','rosters'].includes(mode)}">
         <button t-foreach="state.data.rows" t-as="row" t-key="row.id" class="pbww-record" t-on-click="() => this.open(row)">
-         <h3 t-esc="row.name || 'Record'"/><dl><t t-foreach="fields" t-as="f" t-key="f[0]"><div><dt t-esc="f[1].string"/><dd t-esc="format(row[f[0]],f[1],f[0])"/></div></t></dl><span class="pbww-record-open">Open details →</span>
+         <h3 t-esc="rowName(row)"/><dl><t t-foreach="fields" t-as="f" t-key="f[0]"><div><dt t-esc="f[1].string"/><dd t-esc="format(row[f[0]],f[1],f[0])"/></div></t></dl><span class="pbww-record-open">Open details →</span>
         </button>
        </div>
        <div t-if="!state.data.rows.length" class="pbww-empty"><t t-out="icon('calendar',30)"/><h2>No records to show</h2><p>Adjust the search or add a record if your role allows it.</p></div>
-       <footer class="pbww-pager"><button class="pbim-btn ghost" t-att-disabled="state.offset === 0" t-on-click="() => this.page(-1)">Previous</button><span><t t-esc="state.data.total ? state.offset+1 : 0"/>–<t t-esc="Math.min(state.offset+40,state.data.total)"/> of <t t-esc="state.data.total"/></span><button class="pbim-btn ghost" t-att-disabled="state.offset+40 >= state.data.total" t-on-click="() => this.page(1)">Next</button></footer>
+       <footer class="pbww-pager"><button class="pbim-btn ghost" t-att-disabled="state.offset === 0" t-on-click="() => this.page(-1)">Previous</button><span t-esc="pagerLine"/><button class="pbim-btn ghost" t-att-disabled="state.offset+40 >= state.data.total" t-on-click="() => this.page(1)">Next</button></footer>
       </t>
      </t>
     </t>
@@ -79,11 +79,11 @@
  </t>
  <t t-name="pb_workforce_workspace.Patterns" t-inherit="pb_shift_patterns.PbShiftPatterns" t-inherit-mode="extension">
   <xpath expr="//div[hasclass('pbsp-head-actions')]" position="inside"><button t-if="workspacePattern" class="pbim-btn ghost" t-on-click="reviewWorkspaceDrafts">Review roster drafts</button></xpath>
-  <xpath expr="//div[hasclass('pbsp-head-actions')]//span[text()='Make drafts']" position="replace"><span t-esc="workspacePattern ? 'Create roster' : 'Make drafts'"/></xpath>
-  <xpath expr="//button[hasclass('pbsp-card-make')]/span" position="replace"><span t-esc="workspacePattern ? 'Create roster' : 'Make drafts'"/></xpath>
+  <xpath expr="//div[hasclass('pbsp-head-actions')]//span[text()='Make drafts']" position="replace"><span t-esc="workspaceMakeLabel"/></xpath>
+  <xpath expr="//button[hasclass('pbsp-card-make')]/span" position="replace"><span t-esc="workspaceMakeLabel"/></xpath>
   <xpath expr="//button[@t-on-click='makeDrafts']" position="attributes"><attribute name="t-att-disabled">M.busy or !pickedIds.length or (workspacePattern and !M.preview)</attribute></xpath>
-  <xpath expr="//button[@t-on-click='makeDrafts']/span" position="replace"><span t-esc="workspacePattern ? 'Create roster drafts' : 'Make drafts'"/></xpath>
-  <xpath expr="//button[@t-on-click='makeFromEdit']/span" position="replace"><span t-esc="workspacePattern ? 'Create roster' : 'Make drafts'"/></xpath>
+  <xpath expr="//button[@t-on-click='makeDrafts']/span" position="replace"><span t-esc="workspaceMakeDraftsLabel"/></xpath>
+  <xpath expr="//button[@t-on-click='makeFromEdit']/span" position="replace"><span t-esc="workspaceMakeLabel"/></xpath>
   <xpath expr="//div[hasclass('pbsp-strip')]" position="attributes"><attribute name="aria-hidden">false</attribute><attribute name="t-att-class">{'pbww-pattern-strip':workspacePattern}</attribute></xpath>
   <xpath expr="//div[hasclass('pbsp-strip')]/span/t" position="replace"><t t-esc="workspacePattern ? workspaceCell(ce,rw) : (ce.off ? '' : ce.code)"/></xpath>
  </t>

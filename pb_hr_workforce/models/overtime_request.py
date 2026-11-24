@@ -92,18 +92,14 @@ class OvertimeRequest(models.Model):
 
     @api.depends('overtime_type', 'company_id')
     def _compute_overtime_config(self):
+        # WFSETUP P3: the most specific row wins (`hr.overtime.config._pb_pick`).
+        # The former single search ordered `country_id desc, company_id desc`
+        # put NULLs FIRST (Postgres DESC), so a global row beat the company's
+        # own country row (pinned by tests/test_ot_config_resolution.py).
         Config = self.env['hr.overtime.config']
         for rec in self:
-            country = rec.employee_id.country_id
-            config = Config.search([
-                ('overtime_type', '=', rec.overtime_type),
-                '|',
-                ('country_id', '=', country.id if country else False),
-                ('country_id', '=', False),
-                '|',
-                ('company_id', '=', rec.company_id.id),
-                ('company_id', '=', False),
-            ], order='country_id desc, company_id desc', limit=1)
+            country = rec.employee_id.sudo().country_id     # nationality is HR-only
+            config = Config._pb_pick(rec.overtime_type, country, rec.company_id)
             rec.overtime_config_id = config.id if config else False
 
     @api.depends('rate_multiplier')
