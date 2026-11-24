@@ -103,6 +103,8 @@
         <StepWho t-if="nh.step === 'who'" api="api"/>
         <StepRole t-elif="nh.step === 'role'" api="api"/>
         <StepPay t-elif="nh.step === 'pay'" api="api"/>
+        <StepSched t-elif="nh.step === 'sched'" api="api"/>
+        <StepWelcome t-elif="nh.step === 'welcome'" api="api"/>
         <StepCheck t-elif="nh.step === 'check'" api="api"/>
         <StepSoon t-else="" api="api" stepKey="nh.step"/>
         <div class="pbnh-nav" t-if="!nh.result">
@@ -324,6 +326,11 @@
           <b t-key="trialTile.value" t-esc="trialTile.value"/>
           <small t-if="trialTile.sub" t-esc="trialTile.sub"/>
         </div>
+        <div t-att-class="'pbnh-dec ' + letterTile.cls">
+          <span><t t-out="icon('fileText', 13)"/>Contract letter</span>
+          <b t-key="letterTile.value" t-esc="letterTile.value"/>
+          <small t-if="letterTile.sub" t-esc="letterTile.sub"/>
+        </div>
       </div>
       <div t-if="problem" class="pbnh-hint pbnh-hint--warn" role="status">
         <t t-out="icon('alert', 16)"/>
@@ -431,6 +438,16 @@
             <input id="pbnh-f-date_end" type="date" t-att-min="d.date_start" t-att-value="d.date_end" t-on-change="(ev) => this.onDate('date_end', ev)" aria-required="true"/>
             <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="endErr"/></t>
           </label>
+          <label t-if="showCats" t-att-class="'pbnh-f' + (err('type_id') ? ' is-bad' : '') + (catSuggested ? ' is-auto' : '')">
+            <span>Contract category <em>*</em></span>
+            <select id="pbnh-f-type_id" t-on-change="onCat" aria-required="true">
+              <option value="" t-att-selected="!d.type_id">Choose a category</option>
+              <option t-foreach="cats" t-as="c" t-key="c.id" t-att-value="c.id" t-att-selected="c.id === d.type_id" t-esc="c.name"/>
+            </select>
+            <span t-if="catWhy" class="pbnh-why"><t t-out="icon('sparkles', 12)"/><t t-esc="catWhy"/></span>
+            <span t-elif="catNone and !d.type_id" class="pbnh-why" style="color:var(--pbnh-muted);font-weight:500">None matches this country and kind of contract, so choose one.</span>
+            <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('type_id')"/></t>
+          </label>
           <div class="pbnh-f">
             <span>Trial period</span>
             <div class="pbnh-trial">
@@ -497,6 +514,241 @@
   </div>
 </t>
 
+<!-- ============================================================ step 4 -->
+<t t-name="pb_new_hire.StepSched">
+  <div class="pbnh-step-in">
+    <div class="pbnh-q">
+      <div class="pbnh-q-t">
+        <div class="pbnh-eyebrow">Step 4 of 7 · optional</div>
+        <h1 tabindex="-1" t-esc="heading"/>
+        <p>These come from the team, so you can leave this step alone. Change it only if this person is different from their team.</p>
+      </div>
+      <span class="pbnh-chip pbnh-chip--teal"><t t-out="icon('sparkles', 13)"/><t t-esc="teamChip"/></span>
+    </div>
+
+    <div t-if="!s" class="pbnh-card pbnh-pad pbnh-col" aria-busy="true">
+      <span class="pbnh-skel" style="height:40px"/><span class="pbnh-skel" style="height:46px"/>
+    </div>
+    <t t-else="">
+      <div class="pbnh-card pbnh-pad pbnh-col" style="gap:14px">
+        <div class="pbnh-grid">
+          <label t-if="weeks.length" t-att-class="'pbnh-f' + (err('week_id') ? ' is-bad' : '') + (isAuto('week_id') and week ? ' is-auto' : '')">
+            <span>Working week</span>
+            <select id="pbnh-f-week_id" t-on-change="onWeek">
+              <option value="" t-att-selected="!d.week_id" t-esc="usualHours"/>
+              <option t-foreach="weeks" t-as="w" t-key="w.id" t-att-value="w.id" t-att-selected="w.id === d.week_id" t-esc="weekLabel(w)"/>
+            </select>
+            <span t-if="week and week.team_default" class="pbnh-why"><t t-out="icon('sparkles', 12)"/>Same as the rest of the team</span>
+            <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('week_id')"/></t>
+          </label>
+          <div t-if="s.late_groups" class="pbnh-f">
+            <span>Late and overtime rule</span>
+            <div class="pbnh-seg" role="radiogroup" aria-label="Late and overtime rule">
+              <button type="button" role="radio" t-att-aria-checked="d.late_group !== 'manager' ? 'true' : 'false'"
+                      t-att-class="d.late_group !== 'manager' ? 'is-on' : ''" t-on-click="() => this.setGroup('worker')">Worker</button>
+              <button type="button" role="radio" t-att-aria-checked="d.late_group === 'manager' ? 'true' : 'false'"
+                      t-att-class="d.late_group === 'manager' ? 'is-on' : ''" t-on-click="() => this.setGroup('manager')">Manager</button>
+            </div>
+            <span class="pbnh-why" style="color:var(--pbnh-muted);font-weight:500">Decides which late and overtime rules apply.</span>
+          </div>
+        </div>
+        <div t-if="week" class="pbnh-wk" t-key="stripKey" aria-label="The first week">
+          <div t-foreach="strip" t-as="day" t-key="day.key" t-att-class="day.on ? 'is-on' : ''" t-att-style="'animation-delay:' + (day_index * 30) + 'ms'">
+            <b t-esc="day.label"/>
+            <span t-if="day.on" class="pbnh-num" t-esc="day.start"/>
+            <span t-else="">off</span>
+          </div>
+        </div>
+        <div t-if="week" class="pbnh-sub">
+          <t t-esc="hoursLine"/><t t-if="week.rotation_note"> · <t t-esc="week.rotation_note"/></t>
+        </div>
+        <div t-if="!weeks.length" class="pbnh-hint pbnh-hint--quiet">
+          <t t-out="icon('calendarClock', 16)"/>
+          <span class="pbnh-hint-t">
+            <span t-esc="s.weeks_reason"/>
+            <button t-if="s.setup_link" type="button" class="pbnh-link" t-on-click="openSetup">Set up working weeks</button>
+          </span>
+        </div>
+      </div>
+
+      <div class="pbnh-card">
+        <div t-if="s.clock" class="pbnh-row">
+          <button type="button" t-att-class="'pbnh-tog' + (d.clock_on ? ' is-on' : '')" role="switch"
+                  t-att-aria-checked="d.clock_on ? 'true' : 'false'" t-att-aria-label="clockTitle" t-on-click="toggleClock"/>
+          <div class="pbnh-row-t"><b t-esc="clockTitle"/><small t-esc="clockSub"/></div>
+          <div t-if="d.clock_on" t-att-class="'pbnh-row-r pbnh-clock' + (clockBad ? ' is-bad' : '')">
+            <input id="pbnh-f-clock_code" type="text" autocomplete="off" inputmode="numeric" placeholder="Clock number"
+                   aria-label="Clock number" t-att-value="d.clock_code" t-on-input="onClock"/>
+          </div>
+          <div t-if="d.clock_on and clockCheck and clockCheck.message" t-att-class="'pbnh-clock-msg' + (clockBad ? ' is-bad' : ' is-ok')" role="status">
+            <t t-out="icon(clockBad ? 'alert' : 'check', 14)"/><span t-esc="clockCheck.message"/>
+          </div>
+        </div>
+        <div t-foreach="leave" t-as="row" t-key="row_index" class="pbnh-row">
+          <span class="pbnh-tile" t-out="icon('calendar', 17)"/>
+          <div class="pbnh-row-t"><b t-esc="leaveTitle(row)"/><small t-esc="leaveSub(row)"/></div>
+        </div>
+        <div class="pbnh-row">
+          <span class="pbnh-tile" t-out="icon('globe', 17)"/>
+          <div class="pbnh-row-t"><b t-esc="holidayTitle"/><small t-if="holidaySub" t-esc="holidaySub"/></div>
+        </div>
+      </div>
+    </t>
+  </div>
+</t>
+
+<!-- ============================================================ step 6 -->
+<t t-name="pb_new_hire.StepWelcome">
+  <div class="pbnh-step-in">
+    <div class="pbnh-q">
+      <div class="pbnh-q-t">
+        <div class="pbnh-eyebrow">Step 6 of 7 · optional</div>
+        <h1 tabindex="-1" t-esc="heading"/>
+        <p>The joining checklist starts by itself when the hire is added. Choose the sign-in, a buddy and the equipment, or leave the defaults.</p>
+      </div>
+    </div>
+
+    <div t-if="loading" class="pbnh-card pbnh-pad pbnh-col" aria-busy="true">
+      <span class="pbnh-skel" style="height:44px"/><span class="pbnh-skel" style="height:44px"/><span class="pbnh-skel" style="height:120px"/>
+    </div>
+    <t t-else="">
+      <div class="pbnh-card">
+        <!-- sign-in -->
+        <div class="pbnh-row">
+          <span class="pbnh-tile" t-out="icon('key', 17)"/>
+          <div class="pbnh-row-t"><b>Sign-in to My Payobook</b><small t-if="modeInfo" t-esc="modeInfo.sub"/></div>
+          <div class="pbnh-seg" role="radiogroup" aria-label="Sign-in">
+            <button t-foreach="modes" t-as="m" t-key="m.key" type="button" role="radio"
+                    t-att-aria-checked="m.key === mode ? 'true' : 'false'" t-att-aria-disabled="m.available ? 'false' : 'true'"
+                    t-att-title="m.why_not or ''" t-att-class="(m.key === mode ? 'is-on' : '') + (m.available ? '' : ' is-off')"
+                    t-on-click="() => this.setMode(m)" t-esc="m.label"/>
+          </div>
+          <div t-if="blockedModes.length" class="pbnh-why-not">
+            <div t-foreach="blockedModes" t-as="m" t-key="m.key">
+              <t t-out="icon('info', 13)"/><span><b t-esc="m.label"/>: <t t-esc="m.why_not"/></span>
+              <button t-if="fixLabel(m)" type="button" class="pbnh-link" t-on-click="() => this.fixMode(m)" t-esc="fixLabel(m)"/>
+            </div>
+          </div>
+          <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('login_mode')"/></t>
+        </div>
+        <!-- the checklist switch -->
+        <div class="pbnh-row">
+          <button t-if="caseInfo.available" type="button" t-att-class="'pbnh-tog' + (caseOn ? ' is-on' : '')" role="switch"
+                  t-att-aria-checked="caseOn ? 'true' : 'false'" aria-label="Start the joining checklist" t-on-click="toggleCase"/>
+          <span t-else="" class="pbnh-tile pbnh-tile--warn" t-out="icon('listChecks', 17)"/>
+          <div class="pbnh-row-t"><b t-esc="caseTitle"/><small t-esc="caseSub"/></div>
+        </div>
+        <t t-if="!collapsed">
+          <!-- buddy -->
+          <div class="pbnh-row">
+            <span class="pbnh-tile" t-out="icon('userCheck', 17)"/>
+            <div class="pbnh-row-t"><b>Buddy</b><small t-esc="buddySub"/></div>
+            <div class="pbnh-pick pbnh-buddy">
+              <input id="pbnh-f-buddy_id" type="text" autocomplete="off" role="combobox" aria-autocomplete="list"
+                     t-att-aria-expanded="ui.open ? 'true' : 'false'" aria-controls="pbnh-buddy-list" aria-label="Buddy"
+                     t-att-placeholder="buddyPlaceholder" t-att-value="buddyText"
+                     t-on-focus="onBuddyFocus" t-on-input="onBuddyInput" t-on-keydown="onBuddyKey" t-on-blur="onBuddyBlur"/>
+              <button t-if="d.buddy_id and !ui.open" type="button" class="pbnh-pick-x" aria-label="Manager chooses" title="Manager chooses"
+                      t-on-click="clearBuddy"><t t-out="icon('x', 14)"/></button>
+              <ul t-if="ui.open" id="pbnh-buddy-list" class="pbnh-pick-pop" role="listbox">
+                <li t-if="!ui.list.length and !ui.busy" class="pbnh-pick-none">Nobody found. Try another name.</li>
+                <li t-foreach="ui.list" t-as="p" t-key="p.id" role="option" t-att-aria-selected="p_index === ui.active ? 'true' : 'false'"
+                    t-att-aria-disabled="p.level === 'fail' ? 'true' : 'false'"
+                    t-att-class="buddyCls(p, p_index)" t-on-mousedown.prevent="() => this.chooseBuddy(p)">
+                  <span class="pbnh-av" t-esc="initials(p.name)"/>
+                  <span><b t-esc="p.name"/><small t-if="p.level === 'pass'" t-esc="buddyLine(p)"/><small t-else="" t-att-class="'is-' + p.level" t-esc="p.why or buddyLine(p)"/></span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- equipment -->
+          <div t-if="kit.length" class="pbnh-row">
+            <span class="pbnh-tile" t-out="icon('laptop', 17)"/>
+            <div class="pbnh-row-t"><b>Equipment</b><small>Each one becomes a request to the person who hands it over, needed by the first day.</small></div>
+            <div class="pbnh-kit" role="group" aria-label="Equipment">
+              <button t-foreach="kit" t-as="c" t-key="c.id" type="button" t-att-class="kitOn(c) ? 'is-on' : ''"
+                      t-att-aria-pressed="kitOn(c) ? 'true' : 'false'" t-on-click="() => this.toggleKit(c)">
+                <t t-out="icon(kitIcon(c), 15)"/><t t-esc="c.name"/>
+              </button>
+            </div>
+          </div>
+        </t>
+        <div t-elif="caseInfo.available" class="pbnh-row"><span class="pbnh-empty" style="flex:1">These need the joining checklist.</span></div>
+        <!-- letter -->
+        <div class="pbnh-row">
+          <button t-if="letter.available" type="button" t-att-class="'pbnh-tog' + (letterOn ? ' is-on' : '')" role="switch"
+                  t-att-aria-checked="letterOn ? 'true' : 'false'" aria-label="Prepare the contract letter" t-on-click="toggleLetter"/>
+          <span t-else="" class="pbnh-tile pbnh-tile--warn" t-out="icon('fileText', 17)"/>
+          <div class="pbnh-row-t"><b>Prepare the contract letter</b><small t-esc="letterSub"/></div>
+        </div>
+      </div>
+
+      <!-- your own fields (not shown at all when the company has none) -->
+      <div t-if="own.length" class="pbnh-card">
+        <div class="pbnh-cardh">
+          <div><h3>Your own fields</h3><p class="pbnh-sub">The fields your company added in Form builder, so nothing on the employee record is missed.</p></div>
+        </div>
+        <div class="pbnh-pad">
+          <div class="pbnh-grid">
+            <t t-foreach="ownOk" t-as="f" t-key="f.name">
+              <label t-if="f.kind === 'bool'" class="pbnh-f pbnh-own-bool">
+                <span t-esc="f.label"/>
+                <span class="pbnh-own-check">
+                  <input t-att-id="ownId(f)" type="checkbox" t-att-checked="ownValue(f) ? 'checked' : undefined" t-on-change="(ev) => this.onOwn(f, ev)"/>
+                  <small t-esc="f.help or ''"/>
+                </span>
+              </label>
+              <label t-elif="f.kind === 'select'" t-att-class="'pbnh-f' + (ownErr(f) or ownMissing(f) ? ' is-bad' : '')">
+                <span><t t-esc="f.label"/><em t-if="f.required"> *</em><i t-else=""> optional</i></span>
+                <select t-att-id="ownId(f)" t-on-change="(ev) => this.onOwn(f, ev)">
+                  <option value="" t-att-selected="!ownText(f)">Choose</option>
+                  <option t-foreach="f.options" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="o.value === ownValue(f)" t-esc="o.label"/>
+                </select>
+                <span t-if="f.help" class="pbnh-own-help" t-esc="f.help"/>
+                <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="ownErr(f)"/></t>
+              </label>
+              <label t-elif="f.kind === 'longtext'" t-att-class="'pbnh-f pbnh-f--wide' + (ownErr(f) or ownMissing(f) ? ' is-bad' : '')">
+                <span><t t-esc="f.label"/><em t-if="f.required"> *</em><i t-else=""> optional</i></span>
+                <textarea t-att-id="ownId(f)" rows="2" t-att-value="ownText(f)" t-on-change="(ev) => this.onOwn(f, ev)"/>
+                <span t-if="f.help" class="pbnh-own-help" t-esc="f.help"/>
+                <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="ownErr(f)"/></t>
+              </label>
+              <label t-else="" t-att-class="'pbnh-f' + (ownErr(f) or ownMissing(f) ? ' is-bad' : '')">
+                <span><t t-esc="f.label"/><em t-if="f.required"> *</em><i t-else=""> optional</i></span>
+                <input t-att-id="ownId(f)" t-att-type="inputType(f)" t-att-step="f.kind === 'number' ? 'any' : undefined"
+                       autocomplete="off" t-att-value="ownText(f)" t-on-change="(ev) => this.onOwn(f, ev)"/>
+                <span t-if="f.help" class="pbnh-own-help" t-esc="f.help"/>
+                <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="ownErr(f)"/></t>
+              </label>
+            </t>
+          </div>
+          <div t-if="ownLater.length" class="pbnh-own-later">
+            <div t-foreach="ownLater" t-as="f" t-key="f.name"><t t-out="icon('clock', 13)"/><span><b t-esc="f.label"/>: <t t-esc="ownLaterLine"/></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- the hero: what happens, and when -->
+      <div class="pbnh-card pbnh-pad">
+        <div class="pbnh-tl-h">
+          <h3>What happens, and when</h3>
+          <p class="pbnh-sub" t-esc="timelineSub"/>
+        </div>
+        <ol class="pbnh-tl" aria-live="polite">
+          <li t-foreach="events" t-as="e" t-key="e.key" t-att-class="'pbnh-ev is-' + e.kind + (e.past ? ' is-now' : '')" t-att-style="e.style">
+            <span class="pbnh-ev-when pbnh-num" t-esc="e.label"/>
+            <span class="pbnh-ev-ln" aria-hidden="true"><i/></span>
+            <div class="pbnh-ev-what">
+              <b t-esc="e.title"/>
+              <small><t t-if="e.who"><span class="pbnh-ev-who" t-esc="e.who"/></t><t t-if="e.who and e.sub"> · </t><t t-esc="e.sub"/></small>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </t>
+  </div>
+</t>
+
 <!-- ============================================================ step 7 -->
 <t t-name="pb_new_hire.StepCheck">
   <div class="pbnh-step-in">
@@ -507,9 +759,16 @@
         <h1 tabindex="-1" t-esc="doneTitle"/>
         <p t-esc="doneLine"/>
         <span t-if="reference" class="pbnh-chip pbnh-chip--p pbnh-num" t-esc="reference"/>
+        <div t-if="result.applied and legs.length" class="pbnh-legs">
+          <div t-if="legsLine" class="pbnh-leg is-ok"><t t-out="icon('checkCircle', 16)"/><span t-esc="legsLine"/></div>
+          <div t-foreach="legsFailed" t-as="leg" t-key="leg.key" class="pbnh-leg is-bad" role="alert">
+            <t t-out="icon('alert', 16)"/><span t-esc="leg.message"/>
+          </div>
+        </div>
         <div class="pbnh-done-b">
           <t t-if="result.applied">
             <button t-if="result.employee_id" type="button" class="pbnh-btn pbnh-btn--pri" t-on-click="() => this.api.openRecord()"><t t-out="icon('user', 16)"/><t t-esc="openLabel"/></button>
+            <button t-if="canSeeJoiners" type="button" class="pbnh-btn" t-on-click="() => this.api.seeJoiners()"><t t-out="icon('users', 16)"/>See new joiners</button>
           </t>
           <t t-else="">
             <button type="button" class="pbnh-btn pbnh-btn--out" t-att-disabled="nh.sending" t-on-click="() => this.api.withdraw()">

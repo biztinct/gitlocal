@@ -109,6 +109,18 @@ export class StepPay extends Component {
 
     // ------------------------------------------------------------ contract and trial
     setKind(kind) { this.api.set("contract_kind", kind); }
+    /** P2: the employee category, asked only when there is a choice. */
+    get cats() { return this.nh.cats || []; }
+    get showCats() { return this.cats.length > 1; }
+    get catSuggested() {
+        const c = this.cats.find((x) => x.id === this.d.type_id);
+        return Boolean(c && c.suggested && this.nh.auto.type_id);
+    }
+    get catWhy() {
+        return this.catSuggested ? _t("Suggested for %s", this.api.countryName) : "";
+    }
+    get catNone() { return this.showCats && !this.cats.some((c) => c.suggested); }
+    onCat(ev) { this.api.set("type_id", Number(ev.target.value) || false); }
     onDate(key, ev) { this.api.set(key, ev.target.value || ""); }
     get endErr() {
         const d = this.d;

@@ -291,6 +291,88 @@
     .pbnh-soon h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
     .pbnh-soon p { color: var(--pbnh-muted); max-width: 60ch; }
 
+    // ------------------------------------------------ step 4: schedule and time off (P2)
+    .pbnh-wk { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; max-width: 460px; }
+    .pbnh-wk > div {
+        border-radius: 9px; padding: 7px 0; text-align: center; font-size: 11.5px; background: #F6F7FB; color: var(--pbnh-faint);
+        line-height: 1.3; animation: pbnh-land .28s ease-out both;
+    }
+    .pbnh-wk > div b { display: block; font-weight: 600; color: var(--pbnh-muted); }
+    .pbnh-wk > div span { display: block; }
+    .pbnh-wk > div.is-on { background: var(--pbnh-p-soft); color: var(--pbnh-p); }
+    .pbnh-wk > div.is-on b { color: var(--pbnh-p-dark); font-weight: 700; }
+    .pbnh-clock input { width: 150px; text-align: left; }
+    .pbnh-clock.is-bad input { border-color: var(--pbnh-err); }
+    .pbnh-clock-msg { flex-basis: 100%; display: flex; gap: 6px; align-items: center; font-size: 12.5px; padding-left: 50px; animation: pbnh-fade .2s; }
+    .pbnh-clock-msg.is-bad { color: var(--pbnh-err); }
+    .pbnh-clock-msg.is-ok { color: var(--pbnh-ok); }
+
+    // ------------------------------------------------ step 6: welcome and first day (P2)
+    .pbnh-seg button.is-off { color: var(--pbnh-faint); text-decoration: line-through; text-decoration-thickness: 1px; cursor: not-allowed; }
+    .pbnh-why-not { flex-basis: 100%; display: flex; flex-direction: column; gap: 4px; padding-left: 46px; font-size: 12.5px; color: var(--pbnh-muted); }
+    .pbnh-why-not > div { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+    .pbnh-why-not svg { color: var(--pbnh-faint); flex: none; position: relative; top: 2px; }
+    .pbnh-why-not b { color: var(--pbnh-ink); font-weight: 600; }
+    .pbnh-buddy { width: 240px; max-width: 100%; }
+    .pbnh-buddy input {
+        display: block; width: 100%; min-height: 36px; padding: 6px 30px 6px 10px; border: 1px solid var(--pbnh-line);
+        border-radius: 9px; background: var(--pbnh-card); font-weight: 500; font-size: 13.5px;
+    }
+    .pbnh-buddy input:focus { outline: 2px solid var(--pbnh-p-light); border-color: var(--pbnh-p); }
+    .pbnh-buddy .pbnh-pick-x { bottom: 5px; }
+    .pbnh-pick-pop li.is-off { opacity: .6; cursor: not-allowed; }
+    .pbnh-pick-pop li small.is-fail { color: var(--pbnh-err); }
+    .pbnh-pick-pop li small.is-warn { color: var(--pbnh-warn); }
+    .pbnh-kit { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbnh-kit button {
+        display: inline-flex; align-items: center; gap: 7px; border: 1.5px solid var(--pbnh-line); background: var(--pbnh-card);
+        border-radius: 10px; padding: 6px 11px; font-weight: 600; font-size: 13px; color: var(--pbnh-muted);
+        transition: border-color .15s, background .15s, color .15s, transform .15s;
+    }
+    .pbnh-kit button:hover { border-color: var(--pbnh-p-light); }
+    .pbnh-kit button:active { transform: scale(.97); }
+    .pbnh-kit button.is-on { border-color: var(--pbnh-p); background: var(--pbnh-p-soft); color: var(--pbnh-p-dark); }
+    .pbnh-kit button svg { width: 15px; height: 15px; }
+    .pbnh-f textarea {
+        display: block; border: 1px solid var(--pbnh-line); border-radius: 9px; padding: 8px 10px; background: var(--pbnh-card);
+        font-size: 14px; color: var(--pbnh-ink); font-weight: 500; width: 100%; resize: vertical;
+    }
+    .pbnh-f--wide { grid-column: 1 / -1; }
+    .pbnh-own-help { font-size: 11.5px; color: var(--pbnh-faint); }
+    .pbnh-own-check { display: flex; gap: 8px; align-items: center; min-height: 40px; }
+    .pbnh-own-check input { width: 18px; height: 18px; min-height: 0; accent-color: var(--pbnh-p); }
+    .pbnh-own-later { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--pbnh-muted); }
+    .pbnh-own-later > div { display: flex; gap: 6px; align-items: baseline; }
+    .pbnh-own-later b { color: var(--pbnh-ink); font-weight: 600; }
+    .pbnh-tl-h { margin-bottom: 14px; display: flex; flex-direction: column; gap: 2px; }
+    .pbnh-tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    .pbnh-ev {
+        display: grid; grid-template-columns: 104px 18px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 13.5px;
+        animation: pbnh-rise .26s ease-out both;
+    }
+    .pbnh-ev-when { color: var(--pbnh-muted); font-size: 12.5px; text-align: right; padding-top: 1px; font-weight: 600; }
+    .pbnh-ev.is-now .pbnh-ev-when { color: var(--pbnh-teal); }
+    .pbnh-ev-ln { position: relative; align-self: stretch; display: flex; justify-content: center; }
+    .pbnh-ev-ln::before { content: ""; position: absolute; top: 0; bottom: 0; width: 2px; background: var(--pbnh-line); }
+    .pbnh-ev:last-child .pbnh-ev-ln::before { bottom: auto; height: 8px; }
+    .pbnh-ev-ln i { position: relative; width: 10px; height: 10px; border-radius: 50%; background: var(--pbnh-card); border: 2px solid var(--pbnh-p); margin-top: 5px; }
+    .pbnh-ev.is-now .pbnh-ev-ln i { border-color: var(--pbnh-teal); }
+    .pbnh-ev.is-day .pbnh-ev-ln i { background: var(--pbnh-p); width: 14px; height: 14px; margin-top: 3px; box-shadow: 0 0 0 4px var(--pbnh-p-soft); }
+    .pbnh-ev.is-day .pbnh-ev-what b { color: var(--pbnh-p-dark); }
+    .pbnh-ev-what { padding-bottom: 14px; min-width: 0; }
+    .pbnh-ev-what b { font-weight: 600; display: block; overflow-wrap: anywhere; }
+    .pbnh-ev-what small { color: var(--pbnh-muted); display: block; font-size: 12px; overflow-wrap: anywhere; }
+    .pbnh-ev-who { color: var(--pbnh-ink); font-weight: 500; }
+
+    // ------------------------------------------------ the done card's welcome legs (P2)
+    .pbnh-legs { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 560px; text-align: left; margin-top: 4px; }
+    .pbnh-leg { display: flex; gap: 8px; align-items: flex-start; border-radius: 10px; padding: 9px 12px; font-size: 13px; animation: pbnh-rise .25s ease-out both; }
+    .pbnh-leg svg { flex: none; margin-top: 1px; }
+    .pbnh-leg.is-ok { background: var(--pbnh-ok-soft); color: #1F5C3A; }
+    .pbnh-leg.is-ok svg { color: var(--pbnh-ok); }
+    .pbnh-leg.is-bad { background: var(--pbnh-warn-soft); color: #7A3A06; }
+    .pbnh-leg.is-bad svg { color: var(--pbnh-warn); }
+
     // ------------------------------------------------ step 7
     .pbnh-check { display: flex; gap: 12px; align-items: center; padding: 12px 18px; border-top: 1px solid var(--pbnh-line2); }
     .pbnh-check:first-child { border-top: 0; }
@@ -428,6 +510,10 @@
         .pbnh-wage input { font-size: 22px; }
         .pbnh-crumb-path { display: none; }
         .pbnh-soon { flex-direction: column; padding: 20px 18px; }
+        .pbnh-ev { grid-template-columns: 74px 18px minmax(0, 1fr); gap: 8px; }
+        .pbnh-buddy { width: 100%; }
+        .pbnh-why-not, .pbnh-clock-msg { padding-left: 0; }
+        .pbnh-wk > div { font-size: 10.5px; }
     }
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }

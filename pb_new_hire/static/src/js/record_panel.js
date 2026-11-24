@@ -47,6 +47,7 @@ export class RecordPanel extends Component {
             { k: "country", label: _t("Country of work"), value: this.api.countryName },
             { k: "boss", label: _t("Manager"), value: d.parent_name || "" },
             { k: "trial", label: _t("Trial ends"), value: trial },
+            { k: "week", label: _t("Working week"), value: this.api.weekName || (this.nh.sched ? _t("Usual hours") : "") },
         ];
     }
     get notSet() { return _t("Not set"); }

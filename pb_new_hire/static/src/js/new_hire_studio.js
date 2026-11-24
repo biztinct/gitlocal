@@ -16,7 +16,7 @@
  * mirrored to sessionStorage (per company and user) so an accidental reload
  * keeps it; it is cleared on a successful Send and on "Add another person".
  */
-import { Component, onWillStart, onWillUnmount, useExternalListener, useRef, useState, useEffect } from "@odoo/owl";
+import { Component, onMounted, onWillStart, onWillUnmount, useExternalListener, useRef, useState, useEffect } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -28,13 +28,42 @@ import { StepWho } from "./step_who";
 import { StepRole } from "./step_role";
 import { StepPay } from "./step_pay";
 import { StepSoon } from "./step_soon";
+import { StepSched } from "./step_sched";
+import { StepWelcome } from "./step_welcome";
 import { StepCheck } from "./step_check";
 import { RecordPanel } from "./record_panel";
 
 const STEP_KEYS = ["who", "role", "pay", "sched", "docs", "welcome", "check"];
-const SOON = ["sched", "docs", "welcome"];
+const SOON = ["docs"];
 const TOAST_MS = 7000;
 const EMPLOYEES = { label: _t("People"), xmlid: "pb_people_hub.action_pb_people_hub", lens: "employees", context: {} };
+const JOINERS_XMLID = "pb_onboarding.action_pb_onboarding_board";
+const SETUP_XMLID = "pb_workforce_setup.action_setup_studio";
+
+/**
+ * P2: every draft key added since P1, declared ONCE — its blank value and how
+ * it is sent (`null` = kept on the screen only). The server lists the same
+ * keys in `DRAFT_KEYS` (studio.py); one table per language is as far as a
+ * single declaration goes.
+ */
+const P2_KEYS = {
+    type_id: [false, (d) => d.type_id || false],
+    week_id: [false, (d) => d.week_id || false],
+    late_group: ["worker", (d) => d.late_group || "worker"],
+    clock_on: [false, (d) => Boolean(d.clock_on)],
+    clock_code: ["", (d) => (d.clock_on ? String(d.clock_code || "").trim() : "")],
+    login_mode: ["", (d) => d.login_mode || ""],
+    buddy_id: [false, (d) => (d.open_case !== false ? d.buddy_id || false : false)],
+    buddy_name: ["", null],
+    equipment: [null, (d) => (d.open_case !== false && Array.isArray(d.equipment) ? [...d.equipment] : null)],
+    letter: [true, (d) => d.letter !== false],
+    open_case: [true, (d) => d.open_case !== false],
+    own: [{}, (d) => ({ ...(d.own || {}) })],
+};
+/** Changing one of these re-builds step 6's options and its timeline. */
+const WELCOME_INPUTS = ["name", "date_start", "work_email", "department_id", "payroll_country", "parent_id",
+    "country_id", "contract_kind", "trial_on", "clock_on", "clock_code", "login_mode", "buddy_id",
+    "equipment", "open_case"];
 
 function stepList() {
     return [
@@ -55,12 +84,13 @@ function blankDraft(today) {
         payroll_country: "", parent_id: false, parent_name: "", work_location_id: false,
         country_id: false, wage: null, contract_kind: "permanent", date_end: "", trial_on: true,
         usual: {}, pb_scale_pin_reason: "", fill_job_id: false,
+        ...Object.fromEntries(Object.entries(P2_KEYS).map(([k, [blank]]) => [k, deepClone(blank)])),
     };
 }
 
 export class NewHireStudio extends Component {
     static template = "pb_new_hire.Studio";
-    static components = { HubBackChip, StepWho, StepRole, StepPay, StepSoon, StepCheck, RecordPanel };
+    static components = { HubBackChip, StepWho, StepRole, StepPay, StepSoon, StepSched, StepWelcome, StepCheck, RecordPanel };
     static props = { "*": true };
 
     setup() {
@@ -84,6 +114,10 @@ export class NewHireStudio extends Component {
             usual: { configId: 0, rows: null, busy: false },
             hint: null,
             dup: null,
+            cats: null,         // step 3: contract categories
+            sched: null,        // step 4: schedule_options()
+            clockCheck: null,   // step 4: check_clock()
+            welcome: null,      // step 6: welcome_options() (and its timeline)
             sending: false, result: null, refusal: null,
             dialog: null, toast: null,
         });
@@ -100,6 +134,14 @@ export class NewHireStudio extends Component {
             setUsual: (code, amount) => this.setUsual(code, amount),
             resetUsual: (code) => this.resetUsual(code),
             findPeople: (q) => this.orm.call(MODEL, "find_people", [q, 20]),
+            findBuddies: (q) => this.orm.call(MODEL, "find_buddies", [q, 12]),
+            setOwn: (name, value) => this.setOwn(name, value),
+            initEquipment: () => this.initEquipment(),
+            openWorkforceSetup: () => this.openWorkforceSetup(),
+            seeJoiners: () => this.seeJoiners(),
+            get ownMissing() { return studio.ownMissing; },
+            get siteName() { return studio.siteName; },
+            get weekName() { return studio.weekName; },
             send: () => this.send(),
             withdraw: () => this.withdraw(),
             again: () => this.again(),
@@ -109,6 +151,7 @@ export class NewHireStudio extends Component {
             status: (key) => this.status(key),
             stepMeta: (key) => this.steps.find((s) => s.key === key),
             get ready() { return studio.ready; },
+            get sendable() { return studio.sendable; },
             get currency() { return studio.currency; },
             get first() { return studio.first; },
             get teamName() { return studio.teamName; },
@@ -121,6 +164,7 @@ export class NewHireStudio extends Component {
         }
         useSetupAction({ beforeLeave: (opts) => this.beforeLeave(opts) });
         onWillStart(() => this.load());
+        onMounted(() => this.askPrefill());
 
         useExternalListener(window, "keydown", (ev) => this.onKey(ev), { capture: true });
         // first run (mount): the first empty field; after that, on every step
@@ -201,9 +245,18 @@ export class NewHireStudio extends Component {
         try {
             const data = await this.orm.call(MODEL, "load", [this.prefill || false]);
             nh.data = data;
-            const draft = Object.assign(blankDraft(data.today), data.draft || {});
-            const kept = this.prefill ? null : this.readStore();
-            if (this.prefill) {
+            let draft = Object.assign(blankDraft(data.today), data.draft || {});
+            let kept = this.readStore();
+            if (this.prefill && kept && kept.draft && String(kept.draft.name || "").trim()) {
+                // P2 (fix c): an unsent hire is never replaced without asking.
+                // Carry on is the safe answer, so the kept hire shows first;
+                // the question is asked once the screen is up (onMounted).
+                this.prefillChoice = { data: deepClone(data.draft || {}), name: String(kept.draft.name).trim(),
+                                       role: this.prefillRole(data) };
+                draft = blankDraft(data.today);
+                data.draft = { date_start: data.today, payroll_country: (data.draft || {}).payroll_country || "" };
+            } else if (this.prefill) {
+                kept = null;
                 this.clearStore();
             }
             if (kept && kept.draft && kept.draft.name !== undefined) {
@@ -215,7 +268,7 @@ export class NewHireStudio extends Component {
                     nh.step = kept.step;
                     this.props.updateActionState?.({ step: nh.step });
                 }
-                if (draft.name) {
+                if (draft.name && !this.prefillChoice) {
                     this.toast(_t("Your unsent hire was kept, so you can carry on where you left off."), {
                         kind: "info",
                         action: { label: _t("Start again"), run: () => this.again(true) },
@@ -240,6 +293,8 @@ export class NewHireStudio extends Component {
             } else {
                 this.refreshAll();
             }
+            this.refreshCats();
+            this.refreshSched();
         } catch (e) {
             if (isAccessError(e)) {
                 nh.denied = errorText(e);
@@ -279,6 +334,194 @@ export class NewHireStudio extends Component {
         this.refreshDecides();
         this.refreshHint();
         this.checkPerson();
+        this.refreshWelcome();
+    }
+
+    /** P2 (fix c): the org chart sent a new role while an unsent hire was
+     *  kept. Ask; "Carry on" (the safe answer, Esc) keeps what is there. */
+    async askPrefill() {
+        const choice = this.prefillChoice;
+        if (!choice) {
+            return;
+        }
+        this.prefillChoice = null;
+        const start = await this.ask_({
+            title: _t("Carry on with %s?", choice.name),
+            body: _t("You have an unsent hire for %(name)s. Carry on with it, or start %(role)s from the org chart instead.",
+                     { name: choice.name, role: choice.role }),
+            ok: _t("Start %s", choice.role),
+            cancel: _t("Carry on with %s", choice.name),
+        });
+        if (!start) {
+            return;
+        }
+        const nh = this.nh;
+        this.clearStore();
+        nh.auto = {};
+        nh.touched = {};
+        nh.seen = { who: true };
+        nh.fieldErr = {};
+        nh.decides = null;
+        nh.usual = { configId: 0, rows: null, busy: false };
+        nh.draft = Object.assign(blankDraft(nh.data.today), choice.data);
+        for (const k of ["department_id", "job_id", "job_title", "parent_id"]) {
+            if (choice.data[k]) {
+                nh.touched[k] = true;
+            }
+        }
+        nh.data.draft = choice.data;
+        if (nh.step !== "who") {
+            this.go("who", "name");
+        } else {
+            this.focusAfter = "name";
+            this.focusHeading(false);
+        }
+        if (nh.draft.department_id) {
+            await this.pickTeam(nh.draft.department_id, { initial: true });
+        } else {
+            this.refreshAll();
+        }
+        this.refreshCats();
+        this.refreshSched();
+    }
+
+    /** The org chart's role, in words, for the "carry on?" question. */
+    prefillRole(data) {
+        const pre = this.prefill || {};
+        const job = (data.jobs || []).find((j) => j.id === pre.job_id);
+        const team = (data.teams || []).find((t) => t.id === pre.department_id);
+        return (job && job.name) || pre.job_title || (team && team.name) || _t("the new role");
+    }
+
+    // ------------------------------------------------------------ P2: steps 3, 4, 6
+    refreshCats() {
+        const d = this.nh.draft;
+        if (!d.payroll_country) {
+            this.nh.cats = null;
+            return;
+        }
+        return this.ask("cats", "contract_categories", [d.payroll_country, d.contract_kind], (rows) => {
+            const cats = rows || [];
+            this.nh.cats = cats;
+            if (!this.nh.touched.type_id || !cats.some((c) => c.id === this.nh.draft.type_id)) {
+                const pick = cats.length === 1 ? cats[0] : cats.find((c) => c.suggested);
+                this.patch({ type_id: pick ? pick.id : false }, { auto: true });
+            }
+        });
+    }
+
+    refreshSched() {
+        const d = this.nh.draft;
+        return this.ask("sched", "schedule_options", [d.department_id || false, d.payroll_country || false,
+                                                       d.date_start || false, d.name || ""], (res) => {
+            if (!res) {
+                return;
+            }
+            const nh = this.nh;
+            nh.sched = res;
+            const take = {};
+            const weeks = res.weeks || [];
+            if (!nh.touched.week_id || !weeks.some((w) => w.id === nh.draft.week_id)) {
+                const team = weeks.find((w) => w.team_default);
+                take.week_id = team ? team.id : false;
+            }
+            if (!nh.touched.clock_on) {
+                take.clock_on = Boolean(res.clock && res.clock_usual);
+            }
+            this.patch(take, { auto: true });
+        });
+    }
+
+    refreshWelcome() {
+        this.later("welcome", 120, () => {
+            const d = this.nh.draft;
+            if (!d.department_id && !d.payroll_country) {
+                return;
+            }
+            return this.ask("welcome", "welcome_options", [this.sendDraft], (res) => {
+                if (!res) {
+                    return;
+                }
+                const nh = this.nh;
+                nh.welcome = res;
+                const chosen = res.login && res.login.chosen;
+                if (chosen && chosen !== nh.draft.login_mode
+                        && (!nh.touched.login_mode || !res.login.modes.some((m) => m.key === nh.draft.login_mode && m.available))) {
+                    this.patch({ login_mode: chosen }, { auto: true });
+                }
+                if (res.letter && !res.letter.available && nh.draft.letter !== false && !nh.touched.letter) {
+                    nh.draft.letter = true;   // shown off, sent as "not available" by the server
+                }
+            });
+        });
+    }
+
+    checkClock() {
+        const d = this.nh.draft;
+        const code = String(d.clock_code || "").trim();
+        if (!d.clock_on || !code) {
+            this.nh.clockCheck = null;
+            return;
+        }
+        this.later("clock", 350, () => this.ask("clock", "check_clock", [code], (res) => {
+            this.nh.clockCheck = res || null;
+        }));
+    }
+
+    /** The first time step 6 shows, the chips stand for what will be asked:
+     *  the categories every joiner gets. */
+    initEquipment() {
+        const nh = this.nh;
+        if (nh.step !== "welcome" || nh.draft.equipment !== null || !nh.welcome) {
+            return;
+        }
+        const usual = (nh.welcome.equipment || []).filter((c) => c.usual).map((c) => c.id);
+        this.patch({ equipment: usual }, { auto: true });
+    }
+
+    setOwn(name, value) {
+        const own = { ...(this.nh.draft.own || {}) };
+        if (value === "" || value === null || value === undefined) {
+            delete own[name];
+        } else {
+            own[name] = value;
+        }
+        delete this.nh.fieldErr[`own-${name}`];
+        this.patch({ own });
+    }
+
+    /** Required own fields of this country still empty (they block Send). */
+    get ownMissing() {
+        const w = this.nh.welcome;
+        const own = this.nh.draft.own || {};
+        return ((w && w.own_fields) || []).filter((f) => f.supported && f.required && f.kind !== "bool")
+            .filter((f) => {
+                const v = own[f.name];
+                return v === undefined || v === null || v === false || String(v).trim() === "";
+            });
+    }
+    get siteName() {
+        const s = ((this.data && this.data.sites) || []).find((x) => x.id === this.nh.draft.work_location_id);
+        return s ? s.name : "";
+    }
+    get weekName() {
+        const weeks = (this.nh.sched && this.nh.sched.weeks) || [];
+        const w = weeks.find((x) => x.id === this.nh.draft.week_id);
+        return w ? w.name : "";
+    }
+    async openWorkforceSetup() {
+        try {
+            await this.action.doAction(SETUP_XMLID);
+        } catch (e) {
+            this.toast(errorText(e), { kind: "error" });
+        }
+    }
+    async seeJoiners() {
+        try {
+            await this.action.doAction(JOINERS_XMLID);
+        } catch (e) {
+            this.toast(errorText(e), { kind: "error" });
+        }
     }
 
     refreshDecides() {
@@ -387,6 +630,18 @@ export class NewHireStudio extends Component {
         if (has("name", "work_email")) {
             this.checkPerson();
         }
+        if (has("payroll_country", "contract_kind")) {
+            this.refreshCats();
+        }
+        if (has("department_id", "payroll_country", "date_start", "name")) {
+            this.refreshSched();
+        }
+        if (has("clock_on", "clock_code")) {
+            this.checkClock();
+        }
+        if (has(...WELCOME_INPUTS)) {
+            this.refreshWelcome();
+        }
     }
 
     /** The hero moment: a team suggests its manager, site and country —
@@ -494,6 +749,8 @@ export class NewHireStudio extends Component {
         return Boolean(wageOk && endOk);
     }
     get ready() { return this.whoReady && this.roleReady && this.payReady; }
+    /** P2: required own fields block Send (not "Skip to the end"). */
+    get sendable() { return this.ready && !this.ownMissing.length; }
 
     status(key) {
         const nh = this.nh;
@@ -518,6 +775,25 @@ export class NewHireStudio extends Component {
             }
             const wage = d.wage > 0 ? _t("%s a month", money(d.wage, this.currency)) : _t("From the pay scale");
             return nh.seen.pay ? { state: "done", text: wage } : { state: "todo", text: _t("Suggested. Check it") };
+        }
+        if (key === "sched") {
+            const clash = nh.clockCheck && nh.clockCheck.ok === false;
+            if (clash) {
+                return { state: "warn", text: _t("Clock number taken") };
+            }
+            const text = this.weekName || _t("Company's usual hours");
+            return nh.seen.sched ? { state: "done", text } : { state: "todo", text: _t("Team defaults are ready") };
+        }
+        if (key === "welcome") {
+            const missing = this.ownMissing.length;
+            if (missing) {
+                return { state: "warn", text: missing === 1 ? _t("1 of your own fields is needed")
+                    : _t("%s of your own fields are needed", missing) };
+            }
+            const w = nh.welcome;
+            const has = Boolean(w && w.case && w.case.available && nh.draft.open_case !== false);
+            const text = has ? _t("Checklist ready") : _t("No checklist");
+            return nh.seen.welcome ? { state: "done", text } : { state: "todo", text: has ? _t("Checklist is ready") : text };
         }
         if (SOON.includes(key)) {
             return { state: "soon", text: _t("Arrives next") };
@@ -650,7 +926,14 @@ export class NewHireStudio extends Component {
     // ------------------------------------------------------------ sending
     get sendDraft() {
         const d = this.nh.draft;
+        const p2 = {};
+        for (const [key, [, send]] of Object.entries(P2_KEYS)) {
+            if (send) {
+                p2[key] = send(d);
+            }
+        }
         return {
+            ...p2,
             name: d.name, date_start: d.date_start, work_email: d.work_email, personal: d.personal,
             department_id: d.department_id, job_id: d.job_id || false,
             job_title: d.job_id ? "" : d.job_title, payroll_country: d.payroll_country,
@@ -664,7 +947,7 @@ export class NewHireStudio extends Component {
 
     async send() {
         const nh = this.nh;
-        if (nh.sending || nh.result || !this.ready || nh.data?.approval?.problem) {
+        if (nh.sending || nh.result || !this.sendable || nh.data?.approval?.problem) {
             return;
         }
         nh.sending = true;
@@ -735,7 +1018,11 @@ export class NewHireStudio extends Component {
         nh.hint = null;
         nh.dup = null;
         nh.usual = { configId: 0, rows: null, busy: false };
+        nh.welcome = null;
+        nh.clockCheck = null;
         nh.draft = Object.assign(blankDraft(nh.data.today), { payroll_country: nh.data.draft.payroll_country || "" });
+        this.refreshCats();
+        this.refreshSched();
         if (fromToast) {
             this.closeToast();
         }

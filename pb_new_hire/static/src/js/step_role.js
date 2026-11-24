@@ -176,6 +176,25 @@ export class StepRole extends Component {
         }
         return { cls: "is-set", value: _t("No trial period"), sub: dec.trial_none || "" };
     }
+    /** P2: the contract letter that will be used for this country. */
+    get letterTile() {
+        const dec = this.dec;
+        if (!this.d.payroll_country) {
+            return { cls: "", value: _t("Choose a country first"), sub: "" };
+        }
+        if (!dec) {
+            return { cls: "is-busy", value: _t("Working it out"), sub: "" };
+        }
+        const l = dec.letter;
+        if (!l || !l.available) {
+            return { cls: "is-warn", value: _t("No contract letter"), sub: (l && l.reason) || "" };
+        }
+        if (!l.own) {
+            return { cls: "is-set", value: _t("No letter wording for %s yet", this.props.api.countryName),
+                     sub: _t("The general one is used, in %s.", l.language) };
+        }
+        return { cls: "is-set", value: _t("In %s", l.language), sub: l.name };
+    }
     get problem() { return this.dec && this.dec.problem; }
     get mismatchCountry() {
         const s = this.dec && this.dec.scheme;
