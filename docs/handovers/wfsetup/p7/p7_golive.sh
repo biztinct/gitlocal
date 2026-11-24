@@ -113,7 +113,7 @@ for db in $ORDER; do
     log "$db: switched back off jobs re-activated by the install: $ON"
   fi
   NEWIDS=$(join -t, -v2 <(sort $EV/cron-golive-$db.txt) <(sort $EV/cron-mid-$db.txt) | cut -d, -f1 | sort -n | paste -sd, -)
-  [ -n "$NEWIDS" ] && log "$db: NEW job rows after the install: $(pq $db -c "select string_agg(id||' '||(cron_name->>'en_US')||' every '||interval_number||' '||interval_type||' active='||active::text, '; ' order by id) from ir_cron where id in ($NEWIDS)")"
+  [ -n "$NEWIDS" ] && log "$db: NEW job rows after the install: $(pq $db -c "select string_agg(id||' '||cron_name||' every '||interval_number||' '||interval_type||' active='||active::text, '; ' order by id) from ir_cron where id in ($NEWIDS)")"
   if [ "$db" = payobook_template ] && [ -n "$NEWIDS" ]; then
     pq $db -c "UPDATE ir_cron SET active=false WHERE id IN ($NEWIDS)" >/dev/null
     OLD=$(pq $db -c "select value from ir_config_parameter where key='pb_tenants.template_active_crons'")
