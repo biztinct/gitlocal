@@ -12,7 +12,8 @@ import { PbSchedule } from '@pb_schedule/js/pb_schedule';
 import { PbShiftPatterns } from '@pb_shift_patterns/js/patterns_board';
 import { PbOtDesk } from '@pb_hr_workforce/js/pb_ot_desk';
 import { ic } from '@pb_import_kit/js/import_icons';
-import { SETTINGS_CATEGORIES } from '@pb_settings/js/settings_hub';
+import { HubBackChip, hubBack } from '@pb_hub/js/hub_nav';
+import { PbSettingsHub, SETTINGS_CATEGORIES } from '@pb_settings/js/settings_hub';
 
 const MODEL = 'pb.workforce.workspace';
 const GROUPS = [
@@ -42,12 +43,12 @@ const COPY = {
 
 export class WorkforcePanel extends Component {
     static template = 'pb_workforce_workspace.Panel';
-    static components = {PremiumRecordForm, View};
+    static components = {PremiumRecordForm, View, HubBackChip};
     static props = {mode:{type:String,optional:true}, '*':true};
     setup() {
         this.dialog=useService('dialog');
         this.orm = useService('orm'); this.action = useService('action'); this.notify = useService('notification');
-        this.ctx = useService('wf_context');
+        this.ctx = useService('wf_context');this.back=hubBack(this.props);
         this.state = useState({loading:true,error:'',data:null,preferences:null,search:'',offset:0,editor:null,
             location:null, locationName:'',drafts:false, busy:false});
         this.leaveGuard=()=>this.guard();
@@ -100,7 +101,7 @@ export class WorkforcePanel extends Component {
         onRecordSaved:async(record)=>{await this.load();this.state.editor={id:record.resId,name:record.data?.name||this.state.data.label};}});}
     async go(key,location=null,drafts=false){
         if(this.env.pbWorkforce){await this.env.pbWorkforce.go(key,location,drafts);}
-        else if (COPY[key] || key === 'setup') await this.action.doAction('pb_workforce_workspace.action_workspace_setup',{additionalContext:{pb_workspace_section:key}});
+        else if (COPY[key] || key === 'setup') await this.action.doAction('pb_workforce_workspace.action_workspace_setup',{additionalContext:{pb_workspace_section:key,pb_back:this.props.action?.context?.pb_back}});
         else await this.action.doAction('pb_mission.action_pb_workforce',{additionalContext:{pb_shell_lens:key}});
     }
     async location(row,key){
@@ -217,5 +218,26 @@ patch(WfDock.prototype,{
         const collapse=()=>{if(this.env.pbWorkforce?.enabled && media.matches)this.state.collapsed=true;};
         onMounted(collapse);media.addEventListener('change',collapse);
         onWillUnmount(()=>media.removeEventListener('change',collapse));
+    },
+});
+
+// Settings keeps its familiar entries; adopted companies arrive at the same editors.
+patch(PbSettingsHub.prototype,{
+    setup(){
+        super.setup(...arguments);this.workforceUnified=false;
+        onWillStart(async()=>{this.workforceUnified=(await this.orm.call(MODEL,'preferences',[])).enabled;});
+    },
+    openCard(card){
+        const targets={
+            'pb_attendance_policy.action_policy':'policies',
+            'pb_attendance_policy.action_employee_policy':'people',
+            'pb_hr_workforce.action_shift_planning_no_filter':'rosters',
+            'resource.action_resource_calendar_form':'calendars',
+            'pb_clock.action_clock_connectors':'connectors',
+        };
+        const section=targets[card.xmlid];
+        if(this.workforceUnified && section)return super.openCard({...card,xmlid:undefined,tag:'pb_workforce_setup',
+            context:{...card.context,pb_workspace_section:section}});
+        return super.openCard(...arguments);
     },
 });

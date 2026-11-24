@@ -21,6 +21,7 @@
      <PremiumRecordForm t-key="state.editor.id" resModel="state.data.model" resId="state.editor.id" title="state.data.label" recordContext="recordContext" onReady="ready" onSaved="saved"/>
     </div>
     <t t-else="">
+     <HubBackChip t-if="back" back="back"/>
      <header class="pbww-head">
       <div><span class="pbww-eyebrow" t-esc="state.preferences?.company || 'Workforce'"/><h1 t-esc="mode === 'overview' ? 'Every workplace. One view.' : heading"/><p t-esc="mode === 'overview' ? 'Review coverage by workplace, then move into the roster or employee assignments.' : description"/></div>
       <button class="pbim-btn ghost" t-att-disabled="state.loading" t-on-click="load" aria-label="Refresh workspace"><t t-out="icon('refresh')"/> Refresh</button>
