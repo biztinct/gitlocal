@@ -1,0 +1,692 @@
+<meta charset="utf-8">
+<title>New Hire Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
+<style>
+/* Layout: one screen, three columns. Left = the 7 steps with live status (3 required, 4 optional).
+   Centre = the one question you are answering now. Right = the employee record building itself, with a first-payslip example.
+   Single light look on purpose: it mirrors the product screen it proposes to replace. */
+:root{
+  --ink:#1E1B2E; --muted:#64748B; --faint:#94A0B4; --line:#E2E8F0; --line2:#EEF0F6;
+  --canvas:#F4F5FB; --card:#FFFFFF; --soft:#FAFAFD; --rail:#10122E; --rail-ink:#A9AFD1;
+  --p:#5A4BB0; --p-h:#4A3D96; --p-soft:#EDEAF8; --p-light:#CBC2EE; --p-dark:#241F52;
+  --ok:#2E7D4F; --ok-soft:#E4F3EA; --warn:#B45309; --warn-soft:#FDF1DD; --err:#DC2668; --err-soft:#FCE7EF;
+  --teal:#0F8B8D; --teal-soft:#E0F2F2; --blue:#2563EB; --blue-soft:#E5EDFD;
+  --display:'Manrope','Inter',system-ui,sans-serif; --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px rgba(30,27,46,.06);
+}
+*{box-sizing:border-box}
+body{background:var(--canvas);color:var(--ink);font:14px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--p);outline-offset:2px;border-radius:6px}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0}
+.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.num{font-variant-numeric:tabular-nums}
+
+.app{display:flex;min-height:100vh}
+.siderail{width:60px;background:var(--rail);color:var(--rail-ink);display:flex;flex-direction:column;align-items:center;gap:18px;padding:14px 0;flex:none}
+.siderail .logo{width:34px;height:34px;border-radius:10px;background:var(--p);color:#fff;display:grid;place-items:center;font:800 16px var(--display);margin-bottom:6px}
+.siderail .on{color:#fff;background:#2A2C5C;border-radius:9px;padding:7px;display:grid}
+.shell{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding-block:10px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.crumb{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.crumb b{color:var(--ink);font-family:var(--display);font-size:15px}
+.demo{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);padding:3px 8px;border-radius:99px}
+.top .sp{flex:1}
+.prog{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.prog .bar{width:110px;height:6px;border-radius:9px;background:var(--line2);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:var(--ok);border-radius:9px;transition:width .4s}
+
+.btn{display:inline-flex;align-items:center;gap:7px;border-radius:10px;border:1px solid var(--line);background:var(--card);padding:8px 14px;font-weight:600;font-size:13.5px;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--p-light);background:var(--p-soft)}
+.btn.pri{background:var(--p);border-color:var(--p);color:#fff}
+.btn.pri:hover{background:var(--p-h)}
+.btn.out{color:var(--p);border-color:var(--p-light)}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:8px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.ghost:hover{background:var(--line2);color:var(--ink)}
+.btn.big{padding:12px 20px;font-size:15px;border-radius:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn .ic{width:16px;height:16px}
+
+.work{display:grid;grid-template-columns:236px minmax(0,1fr) 328px;gap:20px;align-items:start;
+  padding-block:20px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.steps{position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);display:flex;flex-direction:column;gap:2px}
+.steps h3{font:600 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:10px 10px 6px}
+.steps h3:first-child{padding-top:0}
+.step{display:flex;gap:11px;align-items:flex-start;text-align:left;border:0;background:transparent;border-radius:12px;padding:9px 10px;width:100%}
+.step:hover{background:#ECEDF6}
+.step.cur{background:var(--card);box-shadow:var(--shadow)}
+.step .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;font:700 12px var(--body);background:var(--line2);color:var(--muted);margin-top:1px}
+.step.cur .dot{background:var(--p);color:#fff}
+.step.done .dot{background:var(--ok-soft);color:var(--ok)}
+.step.warn .dot{background:var(--warn-soft);color:var(--warn)}
+.step .dot .ic{width:14px;height:14px;stroke-width:3}
+.step b{display:block;font-weight:600;font-size:13.5px}
+.step small{display:block;color:var(--muted);font-size:12px;line-height:1.35}
+.step.warn small{color:var(--warn)}
+.step.done small{color:var(--ok)}
+
+.stage{min-width:0;display:flex;flex-direction:column;gap:16px}
+.q{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.q .t{flex:1;min-width:240px}
+.eyebrow{font-size:12px;font-weight:600;color:var(--p);letter-spacing:.06em;text-transform:uppercase}
+.q h1{font-size:27px;font-weight:800;line-height:1.15;margin:2px 0 4px}
+.q p{color:var(--muted);max-width:62ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.pad{padding:16px 18px}
+.card h3{font-size:15px;font-weight:700}
+.sub{color:var(--muted);font-size:13px}
+.nav{display:flex;justify-content:space-between;gap:10px;padding-top:4px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600;background:var(--line2);color:var(--muted);white-space:nowrap}
+.chip .ic{width:13px;height:13px}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.p{background:var(--p-soft);color:var(--p)} .chip.teal{background:var(--teal-soft);color:var(--teal)}
+.hint{display:flex;gap:9px;align-items:flex-start;background:var(--p-soft);color:var(--p-dark);border-radius:12px;padding:10px 13px;font-size:13px}
+.hint .ic{color:var(--p);margin-top:1px}
+.hint.warn{background:var(--warn-soft);color:#7A3A06}.hint.warn .ic{color:var(--warn)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:500;min-width:0}
+.f em{font-style:normal;color:var(--err)}
+.f i{font-style:normal;font-weight:400;color:var(--faint)}
+.f input,.f select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--card);font-size:14px;color:var(--ink);font-weight:500;width:100%;min-width:0}
+.f input:focus,.f select:focus{outline:2px solid var(--p-light);border-color:var(--p)}
+.f .why{font-size:11.5px;color:var(--teal);font-weight:600;display:flex;gap:4px;align-items:center}
+.f .why .ic{width:12px;height:12px}
+.seg{display:inline-flex;background:var(--line2);border-radius:10px;padding:3px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;border-radius:8px;padding:5px 12px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.tog{width:38px;height:22px;border-radius:99px;border:0;background:var(--line);position:relative;flex:none;transition:background .2s}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
+.tog.on{background:var(--p)} .tog.on::after{left:19px}
+
+/* step 1: ways to start */
+.ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.way{display:flex;gap:12px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:var(--r);padding:13px 14px}
+.way:hover{border-color:var(--p-light)}
+.way.on{border-color:var(--p);background:var(--p-soft)}
+.way b{display:block;font-weight:600}
+.way small{color:var(--muted);font-size:12.5px;line-height:1.35;display:block}
+.tile{width:34px;height:34px;border-radius:10px;background:var(--p-soft);color:var(--p);display:grid;place-items:center;flex:none}
+.way.on .tile{background:var(--p);color:#fff}
+.cand{display:flex;gap:12px;align-items:center;padding:11px 18px;border-top:1px solid var(--line2);flex-wrap:wrap}
+.cand .who{flex:1;min-width:160px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--p-soft);color:var(--p);display:grid;place-items:center;font-weight:700;font-size:12px;flex:none}
+
+/* step 2: what this decides */
+.decides{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.dec{border:1px dashed var(--line);border-radius:12px;padding:11px 12px;background:var(--soft);display:flex;flex-direction:column;gap:3px;min-width:0}
+.dec.set{border:1px solid var(--teal);background:var(--teal-soft)}
+.dec span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);display:flex;gap:6px;align-items:center}
+.dec.set span{color:var(--teal)}
+.dec span .ic{width:13px;height:13px}
+.dec b{font-weight:600;font-size:13.5px}
+.dec:not(.set) b{color:var(--faint);font-weight:500}
+
+/* step 3: pay */
+.paidby{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.paidby .tile{background:var(--teal-soft);color:var(--teal)}
+.wage{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:6px 14px;background:var(--card);max-width:340px}
+.wage:focus-within{border-color:var(--p);outline:2px solid var(--p-light)}
+.wage span{font:700 18px var(--display);color:var(--muted)}
+.wage input{border:0;outline:0;font:800 26px var(--display);width:100%;min-width:0;background:transparent;color:var(--ink)}
+.wage small{color:var(--muted);white-space:nowrap}
+.band{position:relative;height:8px;border-radius:9px;background:var(--line2);margin:22px 0 6px}
+.band u{position:absolute;inset:0 0 0 0;left:15%;right:15%;background:var(--p-light);border-radius:9px}
+.band i{position:absolute;top:-5px;width:18px;height:18px;border-radius:50%;background:var(--p);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transform:translateX(-50%);transition:left .25s}
+.bandl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.row{display:flex;gap:12px;align-items:center;padding:12px 18px;border-top:1px solid var(--line2);flex-wrap:wrap}
+.row:first-child{border-top:0}
+.row .txt{flex:1;min-width:180px}
+.row .txt b{font-weight:600;display:block}
+.row .txt small{color:var(--muted);display:block;font-size:12.5px}
+.row .extra{flex-basis:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;background:var(--soft);border:1px solid var(--line2);border-radius:12px;padding:12px}
+.drop{border:1.5px dashed var(--p-light);border-radius:10px;background:var(--card);padding:12px;color:var(--p);font-weight:600;display:flex;gap:8px;align-items:center;justify-content:center;width:100%}
+.drop.has{border-style:solid;border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cardh{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line2)}
+
+/* week strip */
+.wkstrip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:420px}
+.wkstrip div{border-radius:8px;padding:6px 0;text-align:center;font-size:11px;background:#F6F7FB;color:var(--faint);line-height:1.3}
+.wkstrip div.h{background:var(--p-soft);color:var(--p);font-weight:700}
+.wkstrip div span{display:block;color:var(--muted);font-weight:500}
+
+/* phone */
+.invite{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:20px;align-items:center}
+.phone{background:var(--ink);border-radius:30px;padding:9px;box-shadow:0 18px 40px rgba(36,31,82,.28)}
+.phone .scr{background:var(--canvas);border-radius:22px;padding:16px 13px 13px;display:flex;flex-direction:column;gap:10px;min-height:330px}
+.phone .hi{font:800 16px var(--display);line-height:1.2}
+.phone .todo{background:var(--card);border-radius:10px;padding:8px 10px;display:flex;gap:8px;align-items:center;font-size:12px;font-weight:500;animation:rise .25s}
+.phone .todo::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid var(--p-light);flex:none}
+.phone .go{margin-top:auto;background:var(--p);color:#fff;border-radius:10px;text-align:center;padding:9px;font-weight:600;font-size:12.5px}
+.phone .none{color:var(--muted);font-size:12px;text-align:center;margin:auto}
+@keyframes rise{from{transform:translateY(8px);opacity:.3}to{transform:none;opacity:1}}
+
+/* timeline */
+.tl{display:flex;flex-direction:column}
+.tl .ev{display:grid;grid-template-columns:92px 18px minmax(0,1fr);gap:10px;align-items:start;font-size:13.5px}
+.tl .when{color:var(--muted);font-size:12.5px;text-align:right;padding-top:1px}
+.tl .ln{position:relative;align-self:stretch;display:flex;justify-content:center}
+.tl .ln::before{content:"";position:absolute;top:0;bottom:0;width:2px;background:var(--line)}
+.tl .ev:last-child .ln::before{bottom:auto;height:8px}
+.tl .ln i{position:relative;width:10px;height:10px;border-radius:50%;background:var(--card);border:2px solid var(--p);margin-top:5px}
+.tl .ev.day .ln i{background:var(--p);width:14px;height:14px;margin-top:3px}
+.tl .what{padding-bottom:14px}
+.tl .what small{color:var(--muted);display:block;font-size:12px}
+.kit{display:flex;gap:8px;flex-wrap:wrap}
+.kit button{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:6px 11px;font-weight:600;font-size:13px}
+.kit button.on{border-color:var(--p);background:var(--p-soft);color:var(--p-dark)}
+.kit button .ic{width:15px;height:15px}
+
+/* check + done */
+.check{display:flex;gap:12px;align-items:center;padding:12px 18px;border-top:1px solid var(--line2)}
+.check:first-child{border-top:0}
+.check .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--ok-soft);color:var(--ok)}
+.check.bad .dot{background:var(--warn-soft);color:var(--warn)}
+.check.wait .dot{background:var(--p-soft);color:var(--p)}
+.check .dot .ic{width:14px;height:14px;stroke-width:3}
+.check div{flex:1;min-width:0}
+.check small{color:var(--muted);display:block}
+.launch{padding:20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:var(--p-soft);border-color:var(--p-light)}
+.launch h2{font-size:20px}
+.then{counter-reset:n;display:flex;flex-direction:column;gap:8px;padding:0;margin:0;list-style:none}
+.then li{counter-increment:n;display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
+.then li::before{content:counter(n);width:22px;height:22px;border-radius:50%;background:var(--p-soft);color:var(--p);font-weight:700;font-size:12px;display:grid;place-items:center;flex:none}
+.done-hero{padding:34px 24px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.done-hero .tick{width:60px;height:60px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.done-hero .tick .ic{width:30px;height:30px;stroke-width:3}
+@keyframes pop{from{transform:scale(.3)}to{transform:scale(1)}}
+
+/* live record */
+.pv{position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);display:flex;flex-direction:column;overflow:hidden}
+.pv-h{padding:14px 16px;display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line2)}
+.ring{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;flex:none;background:conic-gradient(var(--ok) calc(var(--v)*1%),var(--line2) 0);transition:--v .4s}
+.ring b{width:48px;height:48px;border-radius:50%;background:var(--p);color:#fff;display:grid;place-items:center;font:800 16px var(--display);border:3px solid var(--card)}
+.ring.empty b{background:var(--line2);color:var(--faint)}
+.pv-h .nm{min-width:0}
+.pv-h .nm b{font:800 17px var(--display);display:block;overflow-wrap:anywhere;line-height:1.2}
+.pv-h .nm small{color:var(--muted);font-size:12.5px;display:block}
+.pv-b{padding:14px 16px;display:flex;flex-direction:column;gap:14px}
+.lab{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 12px;font-size:13px}
+.facts span{color:var(--muted)}
+.facts b{font-weight:600;text-align:right;overflow-wrap:anywhere}
+.facts b.no{color:var(--faint);font-weight:400}
+.ready{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.ready div{display:flex;gap:8px;align-items:center}
+.ready .ic{width:15px;height:15px}
+.ready .y{color:var(--ok)} .ready .w{color:var(--warn)} .ready .n{color:var(--faint)}
+.pvo{background:var(--p-dark);color:#fff;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:9px}
+.pvo p{font-size:12.5px;color:#D8D3F2;line-height:1.45}
+.pvo p b{color:#fff}
+.pvo .rows{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:13px;border-top:1px solid rgba(255,255,255,.14);padding-top:9px}
+.pvo .rows span:nth-child(odd){color:#BDB6E6}
+.pvo .rows span:nth-child(even){font-weight:700;text-align:right}
+.pvo .tot{font:800 22px var(--display)}
+.pvo .eb{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#BDB6E6}
+.empty{color:var(--muted);font-size:13px;background:#F8F9FC;border-radius:10px;padding:12px}
+.split{display:flex;height:8px;border-radius:9px;overflow:hidden;background:var(--line2)}
+.split i{display:block;transition:flex .3s}
+.splitl{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.splitl i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+
+/* drawer + toast */
+.scrim{position:fixed;inset:0;background:rgba(16,18,46,.42);z-index:40;display:flex;justify-content:flex-end;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.drawer{width:min(520px,100%);background:var(--card);height:100%;display:flex;flex-direction:column;animation:slide .22s ease-out;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@keyframes slide{from{transform:translateX(40px);opacity:.4}}
+.drawer header{padding:18px 20px 12px;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid var(--line2)}
+.drawer header h2{font-size:20px}
+.drawer header p{color:var(--muted);font-size:13px}
+.drawer .body{padding:18px 20px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:18px}
+.find{display:grid;grid-template-columns:22px 1fr;gap:8px 10px;font-size:13.5px}
+.find .ic{margin-top:2px}
+.find small{color:var(--muted);display:block}
+.find b{font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:12px;padding:11px 16px;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:rise .2s;max-width:calc(100% - 32px);font-size:13.5px}
+
+@media (max-width:1180px){.work{grid-template-columns:210px minmax(0,1fr)}.pv{position:static;grid-column:2}}
+@media (max-width:820px){
+  .siderail{display:none}
+  .work{grid-template-columns:minmax(0,1fr);gap:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .steps{position:static;flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .steps h3{display:none}
+  .step{width:auto;flex:none;align-items:center;background:var(--card);border:1px solid var(--line)}
+  .step small{display:none}
+  .pv{grid-column:1}
+  .q h1{font-size:22px}
+  .prog .bar{display:none}
+  .invite{grid-template-columns:minmax(0,1fr)}
+  .phone{max-width:250px;margin:0 auto;width:100%}
+  .tl .ev{grid-template-columns:70px 18px minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <nav class="siderail" aria-hidden="true" id="siderail"></nav>
+  <div class="shell">
+    <header class="top">
+      <div class="crumb">People <span>›</span> Employees <span>›</span> <b>Add employee</b></div>
+      <span class="demo">Design proposal · example person</span>
+      <span class="sp"></span>
+      <div class="prog" id="prog"></div>
+      <span id="topact"></span>
+      <button class="btn out" data-a="findings" id="btnFindings"></button>
+    </header>
+    <div class="work">
+      <nav class="steps" id="steps" aria-label="Steps"></nav>
+      <main class="stage" id="stage"></main>
+      <aside class="card pv" id="pv" aria-label="The record so far"></aside>
+    </div>
+  </div>
+</div>
+<div id="drawer"></div>
+<div id="toast"></div>
+
+<script>
+/* ---------- icons (Lucide outlines) ---------- */
+const P={check:'<path d="M20 6 9 17l-5-5"/>',plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+arrow:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',back:'<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',
+info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+eye:'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+brief:'<rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+cash:'<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+file:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',phone:'<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
+laptop:'<path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/>',
+key:'<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+bank:'<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+card:'<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+sheet:'<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/>',
+spark:'<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>',
+shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+home:'<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',pencil:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+globe:'<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>'};
+const ic=n=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${P[n]||''}</svg>`;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+
+/* ---------- example company ---------- */
+const prog=(x,br)=>{let t=0,lo=0;for(const[hi,r]of br){if(x>lo)t+=(Math.min(x,hi)-lo)*r;lo=hi}return Math.max(0,t)};
+const CO={
+ ID:{n:'Indonesia',cur:'Rp',schemes:['Indonesia monthly staff','Indonesia daily workers'],trial:3,noTrialFixed:true,band:[6e6,14e6],wage:8500000,leave:12,letter:'Indonesian and English',
+   nums:'NIK, NPWP and BPJS numbers',numf:['NIK (identity number)','NPWP (tax number)','BPJS numbers'],
+   docs:[['id','KTP (identity card)',1],['tax','NPWP card',0],['fam','Family card (Kartu Keluarga)',0],['cert','Highest certificate',0],['photo','Photo',0]],
+   d1:{n:'BPJS Kesehatan',s:'Health cover, 1% from the employee',p:.01,cap:12e6},d2:{n:'BPJS Ketenagakerjaan',s:'Old-age and pension savings, 3% from the employee',p:.03},
+   status:['TK/0 single','K/0 married','K/1 married, 1 child','K/2 married, 2 children'],statusL:'Tax status (PTKP)',
+   tax:g=>prog(g*12-54e6,[[60e6,.05],[250e6,.15],[500e6,.25],[5e9,.3],[Infinity,.35]])/12},
+ VN:{n:'Vietnam',cur:'₫',schemes:['Vietnam monthly staff','Vietnam factory workers'],trial:2,band:[12e6,26e6],wage:18000000,leave:12,letter:'Vietnamese and English',
+   nums:'Citizen ID, tax code and social insurance number',numf:['Citizen ID number','Tax code','Social insurance number'],
+   docs:[['id','Citizen ID card',1],['si','Social insurance book',0],['health','Health check',1],['cert','Highest certificate',0],['photo','Photo',0]],
+   d1:{n:'Social, health and unemployment insurance',s:'10.5% from the employee',p:.105,cap:46.8e6},d2:{n:'Union fee',s:'1% for union members',p:.01},
+   status:['No dependants','1 dependant','2 dependants','3 dependants'],statusL:'Dependants',
+   tax:(g,i)=>prog(g-i-11e6,[[5e6,.05],[10e6,.1],[18e6,.15],[32e6,.2],[52e6,.25],[80e6,.3],[Infinity,.35]])},
+ IN:{n:'India',cur:'₹',schemes:['India monthly staff'],trial:6,band:[60000,130000],wage:85000,leave:18,letter:'English',
+   nums:'PAN, Aadhaar and UAN',numf:['PAN','Aadhaar number','UAN (provident fund)'],
+   docs:[['id','PAN card',1],['aad','Aadhaar card',1],['chq','Cancelled cheque',0],['cert','Highest certificate',0],['photo','Photo',0]],
+   d1:{n:'Provident Fund',s:'12% of basic pay from the employee',p:.06},d2:{n:'Professional tax',s:'Fixed amount each month',flat:200},
+   status:['New tax regime','Old tax regime'],statusL:'Tax regime',
+   tax:g=>{const a=g*12-75000;return a<=12e5?0:prog(a,[[4e5,0],[8e5,.05],[12e5,.1],[16e5,.15],[20e5,.2],[24e5,.25],[Infinity,.3]])/12}},
+ SG:{n:'Singapore',cur:'S$',schemes:['Singapore monthly staff'],trial:3,band:[3800,7500],wage:5200,leave:14,letter:'English',
+   nums:'NRIC or work pass number',numf:['NRIC or FIN','Work pass number'],
+   docs:[['id','NRIC or work pass',1],['cert','Highest certificate',0],['photo','Photo',0]],
+   d1:{n:'CPF',s:'20% from the employee, citizens and residents',p:.2,cap:8000},d2:null,
+   status:['Citizen','Permanent resident','Foreigner'],statusL:'Residency',tax:()=>0}};
+const DEPTS={'Indonesia Operation':{c:'ID',mgr:'Budi Santoso',week:'field',loc:'Malang farm',jobs:['Junior Agronomist','Field Supervisor','Farm Technician']},
+ 'Human Resources':{c:'ID',mgr:'Dewi Lestari',week:'office',loc:'Jakarta office',jobs:['Recruiter','Payroll Officer']},
+ 'Vietnam Operation':{c:'VN',mgr:'Trần Minh Huy',week:'field',loc:'Đà Lạt farm',jobs:['Junior Agronomist','Field Supervisor']},
+ 'Product & Technology':{c:'IN',mgr:'Priya Nair',week:'office',loc:'Bengaluru office',jobs:['QA Engineer','Software Engineer']},
+ 'Finance':{c:'SG',mgr:'Tan Wei Ling',week:'office',loc:'Singapore office',jobs:['Accountant','Finance Analyst']}};
+const WEEKS={office:{n:'Office week',t:'08:30 to 17:30',d:[1,1,1,1,1,0,0]},field:{n:'Field week',t:'07:30 to 16:30',d:[1,1,1,1,1,1,0]},rot:{n:'Day and night rotation',t:'changes each week',d:[1,1,1,1,1,1,0]}};
+const HIRED=[{name:'Made Prasetya',email:'made.prasetya@example.com',job:'Field Supervisor',dept:'Indonesia Operation',wage:11000000,start:'2026-12-14',got:['bank','nums','d_id','d_tax','d_cert'],signed:'18 Nov',
+   vals:{bank:'Given in Hiring on 18 Nov: BCA, account ending 4821, in the name Made Prasetya',nums:'Given in Hiring on 18 Nov: NIK and NPWP. BPJS numbers follow from the NIK'}},
+ {name:'Ananya Rao',email:'ananya.rao@example.com',job:'QA Engineer',dept:'Product & Technology',wage:95000,start:'2027-01-04',got:['d_id'],signed:'21 Nov',vals:{}}];
+const GOTL={bank:'Bank account',nums:'Tax and ID numbers',d_id:'Identity card',d_tax:'Tax card',d_cert:'Certificate'};
+const KIT=[['Laptop','laptop'],['Access card','card'],['Phone','phone'],['Uniform','user']];
+const TODAY='2026-11-25';
+
+const S={step:'who',src:'type',seen:new Set(['who']),sent:false,drawer:false,
+  name:'Sari Wulandari',email:'sari.wulandari@example.com',pemail:'sari.w@example.net',phone:'',start:'2026-12-07',
+  dept:'Indonesia Operation',job:'Junior Agronomist',mgr:'Budi Santoso',country:'ID',loc:'Malang farm',
+  ctype:'perm',end:'',scheme:'Indonesia monthly staff',wage:8500000,u1:true,u2:true,status:0,
+  week:'field',grp:'worker',clock:true,items:{},got:new Set(),gotv:{},files:{},x:{},remind:true,
+  login:'email',buddy:'',kit:new Set(['Laptop','Access card']),letter:true};
+
+/* ---------- helpers ---------- */
+const C=()=>CO[S.country];
+const first=()=>(S.name.trim().split(/\s+/)[0])||'the employee';
+const money=v=>(C()?C().cur:'')+' '+Math.round(v).toLocaleString('en-US');
+const D=s=>new Date(s+'T12:00');
+const iso=d=>d.toISOString().slice(0,10);
+const fmtD=(s,o)=>s?D(s).toLocaleDateString('en-GB',o||{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';
+const shortD=s=>fmtD(s,{weekday:'short',day:'numeric',month:'short'});
+const addD=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return iso(d)};
+const addM=(s,n)=>{const d=D(s);d.setMonth(d.getMonth()+n);return iso(d)};
+const init=()=>{const w=S.name.trim().split(/\s+/).filter(Boolean);return w.length?(w[0][0]+(w.length>1?w[w.length-1][0]:'')).toUpperCase():''};
+const trialEnd=()=>{const c=C();if(!c||!S.start)return'';if(S.ctype==='fixed'&&c.noTrialFixed)return'';return addD(addM(S.start,c.trial),-1)};
+const ready=()=>!!(S.name.trim()&&S.start&&S.country&&S.dept&&S.job&&S.wage>0);
+function workdays(y,m,from){let n=0;const last=new Date(y,m+1,0).getDate();for(let d=from;d<=last;d++){const w=new Date(y,m,d).getDay();if(w&&w<6)n++}return n}
+function slip(){const c=C();if(!c||!S.wage||!S.start)return null;const d=D(S.start),all=workdays(d.getFullYear(),d.getMonth(),1),part=workdays(d.getFullYear(),d.getMonth(),d.getDate());
+  const gross=S.wage*(all?part/all:1),lines=[];
+  if(S.u1&&c.d1&&!(S.country==='SG'&&S.status===2))lines.push([c.d1.n,Math.min(gross,c.d1.cap||Infinity)*c.d1.p]);
+  if(S.u2&&c.d2)lines.push([c.d2.n,c.d2.flat||gross*c.d2.p]);
+  const ins=lines.reduce((a,l)=>a+l[1],0),tax=c.tax(gross,ins);
+  return{gross,lines,tax,net:gross-ins-tax,part,all,month:d.toLocaleDateString('en-GB',{month:'long'})}}
+function items(){const c=C();if(!c)return[];
+  return[{k:'personal',ic:'user',n:'Personal details',s:'Date of birth, gender, home address, personal phone',f:['Date of birth','Home address','Personal phone']},
+   {k:'emerg',ic:'heart',n:'Emergency contact',s:'Someone to call if something happens at work',f:['Contact name','Contact phone']},
+   {k:'nums',ic:'card',n:c.nums,s:'So tax and insurance come out right on the first payslip',req:1,f:c.numf},
+   {k:'bank',ic:'bank',n:'Bank account',s:'A second person approves every bank account before any pay goes to it',req:1,f:['Bank','Account number','Account holder']},
+   ...c.docs.map(([k,n,req])=>({k:'d_'+k,ic:'file',n,s:'A scan or a phone photo is fine',req,doc:1}))]}
+const who=k=>S.got.has(k)?'got':(S.items[k]||'emp');
+function tally(){const it=items();return{emp:it.filter(i=>who(i.k)==='emp').length,me:it.filter(i=>who(i.k)==='me').length,got:it.filter(i=>who(i.k)==='got').length,skip:it.filter(i=>who(i.k)==='skip').length,other:S.kit.size+(S.buddy?1:0)+1}}
+function completeness(){const v=[S.name.trim(),S.email,S.start,S.dept,S.job,S.country,S.mgr,S.wage>0,S.week,S.seen.has('docs'),S.seen.has('welcome'),S.buddy];return Math.round(v.filter(Boolean).length/v.length*100)}
+
+const STEPS=[
+ {k:'who',t:'Who is joining',req:1,st:()=>S.name.trim()&&S.start?['done',`${S.name.trim()}, starts ${shortD(S.start)}`]:['warn','Name and start date needed']},
+ {k:'role',t:'Role and place',req:1,st:()=>!(S.country&&S.dept&&S.job)?['warn','Team, job and country needed']:S.seen.has('role')?['done',`${S.job}, ${C().n}`]:['todo','Suggested. Check it']},
+ {k:'pay',t:'Contract and pay',req:1,st:()=>!(S.wage>0)?['warn','Wage needed']:S.seen.has('pay')?['done',`${money(S.wage)} a month`]:['todo','Suggested. Check it']},
+ {k:'sched',t:'Schedule and time off',st:()=>S.seen.has('sched')?['done',WEEKS[S.week].n]:['todo','Team defaults are ready']},
+ {k:'docs',t:'Details and documents',st:()=>{const t=tally();return S.seen.has('docs')?['done',`${t.emp} for ${first()}, ${t.me+t.got} with you`]:['todo',`${first()} can finish these`]}},
+ {k:'welcome',t:'Welcome and first day',st:()=>S.seen.has('welcome')?['done','Checklist ready']:['todo','Checklist is ready']},
+ {k:'check',t:'Check and add',st:()=>S.sent?['done','Sent for approval']:['todo','Last step']}];
+
+/* ---------- chrome ---------- */
+function renderChrome(){
+  $('siderail').innerHTML=`<div class="logo">P</div>${['home','calendar','zap'].map(ic).join('')}<span class="on">${ic('users')}</span>${ic('cash')}`;
+  $('btnFindings').innerHTML=ic('eye')+'What I found';
+  const done=STEPS.filter(s=>s.st()[0]==='done').length;
+  $('prog').innerHTML=`<span><b class="num">${done} of ${STEPS.length}</b> steps done</span><div class="bar"><i style="width:${done/STEPS.length*100}%"></i></div>`;
+  $('topact').innerHTML=S.step!=='check'&&!S.sent?`<button class="btn" data-a="go" data-v="check" ${ready()?'':'disabled title="Finish the three required steps first"'}>${ic('zap')}Skip to the end</button>`:'';
+  let h='';STEPS.forEach((s,i)=>{const[st,txt]=s.st();
+    if(i===0)h+='<h3>Required</h3>';if(i===3)h+='<h3>Optional, with defaults</h3>';if(i===6)h+='<h3>Finish</h3>';
+    h+=`<button class="step ${st} ${S.step===s.k?'cur':''}" data-a="go" data-v="${s.k}" ${S.step===s.k?'aria-current="step"':''}>
+      <span class="dot">${st==='done'?ic('check'):i+1}</span><span><b>${s.t}</b><small>${esc(txt)}</small></span></button>`});
+  $('steps').innerHTML=h;
+}
+function head(eyebrow,h,p,extra=''){return `<div class="q"><div class="t"><div class="eyebrow">${eyebrow}</div><h1>${h}</h1><p>${p}</p></div>${extra}</div>`}
+function nav(label){const i=STEPS.findIndex(s=>s.k===S.step);
+  return `<div class="nav">${i?`<button class="btn ghost" data-a="go" data-v="${STEPS[i-1].k}">${ic('back')}${STEPS[i-1].t}</button>`:'<span></span>'}
+  ${label?`<button class="btn pri" data-a="next">${label} ${ic('arrow')}</button>`:''}</div>`}
+const fld=(label,key,o={})=>`<label class="f">${label}${o.req?' <em>*</em>':''}${o.opt?' <i>optional</i>':''}<input id="f-${key.replace('.','-')}" data-i="${key}" type="${o.type||'text'}" value="${esc(key.startsWith('x.')?S.x[key.slice(2)]:S[key])}" placeholder="${esc(o.ph||'')}" ${o.attr||''}>${o.why?`<span class="why">${ic('spark')}${o.why}</span>`:''}</label>`;
+const sel=(label,key,opts,o={})=>`<label class="f">${label}${o.req?' <em>*</em>':''}<select id="f-${key}" data-c="${key}">${o.blank?`<option value="">${o.blank}</option>`:''}${opts.map(([v,t])=>`<option value="${esc(v)}" ${String(S[key])===String(v)?'selected':''}>${esc(t)}</option>`).join('')}</select>${o.why?`<span class="why">${ic('spark')}${o.why}</span>`:''}</label>`;
+
+/* ---------- step 1 ---------- */
+function vWho(){
+  const dup=/^abdul rohman$/i.test(S.name.trim());
+  return head('Step 1 of 7 · required','Who is joining?','Four things are enough to begin. Everything else is either worked out for you or can be finished by the new person from their phone.')+
+  `<div class="ways">
+    <button class="way ${S.src==='type'?'on':''}" data-a="src" data-v="type"><span class="tile">${ic('pencil')}</span><span><b>Type it in</b><small>Someone hired outside Payobook</small></span></button>
+    <button class="way ${S.src==='hire'?'on':''}" data-a="src" data-v="hire"><span class="tile">${ic('brief')}</span><span><b>From Hiring</b><small>${HIRED.length} signed offers are waiting. Bank account, tax numbers and papers come across</small></span></button>
+    <button class="way" data-a="soon" data-v="This opens the joiners sheet in Updates, for up to 200 people in one file."><span class="tile">${ic('sheet')}</span><span><b>Many at once</b><small>Fill a sheet for a whole intake</small></span></button></div>
+  ${S.src==='hire'?`<div class="card"><div class="cardh"><h3>Signed offers</h3><span class="sub">Pick one to bring across</span></div>
+    ${HIRED.map((h,i)=>`<div class="cand"><span class="av">${h.name.split(' ').map(w=>w[0]).join('')}</span><div class="who"><b style="font-weight:600">${h.name}</b><div class="sub">${h.job} · ${h.dept} · signed ${h.signed}</div></div>
+      <button class="btn sm ${S.name===h.name?'out':'pri'}" data-a="pick" data-v="${i}">${S.name===h.name?ic('check')+'Brought across':'Bring across'}</button>
+      <div style="flex-basis:100%;display:flex;gap:6px;flex-wrap:wrap;padding-left:46px">${Object.entries(GOTL).map(([k,l])=>h.got.includes(k)?`<span class="chip ok">${ic('check')}${l}</span>`:`<span class="chip">${l} not sent yet</span>`).join('')}</div></div>`).join('')}
+    <div class="row"><span class="tile">${ic('info')}</span><div class="txt"><b>Nothing the candidate sent is typed twice</b><small>What they gave in Hiring lands on the employee record: the bank account (still approved by a second person), tax and ID numbers, and each paper in their documents. Anything not sent yet is asked for in the welcome link. "Confirm they joined" in Hiring opens this same screen with the person already brought across.</small></div></div></div>`:''}
+  <div class="card pad"><div class="grid">
+    ${fld('Full name','name',{req:1,ph:'As on their identity card'})}
+    ${fld('First day','start',{req:1,type:'date'})}
+    ${fld('Work email','email',{opt:1,ph:'name@company.com'})}
+    ${fld('Personal email or phone','pemail',{opt:1,ph:'For the welcome link',why:'Used to send the welcome link before day one'})}
+  </div></div>
+  ${dup?`<div class="hint warn">${ic('alert')}<span><b>Abdul Rohman</b> is already an employee (Junior Agronomist, Indonesia Operation). Carry on only if this is a different person.</span></div>`:''}
+  <div class="hint">${ic('info')}<span>A work email is not needed. People without one sign in with their employee number, and you can print their first password in step 6.</span></div>`
+  +nav('Next: role and place');
+}
+
+/* ---------- step 2 ---------- */
+function vRole(){const c=C(),d=DEPTS[S.dept],te=trialEnd();
+  const dec=(icn,l,v)=>`<div class="dec ${v?'set':''}"><span>${ic(icn)}${l}</span><b>${esc(v||'Choose a country first')}</b></div>`;
+  return head('Step 2 of 7 · required','Where will '+esc(first())+' work, and as what?','Pick the team first. The country of work, manager and site are suggested from it, and the country then decides the pay scheme, currency, holidays and papers.')+
+  `<div class="card pad"><div class="grid">
+    ${sel('Team','dept',Object.keys(DEPTS).map(k=>[k,k]),{req:1,blank:'Choose a team'})}
+    ${sel('Job','job',(d?d.jobs:[]).map(j=>[j,j]),{req:1,blank:d?'Choose a job':'Choose a team first'})}
+    ${sel('Country of work','country',Object.entries(CO).map(([k,v])=>[k,v.n]),{req:1,blank:'Choose a country',why:d&&d.c===S.country?'Suggested from the team':''})}
+    ${sel('Manager','mgr',[...new Set(Object.values(DEPTS).map(x=>x.mgr))].map(m=>[m,m]),{blank:'No manager yet',why:d&&d.mgr===S.mgr?'Leads this team':''})}
+    ${fld('Work site','loc',{opt:1})}
+  </div></div>
+  <div class="card pad" style="display:flex;flex-direction:column;gap:12px"><div><h3>What this decides</h3><p class="sub">You never pick these by hand again. Change the country and they all follow.</p></div>
+    <div class="decides">
+      ${dec('cash','Pay scheme',c&&S.scheme)}
+      ${dec('globe','Currency',c&&`${c.cur} · wages and payslips`)}
+      ${dec('calendar','Holidays',c&&`${c.n} public holidays`)}
+      ${dec('shield','Trial period',c&&(te?`${c.trial} months, to ${shortD(te)}`:'None on a fixed-term contract'))}
+      ${dec('file','Papers needed',c&&`${c.docs.filter(x=>x[2]).length} required, ${c.docs.filter(x=>!x[2]).length} optional`)}
+      ${dec('pencil','Contract letter',c&&c.letter)}
+    </div></div>`
+  +nav('Next: contract and pay');
+}
+
+/* ---------- step 3 ---------- */
+function bandHtml(){const c=C();if(!c)return'';const[lo,hi]=c.band,span=(hi-lo)/.7,min=lo-span*.15,pos=Math.max(2,Math.min(98,(S.wage-min)/span*100));
+  const where=S.wage<lo?'Below the pay band':S.wage>hi?'Above the pay band':'Inside the pay band';
+  return `<div class="band"><u></u><i style="left:${pos}%"></i></div><div class="bandl num"><span>${money(lo)}</span><span class="chip ${S.wage<lo||S.wage>hi?'warn':'ok'}">${where} for ${esc(S.job||'this job')}</span><span>${money(hi)}</span></div>`}
+function vPay(){const c=C();if(!c)return head('Step 3 of 7 · required','Contract and pay','Choose the country of work in step 2 first. It decides the pay scheme and the currency.')+nav('');
+  const te=trialEnd();
+  const tg=(k,d)=>d?`<div class="row"><button class="tog ${S[k]?'on':''}" data-a="tog" data-v="${k}" role="switch" aria-checked="${S[k]}" aria-label="${esc(d.n)}"></button><div class="txt"><b>${d.n}</b><small>${d.s}</small></div><span class="chip teal">${ic('spark')}Usual answer</span></div>`:'';
+  return head('Step 3 of 7 · required','What is the contract, and what does it pay?','The pay scheme and currency come from step 2. Type the wage and the first payslip on the right updates as you type.')+
+  `<div class="card pad paidby"><span class="tile">${ic('cash')}</span><div style="flex:1;min-width:200px"><div class="lab">Paid by</div><b style="font:700 16px var(--display)">${esc(S.scheme)}</b>
+      <div class="sub">Because ${esc(S.dept||'this team')} in ${c.n} is paid by this scheme. Wages are in <b>${c.cur}</b>.</div></div>
+    ${c.schemes.length>1?`<label class="f" style="min-width:200px">Use a different scheme<select id="f-scheme" data-c="scheme">${c.schemes.map(s=>`<option ${s===S.scheme?'selected':''}>${s}</option>`).join('')}</select></label>`:'<span class="chip">The only scheme in '+c.n+'</span>'}</div>
+  <div class="card pad" style="display:flex;flex-direction:column;gap:6px"><div class="lab">Monthly wage <span style="color:var(--err)">*</span></div>
+    <label class="wage"><span>${c.cur}</span><input id="f-wage" data-i="wage" inputmode="numeric" value="${S.wage?S.wage.toLocaleString('en-US'):''}" aria-label="Monthly wage"><small>a month</small></label>
+    <div id="band">${bandHtml()}</div></div>
+  <div class="card pad"><div class="grid">
+    <div class="f">Contract<div class="seg" style="align-self:flex-start"><button class="${S.ctype==='perm'?'on':''}" data-a="ctype" data-v="perm">Permanent</button><button class="${S.ctype==='fixed'?'on':''}" data-a="ctype" data-v="fixed">Fixed term</button></div></div>
+    ${fld('Starts','start',{type:'date'})}
+    ${S.ctype==='fixed'?fld('Ends','end',{type:'date'}):''}
+    <div class="f">Trial period<div style="font-size:14px;color:var(--ink);font-weight:600;padding:8px 0">${te?`${c.trial} months, ends ${shortD(te)}`:'None'}</div>
+      <span class="why">${ic('spark')}${te?`From the ${c.n} trial period rule`:'Fixed-term contracts in Indonesia cannot have one'}</span></div>
+  </div></div>
+  <div class="card"><div class="cardh"><div><h3>The scheme's usual answers</h3><p class="sub">Filled in for you from ${esc(S.scheme)}. Change only what is different for ${esc(first())}.</p></div></div>
+    ${tg('u1',c.d1)}${tg('u2',c.d2)}
+    <div class="row"><span class="tile">${ic('users')}</span><div class="txt"><b>${c.statusL}</b><small>${esc(first())} can confirm this later. It only changes the tax line.</small></div>
+      <select id="f-status" data-c="status" class="inl" style="border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:var(--card);font-weight:500">${c.status.map((s,i)=>`<option value="${i}" ${S.status===i?'selected':''}>${s}</option>`).join('')}</select></div></div>`
+  +nav('Next: schedule and time off');
+}
+
+/* ---------- step 4 ---------- */
+function vSched(){const c=C()||CO.ID,w=WEEKS[S.week],d=DEPTS[S.dept];
+  const yrEnd=S.start?S.start.slice(0,4)+'-12-31':'',months=S.start?Math.max(0,12-D(S.start).getMonth()-(D(S.start).getDate()>15?1:0)):0;
+  return head('Step 4 of 7 · optional','When does '+esc(first())+' work?','These come from the team, so you can leave this step alone. Change it only if this person is different from their team.',`<span class="chip teal">${ic('spark')}Defaults from ${esc(S.dept||'the team')}</span>`)+
+  `<div class="card pad" style="display:flex;flex-direction:column;gap:14px"><div class="grid">
+      ${sel('Working week','week',Object.entries(WEEKS).map(([k,v])=>[k,`${v.n}, ${v.t}`]),{why:d&&d.week===S.week?'Same as the rest of the team':''})}
+      <div class="f">Late and overtime rule<div class="seg" style="align-self:flex-start"><button class="${S.grp==='worker'?'on':''}" data-a="grp" data-v="worker">Worker</button><button class="${S.grp==='manager'?'on':''}" data-a="grp" data-v="manager">Manager</button></div></div></div>
+    <div class="wkstrip">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((x,i)=>`<div class="${w.d[i]?'h':''}">${x}<span>${w.d[i]?(S.week==='rot'?'shift':w.t.slice(0,5)):'off'}</span></div>`).join('')}</div></div>
+  <div class="card">
+    <div class="row"><button class="tog ${S.clock?'on':''}" data-a="tog" data-v="clock" role="switch" aria-checked="${S.clock}" aria-label="Uses the time clock"></button><div class="txt"><b>Clocks in at ${esc(S.loc||'the site')}</b><small>${S.clock?'Gets the next free clock number, 0232. The site supervisor enrols the fingerprint on day one.':'Hours come from the working week, with no clocking.'}</small></div></div>
+    <div class="row"><span class="tile">${ic('calendar')}</span><div class="txt"><b>Annual leave: ${c.leave} days a year</b><small>Earned from the first day. About <b class="num">${Math.round(c.leave*months/12)}</b> day${Math.round(c.leave*months/12)===1?'':'s'} by ${shortD(yrEnd)}.</small></div><span class="chip">${c.n} time off rules</span></div>
+    <div class="row"><span class="tile">${ic('globe')}</span><div class="txt"><b>${c.n} public holidays</b><small>Follows the country of work, not the nationality.</small></div></div></div>`
+  +nav('Next: details and documents');
+}
+
+/* ---------- step 5 ---------- */
+function vDocs(){const c=C();if(!c)return head('Step 5 of 7 · optional','Details and documents','Choose the country of work in step 2 first. It decides which papers are needed.')+nav('');
+  const it=items(),f=esc(first()),asked=it.filter(i=>who(i.k)==='emp');
+  const row=i=>{const w=who(i.k);
+    return `<div class="row"><span class="tile">${ic(i.ic)}</span><div class="txt"><b>${esc(i.n)}</b><small>${w==='got'?esc(S.gotv[i.k]||'The file the candidate sent is filed in their documents'):i.s}</small></div>
+      ${i.req?'<span class="chip warn">Needed before first pay</span>':'<span class="chip">Optional</span>'}
+      ${w==='got'?`<span class="chip ok">${ic('check')}Received in Hiring</span>`:`<div class="seg"><button class="${w==='emp'?'on':''}" data-a="who" data-v="${i.k}|emp">Ask ${f}</button><button class="${w==='me'?'on':''}" data-a="who" data-v="${i.k}|me">I have it</button>${i.req?'':`<button class="${w==='skip'?'on':''}" data-a="who" data-v="${i.k}|skip">Not needed</button>`}</div>`}
+      ${w==='me'?`<div class="extra">${i.doc?`<button class="drop ${S.files[i.k]?'has':''}" data-a="file" data-v="${i.k}">${ic(S.files[i.k]?'check':'upload')}${S.files[i.k]?esc(S.files[i.k])+' attached':'Drop the file here, or choose it'}</button>`
+        :i.f.map((l,n)=>fld(l,`x.${i.k}${n}`)).join('')}</div>`:''}</div>`};
+  return head('Step 5 of 7 · optional','Who fills in the rest?','For each item, choose whether you have it now or '+f+' should send it. Anything you ask for goes into one welcome link that works on a phone, with no password.',
+    `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm out" data-a="allwho" data-v="emp">Ask ${f} for everything</button><button class="btn sm" data-a="allwho" data-v="me">I have everything here</button></div>`)+
+  `${S.got.size?`<div class="hint">${ic('check')}<span><b>${S.got.size} of ${it.length} items came across from Hiring</b>, so ${f} is not asked for them again. Only what is still missing goes into the welcome link.</span></div>`:''}
+  <div class="card"><div class="cardh"><h3>Details</h3><span class="sub">What ${f} enters is checked by HR before it is saved</span></div>${it.filter(i=>!i.doc).map(row).join('')}</div>
+  <div class="card"><div class="cardh"><h3>Papers for ${c.n}</h3><span class="sub">The list follows the country of work</span></div>${it.filter(i=>i.doc).map(row).join('')}</div>
+  <div class="card pad invite"><div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div><div class="eyebrow">What ${f} receives</div><h3 style="font-size:18px;margin-top:2px">${asked.length?`One link, ${asked.length} thing${asked.length>1?'s':''} to finish`:'Nothing to send'}</h3>
+      <p class="sub">${asked.length?`Sent to <b>${esc(S.pemail||S.email||'the address you add in step 1')}</b> as soon as the hire is approved. Due before ${shortD(S.start)}. It opens My Payobook on the pages that already exist for personal details, bank account, tax numbers and papers, so ${f} is asked at joining time instead of finding them later.`:`You have everything, so ${f} is not asked for anything before day one.`}</p></div>
+      <div style="display:flex;gap:10px;align-items:center"><button class="tog ${S.remind?'on':''}" data-a="tog" data-v="remind" role="switch" aria-checked="${S.remind}" aria-label="Reminders"></button><span>Remind ${f} every 2 days until it is done, and tell me if it is not done 3 days before the first day.</span></div>
+      <div class="hint">${ic('shield')}<span>The bank account still goes to a second person for approval, whoever types it.</span></div></div>
+    <div class="phone" aria-label="Preview of the welcome page on a phone"><div class="scr">
+      <div class="lab">Example Farms</div><div class="hi">Welcome, ${f}</div>
+      ${asked.length?`<div class="sub" style="font-size:12px">Please finish these before ${shortD(S.start)}</div>${asked.map(i=>`<div class="todo">${esc(i.n)}</div>`).join('')}<div class="go">Start · about ${Math.max(2,Math.round(asked.length*1.5))} minutes</div>`
+        :`<div class="none">See you on ${shortD(S.start)}.<br>Nothing to fill in.</div>`}</div></div></div>`
+  +nav('Next: welcome and first day');
+}
+
+/* ---------- step 6 ---------- */
+function timeline(){const f=first(),te=trialEnd(),ev=[];const add=(off,t,s,day)=>ev.push({d:addD(S.start,off),t,s,day});
+  if(S.kit.has('Laptop'))add(-12,'Laptop request goes to IT','Raised by itself. A spare is suggested first');
+  add(-5,'IT sets up tool access','');add(-1,`"Tell us about you" link to ${f}`,'A few fun facts for the welcome card');
+  add(0,'First day','Welcome card to the team, day-one invitation'+(S.login!=='none'?' and sign-in details':'')+' send themselves',1);
+  add(3,`${f} finishes their own details`,'Anything still open from step 5');add(7,'Welcome session with HR','Then check-ins on day 30 and day 60');
+  if(te)ev.push({d:addD(te,-14),t:'Trial period review opens',s:`Trial ends ${shortD(te)}`});
+  return ev.map(e=>`<div class="ev ${e.day?'day':''}"><span class="when num">${e.d<=TODAY?'Straight away':shortD(e.d)}</span><span class="ln"><i></i></span><div class="what"><b style="font-weight:600">${esc(e.t)}</b>${e.s?`<small>${esc(e.s)}</small>`:''}</div></div>`).join('')}
+function vWelcome(){const c=C()||CO.ID,f=esc(first());
+  return head('Step 6 of 7 · optional','How will '+f+' be welcomed?','The joining checklist starts by itself when the hire is approved. Choose the sign-in, a buddy and the equipment, or leave the defaults.')+
+  `<div class="card">
+    <div class="row"><span class="tile">${ic('key')}</span><div class="txt"><b>Sign-in to My Payobook</b><small>${S.login==='email'?`An invitation goes to ${esc(S.email||S.pemail||'their email')} on the first day.`:S.login==='code'?'Signs in with the employee number. You print the first password after approval.':'No sign-in. You can add one later from Access.'}</small></div>
+      <div class="seg"><button class="${S.login==='email'?'on':''}" data-a="login" data-v="email">Email invitation</button><button class="${S.login==='code'?'on':''}" data-a="login" data-v="code">Employee number</button><button class="${S.login==='none'?'on':''}" data-a="login" data-v="none">Not yet</button></div></div>
+    <div class="row"><span class="tile">${ic('heart')}</span><div class="txt"><b>Buddy</b><small>${S.buddy?`${esc(S.buddy)} is told when the hire is approved.`:`Left empty, ${esc(S.mgr||'the manager')} is asked to choose one.`}</small></div>
+      <select id="f-buddy" data-c="buddy" style="border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:var(--card);font-weight:500"><option value="">Manager chooses</option>${['Adika Nadhif','Putri Handayani','Rizky Maulana'].map(b=>`<option ${S.buddy===b?'selected':''}>${b}</option>`).join('')}</select></div>
+    <div class="row"><span class="tile">${ic('laptop')}</span><div class="txt"><b>Equipment</b><small>Each one becomes a request to the person who hands it over.</small></div>
+      <div class="kit">${KIT.map(([k,i])=>`<button class="${S.kit.has(k)?'on':''}" data-a="kit" data-v="${k}" aria-pressed="${S.kit.has(k)}">${ic(i)}${k}</button>`).join('')}</div></div>
+    <div class="row"><button class="tog ${S.letter?'on':''}" data-a="tog" data-v="letter" role="switch" aria-checked="${S.letter}" aria-label="Prepare the contract letter"></button><div class="txt"><b>Prepare the contract letter</b><small>${S.letter?`In ${c.letter}, filled from step 3 and saved to ${f}'s documents for signing on paper.`:'No letter is prepared.'}</small></div></div></div>
+  <div class="card pad"><div class="grid">${fld('Uniform size','x.cf0',{opt:1,ph:'S, M, L, XL'})}${fld('Shuttle route','x.cf1',{opt:1,ph:'Route name'})}</div>
+    <p class="sub" style="margin-top:10px">Your own fields from Form builder appear here, so nothing you added to the employee record is missed.</p></div>
+  <div class="card pad"><h3 style="margin-bottom:12px">What happens, and when</h3><div class="tl">${timeline()}</div></div>`
+  +nav('Next: check and add');
+}
+
+/* ---------- step 7 ---------- */
+function vCheck(){const c=C(),t=tally(),f=esc(first()),ok=ready(),te=trialEnd(),bank=who('bank');
+  if(S.sent)return `<div class="card done-hero"><span class="tick">${ic('check')}</span><h1 style="font-size:26px">${esc(S.name)} is with Dewi Lestari for approval</h1>
+    <p class="sub" style="max-width:54ch">Nothing is created until the hire is approved. After that the record, the contract, the welcome link and the joining checklist all start by themselves.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px"><button class="btn pri" data-a="again">${ic('plus')}Add another person</button>
+    <button class="btn" data-a="soon" data-v="This opens the New joiners board, where ${f} now has a row.">${ic('users')}See new joiners</button></div></div>
+    ${t.emp?`<div class="card"><div class="cardh"><div><h3>What ${f} has been asked for</h3><p class="sub">You follow this on the New joiners board. Each answer comes to HR to check before it is saved.</p></div><span class="chip p num">0 of ${t.emp} done</span></div>
+      ${items().filter(i=>who(i.k)==='emp').map(i=>`<div class="row"><span class="tile">${ic(i.ic)}</span><div class="txt"><b>${esc(i.n)}</b><small>${i.req?'Needed before first pay':'Optional'}</small></div><span class="chip warn">${ic('clock')}Waiting for ${f}</span></div>`).join('')}
+      <div class="row"><span class="tile">${ic('send')}</span><div class="txt"><b>${S.remind?`Reminders every 2 days`:'No reminders'}</b><small>${S.remind?`You are told if anything needed for pay is still missing 3 days before ${shortD(S.start)}.`:'Turn reminders on in step 5 to chase these automatically.'}</small></div></div></div>`:''}`;
+  const ck=(cls,i,b,s,go)=>`<div class="check ${cls}"><span class="dot">${ic(i)}</span><div><b style="font-weight:600">${b}</b><small>${s}</small></div>${go?`<button class="btn sm ghost" data-a="go" data-v="${go}">${ic('pencil')}Change</button>`:''}</div>`;
+  return head('Step 7 of 7','Check, then add '+f,'One last look. A second person approves every new hire, so nothing is created until they agree.')+
+  `<div class="card">
+    ${S.name.trim()&&S.start?ck('','check',esc(S.name),`First day ${fmtD(S.start)}`,'who'):ck('bad','alert','Name and first day are missing','Step 1','who')}
+    ${S.country&&S.dept&&S.job?ck('','check',`${esc(S.job)}, ${esc(S.dept)}`,`${c.n} · reports to ${esc(S.mgr||'nobody yet')} · ${esc(S.loc||'no site')}`,'role'):ck('bad','alert','Team, job or country is missing','Step 2','role')}
+    ${S.wage>0&&c?ck('','check',`${money(S.wage)} a month, ${S.ctype==='perm'?'permanent':'fixed term'}`,`Paid by ${esc(S.scheme)} · ${te?'trial to '+shortD(te):'no trial period'}`,'pay'):ck('bad','alert','The wage is missing','Step 3','pay')}
+    ${ck('','check',`${WEEKS[S.week].n}, ${WEEKS[S.week].t}`,S.clock?'Clocks in · late rule: '+S.grp:'No clocking · late rule: '+S.grp,'sched')}
+    ${c?ck('wait','send',`${t.emp} item${t.emp===1?'':'s'} for ${f}, ${t.me+t.got} with you`,bank==='emp'?`${f} is not payroll-ready until the bank account arrives and is approved`:'The bank account goes to a second person for approval','docs'):''}
+    ${ck('','check',S.login==='none'?'No sign-in yet':S.login==='email'?'Sign-in by email invitation':'Sign-in by employee number',`${S.kit.size} equipment request${S.kit.size===1?'':'s'} · ${S.buddy?'buddy '+esc(S.buddy):'manager chooses the buddy'}${S.letter?' · contract letter prepared':''}`,'welcome')}
+  </div>
+  <div class="card pad"><h3 style="margin-bottom:10px">When you press the button</h3><ol class="then">
+    <li><span><b>Dewi Lestari</b> gets the hire to approve. You see it under "Waiting for approval".</span></li>
+    <li><span>On approval, the employee record and a running contract are created, in ${c?c.cur:'the right currency'}, on the right pay scheme.</span></li>
+    <li><span>${t.emp?`${f} gets the welcome link with ${t.emp} thing${t.emp===1?'':'s'} to finish.`:`${f} gets a welcome message with nothing to fill in.`}</span></li>
+    <li><span>The joining checklist opens on the New joiners board, with the buddy, IT and equipment tasks already dated.</span></li></ol></div>
+  <div class="card launch"><div style="flex:1;min-width:220px"><h2>${ok?'Ready to send':'Three steps still need you'}</h2><p class="sub">${ok?`You can come back and change anything before it is approved.`:'Finish the required steps on the left, then come back.'}</p></div>
+    <button class="btn pri big" data-a="send" ${ok?'':'disabled'}>${ic('send')}Send for approval</button></div>`
+  +nav('');
+}
+
+/* ---------- live record ---------- */
+function renderPv(){const c=C(),s=slip(),t=tally(),f=esc(first()),bank=who('bank'),contract=S.wage>0&&S.start,v=completeness();
+  const fact=(l,val)=>`<span>${l}</span><b class="${val?'':'no'}">${esc(val||'Not set')}</b>`;
+  const tot=Math.max(1,t.emp+t.me+t.got+t.other);
+  $('pv').innerHTML=`<div class="pv-h"><span class="ring ${init()?'':'empty'}" style="--v:${v}"><b>${init()||ic('user')}</b></span>
+      <div class="nm"><div class="lab" style="color:var(--p)">The record so far</div><b>${esc(S.name.trim()||'New employee')}</b><small>${esc([S.job,S.dept].filter(Boolean).join(' · ')||'No role yet')}</small></div></div>
+    <div class="pv-b">
+      <div class="facts">${fact('First day',S.start&&shortD(S.start))}${fact('Country of work',c&&c.n)}${fact('Manager',S.mgr)}${fact('Trial ends',trialEnd()?shortD(trialEnd()):(c?'No trial':''))}</div>
+      <div><div class="lab" style="margin-bottom:6px">Payroll-ready</div><div class="ready">
+        <div>${contract?`<span class="y">${ic('check')}</span>Running contract from ${shortD(S.start)}`:`<span class="n">${ic('clock')}</span>Contract needs a wage and a first day`}</div>
+        <div>${bank==='emp'?`<span class="w">${ic('send')}</span>Bank account: asking ${f}`:`<span class="w">${ic('shield')}</span>Bank account${bank==='got'?' from Hiring':''}: waiting for a second approval`}</div></div></div>
+      ${s?`<div class="pvo"><div class="eb">First payslip · ${s.month} · example</div>
+        <p>${s.part<s.all?`${f} starts part-way through ${s.month}, so the first pay covers <b class="num">${s.part} of ${s.all}</b> working days.`:`${f} works the whole of ${s.month}, so the first pay is a full month.`}</p>
+        <div class="rows num"><span>Wage for the month</span><span>${money(s.gross)}</span>${s.lines.map(l=>`<span>${l[0]}</span><span>− ${money(l[1])}</span>`).join('')}
+          <span>${S.country==='SG'?'Income tax (paid yearly by the employee)':'Income tax'}</span><span>${S.country==='SG'?'none':'− '+money(s.tax)}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="color:#BDB6E6;font-size:13px">Take-home</span><span class="tot num">${money(s.net)}</span></div>
+        <p style="font-size:11.5px">Rounded example. The real payslip is worked out by ${esc(S.scheme)}.</p></div>`
+      :`<div class="empty">Choose a country of work and type a wage to see the first payslip here.</div>`}
+      ${c?`<div><div class="lab" style="margin-bottom:6px">Who does what</div><div class="split"><i style="flex:${t.me+t.got};background:var(--p)"></i><i style="flex:${t.emp};background:var(--teal)"></i><i style="flex:${t.other};background:var(--warn)"></i></div>
+        <div class="splitl num" style="margin-top:6px"><span><i style="background:var(--p)"></i>You ${t.me+t.got}</span><span><i style="background:var(--teal)"></i>${f} ${t.emp}</span><span><i style="background:var(--warn)"></i>Manager and IT ${t.other}</span></div></div>`:''}
+    </div>`;
+}
+
+/* ---------- findings drawer ---------- */
+function renderDrawer(){if(!S.drawer){$('drawer').innerHTML='';return}
+  const row=(i,col,b,s)=>`<span style="color:var(--${col})">${ic(i)}</span><div><b>${b}</b><small>${s}</small></div>`;
+  $('drawer').innerHTML=`<div class="scrim" data-a="closeDrawer"><div class="drawer" role="dialog" aria-label="What I found"><header><div style="flex:1"><h2>What I found</h2><p>From studying how adding and welcoming a new person works in Payobook today.</p></div><button class="btn sm ghost" data-a="closeDrawer" aria-label="Close">${ic('x')}</button></header>
+  <div class="body">
+    <div><div class="lab" style="margin-bottom:10px">What the current Add employee window gets wrong</div><div class="find">
+      ${row('alert','warn','It asks for a "Salary structure"','That choice no longer decides how someone is paid. The pay scheme does, and it is picked from the team. The window never shows it.')}
+      ${row('alert','warn','"Country" saves the nationality','It does not set the Country of work. That is why the "Fill Country of Work" button exists and still shows 4 people.')}
+      ${row('alert','warn','The wage always shows the company currency','Someone hired in India is asked for a wage with the wrong currency sign.')}
+      ${row('alert','warn','It stops too early','No trial period end, no tax or insurance numbers, no papers, no sign-in, no joining checklist and none of your own fields.')}
+      ${row('check','ok','One thing it does well, kept here','A second person approves the hire and the bank account.')}</div></div>
+    <div><div class="lab" style="margin-bottom:10px">Already built, but not connected to the button</div><div class="find">
+      ${row('check','ok','New joiners board','A 9-step joining checklist with buddy, laptop, welcome card and check-ins. Today it only starts from Hiring, not from Add employee.')}
+      ${row('check','ok','My Payobook','The employee can already enter personal details, bank account, tax numbers and upload papers, each checked by HR.')}
+      ${row('check','ok','Hiring','Candidates already send their papers and bank details. Those files are not carried over to the employee record today.')}
+      ${row('check','ok','Sign-ins, letters, equipment, working weeks, trial periods','All exist as separate screens. This design calls them from one place instead of rebuilding them.')}</div></div>
+    <div><div class="lab" style="margin-bottom:10px">What the best products do, and what I took</div><div class="find">
+      ${row('spark','p','Gusto, Employment Hero, Deel','HR types about six things. The new person finishes the rest from a phone before day one. This is step 5.')}
+      ${row('spark','p','Rippling','Choosing the role and place decides everything else by itself. This is "What this decides" in step 2.')}
+      ${row('spark','p','BambooHR, HiBob','A welcome pack and a dated task list for the manager, IT and buddy. This is step 6.')}
+      ${row('spark','p','Workday','A hire is an approved, dated event, not a saved form. This is step 7.')}
+      ${row('info','muted','Where this comes from','My own knowledge of those products, not fresh research this week.')}</div></div>
+    <div><div class="lab" style="margin-bottom:10px">New things that would need building</div><div class="find">
+      ${row('plus','blue','A list of required papers for each country','Today no paper is ever marked as missing.')}
+      ${row('plus','blue','Carrying a candidate\'s files and bank details across','Bank account, tax and ID numbers and each paper move from Hiring to the employee record, so nothing is typed or asked for twice. Shown in step 1 and step 5.')}
+      ${row('plus','blue','Trial end date from the country rule','The rule exists, but nothing applies it when someone joins.')}
+      ${row('plus','blue','The first-payslip example','A preview from the real pay scheme, as on the Workforce setup screen.')}
+      ${row('info','muted','Not in this design','Signing the contract on screen. Today only offer letters can be signed that way.')}</div></div>
+  </div></div></div>`;
+}
+
+/* ---------- render + events ---------- */
+const VIEWS={who:vWho,role:vRole,pay:vPay,sched:vSched,docs:vDocs,welcome:vWelcome,check:vCheck};
+function render(){const a=document.activeElement&&document.activeElement.id;
+  renderChrome();$('stage').innerHTML=VIEWS[S.step]();renderPv();renderDrawer();
+  if(a&&$(a)&&a.startsWith('f-'))$(a).focus();}
+let tt;function toast(m){$('toast').innerHTML=`<div class="toast" role="status">${esc(m)}</div>`;clearTimeout(tt);tt=setTimeout(()=>$('toast').innerHTML='',3600)}
+function go(k){S.step=k;S.seen.add(k);render();window.scrollTo({top:0,behavior:'smooth'})}
+function setCountry(k){S.country=k;const c=C();if(c){S.scheme=c.schemes[0];S.status=0;S.u1=S.u2=true;S.items={};S.files={}}}
+function setDept(k){S.dept=k;const d=DEPTS[k];if(d){const old=S.country;S.mgr=d.mgr;S.week=d.week;S.loc=d.loc;if(!d.jobs.includes(S.job))S.job='';if(old!==d.c){setCountry(d.c);S.wage=C().wage}}}
+
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a,v=b.dataset.v;
+  if(a==='closeDrawer'){if(e.target.closest('.drawer')&&!e.target.closest('button'))return;S.drawer=false;return renderDrawer()}
+  if(a==='findings'){S.drawer=true;return renderDrawer()}
+  if(a==='go')return go(v);
+  if(a==='next'){const i=STEPS.findIndex(s=>s.k===S.step);return go(STEPS[i+1].k)}
+  if(a==='soon')return toast(v);
+  if(a==='src'){S.src=v}
+  if(a==='pick'){const h=HIRED[+v];Object.assign(S,{name:h.name,email:h.email,pemail:h.email,start:h.start,job:h.job});setDept(h.dept);S.job=h.job;S.wage=h.wage;S.got=new Set(h.got);S.gotv=h.vals;toast(`${h.name} brought across from Hiring, with ${h.got.length} items already received.`)}
+  if(a==='tog')S[v]=!S[v];
+  if(a==='ctype')S.ctype=v;
+  if(a==='grp')S.grp=v;
+  if(a==='login')S.login=v;
+  if(a==='kit'){S.kit.has(v)?S.kit.delete(v):S.kit.add(v)}
+  if(a==='who'){const[k,m]=v.split('|');S.items[k]=m}
+  if(a==='allwho'){items().forEach(i=>{if(!S.got.has(i.k))S.items[i.k]=v})}
+  if(a==='file'){S.files[v]=S.files[v]?'':first().toLowerCase()+'-'+v.slice(2)+'.pdf'}
+  if(a==='send'){S.sent=true;render();return window.scrollTo({top:0,behavior:'smooth'})}
+  if(a==='again'){Object.assign(S,{step:'who',src:'type',seen:new Set(['who']),sent:false,name:'',email:'',pemail:'',items:{},got:new Set(),gotv:{},files:{},x:{},buddy:''})}
+  render();
+});
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.i;if(!k)return;let v=e.target.value;
+  if(k==='wage'){S.wage=+v.replace(/[^\d]/g,'')||0;if($('band'))$('band').innerHTML=bandHtml()}
+  else if(k.startsWith('x.'))S.x[k.slice(2)]=v;else S[k]=v;
+  renderChrome();renderPv();
+});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.i){if(t.dataset.i==='wage'||t.type==='date'||t.dataset.i==='name')render();return}
+  const k=t.dataset.c;if(!k)return;const v=t.value;
+  if(k==='dept')setDept(v);else if(k==='country'){setCountry(v);if(C())S.wage=C().wage}else if(k==='status')S.status=+v;else S[k]=v;
+  render();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.drawer){S.drawer=false;renderDrawer()}});
+render();
+</script>

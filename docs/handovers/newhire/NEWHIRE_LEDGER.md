@@ -1,0 +1,106 @@
+# NEWHIRE — ledger (standing rules, architect decisions, gotchas)
+
+Binding on every phase. Read before the phase handover. Add a gotcha (`NHnn`) the moment you hit one; never renumber.
+
+Programme: replace People › Employees "Add employee" (3-step window) with the **New Hire Studio**, a guided 7-step screen.
+Design of record: `docs/design/new-hire-studio-poc.html` (open it in a browser and click through — layout, wording, spacing,
+colour, motion). Facts (do not re-derive): `NEWHIRE_FACTS_CORE.md`, `NEWHIRE_FACTS_ONBOARD.md`.
+Owner approved the design and the phased build on 2026-11-25.
+
+## 0. Standing rules
+
+1. **Worktree only**: `/Users/adity/Documents/GitHub/gitlocal-worktrees/newhire` (branch `newhire`). Never edit or stage from
+   `/Users/adity/Documents/GitHub/gitlocal`. Other sessions (Codex, other Claude sessions) ship People modules — keep edits to
+   modules we do not own to the smallest pure refactor the handover names, and report every such file.
+2. **White-label**: the word "Odoo" never appears in anything a user can see or receive (labels, tooltips, toasts, errors,
+   menu/action names, field `string=`/`help=`, emails, `.po` msgstr, manifest `name`/`summary`). Technical identifiers
+   (`from odoo import`, model/xml ids, comments, these docs) keep the real name. Use "Payobook" or a neutral word.
+3. **Plain words on screen**: use the words in the POC ("pay scheme", "Country of work", "trial period", "working week",
+   "take-home"). No model names, codes or internal vocabulary in any user-visible string. One sentence per `_t()`/`_()`.
+4. **Design bar (owner's words, verbatim): "extreme WOW, intuitive, out-of-this-world experience, best in class."** Every
+   phase must state and satisfy: a **hero moment** (named in the handover); **zero dead-ends** (every state — empty, loading,
+   error, partial, huge — is designed; every failure names its reason and its next step); **plain language over code
+   vocabulary**; **motion with purpose** (enter/exit, progress, state change — never decorative jitter); **keyboard
+   ergonomics** (Tab order, Enter to continue, Esc closes drawers); measured against the best consumer/SaaS tool in the
+   category, not against the stock framework. Lucide icons via the import kit, never emoji. The phase report scores itself
+   against this bar.
+5. **No parallel engines**: never re-implement scheme resolution, the fill-in, pay totals, trial-period maths or approval.
+   Call the existing code; where the handover asks for a factor-out, the old caller must call the new function too.
+6. **Backend needs a screen twin**: anything the build can do server-side must be doable by the user on screen.
+7. **Tests**: `@tagged('post_install', '-at_install', 'newhire')`, `TransactionCase`, users via `new_test_user`. A static
+   gate file (clone `pb_workforce_setup/tests/test_static.py`): no "Odoo" in visible text, every icon exists, no emoji.
+   Local run recipe: FACTS_CORE §I (wfsetup recipe: private conf in the scratch dir, DB copy of `upd_p6_t_tpl` + one `-u all`).
+   Also run the suites of every module you touched and the existing tests listed in FACTS_CORE §A.5.
+8. **Browser proof is mandatory** before calling a screen done: local server, Chrome MCP walk, console read
+   (errors only), at 1440 and 400 px wide. A hidden Chrome tab renders blank — check `document.visibilityState` first.
+9. **Translations**: every string translatable from day one (`_t("literal")` with the exact import
+   `import { _t } from "@web/core/l10n/translation";`, `_()` in Python). `.po` files arrive in P5 (vi_VN, id_ID).
+10. **Commits**: one feature-scoped commit per coherent piece, explicit paths only (never `git add .`/`-A`), message =
+    problem → fix → key decisions, ending with `Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>`. The repo is
+    PUBLIC: no passwords, keys, client names or client data in any commit. Builders commit; the main loop pushes.
+11. **No deploy and no server writes unless the phase handover says so.** Never touch any database named `abm`.
+12. **Lessons follow screens**: FACTS_CORE §A.5 lists the Learn anchors/replicas that describe the old window. They are
+    updated in P5 with the takeover going live; a phase that changes what a lesson describes says so in its report.
+13. **Usage limit**: on a 429 / "session limit", finish the current step, make one WIP commit with explicit paths, write a
+    "Where I stopped" section in the phase report, end with PAUSED.
+
+## 1. Architect decisions (made — do not reopen without a report)
+
+- **D1 Module**: new module `pb_new_hire`, CSS prefix `pbnh-` (grep first; if taken use `pbnj-` and record it). Client
+  action tag `pb_new_hire_studio`, xmlid `pb_new_hire.action_new_hire_studio`, name "Add employee".
+- **D2 One create path, same approval**: the studio builds ONE values dict and proposes through the existing
+  `pb.newhire.proposal` (kind `employee`). On approval the existing `_apply_employee` replays
+  `pb.people.onboard.wizard.create_employee(values)`; `pb_new_hire` extends `create_employee` / `create_contract` by
+  inheritance so the NEW optional keys are honoured. Signatures unchanged; every old caller (Updates joiners sheet, org chart,
+  pay scales) keeps working with the old keys.
+- **D3 Team decides the pay scheme; the country is checked against it.** New pure function
+  `pb.scheme.map.resolve_for_team(...)` (factor-out, FACTS_CORE §C.4). No per-person "use a different scheme" picker (no seam
+  exists); when the team's scheme and the chosen country disagree the screen says so and names the fix.
+- **D4 Country of work is written where it matters**: employee `payroll_country`, contract `payroll_country` (currency),
+  and the trial period is computed from the CHOSEN country (`policy_for_country`), not from the address ladder. Nationality
+  (`country_id`) is its own optional field that defaults to the country of work.
+- **D5 Trial end** is written on the employee (`pb_set_trial_end`, the field the trial-period board reads), with the
+  product's own maths (`add_months(start, months)`, no minus one day). HR can switch it off for this person.
+- **D6 Usual answers** are previewed from the scheme (`_pb_usual_answer_rules`, factor-out) and the person's choices are
+  written as contract lines so the automatic fill-in leaves them alone.
+- **D7 After sending**: the payload is frozen. The screen offers "Withdraw and change" (engine cancel + back to the form
+  with everything still filled in), never "edit in place".
+- **D8 Welcome link = the standard sign-up invitation** landing on the existing My Payobook pages (FACTS_ONBOARD §B). The
+  person sets a password once. No token link ever collects bank details, ID numbers or papers.
+- **D9 First-payslip example** = savepoint + rollback over real records (FACTS_CORE §F), built in P4 by the architect or
+  under tight rails. Until then the panel says what will appear there.
+- **D10 Install scope while building**: `pb_new_hire` is installed on `payobook` only until the closeout phase; the takeover
+  of the old door lives inside `pb_new_hire`, so databases without it keep the old window.
+
+## 2. Where the POC is not true to the product (build the truth, keep the feel)
+
+| POC says | Truth | Build |
+|---|---|---|
+| Welcome link "with no password" | Signed invitation, password set once (D8) | wording changed in P3 |
+| "Use a different scheme" picker | no per-person override exists (D3) | show "Paid by" read-only + mismatch help |
+| Trial ends one day before N months | product uses same day N months later (D5) | product maths |
+| "Fixed-term contracts in Indonesia cannot have one" | no such rule exists | a per-person switch instead |
+| Holidays "follow the country of work" | one holiday list per company calendar | say "your company's holiday list" |
+| "Gets the next free clock number, 0232" | no such feature | a plain clock-number box (P2) |
+| "Change anything before it is approved" | payload frozen (D7) | Withdraw and change |
+| Numbers typed in Hiring "come across" | Hiring holds files only | P4: files come across; numbers are asked |
+| First payslip always prorated | no engine-wide joiner proration | P4: show what the scheme really does, say so |
+
+## 3. Gotchas
+
+- **NH1** `hr.employee.country_id` is NATIONALITY. Country of work is `payroll_country` (Selection; contract accepts only
+  VN/ID/IN/SG/MY — writing TH/KH/PH on a contract raises). FACTS_CORE §C.1.
+- **NH2** `create_contract` always passes `resource_calendar_id`, overriding the time-zone calendar the employee create
+  cloned from `payroll_country`. FACTS_CORE §C.1.
+- **NH3** Contract `wage` is Monetary and rounds to the contract currency at write time; the currency follows the contract's
+  `payroll_country`. Set the country before (or re-write the wage after) or a SGD wage is rounded to VND decimals. §C.3.
+- **NH4** The scheme map reads departments with raw SQL: `flush_all()` after writes in the same transaction. §C.4.
+- **NH5** Two trial-end fields; the board reads the employee/version one. §D.
+- **NH6** HR officers have read-only access to `hr.contract.advantage`, are refused by pay bands (`AccessError`) and by
+  `assign_week`. Write behind `require_hr` with sudo; catch and hide for reads. §E, §G, §H.
+- **NH7** `pb_tenancy` refuses `hr.employee.create` at the seat limit — including inside a savepoint preview. §F.
+- **NH8** The approval payload is stored as JSON and replayed later by ANOTHER user (the approver): every value must be
+  JSON-plain (ids, strings, numbers), never recordsets or dates objects; re-validate on replay (a team or job may be gone).
+- **NH9** No approval route for the company → `propose` raises a UserError. Design that state.
+- **NH10** Sibling-studio gotchas from WFSETUP apply as written: WS1, WS2, WS4, WS5, WS10, WS11, WS14, WS17, WS18, WS22,
+  WS24, WS28, WS39, WS40, WS42 (FACTS_CORE §B.6).
