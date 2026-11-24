@@ -48,7 +48,7 @@ export class WorkforcePanel extends Component {
     setup() {
         this.dialog=useService('dialog');
         this.orm = useService('orm'); this.action = useService('action'); this.notify = useService('notification');
-        this.ctx = useService('wf_context');this.back=hubBack(this.props);
+        this.ctx = useService('wf_context');this.settingsBack=hubBack(this.props);
         this.state = useState({loading:true,error:'',data:null,preferences:null,search:'',offset:0,editor:null,
             location:null, locationName:'',drafts:false, busy:false});
         this.leaveGuard=()=>this.guard();
