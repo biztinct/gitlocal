@@ -1,0 +1,969 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_workforce_workspace
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-24 16:07+0000\n"
+"PO-Revision-Date: 2026-11-24 16:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%(from)s–%(to)s of %(total)s"
+msgstr "%(from)s–%(to)s dari %(total)s"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s active policies"
+msgstr "%s kebijakan aktif"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s connectors have reported"
+msgstr "%s konektor sudah melapor"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s draft shifts"
+msgstr "%s shift draf"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s employees"
+msgstr "%s karyawan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s other roster rows"
+msgstr "%s baris jadwal lainnya"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s people"
+msgstr "%s orang"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s people without a policy"
+msgstr "%s orang tanpa kebijakan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s records"
+msgstr "%s catatan"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s roster drafts awaiting review"
+msgstr "%s draf jadwal menunggu tinjauan"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s shifts available"
+msgstr "%s shift tersedia"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s · Rest"
+msgstr "%s · Libur"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "+ New"
+msgstr "+ Baru"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Activation is a separate review"
+msgstr "Aktivasi adalah tinjauan terpisah"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Active calculation policies"
+msgstr "Kebijakan perhitungan aktif"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Adjust the search or add a record if your role allows it."
+msgstr "Ubah pencarian atau tambahkan catatan jika peran Anda mengizinkan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "All draft roster rows"
+msgstr "Semua baris jadwal draf"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid ""
+"An unconfirmed lateness band needs review. A draft policy is not proof that "
+"attendance is ready for payroll."
+msgstr "Ada rentang keterlambatan yang belum dikonfirmasi dan perlu ditinjau. Kebijakan draf bukan bukti bahwa absensi siap untuk penggajian."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Assign people"
+msgstr "Tetapkan orang"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Assign people to recurring patterns, preview dates and create drafts. "
+"Publish only the reviewed roster."
+msgstr "Tetapkan orang ke pola berulang, pratinjau tanggal, dan buat draf. Terbitkan hanya jadwal kerja yang sudah ditinjau."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Assign recurring patterns"
+msgstr "Tetapkan pola berulang"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Attendance & hours"
+msgstr "Absensi & jam kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Attendance access is required."
+msgstr "Akses absensi diperlukan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Attendance policies"
+msgstr "Kebijakan absensi"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Attendance, connected."
+msgstr "Absensi, terhubung."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Build a working week that works."
+msgstr "Susun minggu kerja yang pas."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Build and review the roster"
+msgstr "Susun dan tinjau jadwal kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Calculation policy module not installed"
+msgstr "Bagian kebijakan perhitungan belum dipasang"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid ""
+"Changes use the existing permissions, validations and approval workflow. "
+"Save or cancel edits before leaving."
+msgstr "Perubahan mengikuti izin, validasi, dan alur persetujuan yang ada. Simpan atau batalkan suntingan sebelum keluar."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Check each person’s workplace, calendar and attendance group. Assign "
+"recurring patterns in the next step."
+msgstr "Periksa tempat kerja, kalender, dan kelompok absensi setiap orang. Tetapkan pola berulang di langkah berikutnya."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Check hours before payroll"
+msgstr "Periksa jam kerja sebelum penggajian"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Check latest contact →"
+msgstr "Periksa kontak terakhir →"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Clear rules. Explainable hours."
+msgstr "Aturan jelas. Jam kerja yang bisa dijelaskan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Clear workplace filter ×"
+msgstr "Hapus filter tempat kerja ×"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Close & send to payroll"
+msgstr "Tutup & kirim ke penggajian"
+
+#. module: pb_workforce_workspace
+#: model:ir.model,name:pb_workforce_workspace.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Confirm normal hours, overtime boundaries and lateness deductions. Activate "
+"only after review."
+msgstr "Konfirmasi jam normal, batas lembur, dan potongan keterlambatan. Aktifkan hanya setelah ditinjau."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Connect attendance"
+msgstr "Hubungkan absensi"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Connections"
+msgstr "Koneksi"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Create roster"
+msgstr "Buat jadwal kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Create roster drafts"
+msgstr "Buat draf jadwal kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Data connectors"
+msgstr "Konektor data"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Day %s"
+msgstr "Hari %s"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Define how overtime is paid."
+msgstr "Tentukan cara lembur dibayar."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Define the shifts"
+msgstr "Tentukan shift"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Define times and breaks once, then use them in recurring patterns and the "
+"roster."
+msgstr "Tentukan jam dan istirahat sekali, lalu gunakan di pola berulang dan jadwal kerja."
+
+#. module: pb_workforce_workspace
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_pb_shift_patterns__display_name
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_pb_workforce_workspace__display_name
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Enable unified workspace"
+msgstr "Aktifkan ruang kerja terpadu"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Enabled for this company. Attendance and payroll rules are managed "
+"separately."
+msgstr "Aktif untuk perusahaan ini. Aturan absensi dan penggajian dikelola terpisah."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Every workplace. One view."
+msgstr "Semua tempat kerja. Satu tampilan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Factories & workplaces"
+msgstr "Pabrik & tempat kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Factory overview"
+msgstr "Ikhtisar pabrik"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Field"
+msgstr "Lapangan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Follow the guided setup or return to an individual setting. Administrators "
+"can enable the unified workspace here."
+msgstr "Ikuti penyiapan terpandu atau kembali ke satu pengaturan. Administrator dapat mengaktifkan ruang kerja terpadu di sini."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Guided setup"
+msgstr "Penyiapan terpandu"
+
+#. module: pb_workforce_workspace
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_pb_shift_patterns__id
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_pb_workforce_workspace__id
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Insights"
+msgstr "Wawasan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Invite IT and check each source. Collection continues while record issues "
+"are reviewed in Payobook."
+msgstr "Undang IT dan periksa setiap sumber. Pengumpulan tetap berjalan selagi masalah catatan ditinjau di Payobook."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Invite IT, pair the PC and verify received records. A successful upload does"
+" not prove that all terminals were downloaded."
+msgstr "Undang IT, pasangkan PC, dan periksa catatan yang diterima. Unggahan yang berhasil tidak membuktikan semua terminal sudah diunduh."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Keep overtime within the agreed limits."
+msgstr "Jaga lembur dalam batas yang disepakati."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Maintain the working calendars assigned to employees. Keep their normal "
+"hours aligned with shift calculation rules."
+msgstr "Kelola kalender kerja yang diberikan ke karyawan. Jaga jam normalnya selaras dengan aturan perhitungan shift."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Make drafts"
+msgstr "Buat draf"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "More"
+msgstr "Lainnya"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "New: %s"
+msgstr "Baru: %s"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Next"
+msgstr "Berikutnya"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "No records to show"
+msgstr "Tidak ada catatan untuk ditampilkan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid ""
+"No workplaces are visible for your role. Assign workplaces on employee "
+"records to build this overview."
+msgstr "Tidak ada tempat kerja yang terlihat untuk peran Anda. Tetapkan tempat kerja di data karyawan untuk membangun ikhtisar ini."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Not assigned"
+msgstr "Belum ditetapkan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Not installed"
+msgstr "Belum dipasang"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Not set"
+msgstr "Belum diatur"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"One setup, connected to the roster, attendance and payroll. Review each step"
+" before going live."
+msgstr "Satu penyiapan, terhubung ke jadwal kerja, absensi, dan penggajian. Tinjau setiap langkah sebelum mulai dipakai."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Only an administrator can change the company workspace."
+msgstr "Hanya administrator yang dapat mengubah ruang kerja perusahaan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Only drafts are shown."
+msgstr "Hanya draf yang ditampilkan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid ""
+"Open a connector for Guided setup / invite IT, connection health and "
+"Received records. Contact timestamps below are UTC."
+msgstr "Buka konektor untuk Penyiapan terpandu / undang IT, kesehatan koneksi, dan Catatan diterima. Waktu kontak di bawah dalam UTC."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Open details →"
+msgstr "Buka detail →"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Overtime approvals"
+msgstr "Persetujuan lembur"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Overtime ceilings"
+msgstr "Batas lembur"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Overtime definitions"
+msgstr "Definisi lembur"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Overview"
+msgstr "Ikhtisar"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "People"
+msgstr "Orang"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "People & assignments"
+msgstr "Orang & penugasan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Previous"
+msgstr "Sebelumnya"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Rates and eligibility belong here. Actual overtime is reviewed and approved "
+"under Timesheets."
+msgstr "Tarif dan syarat diatur di sini. Lembur yang sebenarnya ditinjau dan disetujui di Jam kerja."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Reading your workspace…"
+msgstr "Membaca ruang kerja Anda…"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Record"
+msgstr "Catatan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Recurring patterns"
+msgstr "Pola berulang"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Refresh"
+msgstr "Muat ulang"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Refresh workspace"
+msgstr "Muat ulang ruang kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review"
+msgstr "Tinjau"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Review actual attendance, normal hours and overtime. Resolve exceptions and "
+"approve hours before closing the period."
+msgstr "Tinjau absensi aktual, jam normal, dan lembur. Selesaikan pengecualian dan setujui jam kerja sebelum menutup periode."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review before publishing →"
+msgstr "Tinjau sebelum diterbitkan →"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Review coverage by workplace, then move into the roster or employee "
+"assignments."
+msgstr "Tinjau cakupan per tempat kerja, lalu lanjut ke jadwal kerja atau penugasan karyawan."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Review required before each payroll"
+msgstr "Perlu ditinjau sebelum setiap penggajian"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review roster"
+msgstr "Tinjau jadwal kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review roster drafts"
+msgstr "Tinjau draf jadwal kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Review rules & calendars"
+msgstr "Tinjau aturan & kalender"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review setup"
+msgstr "Tinjau penyiapan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Review shift boundaries, unpaid breaks and additional lateness deductions. "
+"Draft policies do not calculate attendance."
+msgstr "Tinjau batas shift, istirahat tidak dibayar, dan potongan keterlambatan tambahan. Kebijakan draf tidak menghitung absensi."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Review the planned work."
+msgstr "Tinjau pekerjaan yang direncanakan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Review workplace, working calendar, attendance group and calculation policy."
+" Use recurring patterns to assign repeating shifts."
+msgstr "Tinjau tempat kerja, kalender kerja, kelompok absensi, dan kebijakan perhitungan. Gunakan pola berulang untuk memberi shift yang berulang."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Roster"
+msgstr "Jadwal kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Roster board"
+msgstr "Papan jadwal kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Roster counts for %(from)s to %(to)s. Grouped by each employee’s assigned "
+"workplace."
+msgstr "Jumlah jadwal dari %(from)s sampai %(to)s. Dikelompokkan menurut tempat kerja tiap karyawan."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Roster review"
+msgstr "Tinjauan jadwal kerja"
+
+#. module: pb_workforce_workspace
+#: model:ir.model,name:pb_workforce_workspace.model_pb_shift_patterns
+msgid "Rotating shift patterns board"
+msgstr "Papan pola shift bergilir"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Rules & calendars"
+msgstr "Aturan & kalender"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Search by name…"
+msgstr "Cari menurut nama…"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Search records"
+msgstr "Cari catatan"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Set start and end times, unpaid breaks and overnight work."
+msgstr "Atur jam mulai dan selesai, istirahat tidak dibayar, dan kerja lewat tengah malam."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Set up Workforce"
+msgstr "Siapkan Tenaga Kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Setup library"
+msgstr "Pustaka penyiapan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Shift library"
+msgstr "Pustaka shift"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Shifts"
+msgstr "Shift"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Shifts & patterns"
+msgstr "Shift & pola"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Shifts that fit the working day."
+msgstr "Shift yang sesuai dengan hari kerja."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Shifts, people, recurring rosters, calculation rules and attendance "
+"connections in one place."
+msgstr "Shift, orang, jadwal berulang, aturan perhitungan, dan koneksi absensi di satu tempat."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Showing the selected week."
+msgstr "Menampilkan minggu yang dipilih."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Sign in to continue."
+msgstr "Masuk untuk melanjutkan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Sources with a report"
+msgstr "Sumber yang sudah melapor"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Suggested shifts remain drafts until reviewed and published. Open a row for "
+"its policy, evidence and calculation preview."
+msgstr "Shift yang disarankan tetap draf sampai ditinjau dan diterbitkan. Buka satu baris untuk melihat kebijakan, bukti, dan pratinjau perhitungannya."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "The right schedule for every person."
+msgstr "Jadwal yang tepat untuk setiap orang."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"These are the existing ceiling settings used by overtime approval. Zero "
+"means a limit is not enforced."
+msgstr "Ini adalah batas yang ada dan dipakai saat menyetujui lembur. Nol berarti batas tidak diberlakukan."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "These are the same records used by daily operations and Settings."
+msgstr "Ini adalah catatan yang sama yang dipakai dalam pekerjaan harian dan Pengaturan."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "This optional feature is not installed for this database."
+msgstr "Fitur opsional ini belum dipasang di basis data ini."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Time off"
+msgstr "Cuti"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Timesheets"
+msgstr "Jam kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Today"
+msgstr "Hari ini"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Unable to load. Please retry."
+msgstr "Tidak dapat memuat. Silakan coba lagi."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Unavailable"
+msgstr "Tidak tersedia"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Unified Workforce workspace"
+msgstr "Ruang kerja Tenaga Kerja terpadu"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Unknown workforce section."
+msgstr "Bagian tenaga kerja tidak dikenal."
+
+#. module: pb_workforce_workspace
+#: model:ir.model.fields,help:pb_workforce_workspace.field_res_company__pb_workforce_workspace_enabled
+msgid ""
+"Use grouped navigation and guided setup. Existing attendance and payroll "
+"rules are unchanged."
+msgstr "Gunakan menu berkelompok dan penyiapan terpandu. Aturan absensi dan penggajian yang ada tidak berubah."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Use grouped navigation for this company. Existing rules and employee "
+"schedules stay as they are."
+msgstr "Gunakan menu berkelompok untuk perusahaan ini. Aturan dan jadwal karyawan yang ada tetap seperti sekarang."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Use previous navigation"
+msgstr "Gunakan menu sebelumnya"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Use the roster board to publish reviewed shifts."
+msgstr "Gunakan papan jadwal kerja untuk menerbitkan shift yang sudah ditinjau."
+
+#. module: pb_workforce_workspace
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_res_company__pb_workforce_workspace_enabled
+msgid "Use unified Workforce workspace"
+msgstr "Gunakan ruang kerja Tenaga Kerja terpadu"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Workforce"
+msgstr "Tenaga Kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+#: model:ir.actions.client,name:pb_workforce_workspace.action_workspace_setup
+msgid "Workforce setup"
+msgstr "Penyiapan Tenaga Kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+#: model:ir.model,name:pb_workforce_workspace.model_pb_workforce_workspace
+msgid "Workforce workspace"
+msgstr "Ruang kerja Tenaga Kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Working calendars"
+msgstr "Kalender kerja"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Working days, rest days and holidays."
+msgstr "Hari kerja, hari istirahat, dan hari libur."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Workplace not assigned"
+msgstr "Tempat kerja belum ditetapkan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Workplace:"
+msgstr "Tempat kerja:"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "← Back to list"
+msgstr "← Kembali ke daftar"

@@ -1,0 +1,969 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_workforce_workspace
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-24 16:07+0000\n"
+"PO-Revision-Date: 2026-11-24 16:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%(from)s–%(to)s of %(total)s"
+msgstr "%(from)s–%(to)s trên %(total)s"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s active policies"
+msgstr "%s chính sách đang dùng"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s connectors have reported"
+msgstr "%s kết nối đã gửi báo cáo"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s draft shifts"
+msgstr "%s ca nháp"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s employees"
+msgstr "%s nhân viên"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s other roster rows"
+msgstr "%s dòng lịch khác"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s people without a policy"
+msgstr "%s người chưa có chính sách"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s records"
+msgstr "%s bản ghi"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s roster drafts awaiting review"
+msgstr "%s lịch nháp chờ xem"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "%s shifts available"
+msgstr "Có %s ca"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "%s · Rest"
+msgstr "%s · Nghỉ"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "+ New"
+msgstr "+ Mới"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Activation is a separate review"
+msgstr "Kích hoạt là một bước xem xét riêng"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Active calculation policies"
+msgstr "Chính sách tính công đang dùng"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Adjust the search or add a record if your role allows it."
+msgstr "Đổi từ khóa tìm kiếm hoặc thêm bản ghi nếu vai trò của bạn cho phép."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "All draft roster rows"
+msgstr "Tất cả dòng lịch nháp"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid ""
+"An unconfirmed lateness band needs review. A draft policy is not proof that "
+"attendance is ready for payroll."
+msgstr "Một mức đi muộn chưa xác nhận cần được xem lại. Chính sách nháp không chứng minh chấm công đã sẵn sàng cho bảng lương."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Assign people"
+msgstr "Phân công nhân viên"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Assign people to recurring patterns, preview dates and create drafts. "
+"Publish only the reviewed roster."
+msgstr "Giao nhân viên vào mẫu ca lặp lại, xem trước ngày và tạo bản nháp. Chỉ công bố lịch đã xem lại."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Assign recurring patterns"
+msgstr "Giao mẫu ca lặp lại"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Attendance & hours"
+msgstr "Chấm công và giờ làm"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Attendance access is required."
+msgstr "Cần quyền chấm công."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Attendance policies"
+msgstr "Chính sách chấm công"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Attendance, connected."
+msgstr "Chấm công, đã kết nối."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Build a working week that works."
+msgstr "Xây dựng tuần làm việc hiệu quả."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Build and review the roster"
+msgstr "Lập và xem lại lịch làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Calculation policy module not installed"
+msgstr "Chưa cài phần chính sách tính công"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid ""
+"Changes use the existing permissions, validations and approval workflow. "
+"Save or cancel edits before leaving."
+msgstr "Thay đổi tuân theo quyền, kiểm tra và quy trình phê duyệt hiện có. Lưu hoặc hủy chỉnh sửa trước khi rời đi."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Check each person’s workplace, calendar and attendance group. Assign "
+"recurring patterns in the next step."
+msgstr "Kiểm tra nơi làm việc, lịch và nhóm chấm công của từng người. Giao mẫu ca lặp lại ở bước tiếp theo."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Check hours before payroll"
+msgstr "Kiểm tra giờ công trước khi tính lương"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Check latest contact →"
+msgstr "Xem lần liên lạc gần nhất →"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Clear rules. Explainable hours."
+msgstr "Quy tắc rõ ràng. Giờ công giải thích được."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Clear workplace filter ×"
+msgstr "Bỏ lọc nơi làm việc ×"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Close & send to payroll"
+msgstr "Chốt kỳ và gửi sang bảng lương"
+
+#. module: pb_workforce_workspace
+#: model:ir.model,name:pb_workforce_workspace.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Confirm normal hours, overtime boundaries and lateness deductions. Activate "
+"only after review."
+msgstr "Xác nhận giờ làm bình thường, ngưỡng tăng ca và khoản trừ đi muộn. Chỉ kích hoạt sau khi đã xem."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Connect attendance"
+msgstr "Kết nối chấm công"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Connections"
+msgstr "Kết nối"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Create roster"
+msgstr "Tạo lịch làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Create roster drafts"
+msgstr "Tạo lịch nháp"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Data connectors"
+msgstr "Kết nối dữ liệu"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Day %s"
+msgstr "Ngày %s"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Define how overtime is paid."
+msgstr "Xác định cách trả tăng ca."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Define the shifts"
+msgstr "Xác định các ca"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Define times and breaks once, then use them in recurring patterns and the "
+"roster."
+msgstr "Đặt giờ và giờ nghỉ một lần, rồi dùng chúng trong mẫu ca lặp lại và lịch làm việc."
+
+#. module: pb_workforce_workspace
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_pb_shift_patterns__display_name
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_pb_workforce_workspace__display_name
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Enable unified workspace"
+msgstr "Bật không gian làm việc hợp nhất"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Enabled for this company. Attendance and payroll rules are managed "
+"separately."
+msgstr "Đã bật cho công ty này. Quy tắc chấm công và bảng lương được quản lý riêng."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Every workplace. One view."
+msgstr "Mọi nơi làm việc. Một màn hình."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Factories & workplaces"
+msgstr "Nhà máy và nơi làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Factory overview"
+msgstr "Tổng quan nhà máy"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Field"
+msgstr "Hiện trường"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Follow the guided setup or return to an individual setting. Administrators "
+"can enable the unified workspace here."
+msgstr "Làm theo phần thiết lập có hướng dẫn hoặc quay lại từng mục cài đặt. Quản trị viên có thể bật không gian làm việc hợp nhất tại đây."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Guided setup"
+msgstr "Thiết lập có hướng dẫn"
+
+#. module: pb_workforce_workspace
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_pb_shift_patterns__id
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_pb_workforce_workspace__id
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Invite IT and check each source. Collection continues while record issues "
+"are reviewed in Payobook."
+msgstr "Mời bộ phận IT và kiểm tra từng nguồn. Việc thu thập vẫn tiếp tục trong khi các vấn đề về bản ghi được xem xét trong Payobook."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Invite IT, pair the PC and verify received records. A successful upload does"
+" not prove that all terminals were downloaded."
+msgstr "Mời IT, ghép nối máy tính và kiểm tra các bản ghi đã nhận. Một lần tải lên thành công không chứng minh mọi máy chấm công đã được tải về."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Keep overtime within the agreed limits."
+msgstr "Giữ tăng ca trong giới hạn đã thỏa thuận."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Maintain the working calendars assigned to employees. Keep their normal "
+"hours aligned with shift calculation rules."
+msgstr "Duy trì lịch giờ làm việc gán cho nhân viên. Giữ giờ làm bình thường khớp với quy tắc tính ca."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Make drafts"
+msgstr "Tạo bản nháp"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "More"
+msgstr "Thêm"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "New: %s"
+msgstr "Mới: %s"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Next"
+msgstr "Sau"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "No records to show"
+msgstr "Không có bản ghi để hiển thị"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid ""
+"No workplaces are visible for your role. Assign workplaces on employee "
+"records to build this overview."
+msgstr "Vai trò của bạn không thấy nơi làm việc nào. Gán nơi làm việc trên hồ sơ nhân viên để có màn hình tổng quan này."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Not assigned"
+msgstr "Chưa gán"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Not installed"
+msgstr "Chưa cài đặt"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"One setup, connected to the roster, attendance and payroll. Review each step"
+" before going live."
+msgstr "Một lần thiết lập, kết nối với lịch làm việc, chấm công và bảng lương. Xem lại từng bước trước khi đưa vào dùng."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Only an administrator can change the company workspace."
+msgstr "Chỉ quản trị viên mới được thay đổi không gian làm việc của công ty."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Only drafts are shown."
+msgstr "Chỉ hiển thị bản nháp."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid ""
+"Open a connector for Guided setup / invite IT, connection health and "
+"Received records. Contact timestamps below are UTC."
+msgstr "Mở một kết nối để dùng Thiết lập có hướng dẫn / mời IT, xem tình trạng kết nối và Bản ghi đã nhận. Thời điểm liên lạc bên dưới theo giờ UTC."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Open details →"
+msgstr "Mở chi tiết →"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Overtime approvals"
+msgstr "Duyệt tăng ca"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Overtime ceilings"
+msgstr "Giới hạn tăng ca"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Overtime definitions"
+msgstr "Định nghĩa tăng ca"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Overview"
+msgstr "Tổng quan"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "People"
+msgstr "Nhân viên"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "People & assignments"
+msgstr "Nhân viên và phân công"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Previous"
+msgstr "Trước"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Rates and eligibility belong here. Actual overtime is reviewed and approved "
+"under Timesheets."
+msgstr "Mức trả và điều kiện được đặt ở đây. Tăng ca thực tế được xem và duyệt trong Bảng công."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Reading your workspace…"
+msgstr "Đang đọc không gian làm việc…"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Record"
+msgstr "Bản ghi"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Recurring patterns"
+msgstr "Mẫu ca lặp lại"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Refresh workspace"
+msgstr "Làm mới không gian làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review"
+msgstr "Xem"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid ""
+"Review actual attendance, normal hours and overtime. Resolve exceptions and "
+"approve hours before closing the period."
+msgstr "Xem chấm công thực tế, giờ làm bình thường và tăng ca. Xử lý ngoại lệ và duyệt giờ công trước khi chốt kỳ."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review before publishing →"
+msgstr "Xem trước khi công bố →"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Review coverage by workplace, then move into the roster or employee "
+"assignments."
+msgstr "Xem mức phủ ca theo nơi làm việc, rồi chuyển sang lịch làm việc hoặc phân công nhân viên."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Review required before each payroll"
+msgstr "Cần xem lại trước mỗi kỳ lương"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review roster"
+msgstr "Duyệt lịch làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review roster drafts"
+msgstr "Xem lịch nháp"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Review rules & calendars"
+msgstr "Xem quy tắc và lịch"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Review setup"
+msgstr "Xem lại thiết lập"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Review shift boundaries, unpaid breaks and additional lateness deductions. "
+"Draft policies do not calculate attendance."
+msgstr "Kiểm tra giới hạn ca, giờ nghỉ không lương và các khoản trừ đi muộn. Chính sách nháp không tính công."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Review the planned work."
+msgstr "Xem lại công việc đã lên lịch."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Review workplace, working calendar, attendance group and calculation policy."
+" Use recurring patterns to assign repeating shifts."
+msgstr "Kiểm tra nơi làm việc, lịch giờ làm việc, nhóm chấm công và chính sách tính công. Dùng mẫu ca lặp lại để giao các ca lặp lại."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Roster"
+msgstr "Lịch làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Roster board"
+msgstr "Bảng lịch làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Roster counts for %(from)s to %(to)s. Grouped by each employee’s assigned "
+"workplace."
+msgstr "Số ca từ %(from)s đến %(to)s. Nhóm theo nơi làm việc được giao của từng nhân viên."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Roster review"
+msgstr "Duyệt lịch làm việc"
+
+#. module: pb_workforce_workspace
+#: model:ir.model,name:pb_workforce_workspace.model_pb_shift_patterns
+msgid "Rotating shift patterns board"
+msgstr "Bảng mẫu ca xoay vòng"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Rules & calendars"
+msgstr "Quy tắc và lịch"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Search by name…"
+msgstr "Tìm theo tên…"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Search records"
+msgstr "Tìm bản ghi"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Set start and end times, unpaid breaks and overnight work."
+msgstr "Đặt giờ bắt đầu, giờ kết thúc, giờ nghỉ không lương và ca qua đêm."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Set up Workforce"
+msgstr "Thiết lập lực lượng lao động"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Setup library"
+msgstr "Thư viện thiết lập"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Shift library"
+msgstr "Thư viện ca"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Shifts"
+msgstr "Ca làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Shifts & patterns"
+msgstr "Ca và mẫu ca"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Shifts that fit the working day."
+msgstr "Ca làm việc phù hợp với ngày làm việc."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Shifts, people, recurring rosters, calculation rules and attendance "
+"connections in one place."
+msgstr "Ca làm việc, nhân viên, lịch lặp lại, quy tắc tính công và kết nối chấm công ở cùng một nơi."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Showing the selected week."
+msgstr "Đang hiển thị tuần đã chọn."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Sign in to continue."
+msgstr "Đăng nhập để tiếp tục."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Sources with a report"
+msgstr "Nguồn đã gửi báo cáo"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Suggested shifts remain drafts until reviewed and published. Open a row for "
+"its policy, evidence and calculation preview."
+msgstr "Các ca được đề xuất vẫn là bản nháp cho đến khi được xem và công bố. Mở một dòng để xem chính sách, bằng chứng và bản xem trước cách tính."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "The right schedule for every person."
+msgstr "Lịch phù hợp cho từng người."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"These are the existing ceiling settings used by overtime approval. Zero "
+"means a limit is not enforced."
+msgstr "Đây là các giới hạn hiện có dùng khi duyệt tăng ca. Số 0 nghĩa là không áp giới hạn."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "These are the same records used by daily operations and Settings."
+msgstr "Đây là chính các bản ghi được dùng trong công việc hằng ngày và Cài đặt."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "This optional feature is not installed for this database."
+msgstr "Tính năng tùy chọn này chưa được cài cho cơ sở dữ liệu này."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Time off"
+msgstr "Nghỉ phép"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Timesheets"
+msgstr "Bảng công"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Unable to load. Please retry."
+msgstr "Không tải được. Vui lòng thử lại."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Unavailable"
+msgstr "Không có"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Unified Workforce workspace"
+msgstr "Không gian làm việc lực lượng lao động hợp nhất"
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Unknown workforce section."
+msgstr "Mục lực lượng lao động không xác định."
+
+#. module: pb_workforce_workspace
+#: model:ir.model.fields,help:pb_workforce_workspace.field_res_company__pb_workforce_workspace_enabled
+msgid ""
+"Use grouped navigation and guided setup. Existing attendance and payroll "
+"rules are unchanged."
+msgstr "Dùng menu theo nhóm và thiết lập có hướng dẫn. Quy tắc chấm công và bảng lương hiện có không thay đổi."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid ""
+"Use grouped navigation for this company. Existing rules and employee "
+"schedules stay as they are."
+msgstr "Dùng menu theo nhóm cho công ty này. Quy tắc và lịch của nhân viên hiện có vẫn giữ nguyên."
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Use previous navigation"
+msgstr "Dùng menu cũ"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Use the roster board to publish reviewed shifts."
+msgstr "Dùng bảng lịch làm việc để công bố các ca đã xem."
+
+#. module: pb_workforce_workspace
+#: model:ir.model.fields,field_description:pb_workforce_workspace.field_res_company__pb_workforce_workspace_enabled
+msgid "Use unified Workforce workspace"
+msgstr "Dùng không gian làm việc lực lượng lao động hợp nhất"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Workforce"
+msgstr "Lực lượng lao động"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+#: model:ir.actions.client,name:pb_workforce_workspace.action_workspace_setup
+msgid "Workforce setup"
+msgstr "Thiết lập lực lượng lao động"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+#: model:ir.model,name:pb_workforce_workspace.model_pb_workforce_workspace
+msgid "Workforce workspace"
+msgstr "Không gian làm việc lực lượng lao động"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Working calendars"
+msgstr "Lịch giờ làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Working days, rest days and holidays."
+msgstr "Ngày làm việc, ngày nghỉ và ngày lễ."
+
+#. module: pb_workforce_workspace
+#. odoo-python
+#: code:addons/pb_workforce_workspace/models/workspace.py:0
+msgid "Workplace not assigned"
+msgstr "Chưa gán nơi làm việc"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "Workplace:"
+msgstr "Nơi làm việc:"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.js:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_workforce_workspace
+#. odoo-javascript
+#: code:addons/pb_workforce_workspace/static/src/workspace.xml:0
+msgid "← Back to list"
+msgstr "← Quay lại danh sách"

@@ -7,6 +7,7 @@ from datetime import timedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
 from odoo.osv import expression
+from odoo.tools.misc import formatLang
 
 
 CATALOGS = {
@@ -19,6 +20,21 @@ CATALOGS = {
     'connectors': ('pb.clock.connector', 'Data connectors', ['name', 'source_group', 'state', 'last_contact', 'last_read', 'pending_rows', 'last_error']),
     'rosters': ('hr.shift.planning', 'Roster review', ['name', 'employee_id', 'date', 'shift_template_id', 'state', 'planned_hours', 'pb_inferred', 'pb_calculation_status']),
 }
+
+
+def _catalog_label(key):
+    """The section names, translated when they are read (WFSETUP P5c): the
+    labels in CATALOGS stay English identifiers."""
+    return {
+        'shifts': _('Shifts'),
+        'policies': _('Attendance policies'),
+        'people': _('People & assignments'),
+        'calendars': _('Working calendars'),
+        'rates': _('Overtime definitions'),
+        'ceilings': _('Overtime ceilings'),
+        'connectors': _('Data connectors'),
+        'rosters': _('Roster review'),
+    }.get(key, key)
 
 
 class Company(models.Model):
@@ -70,7 +86,8 @@ class Workspace(models.AbstractModel):
         self._gate()
         if key not in CATALOGS:
             raise ValidationError(_('Unknown workforce section.'))
-        name, label, wanted = CATALOGS[key]
+        name, _label, wanted = CATALOGS[key]
+        label = _catalog_label(key)
         if name not in self.env:
             raise ValidationError(_('This optional feature is not installed for this database.'))
         model = self.env[name]
@@ -127,13 +144,20 @@ class Workspace(models.AbstractModel):
         contacts = count('pb.clock.connector', [('last_contact', '!=', False)])
         missing = count('hr.employee', [('pb_attendance_policy_id', '=', False)]) if 'pb.attendance.policy' in self.env else None
         result.update(active_policies=active, draft_rosters=drafts, contacted_connectors=contacts, unassigned_people=missing)
+        num = lambda n: formatLang(self.env, int(n or 0), digits=0)
         result['steps'] = [
-            {'key': 'shifts', 'title': 'Define the shifts', 'text': 'Set start and end times, unpaid breaks and overnight work.', 'status': '%s shifts available' % counts.get('shifts', 0)},
-            {'key': 'policies', 'title': 'Review rules & calendars', 'text': 'Confirm normal hours, overtime boundaries and lateness deductions. Activate only after review.', 'status': ('%s active policies' % active) if active is not None else 'Calculation policy module not installed'},
-            {'key': 'people', 'title': 'Assign people', 'text': 'Check each person’s workplace, calendar and attendance group. Assign recurring patterns in the next step.', 'status': ('%s people without a policy' % missing) if missing is not None else '%s employees' % counts.get('people', 0)},
-            {'key': 'patterns', 'title': 'Build and review the roster', 'text': 'Assign people to recurring patterns, preview dates and create drafts. Publish only the reviewed roster.', 'status': '%s roster drafts awaiting review' % (drafts or 0)},
-            {'key': 'connectors', 'title': 'Connect attendance', 'text': 'Invite IT, pair the PC and verify received records. A successful upload does not prove that all terminals were downloaded.', 'status': '%s connectors have reported' % (contacts or 0)},
-            {'key': 'time', 'title': 'Check hours before payroll', 'text': 'Review actual attendance, normal hours and overtime. Resolve exceptions and approve hours before closing the period.', 'status': 'Review required before each payroll'},
+            {'key': 'shifts', 'title': _('Define the shifts'), 'text': _('Set start and end times, unpaid breaks and overnight work.'),
+             'status': _('%s shifts available', num(counts.get('shifts', 0)))},
+            {'key': 'policies', 'title': _('Review rules & calendars'), 'text': _('Confirm normal hours, overtime boundaries and lateness deductions. Activate only after review.'),
+             'status': _('%s active policies', num(active)) if active is not None else _('Calculation policy module not installed')},
+            {'key': 'people', 'title': _('Assign people'), 'text': _('Check each person’s workplace, calendar and attendance group. Assign recurring patterns in the next step.'),
+             'status': _('%s people without a policy', num(missing)) if missing is not None else _('%s employees', num(counts.get('people', 0)))},
+            {'key': 'patterns', 'title': _('Build and review the roster'), 'text': _('Assign people to recurring patterns, preview dates and create drafts. Publish only the reviewed roster.'),
+             'status': _('%s roster drafts awaiting review', num(drafts))},
+            {'key': 'connectors', 'title': _('Connect attendance'), 'text': _('Invite IT, pair the PC and verify received records. A successful upload does not prove that all terminals were downloaded.'),
+             'status': _('%s connectors have reported', num(contacts))},
+            {'key': 'time', 'title': _('Check hours before payroll'), 'text': _('Review actual attendance, normal hours and overtime. Resolve exceptions and approve hours before closing the period.'),
+             'status': _('Review required before each payroll')},
         ]
         Employee = self.env['hr.employee']
         if Employee.has_access('read'):
