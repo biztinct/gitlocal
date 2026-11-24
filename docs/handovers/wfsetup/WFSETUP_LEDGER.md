@@ -19,7 +19,7 @@ action; every record opens the generic premium record form; no visual of a shift
 | P0 | Facts doc | done 2026-11-24 |
 | P1 | New screen shell (7-step rail, status facade, live-preview panel) + step 1 Shifts + step 2 Working weeks | built + tested locally 2026-11-24 (`fd11e1e6a`, report WFSETUP_P1_REPORT.md) |
 | P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | built + tested locally 2026-11-24 (report WFSETUP_P2_REPORT.md) |
-| P3 | Step 4 Late and overtime rules + real live preview calculation + automatic holiday/rest-day marking | launched 2026-11-25 |
+| P3 | Step 4 Late and overtime rules + real live preview calculation + automatic holiday/rest-day marking | built + tested locally 2026-11-25 (report WFSETUP_P3_REPORT.md) |
 | P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | |
 | P5 | Take over the Settings card, vi/id translations, lessons/tours touched, deploy + browser walk, closeout | |
 
@@ -55,6 +55,15 @@ action; every record opens the generic premium record form; no visual of a shift
 - **WS13** `td { display: flex }` turns the cell into a non-cell and breaks the table; put a flex `div` inside the `td`. Use `table-layout: fixed` + `<colgroup>` so a long name never pushes the last columns out of a ~750 px centre column.
 - **WS14** A drawer that focuses its first radio option on open shows a focus ring that reads as a second selection; focus the dialog element (`tabindex=-1`) instead.
 - **WS15** "Has a working week" = a member row covering TODAY (P1 case 16). A future start shows "starts <date>" and still counts under "No working week yet"; default the date to today so the team bar fills on Apply.
+
+- **WS16** `resource.calendar.leaves`: `company_id` is COMPUTED from `calendar_id` (no calendar → the acting user's company), and the stock create shifts public-holiday times into the acting user's time zone. Tests and seeds must do what `pb.holidays._create_row` does: `calendar_id` = the company calendar, create a century out, then `write` the real UTC bounds. Otherwise the holiday lands on the wrong company or the wrong day and `_pb_holiday_map` never sees it.
+- **WS17** The backend bundle carries a global `[type="number"], [type="text"] … { display: block; width: 100% }`. An input inside a sentence must say `display: inline-block` itself.
+- **WS18** A number box that is half typed ("0.") reports `value === ""`. Never write `NaN`/empty back into reactive state from `t-on-input`: OWL re-applies `t-att-value`, wipes the box and "0.5" became "50" in the walk. Leave the stored value alone, mark the box, block saving until it holds a number (`step_rules.js num()/pending()`).
+- **WS19** `hr.overtime.config` rates are live for every overtime request the moment they are written. A screen that edits rates as part of a draft / "new version" must hold them on the draft (`pb.attendance.policy.pb_pending_rates`) and apply them on Confirm; otherwise "the current rules stay in use until you confirm" is false and Discard cannot undo.
+- **WS20** Rate rows are picked by the PERSON's nationality (`hr.employee.country_id`, HR-only), not the company's country; a person with no nationality only ever matches rows without a country. The one resolver is `hr.overtime.config._pb_pick` (pb_hr_workforce 4.25.0): company+country > company > country > global. A company row WITHOUT a country is the row that reaches everyone in the company.
+- **WS21** `engine.calculate` does not apply the clock window; `_policy_calculate` drops punches outside `start − capture_before … end + capture_after` first. A hypothetical example must apply the window itself or it pays punches the real job ignores.
+- **WS22** Web client `_t()` / sprintf has no `%%` escape: write "150 %" with a template string, not `_t("%s %%")`.
+- **WS23** Active rule sets are immutable, but a shift's times are not: changing a shift in step 1 while rules are in use can leave an ACTIVE per-shift line that no longer fits (the calculation then refuses that shift). `rules()` flags it per line; the fix is Change the rules → Confirm. Draft lines are re-synced automatically.
 
 ## Owner rulings (2026-11-24, on cards)
 - R1 Codex has FINISHED with the Workforce screens — build freely, replace its setup screen. (Still read /opt/deploy-notes.md before deploying.)
