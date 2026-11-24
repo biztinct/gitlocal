@@ -129,7 +129,9 @@ try:
                     raw = base64.b64decode(r['data'])
                     n, texts = pdf_text(raw)
                     p('pdf download', label, 'rows', r['rows'], 'pages', n, 'seconds', r['seconds'],
-                      'pages with Printed on', sum(1 for t in texts if 'Printed on' in t),
+                      'pages with a printed-on line', sum(1 for t in texts if re.search(r'Printed on|In lúc|In ngày|Dicetak', t)),
+                      'pages with a page number', sum(1 for t in texts if re.search(r'(Page|Trang|Halaman)\s*\d+', t)),
+                      'reader lang', uenv.user.lang,
                       'empty pages', sum(1 for t in texts if len(t.strip()) < 20),
                       'vendor in name', 'odoo' in r['name'].lower())
                 else:
