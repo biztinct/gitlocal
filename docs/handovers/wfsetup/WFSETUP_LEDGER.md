@@ -20,7 +20,7 @@ action; every record opens the generic premium record form; no visual of a shift
 | P1 | New screen shell (7-step rail, status facade, live-preview panel) + step 1 Shifts + step 2 Working weeks | built + tested locally 2026-11-24 (`fd11e1e6a`, report WFSETUP_P1_REPORT.md) |
 | P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | built + tested locally 2026-11-24 (report WFSETUP_P2_REPORT.md) |
 | P3 | Step 4 Late and overtime rules + real live preview calculation + automatic holiday/rest-day marking | built + tested locally 2026-11-25 (report WFSETUP_P3_REPORT.md) |
-| P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | |
+| P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | launched 2026-11-25 |
 | P5 | Take over the Settings card, vi/id translations, lessons/tours touched, deploy + browser walk, closeout | |
 
 ## Standing rules every handover repeats
