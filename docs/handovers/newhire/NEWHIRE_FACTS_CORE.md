@@ -515,3 +515,23 @@ honest but needs set-up per scheme.
 9. **Joining checklist + trial end from Add employee** means opening an onboarding case through `pb.zoho.pipeline._open_case`
    (lives in `pb_zoho_bridge`) — check module dependency weight, and that `pb_probation` is installed on all four DBs.
 10. **Holidays per country and "next free clock number" do not exist**; either build them or soften the POC sentences.
+
+---
+
+## Corrections and additions found in P1 (2026-11-25)
+- §A.4 "the maker can withdraw (`engine.cancel`)": true, but the mixin has no `_approval_withdraw`, so the PROPOSAL stays
+  `pending` after its request is cancelled. `pb_new_hire` (`create_ext.py`, `PbNewHireProposalNH._approval_withdraw`) moves a
+  studio proposal to `draft`; other new-hire proposals keep the old behaviour (ledger NH14).
+- §A.4 / §C.3: the request's amount is shown in `_approval_context()['currency_id']`, i.e. the company currency, whatever the
+  hire's country (ledger NH15). Studio proposals now pass the contract currency.
+- §C.4 `resolve_for_team` now exists (`pb_scheme_map/models/pb_scheme_map.py`, after `resolve_many`), built from three shared
+  rung helpers `_rung_department/_rung_division/_rung_only` that `resolve_many` also calls. `_department_schemes` in pb_updates
+  was NOT switched to it (not in the P1 handover's §2.2 list; it returns a set over every cycle type).
+- §D `policy_for_country(country, company)` now exists in `pb_probation/models/probation_policy.py`; `policy_for` calls it.
+- §E `_pb_usual_answer_rules()` lives on `hr.formula.config` in `contract_fill_in.py` (class `HrFormulaConfigUsualAnswers`,
+  not `formula_config.py`); `_pb_fill_one` calls it.
+- §I the recipe DB `upd_p6_t_tpl` has no active scheme and a US/USD company; it lacks `pb_pay_scales` and `pb_contract_rules`
+  (ledger NH16).
+- MRO on the local DB after install (top first): `pb.people.onboard.wizard` pb_new_hire → pb_pay_scales → pb_orgchart →
+  pb_people_advanced; `pb.people.contract.wizard` pb_new_hire → pb_pay_scales → pb_people_advanced. The studio path is written to
+  work in either order (extras ride in the context key `pb_nh_hire`, read by the `hr.employee` / `hr.contract` create overrides).

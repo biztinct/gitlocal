@@ -104,3 +104,23 @@ Owner approved the design and the phased build on 2026-11-25.
 - **NH9** No approval route for the company → `propose` raises a UserError. Design that state.
 - **NH10** Sibling-studio gotchas from WFSETUP apply as written: WS1, WS2, WS4, WS5, WS10, WS11, WS14, WS17, WS18, WS22,
   WS24, WS28, WS39, WS40, WS42 (FACTS_CORE §B.6).
+- **NH11** (P1) An OWL template cannot call JS globals: `String(x)`, `Number(x)`, `Math.*` compile to `ctx.String` and crash the
+  step on render ("ctx.String is not a function"). Put the comparison in a component method (`isJob(j)`).
+- **NH12** (P1) Python: `0 in (None, '', False)` is **True** (`0 == False`). A "turned off" usual answer (amount 0) was dropped
+  by a membership test. Test emptiness with identity (`value is None or value is False or value == ''`).
+- **NH13** (P1) `hr.department.complete_name` is not stored: `search(order='complete_name')` raises. Order by name, sort in Python.
+- **NH14** (P1) The approval engine calls `record._approval_withdraw` only if the model has it; the proposal mixin does not, so a
+  withdrawn `pb.newhire.proposal` stayed "Waiting for approval" forever. `pb_new_hire` adds the hook for studio payloads only
+  (state → `draft`).
+- **NH15** (P1) The approval request's money is `_approval_context()['currency_id']` (company currency by default): a
+  Singapore hire showed "5,200.50 VND" in the inbox. `pb_new_hire` overrides `_approval_context` for studio payloads with the
+  contract currency; the mixin and the proposal's own currency field are unchanged.
+- **NH16** (P1) `upd_p6_t_tpl` (the wfsetup recipe DB) has no active scheme, one team, a US/USD company and lacks `pb_pay_scales`
+  and `pb_contract_rules`. Install those two and seed a walk world (script in the P1 report, §2.3) before any browser walk.
+- **NH17** (P1) Chrome DevTools MCP can be held by another session ("browser is already running for … chrome-profile"). Use the
+  Claude-in-Chrome tools instead. Its window cannot go below ~578 px: prove 400 px by narrowing `.pbnh` to 340 px (400 minus
+  the 60 px sidebar) — the viewport is already under the 600 px breakpoint. Type-ahead on a native `<select>` cannot be driven
+  on macOS (keys go to the native popup): use `form_input` for selects in a keyboard walk.
+- **NH18** (P1) Screens we do not own still read the company currency: People › Employees shows a studio hire's IDR wage as
+  "₫9.0M", and the contract panel's "Employee category" is the first `hr.contract.type` ("Vietnam Permanent Monthly") for an
+  Indonesian hire (`create_contract` never sets `type_id`, FACTS §A.3). Not fixed in P1 — open questions in the P1 report.
