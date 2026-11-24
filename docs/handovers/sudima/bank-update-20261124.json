@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-24",
+  "source_sha256": "74f194f6dceb8bbba678955839c0619a76b8809215b86235676685bedcb5b5a6",
+  "data_database": "sudima",
+  "shared_code_databases": [
+    "payobook",
+    "payobook_template",
+    "p0clone",
+    "rize",
+    "sudima"
+  ],
+  "commits": {
+    "data": "8b93b285f",
+    "new_profile_country": "64df6b50d",
+    "joining_date": "7b4d349d9",
+    "shared_deployment": "465faa09f",
+    "obsolete_proposal": "925b69979"
+  },
+  "counts": {
+    "profiles_created": 27,
+    "names_corrected": 233,
+    "bank_master_corrected": 246,
+    "linked_accounts_corrected": 181,
+    "bank_links_corrected": 168,
+    "bank_records_verified": 576,
+    "names_and_joining_dates_verified": 606
+  },
+  "tests": {
+    "rollback_rehearsal": "passed",
+    "zero_change_repeat": "passed",
+    "new_profiles_no_contracts_banks_or_logins": "passed",
+    "protected_payroll_contract_attendance_leave_users": "unchanged",
+    "joining_date_regressions": 5,
+    "deployed_helper_all_five_databases": "passed",
+    "combined_custom_module_trees": 207,
+    "installed_versions_all_five_databases": "matched",
+    "http_active_hosts": "200",
+    "chrome": [
+      "new profile and supplied joining date",
+      "corrected name and bank account",
+      "obsolete pending warning removed",
+      "HTML report readability"
+    ]
+  },
+  "obsolete_proposal": {
+    "cancelled": "RD00185",
+    "exact_already_applied_copy": "RD00189",
+    "normal_cancel_api": true,
+    "repeat_no_change": true
+  },
+  "pending": {
+    "bank_name_missing_codes": [
+      "029"
+    ],
+    "waiting_bank_registration": 29,
+    "existing_old_account_needs_confirmation": "039",
+    "conflicting_probation_pair": [
+      "1264",
+      "12641"
+    ],
+    "historical_probation_records_left_unchanged": 8
+  },
+  "scope_notes": [
+    "No future probation-code import-matching change",
+    "No schema or manifest changes; no module upgrade needed",
+    "ABM untouched",
+    "No screenshot files saved; other sessions assets preserved"
+  ],
+  "permanent_backup_and_receipts": "/odoo/archives/sudima-bank-check-20261124",
+  "local_report": "SUDIMA/Sudima - November roster and bank update - 24Nov2026.html"
+}
