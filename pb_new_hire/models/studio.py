@@ -43,6 +43,10 @@ MAX_TEAMS = 500
 MAX_JOBS = 1000
 MAX_FIND = 50
 MAX_USUAL = 60
+MAX_WEEKS = 200
+MAX_OWN = 80
+MAX_EQUIPMENT = 40
+MAX_CLOCK = 32
 
 #: The keys a draft from the screen may carry. Anything else is ignored.
 DRAFT_KEYS = (
@@ -50,6 +54,9 @@ DRAFT_KEYS = (
     'job_title', 'payroll_country', 'parent_id', 'work_location_id',
     'country_id', 'wage', 'contract_kind', 'date_end', 'trial_on', 'usual',
     'pb_scale_pin_reason', 'pb_scale_pin_note', 'fill_job_id',
+    # P2 — step 3's category, step 4 and step 6
+    'type_id', 'week_id', 'late_group', 'clock_on', 'clock_code', 'login_mode',
+    'buddy_id', 'equipment', 'letter', 'open_case', 'own',
 )
 
 _EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
@@ -393,6 +400,7 @@ class PbNewHire(models.AbstractModel):
             elif not policy or policy.duration_months <= 0:
                 out['trial_none'] = _("No trial period rule for %(country)s.",
                                       country=self._country_label(code))
+            out['letter'] = self._letter_info(code)     # P2: the Contract letter tile
         return out
 
     # ======================================================= usual answers
@@ -558,7 +566,7 @@ class PbNewHire(models.AbstractModel):
                 return self._refuse('pay', 'date_end', _("A fixed-term contract needs an end date."))
             if end <= start:
                 return self._refuse('pay', 'date_end', _("The contract must end after the first day."))
-        return None
+        return self._validate_welcome(d)                # P2: steps 4 and 6
 
     @api.model
     def _scale_amount(self, d):
@@ -664,6 +672,7 @@ class PbNewHire(models.AbstractModel):
         fill = self._job(d.get('fill_job_id'))
         if fill:
             vals['fill_job_id'] = fill.id
+        self._values_welcome(d, vals, decided)          # P2: steps 4 and 6
         return vals, decided
 
     @api.model

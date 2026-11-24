@@ -53,7 +53,10 @@ NH_CTX = 'pb_nh_hire'
 
 #: The employee fields the studio may set at create (whitelist, §3).
 EMPLOYEE_EXTRA = ('payroll_country', 'date_of_joining', 'private_email',
-                  'private_phone', 'work_location_id')
+                  'private_phone', 'work_location_id',
+                  # P2: the late and overtime rule group rides on the ONE create
+                  # (FACTS_CORE §H: a category passed at create is respected)
+                  'pb_attendance_category')
 
 
 def _int(value):
@@ -78,7 +81,8 @@ class PbOnboardWizardNewHire(models.AbstractModel):
                   ('job_id', 'hr.job', _("The job %s was removed before approval.")),
                   ('parent_id', 'hr.employee', _("The manager %s left before approval.")),
                   ('work_location_id', 'hr.work.location', _("The work site %s was removed before approval.")),
-                  ('country_id', 'res.country', '%s'))
+                  ('country_id', 'res.country', '%s'),
+                  ('type_id', 'hr.contract.type', '%s'))
         for key, model, sentence in checks:
             if not values.get(key):
                 continue
@@ -89,7 +93,7 @@ class PbOnboardWizardNewHire(models.AbstractModel):
             values.pop(key, None)
             if key == 'job_id' and names.get('job_id'):
                 values.setdefault('job_title', names['job_id'])
-            if key != 'country_id':
+            if key not in ('country_id', 'type_id'):
                 notes.append(sentence % (names.get(key) or ''))
         return values, notes
 
@@ -109,6 +113,7 @@ class PbOnboardWizardNewHire(models.AbstractModel):
                 'scheme_id': _int(values.get('pb_nh_scheme_id')),
                 'contract_kind': values.get('contract_kind') or 'permanent',
                 'pin_note': values.get('pb_scale_pin_note') or False,
+                'type_id': _int(values.get('type_id')),
             },
         }
 
@@ -134,7 +139,11 @@ class PbOnboardWizardNewHire(models.AbstractModel):
                 raise UserError(_("The end of the trial period could not be set."))
         for note in notes:
             emp.message_post(body=note)
-        return res
+        # P2: the welcome legs — after the core, each in its own savepoint;
+        # a failed leg never undoes the hire (handover §2.2).
+        contract = self.env['hr.contract'].sudo().browse(_int(res.get('contract_id'))).exists()
+        legs, summary = self.env['pb.new.hire.legs'].run(emp, contract, values)
+        return dict(res, legs=legs, legs_summary=summary)
 
 
 class PbContractWizardNewHire(models.AbstractModel):
@@ -237,6 +246,10 @@ class HrContractNewHire(models.Model):
         field = self._fields.get('payroll_country')
         if code and field and code in dict(field._description_selection(self.env)):
             vals['payroll_country'] = code      # NH3: the currency is right when the wage is written
+        type_id = _int((extra.get('contract') or {}).get('type_id'))
+        if type_id and 'type_id' in self._fields \
+                and self.env['hr.contract.type'].sudo().browse(type_id).exists():
+            vals['type_id'] = type_id           # P2: the category chosen on screen
         employee = self.env['hr.employee'].sudo().browse(extra['employee_id']).exists()
         if employee and employee.resource_calendar_id:
             vals['resource_calendar_id'] = employee.resource_calendar_id.id   # NH2
@@ -314,6 +327,38 @@ class PbNewHireProposalNH(models.Model):
         for item in values.get('usual') or []:
             if isinstance(item, dict):
                 add(item.get('name') or item.get('code') or '', _('Changed to %s', item.get('text') or ''))
+        add(_('Contract category'), self._row_label('hr.contract.type', values.get('type_id')))
+        rows.extend(self._pb_nh_welcome_rows(values, names))
+        return rows
+
+    def _pb_nh_welcome_rows(self, values, names):
+        """P2: steps 4 and 6 as the approver reads them."""
+        rows = []
+
+        def add(label, value):
+            if value not in (None, '', False):
+                rows.append((label, '', value))
+
+        add(_('Working week'), names.get('week') or _("The company's usual hours"))
+        if values.get('pb_attendance_category'):
+            add(_('Late and overtime rule'), _('Manager') if values['pb_attendance_category'] == 'manager'
+                else _('Worker'))
+        add(_('Clock number'), values.get('pb_clock_code') or _('No clocking'))
+        mode = values.get('login_mode') or 'none'
+        add(_('Sign-in'), {'email': _('Email invitation'),
+                           'code': _('Employee number')}.get(mode, _('Not yet')))
+        if values.get('open_case', True):
+            add(_('Joining checklist'), names.get('case') or _('None is set up'))
+            add(_('Buddy'), names.get('buddy') or _('The manager chooses'))
+            if values.get('equipment') is not None:
+                add(_('Equipment'), ', '.join(names.get('equipment') or []) or _('None'))
+        else:
+            add(_('Joining checklist'), _('Not started for this person'))
+        add(_('Contract letter'), names.get('letter') if values.get('letter') else _('Not prepared'))
+        own = names.get('own') or {}
+        for name in (values.get('own_fields') or {}):
+            item = own.get(name) or {}
+            add(item.get('label') or name, item.get('text'))
         return rows
 
     def _approval_withdraw(self, request, reason):
