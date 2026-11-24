@@ -22,6 +22,7 @@ action; every record opens the generic premium record form; no visual of a shift
 | P3 | Step 4 Late and overtime rules + real live preview calculation + automatic holiday/rest-day marking | built + tested locally 2026-11-25 (report WFSETUP_P3_REPORT.md) |
 | P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | built + tested locally 2026-11-25 (report WFSETUP_P4_REPORT.md) |
 | P5a | Take over the old doors, trim the Workforce menu, vi/id wording, lessons check, final pass, step 7 plan once | built + tested locally 2026-11-25 (report WFSETUP_P5A_REPORT.md) |
+| P5c | Polish: publish makes the roster day by day (progress in ~3 s), translated Workforce tab bar, numbers in the user's language | built + tested locally 2026-11-25 (report WFSETUP_P5A_REPORT.md, P5c section) |
 | P5b | Deploy + live browser walk + closeout | next |
 
 ## Standing rules every handover repeats
@@ -82,6 +83,10 @@ action; every record opens the generic premium record form; no visual of a shift
 - **WS36** A baseline run from a `git archive` snapshot must include `pb_import_kit` next to the snapshot: `test_static.test_s2_every_icon_exists` reads it through the module's parent folder (one false ERROR otherwise).
 - **WS37** Inside one test transaction `write_date` is `now()` of that transaction and never moves: a fingerprint built on `max(write_date)` sees a create/unlink (count, max id) but not a plain write. Real requests are separate transactions, so it works live; a test must bump `write_date` by SQL to stand in for "a later request".
 - **WS38** `pb_learn` `TestAnchorRegistry.test_05_no_stray_anchors` fails on `19.1` for anchors in other modules (`pb_payrun_wizard`, `pb_payslip_review`, `pb_contracts`, `pb_pay_delivery`, `pb_govt_reports`, `pb_approval_config`) — not this programme's files.
+- **WS39** The translation export only sees a LITERAL first argument: a helper `count(text, n)` that calls `_t(text, …)` silently drops those msgids (the screen stays English). Write `_t("%s people", …)` at each call site.
+- **WS40** The asset transpiler binds `_t` to the module's own translations only when the import is exactly `import { _t } from "@web/core/l10n/translation";` — DOUBLE quotes and nothing after the semicolon (`js_transpiler.GETTEXT_RE`, `^…require("…");$`). Single quotes or a trailing comment fall back to the global table: whichever module's translation won ("More" became "Selengkapnya", "Field" stayed English) — it can look half-working. Pinned by `pb_workforce_workspace` `test_02`.
+- **WS41** Go-live engine work can be split into consecutive day ranges with an identical result only if (a) each range first removes the drafts the engine will take away on the NEXT day (`Eng.plan(next_day)['remove']`) and (b) nobody is on two working weeks on the same day (else one pass, `_live_split_ok`). Each engine call has ~0.6–0.9 s fixed cost: batch ~1,000 shifts per call (one day at 700 people, a week at 120).
+- **WS42** Numbers: `toLocaleString()` follows the BROWSER; the web client's `formatFloat` (`@web/core/utils/numbers`) and server `formatLang(env, n, digits=0)` follow the user's language (2.402 / 7,5 in vi and id). Never group years. Locally, signing in on the English login page set the walk users' language to English — switch with the language menu (or `frontend_lang` cookie) before a vi/id walk; a SQL change of `res_partner.lang` needs a server restart (cached user context).
 
 ## Owner rulings (2026-11-24, on cards)
 - R1 Codex has FINISHED with the Workforce screens — build freely, replace its setup screen. (Still read /opt/deploy-notes.md before deploying.)

@@ -186,3 +186,146 @@ Workforce tab names around the studio are English for Vietnamese and Indonesian 
 - this report + ledger WS32–WS38 (docs commit on top)
 
 Test databases `wfs5_base` and `wfs5_ws` and their filestores dropped after the run; the walk logins existed only there.
+
+---
+
+# P5c — polish pass (publish speed, translated Workforce tab bar, numbers in the user's language)
+
+Built 2026-11-25 in the same worktree / branch. Not pushed, not deployed. One local DB `wfs5c` (copy of
+`upd_p6_t_tpl` + one `-u all`, WS3), dropped with its filestore afterwards.
+
+## P5c.1 Fix 1 — publish no longer plans the whole window first
+
+**Chosen: the split, not the reuse.** Reusing the check's plan was not enough: `Eng.apply` re-plans anyway, the
+12-week check plan is not stored server-side, and even with a stored plan the start would still create all
+16,100 rows before the first week could tick (~25 of the 35 s). So the engine work moved into the week calls:
+
+- `go_live_start` now only checks, re-marks the rows already there (`remark_days`), and opens the run
+  (`per_week = True`, `made_to = yesterday`). 0.2 s at 700 people.
+- New `go_live_make(run_id, index, day=None)`: makes the drafts up to `day` (whole week without it). The screen
+  calls it a few days at a time — about 1,000 shifts a call (`round(1000 / headcount)` days, 1..7): one day at
+  700 people, a whole week at 120. The bar counts a made day as 1 and a published week as 2.
+- `go_live_week` first makes whatever is left of its week (`_make_until`), then publishes as before. So the
+  P4 protocol (start → week → … → finish), the P4 tests 12–15 and a resumed run all still work unchanged.
+- **Why it is the same roster** (proof in the `golive.py` docstring, test `test_p5c.py`): everything the engine
+  decides is per person and day except the overlap test, which looks one day either side. A person on ONE working
+  week is planned day after day, so splitting into consecutive day ranges keeps the order, provided the drafts the
+  engine will remove on the NEXT day go first — `_live_make` takes `Eng.plan(next_day)['remove']` before applying
+  (skipped when that day has no working-week draft). A person on TWO working weeks on the same day breaks the
+  order (a later pattern's Sunday is judged against an earlier pattern's Monday): `_live_split_ok` detects it and
+  then the start runs the old single pass (`per_week = False`). Day types do not depend on roster rows, so
+  re-marking at the start + marking on create = re-marking after the engine.
+- One knowing difference, in the new path's favour: a working-week shift refilled on a hand-decided day is deleted
+  in the same call; in one pass it lived until the whole window was planned and could block the next day's shift
+  (a "ghost"). Needs a shift that runs past midnight into the next day's shift.
+- Safety unchanged: company-scoped searches, idempotent (`made_to` + `state = draft`), the make step has its own
+  savepoint (a failure there is reported like a failed week and rolled back whole; Carry on makes it again), a
+  failed publish keeps the week's drafts (test 15 unchanged). `go_live_make` is attendance-manager only.
+
+**Equivalence test** (`TestP5cWeekByWeek.test_01`, fixture = 3 working weeks / 40 people / 4 weeks): drafts
+already made for weeks 2–3, a company day off in week 2, a hand-edited draft, two one-off night shifts (one on a
+pre-made day, one on a day the engine still fills), a hand-made rest-day shift, a shift published before, a draft
+the week no longer wants, an untouched stale early-shift draft on week 2's Monday overlapping week 1's new Sunday
+night, another company's draft. The P4 path (forced through `_live_split_ok = False`), the week-only protocol and
+the screen's day-by-day protocol each run; the first two inside a rolled-back savepoint. Every row of both
+companies from today on is compared field by field (person, day, shift, times, state, day type + by-hand flag,
+working week, signature, late-rule set, acknowledgement token present) plus the finish card (published, people,
+dates, made counts, summary): **identical**. Also: someone on two working weeks → one pass (`test_02`); a failing
+make rolls back and carries on (`test_03`); officer refused (`test_04`); 700-people timing (`test_05`).
+
+**Timings, 700 people × 4 weeks from a Tuesday/Wednesday = 16,100 shifts** (same machine, same DB):
+
+| | Before (P4 code, `git archive HEAD`) | After, week-only calls | After, the screen's calls |
+|---|---|---|---|
+| Publish pressed → start returns | **35.5 s** | 0.2 s | **0.2 s** |
+| First visible progress | **~38 s** (first week done) | ~11 s | **2.7 s** (first day made) |
+| Each step | weeks 2.6 / 3.1 / 3.1 / 3.1 s | weeks 10.9–12.8 s | ~2.5 s per day (700 shifts), ~2.5–3 s per publish |
+| Whole publish | ~47 s | ~48 s | ~71 s alone (77 s inside the full suite) |
+
+The day-by-day calls cost ~0.7 s of fixed work each (the plan's per-call reads), so the whole 700-people publish
+takes ~50 % longer in exchange for progress at 2.7 s instead of ~38 s. Smaller companies batch days (120 people =
+one make per week), so they pay almost nothing: walk below.
+
+## P5c.2 Fix 2 — the grouped Workforce tab bar is translated
+
+- `pb_workforce_workspace/static/src/workspace.js`: tab names through `groupLabel(label)` (the English label stays
+  the identity for comparisons and P5a test 2), sub-tab and lens names through `lensLabels()`, the page copy through
+  `copy()`, the Settings card and lens registry entries as getters — every `_t` runs when shown. Sub-tabs of
+  "More" (time off, approvals, field, insights) get their own names in the tab bar. Hard-coded English inside
+  template expressions moved to getters (eyebrow, adoption card, stats "Not installed"/"Unavailable", week line,
+  "N people / draft shifts / other roster rows" with the bold number as markup, "N records", pager, "Record",
+  "Not assigned", the patterns-board button labels, weekday names through luxon, dates in the review list).
+- `models/workspace.py`: section names (`_catalog_label`) and the six old setup steps through `_()`; counts with
+  `formatLang`.
+- `i18n/pb_workforce_workspace.pot` (148 msgids: JS, template, Python, field/model terms) + `vi_VN.po` + `id_ID.po`
+  (complete; glossary as P5a: Lịch làm việc / Jadwal kerja for roster, Bảng công / Jam kerja for Timesheets…).
+  Three loading markers on every entry; parse gate over all 5,662 `.po` files in the worktree: 0 bad (the known
+  legacy country-module "unknown occurrence" warnings only). No "Odoo" in any msgid or msgstr (test).
+- New `tests/test_static.py` (3 tests): translations load (parse, coverage, placeholders, vendor word, markers);
+  no module-level `_t`, the exact `_t` import line (WS40), no `toLocaleString`; every tab has a translated name.
+- Version **19.0.1.1.0 → 19.0.1.1.1**.
+- Still English for a vi/id user, outside this module: a few roster field labels in the review list
+  ("Suggested from punch history", "Pb Calculation Status" — other modules' field names), the "You don't have
+  access to this yet" dialog, and the studio's "Kembali ke Workforce" back chip word "Workforce".
+
+## P5c.3 Fix 3 — numbers in the user's language
+
+- Studio JS: `fmtNum(n)` and `dec(v, digits)` in `setup_util.js` use the web client's `formatFloat`
+  (`@web/core/utils/numbers`, the user's language settings). Every `toLocaleString()` is gone (step 7, rules,
+  people, clocks); counts that can pass 999 in sentences (people, shifts, days, ticked, applied…) and in the
+  template (no-week / no-clock-number chips, worker/manager counts) are formatted; hours (`hrs`, `hoursText`),
+  percentages and read-only rule values use the user's decimal mark (8,8 jam / 7,5 h).
+- Server sentences shown in the studio: `_num(n)` / `_dec(v)` on the facade (`formatLang`) replace every
+  `'{:,}'.format` and the raw people/shift counts (publish label and finish card, re-mark summary, holiday
+  re-mark toasts, rules confirmed, one-offs added, late rules set, "more than 5,000 shifts", band "h off").
+- Years, week numbers, minutes and line numbers are left as they are on purpose.
+
+## P5c.4 Tests
+
+| Run | Result |
+|---|---|
+| `pb_workforce_setup` + `pb_workforce_workspace` full suites, final code | **0 failed, 0 errors of 101 tests** (`pb_workforce_setup` 89 incl. 5 new P5c, `pb_workforce_workspace` 12 incl. 3 new static); P4 tests 12–15 unchanged and green. In that run: case 17 start 0.36 s, weeks 11.9–13.8 s; P5c day-by-day first step 2.76 s, total 68.3 s |
+| P5c tests alone (5) | 5 / 5 |
+| Static tests (`TestSetupStatic` 4, `TestP5aStatic` 4, `TestWorkspaceStatic` 3) | pass |
+| Before-timing run (P4 code: test 17 + test 12/13) | 2 / 2 |
+
+## P5c.5 Browser walk (local, port 8196, host `wfs5c.localhost`, crons off; "Walk Furniture Co" and "Walk Two Co": 120 people, 3 working weeks, rules confirmed, grouped menu on; logins with attendance manager + HR officer rights)
+
+| # | Result | Notes |
+|---|---|---|
+| W1 Vietnamese tab bar | pass | Tổng quan · Lịch làm việc · Bảng công · Thêm · "Thiết lập lực lượng lao động"; sub-tabs Tổng quan nhà máy / Hôm nay; Bảng lịch làm việc; Chấm công và giờ làm / Duyệt tăng ca / Chốt kỳ và gửi sang bảng lương; Phê duyệt / Hiện trường. Overview page, workplace card ("120 người · 0 ca nháp · 560 dòng lịch khác"), library, review-roster list ("560 bản ghi", "1–40 trên 560", "Tìm theo tên…") all Vietnamese |
+| W2 Indonesian tab bar | pass (after fix WS40) | Ikhtisar · Jadwal kerja · Jam kerja · Lainnya · Penyiapan Tenaga Kerja; sub-tabs all Indonesian. Before the fix "More" read "Selengkapnya" (another module's word) and "Field" stayed English |
+| W3 Vietnamese publish 4 weeks, fresh company, final code | pass | "2.480" shifts; bar moves at **1.8 s**, done at **10.6 s**; finish "Lịch làm việc có 2.480 ca cho 120 người…"; DB 2,480 published, 120 people, 0 duplicates |
+| W4 Vietnamese publish of 4 more weeks (12-week window, day-at-a-time build) | pass | "2.720 ca mới · 5.320 ca đã công bố trước đó"; bar at 1.1 s, done 27.5 s |
+| W5 Indonesian publish of 4 more weeks (8-week window, day-at-a-time build) | pass | bar at 0.66 s, done 23 s; "2.720 shift lagi diterbitkan"; preview "8,8 jam", "7,8 jam" |
+| W6 First Vietnamese publish (4 weeks, before the walk fixes) | pass | "2.600", done 10.9 s |
+| DB after W4–W6 | pass | 8,040 published, 0 duplicates, 0 chatter lines |
+| Console | clean | no errors or warnings on all three logins |
+
+Walk fixes: WS40 (the `_t` import spelling), the bold-count helper that called `_t(variable)` (WS39), dates in
+the review list, and the per-call day batching (W4/W5 ran one day per call: ~0.6 s overhead per call at 120
+people; W3 ran on the batched code).
+
+## P5c.6 Updated module / version table (for the P5b deploy — replaces §6 above)
+
+| Module | Version before → after | Install or upgrade | Stored fields / tables added |
+|---|---|---|---|
+| `pb_workforce_setup` | new → **19.0.1.4.1** | **install** (sudima + payobook first, R2) | as §6, plus `pb_workforce_setup_run.per_week` (Boolean), `made_to` (Date) on the transient run table |
+| `pb_workforce_workspace` | 19.0.1.0.0 → **19.0.1.1.1** | upgrade where installed | none (new `i18n/` folder: code translations, no DB load step) |
+| `pb_hr_workforce` | 19.0.4.24.1 → **19.0.4.25.0** | upgrade everywhere installed | none |
+| `pb_attendance_policy` | unchanged | install where missing | its own tables |
+| other dependencies | unchanged | by the dependency chain | — |
+
+Deploy notes unchanged: purge `/web/assets/%` per DB (JS/XML changed in both modules). A user who signs in on an
+English login page may land in English (the login sets the user's language): switch with the language menu.
+
+## P5c.7 New gotchas → ledger WS39–WS42
+
+## P5c.8 Commits (branch `wfsetup`)
+- `735da7717` feat(pb_workforce_workspace): translated grouped tab bar, overview and review roster (WFSETUP P5c)
+- `063855e44` feat(pb_workforce_setup): publish makes the roster day by day; numbers in the user's language (WFSETUP P5c)
+  (fixes 1 and 3 share `golive.py` / `step_live.js`, so they are one commit for this module)
+- this report section + ledger WS39–WS42 (docs commit on top)
+
+Test database `wfs5c` and its filestore dropped after the run; the walk logins existed only there.
+
