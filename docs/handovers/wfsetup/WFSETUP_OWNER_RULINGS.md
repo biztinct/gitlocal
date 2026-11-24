@@ -17,3 +17,12 @@
 - R7 **Holiday / rest-day pay becomes automatic**: when the roster is made, shifts on a public holiday or on the person's
   day off are marked for the holiday / rest-day rate; a single shift can still be changed by hand. Owner note: Sudima is in
   production but no real pay run has happened; anything there is test/demo. Test carefully, no long recompute rehearsal needed.
+
+## 2026-11-25 (after the P8 rehearsal, on cards)
+- R8 Clock numbers: matching ignores leading zeros ("012" = "12"), all sites.
+- R9 Sudima pay uses clock hours from **1 December 2026**. Sep–Nov stay on the pay spreadsheet. Order before 1 Dec:
+  confirm rules → publish December roster → switch clock-ins on (five real PCs; connector 1 stays off, owner's call).
+- R10 Late minutes reduce pay (after the rules' grace bands).
+- R11 Owner's thought, adopted: pay formulas read **paid hours**; **actual hours from the punches stay in a separate
+  field**, shown but never used in a formula.
+- R12 The built-in "extra hours" count is switched off on Sudima (its overtime comes from the rules).
