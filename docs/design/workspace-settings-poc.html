@@ -2,7 +2,56 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Workspace settings · Payobook</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#211e39;background:#f6f7fb}button,select,input{font:inherit;color:inherit}button,select{cursor:pointer}button{background:white;border:0}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #8978ff;outline-offset:1px}button:hover{background:#f1effb}svg{width:19px;height:19px;flex:none;vertical-align:middle;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.app{display:grid;grid-template:48px 39px minmax(0,1fr) / 56px 82px minmax(0,1fr);height:100dvh}.primary{grid-area:1/1/4/2;background:#11152e;display:flex;flex-direction:column;align-items:center;color:#dbe0f4;padding:8px 0;gap:8px}.logo,.avatar{display:grid;place-items:center;background:#5945de;color:white;border-radius:10px;font-weight:800;width:34px;height:34px}.avatar{margin-top:auto;font-size:11px}.places{width:100%;min-height:0;overflow:auto;scrollbar-width:thin}.place{display:grid;place-items:center;width:40px;height:36px;margin:3px auto;color:inherit;background:transparent;border-radius:9px}.place:hover,.place[aria-current=true]{background:#302d66;color:white}.place[aria-current=true]{box-shadow:inset 3px 0 #9a96ff}header{grid-area:1/2/2/4;background:#252049;color:white;display:flex;align-items:center;gap:10px;padding:0 19px}header select{background:#252049;color:white;border:none;font-weight:700}header .end{margin-left:auto;color:#dfdcf6;font-size:12px}.review{border:1px solid #777292;border-radius:6px;color:white;background:transparent;padding:4px 10px}.review:hover{background:#443c6c}.crumb{grid-area:2/2/3/4;background:white;border-bottom:1px solid #e0e3ed;padding:9px 19px;color:#657089;font-size:12px}.crumb b{color:#252039}.crumb span{padding:0 9px}.secondary{grid-area:3/2/4/3;background:white;border-right:1px solid #dfe3ec;display:flex;flex-direction:column;min-height:0;padding:6px 4px}.work{flex:1;overflow:auto;scrollbar-width:thin}.foot{border-top:1px solid #dddfea;padding-top:5px}.navbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:100%;min-height:49px;padding:5px 2px;border-radius:8px;font-size:9px;line-height:1.25;font-weight:700;text-transform:uppercase;color:#65748b}.navbtn[aria-current=true]{background:#edeafa;color:#5741bc}.page{grid-area:3/3/4/4;overflow:auto;min-width:0}.wrap{max-width:1130px;margin:0 auto;padding:clamp(24px,4vw,62px)}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:750;color:#6c6591}.heading{border-bottom:1px solid #dedfeb;padding-bottom:25px}.heading h1{font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-.045em;margin:10px 0}.heading p,.muted{color:#617089;margin:0}.tools{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:23px 0 18px}.tools strong{font-size:15px}.search{display:flex;align-items:center;gap:7px;border:1px solid #d9dce9;background:white;border-radius:8px;padding:6px 10px;color:#778198}.search input{width:150px;max-width:100%;border:none;outline:0;background:transparent;font-size:12px}.groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}.panel{border:1px solid #dfe2ed;background:white;border-radius:14px;overflow:hidden}.panel h2{margin:0;padding:16px 18px;background:#fbfbfd;border-bottom:1px solid #e7e8ef;font-size:14px;display:flex;align-items:center;gap:9px}.panel h2 span{color:#80799a;font-weight:500;font-size:12px}.row{width:100%;display:flex;text-align:left;padding:19px 16px;gap:12px;align-items:flex-start}.row+.row{border-top:1px solid #eeedf4}.tile{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;flex:none;color:#6253b4;background:#efedf9}.panel:nth-child(even) .tile{background:#e7f3f1;color:#37766b}.row strong,.row small{display:block}.row strong{font-size:14px}.row small{color:#626e84;margin-top:4px;font-size:12px;line-height:1.5}.arrow{margin:auto 0 auto auto;color:#89879e}.arrow svg{width:14px}.note{margin:25px 0 0;padding:15px 0;border-top:1px solid #dedfeb;color:#627086;font-size:12px}.note b{color:#48425b}.empty{padding:24px}.wide{grid-column:1/-1}dialog{color:inherit;border:1px solid #d9dae5;border-radius:15px;padding:24px;width:min(590px,92vw);max-height:85dvh}dialog::backdrop{background:#11152e68}dialog h2{margin:8px 0;font-size:23px}dialog p{color:#59657a}dialog code{overflow-wrap:anywhere;font-size:12px}dialog .close{float:right;border-radius:7px;padding:6px}details{margin:7px 0;border:1px solid #e3e4ed;border-radius:7px;padding:9px 12px}summary{cursor:pointer;font-weight:650}dt{font-weight:650;margin-top:16px}dd{margin:3px 0;color:#59657a}.action{border:1px solid #c9c3ef;color:#5646ad;border-radius:7px;padding:7px 13px}h2{font-size:18px}.guide{color:#50466f;background:#f0eef8;padding:12px;border-radius:8px}@media(max-width:850px){.groups{grid-template-columns:1fr}}@media(max-width:570px){.app{grid-template-columns:42px 63px minmax(0,1fr)}.wrap{padding:16px 10px}.tools{align-items:stretch;flex-direction:column}.row{padding:13px 9px;gap:7px}.tile{width:27px;height:27px}.navbtn{font-size:8px}.place{width:34px}.end{display:none}header .review{margin-left:auto}.panel h2{padding:12px}.heading p{font-size:12px}header{padding:0 8px}.search input{width:100%}} 
-fieldset{margin:20px 0;padding:12px 16px 16px;border:1px solid #d9d6ec;border-radius:10px}legend{font-weight:650;padding:0 4px}.choice{display:block;padding:5px 0}.choice input{accent-color:#6046cf}#saved{color:#266858;font-size:12px}.native>p,.native>details{margin:12px 16px}.native ul{list-style:none;padding-left:4px}.native li{padding:6px 0}.native small{display:block;color:#65748b;overflow-wrap:anywhere}</style></head><body><div class="app"><aside class="primary"><div class="logo" aria-label="Payobook">P</div><nav class="places" aria-label="Workspaces"></nav><div class="avatar" title="Design preview">PB</div></aside><header><span id="brand"></span><select id="picker" aria-label="Choose workspace"></select><span class="end">Design preview</span><button class="review" id="study">Menu study</button></header><div class="crumb"></div><nav class="secondary" aria-label="Workspace submenu"><div class="work"></div><div class="foot"></div></nav><main class="page"><div class="wrap"><div class="heading"></div><div id="content"></div></div></main></div><dialog id="dialog"><button class="close" aria-label="Close dialog">✕</button><div id="detail"></div></dialog>
+fieldset{margin:20px 0;padding:12px 16px 16px;border:1px solid #d9d6ec;border-radius:10px}legend{font-weight:650;padding:0 4px}.choice{display:block;padding:5px 0}.choice input{accent-color:#6046cf}#saved{color:#266858;font-size:12px}.native>p,.native>details{margin:12px 16px}.native ul{list-style:none;padding-left:4px}.native li{padding:6px 0}.native small{display:block;color:#65748b;overflow-wrap:anywhere}#nativeForm label{display:grid;gap:5px;margin:13px 0 4px;font-size:13px;font-weight:650}#nativeForm label.switch{display:flex;align-items:baseline;gap:9px}#nativeForm input:not([type=checkbox]),#nativeForm select{width:100%;min-width:0;border:1px solid #cbd2de;border-radius:7px;background:white;padding:8px;font:inherit;font-weight:400}#nativeForm input[type=color]{max-width:100px;height:36px;padding:3px}#nativeForm input:read-only:not([type=checkbox]):not([type=file]):not([type=color]){background:#f6f7fb}#nativeForm input[type=checkbox]{accent-color:#594ab7}#nativeForm p{font-size:12px;margin:5px 0 14px}#nativeForm fieldset{min-width:0}#nativeForm .editor-actions{margin:20px 0 0;display:flex;align-items:center;flex-wrap:wrap;gap:8px}#nativeForm [role=status]{color:#276455;font-size:12px}</style></head><body><div class="app"><aside class="primary"><div class="logo" aria-label="Payobook">P</div><nav class="places" aria-label="Workspaces"></nav><div class="avatar" title="Design preview">PB</div></aside><header><span id="brand"></span><select id="picker" aria-label="Choose workspace"></select><span class="end">Design preview</span><button class="review" id="study">Menu study</button></header><div class="crumb"></div><nav class="secondary" aria-label="Workspace submenu"><div class="work"></div><div class="foot"></div></nav><main class="page"><div class="wrap"><div class="heading"></div><div id="content"></div></div></main></div><dialog id="dialog"><button class="close" aria-label="Close dialog">✕</button><div id="detail"></div></dialog>
+<template data-section="Attendance approvals" data-group="Payroll" data-scope="Company" data-icon="calendar" data-summary="Choose how approved weeks feed payroll and when an unapproved week blocks a run." data-source="General Settings › Weekly timesheets">
+ <label class="switch"><input type="checkbox" name="pb_timesheet_payroll" checked> Payroll reads approved timesheets</label>
+ <p>Use approved weeks for hours, worked days and overtime.</p>
+ <div data-when="pb_timesheet_payroll"><label class="switch"><input type="checkbox" name="pb_timesheet_block_run"> Block the run until every week is approved</label>
+ <p>With this switch off, an unapproved week adds a note to the run.</p></div>
+</template>
+<template data-section="Pay run review" data-group="Payroll" data-scope="Database" data-icon="receipt" data-summary="Set the change in take-home pay that sends a payslip for review." data-source="Payroll settings › Pay run review">
+ <label>Flag a big change in take-home pay (%)<input type="number" min="0" step="1" required value="30" name="pb_review_change_pct"></label>
+ <p>Compare take-home pay with the employee’s previous payslip in the same pay scheme. A change above this percentage flags the slip. New joiners are excluded. Enter 0 to switch off this flag.</p>
+</template>
+<template data-section="Employee self-service" data-group="HR" data-scope="Company" data-icon="users" data-summary="Choose whether employees can clock in and record project time on their self-service pages." data-source="Attendances › Modes · Timesheets › Time Encoding">
+ <label class="switch"><input type="checkbox" checked name="pb_ess_portal_clock"> Employees can clock in from their self-service pages</label>
+ <p>Turning this off hides the Clock page and its home button. Devices and the field app still work.</p>
+ <label class="switch"><input type="checkbox" checked name="pb_me_project_time_enabled"> Employees enter project time on their self-service pages</label>
+ <p>Turning this off hides the home tile. Previously entered project time is retained.</p>
+</template>
+<template data-section="Ask HR" data-group="HR" data-scope="Company" data-icon="users" data-summary="Choose who receives new employee questions or leave them in the HR queue." data-source="Employees › Ask HR">
+ <label>Default person assigned to new Ask HR questions<select name="pb_ask_hr_owner_id"><option value="">Unassigned · HR team queue</option><option>Alex Morgan (example)</option><option>Sam Lee (example)</option></select></label>
+ <p>Choose an internal user to receive new questions on their to-do list. Leave the assignment empty for the HR team to pick them up.</p>
+</template>
+<template data-section="Zoho single sign-on" data-group="Connect" data-scope="Database" data-icon="key" data-summary="Configure the Zoho OAuth client, account linking and login destination." data-source="General Settings › Zoho single sign-on">
+ <label class="switch"><input type="checkbox" name="pb_zoho_sso_enabled"> Allow users to sign in through Zoho People</label>
+ <div data-when="pb_zoho_sso_enabled">
+ <fieldset><legend>OAuth client</legend>
+ <label>Client ID<input name="pb_zoho_sso_client_id" placeholder="Example client ID"></label>
+ <label>Client secret<input name="pb_zoho_sso_client_secret" type="password" autocomplete="new-password" placeholder="Example secret"></label>
+ <label>Zoho data centre<select name="pb_zoho_sso_accounts_url">
+ <option value="https://accounts.zoho.com">United States / Global (.com)</option><option value="https://accounts.zoho.eu">Europe (.eu)</option><option value="https://accounts.zoho.in">India (.in)</option><option value="https://accounts.zoho.com.au">Australia (.com.au)</option><option value="https://accounts.zoho.jp">Japan (.jp)</option><option value="https://accounts.zoho.ca">Canada (.ca)</option><option value="https://accounts.zoho.com.cn">China (.com.cn)</option><option value="https://accounts.zoho.sa">Saudi Arabia (.sa)</option>
+ </select></label></fieldset>
+ <fieldset><legend>Account linking</legend>
+ <label class="switch"><input type="checkbox" name="pb_zoho_sso_auto_link_email"> Automatically link existing users</label>
+ <div data-when="pb_zoho_sso_auto_link_email"><label>Allowed email domains<input name="pb_zoho_sso_allowed_domains" placeholder="example.com, example.org"></label><p>Leave empty to require manual approval for every identity.</p></div></fieldset>
+ <fieldset><legend>Zoho People button and API console</legend>
+ <label>Default Payobook destination<input name="pb_zoho_sso_default_target" value="action-1156" placeholder="home" pattern="home|payobook|payslip_studio|action-[1-9][0-9]{0,8}" title="Use home, payobook, payslip_studio or action followed by a hyphen and a numeric ID."></label>
+ <label>Zoho People button URL<input readonly name="pb_zoho_sso_button_url"></label>
+ <label>Authorized redirect URI<input readonly name="pb_zoho_sso_callback_url" value="https://payobook.example/auth/zoho/callback"></label>
+ <label>OAuth scope<input readonly name="pb_zoho_sso_scope" value="AaaServer.profile.READ,email"></label></fieldset>
+ </div>
+</template>
+<template data-section="Branding" data-group="System" data-scope="Database · Platform administrator" data-icon="layers" data-summary="Manage the product name, website, theme colour and loading-screen logo." data-source="General Settings › Branding">
+ <label>Product brand name<input name="biz_debrand_brand_name" value="Payobook"></label>
+ <label>Brand website<input type="url" name="biz_debrand_brand_website" value="https://payobook.example"></label>
+ <label>Theme colour<input type="color" name="biz_debrand_theme_color" value="#1565c0"></label>
+ <label>Name to replace<input name="biz_debrand_product_name" placeholder="Optional"></label>
+ <p>Matching product names in screen text use your brand name. Leave empty to keep the original wording.</p>
+ <label>Loading-screen logo<input type="file" name="biz_debrand_loader_logo" accept=".png,.svg,image/png,image/svg+xml"></label>
+ <label>Loading-screen logo address<input name="biz_debrand_loader_logo_url" placeholder="/your_module/static/src/img/logo.png"></label>
+ <p>Choose a wide, transparent PNG or SVG, or enter the address of an image served by this site.</p>
+</template>
 <script>
 const menus = {
  "Home": {
@@ -999,9 +1048,60 @@ function nativeDirectory(){
  return '<section class="panel wide native"><h2>Original application menus</h2><p>Platform administrator reference. Expand an application to see its existing settings paths. Availability depends on installed modules and permissions.</p>'+
   [...apps].map(([app,items])=>'<details><summary>'+escape(app)+' ('+items.length+')</summary><ul>'+items.join('')+'</ul></details>').join('')+'</section>';
 }
+const nativeEditors = [...document.querySelectorAll('template[data-section]')];
+const exampleSettings = new Map();
+function nativeEditorPanel(){
+ const hits = nativeEditors.filter(t => t.dataset.group === view &&
+  [t.dataset.section,t.dataset.summary,t.dataset.source,t.content.textContent].join(' ').toLowerCase().includes(term));
+ if(!hits.length) return '';
+ return '<section class="panel wide"><h2>Payobook controls from Odoo Settings</h2>'+hits.map(t=>{
+  const d=t.dataset;
+  return '<button class="row" data-editor="'+escape(d.section)+'"><span class="tile">'+icon(d.icon)+'</span><span><strong>'+escape(d.section)+'</strong><small>'+escape(d.summary)+'</small></span><span class="arrow">'+icon('chevron')+'</span></button>';
+ }).join('')+'</section>';
+}
+function openNativeEditor(name){
+ const t=nativeEditors.find(entry=>entry.dataset.section===name);
+ const d=t.dataset;
+ show('<div class="eyebrow">Main Settings / '+escape(d.group)+'</div><h2>'+escape(name)+'</h2><p>'+escape(d.scope)+' settings · Example values</p><form id="nativeForm" autocomplete="off">'+t.innerHTML+'<div class="editor-actions"><button type="submit" class="action">Apply to preview</button> <span role="status"></span></div></form><p class="note">Current Odoo location · '+escape(d.source)+'</p>');
+ const form=find('#nativeForm'), fields=form.elements;
+ for(const [key,value] of Object.entries(exampleSettings.get(name)||{})){
+  const field=fields.namedItem(key);
+  if(field.type==='checkbox')field.checked=value;
+  else field.value=value;
+ }
+ function update(){
+  for(const area of form.querySelectorAll('[data-when]'))area.hidden=!fields.namedItem(area.dataset.when).checked;
+  for(const field of form.querySelectorAll('[data-when] input,[data-when] select'))field.disabled=Boolean(field.closest('[hidden]'));
+  if(fields.pb_zoho_sso_button_url){
+   const target=fields.pb_zoho_sso_default_target.value.trim()||'home';
+   fields.pb_zoho_sso_button_url.value='https://payobook.example/auth/zoho/start?target='+encodeURIComponent(target);
+  }
+  form.querySelector('[role=status]').textContent='';
+ }
+ update();form.addEventListener('input',update);
+ form.addEventListener('change',event=>{
+  const file=event.target.files?.[0];
+  if(file && fields.biz_debrand_loader_logo_url) fields.biz_debrand_loader_logo_url.value='/preview/images/'+encodeURIComponent(file.name);
+  update();
+ });
+ form.addEventListener('submit',event=>{
+  event.preventDefault();
+  const values={};
+  for(const field of fields){
+   if(field.name && !field.readOnly && field.type!=='file')values[field.name]=field.type==='checkbox'?field.checked:field.value;
+  }
+  exampleSettings.set(name,values);
+  form.querySelector('[role=status]').textContent='Applied for this preview session';
+ });
+}
+
 function drawCards(){
  const groupMap=view==='settings'?current().groups:{[view]:Object.keys(cards).filter(k=>cards[k][4]===view)};
  const fragments=[];
+ if(workspace==='Settings' && view!=='settings'){
+  const panel=nativeEditorPanel();
+  if(panel)fragments.push(panel);
+ }
  for(const [group,names] of Object.entries(groupMap)){
   const hits=names.filter(n=>(group+' '+n+' '+cards[n][0]).toLowerCase().includes(term));
   if(!hits.length)continue;
@@ -1026,17 +1126,20 @@ function inspect(name){
 }
 find('#picker').innerHTML=Object.keys(menus).map(k=>'<option>'+k+'</option>').join('');
 find('#picker').onchange=e=>go(e.target.value);
-find('#study').onclick=()=>show('<div class="eyebrow">Navigation design</div><h2>Menu study</h2><p>The same 13 active sidebar entries appear in payobook, payobook_template, p0clone and rize. Submenus below combine core screens and optional module registrations. A person’s visible screens depend on their company and role.</p><p>The seven main Settings groups account for all 49 registered cards across the four installations, including conditional entries. Settings › System also indexes the original application menus. Editors nested inside a configurator remain reachable through its parent screen.</p><p>Keep daily screens in the scrolling upper rail. Pin Settings and eligible Access entries below it, including on short screens. Show a settings entry only when at least one installed destination passes its visibility check. Recheck access on the server when opening it.</p><p>Use the same action in the central directory and local menu. Shared rules such as Insurance &amp; Tax can have two contextual links. Global company, tenancy and system administration stay in Settings.</p><p>Hiring, People and Payroll already have scoped Access. Six additional workspace filters are proposed. Calendar, Help and Home use the permissions of their individual settings.</p>'+Object.entries(menus).map(([n,m])=>'<details><summary>'+n+'</summary><p>'+escape(m.note)+'</p><b>Work screens</b><p>'+escape(m.sub.join(' · '))+'</p><b>Local settings</b><p>'+escape(Object.values(m.groups).flat().join(' · '))+'</p><button class="action" data-menu="'+n+'">Inspect '+n+'</button></details>').join(''));
+find('#study').onclick=()=>show('<div class="eyebrow">Navigation design</div><h2>Menu study</h2><p>The same 13 active sidebar entries appear in payobook, payobook_template, p0clone and rize. Submenus below combine core screens and optional module registrations. A person’s visible screens depend on their company and role.</p><p>The seven main Settings groups account for all 49 registered cards across the four installations, including conditional entries. Six proposed editors bring custom controls from Odoo into Payroll, HR, Connect and System. Settings › System also indexes the original application menus. Editors nested inside a configurator remain reachable through its parent screen.</p><p>Keep daily screens in the scrolling upper rail. Pin Settings and eligible Access entries below it, including on short screens. Show a settings entry only when at least one installed destination passes its visibility check. Recheck access on the server when opening it.</p><p>Use the same action in the central directory and local menu. Shared rules such as Insurance &amp; Tax can have two contextual links. Global company, tenancy and system administration stay in Settings.</p><p>Hiring, People and Payroll already have scoped Access. Six additional workspace filters are proposed. Calendar, Help and Home use the permissions of their individual settings.</p>'+Object.entries(menus).map(([n,m])=>'<details><summary>'+n+'</summary><p>'+escape(m.note)+'</p><b>Work screens</b><p>'+escape(m.sub.join(' · '))+'</p><b>Local settings</b><p>'+escape(Object.values(m.groups).flat().join(' · '))+'</p><button class="action" data-menu="'+n+'">Inspect '+n+'</button></details>').join(''));
 document.addEventListener('click',event=>{
  const b=event.target.closest('button');if(!b)return;
  if(b.classList.contains('close'))find('dialog').close();
  if(b.dataset.menu){if(find('dialog').open)find('dialog').close();go(b.dataset.menu)}
  if(b.dataset.view)go(workspace,b.dataset.view);
  if(b.dataset.card)inspect(b.dataset.card);
+ if(b.dataset.editor)openNativeEditor(b.dataset.editor);
  if(b.id==='applyRoute'){
   paymentPreview.route=find('input[name=route]:checked').value;
   find('#saved').textContent='Preview updated';
  }
 });
-render();
+const linkedGroup=menus.Settings.sub.find(group=>location.hash==='#settings-'+group.toLowerCase());
+if(linkedGroup)go('Settings',linkedGroup);
+else render();
 </script></body></html>
