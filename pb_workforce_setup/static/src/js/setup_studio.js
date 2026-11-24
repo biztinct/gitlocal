@@ -22,6 +22,7 @@ import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { MODEL, icon, errorText } from "./setup_util";
 import { StepShifts } from "./step_shifts";
 import { StepWeeks } from "./step_weeks";
+import { StepPeople } from "./step_people";
 import { StepSoon } from "./step_soon";
 import { PreviewPanel } from "./preview_panel";
 
@@ -41,7 +42,7 @@ function stepList() {
 
 export class SetupStudio extends Component {
     static template = "pb_workforce_setup.SetupStudio";
-    static components = { HubBackChip, StepShifts, StepWeeks, StepSoon, PreviewPanel };
+    static components = { HubBackChip, StepShifts, StepWeeks, StepPeople, StepSoon, PreviewPanel };
     static props = { "*": true };
 
     setup() {
@@ -159,9 +160,24 @@ export class SetupStudio extends Component {
         }
     }
 
-    setPerson(id) {
+    /** The right panel follows one person: fetch only that person's week
+     *  (a whole load() per row click would recount every step). */
+    async setPerson(id) {
+        if (!id || id === this.state.personId) {
+            return;
+        }
         this.state.personId = id;
-        this.refresh();
+        const seq = (this.personSeq = (this.personSeq || 0) + 1);
+        try {
+            const person = await this.orm.call(MODEL, "person_week", [id]);
+            if (seq === this.personSeq && this.state.data && this.state.personId === id) {
+                this.state.data.person = person;
+            }
+        } catch (e) {
+            if (seq === this.personSeq) {
+                this.notification.add(errorText(e), { type: "danger" });
+            }
+        }
     }
 
     // ------------------------------------------------------------ steps

@@ -66,6 +66,7 @@
       <main class="pbws-stage">
         <StepShifts t-if="state.step === 'shifts'" studio="api" data="data"/>
         <StepWeeks t-elif="state.step === 'weeks'" studio="api" data="data"/>
+        <StepPeople t-elif="state.step === 'people'" studio="api" data="data"/>
         <StepSoon t-else="" studio="api" data="data" stepKey="state.step"/>
         <div class="pbws-nav">
           <button t-if="prevStep" type="button" class="pbws-btn pbws-btn--ghost" t-on-click="() => this.go(prevStep.key)">
@@ -353,7 +354,284 @@
   </t>
 </t>
 
-<!-- ============================================================ steps 3-7 -->
+<!-- ============================================================ step 3 -->
+<t t-name="pb_workforce_setup.StepPeople">
+  <div class="pbws-people" t-ref="root">
+    <div class="pbws-q">
+      <div class="pbws-q-t">
+        <div class="pbws-eyebrow">Step 3 of 7</div>
+        <h1>Who works which week?</h1>
+        <p>Tick people, or pick a whole team, then give them all a working week in one go. Hold Shift to tick a range.</p>
+        <t t-if="!canEdit" t-call="pb_workforce_setup.ReadOnly"/>
+      </div>
+      <t t-if="people and total">
+        <span t-if="missing" class="pbws-chip pbws-chip--warn pbws-num"><t t-out="icon('triangleAlert', 14)"/><t t-esc="headChip"/></span>
+        <span t-else="" class="pbws-chip pbws-chip--ok"><t t-out="icon('check', 14)"/><t t-esc="headChip"/></span>
+      </t>
+    </div>
+
+    <!-- loading -->
+    <t t-if="state.loading">
+      <div class="pbws-teams" aria-hidden="true">
+        <div t-foreach="[1, 2, 3, 4]" t-as="k" t-key="k" class="pbws-team pbws-team--skel"><span class="pbws-skel pbws-skel-line"/><span class="pbws-skel pbws-skel-m"/></div>
+      </div>
+      <div class="pbws-card" aria-busy="true">
+        <div class="pbws-tools"><span class="pbws-skel pbws-skel-srch"/></div>
+        <div t-foreach="skeleton" t-as="k" t-key="k" class="pbws-skel-tr"><span class="pbws-skel pbws-skel-av"/><span class="pbws-skel pbws-skel-line"/><span class="pbws-skel pbws-skel-line"/></div>
+      </div>
+    </t>
+
+    <!-- load error -->
+    <div t-elif="state.error and !people" class="pbws-card pbws-fail" role="alert">
+      <span class="pbws-fail-ic" t-out="icon('triangleAlert', 22)"/>
+      <h2>The people could not be loaded.</h2>
+      <p t-esc="state.error"/>
+      <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="retry"><t t-out="icon('refresh', 16)"/>Try again</button>
+    </div>
+
+    <!-- nobody at all -->
+    <div t-elif="!total" class="pbws-card pbws-empty-card">
+      <span class="pbws-empty-ic" t-out="icon('users', 22)"/>
+      <h2>Nobody works for this company yet</h2>
+      <p>Add people under People first. They appear here straight away, ready to be given a working week.</p>
+    </div>
+
+    <t t-else="">
+      <div t-if="noWeeks" class="pbws-card pbws-nowk">
+        <span class="pbws-empty-ic" t-out="icon('repeat', 20)"/>
+        <div class="pbws-nowk-t">
+          <b>Build a working week first</b>
+          <span>People are given a working week here. There is none yet for this company.</span>
+        </div>
+        <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="goWeeks"><t t-out="icon('back', 16)"/>Go to working weeks</button>
+      </div>
+
+      <div class="pbws-teams" role="group" aria-label="Teams">
+        <button t-foreach="teams" t-as="team" t-key="team.id" type="button"
+                t-att-class="'pbws-team' + (state.team === team.id ? ' is-on' : '')"
+                t-att-aria-pressed="state.team === team.id ? 'true' : 'false'" t-on-click="() => this.pickTeam(team)">
+          <b t-att-title="team.name" t-esc="team.name"/>
+          <span class="pbws-team-m" role="progressbar" aria-valuemin="0" t-att-aria-valuemax="team.total" t-att-aria-valuenow="team.with_week"><i t-att-style="teamWidth(team)"/></span>
+          <small class="pbws-num" t-esc="teamLine(team)"/>
+        </button>
+      </div>
+
+      <div class="pbws-card pbws-ptable">
+        <div class="pbws-tools">
+          <label class="pbws-srch pbws-srch--wide"><t t-out="icon('search', 16)"/>
+            <input t-ref="search" type="search" placeholder="Search a name, number or team" aria-label="Search people"
+                   t-att-value="state.q" t-on-input="onSearch"/>
+          </label>
+          <button type="button" t-att-class="'pbws-brush' + (state.onlyMissing ? ' is-on' : '')"
+                  t-att-aria-pressed="state.onlyMissing ? 'true' : 'false'" t-on-click="toggleMissing">
+            No working week yet <span class="pbws-num pbws-brush-c" t-esc="missing"/>
+          </button>
+          <t t-if="teamRow">
+            <button t-if="canEdit" type="button" class="pbws-btn pbws-btn--sm" t-on-click="tickTeam"><t t-out="icon('check', 16)"/><t t-esc="tickTeamLabel"/></button>
+            <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="showEveryone">Show everyone</button>
+          </t>
+        </div>
+        <div t-if="showSelAll" class="pbws-selall">
+          <t t-esc="selAllLine"/> <button type="button" t-on-click="tickAllInList" t-esc="selAllButton"/>
+        </div>
+        <div t-if="people.capped" class="pbws-selall pbws-selall--muted" t-esc="cappedLine"/>
+        <div class="pbws-tblwrap" t-ref="wrap" t-on-scroll="onScroll">
+          <table t-att-class="'pbws-tbl' + (canEdit ? '' : ' is-ro')">
+            <colgroup>
+              <col t-if="canEdit" class="pbws-col-cb"/>
+              <col class="pbws-col-p"/><col class="pbws-col-t"/><col class="pbws-col-l"/><col/><col class="pbws-col-f"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <th t-if="canEdit" class="pbws-th-cb">
+                  <input type="checkbox" class="pbws-cb" aria-label="Tick everyone in this list"
+                         t-att-checked="allTicked" t-att-indeterminate="someTicked" t-on-click="onHeadBox"/>
+                </th>
+                <th>Person</th><th>Team and site</th><th>Late rule</th><th>Working week</th><th>From</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="visible" t-as="row" t-key="row.id" t-att-class="rowClass(row, row_index)"
+                  t-att-data-index="row_index" t-att-tabindex="rowTab(row_index)"
+                  t-att-aria-selected="canEdit ? (isTicked(row) ? 'true' : 'false') : false"
+                  t-on-click="(ev) => this.onRowClick(row, row_index, ev)"
+                  t-on-keydown="(ev) => this.onRowKey(row, row_index, ev)">
+                <td t-if="canEdit" class="pbws-td-cb">
+                  <input type="checkbox" class="pbws-cb" tabindex="-1" t-att-checked="isTicked(row)" t-att-aria-label="tickLabel(row)"/>
+                </td>
+                <td class="pbws-td-p"><div class="pbws-td-pi">
+                  <span class="pbws-av" aria-hidden="true" t-esc="row.initials"/>
+                  <span class="pbws-td-n"><b t-att-title="row.name" t-esc="row.name"/><span t-if="row.number" class="pbws-num pbws-faint" t-esc="row.number"/></span>
+                </div></td>
+                <td class="pbws-td-t"><t t-esc="row.department"/><span t-if="row.site" class="pbws-faint"> · <t t-esc="row.site"/></span></td>
+                <td t-att-class="row.group ? '' : 'pbws-faint'" t-esc="groupLabel(row)"/>
+                <td class="pbws-td-w">
+                  <t t-if="row.week_id">
+                    <span class="pbws-mini" aria-hidden="true"><i t-foreach="mini(row)" t-as="d" t-key="d.key" t-att-class="d.cls"/></span>
+                    <span class="pbws-td-wn" t-att-title="weekLabel(row)" t-esc="weekLabel(row)"/>
+                    <span t-if="!row.week_now" class="pbws-chip pbws-chip--sm pbws-num" t-esc="startsLabel(row)"/>
+                    <span t-if="row.also_on.length" class="pbws-chip pbws-chip--sm pbws-chip--warn" t-att-title="alsoTitle(row)" t-esc="alsoLabel(row)"/>
+                  </t>
+                  <span t-else="" class="pbws-chip pbws-chip--sm pbws-chip--warn">Not set</span>
+                  <span t-if="row.oneoff" class="pbws-chip pbws-chip--sm pbws-chip--p pbws-num" t-esc="oneoffLabel(row)"/>
+                </td>
+                <td class="pbws-num pbws-td-f" t-esc="fromText(row)"/>
+              </tr>
+              <tr t-if="!list.length" class="pbws-tr-none">
+                <td t-att-colspan="canEdit ? 6 : 5">
+                  <span>Nobody matches. Clear the search or the filter.</span>
+                  <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-on-click="clearFilters"><t t-out="icon('x', 16)"/>Clear</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div t-if="more" class="pbws-more pbws-num" t-esc="moreLine"/>
+        </div>
+      </div>
+
+      <div t-if="canEdit and selCount" class="pbws-bulk" t-ref="bulk" role="toolbar" aria-label="Change the people you ticked">
+        <b class="pbws-num" t-esc="selLine"/>
+        <button type="button" class="pbws-btn pbws-btn--bulkpri pbws-bulk-pri" t-att-disabled="noWeeks"
+                t-att-title="noWeeksTitle" t-on-click="openAssign">
+          <t t-out="icon('repeat', 16)"/>Give a working week
+        </button>
+        <button type="button" class="pbws-btn pbws-btn--bulk" t-att-disabled="!shifts.length" t-on-click="openOneoff"><t t-out="icon('calendar', 16)"/>One-off shift</button>
+        <button type="button" class="pbws-btn pbws-btn--bulk" t-on-click="openLate"><t t-out="icon('sliders', 16)"/>Late rule</button>
+        <button type="button" class="pbws-btn pbws-btn--bulk pbws-bulk-x" aria-label="Clear ticks" title="Clear ticks (Esc)" t-on-click="clearTicks"><t t-out="icon('x', 16)"/></button>
+      </div>
+    </t>
+
+    <!-- ===================================================== drawers -->
+    <SetupDrawer t-if="dr" title="drawerTitle" subtitle="drawerSub" onClose.bind="closeDrawer">
+      <t t-set-slot="default">
+        <!-- give a working week -->
+        <t t-if="dr.type === 'assign'">
+          <div class="pbws-lbl">Which week</div>
+          <div class="pbws-opts" role="radiogroup" aria-label="Which week">
+            <button t-foreach="weeks" t-as="w" t-key="w.id" type="button" role="radio"
+                    t-att-aria-checked="dr.week === w.id ? 'true' : 'false'"
+                    t-att-class="'pbws-opt' + (dr.week === w.id ? ' is-on' : '')" t-on-click="() => this.setChoice('week', w.id)">
+              <span class="pbws-mini" aria-hidden="true"><i t-foreach="weekStrip(w)" t-as="d" t-key="d.key" t-att-class="d.cls"/></span>
+              <span class="pbws-opt-t"><b t-esc="w.name"/><small class="pbws-num" t-esc="weekSub(w)"/></span>
+            </button>
+          </div>
+          <label class="pbws-f">Starting from
+            <input type="date" t-att-min="today" t-att-value="dr.from" t-on-change="(ev) => this.onDate('from', ev)"/>
+          </label>
+          <div t-if="rotationWeeks.length">
+            <div class="pbws-lbl pbws-lbl--gap">They begin on</div>
+            <div class="pbws-seg" role="radiogroup" aria-label="They begin on">
+              <button t-foreach="rotationWeeks" t-as="i" t-key="i" type="button" role="radio"
+                      t-att-aria-checked="dr.startWeek === i ? 'true' : 'false'"
+                      t-att-class="dr.startWeek === i ? 'is-on' : ''" t-on-click="() => this.setChoice('startWeek', i)" t-esc="weekButton(i)"/>
+            </div>
+          </div>
+          <div t-if="pv and pv.keep_theirs">
+            <div class="pbws-lbl pbws-lbl--gap" t-esc="differentLine"/>
+            <div class="pbws-seg" role="radiogroup" t-att-aria-label="differentLine">
+              <button type="button" role="radio" t-att-aria-checked="dr.mode === 'replace' ? 'true' : 'false'"
+                      t-att-class="dr.mode === 'replace' ? 'is-on' : ''" t-on-click="() => this.setChoice('mode', 'replace')">Replace it</button>
+              <button type="button" role="radio" t-att-aria-checked="dr.mode === 'keep' ? 'true' : 'false'"
+                      t-att-class="dr.mode === 'keep' ? 'is-on' : ''" t-on-click="() => this.setChoice('mode', 'keep')">Keep theirs</button>
+            </div>
+          </div>
+          <div t-att-class="'pbws-sumbox' + (dr.loading ? ' is-busy' : '')" aria-live="polite">
+            <b class="pbws-sumbox-h">What will happen</b>
+            <span t-foreach="problems" t-as="line" t-key="line_index" class="pbws-sum-warn"><t t-out="icon('triangleAlert', 14)"/><t t-esc="line"/></span>
+            <span t-foreach="assignLines" t-as="line" t-key="line_index" t-out="line"/>
+            <span class="pbws-sum-muted">Nothing is put on the roster yet: that happens when you go live in step 7. You can undo this straight after.</span>
+          </div>
+        </t>
+
+        <!-- one-off shift -->
+        <t t-elif="dr.type === 'oneoff'">
+          <div class="pbws-lbl">Which shift</div>
+          <div t-att-class="'pbws-opts' + (shifts.length > 3 ? ' pbws-opts--grid' : '')" role="radiogroup" aria-label="Which shift">
+            <button t-foreach="shifts" t-as="s" t-key="s.id" type="button" role="radio"
+                    t-att-aria-checked="dr.shift === s.id ? 'true' : 'false'"
+                    t-att-class="'pbws-opt' + (dr.shift === s.id ? ' is-on' : '')" t-on-click="() => this.setChoice('shift', s.id)">
+              <span t-att-class="'pbws-sw pbws-sw--lg pbws-c-' + s.color"/>
+              <span class="pbws-opt-t"><b t-esc="s.name"/><small class="pbws-num" t-esc="shiftSub(s)"/></span>
+            </button>
+          </div>
+          <div class="pbws-dates">
+            <label class="pbws-f">From<input type="date" t-att-value="dr.from" t-on-change="(ev) => this.onDate('from', ev)"/></label>
+            <label class="pbws-f">To<input type="date" t-att-min="dr.from" t-att-value="dr.to" t-on-change="(ev) => this.onDate('to', ev)"/></label>
+          </div>
+          <div>
+            <div class="pbws-lbl pbws-lbl--gap">On these days</div>
+            <div class="pbws-days" role="group" aria-label="On these days">
+              <button t-foreach="days" t-as="d" t-key="d_index" type="button"
+                      t-att-aria-pressed="dr.days.includes(d_index) ? 'true' : 'false'"
+                      t-att-class="dr.days.includes(d_index) ? 'is-on' : ''" t-on-click="() => this.toggleDay(d_index)" t-esc="d"/>
+            </div>
+          </div>
+          <div t-att-class="'pbws-sumbox' + (dr.loading ? ' is-busy' : '')" aria-live="polite">
+            <b class="pbws-sumbox-h">What will happen</b>
+            <span t-foreach="problems" t-as="line" t-key="line_index" class="pbws-sum-warn"><t t-out="icon('triangleAlert', 14)"/><t t-esc="line"/></span>
+            <span t-foreach="oneoffLines" t-as="line" t-key="line_index" t-out="line"/>
+            <t t-if="skippedTotal">
+              <span class="pbws-sum-warn"><t t-out="icon('info', 14)"/><t t-esc="skippedLine"/></span>
+              <ul class="pbws-sum-list">
+                <li t-foreach="pv.skipped_list" t-as="s" t-key="s.code" t-esc="skipText(s)"/>
+              </ul>
+              <ul t-if="pv.examples.length" class="pbws-sum-list pbws-sum-muted">
+                <li t-foreach="pv.examples" t-as="ex" t-key="ex_index" t-esc="ex"/>
+              </ul>
+            </t>
+            <span class="pbws-sum-muted">Their normal working week stays as it is. You can undo this straight after.</span>
+          </div>
+        </t>
+
+        <!-- late rule -->
+        <t t-else="">
+          <div class="pbws-opts" role="radiogroup" aria-label="Late rule">
+            <button t-foreach="groups" t-as="g" t-key="g.key" type="button" role="radio"
+                    t-att-aria-checked="dr.group === g.key ? 'true' : 'false'"
+                    t-att-class="'pbws-opt' + (dr.group === g.key ? ' is-on' : '')" t-on-click="() => this.setChoice('group', g.key)">
+              <span class="pbws-opt-ic" t-out="g.key === 'manager' ? icon('briefcase', 18) : icon('users', 18)"/>
+              <span class="pbws-opt-t"><b t-esc="g.label"/><small t-esc="groupLines(g.key)"/></span>
+            </button>
+          </div>
+          <div t-att-class="'pbws-sumbox' + (dr.loading ? ' is-busy' : '')" aria-live="polite">
+            <b class="pbws-sumbox-h">What will happen</b>
+            <span t-foreach="problems" t-as="line" t-key="line_index" class="pbws-sum-warn"><t t-out="icon('triangleAlert', 14)"/><t t-esc="line"/></span>
+            <span t-foreach="lateLines" t-as="line" t-key="line_index" t-out="line"/>
+            <span class="pbws-sum-muted">You can undo this straight after.</span>
+          </div>
+        </t>
+        <p t-if="dr.error" class="pbws-err" role="alert"><t t-out="icon('triangleAlert', 16)"/><span t-esc="dr.error"/></p>
+      </t>
+      <t t-set-slot="footer">
+        <button type="button" class="pbws-btn" t-on-click="closeDrawer">Cancel</button>
+        <button type="button" class="pbws-btn pbws-btn--pri" t-att-disabled="applyDisabled" t-on-click="apply">
+          <span t-if="dr.loading or state.applying" class="pbws-spin" aria-hidden="true"/>
+          <t t-else="" t-out="icon('check', 16)"/>
+          <t t-esc="applyLabel"/>
+        </button>
+      </t>
+    </SetupDrawer>
+  </div>
+</t>
+
+<!-- ============================================================ drawer -->
+<t t-name="pb_workforce_setup.SetupDrawer">
+  <div class="pbws-scrim" t-on-click="onScrim">
+    <div class="pbws-dr" role="dialog" aria-modal="true" t-att-aria-labelledby="titleId" tabindex="-1" t-ref="panel" t-on-keydown="onKey">
+      <header class="pbws-dr-h">
+        <div class="pbws-dr-ht">
+          <h2 t-att-id="titleId" t-esc="props.title"/>
+          <p t-if="props.subtitle" t-esc="props.subtitle"/>
+        </div>
+        <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" aria-label="Close" title="Close (Esc)" t-on-click="() => this.props.onClose()"><t t-out="icon('x', 16)"/></button>
+      </header>
+      <div class="pbws-dr-body"><t t-slot="default"/></div>
+      <footer class="pbws-dr-f"><t t-slot="footer"/></footer>
+    </div>
+  </div>
+</t>
+
+<!-- ============================================================ steps 4-7 -->
 <t t-name="pb_workforce_setup.StepSoon">
   <div class="pbws-q">
     <div class="pbws-q-t">
@@ -367,10 +645,6 @@
     <div class="pbws-soon-t">
       <h2>This step arrives next</h2>
       <p t-esc="copy.next"/>
-      <p t-if="props.stepKey === 'people' and status.text" t-att-class="'pbws-soon-st is-' + status.state">
-        <t t-if="status.state === 'done'" t-out="icon('check', 14)"/><t t-else="" t-out="icon('triangleAlert', 14)"/>
-        <t t-esc="status.text"/>
-      </p>
     </div>
   </div>
 </t>

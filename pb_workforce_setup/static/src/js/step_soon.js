@@ -1,8 +1,7 @@
 /** @odoo-module **/
 /**
  * Steps 3-7 in P1: the step's question as the heading and one calm card that
- * says what arrives here next. No fake controls. Step 3 also shows its real
- * count of people without a working week.
+ * says what arrives here next. No fake controls. (Step 3 is live since P2.)
  */
 import { Component } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
@@ -24,11 +23,6 @@ export class StepSoon extends Component {
     }
     get copy() {
         const copy = {
-            people: {
-                question: _t("Who works which week?"),
-                lead: _t("Tick people, or pick a whole team, then give them all a working week in one go."),
-                next: _t("Here you will tick people or a whole team and give them a working week in one go, with undo."),
-            },
             rules: {
                 question: _t("What happens when someone is late or stays on?"),
                 lead: _t("Each rule is a sentence. Change the highlighted numbers and watch the example on the right change with you."),

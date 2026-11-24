@@ -10,19 +10,23 @@ WFSETUP — the guided "Workforce setup" screen (Setup Studio).
 
 One client action (`pb_workforce_setup_studio`) with a seven-step rail, a
 working area and a "See it on a real person" panel. P1 ships step 1 (Shifts,
-`hr.shift.template`) and step 2 (Working weeks, `pb.shift.pattern` + slots);
-steps 3-7 show their real status where it can be computed and a calm
+`hr.shift.template`) and step 2 (Working weeks, `pb.shift.pattern` + slots).
+P2 ships step 3 (Who works what): every person in one table, team strip,
+tick / Shift-range selection and three bulk actions (give a working week,
+one-off shift, late rule), each previewed on the server and undoable.
+Steps 4-7 show their real status where it can be computed and a calm
 "arrives next" card.
 
 Facade `pb.workforce.setup` (AbstractModel): every method gated on the server
 (attendance officer reads, attendance manager writes), every domain scoped to
 the current company. Writes go through the ORM with the existing models'
-validations and ACLs; no new stored field, no new calculation.
+validations and ACLs; no new stored field, no new calculation. One transient
+model, `pb.workforce.setup.undo`, records each bulk change for its Undo.
 
 Nothing is created on install. The existing workspace screens are untouched;
 the takeover of the Settings card is a later phase.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -33,8 +37,11 @@ the takeover of the Settings card is a later phase.
         'pb_import_kit',            # pbim tokens + the shared Lucide ic() registry
         'pb_hub',                   # HubBackChip / hubBack
         'pb_timeoff',               # holidays step (later phase)
+        'pb_attendance_policy',     # late rules on every site (owner ruling R4)
     ],
     'data': [
+        'security/ir.model.access.csv',
+        'security/undo_rules.xml',
         'views/setup_action.xml',
     ],
     'assets': {
@@ -44,6 +51,8 @@ the takeover of the Settings card is a later phase.
             'pb_workforce_setup/static/src/js/step_shifts.js',
             'pb_workforce_setup/static/src/js/step_weeks.js',
             'pb_workforce_setup/static/src/js/step_soon.js',
+            'pb_workforce_setup/static/src/js/setup_drawer.js',
+            'pb_workforce_setup/static/src/js/step_people.js',
             'pb_workforce_setup/static/src/js/preview_panel.js',
             'pb_workforce_setup/static/src/js/setup_studio.js',
             'pb_workforce_setup/static/src/xml/setup_studio.xml',
