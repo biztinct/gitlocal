@@ -1,7 +1,7 @@
 {
     'name': 'Workforce Management',
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.4.24.1',
+    'version': '19.0.4.25.0',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
@@ -19,6 +19,12 @@ Workforce Management — Deputy & Rippling-Style HR Tools
 a punch on the calendar day of its check-in in the person's own time zone (in
 Vietnam a 06:30 start used to show on the previous day). No data changes: rows
 the grid made were always created on the local day; only the reading moved.
+
+4.25.0 (WFSETUP P3): an overtime request now uses the MOST SPECIFIC rate row
+(company + country > company > country > global). The former ordered search
+put rows without a country or company first, so a global fallback could beat
+the company's own country rate. Existing requests keep their stored rate row
+until their type or company changes.
     """,
     'author': 'Payobook',
     'website': 'https://payobook.com',
