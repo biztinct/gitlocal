@@ -1,0 +1,5 @@
+<odoo>
+ <record id="action_workspace_setup" model="ir.actions.client">
+  <field name="name">Workforce setup</field><field name="tag">pb_workforce_setup</field>
+ </record>
+</odoo>
