@@ -15,7 +15,7 @@
  * server (`*_preview`, debounced 250 ms) BEFORE anything is applied; Apply
  * then shows a toast with Undo.
  */
-import { Component, onWillStart, onWillUnmount, useExternalListener, useRef, useState } from "@odoo/owl";
+import { Component, onMounted, onWillStart, onWillUnmount, useExternalListener, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { deserializeDate, serializeDate } from "@web/core/l10n/dates";
@@ -72,7 +72,12 @@ export class StepPeople extends Component {
         // it bubbles to window (found in the browser walk)
         useExternalListener(window, "keydown", (ev) => this.onWindowKey(ev), { capture: true });
         onWillStart(() => this.load());
+        // an Undo always redraws the table on screen (P6, studio.onToastUndo)
+        onMounted(() => {
+            this.unregister = this.props.studio.registerReload(() => this.load());
+        });
         onWillUnmount(() => {
+            this.unregister?.();
             clearTimeout(this.previewTimer);
             clearTimeout(this.personTimer);
         });
@@ -730,16 +735,8 @@ export class StepPeople extends Component {
             this.props.studio.toast(res.summary, { kind: "info" });
             return;
         }
-        this.props.studio.toast(res.summary, { undo: () => this.undo(res.undo_id) });
-    }
-    async undo(id) {
-        try {
-            const res = await this.orm.call(MODEL, "undo", [id]);
-            await Promise.all([this.load(), this.props.studio.refresh()]);
-            this.props.studio.toast(res.summary, { kind: "info" });
-        } catch (e) {
-            this.props.studio.toast(errorText(e), { kind: "error" });
-        }
+        // run by the studio (one undo path for every bulk action, P6)
+        this.props.studio.toast(res.summary, { undo: { method: "undo", args: [res.undo_id], kind: "info" } });
     }
 
     // ------------------------------------------------------------ misc

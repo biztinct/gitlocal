@@ -320,8 +320,11 @@ class TestGoLive(GoLiveFixture, TransactionCase):
 
     def test_07_clock_states(self):
         now = fields.Datetime.now().replace(microsecond=0)        # one fixed "now" for every row
-        ok = self._connector('Gate A', state='connected', last_contact=now - timedelta(hours=2))
-        quiet = self._connector('Gate B', state='connected', last_contact=now - timedelta(hours=30))
+        # P6: "heard from recently" is pb_clock's own rule (max(60, 3 x 15) min
+        # for a PC, 180 s for a machine) and "ok" needs the send switch on
+        ok = self._connector('Gate A', state='connected', last_contact=now - timedelta(minutes=10),
+                             publish_punches=True)
+        quiet = self._connector('Gate B', state='connected', last_contact=now - timedelta(hours=2))
         waiting = self._connector('Gate C')
         self._connector('Gate D', state='connected', last_contact=now - timedelta(minutes=5),
                                  last_error=r'C:\Users\clerk\Mitaco\att2000.mdb could not be opened (0x80004005)')
@@ -609,6 +612,7 @@ class TestGoLive(GoLiveFixture, TransactionCase):
             lambda: f.clock_invite(conn.id),
             lambda: f.clock_add('X'),
             lambda: f.clock_details(conn.id),
+            lambda: f.clock_switch_on(conn.id),
             lambda: f.confirm_clocks(),
             lambda: f.go_live_start(4),
             lambda: f.go_live_week(1, 0),

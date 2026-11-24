@@ -371,6 +371,8 @@ export class StepLive extends Component {
         }
         return this.props.studio.go(s.fix || s.key);
     }
+    /** P6: the finish card's "See step 6" when no clock is sending. */
+    goClocks() { return this.props.studio.go("clocks"); }
     openRoster() {
         this.action.doAction("pb_mission.action_pb_workforce", { additionalContext: { pb_shell_lens: "schedule" } });
     }

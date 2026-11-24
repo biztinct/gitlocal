@@ -211,13 +211,20 @@ class WorkforceSetupGoLive(models.AbstractModel):
         add('holidays', _("Holidays"), hol['state'] == 'done',
             hol['text'] if hol['state'] == 'done' else _("Not confirmed yet."), False)
         clk = status['clocks']
-        if clk['state'] == 'done':
+        counts = self._clock_counts()
+        if not counts['delivering']:
+            # P6: amber, never a blocker — a company may publish a roster
+            # before its clocks are on; the finish card says the same
+            add('clocks', _("Time clocks"), False,
+                _("No clock is sending clock-ins yet. Paid hours start once one is. You can go live without it."),
+                False)
+        elif clk['state'] == 'done':
             add('clocks', _("Time clocks"), True, clk['text'], False)
         else:
-            later = sum(1 for r in self._clock_rows() if r['state'] in ('waiting', 'quiet', 'attention'))
+            later = counts['later']
             add('clocks', _("Time clocks"), False,
                 (_("1 clock still needs setting up. You can go live without it.") if later == 1 else
-                 _("%s clocks still need setting up. You can go live without them.", later)) if later
+                 _("%s clocks still need setting up. You can go live without them.", self._num(later))) if later
                 else _("Not confirmed yet."), False)
         return out, people
 
@@ -494,6 +501,8 @@ class WorkforceSetupGoLive(models.AbstractModel):
             'headcount': people.get('total', 0),
             'missing': people.get('missing', 0),
             'plan_key': self._live_plan_key() if self._can_edit() else False,
+            # P6: whether any clock's clock-ins reach the rules right now
+            'clocks_sending': bool(self._clock_counts()['delivering']),
         }
         if not self._can_edit() or not with_plan:
             return out
@@ -762,6 +771,8 @@ class WorkforceSetupGoLive(models.AbstractModel):
             'capped': run.capped,
             'made': run.made or {},
             'summary': summary,
+            # P6: "Clock-ins now turn into paid hours" only when a clock sends them
+            'clocks_sending': bool(self._clock_counts()['delivering']),
         }
 
     @api.model

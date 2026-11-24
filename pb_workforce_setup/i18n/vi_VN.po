@@ -247,12 +247,6 @@ msgstr "%(why)s (%(n)s)"
 
 #. module: pb_workforce_setup
 #. odoo-python
-#: code:addons/pb_workforce_setup/models/people.py:0
-msgid "%g"
-msgstr "%g"
-
-#. module: pb_workforce_setup
-#. odoo-python
 #: code:addons/pb_workforce_setup/models/setup.py:0
 msgid "%s (copy)"
 msgstr "%s (bản sao)"
@@ -287,6 +281,12 @@ msgstr "%s quy tắc chấm công"
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
 msgid "%s clock-ins received today"
 msgstr "Hôm nay đã nhận %s lượt chấm công vào"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks sending clock-ins"
+msgstr "%s máy chấm công đang gửi lượt chấm công"
 
 #. module: pb_workforce_setup
 #. odoo-python
@@ -661,6 +661,12 @@ msgstr "+%s ca làm một lần"
 #: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
 msgid "1 already has a different week"
 msgstr "1 người đã có tuần làm việc khác"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock sending clock-ins"
+msgstr "1 máy chấm công đang gửi lượt chấm công"
 
 #. module: pb_workforce_setup
 #. odoo-python
@@ -1200,6 +1206,12 @@ msgid "Ascension Day of Jesus Christ"
 msgstr "Lễ Thăng Thiên của Chúa Giê-su"
 
 #. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to switch clock-ins on."
+msgstr "Hãy nhờ quản lý bật gửi lượt chấm công."
+
+#. module: pb_workforce_setup
 #. odoo-python
 #: code:addons/pb_workforce_setup/models/setup.py:0
 msgid "Attendance access is required."
@@ -1406,8 +1418,35 @@ msgstr "Lượt chấm vào và chấm ra được tính trong vòng tối đa 6
 #. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clock-ins are also switched off for this clock."
+msgstr "Máy này cũng đang tắt gửi lượt chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clock-ins are switched on for “%s”."
+msgstr "Đã bật gửi lượt chấm công cho “%s”."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Clock-ins from this clock will start arriving in attendance, including the "
+"ones it has already sent, and will be turned into paid hours by the rules in"
+" step 4."
+msgstr "Lượt chấm công từ máy này sẽ bắt đầu vào bảng chấm công, kể cả những lượt máy đã gửi trước đó, và sẽ được tính thành giờ có lương theo quy tắc ở bước 4."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "Clock-ins now turn into paid hours using your rules."
 msgstr "Lượt chấm công vào giờ được tính thành giờ có lương theo quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clock-ins switched off"
+msgstr "Đã tắt gửi lượt chấm công"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -1526,6 +1565,12 @@ msgstr "Đã xác nhận"
 #: code:addons/pb_workforce_setup/models/clocks.py:0
 msgid "Confirmed without a clock"
 msgstr "Đã xác nhận, không có máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Connected, but clock-ins are switched off"
+msgstr "Đã kết nối, nhưng đang tắt gửi lượt chấm công"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -2098,6 +2143,14 @@ msgstr "Vẫn có thể thay đổi trong trình sửa vòng xoay ca."
 
 #. module: pb_workforce_setup
 #. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Its clock-ins are kept, and your late and overtime rules read them once "
+"confirmed. They only appear in attendance after clock-ins are switched on."
+msgstr "Lượt chấm công của máy này vẫn được lưu, và quy tắc đi muộn và tăng ca sẽ đọc chúng sau khi được xác nhận. Chúng chỉ hiện trong bảng chấm công sau khi bật gửi lượt chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
 msgid "Its lateness lines are set in step 4."
 msgstr "Các dòng đi muộn được đặt ở bước 4."
@@ -2221,6 +2274,11 @@ msgstr "Nghỉ Tết Nguyên đán"
 #: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made
 msgid "Made"
 msgstr "Đã tạo"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made_to
+msgid "Made To"
+msgstr "Đã tạo đến"
 
 #. module: pb_workforce_setup
 #: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__mail_enabled
@@ -2472,6 +2530,20 @@ msgstr "Làm đêm, cộng thêm %s"
 #. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No clock is sending clock-ins yet — paid hours will start once one is."
+msgstr "Chưa có máy chấm công nào gửi lượt chấm công — giờ có lương sẽ bắt đầu khi có một máy gửi."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"No clock is sending clock-ins yet. Paid hours start once one is. You can go "
+"live without it."
+msgstr "Chưa có máy chấm công nào gửi lượt chấm công. Giờ có lương sẽ bắt đầu khi có một máy gửi. Bạn vẫn có thể đưa vào sử dụng mà chưa cần máy."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "No clock number"
 msgstr "Chưa có mã chấm công"
 
@@ -2622,6 +2694,18 @@ msgid ""
 "Not confirmed yet. Shifts are only paid by your rules once they are "
 "confirmed."
 msgstr "Chưa xác nhận. Ca làm việc chỉ được trả lương theo quy tắc của bạn sau khi quy tắc được xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Not heard from since %s"
+msgstr "Không có tín hiệu từ %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Not heard from yet"
+msgstr "Chưa có tín hiệu"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -2951,6 +3035,11 @@ msgid "People tap in and out from My Payobook on their phone."
 msgstr "Mọi người chấm công vào và ra bằng My Payobook trên điện thoại."
 
 #. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__per_week
+msgid "Per Week"
+msgstr "Mỗi tuần"
+
+#. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "Person"
@@ -3126,12 +3215,6 @@ msgstr "Việc công bố đã dừng trước khi xong mọi tuần."
 #: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
 msgid "Publishing…"
 msgstr "Đang công bố…"
-
-#. module: pb_workforce_setup
-#. odoo-javascript
-#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
-msgid "Quiet since %s"
-msgstr "Không có tín hiệu từ %s"
 
 #. module: pb_workforce_setup
 #: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_attendance_policy__pb_pending_rates
@@ -3334,9 +3417,9 @@ msgstr "Tìm người"
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid ""
-"See each clock and whether it is sending data. If one is not, send your IT "
-"person a ready-made setup link."
-msgstr "Xem từng máy chấm công và máy đó có đang gửi dữ liệu không. Nếu không, hãy gửi cho người phụ trách IT một đường dẫn cài đặt có sẵn."
+"See each clock and whether it is sending clock-ins. If one is not, send your"
+" IT person a ready-made setup link."
+msgstr "Xem từng máy chấm công và máy đó có đang gửi lượt chấm công hay không. Nếu không, hãy gửi cho người phụ trách IT một liên kết cài đặt có sẵn."
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -3346,9 +3429,15 @@ msgstr "Xem trên một người thật"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "See step 6"
+msgstr "Xem bước 6"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
-msgid "Sending data"
-msgstr "Đang gửi dữ liệu"
+msgid "Sending clock-ins"
+msgstr "Đang gửi lượt chấm công"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -3577,6 +3666,18 @@ msgstr "Chủ nhật"
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
 msgid "Supervisor enters hours"
 msgstr "Tổ trưởng nhập giờ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch clock-ins on"
+msgstr "Bật gửi lượt chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Switch clock-ins on for %s"
+msgstr "Bật gửi lượt chấm công cho %s"
 
 #. module: pb_workforce_setup
 #. odoo-javascript

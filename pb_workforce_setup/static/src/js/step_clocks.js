@@ -2,8 +2,10 @@
 /**
  * Step 6 — "How do people clock in?" (WFSETUP P4).
  *
- * One card per clock with an honest state (sending data / quiet / waiting
- * for IT / needs attention / switched off), "Copy setup link for IT" (a new
+ * One card per clock with an honest state (sending clock-ins / connected,
+ * but clock-ins are switched off / not heard from since … / waiting for IT /
+ * needs attention / switched off), "Switch clock-ins on" for a manager behind
+ * an inline confirm (P6), "Copy setup link for IT" (a new
  * 5-day link from the clock's own invitation; the link is built exactly as
  * the clock's own setup page builds it), "Add a clock", the people who have
  * no clock number, and only those ways without a machine that exist here.
@@ -13,6 +15,8 @@ import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { deserializeDateTime } from "@web/core/l10n/dates";
 import { MODEL, icon, errorText, fmtNum } from "./setup_util";
+
+const { DateTime } = luxon;
 
 export class StepClocks extends Component {
     static template = "pb_workforce_setup.StepClocks";
@@ -36,12 +40,25 @@ export class StepClocks extends Component {
             linkShown: {},             // card key -> link to select by hand (clipboard refused)
             fresh: null,               // card key just added (highlight)
             confirming: false,
+            switchAsk: null,           // card key asking "switch clock-ins on?"
         });
         useEffect(() => {
             if (this.state.adding) {
                 this.root.el?.querySelector(".pbws-addclk input")?.focus();
             }
         }, () => [this.state.adding]);
+        // the inline confirm takes focus when it opens (its own button) and
+        // gives it back to "Switch clock-ins on" when it closes (after the
+        // patch: the button is drawn again only then)
+        useEffect(() => {
+            if (this.state.switchAsk) {
+                this.root.el?.querySelector(`[data-switch-ask="${this.state.switchAsk}"] .pbws-btn--out`)?.focus();
+            } else if (this.switchBack) {
+                const key = this.switchBack;
+                this.switchBack = null;
+                this.root.el?.querySelector(`[data-switch="${key}"]`)?.focus();
+            }
+        }, () => [this.state.switchAsk]);
         onWillStart(() => this.load());
         // the bar lives in the studio's state: setting it before this step is
         // mounted re-renders the studio, which makes a NEW step whose
@@ -108,6 +125,7 @@ export class StepClocks extends Component {
     chipClass(row) {
         return {
             ok: "pbws-chip pbws-chip--ok",
+            held: "pbws-chip pbws-chip--warn",
             quiet: "pbws-chip pbws-chip--warn",
             waiting: "pbws-chip pbws-chip--warn",
             attention: "pbws-chip pbws-chip--err",
@@ -115,12 +133,13 @@ export class StepClocks extends Component {
         }[row.state] || "pbws-chip";
     }
     chipIcon(row) {
-        return { ok: "check", quiet: "hourglass", waiting: "clock", attention: "triangleAlert", off: "powerOff" }[row.state] || "clock";
+        return { ok: "check", held: "pause", quiet: "hourglass", waiting: "clock", attention: "triangleAlert", off: "powerOff" }[row.state] || "clock";
     }
     chipText(row) {
         switch (row.state) {
-            case "ok": return _t("Sending data");
-            case "quiet": return _t("Quiet since %s", this.day(row.last_heard));
+            case "ok": return _t("Sending clock-ins");
+            case "held": return _t("Connected, but clock-ins are switched off");
+            case "quiet": return row.last_heard ? _t("Not heard from since %s", this.since(row.last_heard)) : _t("Not heard from yet");
             case "waiting": return _t("Waiting for IT");
             case "attention": return _t("Needs attention");
             default: return _t("Switched off");
@@ -144,6 +163,15 @@ export class StepClocks extends Component {
         const d = this.dt(value);
         return d ? d.toFormat("ccc d LLL") : "";
     }
+    /** "14:05" today, "Mon 23 Nov" before (P6: a PC is "not heard from"
+     *  after an hour, so the day alone would read wrong). */
+    since(value) {
+        const d = this.dt(value);
+        if (!d) {
+            return "";
+        }
+        return d.hasSame(DateTime.now(), "day") ? d.toFormat("HH:mm") : d.toFormat("ccc d LLL");
+    }
     heardLine(row) { return _t("Last heard from %s", this.ago(row.last_heard)); }
     todayLine(row) {
         return row.today === 1 ? _t("1 clock-in received today") : _t("%s clock-ins received today", fmtNum(row.today));
@@ -160,7 +188,54 @@ export class StepClocks extends Component {
             ? _t("Nothing received since %s. Ask your IT person to check that the PC beside the clock is on.", this.day(row.last_heard))
             : _t("Nothing received yet.");
     }
-    canLink(row) { return this.canEdit && row.kind === "pc" && row.state !== "off" && row.state !== "ok"; }
+    // ------------------------------------------------------------ the switch (P6)
+    /** A connected PC whose clock-ins are switched off. */
+    isOff(row) { return row.switch && !row.sending && ["held", "quiet", "attention"].includes(row.state); }
+    canSwitch(row) { return !!row.can_switch && this.isOff(row); }
+    switchTitle(row) { return _t("Switch clock-ins on for %s", row.name); }
+    askLine(row) { return this.isOff(row) && !row.can_switch; }
+    askSwitch(row) {
+        if (!this.canSwitch(row) || this.state.busy) {
+            return;
+        }
+        this.state.switchAsk = row.key;
+    }
+    keepSwitch() {
+        // focus goes back to the button that opened the question (effect above)
+        this.switchBack = this.state.switchAsk;
+        this.state.switchAsk = null;
+    }
+    onSwitchKey(ev) {
+        if (ev.key === "Escape") {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.keepSwitch();
+        }
+    }
+    async switchOn(row) {
+        if (!this.canSwitch(row) || this.state.busy) {
+            return;
+        }
+        this.state.busy = true;
+        let res;
+        try {
+            res = await this.orm.call(MODEL, "clock_switch_on", [row.id]);
+        } catch (e) {
+            this.props.studio.toast(errorText(e), { kind: "error" });
+            return;
+        } finally {
+            this.state.busy = false;
+        }
+        this.state.switchAsk = null;
+        this.state.fresh = row.key;
+        await Promise.all([this.load(), this.props.studio.refresh()]);
+        this.props.studio.toast(res.summary);
+        // the question is gone: focus stays on that clock's card
+        await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve)));
+        this.root.el?.querySelector(`[data-card="${row.key}"] .pbws-dev-b button`)?.focus();
+    }
+
+    canLink(row) { return this.canEdit && row.kind === "pc" && !["off", "ok", "held"].includes(row.state); }
     cardClass(row) { return `pbws-card pbws-dev is-${row.state}${this.state.fresh === row.key ? " is-fresh" : ""}`; }
 
     get noNumberLine() {
