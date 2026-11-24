@@ -1071,12 +1071,17 @@
           </t>
           <small t-elif="row.state === 'quiet'" t-esc="quietLine(row)"/>
           <small t-elif="row.state === 'waiting' and row.kind === 'pc'">Nothing received yet. Your IT person installs a small program on the PC beside the clock.</small>
+          <t t-elif="row.state === 'disabled'">
+            <small t-if="row.last_heard" t-esc="heardLine(row)"/>
+            <small>Disabled on purpose. The PC stays paired and keeps new clock-ins waiting. Once enabled, it sends everything punched meanwhile.</small>
+          </t>
           <small t-elif="row.state === 'off'">Switched off. Records already received are kept.</small>
           <p t-if="row.problem" t-att-class="row.state === 'attention' ? 'pbws-dev-p is-err' : 'pbws-dev-p'"><t t-out="icon('info', 14)"/><span t-esc="row.problem"/></p>
           <small t-if="row.pending" class="pbws-num" t-esc="pendingLine(row)"/>
           <small t-if="row.invite_until and row.state !== 'ok'" class="pbws-dev-inv" t-esc="inviteLine(row)"/>
           <small t-if="isOff(row) and row.state !== 'held'" class="pbws-dev-off"><t t-out="icon('pause', 13)"/>Clock-ins are also switched off for this clock.</small>
           <small t-if="askLine(row)" class="pbws-dev-off"><t t-out="icon('info', 13)"/>Ask a manager to switch clock-ins on.</small>
+          <small t-if="enableAsk(row)" class="pbws-dev-off"><t t-out="icon('info', 13)"/>Ask a manager to enable it.</small>
           <div t-if="state.switchAsk === row.key" class="pbws-dev-ask" role="alertdialog" aria-modal="false"
                t-att-aria-label="switchTitle(row)" t-att-data-switch-ask="row.key" t-on-keydown="onSwitchKey">
             <b>Clock-ins from this clock will start arriving in attendance, including the ones it has already sent, and will be turned into paid hours by the rules in step 4.</b>
@@ -1099,6 +1104,10 @@
           <div t-if="canEdit" class="pbws-dev-b">
             <button t-if="canSwitch(row) and state.switchAsk !== row.key" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out"
                     t-att-data-switch="row.key" t-att-disabled="state.busy" t-on-click="() => this.askSwitch(row)"><t t-out="icon('play', 14)"/>Switch clock-ins on</button>
+            <button t-if="canEnable(row)" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-att-title="enableTitle(row)"
+                    t-att-disabled="state.busy" t-on-click="() => this.enable(row)">
+              <span t-if="state.busy" class="pbws-spin" aria-hidden="true"/><t t-else="" t-out="icon('play', 14)"/>Enable
+            </button>
             <button t-if="canLink(row) and state.replaceAsk !== row.key" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-att-disabled="state.busy" t-on-click="() => this.copyLink(row)"><t t-out="icon('copy', 14)"/>Copy setup link for IT</button>
             <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.details(row)">Clock details<t t-out="icon('arrowRight', 14)"/></button>
           </div>

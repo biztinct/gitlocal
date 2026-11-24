@@ -18,6 +18,10 @@ Health is worked out from the stored fields only (no protocol work):
   attention the PC reported a problem — mapped to ONE plain sentence, never
             the PC's own text (it can hold a local path; `_setup_status` keeps
             it out for the same reason)
+  disabled  (PC only, P9) a manager pressed "Disable" on the connection: the PC
+            stays paired, is refused until "Enable", and sends what was punched
+            meanwhile once enabled. Neither sending nor needing attention: it
+            counts in no "sending", "later" or "waiting for IT" total
   off       access revoked / machine ignored
 
 "Recently" is pb_clock's own rule (P6), not a number of ours:
@@ -104,6 +108,10 @@ class WorkforceSetupClocks(models.AbstractModel):
         sending = bool(conn.publish_punches)
         if conn.state == 'revoked':
             state = 'off'
+        elif conn.state == 'disabled':
+            # P9: before the error check — a disabled PC is refused on purpose,
+            # whatever it reported last
+            state = 'disabled'
         elif error:
             state = 'attention'
         elif conn.state != 'connected':
@@ -132,6 +140,8 @@ class WorkforceSetupClocks(models.AbstractModel):
             'switch': True,
             'sending': sending,
             'can_switch': bool(can_switch and conn.state == 'connected' and not sending),
+            # P9: "Enable" — the connector's own action, same rights as the switch
+            'can_enable': bool(can_switch and conn.state == 'disabled'),
         }
 
     @api.model
@@ -164,6 +174,7 @@ class WorkforceSetupClocks(models.AbstractModel):
             'switch': False,
             'sending': True,
             'can_switch': False,
+            'can_enable': False,
         }
 
     @api.model
@@ -179,8 +190,8 @@ class WorkforceSetupClocks(models.AbstractModel):
                 ('company_id', '=', company.id), ('kind', '=', 'terminal'),
                 ('id', 'not in', conns.mapped('device_id').ids)], order='name, id')
             rows += [self._device_row(d, now) for d in devices]
-        order = {'attention': 0, 'waiting': 1, 'quiet': 2, 'held': 3, 'ok': 4, 'off': 5}
-        rows.sort(key=lambda r: (order.get(r['state'], 6), r['name'].lower(), r['key']))
+        order = {'attention': 0, 'waiting': 1, 'quiet': 2, 'held': 3, 'ok': 4, 'disabled': 5, 'off': 6}
+        rows.sort(key=lambda r: (order.get(r['state'], 7), r['name'].lower(), r['key']))
         return rows
 
     @api.model
@@ -195,7 +206,9 @@ class WorkforceSetupClocks(models.AbstractModel):
             'delivering': sum(1 for r in rows if r['state'] in DELIVERING_STATES),
             'later': sum(1 for r in rows if r['state'] in LATER_STATES),
             'stuck': sum(1 for r in rows if r['state'] in ('waiting', 'attention')),
-            'live': sum(1 for r in rows if r['state'] != 'off'),
+            # P9: a disabled clock is not live (it sends nothing on purpose)
+            'live': sum(1 for r in rows if r['state'] not in ('off', 'disabled')),
+            'disabled': sum(1 for r in rows if r['state'] == 'disabled'),
         }
 
     @api.model
@@ -281,6 +294,19 @@ class WorkforceSetupClocks(models.AbstractModel):
         }
 
     @api.model
+    def clock_enable(self, connector_id):
+        """"Enable" a disabled PC clock (P9): the connector's own
+        `action_enable` as the caller (no sudo), so its manager check decides.
+        The "Send accepted records to attendance" tick is not touched."""
+        self._gate_edit()
+        conn = self._own_connector(connector_id)
+        conn.action_enable()
+        return {
+            'row': self._connector_row(conn.sudo(), fields.Datetime.now()),
+            'summary': _("“%s” is enabled. It sends what was punched meanwhile on its next sync.", conn.name or ''),
+        }
+
+    @api.model
     def _clock_tz(self):
         from odoo.addons.base.models.res_partner import _tz_get
         valid = {key for key, _label in _tz_get(self)}
@@ -340,6 +366,9 @@ class WorkforceSetupClocks(models.AbstractModel):
             if later:
                 return {'state': 'done', 'text': _("1 to finish later") if later == 1
                         else _("%s to finish later", later)}
+            if not c['live'] and c['disabled']:
+                return {'state': 'done', 'text': _("1 clock disabled") if c['disabled'] == 1
+                        else _("%s clocks disabled", self._num(c['disabled']))}
             if not c['live']:
                 return {'state': 'done', 'text': _("Confirmed without a clock")}
             return {'state': 'done', 'text': _("All connected")}

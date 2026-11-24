@@ -4907,3 +4907,51 @@ msgstr "“%s” disembunyikan dari daftar shift Anda. Hari jadwal kerja yang su
 #: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
 msgid "“%s” is removed."
 msgstr "“%s” sudah dihapus."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Disabled"
+msgstr "Dinonaktifkan"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Enable %s"
+msgstr "Aktifkan %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Disabled on purpose. The PC stays paired and keeps new clock-ins waiting. Once enabled, it sends everything punched meanwhile."
+msgstr "Sengaja dinonaktifkan. PC tetap terpasang dan menahan absen baru. Setelah diaktifkan, PC mengirim semua absen selama itu."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to enable it."
+msgstr "Minta manajer untuk mengaktifkannya."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Enable"
+msgstr "Aktifkan"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "“%s” is enabled. It sends what was punched meanwhile on its next sync."
+msgstr "“%s” diaktifkan. Absen selama itu dikirim pada sinkronisasi berikutnya."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock disabled"
+msgstr "1 mesin absensi dinonaktifkan"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks disabled"
+msgstr "%s mesin absensi dinonaktifkan"

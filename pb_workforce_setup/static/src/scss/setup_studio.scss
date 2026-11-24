@@ -635,6 +635,9 @@
     .pbws-dev { padding: 14px 16px; display: flex; flex-direction: column; gap: 7px; min-width: 0; transition: border-color .2s, box-shadow .2s; }
     .pbws-dev.is-attention { border-color: color-mix(in srgb, var(--pbws-err) 35%, white); }
     .pbws-dev.is-fresh { animation: pbws-glow 1.6s ease-out; }
+    // P9: a disabled PC reads quiet — grey, nothing broken, nothing to fix
+    .pbws-dev.is-disabled { background: #FAFBFD; }
+    .pbws-dev.is-disabled h3 { color: var(--pbws-muted); }
     .pbws-dev-h { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
     // P6: the clock states are whole sentences — wrap inside the card, never cut off
     .pbws-dev-h .pbws-chip { white-space: normal; min-width: 0; line-height: 1.3; border-radius: 12px; padding: 4px 10px; }

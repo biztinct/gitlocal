@@ -11,3 +11,4 @@ from . import test_recheck
 from . import test_backfill
 
 from . import test_connector
+from . import test_disable

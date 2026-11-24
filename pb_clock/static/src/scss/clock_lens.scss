@@ -452,3 +452,34 @@
 @keyframes pbck-arrive { 0% { opacity: 0; transform: translateY(-12px) scale(.97); } 60% { opacity: 1; } 100% { transform: none; } }
 @keyframes pbck-ring { 0%, 100% { transform: rotate(0); } 10% { transform: rotate(-12deg); } 20% { transform: rotate(10deg); } 30% { transform: rotate(-6deg); } 40% { transform: rotate(0); } }
 @keyframes pbck-flash { 0% { box-shadow: 0 0 0 0 rgba(90, 75, 176, .0); } 15% { box-shadow: 0 0 0 4px rgba(90, 75, 176, .35); } 100% { box-shadow: 0 0 0 0 rgba(90, 75, 176, 0); } }
+
+// ---------------------------------------------------------------------
+//  WFSETUP P9 — "Disabled" note on the connection's Connection health tab.
+//  Grey (nothing broken, nothing to fix), Lucide power-off as a mask so a
+//  native form view can show it without markup of its own.
+// ---------------------------------------------------------------------
+.pbck-off-note {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 16px;
+    padding: 12px 14px;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: 12px;
+    background: #F6F7FB;
+    color: var(--pbim-muted, #64748B);
+    .pbck-off-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbck-off-title { color: var(--pbim-text, #1B1733); font-weight: 700; }
+    .pbck-ic-power-off { flex: none; }
+}
+.pbck-ic-power-off {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18.36 6.64A9 9 0 1 1 5.64 6.64'/><path d='M12 2v10'/></svg>") center / contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18.36 6.64A9 9 0 1 1 5.64 6.64'/><path d='M12 2v10'/></svg>") center / contain no-repeat;
+}
+@media (max-width: 575.98px) {
+    .pbck-off-note { flex-wrap: wrap; }
+}

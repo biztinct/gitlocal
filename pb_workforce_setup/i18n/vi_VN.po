@@ -4907,3 +4907,51 @@ msgstr "“%s” đã được ẩn khỏi danh sách ca. Các ngày đã qua tr
 #: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
 msgid "“%s” is removed."
 msgstr "Đã xóa “%s”."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Disabled"
+msgstr "Tạm ngưng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Enable %s"
+msgstr "Bật lại %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Disabled on purpose. The PC stays paired and keeps new clock-ins waiting. Once enabled, it sends everything punched meanwhile."
+msgstr "Đã tạm ngưng có chủ ý. Máy tính vẫn được ghép nối và giữ lại các lượt chấm công mới. Khi được bật lại, máy sẽ gửi mọi lượt chấm công trong thời gian này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to enable it."
+msgstr "Hãy nhờ quản lý bật lại."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Enable"
+msgstr "Bật lại"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "“%s” is enabled. It sends what was punched meanwhile on its next sync."
+msgstr "Đã bật lại “%s”. Máy sẽ gửi các lượt chấm công trong thời gian này ở lần đồng bộ tiếp theo."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock disabled"
+msgstr "1 máy chấm công đang tạm ngưng"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks disabled"
+msgstr "%s máy chấm công đang tạm ngưng"

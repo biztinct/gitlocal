@@ -48,17 +48,19 @@
         $('history').textContent = data.history_from;
         $('timezone').textContent = data.timezone;
         $('schedule-label').textContent = `Configured sync interval: ${data.interval_minutes} minutes`;
-        const paired = data.state === 'connected';
+        // WFSETUP P9: a disabled PC stays paired; it is refused until enabled.
+        const disabled = data.state === 'disabled';
+        const paired = data.state === 'connected' || disabled;
         const read = paired && Boolean(data.last_read);
-        const stale = paired && data.last_contact && Date.now() - new Date(data.last_contact.replace(' ', 'T') + 'Z').getTime() > Math.max(60, data.interval_minutes * 3) * 60000;
-        const complete = read && data.pending === 0 && !data.needs_attention && !stale;
-        $('status-pill').textContent = complete ? 'Sync received' : stale ? 'Contact overdue' : paired ? 'Paired' : data.state === 'revoked' ? 'Access revoked' : 'Awaiting setup';
+        const stale = paired && !disabled && data.last_contact && Date.now() - new Date(data.last_contact.replace(' ', 'T') + 'Z').getTime() > Math.max(60, data.interval_minutes * 3) * 60000;
+        const complete = !disabled && read && data.pending === 0 && !data.needs_attention && !stale;
+        $('status-pill').textContent = disabled ? 'Disabled' : complete ? 'Sync received' : stale ? 'Contact overdue' : paired ? 'Paired' : data.state === 'revoked' ? 'Access revoked' : 'Awaiting setup';
         $('status-pill').className = 'pill ' + (complete ? 'good' : '');
         $('paired').textContent = paired ? 'Yes' : 'Not yet';
         $('contact').textContent = time(data.last_contact);
         $('read').textContent = read ? time(data.last_read) : 'Not yet';
         $('pending').textContent = read ? data.pending.toLocaleString() + ' records' : 'Awaiting first read';
-        $('health-summary').textContent = data.needs_attention ? 'The PC reported a collection issue. Check Show diagnostics on Windows; queued records can continue uploading.' : complete ? 'The database was read and the PC reported an empty upload queue. Confirm the scheduled task on Windows.' : stale ? 'No recent contact. Check that the PC is awake, online and its scheduled task is running.' : paired ? 'The PC is paired. Run Sync now on Windows to verify the database read and upload.' : 'Install and pair the Windows connector to start the connection check.';
+        $('health-summary').textContent = disabled ? 'This connection is disabled in Payobook. The PC stays paired and keeps new records queued; they are sent once an administrator enables it again.' : data.needs_attention ? 'The PC reported a collection issue. Check Show diagnostics on Windows; queued records can continue uploading.' : complete ? 'The database was read and the PC reported an empty upload queue. Confirm the scheduled task on Windows.' : stale ? 'No recent contact. Check that the PC is awake, online and its scheduled task is running.' : paired ? 'The PC is paired. Run Sync now on Windows to verify the database read and upload.' : 'Install and pair the Windows connector to start the connection check.';
         $('code').disabled = paired;
         show('paired-note', paired);
         if (paired) { show('code-result', false); $('pairing-code').value = ''; }

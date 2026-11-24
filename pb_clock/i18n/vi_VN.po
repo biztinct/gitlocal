@@ -2978,3 +2978,53 @@ msgstr "Lượt chấm của máy được gửi bằng tệp · 1 người trê
 #: code:addons/pb_clock/static/src/js/clock_lens.js:0
 msgid "Its punches arrive by file · %s people on the machine"
 msgstr "Lượt chấm của máy được gửi bằng tệp · %s người trên máy"
+
+#. module: pb_clock
+#: model_terms:ir.ui.view,arch_db:pb_clock.view_clock_connector_form
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_connector__state__disabled
+msgid "Disabled"
+msgstr "Tạm ngưng"
+
+#. module: pb_clock
+#: model_terms:ir.ui.view,arch_db:pb_clock.view_clock_connector_form
+msgid "Disable"
+msgstr "Tạm ngưng"
+
+#. module: pb_clock
+#: model_terms:ir.ui.view,arch_db:pb_clock.view_clock_connector_form
+msgid "Enable"
+msgstr "Bật lại"
+
+#. module: pb_clock
+#: model_terms:ir.ui.view,arch_db:pb_clock.view_clock_connector_form
+msgid "This PC will stop sending clock-ins until you enable it again. Nothing already received is removed, and it does not need to be paired again."
+msgstr "Máy tính này sẽ ngừng gửi lượt chấm công cho đến khi bạn bật lại. Không có gì đã nhận bị xóa, và không cần ghép nối lại."
+
+#. module: pb_clock
+#: model_terms:ir.ui.view,arch_db:pb_clock.view_clock_connector_form
+msgid "This PC is not sending clock-ins. It stays paired, nothing already received is removed, and everything punched meanwhile is sent once you enable it."
+msgstr "Máy tính này đang không gửi lượt chấm công. Máy vẫn được ghép nối, những gì đã nhận không bị xóa, và mọi lượt chấm công trong thời gian này sẽ được gửi khi bạn bật lại."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_connector.py:0
+msgid "Disabled. This PC stops sending clock-ins until it is enabled again. Nothing already received is removed and the PC stays paired."
+msgstr "Đã tạm ngưng. Máy tính này ngừng gửi lượt chấm công cho đến khi được bật lại. Những gì đã nhận không bị xóa và máy vẫn được ghép nối."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_connector.py:0
+msgid "Enabled. On its next sync the PC sends everything punched while it was disabled."
+msgstr "Đã bật lại. Ở lần đồng bộ tiếp theo, máy tính sẽ gửi mọi lượt chấm công trong thời gian tạm ngưng."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_connector.py:0
+msgid "Only a connected PC can be disabled. This one is not paired."
+msgstr "Chỉ có thể tạm ngưng một máy tính đã kết nối. Máy này chưa được ghép nối."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_connector.py:0
+msgid "Only a disabled PC can be enabled."
+msgstr "Chỉ có thể bật lại một máy tính đang tạm ngưng."

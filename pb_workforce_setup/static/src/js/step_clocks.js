@@ -4,8 +4,8 @@
  *
  * One card per clock with an honest state (sending clock-ins / connected,
  * but clock-ins are switched off / not heard from since … / waiting for IT /
- * needs attention / switched off), "Switch clock-ins on" for a manager behind
- * an inline confirm (P6), "Copy setup link for IT" (a new
+ * needs attention / disabled (P9) / switched off), "Switch clock-ins on" for a manager behind
+ * an inline confirm (P6), "Enable" on a disabled PC (P9), "Copy setup link for IT" (a new
  * 5-day link from the clock's own invitation; the link is built exactly as
  * the clock's own setup page builds it), "Add a clock", the people who have
  * no clock number, and only those ways without a machine that exist here.
@@ -129,11 +129,12 @@ export class StepClocks extends Component {
             quiet: "pbws-chip pbws-chip--warn",
             waiting: "pbws-chip pbws-chip--warn",
             attention: "pbws-chip pbws-chip--err",
+            disabled: "pbws-chip",
             off: "pbws-chip",
         }[row.state] || "pbws-chip";
     }
     chipIcon(row) {
-        return { ok: "check", held: "pause", quiet: "hourglass", waiting: "clock", attention: "triangleAlert", off: "powerOff" }[row.state] || "clock";
+        return { ok: "check", held: "pause", quiet: "hourglass", waiting: "clock", attention: "triangleAlert", disabled: "powerOff", off: "powerOff" }[row.state] || "clock";
     }
     chipText(row) {
         switch (row.state) {
@@ -142,6 +143,7 @@ export class StepClocks extends Component {
             case "quiet": return row.last_heard ? _t("Not heard from since %s", this.since(row.last_heard)) : _t("Not heard from yet");
             case "waiting": return _t("Waiting for IT");
             case "attention": return _t("Needs attention");
+            case "disabled": return _t("Disabled");
             default: return _t("Switched off");
         }
     }
@@ -235,7 +237,34 @@ export class StepClocks extends Component {
         this.root.el?.querySelector(`[data-card="${row.key}"] .pbws-dev-b button`)?.focus();
     }
 
-    canLink(row) { return this.canEdit && row.kind === "pc" && !["off", "ok", "held"].includes(row.state); }
+    // ------------------------------------------------------------ enable (P9)
+    /** A disabled PC: a manager enables it in one press (no question — it only
+     *  undoes "Disable"); anyone else is told who can. */
+    canEnable(row) { return this.canEdit && !!row.can_enable && row.state === "disabled"; }
+    enableAsk(row) { return row.state === "disabled" && !row.can_enable; }
+    enableTitle(row) { return _t("Enable %s", row.name); }
+    async enable(row) {
+        if (!this.canEnable(row) || this.state.busy) {
+            return;
+        }
+        this.state.busy = true;
+        let res;
+        try {
+            res = await this.orm.call(MODEL, "clock_enable", [row.id]);
+        } catch (e) {
+            this.props.studio.toast(errorText(e), { kind: "error" });
+            return;
+        } finally {
+            this.state.busy = false;
+        }
+        this.state.fresh = row.key;
+        await Promise.all([this.load(), this.props.studio.refresh()]);
+        this.props.studio.toast(res.summary);
+        await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve)));
+        this.root.el?.querySelector(`[data-card="${row.key}"] .pbws-dev-b button`)?.focus();
+    }
+
+    canLink(row) { return this.canEdit && row.kind === "pc" && !["off", "ok", "held", "disabled"].includes(row.state); }
     cardClass(row) { return `pbws-card pbws-dev is-${row.state}${this.state.fresh === row.key ? " is-fresh" : ""}`; }
 
     get noNumberLine() {
