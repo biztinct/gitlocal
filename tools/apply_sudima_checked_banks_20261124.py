@@ -70,12 +70,18 @@ for row in plan['rows']:
     elif not emp:
         emp = Emp.create({'name': row['name'], 'legal_name': row['name'], 'employee_id': row['code'],
                           'barcode': row['code'], 'date_of_joining': row['join'], 'sex': row['sex'],
-                          'company_id': 1, 'department_id': departments[row['source_department']][0]})
+                          'company_id': 1, 'payroll_country': 'VN',
+                          'department_id': departments[row['source_department']][0]})
         counts['profiles_created'] += 1
     else:
         assert emp.name == row['name'] and str(emp.date_of_joining) == row['join']
         assert emp.department_id.id == departments[row['source_department']][0]
         assert not emp.user_id and not emp.pb_portal_user_id
+        assert emp.payroll_country in (False, 'VN')
+        if not emp.payroll_country:
+            # These are the Vietnam factory/office roster's newly created profiles.
+            emp.write({'payroll_country': 'VN'})
+            counts['new_profile_work_countries_set'] += 1
     record = {'code': row['code'], 'employee_id': emp.id, 'name': row['name'], 'status': row['status']}
     if row['name_correction']:
         values = {}
