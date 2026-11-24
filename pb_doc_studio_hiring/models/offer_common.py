@@ -63,3 +63,10 @@ BLOCK_KEYS = ('lines',)
 COND_KEYS = ['country_of_work', 'company', 'department', 'job', 'contract_type']
 COND_LABELS = [_lt('Country'), _lt('Company'), _lt('Department'), _lt('Job position'),
                _lt('Employment type')]
+
+#: "How often" words of the pay lines table, owned here so every letter
+#: language has them (Hiring ships no Indonesian words for its own list).
+#: Keys = `pb_hiring` OFFER_PERIODS; an unknown key falls back to Hiring's own
+#: label.
+PERIOD_KEYS = ['monthly', 'yearly', 'one_time']
+PERIOD_LABELS = [_lt('Every month'), _lt('Once a year'), _lt('One-off')]

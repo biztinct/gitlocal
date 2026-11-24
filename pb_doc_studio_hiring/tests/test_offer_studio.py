@@ -370,3 +370,72 @@ class TestOfferStudio(OfferStudioCase):
             Report._render_qweb_pdf = orig
         self.assertEqual(seen, [(self.recruiter.id, False)])
         self.assertIn('DEMO recruiter', str(offer.sudo().rendered_html))
+
+    # ------------------------------------------------------------ A1-18
+    def test_a1_18_language_rule(self):
+        """Owner ruling: unknown → the hiring company's language (the contact
+        card does not count); the recruiter's explicit choice wins."""
+        self.save(self.generic, body='<p>DEMO main ${candidate_name}</p>',
+                  versions={'vi_VN': {'subject': 'DEMO vi', 'body': '<p>DEMO tiếng Việt ${candidate_name}</p>'},
+                            'id_ID': {'subject': 'DEMO id', 'body': '<p>DEMO bahasa ${candidate_name}</p>'}})
+        offer = self.offer_for(self.generic)
+        self.app.sudo().pb_lang = False
+        self.app.partner_id.sudo().lang = 'id_ID'          # the contact card: ignored
+        self.company.partner_id.lang = 'vi_VN'
+        self.assertFalse(offer._pbds_known_lang())
+        self.assertEqual(offer._pbds_offer_lang(), 'vi_VN')
+        offer.action_prepare_letter()
+        self.assertIn('DEMO tiếng Việt', str(offer.rendered_html))
+        # the language they applied in is known
+        self.app.sudo().pb_lang = 'id_ID'
+        self.assertEqual(offer._pbds_offer_lang(), 'id_ID')
+        # the recruiter's choice wins over both, through the board's door
+        Hiring = self.env['pb.hiring'].with_user(self.recruiter).with_context(
+            allowed_company_ids=[self.company.id])
+        row = Hiring._offer_row(offer.with_user(self.recruiter), full=True)
+        self.assertEqual(row['letter_lang'], '')
+        self.assertTrue(row['letter_lang_open'])
+        self.assertIn('en_US', [l['code'] for l in row['letter_langs']])
+        res = Hiring.act('offer_letter_lang', {'offer_id': offer.id, 'lang': 'en_US'})
+        self.assertIn('English', res['note'])
+        self.assertEqual(offer.pbds_letter_lang, 'en_US')
+        self.assertEqual(offer._pbds_offer_lang(), 'en_US')
+        offer.action_prepare_letter()
+        self.assertIn('DEMO main', str(offer.rendered_html))
+        self.assertEqual(offer.pbds_lang, 'en_US')
+        # back to automatic
+        Hiring.act('offer_letter_lang', {'offer_id': offer.id, 'lang': False})
+        self.assertEqual(offer._pbds_offer_lang(), 'id_ID')
+        with self.assertRaises(UserError):
+            Hiring.act('offer_letter_lang', {'offer_id': offer.id, 'lang': 'xx_XX'})
+        # once the offer has gone out, the language no longer changes
+        offer.sudo().state = 'sent'
+        self.assertFalse(Hiring._offer_row(offer.with_user(self.recruiter), full=True)['letter_lang_open'])
+        with self.assertRaises(UserError):
+            Hiring.act('offer_letter_lang', {'offer_id': offer.id, 'lang': 'vi_VN'})
+
+    def test_a1_18b_choice_on_an_untouched_letter(self):
+        """No choice: Hiring's own code byte for byte (R1). A chosen language
+        on an untouched letter: Hiring's own code, read in that language."""
+        offer = self.offer_for(self.generic)
+        offer.action_prepare_letter()
+        self.assertFalse(offer.pbds_lang)
+        offer.sudo().pbds_letter_lang = 'vi_VN'
+        values = dict(offer.with_context(lang='vi_VN')._placeholder_values())
+        values['lines'] = str(offer.with_context(lang='vi_VN')._lines_table())
+        expected = Template(str(self.generic.with_context(lang='vi_VN').body_html)).safe_substitute(values)
+        offer.action_prepare_letter()
+        self.assertEqual(str(offer.rendered_html), expected)
+        self.assertEqual(offer.pbds_lang, 'vi_VN')
+        self.assertIn('thg', str(offer.rendered_html), 'dates written in Vietnamese')
+
+    # ------------------------------------------------------------ A1-19
+    def test_a1_19_pay_table_words_in_every_language(self):
+        expected = {'en_US': ('Every month', 'One-off'),
+                    'vi_VN': ('Hằng tháng', 'Một lần'),
+                    'id_ID': ('Setiap bulan', 'Sekali saja')}
+        for lang, (month, once) in expected.items():
+            with self.subTest(lang=lang):
+                table = str(self.offer._pbds_lines_table(lang))
+                self.assertIn(month, table)
+                self.assertIn(once, table)

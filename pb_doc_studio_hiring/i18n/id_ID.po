@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 11:41+0000\n"
-"PO-Revision-Date: 2026-11-22 11:41+0000\n"
+"POT-Creation-Date: 2026-11-23 22:26+0000\n"
+"PO-Revision-Date: 2026-11-23 22:26+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: id_ID\n"
@@ -51,6 +51,11 @@ msgstr "Jumlah"
 #: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
 msgid "An offer"
 msgstr "Sebuah penawaran"
+
+#. module: pb_doc_studio_hiring
+#: model_terms:ir.ui.view,arch_db:pb_doc_studio_hiring.view_pb_hiring_offer_form_pbds
+msgid "Automatic"
+msgstr "Otomatis"
 
 #. module: pb_doc_studio_hiring
 #. odoo-python
@@ -142,6 +147,12 @@ msgid "Employment type"
 msgstr "Jenis kepegawaian"
 
 #. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Every month"
+msgstr "Setiap bulan"
+
+#. module: pb_doc_studio_hiring
 #. odoo-javascript
 #: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
 msgid "Find a person"
@@ -205,12 +216,44 @@ msgid "Kind regards,"
 msgstr "Hormat kami,"
 
 #. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_board.xml:0
+msgid "Language of the letter"
+msgstr "Bahasa surat"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_board.js:0
+msgid "Language: %(lang)s, automatic (%(why)s)"
+msgstr "Bahasa: %(lang)s, otomatis (%(why)s)"
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_board.js:0
+msgid "Language: automatic"
+msgstr "Bahasa: otomatis"
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_letter_lang
+msgid ""
+"Leave empty to write the letter in the language the candidate applied in, or"
+" in the company's language when that is not known. Choose a language to "
+"write it in that language instead; press \"Write the letter\" again "
+"afterwards."
+msgstr ""
+"Kosongkan agar surat ditulis dalam bahasa yang dipakai kandidat saat "
+"melamar, atau bahasa perusahaan bila belum diketahui. Pilih bahasa untuk "
+"menulisnya dalam bahasa itu; lalu tekan \"Write the letter\" lagi (tombol di"
+" halaman ini)."
+
+#. module: pb_doc_studio_hiring
 #: model:ir.model,name:pb_doc_studio_hiring.model_pb_letter_template
 msgid "Letter Template"
 msgstr "Templat surat"
 
 #. module: pb_doc_studio_hiring
 #: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_letter_lang
 msgid "Letter language"
 msgstr "Bahasa surat"
 
@@ -289,6 +332,18 @@ msgstr "Penawaran untuk posisi di %s akan memakai salinan ini."
 #. module: pb_doc_studio_hiring
 #. odoo-python
 #: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Once a year"
+msgstr "Setahun sekali"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "One-off"
+msgstr "Sekali saja"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
 msgid "Pay"
 msgstr "Gaji"
 
@@ -353,6 +408,12 @@ msgstr "Tanggal mulai"
 
 #. module: pb_doc_studio_hiring
 #. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "That language is not switched on here."
+msgstr "Bahasa itu belum diaktifkan di sini."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
 #: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
 msgid ""
 "The PDF could not be made right now. Try again in a moment; the preview on "
@@ -372,6 +433,27 @@ msgstr "Kandidat"
 msgid ""
 "The language the offer letter was written in the last time it was prepared."
 msgstr "Bahasa surat penawaran saat terakhir kali disiapkan."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid ""
+"The letter has already gone to the candidate, so its language can no longer "
+"change."
+msgstr ""
+"Surat sudah dikirim ke kandidat, jadi bahasanya tidak bisa diubah lagi."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "The letter will be written in %s, chosen automatically."
+msgstr "Surat akan ditulis dalam %s, dipilih otomatis."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "The letter will be written in %s."
+msgstr "Surat akan ditulis dalam %s."
 
 #. module: pb_doc_studio_hiring
 #. odoo-python
@@ -462,6 +544,18 @@ msgid "You may not see this offer. Ask your administrator for Hiring access."
 msgstr ""
 "Anda tidak boleh melihat penawaran ini. Minta akses Rekrutmen kepada "
 "administrator Anda."
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "the company's language"
+msgstr "bahasa perusahaan"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "the language they applied in"
+msgstr "bahasa yang mereka pakai saat melamar"
 
 #. module: pb_doc_studio_hiring
 #. odoo-python

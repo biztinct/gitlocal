@@ -9,6 +9,8 @@
         <field name="inherit_id" ref="pb_hiring.view_pb_hiring_offer_form"/>
         <field name="arch" type="xml">
             <field name="letter_template_id" position="after">
+                <field name="pbds_letter_lang" placeholder="Automatic"
+                       readonly="state not in ('draft', 'submitted', 'manager_ok', 'hr_ok')"/>
                 <field name="pbds_wording_note" readonly="1" invisible="not pbds_wording_note"
                        decoration-info="pbds_wording_note"/>
                 <field name="pbds_lang_name" readonly="1" invisible="not pbds_lang_name"/>

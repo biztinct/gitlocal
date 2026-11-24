@@ -33,7 +33,7 @@ from odoo.addons.pb_doc_studio.models.doc_common import MAIN_LANG
 from odoo.addons.pb_doc_studio.models.doc_render import apply_rules, substitute
 from odoo.addons.pb_hiring.models.hiring_common import slug_filename
 
-from .offer_common import BLOCK_KEYS, KIND_CTX, OFFER
+from .offer_common import BLOCK_KEYS, KIND_CTX, OFFER, PERIOD_KEYS, PERIOD_LABELS
 
 _logger = logging.getLogger(__name__)
 
@@ -52,6 +52,15 @@ class PbHiringOfferDocStudio(models.Model):
              'was prepared.')
     pbds_lang_name = fields.Char(
         string='Letter written in', compute='_compute_pbds_lang_name')
+    # Owner ruling (A1 follow-up): the recruiter may choose the letter's
+    # language before it goes out; empty = automatic.
+    pbds_letter_lang = fields.Selection(
+        selection='_pbds_letter_lang_selection', string='Letter language',
+        copy=False,
+        help='Leave empty to write the letter in the language the candidate '
+             'applied in, or in the company\'s language when that is not '
+             'known. Choose a language to write it in that language instead; '
+             'press "Write the letter" again afterwards.')
     pbds_wording_note = fields.Char(
         string='Wording used', compute='_compute_pbds_wording_note',
         help='Which wording the letter uses when a company or country has its '
@@ -96,19 +105,31 @@ class PbHiringOfferDocStudio(models.Model):
         return self.env['pb.hr.letter']._pbds_pick_variant(
             tmpl, self.sudo(), variants, self._pbds_offer_country().id or False)
 
-    def _pbds_offer_lang(self):
-        """The candidate's language where known (the language they applied
-        in, then their contact's — Hiring's own order for candidate email),
-        else the company's; only a language in use here counts."""
+    @api.model
+    def _pbds_letter_lang_selection(self):
+        return [(code, name) for code, name in self.env['res.lang'].sudo().get_installed()]
+
+    def _pbds_known_lang(self):
+        """The candidate's language when it is KNOWN (owner ruling): the
+        recruiter's own choice on the offer, else the language the candidate
+        applied in on the careers page (`hr.applicant.pb_lang`). The contact
+        card's language is NOT used (it is usually the recruiter's screen
+        language). Only a language in use here counts. False when unknown."""
         self.ensure_one()
         active = self.env['pb.doc.studio']._pbds_active_langs()
         app = self.applicant_id.sudo()
-        candidates = []
-        if app:
-            if 'pb_lang' in app._fields:
-                candidates.append(app.pb_lang)
-            candidates.append(app.partner_id.lang if app.partner_id else False)
-        candidates.append(self.company_id.sudo().partner_id.lang)
+        for lang in (self.pbds_letter_lang,
+                     app.pb_lang if app and 'pb_lang' in app._fields else False):
+            if lang and lang in active:
+                return lang
+        return False
+
+    def _pbds_offer_lang(self):
+        """The language the letter is written in: the known language
+        (`_pbds_known_lang`), else the hiring company's language."""
+        self.ensure_one()
+        active = self.env['pb.doc.studio']._pbds_active_langs()
+        candidates = [self._pbds_known_lang(), self.company_id.sudo().partner_id.lang]
         for lang in candidates:
             if lang and lang in active:
                 return lang
@@ -152,6 +173,7 @@ class PbHiringOfferDocStudio(models.Model):
         env = local.env
         Line = env['pb.hiring.offer.line']
         periods = dict(Line._fields['period']._description_selection(env))
+        periods.update({k: env._(label) for k, label in zip(PERIOD_KEYS, PERIOD_LABELS)})
         cell = 'padding:5px 8px; border:1px solid #c9ced8;'
         head = 'padding:5px 8px; border:1px solid #c9ced8; background:#f3f4f8; font-weight:700;'
         rows = [Markup(
@@ -267,7 +289,14 @@ class PbHiringOfferDocStudio(models.Model):
         self.ensure_one()
         tmpl = self._pbds_offer_template()
         if not tmpl or not tmpl._pbds_is_studio():
-            return super().action_prepare_letter()
+            chosen = self.pbds_letter_lang
+            if not chosen or chosen not in self.env['pb.doc.studio']._pbds_active_langs():
+                # Nothing chosen: Hiring's own code, byte for byte (rail R1).
+                return super().action_prepare_letter()
+            # The recruiter chose a language: Hiring's own code, read in it.
+            res = super(PbHiringOfferDocStudio, self.with_context(lang=chosen)).action_prepare_letter()
+            self.sudo().write({'pbds_lang': chosen})
+            return res
         if not self.line_ids:
             raise UserError(_(
                 "There is nothing in this offer yet. Add what is being "

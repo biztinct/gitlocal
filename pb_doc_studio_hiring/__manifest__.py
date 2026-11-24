@@ -21,7 +21,7 @@ before (Hiring's own path runs unchanged). The PDF is rendered as the person
 preparing it, never as the superuser (Hiring's rule R89).
 See docs/handovers/docstudio/DOCSTUDIO_A1_REPORT.md.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -35,6 +35,8 @@ See docs/handovers/docstudio/DOCSTUDIO_A1_REPORT.md.
             'pb_doc_studio_hiring/static/src/scss/offer_studio.scss',
             'pb_doc_studio_hiring/static/src/js/offer_studio.js',
             'pb_doc_studio_hiring/static/src/xml/offer_studio.xml',
+            'pb_doc_studio_hiring/static/src/js/offer_board.js',
+            'pb_doc_studio_hiring/static/src/xml/offer_board.xml',
         ],
     },
     'installable': True,
