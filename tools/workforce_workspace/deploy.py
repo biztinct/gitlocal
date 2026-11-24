@@ -83,7 +83,7 @@ try:
   versions=dict(r.split('|',1) for r in sql(db,"SELECT name,latest_version FROM ir_module_module WHERE state='installed'").splitlines())
   assert all(norm(versions[n])==norm(v['version']) for n,v in plan['all_custom'].items() if n in versions)
   receipt['databases'][db]['versions_verified']=True
- 
+
  for db in dbs:
   sql(db, "INSERT INTO orm_signaling_assets DEFAULT VALUES; DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'; INSERT INTO ir_config_parameter(key,value) VALUES ('web.assets.version','"+plan['commit']+"') ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value")
  run(['systemctl','start','odoo-server']);stopped=False;receipt['downtime_seconds']=round(time.monotonic()-start)
