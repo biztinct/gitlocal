@@ -26,7 +26,7 @@ pb_employee_vault` is empty). Databases: `docstudio_a1_t` (copy of `upd_p6_t_tpl
 | Fields | The offer's own keys (Hiring's `_placeholder_values` + `${lines}`), grouped Candidate / Job / Company / Pay / Dates: candidate name, job title, department, where they will be based, who they will report to, company name, monthly total, yearly total, currency, **pay lines table (one block chip, drawn as a dashed table block on the page)**, start date, today's date. A key the wording uses that an offer does not have is amber ("no longer exists") and prints nothing. |
 | "Show only when" on the offer | Country (the hiring request's, else the company's), Company, Department, Job position, Employment type (the job's `contract_type_id`). Implemented by filtering the studio's own condition list (context `pbds_doc_kind='offer'`), so the rule builder, sentences and save checks are the studio's. |
 | Preview with a REAL OFFER (hero) | Same RPCs as a letter: `preview(template, draft, offer_id, lang)` and `sample_pdf(...)` take the offer picked; new `offers(term)` lists offers the caller may read (Hiring's record rules, never sudo). Language defaults to the candidate's. The page shows the candidate's signature line under the company's. JS patch: "Preview with · An offer / A person" line, offer search ("Find an offer", rows "OF-2026-0003 · job · state"), offer empty states (no offer yet / no Hiring access), candidate line on the paper, copy dialog sentence "Offers for roles at X in Y will use this copy.", and the preview record resets when switching between a letter and an offer letter. |
-| Prepared in Hiring | `pb.hiring.offer.action_prepare_letter` / `_make_pdf` overridden. The wording = `letter_template_id` (name pick, cost profile or recruiter's choice) swapped for the most specific ACTIVE company/country copy by the studio's own `_pbds_pick_variant` — the copy rule applies on top of the cost profile. Untouched wording → **Hiring's own code (super), byte-identical**. Studio wording → `_pbds_source` (language: the candidate's `pb_lang` → their contact's → the company's), `apply_rules` on the offer's facts, Hiring's values read in that language + the pay table in that language (headings Pay item / Amount / How often), `substitute`; PDF through `pb_doc_studio.report_doc_letter` + `page_frame` (letterhead, margins, font, size, signature block, signature picture), **rendered as the caller, never sudo (Hiring's R89)**. New fields on the offer: `pbds_lang` (stored), `pbds_lang_name`, `pbds_wording_note` ("Using DEMO B's wording") shown on the offer form; `pb.hiring._offer_row` names the copy that really prints. |
+| Prepared in Hiring | `pb.hiring.offer.action_prepare_letter` / `_make_pdf` overridden. The wording = `letter_template_id` (name pick, cost profile or recruiter's choice) swapped for the most specific ACTIVE company/country copy by the studio's own `_pbds_pick_variant` — the copy rule applies on top of the cost profile. Untouched wording → **Hiring's own code (super), byte-identical**. Studio wording → `_pbds_source` (language: the recruiter's choice → the language the candidate applied in → the company's; §8), `apply_rules` on the offer's facts, Hiring's values read in that language + the pay table in that language (headings Pay item / Amount / How often), `substitute`; PDF through `pb_doc_studio.report_doc_letter` + `page_frame` (letterhead, margins, font, size, signature block, signature picture), **rendered as the caller, never sudo (Hiring's R89)**. New fields on the offer: `pbds_lang` (stored), `pbds_lang_name`, `pbds_wording_note` ("Using DEMO B's wording") shown on the offer form; `pb.hiring._offer_row` names the copy that really prints. |
 
 ### Item 2 — certificates (`pb_doc_studio_me`)
 
@@ -75,6 +75,8 @@ Suites: `pb_doc_studio_hiring` (11 tests + 3 gates), `pb_doc_studio_me` (5 tests
 | A1-15 | Hostile text inert | PASS | `test_a1_15`: `<script>` stripped from the wording, a candidate named `<img onerror>` escaped in the letter and the preview. |
 | A1-16 | Rendered as the caller (R89) | PASS | `test_a1_16`: a spy on `_render_qweb_pdf` sees the recruiter's uid, `su=False`. |
 | A1-17 | PO + static gates | PASS | `test_gates` ×2: vi/id parse with the loader, every entry has module + occurrence + code marker, every msgstr filled, none names the platform; no platform word in templates/strings; window actions name their views. 71 entries (hiring), 11 (certificates). |
+| A1-18 | Language rule (follow-up): unknown → company language; explicit choice wins | PASS | `test_a1_18`, `test_a1_18b` (§8). Browser: Hiring › role › Offer & joining › Offer: select "Language: Vietnamese / Tiếng Việt, automatic (the language they applied in)" → English (US) → toast "The letter will be written in English (US)."; offer form shows "Letter language: English (US)"; console clean. |
+| A1-19 | Pay-table "how often" words in en / vi / id | PASS | `test_a1_19`. |
 | Suites | `pb_hiring`, `pb_me_letters`, `pb_doc_studio` at baseline | see §2.1 | |
 | Walk | Browser walk, console clean | PASS | §2.2 |
 
@@ -170,8 +172,9 @@ favicon on the portal page (`website.favicon` attachment, file missing) — not 
 ## 6. Deploy notes (new modules; risky tier — they change how two existing documents print once edited)
 
 - Both bridges `auto_install`: `-i pb_doc_studio_hiring,pb_doc_studio_me` on all five databases
-  AFTER `pb_doc_studio` (wave 1b) is in. Creates 1 inherited form view (offer form), 1 column
-  `pb_hiring_offer.pbds_lang`, selection value `hiring` on `pbds_kind_set`. No data written, no
+  AFTER `pb_doc_studio` (wave 1b) is in. Creates 1 inherited form view (offer form), 2 columns
+  `pb_hiring_offer.pbds_lang` / `pbds_letter_lang` (empty), selection value `hiring` on
+  `pbds_kind_set`; backend assets patch the Hiring board (language select). No data written, no
   job, no mail.
 - Asset bundles change (backend JS/XML/SCSS): purge `/web/assets/%` per database and restart.
 - Rehearsal on a clone ONLY (jobs and mail off): `docs/handovers/docstudio/a1/golden.py` in
@@ -194,20 +197,52 @@ the pay table and both signatures, redrawn as you type, and the true PDF one cli
 | Plain words | 9/10 | "Preview with · An offer", "Used by 2 offers", "Printed when an offer is prepared in Hiring". |
 | Overall | 9/10 | |
 
-## 8. Owner questions (plain words)
+## 8. Owner questions — answered (rulings of 2026-11-23) and the follow-up built
 
-1. **Which language should an offer letter be in when Payobook does not know the candidate's?**
-   Today: the language they applied in, else the language on their contact card, else the
-   company's language. The contact card language is usually just the recruiter's screen language
-   at the time the candidate was added. Keep this order, or skip the contact card and use the
-   company's language?
-2. **Pay lines in Indonesian.** The "how often" words of the pay table ("Every month", "One-off")
-   have no Indonesian translation in Hiring yet, so an Indonesian offer letter shows those two
-   words in English. Add the Indonesian words in Hiring in a later phase?
-3. **The "Clean" letter font prints bold words a little tight in Vietnamese on this Mac's PDF
-   printer** (a bold name touches the next word); "Classic serif" is fine. Worth one look at a
-   printed certificate on the live server; if it shows there too, the Document studio's "Clean"
-   bold needs a fix (phase F's fonts).
+Version **pb_doc_studio_hiring 19.0.1.1.0** (follow-up commit `b1327eb7f`). Nothing outside the
+two bridge modules was edited for it.
+
+1. **Offer letter language.** Ruling: unknown → the hiring company's language; an explicit choice
+   wins; the recruiter can choose another language before sending.
+   - **What counts as "known"** (`pb.hiring.offer._pbds_known_lang`): (a) the recruiter's own
+     choice on the offer — new field `pbds_letter_lang` "Letter language", empty = automatic; (b)
+     else the language the candidate applied in on the careers page (`hr.applicant.pb_lang`,
+     written by Hiring's apply form). Only a language switched on in the database counts. The
+     contact card's language is **no longer used**.
+   - Unknown → the hiring company's language (`company.partner_id.lang`), else English.
+   - **On screen (screen twin)**: Hiring board › role › Details › Offer & joining › Offer panel —
+     a select beside "Which letter…": "Language: Tiếng Việt, automatic (the language they applied
+     in)" / "(the company's language)", then every language. Choosing one writes the letter again
+     at once if it was already written; toast "The letter will be written in English (US)."
+     Shown while the offer is being prepared, sent for sign-off or agreed, and not while an
+     e-signature request is open; afterwards the server refuses ("The letter has already gone to
+     the candidate, so its language can no longer change."). Also on the offer form ("Letter
+     language", read-only once sent). New board verb `pb.hiring.act('offer_letter_lang', …)`
+     (recruiter gate `_require_recruit`, as every offer verb).
+   - Untouched (built-in) offer letters: with NO choice, Hiring's own code byte for byte (R1 holds,
+     golden unchanged); with a choice, Hiring's own code read in that language (dates, money and
+     any shipped translation follow it).
+   - Tests: A1-18 (unknown → company language with a contact card in another language ignored;
+     applied-in language known; recruiter's choice through the board wins, back to automatic,
+     unknown language refused, refused once sent), A1-18b (choice on an untouched letter), A1-06
+     updated.
+2. **Indonesian "Every month" / "One-off".** Fixed from the bridge: the pay lines table of a
+   studio offer letter now takes its "how often" words from `pb_doc_studio_hiring`
+   (`offer_common.PERIOD_KEYS/PERIOD_LABELS`, an unknown period still falls back to Hiring's
+   label), translated in the bridge's PO: vi "Hằng tháng / Hằng năm / Một lần" (same as Hiring's
+   own Vietnamese), id "Setiap bulan / Setahun sekali / Sekali saja". Test A1-19 (en/vi/id).
+   Deferred: built-in (untouched) offer letters still print through Hiring's own `${lines}`,
+   whose Indonesian words only Hiring's own translation file can supply — not touched
+   (WDGAP-style deferred item: "pb_hiring id_ID.po: Every month / Once a year / One-off").
+3. **Vietnamese bold squash in the "Clean" font — for the deploy agent to check live.** Reproduce
+   with: the **Employment certificate** (document "Employment certificate", Certificates group),
+   asked for on **My Payobook by a portal employee** (`/my/certificates`, language Tiếng Việt),
+   wording = the shipped Vietnamese translation ("Start from the translation" in the designer is
+   enough to make it a studio letter; any edit also does), page font **"Clean"** (Roboto, the
+   default), text size 13, letterhead on. In the PDF, bold names (`<strong>`, e.g. the employee's
+   name and job title) run into the next word ("DEMO Nguyễn Văn Anđang"). The HTML has the space;
+   the "Classic serif" font prints it correctly. Seen with the local wkhtmltopdf 0.12.6 (patched
+   Qt) on this Mac.
 
 ## 9. Left for later
 
