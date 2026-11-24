@@ -99,6 +99,11 @@ action; every record opens the generic premium record form; no visual of a shift
 - **WS49** pb_clock's own "heard from" rules: a PC is "Contact overdue" after `max(60, 3 × interval_minutes)` minutes (`pb_clock/static/setup/setup.js:53`), a machine is "Silent" after 180 s (`clock_lens.js:435`). Step 6 uses exactly these (P6), so a 15-minute PC reads "Not heard from since 14:05" one hour after its last call.
 - **WS50** OWL: focusing the button that opened an inline question from `requestAnimationFrame` runs BEFORE the patch that draws the button again — focus falls to `body`. Return focus from a `useEffect` keyed on the question state (runs after the patch).
 
+- **WS51** (P7) `pb_clock/releases/PayobookAttendanceConnector.zip` exists only on the server (gitlocal ignores `releases/*.zip`; the server builds it), so a whole-tree hash of `pb_clock` never equals a commit. Skip `releases/*.zip` in the hash (`p7/p7_hashtree.sh`), as Codex's `tools/workforce_workspace/prepare_release.py:22` does. Never delete it.
+- **WS52** (P7) `ir_cron.cron_name` is plain text on this build: `cron_name->>'en_US'` fails ("operator does not exist: character varying ->> unknown"). Select `cron_name` as is.
+- **WS53** (P7) Installing `pb_attendance_policy` adds two raw menu rows under Workforce › Configuration ("Attendance calculation policies", "Employee attendance settings", attendance managers only). The Payobook shell hides the classic menu sections, so the Workforce screen (rail) looks the same; they show only in the raw menu tree (`load_web_menus`). Same on sudima and payobook since P5b.
+- **WS54** (P7) A go-live that waits for 15 quiet minutes can take a long time on a busy morning: P7 waited 31 minutes (10 tries, 3 min apart) because someone was working on payobook.com. Run the tries inside a `systemd-run` unit so the deploy finishes even if the session that started it dies (it did, after the go-live; nothing was lost).
+
 ## Owner rulings (2026-11-24, on cards)
 - R1 Codex has FINISHED with the Workforce screens — build freely, replace its setup screen. (Still read /opt/deploy-notes.md before deploying.)
 - R2 Go live first on **sudima + payobook**; rize / payobook_template / p0clone follow in one batch when the owner says (row in docs/deploy/PENDING.md).
