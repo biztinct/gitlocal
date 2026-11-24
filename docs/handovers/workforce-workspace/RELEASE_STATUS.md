@@ -1,37 +1,55 @@
-# Release status — 24 November 2026
+# Workforce workspace — deployed 24 November 2026
 
-Implementation commit: `73726dec8` (on `19.1`, includes the latest DOCSTUDIO W2 repository changes through `705cd8046`).
+The approved design is live on Sudima: grouped navigation for daily work, guided initial setup, and a factory/workplace overview. Existing editors, approvals and calculation engines remain authoritative.
 
-**Not deployed yet.** The user confirmed that another session is deploying and will tell us when it has finished. Do not take over or interrupt that reservation. The live database, company preferences and installed modules have not been changed by this session.
+## Release
 
-## Completed checks
+- Implementation: `73726dec8`.
+- Settings integration: `ba442cd77`.
+- Final deployed combined code: `87ff2e4434ab582f12c9398f426dddfadcf5d7df`, including the completed DOCSTUDIO W2 and Sudima joining-date changes.
+- SSH target: `Payobook19v2`; addons directory: `/odoo/odoo-server/addons`.
+- Installed `pb_workforce_workspace` 19.0.1.0.0 on `payobook`, `payobook_template`, `p0clone`, `rize`, and `sudima`.
+- Enabled only Sudima, through the live guided setup UI. Other companies retain their previous navigation.
+- All 208 combined custom-module trees and installed versions verified. Existing generated Windows connector ZIP deliberately retained. Standard server addons and retired ABM untouched.
+- The initial install and final return-navigation correction were deployed separately (154 and 178 seconds of service downtime). Both completed successfully; all four active hostnames returned HTTP 200.
 
-- Nine server tests pass (0 failed, 0 errors) on an isolated Sudima copy, `pbqa_workforce_20261124`.
-- Backend catalog reads succeeded for all eight libraries using the existing company data.
-- Chrome checked all nine navigation routes in the rehearsal checklist without console errors: roster board, roster review, people, overtime definitions, calendars, connectors, attendance/hours, overtime approvals and guided setup.
-- Created a test shift through the real form: 07:30–16:30, one-hour break, computed eight hours. This exists only in the QA copy.
-- Unsaved edits prompt before switching sections; cancel keeps the original value.
-- Pattern cards show weekdays/times/rest; filters start collapsed. Draft creation is disabled until a preview is obtained. The preview retains existing drafts and reports its impact without publishing anything.
-- Company navigation was disabled and re-enabled through the setup UI. The previous rail returned when disabled.
-- At 390px, page width stayed 390px and the approvals dock collapsed automatically, leaving 647px of canvas height.
-- No screenshot files were generated: visual inspection used inline JPEGs only. Pre-existing and concurrent-session images were preserved.
+## Verification
 
-## Resume after user confirms the other deployment is complete
+- Nine server tests passed on the isolated Sudima copy: company scope, permissions, administrator-only adoption, allowed catalog names, search/pagination, readiness without activation, and workplace filtering.
+- Deployed catalog reads and CSS/JS asset compilation passed on all five databases (eight catalogs on Sudima, seven elsewhere; attendance calculation remains optional).
+- Live Chrome: enabled adoption, factory overview, shift editor, Back to list, policy edit/cancel and unsaved-change protection, recurring pattern preview, roster board/review, people, overtime definitions, calendars, connector details, attendance/hours, overtime approvals, and Settings return path passed.
+- Pattern preview reported 4,645 potential new drafts and 7,739 existing entries; no draft creation or publication was performed.
+- Settings > HR > Calculation policies opens the same premium editor. Back to list and Back to Settings were both exercised after the correction.
+- Mobile: 390px viewport and document width, usable 603px canvas, collapsed approval dock. No browser console errors.
+- UI creation was tested only on the isolated database: a 07:30–16:30 shift with a one-hour break computed eight hours.
+- Temporary live QA user 2501 disabled and password rotated. Isolated service, database, filestore and credential files removed. No test screenshot files were saved; inline JPEG inspection only. Concurrent-session and user-provided images preserved.
 
-1. Fetch and merge the latest `origin/19.1` into the isolated worktree; preserve concurrent work. Recheck `/opt/deploy-notes.md` and the deployment lock.
-2. Refresh the server inventory (`tools/workforce_workspace/inventory.py`) into `/private/tmp/workforce-workspace-ops-20261124/before.json`. Current inventory is **pre-DOCSTUDIO**, so do not deploy from it.
-3. Run `prepare_release.py` from the isolated worktree. It refuses unexplained code differences. The existing generated Windows connector ZIP is deliberately retained, not downgraded to the tracked historical archive.
-4. Upload the new package, release JSON and deployment script to `/tmp/workforce-workspace-20261124`. Run the guarded deployment only after the reservation closes. It backs up all five databases, preserves Rize permanently, deploys only to `/odoo/odoo-server/addons`, installs the new module in all five (all dependencies already installed), and preserves exact cron states. ABM is excluded.
-5. Run `verify_live.py` against all five databases, verify combined module hashes/installed versions again. Enable the workspace in Sudima through its guided setup UI; leave every other company disabled.
-6. Complete authenticated Chrome checks of the deployed Sudima workspace, including Settings entry, navigation, policy editor, existing roster/pattern/time screens and connector details. Do not activate the policy or publish inferred rosters.
-7. Disable any temporary live QA user. Stop the isolated QA server using its validated PID, remove the QA database/filestore and QA credentials created by this session, and stop the local SSH tunnel. Preserve release evidence and unrelated temporary files.
-8. Record final commit, targets and live test results, then report completion.
+## Where users go
 
-## Rehearsal resources
+| Task | Menu |
+| --- | --- |
+| Initial setup | Settings > HR > Workforce setup > Set up Workforce, or Workforce > Guided setup |
+| Daily factory view | Workforce > Overview > Factory overview |
+| Shift definitions | Workforce > Shifts & patterns > Shift library |
+| Repeating work/rest days | Workforce > Shifts & patterns > Recurring patterns |
+| Roster | Workforce > Roster > Roster board / Review roster |
+| Employee assignments | Workforce > People > People & assignments |
+| Calculation, overtime and calendars | Workforce > Rules & calendars |
+| Actual hours and approvals | Workforce > Timesheets > Attendance & hours / Overtime approvals |
+| PC connectors and received data | Workforce > Connections > Data connectors; open a connector > Received records |
 
-- Worktree: `/private/tmp/payobook-workforce-workspace-20261124`
-- Server stage: `/tmp/workforce-workspace-20261124`
-- Rehearsal logs: `rehearsal2.log`, `browser.log`
-- Private temporary QA credential: `qa-login.json` in the server stage; do not print or commit it.
-- Rehearsal server binds **127.0.0.1:8876**. Local SSH tunnel is **127.0.0.1:18776**. It serves only the QA database; no public hostname was added.
-- Sudima's policy is still draft; all 12,384 roster rows are still draft. Its 651 employee records have no workplace assigned, so the factory overview uses an explicit unassigned card.
+## Sudima data still requiring review
+
+This UI release is not payroll readiness approval. The attendance calculation policy remains draft (zero active), and all 12,384 roster rows remain draft. Worker lateness of 1–9 minutes remains unconfirmed. No extra-bonus logic was implemented.
+
+The latest live employee count is 678 after the other session's profile additions; all 678 have no workplace assigned, so the overview honestly displays “Workplace not assigned”. Guided setup also reports 27 people without an attendance policy. The client can maintain these assignments in the UI.
+
+## Evidence and backups
+
+- Initial release: `/tmp/workforce-workspace-20261124/receipt.json`.
+- Final release: `/tmp/workforce-workspace-20261124-final/receipt.json`.
+- Database verification: `/tmp/workforce-workspace-20261124-final/verification.json`.
+- Browser verification/data safeguards: `/tmp/workforce-workspace-20261124-final/ui-verification.json`.
+- Final nonproduction backups: `/odoo/backups/workforce-workspace-20261124T101650Z/` (seven-day retention, preserve latest usable).
+- Final Rize backup: `/odoo/archives/rize-workforce-workspace-20261124T101650Z/` (permanent).
+- Exact pre-deployment scheduled-job states restored on all five databases.
