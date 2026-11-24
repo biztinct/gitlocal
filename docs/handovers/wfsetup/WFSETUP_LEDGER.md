@@ -24,7 +24,7 @@ action; every record opens the generic premium record form; no visual of a shift
 | P5a | Take over the old doors, trim the Workforce menu, vi/id wording, lessons check, final pass, step 7 plan once | built + tested locally 2026-11-25 (report WFSETUP_P5A_REPORT.md) |
 | P5c | Polish: publish makes the roster day by day (progress in ~3 s), translated Workforce tab bar, numbers in the user's language | built + tested locally 2026-11-25 (report WFSETUP_P5A_REPORT.md, P5c section) |
 | P5b | Deploy + live browser walk + closeout | LIVE 2026-11-24 19:48 UTC: setup screen on sudima + payobook, workspace + overtime fix ×5, 551 s down (report WFSETUP_P5B_REPORT.md) |
-| P6 | Honest clocks (step 6 states + "Switch clock-ins on", step 7 / finish wording), every Undo redraws the step | see WFSETUP_P6_REPORT.md |
+| P6 | Honest clocks (step 6 states + "Switch clock-ins on", step 7 / finish wording), every Undo redraws the step | LIVE 2026-11-24 21:16 UTC on sudima + payobook (19.0.1.5.0), 109 s down (report WFSETUP_P6_REPORT.md) |
 
 ## Standing rules every handover repeats
 1. White-label: the word "Odoo" never appears in any user-visible string. Technical identifiers untouched.
