@@ -21,7 +21,7 @@ action; every record opens the generic premium record form; no visual of a shift
 | P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | built + tested locally 2026-11-24 (report WFSETUP_P2_REPORT.md) |
 | P3 | Step 4 Late and overtime rules + real live preview calculation + automatic holiday/rest-day marking | built + tested locally 2026-11-25 (report WFSETUP_P3_REPORT.md) |
 | P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | built + tested locally 2026-11-25 (report WFSETUP_P4_REPORT.md) |
-| P5 | Take over the Settings card, vi/id translations, lessons/tours touched, deploy + browser walk, closeout | |
+| P5a launched 2026-11-25; P5b = deploy | Take over the Settings card, vi/id translations, lessons/tours touched, deploy + browser walk, closeout | |
 
 ## Standing rules every handover repeats
 1. White-label: the word "Odoo" never appears in any user-visible string. Technical identifiers untouched.
