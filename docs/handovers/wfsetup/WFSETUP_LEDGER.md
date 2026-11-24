@@ -21,7 +21,8 @@ action; every record opens the generic premium record form; no visual of a shift
 | P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | built + tested locally 2026-11-24 (report WFSETUP_P2_REPORT.md) |
 | P3 | Step 4 Late and overtime rules + real live preview calculation + automatic holiday/rest-day marking | built + tested locally 2026-11-25 (report WFSETUP_P3_REPORT.md) |
 | P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | built + tested locally 2026-11-25 (report WFSETUP_P4_REPORT.md) |
-| P5a launched 2026-11-25; P5b = deploy | Take over the Settings card, vi/id translations, lessons/tours touched, deploy + browser walk, closeout | |
+| P5a | Take over the old doors, trim the Workforce menu, vi/id wording, lessons check, final pass, step 7 plan once | built + tested locally 2026-11-25 (report WFSETUP_P5A_REPORT.md) |
+| P5b | Deploy + live browser walk + closeout | next |
 
 ## Standing rules every handover repeats
 1. White-label: the word "Odoo" never appears in any user-visible string. Technical identifiers untouched.
@@ -73,6 +74,14 @@ action; every record opens the generic premium record form; no visual of a shift
 - **WS29** A container `keydown` handler that `preventDefault`s Enter (a calendar grid) also swallows Enter on buttons inside it (an inline question strip). Act only when `ev.target` is a day cell.
 - **WS30** The attendance settings screen (`hr_attendance.action_hr_attendance_settings`, `res.config.settings`) needs administrator rights — never a door for an attendance manager.
 - **WS31** The stock public-holiday create is heavy: 10 suggested days = 449 queries / 4.6 s. Show busy state; never loop `add_day_off` per day from the client. Chrome MCP `wait_for` returns the WHOLE accessibility snapshot (12 calendars = 500 nodes) — poll with `evaluate_script` instead.
+
+- **WS32** Odoo 19 exports translations with `odoo-bin i18n export -c <conf> -d <db> -o <file>.pot <module>` (the old `--i18n-export` option is gone: "no such option -o" means the subcommand is missing). JS strings and XML template text are read from the files on disk, so a code-only change needs no `-u` before re-exporting; resync the `.po` files from the new `.pot` (entries no longer in it drop out).
+- **WS33** A Mission lens that hands over to another screen must open it with `stackPosition: "replaceCurrentAction"`, and the button path must be intercepted in `PbMission.setLens` BEFORE `super` runs: `setLens` stores the lens in localStorage, and a remembered hand-over lens bounces every later visit to Workforce. Also clear a remembered `setup` lens on start (`workspace.js` onWillStart).
+- **WS34** One-letter weekday msgids (`_t("T")` for Tuesday AND Thursday, `_t("S")` for Saturday AND Sunday) cannot be translated (Vietnamese T3/T5, Indonesian S/K). Use luxon `DateTime.toFormat("ccccc")` of a known Monday-to-Sunday run.
+- **WS35** Settings categories: a later module re-registers another module's category with `{ sequence, force: true }` and drops one with `registry.category("pb_settings_category").remove(key)` — the asset order follows the dependency order, so the later module wins. A one-card category opens its card straight away; a `tag` card gets the Settings back chip, an `xmlid` card only the breadcrumb.
+- **WS36** A baseline run from a `git archive` snapshot must include `pb_import_kit` next to the snapshot: `test_static.test_s2_every_icon_exists` reads it through the module's parent folder (one false ERROR otherwise).
+- **WS37** Inside one test transaction `write_date` is `now()` of that transaction and never moves: a fingerprint built on `max(write_date)` sees a create/unlink (count, max id) but not a plain write. Real requests are separate transactions, so it works live; a test must bump `write_date` by SQL to stand in for "a later request".
+- **WS38** `pb_learn` `TestAnchorRegistry.test_05_no_stray_anchors` fails on `19.1` for anchors in other modules (`pb_payrun_wizard`, `pb_payslip_review`, `pb_contracts`, `pb_pay_delivery`, `pb_govt_reports`, `pb_approval_config`) — not this programme's files.
 
 ## Owner rulings (2026-11-24, on cards)
 - R1 Codex has FINISHED with the Workforce screens — build freely, replace its setup screen. (Still read /opt/deploy-notes.md before deploying.)
