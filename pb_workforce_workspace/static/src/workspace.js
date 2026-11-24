@@ -26,6 +26,20 @@ const GROUPS = [
     {label:'Connections', keys:['connectors']},
     {label:'More', keys:['timeoff','approvals','field','insights']},
 ];
+// When the guided Workforce setup screen (`pb_workforce_setup`) is installed
+// setup has its own home, so the daily menu keeps only daily work (owner
+// ruling R3, WFSETUP P5a). The setup-only lenses stay registered — other
+// screens still link to them — they are just not listed in the tabs or in
+// "More". Without that module the menu above is unchanged.
+const TRIMMED_GROUPS = [
+    {label:'Overview', keys:['overview','today']},
+    {label:'Roster', keys:['schedule','rosters']},
+    {label:'Timesheets', keys:['time','overtime','close']},
+    {label:'More', keys:['timeoff','approvals','field','insights']},
+];
+const SETUP_ONLY = ['shifts','patterns','people','policies','rates','ceilings','calendars','holidays','connectors'];
+const STUDIO_TAG = 'pb_workforce_setup_studio';
+export function setupStudioInstalled(){return registry.category('actions').contains(STUDIO_TAG);}
 const LABELS = {overview:'Factory overview',today:'Today',schedule:'Roster board',rosters:'Review roster',
     shifts:'Shift library',patterns:'Recurring patterns',people:'People & assignments',policies:'Attendance policies',
     rates:'Overtime definitions',ceilings:'Overtime ceilings',calendars:'Working calendars',time:'Attendance & hours',
@@ -159,19 +173,33 @@ patch(PbMission.prototype,{
             Object.assign(this.workspace,await this.orm.call(MODEL,'preferences',[]));
             if(this.workspace.enabled && !this.props.action?.context?.pb_shell_lens && this.state.lens==='today' && this.state.allowed?.overview)this.state.lens='overview';
             if(!this.workspace.enabled && extraKeys.includes(this.state.lens) && this.state.lens!=='setup')this.state.lens='today';
+            // With the setup screen installed, a remembered setup lens (or, in
+            // the grouped menu, a setup-only lens) is not in the menu: start on
+            // the overview / today instead. A deep link to one still opens it.
+            const asked=this.props.action?.context?.pb_shell_lens;
+            if(setupStudioInstalled() && !asked && (this.state.lens==='setup' || (this.workspace.enabled && SETUP_ONLY.includes(this.state.lens))))
+                this.state.lens=this.workspace.enabled && this.state.allowed?.overview!==false ? 'overview' : 'today';
         });
     },
+    get workspaceTrimmed(){return setupStudioInstalled();},
+    get setupLabel(){return this.workspaceTrimmed ? 'Workforce setup' : 'Guided setup';},
+    get reviewRosterShown(){return !this.workspaceTrimmed || !!this.workspace.review_rows || this.state.lens==='rosters';},
     async setLens(key){
         if(this.workspace?.enabled && this.workspaceEnv.guard && key !== this.state.lens && !await this.workspaceEnv.guard())return;
         return super.setLens(key);
     },
     get lenses(){return super.lenses.filter(l=>this.workspace?.enabled || !extraKeys.includes(l.key));},
     get workspaceGroups(){
-        const visible=new Set(this.lenses.map(l=>l.key));
-        const listed=new Set(GROUPS.flatMap(g=>g.keys));
-        return GROUPS.map(g=>({...g,keys:(g.label==='More'?[...g.keys,...this.lenses.filter(l=>!listed.has(l.key)&&l.key!=='setup').map(l=>l.key)]:g.keys).filter(k=>visible.has(k))})).filter(g=>g.keys.length);
+        const trimmed=this.workspaceTrimmed;
+        const groups=trimmed?TRIMMED_GROUPS:GROUPS;
+        const hidden=new Set(trimmed?[...SETUP_ONLY,'setup',...(this.reviewRosterShown?[]:['rosters'])]:['setup']);
+        const visible=new Set(this.lenses.map(l=>l.key).filter(k=>!hidden.has(k)));
+        const listed=new Set([...GROUPS,...groups].flatMap(g=>g.keys));
+        return groups.map(g=>({...g,keys:(g.label==='More'?[...g.keys,...this.lenses.filter(l=>!listed.has(l.key)&&!hidden.has(l.key)).map(l=>l.key)]:g.keys).filter(k=>visible.has(k))})).filter(g=>g.keys.length);
     },
-    get workspaceGroup(){return this.workspaceGroups.find(g=>g.keys.includes(this.state.lens))||this.workspaceGroups[0];},
+    // A lens reached by a deep link that is not in the trimmed menu (the
+    // rotation editor from setup step 2, say) lights no tab.
+    get workspaceGroup(){return this.workspaceGroups.find(g=>g.keys.includes(this.state.lens))||(this.workspaceTrimmed?null:this.workspaceGroups[0]);},
     get workspaceSubnav(){return (this.workspaceGroup?.keys||[]).map(key=>({key,label:LABELS[key]||this.lenses.find(l=>l.key===key)?.label}));},
     async workspaceNavigate(key){
         if(this.workspaceEnv.guard && !await this.workspaceEnv.guard())return;

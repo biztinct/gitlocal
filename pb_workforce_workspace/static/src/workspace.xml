@@ -4,10 +4,10 @@
   <xpath expr="//nav[hasclass('pbms-rail')]" position="attributes"><attribute name="t-if">!workspace.enabled</attribute></xpath>
   <xpath expr="//div[hasclass('pbms-low')]" position="before">
    <nav t-if="workspace.enabled" class="pbww-nav" aria-label="Workforce workspace">
-    <div class="pbww-tabs"><button t-foreach="workspaceGroups" t-as="g" t-key="g.label" t-att-class="{'is-active':workspaceGroup.label === g.label and state.lens !== 'setup'}" t-att-aria-current="workspaceGroup.label === g.label and state.lens !== 'setup' ? 'page' : false" t-on-click="() => this.workspaceNavigate(g.keys[0])" t-esc="g.label"/>
-     <button t-if="!state.allowed or state.allowed.setup" class="pbww-setup-link" t-att-class="{'is-active':state.lens === 'setup'}" t-on-click="() => this.workspaceNavigate('setup')">Guided setup</button>
+    <div class="pbww-tabs"><button t-foreach="workspaceGroups" t-as="g" t-key="g.label" t-att-class="{'is-active':workspaceGroup and workspaceGroup.label === g.label and state.lens !== 'setup'}" t-att-aria-current="workspaceGroup and workspaceGroup.label === g.label and state.lens !== 'setup' ? 'page' : false" t-on-click="() => this.workspaceNavigate(g.keys[0])" t-esc="g.label"/>
+     <button t-if="!state.allowed or state.allowed.setup" class="pbww-setup-link" t-att-class="{'is-active':state.lens === 'setup'}" t-on-click="() => this.workspaceNavigate('setup')" t-esc="setupLabel"/>
     </div>
-    <div class="pbww-subnav" t-if="state.lens !== 'setup'"><button t-foreach="workspaceSubnav" t-as="l" t-key="l.key" t-att-class="{'is-active':state.lens === l.key}" t-att-aria-current="state.lens === l.key ? 'page' : false" t-on-click="() => this.workspaceNavigate(l.key)" t-esc="l.label"/></div>
+    <div class="pbww-subnav" t-if="state.lens !== 'setup' and workspaceSubnav.length"><button t-foreach="workspaceSubnav" t-as="l" t-key="l.key" t-att-class="{'is-active':state.lens === l.key}" t-att-aria-current="state.lens === l.key ? 'page' : false" t-on-click="() => this.workspaceNavigate(l.key)" t-esc="l.label"/></div>
    </nav>
   </xpath>
  </t>

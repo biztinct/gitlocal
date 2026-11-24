@@ -48,7 +48,23 @@ class Workspace(models.AbstractModel):
             raise AccessError(_('Sign in to continue.'))
         return {'enabled': self.env.company.pb_workforce_workspace_enabled,
                 'company': self.env.company.name, 'company_id': self.env.company.id,
-                'can_configure': self.env.user.has_group('base.group_system')}
+                'can_configure': self.env.user.has_group('base.group_system'),
+                'review_rows': self._review_rows()}
+
+    @api.model
+    def _review_rows(self):
+        """Roster rows still waiting for review (drafts from today on, this
+        company) — the trimmed menu lists "Review roster" only when there are
+        some (WFSETUP P5a). Zero for anyone who cannot read the roster; sudo
+        only for the count, behind the attendance-officer check."""
+        user = self.env.user
+        if not (user.has_group('hr_attendance.group_hr_attendance_officer') or user.has_group('base.group_system')):
+            return 0
+        if 'hr.shift.planning' not in self.env:
+            return 0
+        return self.env['hr.shift.planning'].sudo().search_count([
+            ('company_id', '=', self.env.company.id), ('state', '=', 'draft'),
+            ('date', '>=', fields.Date.context_today(self))])
 
     def _catalog(self, key):
         self._gate()

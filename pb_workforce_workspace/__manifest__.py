@@ -1,7 +1,7 @@
 {
     'name': 'Workforce planning workspace',
     'summary': 'One workspace for rosters, shift patterns, attendance rules and connections',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'depends': ['pb_mission', 'pb_shift_patterns', 'pb_clock', 'pb_settings', 'pb_form_studio'],
