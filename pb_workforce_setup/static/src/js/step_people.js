@@ -51,13 +51,17 @@ export class StepPeople extends Component {
         this.sel = new Set();
         this.anchor = null;          // index in the current list of the last click
         this.version = 0;
+        // another step can send people here on a quick filter (step 6:
+        // "N people have no clock number"; step 7: "no working week yet")
+        const start = this.props.studio.takePeopleFilter?.() || null;
         this.state = useState({
             loading: true,
             error: "",
             people: null,
             q: "",
             team: null,
-            onlyMissing: false,
+            onlyMissing: start === "noweek",
+            onlyNoNumber: start === "nonumber",
             limit: CHUNK,
             focus: -1,
             tick: 0,
@@ -120,6 +124,15 @@ export class StepPeople extends Component {
     get shifts() { return this.props.data.shifts; }
     get missing() { return this.people ? this.people.without_week : 0; }
     get total() { return this.people ? this.people.total : 0; }
+    /** People with neither a clock number nor a badge number (the row's
+     *  `number` is the clock number, else the badge). */
+    get noNumber() {
+        if (this._noNumberV !== this.version) {
+            this._noNumberV = this.version;
+            this._noNumber = this.rows.filter((r) => !r.number).length;
+        }
+        return this._noNumber;
+    }
 
     get shiftMap() {
         if (this._shiftsFor !== this.shifts) {
@@ -131,7 +144,7 @@ export class StepPeople extends Component {
 
     /** The filtered list, memoised on its inputs. */
     get list() {
-        const key = `${this.version}|${this.state.q}|${this.state.team}|${this.state.onlyMissing}`;
+        const key = `${this.version}|${this.state.q}|${this.state.team}|${this.state.onlyMissing}|${this.state.onlyNoNumber}`;
         if (this._listKey !== key) {
             const q = fold(this.state.q).trim();
             const words = q ? q.split(/\s+/) : [];
@@ -139,6 +152,7 @@ export class StepPeople extends Component {
             this._list = this.rows.filter((r) =>
                 (team === null || r.department_id === team)
                 && (!this.state.onlyMissing || !r.week_now)
+                && (!this.state.onlyNoNumber || !r.number)
                 && words.every((w) => r.hay.includes(w)));
             this._listKey = key;
         }
@@ -242,6 +256,10 @@ export class StepPeople extends Component {
         this.state.onlyMissing = !this.state.onlyMissing;
         this.resetView();
     }
+    toggleNoNumber() {
+        this.state.onlyNoNumber = !this.state.onlyNoNumber;
+        this.resetView();
+    }
     onSearch(ev) {
         this.state.q = ev.target.value;
         this.resetView();
@@ -250,6 +268,7 @@ export class StepPeople extends Component {
         this.state.q = "";
         this.state.team = null;
         this.state.onlyMissing = false;
+        this.state.onlyNoNumber = false;
         this.resetView();
         this.search.el?.focus();
     }

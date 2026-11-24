@@ -19,7 +19,14 @@ P3 ships step 4 (Late and overtime rules): the company's rule set
 right worked out by the real engine (`pb_attendance_policy/engine.py`) with
 unsaved values, Confirm = activate for everyone, and automatic holiday /
 rest-day marking of roster shifts (`hr.shift.planning.pb_day_kind_manual`).
-Steps 5-7 show a calm "arrives next" card.
+P4 ships step 5 (Holidays: the year as month calendars over the company's
+working calendar, `pb.holidays._create_row`, one-click suggested public
+holidays from `data/holiday_suggestions.json`), step 6 (Time clocks: honest
+health per `pb.clock.connector` / `pb.clock.device`, the setup link from the
+connector's own `_new_invitation`) and step 7 (Check and go live: checklist,
+the working-week engine's plan, then publishing this company's roster one
+week per call through `action_publish`, resumable, with the finish card).
+Per-company setup state lives in four `res.company` fields.
 
 Facade `pb.workforce.setup` (AbstractModel): every method gated on the server
 (attendance officer reads, attendance manager writes), every domain scoped to
@@ -31,7 +38,7 @@ validations and ACLs; no new calculation. One stored field
 Nothing is created on install. The existing workspace screens are untouched;
 the takeover of the Settings card is a later phase.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -41,7 +48,7 @@ the takeover of the Settings card is a later phase.
         'pb_wf_kit',
         'pb_import_kit',            # pbim tokens + the shared Lucide ic() registry
         'pb_hub',                   # HubBackChip / hubBack
-        'pb_timeoff',               # holidays step (later phase)
+        'pb_timeoff',               # holidays step: pb.holidays._create_row / _column
         'pb_attendance_policy',     # late rules on every site (owner ruling R4)
     ],
     'data': [
@@ -55,10 +62,12 @@ the takeover of the Settings card is a later phase.
             'pb_workforce_setup/static/src/js/setup_util.js',
             'pb_workforce_setup/static/src/js/step_shifts.js',
             'pb_workforce_setup/static/src/js/step_weeks.js',
-            'pb_workforce_setup/static/src/js/step_soon.js',
             'pb_workforce_setup/static/src/js/setup_drawer.js',
             'pb_workforce_setup/static/src/js/step_people.js',
             'pb_workforce_setup/static/src/js/step_rules.js',
+            'pb_workforce_setup/static/src/js/step_holidays.js',
+            'pb_workforce_setup/static/src/js/step_clocks.js',
+            'pb_workforce_setup/static/src/js/step_live.js',
             'pb_workforce_setup/static/src/js/preview_panel.js',
             'pb_workforce_setup/static/src/js/setup_studio.js',
             'pb_workforce_setup/static/src/xml/setup_studio.xml',

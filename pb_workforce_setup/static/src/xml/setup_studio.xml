@@ -68,7 +68,9 @@
         <StepWeeks t-elif="state.step === 'weeks'" studio="api" data="data"/>
         <StepPeople t-elif="state.step === 'people'" studio="api" data="data"/>
         <StepRules t-elif="state.step === 'rules' and state.rules" studio="api" data="data" rules="state.rules"/>
-        <StepSoon t-else="" studio="api" data="data" stepKey="state.step"/>
+        <StepHolidays t-elif="state.step === 'holidays'" studio="api" data="data"/>
+        <StepClocks t-elif="state.step === 'clocks'" studio="api" data="data"/>
+        <StepLive t-elif="state.step === 'live'" studio="api" data="data"/>
         <div class="pbws-nav">
           <button t-if="prevStep" type="button" class="pbws-btn pbws-btn--ghost" t-on-click="() => this.go(prevStep.key)">
             <t t-out="icon('back', 16)"/><t t-esc="prevStep.title"/>
@@ -78,6 +80,11 @@
             <span t-if="state.confirming" class="pbws-spin" aria-hidden="true"/>
             <t t-else="" t-out="icon('check', 16)"/>
             <t t-esc="confirmLabel"/>
+          </button>
+          <button t-elif="bar" type="button" class="pbws-btn pbws-btn--pri" t-att-disabled="bar.busy" t-on-click="runBar">
+            <span t-if="bar.busy" class="pbws-spin" aria-hidden="true"/>
+            <t t-else="" t-out="icon(bar.icon || 'check', 16)"/>
+            <t t-esc="bar.label"/>
           </button>
           <button t-elif="nextStep" type="button" class="pbws-btn pbws-btn--pri" t-on-click="() => this.go(nextStep.key)">
             <t t-esc="current.next"/><t t-out="icon('arrowRight', 16)"/>
@@ -442,6 +449,10 @@
                   t-att-aria-pressed="state.onlyMissing ? 'true' : 'false'" t-on-click="toggleMissing">
             No working week yet <span class="pbws-num pbws-brush-c" t-esc="missing"/>
           </button>
+          <button t-if="noNumber or state.onlyNoNumber" type="button" t-att-class="'pbws-brush' + (state.onlyNoNumber ? ' is-on' : '')"
+                  t-att-aria-pressed="state.onlyNoNumber ? 'true' : 'false'" t-on-click="toggleNoNumber">
+            No clock number <span class="pbws-num pbws-brush-c" t-esc="noNumber"/>
+          </button>
           <t t-if="teamRow">
             <button t-if="canEdit" type="button" class="pbws-btn pbws-btn--sm" t-on-click="tickTeam"><t t-out="icon('check', 16)"/><t t-esc="tickTeamLabel"/></button>
             <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="showEveryone">Show everyone</button>
@@ -721,11 +732,9 @@
               <b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.to"/>
               minutes late, take off
             </t>
-            <input t-if="canEdit" type="number" min="0" max="24" step="0.25" data-part="hours"
+            <span class="pbws-nw"><input t-if="canEdit" type="number" min="0" max="24" step="0.25" data-part="hours"
                    t-att-class="'pbws-inl pbws-num' + (bad(line_index, 'hours') ? ' is-bad' : '')"
-                   t-att-value="line.hours" t-att-aria-label="lineLabel(line_index, 'hours')" t-on-input="(ev) => this.onHours(line_index, ev)"/>
-            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.hours"/>
-            hours.
+                   t-att-value="line.hours" t-att-aria-label="lineLabel(line_index, 'hours')" t-on-input="(ev) => this.onHours(line_index, ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.hours"/> hours.</span>
             <button t-if="canEdit" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost pbws-btn--danger pbws-sent-x"
                     t-att-aria-label="removeLabel(line_index)" t-att-title="removeLabel(line_index)" t-on-click="() => this.removeLine(line_index)">
               <t t-out="icon('trash', 14)"/>
@@ -751,37 +760,36 @@
                 <span class="pbws-num pbws-faint" t-esc="shiftRange(line)"/>
                 <span t-if="!line.in_weeks" class="pbws-chip pbws-chip--sm">Not in a working week</span>
               </span>
+              <!-- row two of the block: each "words + time" pair is glued, so a
+                   time never lands on a line of its own (P3 report, weakest point) -->
               <span class="pbws-sline-s">
-                <t t-if="line.break_minutes">
+                <span t-if="line.break_minutes" class="pbws-nw">
                   Unpaid break starts at
                   <input t-if="canEdit" type="time" class="pbws-inl pbws-inl--t pbws-num" t-att-value="line.break_start"
                          t-att-aria-label="breakLabel(line)" t-on-input="(ev) => this.onShiftTime(line, 'break_start', ev)"/>
                   <b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.break_start"/>
-                </t>
-                <t t-else=""><span class="pbws-faint" t-esc="noBreakText(line)"/></t>
-                <span class="pbws-sline-dot">·</span> overtime starts at
-                <input t-if="canEdit" type="time" class="pbws-inl pbws-inl--t pbws-num" t-att-value="line.overtime_from"
-                       t-att-aria-label="overtimeLabel(line)" t-on-input="(ev) => this.onShiftTime(line, 'overtime_from', ev)"/>
-                <b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.overtime_from"/>
+                </span>
+                <span t-else="" class="pbws-faint" t-esc="noBreakText(line)"/>
+                <span class="pbws-sline-dot" aria-hidden="true">·</span>
+                <span class="pbws-nw">
+                  overtime starts at
+                  <input t-if="canEdit" type="time" class="pbws-inl pbws-inl--t pbws-num" t-att-value="line.overtime_from"
+                         t-att-aria-label="overtimeLabel(line)" t-on-input="(ev) => this.onShiftTime(line, 'overtime_from', ev)"/>
+                  <b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.overtime_from"/>
+                </span>
               </span>
               <p t-if="shiftProblem(line) or line.problem" class="pbws-err" role="alert"><t t-out="icon('triangleAlert', 14)"/><span t-esc="shiftProblem(line) or line.problem"/></p>
             </div>
             <p t-if="!r.shifts.length" class="pbws-rule-none"><t t-out="icon('info', 14)"/>Add a shift in step 1 first.</p>
           </div>
+          <!-- each clause moves as one piece: a number never parts from its words or its percent sign -->
           <div class="pbws-sent">
-            Overtime pays
-            <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('normal') or typing('rate-normal') ? ' is-bad' : '')"
-                   t-att-value="r.rates.normal" aria-label="Overtime rate, percent" t-on-input="(ev) => this.onRate('normal', ev)"/>
-            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.normal"/>
-            %. Work on a rest day pays
-            <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('rest_day') or typing('rate-rest_day') ? ' is-bad' : '')"
-                   t-att-value="r.rates.rest_day" aria-label="Rest day rate, percent" t-on-input="(ev) => this.onRate('rest_day', ev)"/>
-            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.rest_day"/>
-            %, and on a public holiday
-            <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('holiday') or typing('rate-holiday') ? ' is-bad' : '')"
-                   t-att-value="r.rates.holiday" aria-label="Public holiday rate, percent" t-on-input="(ev) => this.onRate('holiday', ev)"/>
-            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.holiday"/>
-            %.
+            <span class="pbws-nw">Overtime pays <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('normal') or typing('rate-normal') ? ' is-bad' : '')"
+                   t-att-value="r.rates.normal" aria-label="Overtime rate, percent" t-on-input="(ev) => this.onRate('normal', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.normal"/> %.</span>
+            <span class="pbws-nw">Work on a rest day pays <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('rest_day') or typing('rate-rest_day') ? ' is-bad' : '')"
+                   t-att-value="r.rates.rest_day" aria-label="Rest day rate, percent" t-on-input="(ev) => this.onRate('rest_day', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.rest_day"/> %,</span>
+            <span class="pbws-nw">and on a public holiday <input t-if="canEdit" type="number" min="100" max="1000" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('holiday') or typing('rate-holiday') ? ' is-bad' : '')"
+                   t-att-value="r.rates.holiday" aria-label="Public holiday rate, percent" t-on-input="(ev) => this.onRate('holiday', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.holiday"/> %.</span>
           </div>
           <p t-if="r.rates_pending" class="pbws-rule-sub pbws-rule-wait"><t t-out="icon('info', 14)"/>The new rates are used once you confirm these rules. Until then the rates in use stay as they are.</p>
           <p class="pbws-fixed"><t t-out="icon('shieldCheck', 16)"/><span t-esc="r.approval"/></p>
@@ -806,10 +814,8 @@
                    aria-label="Night work ends" t-on-input="(ev) => this.onNight('to', ev)"/>
             <b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.night.to"/>
             earn
-            <input t-if="canEdit" type="number" min="0" max="500" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('night') or typing('rate-night') ? ' is-bad' : '')"
-                   t-att-value="r.rates.night" aria-label="Night work extra, percent" t-on-input="(ev) => this.onRate('night', ev)"/>
-            <b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.night"/>
-            % extra.
+            <span class="pbws-nw"><input t-if="canEdit" type="number" min="0" max="500" step="5" t-att-class="'pbws-inl pbws-num' + (rateProblem('night') or typing('rate-night') ? ' is-bad' : '')"
+                   t-att-value="r.rates.night" aria-label="Night work extra, percent" t-on-input="(ev) => this.onRate('night', ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="r.rates.night"/> % extra.</span>
           </div>
           <p t-if="nightProblem" class="pbws-err" role="alert"><t t-out="icon('triangleAlert', 14)"/><span t-esc="nightProblem"/></p>
         </div>
@@ -864,21 +870,360 @@
   </div>
 </t>
 
-<!-- ============================================================ steps 4-7 -->
-<t t-name="pb_workforce_setup.StepSoon">
-  <div class="pbws-q">
-    <div class="pbws-q-t">
-      <div class="pbws-eyebrow" t-esc="stepLine"/>
-      <h1 t-esc="copy.question"/>
-      <p t-esc="copy.lead"/>
+<!-- ============================================================ step 5 -->
+<t t-name="pb_workforce_setup.StepHolidays">
+  <div class="pbws-hols" t-ref="root">
+    <div class="pbws-q">
+      <div class="pbws-q-t">
+        <div class="pbws-eyebrow">Step 5 of 7</div>
+        <h1>Which days is the company closed?</h1>
+        <p>Public holidays and company days off, on one calendar. Click any day to add or remove a company day off.</p>
+        <t t-if="readOnly" t-call="pb_workforce_setup.ReadOnly"/>
+      </div>
+      <span t-if="hol" class="pbws-chip pbws-chip--p pbws-num"><t t-out="icon('calendar', 14)"/><t t-esc="workingChip"/></span>
     </div>
+
+    <t t-if="state.loading">
+      <div class="pbws-card pbws-pad" aria-busy="true">
+        <div class="pbws-months">
+          <div t-foreach="[1, 2, 3, 4, 5, 6]" t-as="k" t-key="k" class="pbws-skel pbws-skel-month"/>
+        </div>
+      </div>
+    </t>
+    <div t-elif="state.error and !hol" class="pbws-card pbws-fail" role="alert">
+      <span class="pbws-fail-ic" t-out="icon('triangleAlert', 22)"/>
+      <h2>The holidays could not be loaded.</h2>
+      <p t-esc="state.error"/>
+      <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="retry"><t t-out="icon('refresh', 16)"/>Try again</button>
+    </div>
+    <t t-else="">
+      <!-- no working calendar: read-only, with the way out -->
+      <div t-if="!hol.has_calendar" class="pbws-card pbws-banner is-warn" role="note">
+        <span class="pbws-banner-ic" t-out="icon('triangleAlert', 18)"/>
+        <div class="pbws-banner-t">
+          <b>Choose the company's normal working calendar first.</b>
+          <span>Days off are kept on that calendar. Until there is one, the year below is for looking only.</span>
+        </div>
+        <button type="button" class="pbws-btn pbws-btn--out" t-on-click="openCalendars">Open working calendars<t t-out="icon('arrowRight', 16)"/></button>
+      </div>
+
+      <!-- October to December: next year -->
+      <div t-if="hol.nudge" class="pbws-nudge" role="note">
+        <t t-out="icon('info', 16)"/>
+        <span t-esc="nudgeLine"/>
+        <button type="button" class="pbws-link" t-on-click="() => this.setYear(hol.nudge)"><t t-esc="nudgeButton"/><t t-out="icon('arrowRight', 14)"/></button>
+      </div>
+
+      <!-- one click: the country's public holidays -->
+      <div t-if="sugg and canEdit" class="pbws-card pbws-sugg">
+        <span class="pbws-ri" t-out="icon('sparkles', 18)"/>
+        <div class="pbws-sugg-t">
+          <b><t t-esc="suggLine"/> <span class="pbws-faint">·</span> <span class="pbws-num" t-esc="suggCount"/></b>
+          <span t-esc="sugg.note"/>
+        </div>
+        <button type="button" class="pbws-btn pbws-btn--out" t-att-disabled="state.busy" t-on-click="addAll"><t t-out="icon('plus', 16)"/>Add them all</button>
+      </div>
+
+      <div class="pbws-card pbws-pad pbws-yearcard">
+        <div class="pbws-yearbar">
+          <div class="pbws-seg" role="radiogroup" aria-label="Year">
+            <button t-foreach="hol.years" t-as="y" t-key="y" type="button" role="radio"
+                    t-att-aria-checked="y === state.year ? 'true' : 'false'" t-att-class="yearClass(y)"
+                    t-on-click="() => this.setYear(y)" t-esc="y"/>
+          </div>
+          <div class="pbws-legend" aria-hidden="true">
+            <span><i class="is-hol"/>Public holiday</span>
+            <span><i class="is-co"/>Company day off</span>
+            <span><i class="is-rest"/>Weekly rest day</span>
+          </div>
+        </div>
+        <div t-if="state.ask" class="pbws-hask" role="alertdialog" aria-live="assertive" t-on-keydown="onCalKey">
+          <t t-out="icon('triangleAlert', 16)"/>
+          <b t-esc="askLine"/>
+          <span class="pbws-sp"/>
+          <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--danger-solid" t-att-disabled="state.busy" t-on-click="confirmAsk"><t t-out="icon('trash', 14)"/>Yes, remove it</button>
+          <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="keepAsk">Keep it</button>
+        </div>
+        <div t-att-class="'pbws-months' + (state.busy ? ' is-busy' : '') + (canEdit ? '' : ' is-ro')" role="group"
+             aria-label="Days off this year. Arrow keys move, Enter adds or removes a company day off." t-on-keydown="onCalKey">
+          <div t-foreach="months" t-as="m" t-key="m.key" class="pbws-month" role="group" t-att-aria-label="m.name">
+            <b t-esc="m.name"/>
+            <div class="pbws-mg">
+              <span t-foreach="weekLetters" t-as="l" t-key="l_index" class="pbws-mg-h" aria-hidden="true" t-esc="l"/>
+              <span t-foreach="m.lead" t-as="x" t-key="'l' + x" aria-hidden="true"/>
+              <button t-foreach="m.days" t-as="day" t-key="day.iso" type="button"
+                      t-att-class="cellClass(day)" t-att-data-iso="day.iso" t-att-tabindex="tab(day)"
+                      t-att-title="day.title" t-att-aria-label="day.label" t-att-aria-disabled="canEdit ? 'false' : 'true'"
+                      t-on-click="() => this.onDay(day)" t-on-focus="() => this.onDayFocus(day)">
+                <span class="pbws-num" t-esc="day.d"/>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbws-card pbws-pad">
+        <div class="pbws-hols-h">
+          <h3>Days off in <t t-esc="hol.year"/></h3>
+          <span class="pbws-faint pbws-num" t-esc="offLine"/>
+          <span t-if="hol.confirmed" class="pbws-chip pbws-chip--ok"><t t-out="icon('check', 14)"/><t t-esc="confirmedLine"/></span>
+        </div>
+        <p t-if="!list.length" class="pbws-rule-none"><t t-out="icon('info', 14)"/>No days off yet this year.</p>
+        <ul t-else="" class="pbws-hlist">
+          <li t-foreach="list" t-as="row" t-key="row.id" t-att-class="'is-' + row.kind">
+            <i aria-hidden="true"/>
+            <span class="pbws-hlist-n"><b t-esc="row.name"/><small t-if="row.name !== kindLabel(row)" t-esc="kindLabel(row)"/></span>
+            <span class="pbws-num pbws-hlist-d" t-esc="rangeLabel(row)"/>
+            <button t-if="canEdit" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost pbws-btn--danger pbws-hlist-x"
+                    t-att-aria-label="removeLabel(row)" t-att-title="removeLabel(row)" t-att-disabled="state.busy"
+                    t-on-click="() => this.removeRow(row)">
+              <t t-out="icon('x', 14)"/>
+            </button>
+          </li>
+        </ul>
+        <p t-if="hol.suggestions" class="pbws-hnote"><t t-out="icon('info', 14)"/><span t-esc="hol.suggestions.note"/></p>
+      </div>
+    </t>
   </div>
-  <div class="pbws-card pbws-soon">
-    <span class="pbws-soon-ic" t-out="icon(meta.icon, 22)"/>
-    <div class="pbws-soon-t">
-      <h2>This step arrives next</h2>
-      <p t-esc="copy.next"/>
+</t>
+
+<!-- ============================================================ step 6 -->
+<t t-name="pb_workforce_setup.StepClocks">
+  <div class="pbws-clocks" t-ref="root">
+    <div class="pbws-q">
+      <div class="pbws-q-t">
+        <div class="pbws-eyebrow">Step 6 of 7</div>
+        <h1>How do people clock in?</h1>
+        <p>See each clock and whether it is sending data. If one is not, send your IT person a ready-made setup link.</p>
+        <t t-if="clk and !canEdit" t-call="pb_workforce_setup.ReadOnly"/>
+      </div>
+      <button t-if="canEdit and !state.adding" type="button" class="pbws-btn pbws-btn--out" t-on-click="startAdd"><t t-out="icon('plus', 16)"/>Add a clock</button>
     </div>
+
+    <t t-if="state.loading">
+      <div class="pbws-grid3" aria-busy="true">
+        <div t-foreach="[1, 2, 3]" t-as="k" t-key="k" class="pbws-card pbws-dev"><span class="pbws-skel pbws-skel-line"/><span class="pbws-skel pbws-skel-text"/><span class="pbws-skel pbws-skel-short"/></div>
+      </div>
+    </t>
+    <div t-elif="state.error and !clk" class="pbws-card pbws-fail" role="alert">
+      <span class="pbws-fail-ic" t-out="icon('triangleAlert', 22)"/>
+      <h2>The clocks could not be loaded.</h2>
+      <p t-esc="state.error"/>
+      <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="retry"><t t-out="icon('refresh', 16)"/>Try again</button>
+    </div>
+    <t t-else="">
+      <div t-if="state.adding" class="pbws-card pbws-addclk" t-on-keydown="onAddKey">
+        <label class="pbws-f pbws-f--name">What is it called?
+          <input type="text" maxlength="120" placeholder="Gate A fingerprint reader" t-model="state.name"/>
+        </label>
+        <label class="pbws-f pbws-f--name">Where is it?
+          <input type="text" maxlength="120" placeholder="Factory 3" t-model="state.where"/>
+        </label>
+        <div class="pbws-addclk-b">
+          <button type="button" class="pbws-btn pbws-btn--out" t-att-disabled="state.busy" t-on-click="add"><t t-out="icon('plus', 16)"/>Add the clock</button>
+          <button type="button" class="pbws-btn pbws-btn--ghost" t-on-click="cancelAdd">Cancel</button>
+        </div>
+        <p t-if="state.addError" class="pbws-err" role="alert"><t t-out="icon('triangleAlert', 14)"/><span t-esc="state.addError"/></p>
+      </div>
+
+      <div t-if="!rows.length" class="pbws-card pbws-empty-card">
+        <span class="pbws-empty-ic" t-out="icon('plug', 22)"/>
+        <h2>No clock yet</h2>
+        <p>Add the clocks people use at work, or let them clock in another way below.</p>
+      </div>
+      <div t-else="" class="pbws-grid3">
+        <div t-foreach="rows" t-as="row" t-key="row.key" t-att-class="cardClass(row)">
+          <div class="pbws-dev-h">
+            <span class="pbws-ri" t-att-title="kindLabel(row)" t-out="icon(kindIcon(row), 18)"/>
+            <span t-att-class="chipClass(row)"><t t-out="icon(chipIcon(row), 13)"/><t t-esc="chipText(row)"/></span>
+          </div>
+          <h3 t-att-title="row.name" t-esc="row.name"/>
+          <small t-if="row.where" class="pbws-dev-w"><t t-out="icon('mapPin', 13)"/><t t-esc="row.where"/></small>
+          <t t-if="row.state === 'ok'">
+            <small>Last heard from <b t-esc="heardLine(row)"/></small>
+            <small class="pbws-num" t-esc="todayLine(row)"/>
+          </t>
+          <small t-elif="row.state === 'quiet'" t-esc="quietLine(row)"/>
+          <small t-elif="row.state === 'waiting' and row.kind === 'pc'">Nothing received yet. Your IT person installs a small program on the PC beside the clock.</small>
+          <small t-elif="row.state === 'off'">Switched off. Records already received are kept.</small>
+          <p t-if="row.problem" t-att-class="row.state === 'attention' ? 'pbws-dev-p is-err' : 'pbws-dev-p'"><t t-out="icon('info', 14)"/><span t-esc="row.problem"/></p>
+          <small t-if="row.pending" class="pbws-num" t-esc="pendingLine(row)"/>
+          <small t-if="row.invite_until and row.state !== 'ok'" class="pbws-dev-inv" t-esc="inviteLine(row)"/>
+          <div t-if="state.replaceAsk === row.key" class="pbws-dev-ask" role="alertdialog">
+            <b>This replaces the link you sent before. Make a new one?</b>
+            <div>
+              <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-att-disabled="state.busy" t-on-click="() => this.copyLink(row, true)"><t t-out="icon('copy', 14)"/>Make a new link</button>
+              <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="keepLink">Keep the old one</button>
+            </div>
+          </div>
+          <input t-if="state.linkShown[row.key]" type="text" readonly="readonly" class="pbws-dev-link" t-att-data-link="row.key"
+                 t-att-value="state.linkShown[row.key]" aria-label="Setup link for IT" t-on-focus="selectLink"/>
+          <div t-if="canEdit" class="pbws-dev-b">
+            <button t-if="canLink(row) and state.replaceAsk !== row.key" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-att-disabled="state.busy" t-on-click="() => this.copyLink(row)"><t t-out="icon('copy', 14)"/>Copy setup link for IT</button>
+            <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.details(row)">Clock details<t t-out="icon('arrowRight', 14)"/></button>
+          </div>
+        </div>
+      </div>
+
+      <button t-if="clk.no_number" type="button" class="pbws-nonum" t-on-click="goNoNumber">
+        <t t-out="icon('idCard', 16)"/><span class="pbws-num" t-esc="noNumberLine"/><span class="pbws-faint">Their clock-ins cannot be matched to them.</span>
+        <b>Show them<t t-out="icon('arrowRight', 14)"/></b>
+      </button>
+
+      <div t-if="options.length" class="pbws-card pbws-pad">
+        <h3 class="pbws-h3">No machine at a site?</h3>
+        <div class="pbws-grid3">
+          <button t-foreach="options" t-as="opt" t-key="opt.key" type="button" class="pbws-opt" t-att-disabled="!opt.can_open" t-on-click="() => this.openOption(opt)">
+            <span class="pbws-opt-ic" t-out="icon(option(opt.key).icon, 18)"/>
+            <span class="pbws-opt-t">
+              <b t-esc="option(opt.key).title"/>
+              <small t-esc="option(opt.key).text"/>
+              <small t-if="optionState(opt)" t-att-class="opt.on ? 'pbws-opt-on' : 'pbws-opt-off'" t-esc="optionState(opt)"/>
+            </span>
+            <t t-if="opt.can_open" t-out="icon('arrowRight', 14)"/>
+          </button>
+        </div>
+      </div>
+      <p t-if="clk.confirmed" class="pbws-hint"><t t-out="icon('checkCircle', 16)"/>Clocks are confirmed. A clock that is still being set up can be finished any time.</p>
+    </t>
+  </div>
+</t>
+
+<!-- ============================================================ step 7 -->
+<t t-name="pb_workforce_setup.StepLive">
+  <div class="pbws-live" t-ref="root">
+    <!-- the finish -->
+    <div t-if="state.finish" class="pbws-card pbws-done" tabindex="-1" role="status">
+      <span class="pbws-tick" t-out="icon('check', 30)"/>
+      <h1>Workforce is live.</h1>
+      <p><t t-esc="finishLine"/> Clock-ins now turn into paid hours using your rules.</p>
+      <p t-if="reachLine" class="pbws-done-reach" t-esc="reachLine"/>
+      <div class="pbws-done-b">
+        <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="openRoster">Open the roster<t t-out="icon('arrowRight', 16)"/></button>
+        <button type="button" class="pbws-btn pbws-btn--ghost" t-on-click="publishMore"><t t-out="icon('plus', 16)"/>Publish more weeks</button>
+      </div>
+    </div>
+    <t t-else="">
+    <div class="pbws-q">
+      <div class="pbws-q-t">
+        <div class="pbws-eyebrow">Step 7 of 7</div>
+        <h1>Ready to go live?</h1>
+        <p>Nothing reaches the roster or payroll until you press Publish. Fix anything in amber first.</p>
+        <t t-if="chk and !canEdit" t-call="pb_workforce_setup.ReadOnly"/>
+      </div>
+    </div>
+
+    <t t-if="state.loading">
+      <div class="pbws-card" aria-busy="true">
+        <div t-foreach="[1, 2, 3, 4, 5, 6]" t-as="k" t-key="k" class="pbws-check"><span class="pbws-skel pbws-skel-dot"/><span class="pbws-skel pbws-skel-line"/></div>
+      </div>
+    </t>
+    <div t-elif="state.error and !chk" class="pbws-card pbws-fail" role="alert">
+      <span class="pbws-fail-ic" t-out="icon('triangleAlert', 22)"/>
+      <h2>The check could not be loaded.</h2>
+      <p t-esc="state.error"/>
+      <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="retry"><t t-out="icon('refresh', 16)"/>Try again</button>
+    </div>
+    <t t-else="">
+      <div t-if="live" t-att-class="'pbws-card pbws-banner' + (live.runs_out ? ' is-warn' : ' is-ok')" role="note">
+        <span class="pbws-banner-ic" t-out="icon(live.runs_out ? 'hourglass' : 'checkCircle', 18)"/>
+        <div class="pbws-banner-t">
+          <b t-esc="liveLine"/>
+          <t t-if="canEdit">
+            <span t-if="live.runs_out">Publish more weeks below so people keep seeing their shifts.</span>
+            <span t-else="">Publish more weeks below whenever you are ready.</span>
+          </t>
+          <span t-else="">An attendance manager publishes more weeks.</span>
+        </div>
+      </div>
+
+      <!-- the checklist -->
+      <div class="pbws-card pbws-checks">
+        <div t-foreach="chk.steps" t-as="s" t-key="s.key" t-att-class="checkClass(s)">
+          <span class="pbws-check-dot" t-out="icon(s.ok ? 'check' : 'alert', 14)"/>
+          <div class="pbws-check-t"><b t-esc="s.title"/><small t-esc="s.text"/></div>
+          <button t-if="s.ok" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.fix(s)" t-esc="fixLabel(s)"/>
+          <button t-else="" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-on-click="() => this.fix(s)"><t t-esc="fixLabel(s)"/><t t-out="icon('arrowRight', 14)"/></button>
+        </div>
+      </div>
+
+      <!-- the first full week -->
+      <div t-if="sample and sample.rows.length" class="pbws-card pbws-pad pbws-rostcard">
+        <h3 class="pbws-h3">First full week of the roster <span class="pbws-faint pbws-num" t-esc="sampleLine"/></h3>
+        <div class="pbws-rost-wrap">
+          <div class="pbws-rost">
+            <span/>
+            <span t-foreach="sample.days" t-as="d" t-key="d.date" t-att-class="'pbws-rh' + (d.today ? ' is-today' : '')" t-esc="d.label"/>
+            <t t-foreach="sample.rows" t-as="r" t-key="r.id">
+              <span class="pbws-rn" t-att-title="r.name" t-esc="r.name"/>
+              <span t-foreach="r.days" t-as="d" t-key="d_index" t-att-class="cellClass(d)" t-att-title="cellTitle(d)">
+                <t t-if="d.start" t-esc="d.start"/><t t-else="">Off</t>
+              </span>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- publishing: week by week -->
+      <div t-if="showRun" class="pbws-card pbws-run" aria-live="polite">
+        <div class="pbws-run-h">
+          <b class="pbws-num" t-esc="progressLine"/>
+          <span t-if="busy" class="pbws-spin pbws-spin--p" aria-hidden="true"/>
+        </div>
+        <div class="pbws-run-bar" role="progressbar" aria-valuemin="0" t-att-aria-valuemax="state.run.weeks.length" t-att-aria-valuenow="doneWeeks"><i t-att-style="progressStyle"/></div>
+        <ol class="pbws-run-weeks">
+          <li t-foreach="state.run.weeks" t-as="w" t-key="w_index" t-att-class="'is-' + w.status">
+            <span class="pbws-run-dot">
+              <span t-if="w.status === 'busy'" class="pbws-spin pbws-spin--p" aria-hidden="true"/>
+              <t t-else="" t-out="icon(weekIcon(w), 14)"/>
+            </span>
+            <b t-esc="weekNo(w_index)"/>
+            <span class="pbws-faint" t-esc="w.label"/>
+            <span class="pbws-sp"/>
+            <span class="pbws-num" t-esc="weekCount(w)"/>
+          </li>
+        </ol>
+        <div t-if="state.phase === 'stopped'" class="pbws-run-stop" role="alert">
+          <p class="pbws-err"><t t-out="icon('triangleAlert', 16)"/><span t-esc="state.run.sentence"/></p>
+          <div class="pbws-run-b">
+            <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="carryOn"><t t-out="icon('refresh', 16)"/>Carry on</button>
+            <button type="button" class="pbws-btn pbws-btn--ghost" t-on-click="hideResume">Not now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- the launch card -->
+      <div t-if="canEdit and !showRun" class="pbws-card pbws-launch">
+        <div class="pbws-launch-t">
+          <h2 t-esc="launchTitle"/>
+          <div class="pbws-wkpick" role="group" aria-label="How many weeks">
+            <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" aria-label="One week fewer" t-att-disabled="state.weeks &lt;= 1 or busy" t-on-click="fewer"><t t-out="icon('minus', 14)"/></button>
+            <b class="pbws-num" aria-live="polite" t-esc="weeksLabel"/>
+            <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" aria-label="One week more" t-att-disabled="state.weeks &gt;= (chk.max_weeks or 12) or busy" t-on-click="more"><t t-out="icon('plus', 14)"/></button>
+            <span class="pbws-faint" t-esc="windowLine"/>
+          </div>
+          <p t-esc="launchLine"/>
+          <p t-if="planNote" class="pbws-launch-n pbws-num" t-esc="planNote"/>
+          <p t-if="skippedLine" class="pbws-launch-n" t-esc="skippedLine"/>
+        </div>
+        <div t-att-class="'pbws-launch-n2' + (state.checking ? ' is-busy' : '')">
+          <div class="pbws-big pbws-num" t-esc="bigNumber"/>
+          <small t-esc="bigLine"/>
+        </div>
+        <div t-if="state.asking" class="pbws-askpub" role="alertdialog" aria-labelledby="pbws-askpub-t" t-on-keydown="onAskKey">
+          <b id="pbws-askpub-t" class="pbws-num" t-esc="askLine"/>
+          <span>People see their shifts in My Payobook straight away. Published shifts cannot be un-published in one go.</span>
+          <div class="pbws-run-b">
+            <button type="button" class="pbws-btn pbws-btn--pri pbws-ask-go" t-on-click="publish"><t t-out="icon('send', 16)"/>Publish now</button>
+            <button type="button" class="pbws-btn pbws-btn--ghost" t-on-click="notYet">Not yet</button>
+          </div>
+        </div>
+        <button t-else="" type="button" class="pbws-btn pbws-btn--pri pbws-btn--lg" t-att-disabled="!chk.can_publish or state.checking" t-on-click="ask">
+          <t t-out="icon('send', 16)"/><t t-esc="chk.publish_label"/>
+        </button>
+      </div>
+    </t>
+    </t>
   </div>
 </t>
 

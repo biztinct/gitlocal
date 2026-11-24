@@ -3,3 +3,4 @@ from . import test_setup
 from . import test_static
 from . import test_people
 from . import test_rules
+from . import test_golive

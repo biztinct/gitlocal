@@ -13,7 +13,7 @@
  * Children keep their unsaved work locally and register a leave guard that
  * saves it before the step changes.
  */
-import { Component, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUnmount, useExternalListener, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -24,7 +24,9 @@ import { StepShifts } from "./step_shifts";
 import { StepWeeks } from "./step_weeks";
 import { StepPeople } from "./step_people";
 import { StepRules } from "./step_rules";
-import { StepSoon } from "./step_soon";
+import { StepHolidays } from "./step_holidays";
+import { StepClocks } from "./step_clocks";
+import { StepLive } from "./step_live";
 import { PreviewPanel } from "./preview_panel";
 
 const ACTION_XMLID = "pb_workforce_setup.action_setup_studio";
@@ -44,7 +46,7 @@ function stepList() {
 
 export class SetupStudio extends Component {
     static template = "pb_workforce_setup.SetupStudio";
-    static components = { HubBackChip, StepShifts, StepWeeks, StepPeople, StepRules, StepSoon, PreviewPanel };
+    static components = { HubBackChip, StepShifts, StepWeeks, StepPeople, StepRules, StepHolidays, StepClocks, StepLive, PreviewPanel };
     static props = { "*": true };
 
     setup() {
@@ -68,7 +70,12 @@ export class SetupStudio extends Component {
             rulesInvalid: false,
             confirming: false,
             toast: null,
+            // steps 5 and 6: the bar's one solid button, set by the step
+            // ({label, icon, run, busy}) — "Confirm" until the step is done
+            bars: {},
         });
+        // step 3 opens on a quick filter when another step sends people there
+        this.peopleFilter = null;
         this.rulesBusy = false;
         this.confirmFn = null;
         const studio = this;
@@ -95,6 +102,22 @@ export class SetupStudio extends Component {
             setRulesBusy: (busy) => { this.rulesBusy = !!busy; },
             setRulesInvalid: (bad) => { this.state.rulesInvalid = !!bad; },
             setConfirming: (on) => { this.state.confirming = !!on; },
+            setBar: (key, bar) => {
+                if (bar) {
+                    this.state.bars[key] = bar;
+                } else {
+                    delete this.state.bars[key];
+                }
+            },
+            goFiltered: (key, filter) => {
+                this.peopleFilter = filter || null;
+                return this.go(key);
+            },
+            takePeopleFilter: () => {
+                const f = this.peopleFilter;
+                this.peopleFilter = null;
+                return f;
+            },
             onConfirm: (fn) => {
                 this.confirmFn = fn;
                 return () => { if (this.confirmFn === fn) { this.confirmFn = null; } };
@@ -108,7 +131,13 @@ export class SetupStudio extends Component {
         // without it a reload on `?step=weeks` loses the parameter (WS4).
         this.props.updateActionState?.({ step: this.state.step });
         onWillStart(() => this.load());
-        onWillUnmount(() => clearTimeout(this.toastTimer));
+        onWillUnmount(() => {
+            clearTimeout(this.toastTimer);
+            cancelAnimationFrame(this.toastFrame);
+        });
+        // the toast stays centred over the working area when the window is
+        // resized while it shows (P3 report: it was placed once)
+        useExternalListener(window, "resize", () => this.followToast());
     }
 
     // ------------------------------------------------------------ the URL
@@ -271,6 +300,17 @@ export class SetupStudio extends Component {
         const r = el.getBoundingClientRect();
         return Math.round(r.left + r.width / 2);
     }
+    followToast() {
+        if (!this.state.toast) {
+            return;
+        }
+        cancelAnimationFrame(this.toastFrame);
+        this.toastFrame = requestAnimationFrame(() => {
+            if (this.state.toast) {
+                this.state.toast.left = this.stageCentre();
+            }
+        });
+    }
     get toastStyle() {
         const t = this.state.toast;
         return t && t.left ? `left:${t.left}px` : "";
@@ -295,6 +335,16 @@ export class SetupStudio extends Component {
      *  button confirms them instead of moving on (design of record). */
     get confirmShown() {
         return this.state.step === "rules" && !!this.state.rules?.can_edit;
+    }
+    /** Steps 5 and 6: the bar's solid button while the step can be confirmed. */
+    get bar() {
+        return this.state.bars[this.state.step] || null;
+    }
+    async runBar() {
+        const bar = this.bar;
+        if (bar && !bar.busy) {
+            await bar.run();
+        }
     }
     get confirmLabel() {
         return this.state.rules?.state === "revision" ? _t("Confirm the new version") : _t("These rules are right. Confirm");

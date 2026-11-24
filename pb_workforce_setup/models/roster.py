@@ -78,7 +78,31 @@ class ShiftPlanningPolicyFill(models.Model):
                 and 'pb_day_kind_manual' in self._fields
                 and self.env.context.get(AUTO_KEY) is not _AUTO):
             vals = dict(vals, pb_day_kind_manual=True)
-        return super().write(vals)
+        # A shift moved to another day or person (WFSETUP P4 carry-over, P3
+        # report §2 item 14): an automatic day type is worked out again in the
+        # same write, for rows nobody set by hand and that are not calculated
+        # or turned into attendance yet. An explicit day type wins.
+        moved = self.browse()
+        if (('date' in vals or 'employee_id' in vals) and 'pb_day_kind' not in vals
+                and 'pb_day_kind_manual' in self._fields):
+            moved = self.filtered(lambda r: not r.pb_day_kind_manual
+                                  and not r.pb_attendance_id and not r.pb_calculation_status)
+        res = super().write(vals)
+        if moved:
+            moved._pb_remark_moved()
+        return res
+
+    def _pb_remark_moved(self):
+        """Day type of moved automatic rows, worked out again (one batch)."""
+        kinds = self._pb_day_kinds([(r.employee_id.id, r.date) for r in self])
+        groups = {}
+        for row in self:
+            want = kinds.get((row.employee_id.id, row.date), 'weekday')
+            if row.pb_day_kind != want:
+                groups.setdefault(want, []).append(row.id)
+        ctx = dict(self._pb_auto_ctx(), tracking_disable=True, mail_notrack=True)
+        for kind, ids in groups.items():
+            self.browse(ids).with_context(**ctx).write({'pb_day_kind': kind})
 
     # ------------------------------------------------------------ the day type
     @api.model

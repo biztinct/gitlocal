@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_pb_workforce_setup_undo_manager,workforce setup undo manager,model_pb_workforce_setup_undo,hr_attendance.group_hr_attendance_manager,1,1,1,1
 access_pb_workforce_setup_undo_system,workforce setup undo system,model_pb_workforce_setup_undo,base.group_system,1,1,1,1
+access_pb_workforce_setup_run_manager,workforce setup run manager,model_pb_workforce_setup_run,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_pb_workforce_setup_run_system,workforce setup run system,model_pb_workforce_setup_run,base.group_system,1,1,1,1
