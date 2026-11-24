@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================================
+       The contract panel: the "Contract document" button. Inside the
+       "Next step" bar when it is shown (people who may change the
+       contract); its own quiet row otherwise (people who may only read it).
+       ================================================================ -->
+  <t t-inherit="pb_contracts.Contract360Drawer" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbc-acts')]" position="inside">
+      <t t-if="pbdcAvailable">
+        <span class="pbdc-acts-gap"/>
+        <button type="button" class="pbim-btn pbdc-btn" t-att-disabled="state.busy"
+                title="See the finished contract, download it as a PDF or file it in their documents"
+                t-on-click="pbdcOpen">
+          <t t-out="pbdcIcon()"/> <span>Contract document</span>
+        </button>
+      </t>
+    </xpath>
+    <xpath expr="//div[hasclass('pbc-acts')]" position="after">
+      <div class="pbc-acts pbdc-acts" t-if="pbdcAvailable and !pbdcInActs">
+        <span class="pbc-acts-l">Paperwork</span>
+        <button type="button" class="pbim-btn pbdc-btn"
+                title="See the finished contract, download it as a PDF or file it in their documents"
+                t-on-click="pbdcOpen">
+          <t t-out="pbdcIcon()"/> <span>Contract document</span>
+        </button>
+      </div>
+    </xpath>
+  </t>
+
+  <!-- ================================================================
+       The designer: a note above a shipped contract (never printed).
+       ================================================================ -->
+  <t t-inherit="pb_doc_studio.Designer" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbds-dz')]" position="before">
+      <div t-if="state.doc and state.doc.pbdc_note" class="pbds-banner pbdc-note" role="note">
+        <t t-out="ic('alert', 16)"/>
+        <span><b>Sample wording.</b> Have your own lawyer check it before you use it.</span>
+        <span class="pbdc-note-np">Not printed</span>
+      </div>
+    </xpath>
+  </t>
+
+  <!-- ================================================================
+       The sheet: the finished contract for THIS contract.
+       ================================================================ -->
+  <t t-name="pb_doc_contracts.ContractDocSheet">
+    <div class="pbdc-wrap" t-att-class="{ 'is-shown': state.shown }">
+      <div class="pbdc-scrim" t-on-click="close"/>
+      <section class="pbdc-sheet" role="dialog" aria-modal="true" aria-label="Contract document">
+
+        <header class="pbdc-head">
+          <span class="pbdc-head-ic" t-out="ic('scrollText', 20)"/>
+          <div class="pbdc-head-tx">
+            <h2 t-esc="title"/>
+            <div class="pbdc-sub">
+              <span t-if="d.person" t-esc="d.person.name"/>
+              <t t-if="d.reference"><span class="pbdc-dot"/><span t-esc="d.reference"/></t>
+              <t t-if="d.document and d.document.note"><span class="pbdc-dot"/><span class="pbdc-copy"><t t-out="ic('globe', 12)"/> <t t-esc="d.document.note"/></span></t>
+            </div>
+          </div>
+          <span class="pbdc-grow"/>
+          <label t-if="documents.length > 1" class="pbdc-pick">
+            <span>Document</span>
+            <select aria-label="Which contract document" t-on-change="onDocument" t-att-disabled="state.loading">
+              <option t-foreach="documents" t-as="doc" t-key="doc.id" t-att-value="doc.id"
+                      t-att-selected="doc.id === state.docId" t-esc="doc.name"/>
+            </select>
+          </label>
+          <div t-if="langs.length > 1" class="pbdc-langs" role="radiogroup" aria-label="Language">
+            <button t-foreach="langs" t-as="l" t-key="l.code" type="button" role="radio"
+                    class="pbdc-lang" t-att-class="{ 'is-on': l.code === state.lang }"
+                    t-att-aria-checked="l.code === state.lang ? 'true' : 'false'"
+                    t-on-click="() => this.setLang(l.code)" t-esc="shortLang(l.name)"/>
+          </div>
+          <span t-elif="langs.length === 1" class="pbdc-lang-one" title="The language this wording is written in">
+            <t t-out="ic('globe', 13)"/> <t t-esc="shortLang(langs[0].name)"/>
+          </span>
+          <button type="button" class="pbdc-x" title="Close (Esc)" aria-label="Close" t-on-click="close"><t t-out="ic('x', 18)"/></button>
+        </header>
+
+        <!-- Owner ruling 2026-11-24: shipped wording goes live with a notice,
+             on screen only (it is not part of the wording, so it never
+             reaches the PDF or the filed document). -->
+        <div t-if="d.sample_wording" class="pbdc-sample" role="note">
+          <span class="pbdc-sample-ic" t-out="ic('triangleAlert', 16)"/>
+          <span class="pbdc-sample-tx"><b>Sample wording.</b> Have your own lawyer check it before you use it.</span>
+          <span class="pbdc-sample-np">Not printed</span>
+          <button t-if="d.can_design" type="button" class="pbdc-link" t-on-click="design">
+            <t t-out="ic('pencil', 13)"/> <span>Make it yours</span>
+          </button>
+        </div>
+
+        <div t-if="state.error and !state.d" class="pbdc-error">
+          <span class="pbdc-error-ic" t-out="ic('fileText', 30)"/>
+          <h3>The contract cannot be shown</h3>
+          <p t-esc="state.error"/>
+          <div class="pbdc-error-acts">
+            <button type="button" class="pbdc-b ghost" t-on-click="reload"><t t-out="ic('refresh', 14)"/> <span>Try again</span></button>
+            <button type="button" class="pbdc-b" t-on-click="close">Close</button>
+          </div>
+        </div>
+
+        <div t-else="" class="pbdc-body">
+          <!-- LEFT: what needs attention, the actions, the saved versions -->
+          <aside class="pbdc-side">
+            <t t-if="state.loading and !state.d">
+              <div class="pbdc-skel"/><div class="pbdc-skel s"/><div class="pbdc-skel"/>
+            </t>
+            <t t-else="">
+              <div t-if="blocked" class="pbdc-card is-rose" role="alert">
+                <div class="pbdc-card-h"><t t-out="ic('lock', 15)"/> <b>Pay is hidden from you</b></div>
+                <p t-esc="d.pay_msg"/>
+              </div>
+
+              <div t-if="missing.length" class="pbdc-card is-amber">
+                <div class="pbdc-card-h">
+                  <t t-out="ic('triangleAlert', 15)"/> <b t-esc="missingTitle"/>
+                  <span class="pbdc-grow"/>
+                  <button type="button" class="pbdc-link" t-on-click="reload" title="Draw the contract again">
+                    <t t-out="ic('refresh', 13)"/> <span>Check again</span>
+                  </button>
+                </div>
+                <p>These print as nothing. Press one to fill it in.</p>
+                <div class="pbdc-chips">
+                  <button t-foreach="missing" t-as="m" t-key="m.key" type="button" class="pbdc-chip"
+                          t-att-class="{ 'is-pay': m.pay, 'is-dead': !canJump(m.jump) }"
+                          t-att-title="jumpTitle(m.jump)" t-att-disabled="!canJump(m.jump)"
+                          t-on-click="() => this.jump(m.jump)">
+                    <t t-out="ic(m.pay ? 'lock' : (m.jump and m.jump.kind === 'employee' ? 'user' : 'pencil'), 12)"/>
+                    <span t-esc="m.text"/>
+                  </button>
+                </div>
+              </div>
+              <div t-elif="!blocked" class="pbdc-card is-ok">
+                <div class="pbdc-card-h"><t t-out="ic('checkCircle', 15)"/> <b>Every field has a value</b></div>
+              </div>
+
+              <div t-if="leftOut.length" class="pbdc-card is-quiet">
+                <button type="button" class="pbdc-card-h pbdc-fold" t-on-click="toggleLeftOut"
+                        t-att-aria-expanded="state.leftOpen ? 'true' : 'false'">
+                  <t t-out="ic('eyeOff', 15)"/> <span t-esc="leftOutTitle"/>
+                  <span class="pbdc-grow"/>
+                  <span class="pbdc-chev" t-att-class="{ 'is-open': state.leftOpen }" t-out="ic('chevronDown', 13)"/>
+                </button>
+                <ul t-if="state.leftOpen" class="pbdc-left">
+                  <li t-foreach="leftOut" t-as="r" t-key="r.id">
+                    <span t-esc="r.sentence"/>
+                    <button t-if="canJump(r.jump)" type="button" class="pbdc-link" t-on-click="() => this.jump(r.jump)">Change it</button>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="pbdc-acts">
+                <button type="button" class="pbdc-b primary" t-att-disabled="state.pdfBusy or state.loading or blocked"
+                        t-att-title="blocked ? d.pay_msg : ''" t-on-click="download">
+                  <span t-if="state.pdfBusy" class="pbdc-spin"/>
+                  <t t-else="" t-out="ic('download', 15)"/>
+                  <span>Download PDF</span> <kbd t-esc="mod + 'P'"/>
+                </button>
+                <button type="button" class="pbdc-b" t-att-disabled="state.saveBusy or state.loading or !canFile"
+                        t-att-title="saveTitle" t-on-click="save">
+                  <span t-if="state.saveBusy" class="pbdc-spin"/>
+                  <t t-else="" t-out="ic('save', 15)"/>
+                  <span t-esc="saveLabel"/> <kbd t-esc="mod + 'S'"/>
+                </button>
+                <p t-if="!blocked and !d.can_file and d.file_msg" class="pbdc-why" t-esc="d.file_msg"/>
+                <button t-if="d.can_design" type="button" class="pbdc-b ghost" t-on-click="design">
+                  <t t-out="ic('pencil', 15)"/> <span>Change the wording</span>
+                </button>
+              </div>
+
+              <div class="pbdc-vers">
+                <div class="pbdc-vers-h"><t t-out="ic('history', 14)"/> <span>Saved versions</span></div>
+                <p t-if="!versions.length" class="pbdc-muted" t-esc="emptyVersionsText"/>
+                <a t-foreach="versions" t-as="v" t-key="v.id" class="pbdc-ver" t-att-class="versionClass(v)"
+                   t-att-href="v.url or '#'" t-att-download="v.url ? '' : false" title="Download this version">
+                  <span class="pbdc-ver-n" t-esc="'v' + v.version"/>
+                  <span class="pbdc-ver-tx">
+                    <b t-esc="v.name"/>
+                    <small t-esc="versionWhen(v)"/>
+                  </span>
+                  <t t-out="ic('download', 14)"/>
+                </a>
+              </div>
+            </t>
+          </aside>
+
+          <!-- RIGHT: the paper -->
+          <main class="pbdc-desk" t-ref="desk">
+            <div t-if="state.loading" class="pbdc-loading" aria-live="polite">
+              <span class="pbdc-spin"/> <span>Writing the contract…</span>
+            </div>
+            <div class="pbdc-paper" t-att-class="{ 'is-dim': state.loading }" t-att-style="paperStyle">
+              <iframe t-if="d.html" t-ref="frame" class="pbdc-frame" title="The finished contract"
+                      sandbox="allow-same-origin" t-att-srcdoc="frameDoc" t-att-style="frameStyle"
+                      t-on-load="onFrameLoad"/>
+            </div>
+          </main>
+        </div>
+      </section>
+    </div>
+  </t>
+
+</templates>

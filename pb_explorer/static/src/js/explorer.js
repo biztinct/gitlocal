@@ -1625,6 +1625,12 @@ export class PbExplorer extends Component {
         return this.state.activeView ? "" : _t("Save this view first");
     }
 
+    /** DOCSTUDIO B — "PDF", when the module that offers it is installed
+     *  (registry `pb_report_pdf`, key `button`, the same props). */
+    get reportPdfButton() {
+        return registry.category("pb_report_pdf").get("button", null);
+    }
+
     // ========================================================== saved views
     /* WDGAP QF2 A. A saved view is a QUESTION: opening one runs it again for
      * whoever opens it, with their own companies and divisions, and a period

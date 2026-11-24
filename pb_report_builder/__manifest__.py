@@ -23,7 +23,8 @@ Build a report: a tab of Insights.
 Nothing is created when the module is installed: no records, no jobs, no
 emails.
 """,
-    'version': '19.0.1.0.0',
+    # DOCSTUDIO B (1.1.0): the "PDF" registry button beside the Excel ones.
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

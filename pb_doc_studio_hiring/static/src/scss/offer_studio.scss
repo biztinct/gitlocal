@@ -1,0 +1,47 @@
+// =====================================================================
+//  Offer letters in the Document studio (phase A1). Locked indigo
+//  palette, no gradients, Lucide icons. Extends the studio's own look.
+// =====================================================================
+$dh-primary: #5A4BB0;
+$dh-soft: #EDEAF8;
+$dh-light: #CBC2EE;
+$dh-ink: #1B1733;
+$dh-muted: #64748B;
+$dh-line: #E2E8F0;
+
+// "Preview with: An offer" — one quiet line above the picker.
+.pbdx-with {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin: 0 0 6px; font-size: 11.5px; color: $dh-muted; text-transform: none;
+    b { display: inline-flex; align-items: center; gap: 5px; color: $dh-primary; font-weight: 600; }
+}
+
+// What a card prints for (shared look with the certificates bridge).
+.pbdx-prints {
+    display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin: 2px 0 0;
+    font-size: 12px; color: $dh-muted; line-height: 1.4;
+    svg { color: $dh-primary; flex: none; }
+    .pbdx-uses {
+        color: $dh-primary; background: $dh-soft; border-radius: 999px; padding: 0 7px; font-weight: 600; font-size: 11px;
+    }
+}
+
+.pbdx-nooffer b { display: block; margin-bottom: 2px; }
+
+// The pay lines table is a whole block on the page: drawn as a small table,
+// never a word in a sentence.
+.pbds .pbds-chip[data-key="lines"] {
+    display: flex; align-items: center; justify-content: center; gap: 8px; white-space: normal;
+    margin: 6px 0; padding: 14px 12px; border-radius: 10px; border: 1px dashed $dh-light;
+    background: #fff; color: $dh-primary; font-size: 12.5px; min-height: 52px;
+    box-shadow: inset 0 -3px 0 $dh-soft;
+    &::before {
+        content: ""; width: 16px; height: 16px; flex: none;
+        background: currentColor;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M3 9h18M3 15h18'/%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M3 9h18M3 15h18'/%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+}
+
+// The candidate's signature line under the company's on the page.
+.pbds-paper .pbdh-accept { margin-top: 30px; }

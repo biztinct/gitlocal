@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Starting wording of the employment contract (DOCSTUDIO A2).
+
+         Short, neutral and structural on purpose: parties, position, term,
+         trial period, working time, pay, leave, confidentiality, ending the
+         contract, signatures. NO statutory claims (no notice periods, no
+         severance amounts, no article numbers). Owner ruling 2026-11-24: it
+         goes live with the on-screen notice "Sample wording. Have your own
+         lawyer check it before you use it." (designer + contract panel,
+         never printed) while `pbdc_sample` is set.
+
+         One generic original (English, every country of work) and two
+         COPIES of it for a country of work: Vietnam (Vietnamese | English)
+         and Indonesia (Indonesian | English), bilingual clause by clause in
+         two-column tables. Company-less. Only words are stored here: the
+         "Show only when" rules (rfixed / ropen / rtrial), the page and the
+         main language are the module's built-in defaults until the customer
+         saves the document in the studio (`_pbdc_rules`, `_pbdc_page`,
+         `_pbds_main_lang` on pb.letter.template). -->
+
+    <record id="contract_template_generic" model="pb.letter.template">
+        <field name="name">Employment contract</field>
+        <field name="sequence">5</field>
+        <field name="letter_type">employment_contract</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="pbdc_sample" eval="True"/>
+        <field name="subject">Employment contract</field>
+        <field name="body_html" type="html">
+<div>
+<p>Contract reference: ${contract_ref}</p>
+<p>This employment contract is made on ${today_long} between:</p>
+<p><strong>The employer:</strong> ${company}, ${company_address}, represented by ${employer_rep}, ${employer_rep_title}; and</p>
+<p><strong>The employee:</strong> ${legal_name}, born on ${birthday}, nationality ${nationality}, ID number ${id_number}, living at ${home_address}.</p>
+<h3>Position</h3>
+<p>The employee is employed as ${contract_job} in ${contract_department}, reporting to ${manager_name}. The place of work is ${contract_location}.</p>
+<h3>Term</h3>
+<div class="pbds-when pbds-r-rfixed"><p>This is a fixed-term contract. It starts on ${contract_start} and ends on ${contract_end}.</p></div>
+<div class="pbds-when pbds-r-ropen"><p>This contract starts on ${contract_start} and has no end date.</p></div>
+<div class="pbds-when pbds-r-rtrial"><h3>Trial period</h3><p>The employee starts with a trial period that ends on ${trial_end}.</p></div>
+<h3>Working time</h3>
+<p>The employee works the ${working_schedule} schedule, ${weekly_hours} hours a week.</p>
+<h3>Pay</h3>
+<p>The monthly pay is ${monthly_pay}, paid in ${pay_currency} under the ${pay_scheme} pay scheme. Taxes and contributions are deducted as the law of the country of work requires.</p>
+<h3>Leave</h3>
+<p>The employee has paid leave and public holidays according to the company's leave policy and the law of the country of work.</p>
+<h3>Confidentiality</h3>
+<p>The employee keeps the company's business information confidential during and after the employment.</p>
+<h3>Ending the contract</h3>
+<p>Either party may end this contract in writing, according to the company's policies and the law of the country of work.</p>
+<h3>Other terms</h3>
+<p>Anything this contract does not cover follows the company's rules and the law of the country of work. This contract is made in two copies, one for each party.</p>
+<table class="pbdc-sign"><tbody><tr>
+<td><p><strong>For the employer</strong></p><p><br/></p><p><br/></p><p>${employer_rep}</p><p>${employer_rep_title}</p></td>
+<td><p><strong>The employee</strong></p><p><br/></p><p><br/></p><p>${legal_name}</p></td>
+</tr></tbody></table>
+</div>
+        </field>
+    </record>
+
+    <record id="contract_template_vn" model="pb.letter.template">
+        <field name="name">Employment contract — Vietnam</field>
+        <field name="sequence">5</field>
+        <field name="letter_type">employment_contract</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="pbdc_sample" eval="True"/>
+        <field name="pbds_replaces_id" ref="contract_template_generic"/>
+        <field name="pbds_country_ids" eval="[(6, 0, [ref('base.vn')])]"/>
+        <field name="subject">HỢP ĐỒNG LAO ĐỘNG / EMPLOYMENT CONTRACT</field>
+        <field name="body_html" type="html">
+<div>
+<table class="pbdc-bi"><tbody><tr>
+<td><p>Số hợp đồng: ${contract_ref}</p><p>Hợp đồng lao động này được lập ngày ${today_dmy} giữa:</p></td>
+<td><p>Contract no.: ${contract_ref}</p><p>This employment contract is made on ${today_dmy} between:</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Các bên</strong></p><p><strong>Người sử dụng lao động:</strong> ${company}, địa chỉ: ${company_address}, do ${employer_rep}, ${employer_rep_title}, làm đại diện.</p><p><strong>Người lao động:</strong> ${legal_name}, sinh ngày ${birthday_dmy}, quốc tịch: ${nationality}, số giấy tờ tùy thân: ${id_number}, địa chỉ: ${home_address}.</p></td>
+<td><p><strong>The parties</strong></p><p><strong>The employer:</strong> ${company}, address: ${company_address}, represented by ${employer_rep}, ${employer_rep_title}.</p><p><strong>The employee:</strong> ${legal_name}, born on ${birthday_dmy}, nationality: ${nationality}, ID number: ${id_number}, address: ${home_address}.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Công việc</strong></p><p>Chức danh: ${contract_job}. Bộ phận: ${contract_department}. Quản lý trực tiếp: ${manager_name}. Địa điểm làm việc: ${contract_location}.</p></td>
+<td><p><strong>Position</strong></p><p>Job: ${contract_job}. Department: ${contract_department}. Reports to: ${manager_name}. Place of work: ${contract_location}.</p></td>
+</tr></tbody></table>
+<div class="pbds-when pbds-r-rfixed"><table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Thời hạn hợp đồng</strong></p><p>Hợp đồng xác định thời hạn, từ ngày ${start_dmy} đến ngày ${end_dmy}.</p></td>
+<td><p><strong>Term</strong></p><p>Fixed-term contract, from ${start_dmy} to ${end_dmy}.</p></td>
+</tr></tbody></table></div>
+<div class="pbds-when pbds-r-ropen"><table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Thời hạn hợp đồng</strong></p><p>Hợp đồng không xác định thời hạn, bắt đầu từ ngày ${start_dmy}.</p></td>
+<td><p><strong>Term</strong></p><p>Open-ended contract, starting on ${start_dmy}.</p></td>
+</tr></tbody></table></div>
+<div class="pbds-when pbds-r-rtrial"><table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Thử việc</strong></p><p>Thời gian thử việc kết thúc vào ngày ${trial_end_dmy}.</p></td>
+<td><p><strong>Trial period</strong></p><p>The trial period ends on ${trial_end_dmy}.</p></td>
+</tr></tbody></table></div>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Thời giờ làm việc</strong></p><p>Người lao động làm việc theo lịch ${working_schedule}, ${weekly_hours} giờ mỗi tuần.</p></td>
+<td><p><strong>Working time</strong></p><p>The employee works the ${working_schedule} schedule, ${weekly_hours} hours a week.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Tiền lương</strong></p><p>Mức lương hằng tháng: ${monthly_pay}, trả bằng ${pay_currency} theo chế độ lương ${pay_scheme}. Thuế và các khoản đóng góp được khấu trừ theo quy định của pháp luật.</p></td>
+<td><p><strong>Pay</strong></p><p>Monthly pay: ${monthly_pay}, paid in ${pay_currency} under the ${pay_scheme} pay scheme. Taxes and contributions are deducted as the law requires.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Nghỉ phép</strong></p><p>Người lao động được nghỉ phép năm và nghỉ lễ theo quy định của công ty và của pháp luật.</p></td>
+<td><p><strong>Leave</strong></p><p>The employee has annual leave and public holidays according to company policy and the law.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Bảo mật</strong></p><p>Người lao động giữ bí mật thông tin kinh doanh của công ty trong và sau thời gian làm việc.</p></td>
+<td><p><strong>Confidentiality</strong></p><p>The employee keeps the company's business information confidential during and after the employment.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Chấm dứt hợp đồng</strong></p><p>Mỗi bên có thể chấm dứt hợp đồng này bằng văn bản, theo quy định của công ty và của pháp luật.</p></td>
+<td><p><strong>Ending the contract</strong></p><p>Either party may end this contract in writing, according to company policy and the law.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Điều khoản khác</strong></p><p>Những nội dung không ghi trong hợp đồng này được thực hiện theo nội quy của công ty và quy định của pháp luật. Hợp đồng được lập thành hai bản, mỗi bên giữ một bản.</p></td>
+<td><p><strong>Other terms</strong></p><p>Anything this contract does not cover follows the company's rules and the law. This contract is made in two copies, one for each party.</p></td>
+</tr></tbody></table>
+<table class="pbdc-sign"><tbody><tr>
+<td><p><strong>NGƯỜI SỬ DỤNG LAO ĐỘNG</strong><br/>THE EMPLOYER</p><p><br/></p><p><br/></p><p>${employer_rep}</p><p>${employer_rep_title}</p></td>
+<td><p><strong>NGƯỜI LAO ĐỘNG</strong><br/>THE EMPLOYEE</p><p><br/></p><p><br/></p><p>${legal_name}</p></td>
+</tr></tbody></table>
+</div>
+        </field>
+    </record>
+
+    <record id="contract_template_id" model="pb.letter.template">
+        <field name="name">Employment contract — Indonesia</field>
+        <field name="sequence">5</field>
+        <field name="letter_type">employment_contract</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="pbdc_sample" eval="True"/>
+        <field name="pbds_replaces_id" ref="contract_template_generic"/>
+        <field name="pbds_country_ids" eval="[(6, 0, [ref('base.id')])]"/>
+        <field name="subject">PERJANJIAN KERJA / EMPLOYMENT CONTRACT</field>
+        <field name="body_html" type="html">
+<div>
+<table class="pbdc-bi"><tbody><tr>
+<td><p>Nomor perjanjian: ${contract_ref}</p><p>Perjanjian kerja ini dibuat pada tanggal ${today_dmy} antara:</p></td>
+<td><p>Contract no.: ${contract_ref}</p><p>This employment contract is made on ${today_dmy} between:</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Para pihak</strong></p><p><strong>Pemberi kerja:</strong> ${company}, beralamat di ${company_address}, diwakili oleh ${employer_rep}, ${employer_rep_title}.</p><p><strong>Pekerja:</strong> ${legal_name}, lahir pada tanggal ${birthday_dmy}, kewarganegaraan: ${nationality}, nomor identitas: ${id_number}, beralamat di ${home_address}.</p></td>
+<td><p><strong>The parties</strong></p><p><strong>The employer:</strong> ${company}, address: ${company_address}, represented by ${employer_rep}, ${employer_rep_title}.</p><p><strong>The employee:</strong> ${legal_name}, born on ${birthday_dmy}, nationality: ${nationality}, ID number: ${id_number}, address: ${home_address}.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Jabatan</strong></p><p>Jabatan: ${contract_job}. Bagian: ${contract_department}. Atasan langsung: ${manager_name}. Tempat kerja: ${contract_location}.</p></td>
+<td><p><strong>Position</strong></p><p>Job: ${contract_job}. Department: ${contract_department}. Reports to: ${manager_name}. Place of work: ${contract_location}.</p></td>
+</tr></tbody></table>
+<div class="pbds-when pbds-r-rfixed"><table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Jangka waktu</strong></p><p>Perjanjian kerja untuk waktu tertentu, mulai tanggal ${start_dmy} sampai dengan tanggal ${end_dmy}.</p></td>
+<td><p><strong>Term</strong></p><p>Fixed-term contract, from ${start_dmy} to ${end_dmy}.</p></td>
+</tr></tbody></table></div>
+<div class="pbds-when pbds-r-ropen"><table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Jangka waktu</strong></p><p>Perjanjian kerja untuk waktu tidak tertentu, mulai tanggal ${start_dmy}.</p></td>
+<td><p><strong>Term</strong></p><p>Open-ended contract, starting on ${start_dmy}.</p></td>
+</tr></tbody></table></div>
+<div class="pbds-when pbds-r-rtrial"><table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Masa percobaan</strong></p><p>Masa percobaan berakhir pada tanggal ${trial_end_dmy}.</p></td>
+<td><p><strong>Trial period</strong></p><p>The trial period ends on ${trial_end_dmy}.</p></td>
+</tr></tbody></table></div>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Waktu kerja</strong></p><p>Pekerja bekerja menurut jadwal ${working_schedule}, ${weekly_hours} jam per minggu.</p></td>
+<td><p><strong>Working time</strong></p><p>The employee works the ${working_schedule} schedule, ${weekly_hours} hours a week.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Upah</strong></p><p>Upah bulanan: ${monthly_pay}, dibayarkan dalam ${pay_currency} menurut skema penggajian ${pay_scheme}. Pajak dan iuran dipotong sesuai ketentuan peraturan perundang-undangan.</p></td>
+<td><p><strong>Pay</strong></p><p>Monthly pay: ${monthly_pay}, paid in ${pay_currency} under the ${pay_scheme} pay scheme. Taxes and contributions are deducted as the law requires.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Cuti</strong></p><p>Pekerja berhak atas cuti tahunan dan hari libur resmi sesuai peraturan perusahaan dan peraturan perundang-undangan.</p></td>
+<td><p><strong>Leave</strong></p><p>The employee has annual leave and public holidays according to company policy and the law.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Kerahasiaan</strong></p><p>Pekerja menjaga kerahasiaan informasi bisnis perusahaan selama dan setelah masa kerja.</p></td>
+<td><p><strong>Confidentiality</strong></p><p>The employee keeps the company's business information confidential during and after the employment.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Berakhirnya perjanjian</strong></p><p>Masing-masing pihak dapat mengakhiri perjanjian ini secara tertulis, sesuai peraturan perusahaan dan peraturan perundang-undangan.</p></td>
+<td><p><strong>Ending the contract</strong></p><p>Either party may end this contract in writing, according to company policy and the law.</p></td>
+</tr></tbody></table>
+<table class="pbdc-bi"><tbody><tr>
+<td><p><strong>Ketentuan lain</strong></p><p>Hal-hal yang tidak diatur dalam perjanjian ini mengikuti peraturan perusahaan dan peraturan perundang-undangan. Perjanjian ini dibuat dalam dua rangkap, masing-masing pihak memegang satu.</p></td>
+<td><p><strong>Other terms</strong></p><p>Anything this contract does not cover follows the company's rules and the law. This contract is made in two copies, one for each party.</p></td>
+</tr></tbody></table>
+<table class="pbdc-sign"><tbody><tr>
+<td><p><strong>PEMBERI KERJA</strong><br/>THE EMPLOYER</p><p><br/></p><p><br/></p><p>${employer_rep}</p><p>${employer_rep_title}</p></td>
+<td><p><strong>PEKERJA</strong><br/>THE EMPLOYEE</p><p><br/></p><p><br/></p><p>${legal_name}</p></td>
+</tr></tbody></table>
+</div>
+        </field>
+    </record>
+</odoo>

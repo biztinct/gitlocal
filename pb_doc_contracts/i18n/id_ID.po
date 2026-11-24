@@ -1,0 +1,628 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 22:15+0000\n"
+"PO-Revision-Date: 2026-11-23 22:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "%(doc)s · v%(n)s · %(date)s"
+msgstr "%(doc)s · v%(n)s · %(date)s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%(when)s · by %(who)s"
+msgstr "%(when)s · oleh %(who)s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%s paragraphs are left out for this contract"
+msgstr "%s paragraf tidak dimuat untuk kontrak ini"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%s things are missing"
+msgstr "%s hal belum diisi"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "1 paragraph is left out for this contract"
+msgstr "1 paragraf tidak dimuat untuk kontrak ini"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "1 thing is missing"
+msgstr "1 hal belum diisi"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "A field that no longer exists"
+msgstr "Kolom yang sudah tidak ada"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Authorised signatory"
+msgstr "Penanda tangan yang berwenang"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Change it"
+msgstr "Ubah"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Change it on the full contract form or the employee's record"
+msgstr "Ubah di formulir kontrak lengkap atau data karyawan"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Change the wording"
+msgstr "Ubah isi"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Check again"
+msgstr "Periksa lagi"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Close (Esc)"
+msgstr "Tutup (Esc)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Contract document"
+msgstr "Dokumen kontrak"
+
+#. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_employee_document__pbdc_version
+msgid "Contract document version"
+msgstr "Versi dokumen kontrak"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Contract length"
+msgstr "Jangka waktu kontrak"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Contract reference"
+msgstr "Nomor kontrak"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Date of birth"
+msgstr "Tanggal lahir"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Date of birth (22/11/2026 style)"
+msgstr "Tanggal lahir (format 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Department on the contract"
+msgstr "Bagian di kontrak"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Document"
+msgstr "Dokumen"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Download PDF"
+msgstr "Unduh PDF"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Download this version"
+msgstr "Unduh versi ini"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Draw the contract again"
+msgstr "Tampilkan ulang kontrak"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Employer representative"
+msgstr "Wakil pemberi kerja"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Employer representative's title"
+msgstr "Jabatan wakil pemberi kerja"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__letter_type__employment_contract
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_generic
+msgid "Employment contract"
+msgstr "Kontrak kerja"
+
+#. module: pb_doc_contracts
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_id
+msgid "Employment contract — Indonesia"
+msgstr "Kontrak kerja — Indonesia"
+
+#. module: pb_doc_contracts
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_vn
+msgid "Employment contract — Vietnam"
+msgstr "Kontrak kerja — Vietnam"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__pbds_kind__employment
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__pbds_kind_set__employment
+msgid "Employment contracts"
+msgstr "Kontrak kerja"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "End date (22/11/2026 style)"
+msgstr "Tanggal berakhir (format 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "End date, or \"no end date\""
+msgstr "Tanggal berakhir, atau \"tanpa tanggal berakhir\""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Every field has a value"
+msgstr "Semua kolom sudah terisi"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Filed in %(who)s's documents as version %(n)s."
+msgstr "Disimpan di dokumen %(who)s sebagai versi %(n)s."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid ""
+"Files the PDF in %s's documents as version %s. Earlier versions are kept."
+msgstr ""
+"Menyimpan PDF di dokumen %s sebagai versi %s. Versi sebelumnya tetap "
+"disimpan."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Fixed term (has an end date)"
+msgstr "Waktu tertentu (ada tanggal berakhir)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Go to this field in the contract panel"
+msgstr "Buka kolom ini di panel kontrak"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Have your own lawyer check it before you use it."
+msgstr ""
+"Minta pengacara Anda sendiri memeriksanya sebelum Anda menggunakannya."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Home address"
+msgstr "Alamat rumah"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Hours per week"
+msgstr "Jam per minggu"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "ID number"
+msgstr "Nomor identitas"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Job on the contract"
+msgstr "Jabatan di kontrak"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Language"
+msgstr "Bahasa"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Make it yours"
+msgstr "Jadikan milik Anda"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Nationality"
+msgstr "Kewarganegaraan"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "New employment contract"
+msgstr "Kontrak kerja baru"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "No %s"
+msgstr "Belum ada %s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Not printed"
+msgstr "Tidak dicetak"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Not saved yet. Saving files it as version 1 in %s's documents."
+msgstr ""
+"Belum disimpan. Menyimpan akan menaruhnya sebagai versi 1 di dokumen %s."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Open the employee to fill it in"
+msgstr "Buka data karyawan untuk mengisinya"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Open-ended (no end date)"
+msgstr "Waktu tidak tertentu (tanpa tanggal berakhir)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "PDF ready. Nothing was filed or sent."
+msgstr "PDF siap. Tidak ada yang disimpan atau dikirim."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Paperwork"
+msgstr "Dokumen"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Passport number"
+msgstr "Nomor paspor"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Pay currency"
+msgstr "Mata uang gaji"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Pay is hidden from you"
+msgstr "Gaji disembunyikan dari Anda"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Pay scheme"
+msgstr "Skema penggajian"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Place of work"
+msgstr "Tempat kerja"
+
+#. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_employee_document__pbdc_contract_id
+msgid "Printed for contract"
+msgstr "Dicetak untuk kontrak"
+
+#. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_letter_template__pbdc_sample
+msgid "Sample wording"
+msgstr "Isi contoh"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Sample wording."
+msgstr "Isi contoh."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Save or discard your changes first."
+msgstr "Simpan atau buang perubahan Anda terlebih dahulu."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid ""
+"Save or discard your changes first: the contract document prints what is "
+"saved."
+msgstr ""
+"Simpan atau buang perubahan Anda terlebih dahulu: dokumen kontrak mencetak "
+"yang sudah disimpan."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Save to documents · v%s"
+msgstr "Simpan ke dokumen · v%s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Saved versions"
+msgstr "Versi yang disimpan"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid ""
+"See the finished contract, download it as a PDF or file it in their "
+"documents"
+msgstr ""
+"Lihat kontrak yang sudah jadi, unduh sebagai PDF, atau simpan di dokumen "
+"mereka"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Start date (22/11/2026 style)"
+msgstr "Tanggal mulai (format 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The PDF could not be made right now."
+msgstr "PDF belum dapat dibuat saat ini."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"The PDF could not be made right now. Try again in a moment; the preview on "
+"screen is exactly what will print."
+msgstr ""
+"PDF belum dapat dibuat saat ini. Coba lagi sebentar lagi; pratinjau di layar"
+" persis sama dengan yang akan dicetak."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The contract cannot be shown"
+msgstr "Kontrak tidak dapat ditampilkan"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be drawn just now. Try again in a moment."
+msgstr "Kontrak belum dapat ditampilkan saat ini. Coba lagi sebentar lagi."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be drawn."
+msgstr "Kontrak tidak dapat ditampilkan."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be filed just now."
+msgstr "Kontrak belum dapat disimpan saat ini."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "The contract could not be filed: %s"
+msgstr "Kontrak tidak dapat disimpan: %s"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"The document kind for contracts is missing. Ask an administrator to add it "
+"back."
+msgstr ""
+"Jenis dokumen untuk kontrak tidak ada. Minta administrator untuk "
+"menambahkannya kembali."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The finished contract"
+msgstr "Kontrak yang sudah jadi"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The language this wording is written in"
+msgstr "Bahasa isi ini"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"There is no employment contract wording switched on. Someone who looks after"
+" documents can add or switch one on in Settings, Documents."
+msgstr ""
+"Belum ada isi kontrak kerja yang diaktifkan. Orang yang mengurus dokumen "
+"dapat menambah atau mengaktifkannya di Pengaturan, Dokumen."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "These print as nothing. Press one to fill it in."
+msgstr "Bagian ini akan tercetak kosong. Tekan salah satu untuk mengisinya."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract has no employee yet, so there is nobody to write the contract "
+"for."
+msgstr ""
+"Kontrak ini belum memiliki karyawan, jadi belum ada orang untuk dibuatkan "
+"kontrak."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract is not available to you. It may have been removed, or it "
+"belongs to a company you do not work in."
+msgstr ""
+"Kontrak ini tidak tersedia untuk Anda. Mungkin sudah dihapus, atau milik "
+"perusahaan tempat Anda tidak bekerja."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract shows pay, and you may not see this person's pay. Ask someone "
+"who may see pay to print it."
+msgstr ""
+"Kontrak ini menampilkan gaji, dan Anda tidak boleh melihat gaji orang ini. "
+"Minta orang yang boleh melihat gaji untuk mencetaknya."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "This is not on the contract panel. Open the full form to fill it in."
+msgstr ""
+"Ini tidak ada di panel kontrak. Buka formulir lengkap untuk mengisinya."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Today's date (22/11/2026 style)"
+msgstr "Tanggal hari ini (format 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Trial period end date"
+msgstr "Tanggal akhir masa percobaan"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Trial period end date (22/11/2026 style)"
+msgstr "Tanggal akhir masa percobaan (format 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Which contract document"
+msgstr "Dokumen kontrak yang mana"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Working schedule"
+msgstr "Jadwal kerja"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Writing the contract…"
+msgstr "Menyusun kontrak…"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"You can download this contract. Filing it in the employee's documents needs "
+"the HR or payroll role."
+msgstr ""
+"Anda dapat mengunduh kontrak ini. Untuk menyimpannya di dokumen karyawan "
+"diperlukan peran HR atau penggajian."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "You may not read everything this contract shows."
+msgstr "Anda tidak boleh membaca semua yang ditampilkan kontrak ini."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "You may not see pay"
+msgstr "Anda tidak boleh melihat gaji"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "no end date"
+msgstr "tanpa tanggal berakhir"
