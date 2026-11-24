@@ -1,0 +1,14 @@
+// The designer's paper draws contract clauses the way they print
+// (`report/contract_frame.xml`): two columns, a line between clauses, no
+// boxes; the signature table without borders.
+.pbds-paper {
+    table.pbdc-bi { table-layout: fixed; margin: 0; }
+    table.pbdc-bi td { width: 50%; border: none; border-top: 1px solid #e2e4ee; padding: 7px 12px 5px 0; }
+    table.pbdc-bi td + td { padding: 7px 0 5px 12px; border-left: 1px solid #e2e4ee; color: #3f4a5c; }
+    table.pbdc-bi p { margin: 0 0 .45em; }
+    table.pbdc-sign { table-layout: fixed; margin-top: 30px; }
+    table.pbdc-sign td { width: 50%; border: none; padding: 0 14px 0 0; }
+    table.pbdc-sign p { margin: 0 0 .3em; }
+    // the signing line sits under the space left for the signature
+    table.pbdc-sign td > p:nth-child(3) { border-bottom: 1px solid #94a3b8; width: 75%; margin-bottom: .5em; }
+}
