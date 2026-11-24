@@ -22,7 +22,9 @@ def _initials(name):
 
 def _join_date(e):
     """Best-available hire date for an employee."""
-    d = getattr(e, 'first_contract_date', False)
+    # A roster can establish the hire date before any contract is created.
+    # Do not present the import/record creation date as that person's joining date.
+    d = getattr(e, 'date_of_joining', False) or getattr(e, 'first_contract_date', False)
     if not d and e.contract_ids:
         starts = [c.date_start for c in e.contract_ids if c.date_start]
         d = min(starts) if starts else False
