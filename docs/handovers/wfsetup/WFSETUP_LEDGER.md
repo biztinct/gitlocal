@@ -18,7 +18,7 @@ action; every record opens the generic premium record form; no visual of a shift
 |---|---|---|
 | P0 | Facts doc | done 2026-11-24 |
 | P1 | New screen shell (7-step rail, status facade, live-preview panel) + step 1 Shifts + step 2 Working weeks | built + tested locally 2026-11-24 (`fd11e1e6a`, report WFSETUP_P1_REPORT.md) |
-| P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | launched 2026-11-24 |
+| P2 | Step 3 Who works what: selection table, team strip, bulk give-a-week / one-off shift / late rule, undo | built + tested locally 2026-11-24 (report WFSETUP_P2_REPORT.md) |
 | P3 | Step 4 Late and overtime rules + real live preview calculation | |
 | P4 | Step 5 Holidays, step 6 Time clocks, step 7 Check and go live (publish) | |
 | P5 | Take over the Settings card, vi/id translations, lessons/tours touched, deploy + browser walk, closeout | |
@@ -47,6 +47,14 @@ action; every record opens the generic premium record form; no visual of a shift
 - **WS6** Chrome MCP `drag` sends only the two end points (no pointer path) — test drag-painting with synthetic `pointerdown`/`pointerenter` events; Chrome windows stop at 500 px wide — use `emulate` viewport for 400 px.
 - **WS7** Per-row CSS grids with an `auto` column misalign a shared time axis (each row sizes its own column). Use `grid-template-columns: subgrid` on the rows with gutter columns on the card.
 - **WS8** `pb.shift.pattern.member._order` is `pattern_id, team_id, id`: compare member id lists sorted in tests.
+
+- **WS9** `pb_attendance_policy`'s roster create hook (`policy.py:241-244`) reads the HR-only `hr.employee.pb_attendance_policy_id` AS THE CALLER: every roster create by an attendance manager without HR rights raises AccessError once that module is installed (15 `pb_shift_patterns` tests, and the live draft engine on Sudima). `pb_workforce_setup/models/roster.py` fills `pb_policy_id` from a sudo read first. Any new roster writer must pass `pb_policy_id` itself or rely on that guard.
+- **WS10** Inside the web client a `useExternalListener(window, 'keydown', …)` never receives Escape (the hotkey layer stops it before it bubbles to window). Listen in the capture phase (`{ capture: true }`) and return early while a drawer is open.
+- **WS11** Sass evaluates `min()`/`max()` with mixed units (`min(560px, 64vh)`, `min(480px, 100%)`) and fails the WHOLE backend bundle ("A css error occured, using an old style"; server log "Incompatible units"). Write `unquote("min(…)")`.
+- **WS12** The Undo toast closes after 8 s: in a scripted walk, Apply and Undo must happen in the same `evaluate_script` call. Chrome MCP `take_screenshot`/`take_snapshot` with `filePath` only accept the MCP workspace roots (not the scratch folder nor the worktree) — keep screenshots inline.
+- **WS13** `td { display: flex }` turns the cell into a non-cell and breaks the table; put a flex `div` inside the `td`. Use `table-layout: fixed` + `<colgroup>` so a long name never pushes the last columns out of a ~750 px centre column.
+- **WS14** A drawer that focuses its first radio option on open shows a focus ring that reads as a second selection; focus the dialog element (`tabindex=-1`) instead.
+- **WS15** "Has a working week" = a member row covering TODAY (P1 case 16). A future start shows "starts <date>" and still counts under "No working week yet"; default the date to today so the team bar fills on Apply.
 
 ## Owner rulings (2026-11-24, on cards)
 - R1 Codex has FINISHED with the Workforce screens — build freely, replace its setup screen. (Still read /opt/deploy-notes.md before deploying.)
