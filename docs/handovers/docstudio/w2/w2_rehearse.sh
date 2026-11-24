@@ -57,7 +57,21 @@ log "[$SRC] counts restored vs installed (jobs and x_ lines excluded): $([ -s $E
 log "[$SRC] x_ lines: $(diff <(grep -E '^x_' $EV/rh-$SRC-counts-0.txt) <(grep -E '^x_' $EV/rh-$SRC-counts-1.txt) | grep -E '^[<>]' | cut -c1-200 | tr '\n' ' ')"
 pq -d postgres -c "ALTER DATABASE $COPY IS_TEMPLATE false"
 for g in w2_golden w2_golden_a1; do sh_ new $g.py $EV/rh-$SRC-$g-after.txt; done
-log "[$SRC] golden F after = before: $(diff -q <(grep '^GOLDEN' $EV/rh-$SRC-w2_golden-before.txt) <(grep '^GOLDEN' $EV/rh-$SRC-w2_golden-after.txt) >/dev/null && echo IDENTICAL || echo DIFFERENT)"
+log "[$SRC] golden F after vs before: $(python3 - $EV/rh-$SRC-w2_golden-before.txt $EV/rh-$SRC-w2_golden-after.txt <<'PY'
+import json, sys
+def rd(f):
+    l = [x for x in open(f) if x.startswith('GOLDEN ')]
+    return json.loads(l[0][7:]) if l else None
+b, a = rd(sys.argv[1]), rd(sys.argv[2])
+if not b or not a:
+    print('MISSING OUTPUT'); raise SystemExit
+tb = {r[0]: r for r in b['templates']}; ta = {r[0]: r for r in a['templates']}
+same_old = all(ta.get(i) == r for i, r in tb.items())
+print('letters %s (%d), existing template rows %s (%d), rows added by the new modules: %s' % (
+    'IDENTICAL' if a['letters'] == b['letters'] else 'DIFFERENT', len(b['letters']),
+    'IDENTICAL' if same_old else 'DIFFERENT', len(tb), ' '.join(str(i) for i in sorted(set(ta) - set(tb))) or 'none'))
+PY
+)"
 diff <(grep '^GOLDEN' $EV/rh-$SRC-w2_golden_a1-before.txt) <(grep '^GOLDEN' $EV/rh-$SRC-w2_golden_a1-after.txt) > $EV/rh-$SRC-golden-a1-diff.txt
 log "[$SRC] golden A1 after = before: $([ -s $EV/rh-$SRC-golden-a1-diff.txt ] && echo "DIFFERENT ($(wc -l < $EV/rh-$SRC-golden-a1-diff.txt) lines)" || echo IDENTICAL) ($(grep -c '^GOLDEN' $EV/rh-$SRC-w2_golden_a1-after.txt) lines after, Traceback $(grep -c Traceback $EV/rh-$SRC-w2_golden_a1-after.txt))"
 sh_ new w2_probe.py $EV/rh-$SRC-probe-new.out
