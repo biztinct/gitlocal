@@ -17,6 +17,14 @@ e=env(user=actor.id,context=dict(env.context,allowed_company_ids=[1],lang='en_US
 e.cr.execute("SELECT pg_advisory_xact_lock(hashtext('sudima-rules-20261125'))")
 P=e['pb.attendance.policy'].browse(2)
 assert P.state=='draft'
+def digest(table):
+    e.cr.execute("SELECT md5(coalesce(string_agg(md5(to_jsonb(t)::text),chr(10) ORDER BY id),'')) FROM " + table + ' t')
+    return e.cr.fetchone()[0]
+protected=['hr_contract','hr_contract_advantage','hr_formula_config','hr_formula_rule',
+           'hr_payslip','hr_payslip_run','hr_attendance','hr_leave','hr_leave_allocation',
+           'hr_overtime_request','pb_shift_pattern_member']
+before={table:digest(table) for table in protected}
+clock_switches={c.id:c.publish_punches for c in e['pb.clock.connector'].search([])}
 S=e['pb.workforce.setup']
 T=e['hr.shift.template']
 plan=json.loads((root/'plan.json').read_text())
@@ -62,11 +70,14 @@ for rule in P.shift_ids.filtered(lambda x:x.template_id.code.startswith('SD-')):
 confirmation=S.confirm_rules()
 assert not confirmation['problems'],confirmation
 assert P.state=='active'
+assert before=={table:digest(table) for table in protected}, 'Protected pay/leave/attendance records changed'
+assert clock_switches=={c.id:c.publish_punches for c in e['pb.clock.connector'].search([])}
 members=e['pb.shift.pattern.member'].search([('employee_id','in',current),('pattern_id.active','=',True)])
 receipt={'shift_checks':checks,'late_cases':8,'accepted_current_working_weeks':len(members.employee_id),
     'current_without_working_week':len(set(current)-set(members.employee_id.ids)),
     'reviewed_future_draft_rows':len(rows),'policy_state':P.state,'confirmation':confirmation,
-    'payroll_state':e['hr.formula.config'].browse(7844).state}
+    'payroll_state':e['hr.formula.config'].browse(7844).state,
+    'protected_tables_unchanged':protected,'clock_publication_unchanged':True}
 assert len(checks)==10
 if os.getenv('SUDIMA_RULES_APPLY')=='1':
     e.cr.commit()

@@ -33,6 +33,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.misc import format_date
 
 from . import input_provenance
 
@@ -155,6 +156,32 @@ class ClockFormulaConfig(models.Model):
 
     def _pb_clock_label(self, key):
         return _clock_labels(self).get(key, key)
+
+    # ------------------------------------------------------------ labels (P10c)
+    def _pb_clock_from_label(self):
+        """The clock date in the reader's own language ("1 Dec 2026",
+        "1 thg 12, 2026", "Dec 1, 2026"), or '' when the scheme has none."""
+        self.ensure_one()
+        if not self.pb_clock_from:
+            return ''
+        return format_date(self.env, self.pb_clock_from, date_format='medium')
+
+    def _pb_clock_template_notes(self):
+        """WFSETUP P10c (B5) — `{rule id: sentence}` for the pay data template.
+
+        The template has no pay period (one file serves every month), so the
+        trigger is the scheme's clock date being set, and the sentence names
+        it. Empty for a scheme without a clock date: the template is then
+        exactly what it was before P10c."""
+        self.ensure_one()
+        if not self.pb_clock_from:
+            return {}
+        rules = self._pb_clock_rules()
+        if not rules:
+            return {}
+        text = _("From the clocks from %s — leave blank for those months") \
+            % self._pb_clock_from_label()
+        return {rule.id: text for rule in rules}
 
     # ------------------------------------------------------------ the overlay
     def _pb_clock_apply(self, employee, date_from, date_to, input_values, prov=None):

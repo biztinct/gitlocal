@@ -16220,3 +16220,9 @@ msgstr "“%s” chỉ để xem thông tin và không được trả. Hãy đ�
 #: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
 msgid "“%s” is shown for information and cannot be used in a formula. Pay is worked out from paid hours."
 msgstr "“%s” chỉ để xem thông tin và không được dùng trong công thức. Lương được tính từ giờ được trả."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "From the clocks from %s — leave blank for those months"
+msgstr "Lấy từ máy chấm công từ %s — để trống cho các tháng đó"

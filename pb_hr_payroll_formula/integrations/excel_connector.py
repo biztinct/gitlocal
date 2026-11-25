@@ -624,6 +624,7 @@ class ExcelConnector(BaseHRConnector):
         rules: List[Any],
         pk_header: str = 'Employee Code',
         sheet_title: str = 'Payroll Data',
+        clock_notes: Optional[Dict[int, str]] = None,
     ) -> bytes:
         """
         Generate the pay-data workbook a scheme will actually READ BACK.
@@ -651,6 +652,13 @@ class ExcelConnector(BaseHRConnector):
             rules: hr.formula.rule records (the scheme's whole rule set)
             pk_header: the employee-identifier column heading to put first
             sheet_title: sheet name for a single-sheet scheme
+            clock_notes: WFSETUP P10c (B5) — `{rule id: sentence}` for the
+                columns the clocks answer. Such a column keeps its heading
+                (the heading is the key the resolver matches; renaming it
+                would break the round trip) and is marked instead: the
+                sentence leads its cell note and the heading is greyed. No
+                entry, no change — a scheme without a clock date gets
+                exactly the workbook it got before.
 
         Returns:
             Excel file content as bytes
@@ -681,6 +689,11 @@ class ExcelConnector(BaseHRConnector):
         wb.remove(wb.active)
         bold = openpyxl.styles.Font(bold=True)
         head_fill = openpyxl.styles.PatternFill('solid', fgColor='EAF1FB')
+        clock_notes = clock_notes or {}
+        # WFSETUP P10c — a "leave blank" heading is grey, not the blue of a
+        # column somebody fills in.
+        clock_fill = openpyxl.styles.PatternFill('solid', fgColor='EEF0F3')
+        clock_font = openpyxl.styles.Font(bold=True, color='64748B')
 
         if not sheets:
             sheets = OrderedDict([(sheet_title, [])])
@@ -709,9 +722,17 @@ class ExcelConnector(BaseHRConnector):
                 note = (_TEMPLATE_PK_NOTE if rule is None
                         else '\n'.join(str(x) for x in
                                        [rule.name, rule.code, rule.column_letter] if x))
+                clock = clock_notes.get(rule.id) if rule is not None else None
+                if clock:
+                    cell.font = clock_font
+                    cell.fill = clock_fill
+                    note = '%s\n\n%s' % (clock, note) if note else clock
                 if note:
                     cell.comment = openpyxl.comments.Comment(
                         text=note, author=product_label(self.env) if self.env is not None else 'Payobook')
+                    if clock:
+                        # room for the sentence without opening the note
+                        cell.comment.width, cell.comment.height = 260, 120
                 ws.column_dimensions[get_column_letter(col_idx)].width = \
                     max(12, min(38, len(header) + 4))
             ws.freeze_panes = 'A2'

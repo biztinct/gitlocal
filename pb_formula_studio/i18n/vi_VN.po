@@ -17039,3 +17039,15 @@ msgstr "Đổi"
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 msgid "Keep it as it is"
 msgstr "Giữ nguyên"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "From the clocks — from %s"
+msgstr "Từ máy chấm công — từ %s"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Answered by the clocks: %(fact)s. Pay periods from %(day)s take this value from the clocks, not the pay data file; earlier pay periods read it as before."
+msgstr "Lấy từ máy chấm công: %(fact)s. Các kỳ lương từ %(day)s lấy giá trị này từ máy chấm công, không lấy từ tệp dữ liệu lương; các kỳ lương trước đó vẫn đọc như cũ."

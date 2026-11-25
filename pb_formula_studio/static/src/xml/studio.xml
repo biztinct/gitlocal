@@ -1235,6 +1235,7 @@
                         <t t-esc="srcLabel(srcDeclared(selected).kind)"/>
                       </span>
                       <span t-if="srcDeclared(selected).key" class="ce-srckey" t-esc="srcDeclared(selected).key"/>
+                      <t t-call="pb_formula_studio.SrcClockChip"/>
                     </div>
                     <div class="ce-srcrow">
                       <span class="ce-srclbl">Last run used</span>
@@ -1475,6 +1476,7 @@
                           <t t-esc="srcLabel(srcDeclared(selected).kind)"/>
                         </span>
                         <span t-if="srcDeclared(selected).key" class="ce-srckey" t-esc="srcDeclared(selected).key"/>
+                        <t t-call="pb_formula_studio.SrcClockChip"/>
                       </div>
                       <div class="ce-srcrow">
                         <span class="ce-srclbl">Last run used</span>
@@ -4378,6 +4380,19 @@
          every glyph in this list keeps. -->
     <t t-elif="icon === 'calendar'"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/><path d="M8 15h.01M12 15h.01M16 15h.01"/></t>
     <t t-else=""><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/></t>
+  </t>
+
+  <!-- WFSETUP P10c (B6) — "From the clocks — from 1 Dec 2026", beside what the
+       component is set to read. Display only; the server sends `source.clock`
+       only for an input the clocks answer on a scheme with a clock date, and
+       both the words and the date (in the reader's language) come from it.
+       Lucide `clock`. -->
+  <t t-name="pb_formula_studio.SrcClockChip">
+    <span t-if="selected and selected.source and selected.source.clock"
+          class="ce-srcchip s-clock" t-att-title="selected.source.clock.hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <t t-esc="selected.source.clock.label"/>
+    </span>
   </t>
 
   <!-- Problem-rail glyphs, keyed by probIcon(kind) in formula_studio.js. Same

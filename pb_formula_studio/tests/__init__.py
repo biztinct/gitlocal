@@ -82,3 +82,6 @@ from . import test_wdgap_w2c_take_home
 
 # WDGAP W2-F — tax year on the Health tab; offer calculator boxes.
 from . import test_wdgap_w2f
+
+# WFSETUP P10c — "From the clocks" labels (template + source card).
+from . import test_p10c_clock_labels

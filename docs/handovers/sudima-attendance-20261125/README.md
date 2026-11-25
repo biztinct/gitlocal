@@ -1,120 +1,168 @@
-# Sudima client confirmation — 25 November 2026
+# Sudima attendance confirmation — 25 November 2026
 
-Configuration-only update using the existing Workforce setup UI workflows.
-Source workbook remains private in SUDIMA; SHA256
+## Result and source
+
+The client employee workbook has 606 exact employee-code/name matches:
+151 Manager, 444 Worker and 11 marked left employment. The 595 current employees'
+attendance classifications are configured through the existing Workforce setup
+assignment workflow. The 11 leavers are not archived without termination dates.
+Source workbook SHA256:
 `b34a12f840bc1f26171506eacd8f5e591ac5b3110af841f7050cea5b9395e12a`.
-The private identity plan and deployment receipt contain employee-level evidence.
+Employee-level evidence remains private under `/odoo/backups/sudima-rules-20261125`.
 
-## Authorized configuration
+The follow-up configuration confirms the attendance policy using the same
+`confirm_rules` method as the screen. This does not publish the roster, enable
+punch publication, activate contracts, approve overtime, or run payroll.
 
-- 606 unique badge codes and names match existing profiles: 151 Manager,
-  444 Worker, 11 marked left employment. Apply the 595 explicit attendance
-  classifications using `pb.workforce.setup.set_late_rule` (with its preview
-  and undo record). Do not archive leavers without dated termination details.
-- Worker 1–9 minutes: confirmed zero **additional** hours penalty. Keep the
-  entire policy draft pending clarification whether actual missed minutes
-  are paid. Worker >=10: additional 4h; manager >=10: additional 1h.
-  Owner's earlier no-annual-leave-debit instruction remains in force.
-- Nine confirmed shift definitions and their normal/OT boundaries:
-  day 07:30 to 16:30/18:30/19:30/20:30/22:00; night 16:30 to
-  01:30/04:30 and 19:30 to 04:30/07:30. Each has eight normal hours.
-  Breaks are 11:30–12:30 or 23:30–00:30. Screen saves use
-  `save_shift` and `save_rules`, with native notes/code fields retained.
-- Existing calendar 202 contains six eight-hour days (48h). Do not assign
-  a weekly rest day to an employee without resolving their proposed pattern.
+## Confirmed calculation
 
-## Unresolved / not payroll-ready
+- First check-in and last check-out within the assigned shift.
+- Below 10 minutes late: retain missed start minutes in paid time for both groups;
+  actual punches, actual worked hours and lateness remain visible.
+- At 10 minutes or more: deduct actual missed time, then an additional four hours
+  for Workers or one hour for Managers. Never debit an annual leave balance.
+- Day break: 11:30–12:30. Night break: 23:30–00:30. Both apply to the long day.
+- Normal day: 07:30–16:30, eight paid normal hours. Ten client shift definitions
+  have been checked against the calculation engine:
 
-- Attendance allowance deduction amount/frequency and whether VNATTPLUS is
-  affected. Both current allowance components are supplied amounts, not
-  automated lateness formulas. Do not invent monthly disqualification.
-- Worker lateness below ten minutes: actual missed-minute treatment.
-- Person-to-night-shift assignments, rotations, confirmed working/rest days.
-- 07:30–04:00 next-day span: screenshot's 10.5h OT implies two unpaid breaks.
-  Existing policy supports only one scheduled break per shift; a reusable
-  multi-break editor/calculation extension is needed if both apply. Do not
-  substitute an incorrect two-hour lunch or pay 11.5h OT silently.
-- Work after 20:30 requires workshop evidence and the existing attendance
-  correction / overtime approval workflows. No fabricated clock-out and no
-  blanket truncation of genuine night punches. Screenshot's separate cash
-  1.5h payment route remains unconfigured until confirmed.
-- Employee list marks 11 people left employment but gives no leaving dates.
-- The newer combined branch includes deployed WFSETUP P10b. Live scheme
-  7844 has clock-to-pay sourcing from 1 December, but the scheme and all
-  650 contracts are still drafts; all six connectors have attendance
-  publication off. Rules and rosters are drafts, with no attendance rows.
-  Do not revive the deferred Actual Pay extra-bonus logic or exceed-limit
-  payment workstream (owner ruling R14: paid OT stays within the limits).
+| Start | End | Next day | Normal hours | OT hours | Unpaid breaks |
+|---|---|---|---:|---:|---:|
+| 07:30 | 16:30 | No | 8 | 0 | 1 |
+| 07:30 | 18:30 | No | 8 | 2 | 1 |
+| 07:30 | 19:30 | No | 8 | 3 | 1 |
+| 07:30 | 20:30 | No | 8 | 4 | 1 |
+| 07:30 | 22:00 | No | 8 | 5.5 | 1 |
+| 16:30 | 01:30 | Yes | 8 | 0 | 1 |
+| 16:30 | 04:30 | Yes | 8 | 3 | 1 |
+| 19:30 | 04:30 | Yes | 8 | 0 | 1 |
+| 19:30 | 07:30 | Yes | 8 | 3 | 1 |
+| 07:30 | 04:00 | Yes | 8 | 10.5 | 2 |
 
-## UI equivalents
+These are measured overtime quantities, not automatic payment approval. Work not
+recorded after 20:30 needs workshop evidence and the correction/OT approval
+workflow. Do not fabricate a checkout or truncate genuine night punches.
+The separate 1.5-hour cash/excess payment mechanism remains a deferred workstream;
+only approved overtime within the configured limits reaches regular payroll.
+
+## Attendance allowance — explicitly held
+
+VNATT (Attendance allowance) and VNATTPLUS (Additional attendance allowance)
+currently remain supplied amounts from the workbook. Neither has a full recurring
+entitlement saved on employee contracts. They are not automatic lateness formulas.
+VNDIVISOR is 26 on all 650 existing contracts.
+
+Owner confirmed one day's **VNATT only** per late working day, using monthly
+entitlement divided by 26. Intended future formula, once entitlement is supplied:
+
+`max(0, full monthly Attendance allowance - full monthly Attendance allowance / 26 * late working days)`
+
+Owner then instructed: **keep it as is for now; will ask client**. No allowance
+amount, binding or formula is changed. Never treat September's paid amount as the
+full entitlement; it may already include deductions. VNATTPLUS stays unchanged.
+
+## Reusable UI controls
 
 Settings → HR → Workforce setup (also Workforce → Setup):
 
-1. Shifts: editable shift definitions and unpaid break duration.
-2. Working weeks: editable repeated working/rest days.
-3. Who works what: select people → Late rule → Worker or Manager → Preview
-   and apply; the same workflow offers Undo. Employee profile contains the
-   attendance deduction group and calculation policy too.
-4. Late and overtime rules: editable late bands, break start and overtime
-   start per shift. Remains draft; **do not press Confirm yet**.
-7. Check and go live: outstanding schedule checks and publication; not run.
+1. **Shifts** — start/end and total unpaid break duration.
+2. **Working weeks** — repeated working and rest days.
+3. **Who works what** — select employees → Late rule → Worker / Manager → Preview
+   and apply; Undo is available. Working-week assignments are managed here too.
+4. **Late and overtime rules** — paid-grace checkbox per lateness band; break and
+   OT start times per shift; split the total unpaid duration into two timed breaks.
+   Confirm activates the policy. Change the rules creates an editable new version.
+7. **Check and go live** — remaining coverage checks and roster publication.
 
-## Delivery contract
+Payroll schema → Hours from clocks / component source picker now also offers
+**Late working days (for allowance rules)**. It counts distinct shift dates with
+lateness, including paid-grace arrivals. It is separate from information-only
+late minutes, avoiding a second time deduction. An ordinary input component can
+be bound using the existing UI; no Sudima allowance binding is created.
 
-Only data for database `sudima` changes; no application addon is modified,
-no restart/module upgrade is required, and other databases retain their
-configuration. Run the source-checked plan with the combined installed code,
-under the shared deployment lock. Back up Sudima first. Validate actual
-stored rules against the engine for all nine shift cases and both late
-threshold boundaries, verify protected tables unchanged, then check the
-deployed settings in Chrome. Report receipt and commit after verification.
+Shared implementation: `pb_attendance_policy` 19.0.1.2.0,
+`pb_workforce_setup` 19.0.1.8.0, `pb_hr_payroll_formula` 19.0.1.172.0.
+Paid grace defaults off; second break defaults zero. Other tenants' policies and
+calculations retain their previous behavior until they adopt these options.
 
-## Follow-up answers received during verification
+## Remaining payroll readiness
 
-The owner confirmed paid grace (retain missed start minutes in paid time) below
-ten minutes, one daily Attendance allowance removed for each late working day,
-Additional attendance allowance unaffected, the existing proposed working weeks,
-and both breaks on the long 07:30–04:00 shift. Cash/excess OT belongs to the
-already deferred payment workstream; it is not enabled here.
+- 504 of the 595 current people have owner-approved proposed working weeks;
+  91 have none. Of the 504, 498 have six-day weeks and six have five-day weeks.
+  The latter were retained as approved rather than silently rewritten to 48h.
+- 572 current employees have contracts; 23 do not. All 650 existing contracts
+  remain draft. Rates for new contracts must not be invented.
+- 7,044 December draft roster rows for current employees are marked reviewed;
+  roster publication remains off. No new night assignments are guessed.
+- Scheme 7844 already has clock-to-pay sourcing from 1 December, but is draft.
+  All six connectors still have attendance publication off, while raw sync is
+  independent. No payroll-ready attendance has been generated by this change.
+- Eleven source leavers need dated treatment; 72 active profiles are outside the
+  current source list. Do not silently archive them or include them in a pay run.
+- The full recurring allowance entitlement remains outstanding as above.
+- The holiday calendar still needs confirmation. The live setup screen counts
+  all 678 active profiles, so it shows 161 without a week and 517 publishable;
+  the current source list contains 91 without a week and 504 with one. Review
+  older/leaver profiles before publishing; do not publish all 517 blindly.
 
-Shared opt-in changes, with screen equivalents:
-- Late-rule sentence checkbox: **Pay the missed minutes; keep the late-arrival
-  record**. Stored on a band, false by default. Actual punches/worked hours remain
-  actual; paid hours include the credit. Existing policies retain their output.
-- Shift rule: split total unpaid break into two timed parts. No overlap, negative
-  duration or out-of-shift break accepted. Native advanced form also exposes both.
-- Pay schema clock-source picker: **Late working days (for allowance rules)**,
-  counting distinct shift dates with lateness, including paid-grace arrivals.
-  This is separate from the information-only late-minutes source, preventing
-  accidental second deduction of missed minutes. No tenant rule is hard-coded.
+## Execution and validation
 
-Confirmed live facts: VNATT and VNATTPLUS are workbook inputs, not formulas, and
-neither has a saved contract entitlement. VNDIVISOR is 26 on all 650 contracts.
-A one-day allowance formula needs the un-reduced entitlement and confirmation
-of its daily divisor. Do not turn a historically paid amount into an entitlement.
+Initial data script: `tools/apply_sudima_attendance_confirmation_20261125.py`.
+Follow-up: `tools/apply_sudima_attendance_final_rules_20261125.py`.
+Both default to rollback and use the UI-facing model methods. Follow-up also
+asserts pay, contract, leave, attendance and pattern membership records unchanged.
 
-Of the 595 current source employees, 504 have a working week and 91 do not.
-498 of those 504 have six days; six have confirmed proposed five-day weeks.
-There are contracts for 572 current people, leaving 23 without one. All contracts
-remain draft. Eleven source leavers need dates; 72 active database profiles are
-outside the current source list. Do not auto-archive or include them in a pay run.
+13 standalone engine tests passed. The application rehearsal covered 43 cases:
+42 passed initially; one new late-day fixture correctly refused undecided OT.
+After completing its approval workflow, that test passed, including source
+binding and the payroll overlay. No application guard was weakened. The final
+paid-grace/two-break round-trip test passed again after the generic UI default fix.
 
-Second data application: `apply_sudima_attendance_final_rules_20261125.py`, after
-the shared release. It adds the long shift, saves both groups' paid grace, and
-marks only current employees' future draft rosters as reviewed. It confirms the now-agreed attendance rules using the screen’s Confirm action.
-The allowance/employee coverage gaps still prevent full payroll readiness; this
-does not publish rosters, enable connector publication, approve overtime or run pay.
+Chrome rehearsal: saved paid grace off/on and the second break 45/60 minutes,
+reloaded to verify persistence, checked worker previews at 9 and 10 minutes
+(8 and 3.83 paid normal hours), and confirmed the policy through the screen.
+Two-break editor rendered correctly; no console errors. Screenshots were viewed
+inline only; no screenshot files created. Concurrent-session images are preserved.
 
-Validation in progress: 13 standalone calculation tests pass. The isolated
-application rehearsal passed 42/43 cases initially; the new late-day test correctly
-refused undecided OT. After completing the fixture's approval workflow, its
-source-to-payroll retest passed. The application behavior was not weakened.
+Release script: `tools/deploy_sudima_attendance_rules_20261125.py`. Combined
+210-custom-module inventory includes the other session's PDFFIX-2 release;
+only changed installed modules are upgraded. Targets: payobook, payobook_template,
+p0clone, sudima, rize. Standard Odoo addons, cron states and the existing Windows
+connector archive are preserved. Rize backup is permanent; other release backups
+have seven-day retention with the latest usable snapshot preserved. ABM untouched.
+### Deployment and live verification
 
-### Latest owner response
+Shared release `bd9f7b12e0d4f1ae95ad59d68c8ec70719aaecc9` completed on all five
+databases; service downtime including stopped-state backups was 583 seconds.
+All 210 custom trees and installed versions matched after deployment; cron
+states restored and all four active website login checks returned HTTP 200.
+Only legacy `payroll_analytics` null-column constraint messages appeared in
+upgrade ERROR output (country/date_from/date_to); upgrades exited successfully.
+The same existing data condition was present in the rehearsal copy. No unrelated
+analytics data was repaired.
 
-Daily allowance divisor confirmed as 26. Owner explicitly instructed **keep the
-current amounts/formula as-is** while asking Sudima for full entitlement. Thus
-VNATT/VNATTPLUS stay untouched; the intended future formula is
-`max(0, full monthly Attendance allowance - full monthly Attendance allowance / 26 * late working days)`.
-This formula has not been activated or applied to historical paid allowances.
-The other deployment must finish first; owner confirmed waiting for it.
+Follow-up data application passed dry run and commit, using configuration script
+commit `d2cb8eb4a` (included in combined `7684b6a4c`). Policy 2 is active; 595
+current classifications, ten shifts, 504 working weeks and 7,044 reviewed future
+draft rows verified. Eleven protected pay/contract/leave/attendance/pattern tables
+were byte-equivalent at row-JSON digest level; clock publication switches stayed
+unchanged. No allowance amounts or formulas changed.
+
+Live Chrome check on `sudima.payobook.com/bizapp/action-1220?step=rules` passed:
+confirmed policy, Worker and Manager bands, second unpaid break, real-person
+preview at 9 and 10 minutes (8 / 3.83 paid normal hours), and the actual go-live
+readiness screen. Console had no errors. The rehearsal had already exercised
+edit/save/reload/confirm through these same screens. No roster was published.
+
+Final read-back: 595 current people (444 Worker / 151 Manager), 504 with working
+weeks, 572 with contracts, zero running contracts, zero published roster rows and
+zero attendance rows. Both allowance rules still have empty formulas, no clock
+binding, and no contract entitlement lines. All five real PC connectors' latest
+reports on 25 November showed successful reads, zero queued records and no error;
+this is last-report evidence, not a claim that the PCs are continuously online.
+
+Evidence: `/tmp/sudima-attendance-release-20261125/receipt.json` and
+`/odoo/backups/sudima-rules-20261125/final-rules-applied.json`,
+`final-verification.json`. The temporary QA account was disabled, its original
+groups/language restored and password rotated; plaintext credentials removed.
+The rehearsal server, database and its own filestore were removed. No screenshots
+or PNG files were saved by this test run; unrelated images were preserved.
