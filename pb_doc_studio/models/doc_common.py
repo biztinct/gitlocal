@@ -301,3 +301,64 @@ def pdf_body(body):
     out = escape(root.text or '') + Markup(''.join(
         lxml.html.tostring(kid, encoding='unicode', with_tail=True) for kid in root))
     return Markup(out)
+
+
+#: Blocks that are a signature: kept on the page of the clause before them.
+PDF_SIGN_CLASSES = ('pbdc-sign',)
+PDF_HEADINGS = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
+
+
+def pdf_split(body):
+    """(head, tail) of a letter body for the PDF (DOCSTUDIO PDFFIX-2).
+
+    `tail` is the last clause — the last block, with its heading, and a
+    signature table written into the wording if there is one — so the page
+    frame can print it in one unbreakable box together with the signatory
+    block: a signature never sits alone at the top of a page. Both parts are
+    already `pdf_body`-normalised. When the body has no clear last block,
+    tail is '' and head is the whole body."""
+    from markupsafe import Markup, escape
+    import lxml.html
+    norm = pdf_body(body)
+    if not norm or not str(norm).strip():
+        return norm, Markup('')
+    try:
+        root = lxml.html.fragment_fromstring(str(norm), create_parent='div')
+    except Exception:                                  # noqa: BLE001
+        return norm, Markup('')
+
+    def tag(node):
+        return node.tag.lower() if isinstance(node.tag, str) else ''
+
+    def is_sign(node):
+        return any(c in (node.get('class') or '').split() for c in PDF_SIGN_CLASSES)
+
+    container = root
+    while True:
+        kids = [k for k in container if isinstance(k.tag, str)]
+        if (len(kids) == 1 and tag(kids[0]) == 'div' and not is_sign(kids[0])
+                and not (container.text or '').strip() and not (kids[0].tail or '').strip()):
+            container = kids[0]
+            continue
+        break
+    kids = [k for k in container if isinstance(k.tag, str)]
+    if not kids or any(not isinstance(k.tag, str) for k in container) \
+            or any((k.tail or '').strip() for k in kids) or (container.text or '').strip():
+        return norm, Markup('')
+    i = len(kids) - 1
+    take = []
+    if is_sign(kids[i]):
+        take.insert(0, kids[i])
+        i -= 1
+    if i >= 0:
+        take.insert(0, kids[i])
+        if i >= 1 and tag(kids[i - 1]) in PDF_HEADINGS:
+            take.insert(0, kids[i - 1])
+    if not take:
+        return norm, Markup('')
+    tail = Markup(''.join(lxml.html.tostring(k, encoding='unicode', with_tail=False) for k in take))
+    for k in take:
+        container.remove(k)
+    head = escape(root.text or '') + Markup(''.join(
+        lxml.html.tostring(kid, encoding='unicode', with_tail=True) for kid in root))
+    return Markup(head), tail

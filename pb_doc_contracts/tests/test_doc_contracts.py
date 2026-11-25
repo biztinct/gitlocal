@@ -194,6 +194,13 @@ class TestDocContracts(ContractDocCase):
         rows = tree.xpath("//table[contains(@class,'pbdc-bi')]//tr")
         self.assertGreater(len(rows), 8)
         self.assertTrue(all(len(r.xpath('./td')) == 2 for r in rows))
+        # PDFFIX-2: a contract prints at the old size, and its last clause and
+        # the signature table sit in one unbreakable box
+        self.assertIn('data-report-dpi="100"', out)
+        keep = tree.xpath("//div[contains(@class,'pbds-keep')]")
+        self.assertEqual(len(keep), 1)
+        self.assertTrue(keep[0].xpath(".//table[contains(@class,'pbdc-sign')]"))
+        self.assertTrue(keep[0].xpath(".//table[contains(@class,'pbdc-bi')]"), 'the last clause goes with the signature')
 
     # ------------------------------------------------------------ 6
     def test_06_every_field_has_a_value_or_a_chip(self):

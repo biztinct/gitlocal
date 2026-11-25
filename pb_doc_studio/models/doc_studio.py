@@ -1535,6 +1535,7 @@ PAGE_CSS = """
 /* PDF only: keep the space before a bold or italic word (DOCSTUDIO PDFFIX,
    doc_common.pdf_body normalises the whitespace first) */
 .pbds-pdf .pbds-body { white-space: pre-wrap; }
+.pbds-pdf .pbds-keep { page-break-inside: avoid; }
 .pbds-page p { margin: 0 0 0.75em; }
 .pbds-page h1, .pbds-page h2, .pbds-page h3, .pbds-page h4, .pbds-page th, .pbds-page td { font-family: inherit; }
 .pbds-page h1 { font-size: 1.6em; margin: 0.4em 0 0.5em; font-weight: 700; }
