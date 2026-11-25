@@ -1270,3 +1270,15 @@ be installed everywhere. **Do not** depend on pb_workforce_setup: it is installe
   it only when the field exists.
 - §D the studio's bank goes through FS-16 unchanged; the request is proposed by the maker (`self.user_id`), so the HR lead
   who approved the hire may approve the bank change too (walk: BCR/2026/0013).
+
+## Corrections and additions found in P3b (2026-11-25)
+- §A6 `_pbme_needs_extra` is one chain in one savepoint; several siblings raise unless the caller is the person themself
+  (`pb_me_project_time.week_summary`, `pb_ess_workforce.get_my_week`), which drops every row put after them (NH41).
+- §A7 checked: `/my/profile`, `/my/details/*`, `/my/tax/*` and `/my/documents` honour no return parameter (`next`, `redirect`).
+  Only the privacy gate keeps `?next=`. `/my/documents` makes the person pick the category from a list of the vault's own names.
+- §B5 on this build: a sign-up POST with a token clears the partner's `signup_type` (the link dies at first use as well as at
+  first sign-in) and force-sends `auth_signup.mail_template_user_signup_account_created`. Tokens are stateless: minting a new
+  one does not revoke older ones (NH43). `pb_zoho_bridge.mail_template_portal_credentials` leaves its link on the employee's
+  chatter (sent with the template's model/res_id, NH42).
+- §F2 `pb_onboarding.step_rize_data` ("Finish your own details") is now ticked by `pb_new_hire` when every ask is done.
+- §G `_auto_create_login` stays work-email only; `pb_new_hire` makes the personal-email login itself (`_login_private`).

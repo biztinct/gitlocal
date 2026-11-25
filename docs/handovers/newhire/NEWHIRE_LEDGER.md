@@ -185,3 +185,32 @@ Owner approved the design and the phased build on 2026-11-25.
 - **NH40** (P3a) Files of a waiting hire are private `ir.attachment` rows of its proposal listed in
   `pb.newhire.proposal.pb_nh_files` (never in the payload); the fast lane applies inside `propose`, so `send` passes them by
   the context key `pb_nh_files` for that one call. `_approval_withdraw/_reject/_return` and the apply drop them.
+- **NH41** (P3b) `pb.me.home._pbme_needs_extra` is ONE chain inside one savepoint: a sibling that raises (several read the
+  session's own employee and raise for anyone else, e.g. `pb_me_project_time`, `pb_ess_workforce`) loses every row put
+  AFTER it. Put your row first (before `super()`), guarded; a row already `put` survives because `put` fills the
+  caller's dict. Test the home as the person (`with_user(emp.user_id)`), never as admin.
+- **NH42** (P3b) `mail.template.send_mail` copies `body_html` into the `mail.message` of the `mail.mail` (`_inherits`) and,
+  with the template's model/res_id, that message shows on the record's chatter (only `user_notification` is hidden). A
+  mail that carries a sign-up link is sent with `email_values={'model': False, 'res_id': False, 'auto_delete': True}`:
+  on nobody's chatter, deleted once sent. (The bridge's own credentials template does leave its link on the chatter.)
+- **NH43** (P3b) The signup link is stateless (signed payload): every link minted stays valid until its own expiry
+  (`auth_signup.signup.validity.hours`, 144 h by default) or the first sign-in. "Send again" / "Copy" do not revoke
+  older links. Setting the password through the link also makes the stock `auth_signup` send its own
+  "account created" email (force-sent) — a stock message on every invitation, not ours.
+- **NH44** (P3b) Locally the asset bundle is not rebuilt when a file changes: restart with the `/web/assets/%`
+  attachments deleted (scratch `restart4.sh`) before judging a JS/SCSS change in the browser.
+- **NH45** (P3b) Narrow-width proof in Claude-in-Chrome: `resize_window` may not apply (window stays 1920 CSS px), the
+  backend refuses to load in an iframe and popups are blocked. `/my` pages CAN be framed (390 px iframe = a real
+  phone viewport). For the studio, set `.pbnh` to 340 px AND copy the stylesheet's own `max-width` media rules into a
+  plain `<style>` (CSSOM read) so the breakpoints apply; measure `scrollWidth`.
+- **NH46** (P3b) `navigator.clipboard.writeText` can stay pending forever in an automation tab without focus (no
+  reject): race it with a timeout and fall back to a select-the-text field (`studio_util.copyText`).
+- **NH47** (P3b) The New joiners drawer (`.obb-scrim`, z-index 1400) sits above the notification layer: a toast
+  raised from inside the drawer is hidden. Say the answer inside the drawer too. Its `pbim-badge` capitalises every
+  word (`text-transform`); sentence-case badges need `text-transform: none`.
+- **NH48** (P3b) An activity assigned to another user (the HR note 3 days before day one) makes the stock
+  "<summary> assigned to you" notification email — product behaviour on every activity.
+- **NH49** (P3b) Tests run on whatever database the runner is given (often a walk DB): never assume there is no active
+  mail server (switch them ALL off when testing "no email"), no other joiner with open asks (judge one person's mail /
+  activity, not a job's totals), no other queued mail (scan only rows made by the test) or no published privacy notice
+  (the `/my` gate redirects every page test; patch `pb.privacy.consent._pb_pending` except in the test of the gate).
